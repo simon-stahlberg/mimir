@@ -23,29 +23,19 @@
 namespace mimir
 {
 
-void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state,
-                                                            ConstSearchNode<uint32_t> search_node,
-                                                            Problem problem,
-                                                            const PDDLFactories& pddl_factories) const
-{
-}
+void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
-void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
-                                                              ConstSearchNode<uint32_t> search_node,
-                                                              Problem problem,
-                                                              const PDDLFactories& pddl_factories) const
-{
-}
+void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) const {}
 
 void DefaultBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
-                                                                             ConstSearchNode<uint32_t> search_node,
+                                                                             GroundAction action,
                                                                              Problem problem,
                                                                              const PDDLFactories& pddl_factories) const
 {
 }
 
 void DefaultBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
-                                                                                 ConstSearchNode<uint32_t> search_node,
+                                                                                 GroundAction action,
                                                                                  Problem problem,
                                                                                  const PDDLFactories& pddl_factories) const
 {

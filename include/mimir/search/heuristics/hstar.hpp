@@ -15,10 +15,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_HEURISTICS_HPP_
-#define MIMIR_SEARCH_HEURISTICS_HPP_
+#ifndef MIMIR_SEARCH_HEURISTICS_HSTAR_HPP_
+#define MIMIR_SEARCH_HEURISTICS_HSTAR_HPP_
 
-#include "mimir/search/heuristics/blind.hpp"
-#include "mimir/search/heuristics/hstar.hpp"
+#include "mimir/search/declarations.hpp"
+#include "mimir/search/heuristics/interface.hpp"
+
+namespace mimir
+{
+
+/// @brief `HStarHeuristic` returns the shortest goal distance.
+class HStarHeuristic : public IHeuristic
+{
+public:
+    HStarHeuristic(Problem problem,
+                   std::shared_ptr<PDDLFactories> factories,
+                   std::shared_ptr<IApplicableActionGenerator> aag,
+                   std::shared_ptr<StateRepository> ssg);
+
+    double compute_heuristic(State state) override;
+
+private:
+    std::unordered_map<State, double, loki::Hash<State>> m_estimates;
+};
+
+}
 
 #endif

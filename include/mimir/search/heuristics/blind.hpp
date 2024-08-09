@@ -23,15 +23,12 @@
 namespace mimir
 {
 
-/**
- * Specialized implementation class.
- */
 class BlindHeuristic : public IHeuristic
 {
 public:
-    [[nodiscard]] double compute_heuristic(State state) override { return 0.; }
+    double compute_heuristic(State state) override { return 0.; }
 };
 
-}  // namespace mimir
+}
 
-#endif  // MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
+#endif

@@ -22,48 +22,35 @@
 
 namespace mimir
 {
-void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state,
-                                                           ConstSearchNode<double, double> search_node,
-                                                           Problem problem,
-                                                           const PDDLFactories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
               << "[AStar] State: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << std::endl
               << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state,
-                                                             ConstSearchNode<double, double> search_node,
-                                                             Problem problem,
-                                                             const PDDLFactories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) const
 {
-    assert(search_node.get_creating_action().has_value());
-    assert(search_node.get_parent_state().has_value());
-    std::cout << "[AStar] Action: " << std::make_tuple(search_node.get_creating_action().value(), std::cref(pddl_factories)) << "\n"
+    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_factories)) << "\n"
               << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << "\n"
               << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
-                                                                     ConstSearchNode<double, double> search_node,
+                                                                     GroundAction action,
                                                                      Problem problem,
                                                                      const PDDLFactories& pddl_factories) const
 {
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
-                                                                         ConstSearchNode<double, double> search_node,
+                                                                         GroundAction action,
                                                                          Problem problem,
                                                                          const PDDLFactories& pddl_factories) const
 {
 }
 
-void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state,
-                                                          ConstSearchNode<double, double> search_node,
-                                                          Problem problem,
-                                                          const PDDLFactories& pddl_factories) const
-{
-}
+void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
 void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {

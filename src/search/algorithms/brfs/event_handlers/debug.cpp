@@ -22,36 +22,29 @@
 
 namespace mimir
 {
-void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state,
-                                                          ConstSearchNode<uint32_t> search_node,
-                                                          Problem problem,
-                                                          const PDDLFactories& pddl_factories) const
+void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[BrFS] ----------------------------------------\n"
               << "[BrFS] State: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << std::endl
               << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
-                                                            ConstSearchNode<uint32_t> search_node,
-                                                            Problem problem,
-                                                            const PDDLFactories& pddl_factories) const
+void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) const
 {
-    assert(search_node.get_creating_action().has_value());
-    std::cout << "[BrFS] Action: " << std::make_tuple(search_node.get_creating_action().value(), std::cref(pddl_factories)) << "\n"
+    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_factories)) << "\n"
               << "[BrFS] Successor: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << "\n"
               << std::endl;
 }
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
-                                                                           ConstSearchNode<uint32_t> search_node,
+                                                                           GroundAction action,
                                                                            Problem problem,
                                                                            const PDDLFactories& pddl_factories) const
 {
 }
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
-                                                                               ConstSearchNode<uint32_t> search_node,
+                                                                               GroundAction action,
                                                                                Problem problem,
                                                                                const PDDLFactories& pddl_factories) const
 {

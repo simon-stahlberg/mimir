@@ -316,6 +316,8 @@ const typename StateSpace::GraphType& StateSpace::get_graph() const { return m_g
 /* States */
 const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
+const ConcreteState& StateSpace::get_state(StateIndex state) const { return m_graph.get_vertices().at(state); }
+
 template<IsTraversalDirection Direction>
 std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<Direction>> StateSpace::get_adjacent_states(StateIndex state) const
 {

@@ -164,6 +164,7 @@ public:
 
     /* States */
     const ConcreteStateList& get_states() const;
+    const ConcreteState& get_state(StateIndex state) const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>

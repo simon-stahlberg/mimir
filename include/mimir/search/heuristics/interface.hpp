@@ -26,6 +26,7 @@ namespace mimir
 /**
  * Interface class
  */
+
 class IHeuristic
 {
 public:

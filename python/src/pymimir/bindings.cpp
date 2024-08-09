@@ -279,33 +279,26 @@ public:
     using DynamicAStarAlgorithmEventHandlerBase::DynamicAStarAlgorithmEventHandlerBase;
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, search_node, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, problem, std::cref(pddl_factories));
     }
 
-    void on_generate_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, search_node, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, action, problem, std::cref(pddl_factories));
     }
-    void on_generate_state_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_relaxed_impl, state, search_node, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_relaxed_impl, state, action, problem, std::cref(pddl_factories));
     }
-    void
-    on_generate_state_not_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void,
-                          DynamicAStarAlgorithmEventHandlerBase,
-                          on_generate_state_not_relaxed_impl,
-                          state,
-                          search_node,
-                          problem,
-                          std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_not_relaxed_impl, state, action, problem, std::cref(pddl_factories));
     }
-    void on_close_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_close_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_close_state_impl, state, search_node, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_close_state_impl, state, problem, std::cref(pddl_factories));
     }
     void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_state, uint64_t num_generated_states) override
     {
@@ -1142,7 +1135,6 @@ void init_pymimir(py::module_& m)
 
     // AStar
     py::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics");
-    py::class_<ConstSearchNode<double, double>>(m, "ConstSearchNode_double_double");
     py::class_<IAStarAlgorithmEventHandler, std::shared_ptr<IAStarAlgorithmEventHandler>>(m, "IAStarAlgorithmEventHandler");
     py::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DefaultAStarAlgorithmEventHandler>>(
         m,

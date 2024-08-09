@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, PDDLFactories, Problem, LiftedApplicableActionGenerator, State, StateRepository, GroundAction, AStarAlgorithm, SearchStatus, IHeuristic, ConstSearchNode_double_double, DefaultAStarAlgorithmEventHandler, AStarAlgorithmEventHandlerBase
+from pymimir import PDDLParser, PDDLFactories, Problem, LiftedApplicableActionGenerator, State, StateRepository, GroundAction, AStarAlgorithm, SearchStatus, IHeuristic, DefaultAStarAlgorithmEventHandler, AStarAlgorithmEventHandlerBase
 
 from pathlib import Path
 from typing import List
@@ -42,19 +42,19 @@ class CustomAStarAlgorithmEventHandler(AStarAlgorithmEventHandlerBase):
         """
         AStarAlgorithmEventHandlerBase.__init__(self, quiet)  # Without this, a TypeError is raised.
 
-    def on_expand_state_impl(self, state : State, search_node: ConstSearchNode_double_double, problem : Problem, pddl_factories : PDDLFactories):
+    def on_expand_state_impl(self, state : State, problem : Problem, pddl_factories : PDDLFactories):
         pass
 
-    def on_generate_state_impl(self, state : State, search_node: ConstSearchNode_double_double, problem : Problem, pddl_factories : PDDLFactories):
+    def on_generate_state_impl(self, state : State, action : GroundAction, problem : Problem, pddl_factories : PDDLFactories):
         pass
 
-    def on_generate_state_relaxed_impl(self, state : State, search_node: ConstSearchNode_double_double, problem : Problem, pddl_factories : PDDLFactories):
+    def on_generate_state_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_factories : PDDLFactories):
         pass
 
-    def on_generate_state_not_relaxed_impl(self, state : State, search_node: ConstSearchNode_double_double, problem : Problem, pddl_factories : PDDLFactories):
+    def on_generate_state_not_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_factories : PDDLFactories):
         pass
 
-    def on_close_state_impl(self, state : State, search_node: ConstSearchNode_double_double, problem : Problem, pddl_factories : PDDLFactories):
+    def on_close_state_impl(self, state : State, problem : Problem, pddl_factories : PDDLFactories):
         pass
 
     def on_finish_f_layer_impl(self, f_value: float, num_expanded_states : int, num_generated_states : int):

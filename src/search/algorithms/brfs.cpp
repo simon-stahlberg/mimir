@@ -101,17 +101,17 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         // We need this before goal test for correct statistics reporting.
         const auto flat_search_node = this->m_search_nodes[state.get_index()];
         auto search_node = SearchNode<uint32_t>(flat_search_node);
-        const auto const_search_node = ConstSearchNode<uint32_t>(flat_search_node);
 
-        if (const_search_node.get_property<0>() > g_value)
+        if (search_node.get_property<0>() > g_value)
         {
-            g_value = const_search_node.get_property<0>();
+            g_value = search_node.get_property<0>();
             m_aag->on_finish_search_layer();
             m_event_handler->on_finish_g_layer();
         }
 
         if (goal_strategy->test_dynamic_goal(state))
         {
+            const auto const_search_node = ConstSearchNode<uint32_t>(flat_search_node);
             set_plan(this->m_search_nodes, const_search_node, out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
@@ -124,7 +124,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             return SearchStatus::SOLVED;
         }
 
-        m_event_handler->on_expand_state(state, const_search_node, problem, pddl_factories);
+        m_event_handler->on_expand_state(state, problem, pddl_factories);
 
         this->m_aag->generate_applicable_actions(state, applicable_actions);
 
@@ -134,11 +134,10 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
             const auto flat_successor_search_node = this->m_search_nodes[successor_state.get_index()];
             auto successor_search_node = SearchNode<uint32_t>(flat_successor_search_node);
-            const auto const_successor_search_node = ConstSearchNode<uint32_t>(flat_successor_search_node);
 
-            m_event_handler->on_generate_state(successor_state, const_successor_search_node, problem, pddl_factories);
+            m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
 
-            bool is_new_successor_state = (const_successor_search_node.get_status() == SearchNodeStatus::NEW);
+            bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
                 m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
@@ -148,7 +147,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             successor_search_node.set_status(SearchNodeStatus::OPEN);
             successor_search_node.set_parent_state(state);
             successor_search_node.set_creating_action(action);
-            successor_search_node.set_property<0>(const_search_node.get_property<0>() + 1);
+            successor_search_node.set_property<0>(search_node.get_property<0>() + 1);
 
             m_queue.emplace_back(successor_state);
         }

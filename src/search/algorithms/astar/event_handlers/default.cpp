@@ -22,40 +22,25 @@
 
 namespace mimir
 {
-void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state,
-                                                             ConstSearchNode<double, double> search_node,
-                                                             Problem problem,
-                                                             const PDDLFactories& pddl_factories) const
-{
-}
+void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
-void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
-                                                               ConstSearchNode<double, double> search_node,
-                                                               Problem problem,
-                                                               const PDDLFactories& pddl_factories) const
-{
-}
+void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) const {}
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
-                                                                       ConstSearchNode<double, double> search_node,
+                                                                       GroundAction action,
                                                                        Problem problem,
                                                                        const PDDLFactories& pddl_factories) const
 {
 }
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
-                                                                           ConstSearchNode<double, double> search_node,
+                                                                           GroundAction action,
                                                                            Problem problem,
                                                                            const PDDLFactories& pddl_factories) const
 {
 }
 
-void DefaultAStarAlgorithmEventHandler::on_close_state_impl(State state,
-                                                            ConstSearchNode<double, double> search_node,
-                                                            Problem problem,
-                                                            const PDDLFactories& pddl_factories) const
-{
-}
+void DefaultAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
 void DefaultAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {

@@ -101,16 +101,16 @@ using AStarAlgorithmStatisticsList = std::vector<AStarAlgorithmStatistics>;
 
 inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics& statistics)
 {
-    os << "[BrFS] Search time: " << statistics.get_search_time_ms().count() << "ms"
+    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms"
        << "\n"
-       << "[BrFS] Number of generated states: " << statistics.get_num_generated() << "\n"
-       << "[BrFS] Number of expanded states: " << statistics.get_num_expanded() << "\n"
-       << "[BrFS] Number of pruned states: " << statistics.get_num_pruned() << "\n"
-       << "[BrFS] Number of generated states until last f-layer: "
+       << "[AStar] Number of generated states: " << statistics.get_num_generated() << "\n"
+       << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
+       << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"
+       << "[AStar] Number of generated states until last f-layer: "
        << (statistics.get_num_generated_until_f_value().empty() ? 0 : statistics.get_num_generated_until_f_value().back()) << "\n"
-       << "[BrFS] Number of expanded states until last f-layer: "
+       << "[AStar] Number of expanded states until last f-layer: "
        << (statistics.get_num_expanded_until_f_value().empty() ? 0 : statistics.get_num_expanded_until_f_value().back()) << "\n"
-       << "[BrFS] Number of pruned states until last f-layer: "
+       << "[AStar] Number of pruned states until last f-layer: "
        << (statistics.get_num_pruned_until_f_value().empty() ? 0 : statistics.get_num_pruned_until_f_value().back());
 
     return os;

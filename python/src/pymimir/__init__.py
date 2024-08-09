@@ -94,7 +94,6 @@ from _pymimir import (
     AStarAlgorithmStatistics,
     BlindHeuristic,
     BrFSAlgorithm,
-    ConstSearchNode_double_double,
     DebugAStarAlgorithmEventHandler,
     DebugBrFSAlgorithmEventHandler,
     DebugGroundedApplicableActionGeneratorEventHandler,

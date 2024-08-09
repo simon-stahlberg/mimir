@@ -44,21 +44,20 @@ public:
 
     /// @brief React on expanding a state.
     /// This is happens immediately before on_generate_state for successors of `state`.
-    virtual void on_expand_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void on_generate_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
-    virtual void on_generate_state_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
-    virtual void
-    on_generate_state_not_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
-    virtual void on_close_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_close_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_f_layer(double f_value) = 0;
@@ -112,47 +111,47 @@ private:
 public:
     explicit StaticAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_expand_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            self().on_expand_state_impl(state, search_node, problem, pddl_factories);
+            self().on_expand_state_impl(state, problem, pddl_factories);
         }
     }
 
-    void on_generate_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, search_node, problem, pddl_factories);
+            self().on_generate_state_impl(state, action, problem, pddl_factories);
         }
     }
 
-    void on_generate_state_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, search_node, problem, pddl_factories);
+            self().on_generate_state_relaxed_impl(state, action, problem, pddl_factories);
         }
     }
 
-    void on_generate_state_not_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, search_node, problem, pddl_factories);
+            self().on_generate_state_relaxed_impl(state, action, problem, pddl_factories);
         }
     }
 
-    void on_close_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_close_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            self().on_close_state_impl(state, search_node, problem, pddl_factories);
+            self().on_close_state_impl(state, problem, pddl_factories);
         }
     }
 
@@ -245,20 +244,15 @@ protected:
 public:
     explicit DynamicAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    virtual void on_expand_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) {}
 
-    virtual void on_generate_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) {}
 
-    virtual void on_generate_state_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories)
-    {
-    }
+    virtual void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) {}
 
-    virtual void
-    on_generate_state_not_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories)
-    {
-    }
+    virtual void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) {}
 
-    virtual void on_close_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_close_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) {}
 
     virtual void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
@@ -274,47 +268,47 @@ public:
 
     virtual void on_exhausted_impl() {}
 
-    void on_expand_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
         if (!m_quiet)
         {
-            on_expand_state_impl(state, search_node, problem, pddl_factories);
+            on_expand_state_impl(state, problem, pddl_factories);
         }
     }
 
-    void on_generate_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            on_generate_state_impl(state, search_node, problem, pddl_factories);
+            on_generate_state_impl(state, action, problem, pddl_factories);
         }
     }
 
-    void on_generate_state_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            on_generate_state_relaxed_impl(state, search_node, problem, pddl_factories);
+            on_generate_state_relaxed_impl(state, action, problem, pddl_factories);
         }
     }
 
-    void on_generate_state_not_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            on_generate_state_relaxed_impl(state, search_node, problem, pddl_factories);
+            on_generate_state_relaxed_impl(state, action, problem, pddl_factories);
         }
     }
 
-    void on_close_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_close_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
     {
         if (!m_quiet)
         {
-            on_close_state_impl(state, search_node, problem, pddl_factories);
+            on_close_state_impl(state, problem, pddl_factories);
         }
     }
 
