@@ -46,7 +46,7 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
     m_search_nodes(FlatSearchNodeVector<double, double>(SearchNodeBuilder<double, double>(SearchNodeStatus::NEW,
                                                                                           std::optional<State>(std::nullopt),
                                                                                           std::optional<GroundAction>(std::nullopt),
-                                                                                          (double) std::numeric_limits<double>::max(),
+                                                                                          (double) std::numeric_limits<double>::infinity(),
                                                                                           (double) 0)
                                                             .get_flatmemory_builder())),
     m_openlist()
@@ -168,7 +168,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
             /* Customization point 1: pruning strategy, default never prunes. */
 
-            if (!pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
+            if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
                 m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
                 continue;

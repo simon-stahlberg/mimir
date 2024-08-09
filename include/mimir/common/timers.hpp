@@ -20,6 +20,8 @@
 
 #include <chrono>
 
+namespace mimir
+{
 class StopWatch
 {
 private:
@@ -45,5 +47,6 @@ public:
         return std::chrono::steady_clock::now() >= m_endTime;
     }
 };
+}
 
 #endif

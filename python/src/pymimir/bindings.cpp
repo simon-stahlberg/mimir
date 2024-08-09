@@ -244,6 +244,28 @@ py::class_<IndexGroupedVector, holder_type> bind_const_index_grouped_vector(py::
 }
 
 /**
+ * IPyHeuristic
+ *
+ * Source: https://pybind11.readthedocs.io/en/stable/advanced/classes.html#overriding-virtual-functions-in-python
+ */
+
+class IPyHeuristic : public IHeuristic
+{
+    /* Inherit the constructors */
+    using IHeuristic::IHeuristic;
+
+    /* Trampoline (need one for each virtual function) */
+    double compute_heuristic(State state) override
+    {
+        PYBIND11_OVERRIDE_PURE(double,            /* Return type */
+                               IHeuristic,        /* Parent class */
+                               compute_heuristic, /* Name of function in C++ (must match Python name) */
+                               state              /* Argument(s) */
+        );
+    }
+};
+
+/**
  * Bindings
  */
 void init_pymimir(py::module_& m)
@@ -1037,7 +1059,7 @@ void init_pymimir(py::module_& m)
              });
 
     /* Heuristics */
-    py::class_<IHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic");
+    py::class_<IHeuristic, IPyHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic").def(py::init<>());
     py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
 
     /* Algorithms */

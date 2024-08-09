@@ -48,6 +48,12 @@ concept IsComparable = requires(T a, T b)
 };
 
 template<typename T>
+concept IsArithmetic = std::is_arithmetic_v<T>;
+
+template<typename T>
+concept IsIntegral = std::is_integral_v<T>;
+
+template<typename T>
 concept IsUnsignedIntegral = std::is_integral_v<T> && std::is_unsigned_v<T>;
 
 template<typename T, typename Value>
