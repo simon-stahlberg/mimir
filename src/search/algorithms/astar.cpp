@@ -84,10 +84,23 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     const auto start_h_value = m_heuristic->compute_heuristic(start_state);
     const auto start_f_value = start_g_value + start_h_value;
 
-    auto start_search_node = SearchNode<double, double>(this->m_search_nodes[start_state.get_index()]);
-    start_search_node.get_status() = SearchNodeStatus::OPEN;
-    start_search_node.get_property<0>() = start_g_value;
-    start_search_node.get_property<1>() = start_h_value;
+    const auto flat_start_search_node = this->m_search_nodes[start_state.get_index()];
+    auto start_search_node = SearchNode<double, double>(flat_start_search_node);
+    const auto const_start_search_node = ConstSearchNode<double, double>(flat_start_search_node);
+    start_search_node.set_status((start_h_value == std::numeric_limits<double>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
+    start_search_node.set_property<0>(start_g_value);
+    start_search_node.set_property<1>(start_h_value);
+
+    /* Test whether start state is deadend. */
+
+    if (const_start_search_node.get_status() == SearchNodeStatus::DEAD_END)
+    {
+        m_event_handler->on_unsolvable();
+
+        return SearchStatus::UNSOLVABLE;
+    }
+
+    /* Test static goal. */
 
     if (!goal_strategy->test_static_goal())
     {
@@ -96,16 +109,16 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         return SearchStatus::UNSOLVABLE;
     }
 
-    auto applicable_actions = GroundActionList {};
+    /* Test pruning of start state. */
 
     if (pruning_strategy->test_prune_initial_state(start_state))
     {
         return SearchStatus::FAILED;
     }
 
-    m_openlist.insert(start_f_value, start_state);
-
+    auto applicable_actions = GroundActionList {};
     auto f_value = double();
+    m_openlist.insert(start_f_value, start_state);
 
     while (!m_openlist.empty())
     {
@@ -115,22 +128,31 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         const auto flat_search_node = this->m_search_nodes[state.get_index()];
         auto search_node = SearchNode<double, double>(flat_search_node);
         const auto const_search_node = ConstSearchNode<double, double>(flat_search_node);
-        auto& search_node_status = search_node.get_status();
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
-        if (search_node_status == SearchNodeStatus::CLOSED)
+
+        if (const_search_node.get_status() == SearchNodeStatus::CLOSED)
         {
             continue;
         }
 
         /* Report search progress. */
 
-        const auto search_node_f_value = search_node.get_property<0>() + search_node.get_property<1>();
+        const auto search_node_f_value = const_search_node.get_property<0>() + const_search_node.get_property<1>();
         if (search_node_f_value > f_value)
         {
             f_value = search_node_f_value;
             m_aag->on_finish_search_layer();
             m_event_handler->on_finish_f_layer(f_value);
+        }
+
+        /* Test whether state is a deadend. */
+
+        if (const_search_node.get_status() == SearchNodeStatus::DEAD_END)
+        {
+            m_event_handler->on_unsolvable();
+
+            return SearchStatus::UNSOLVABLE;
         }
 
         /* Test whether state achieves the dynamic goal. */
@@ -181,18 +203,18 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             {
                 /* Open/Reopen state with updated f_value. */
 
-                successor_search_node.get_status() = SearchNodeStatus::OPEN;
-                successor_search_node.get_parent_state() = state;
-                successor_search_node.get_creating_action() = action;
-                successor_search_node.get_property<0>() = new_successor_g_value;
+                successor_search_node.set_status(SearchNodeStatus::OPEN);
+                successor_search_node.set_parent_state(state);
+                successor_search_node.set_creating_action(action);
+                successor_search_node.set_property<0>(new_successor_g_value);
                 if (is_new_successor_state)
                 {
                     // Compute heuristic if state is new.
-                    successor_search_node.get_property<1>() = m_heuristic->compute_heuristic(successor_state);
+                    successor_search_node.set_property<1>(m_heuristic->compute_heuristic(successor_state));
                 }
                 m_event_handler->on_generate_state_relaxed(successor_state, const_successor_search_node, problem, pddl_factories);
 
-                const auto successor_f_value = successor_search_node.get_property<0>() + successor_search_node.get_property<1>();
+                const auto successor_f_value = const_successor_search_node.get_property<0>() + const_successor_search_node.get_property<1>();
                 m_openlist.insert(successor_f_value, successor_state);
             }
             else
@@ -203,7 +225,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         /* Close state. */
 
-        search_node_status = SearchNodeStatus::CLOSED;
+        search_node.set_status(SearchNodeStatus::CLOSED);
         m_event_handler->on_close_state(state, const_search_node, problem, pddl_factories);
     }
 

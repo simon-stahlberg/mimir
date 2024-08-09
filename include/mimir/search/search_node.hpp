@@ -135,6 +135,21 @@ public:
     SearchNode(FlatSearchNode<SearchNodeProperties...> view) : m_view(view) {}
 
     /**
+     * Setters
+     */
+
+    void set_status(SearchNodeStatus status) { m_view.template get<0>() = status; }
+    void set_parent_state(State state) { m_view.template get<1>() = state; }
+    void set_creating_action(GroundAction action) { m_view.template get<2>() = action; }
+
+    template<size_t I>
+    void set_property(const typename std::tuple_element<I, std::tuple<SearchNodeProperties...>>::type& property)
+    {
+        static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
+        m_view.template get<I + 3>() = property;
+    }
+
+    /**
      * Mutable getters
      */
 
