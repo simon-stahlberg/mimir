@@ -12,3 +12,5 @@ target_link_libraries(_pymimir
         pybind11::module
         mimir::core)
 target_compile_definitions(_pymimir PUBLIC MIMIR_VERSION_INFO="${MIMIR_VERSION_INFO}")
+
+target_compile_definitions(_pymimir PRIVATE PYBIND11_DETAILED_ERROR_MESSAGES)

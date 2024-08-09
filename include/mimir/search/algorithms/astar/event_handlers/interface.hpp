@@ -81,24 +81,28 @@ public:
     /// @brief React on exhausting a search.
     virtual void on_exhausted() = 0;
 
+    /**
+     * Getters
+     */
+
     virtual const AStarAlgorithmStatistics& get_statistics() const = 0;
     virtual bool is_quiet() const = 0;
 };
 
 /**
- * Base class
+ * Static base class (for C++)
  *
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class AStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
+class StaticAStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
 {
 protected:
     AStarAlgorithmStatistics m_statistics;
     bool m_quiet;
 
 private:
-    AStarAlgorithmEventHandlerBase() = default;
+    StaticAStarAlgorithmEventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -106,7 +110,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit AStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit StaticAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_expand_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
     {
@@ -219,7 +223,172 @@ public:
         }
     }
 
-    /// @brief Get the statistics.
+    /**
+     * Getters
+     */
+
+    const AStarAlgorithmStatistics& get_statistics() const override { return m_statistics; }
+    bool is_quiet() const override { return m_quiet; }
+};
+
+/**
+ * Dynamic base class (for Python)
+ *
+ * Collect statistics and call implementation of derived class.
+ */
+class DynamicAStarAlgorithmEventHandlerBase : public IAStarAlgorithmEventHandler
+{
+protected:
+    AStarAlgorithmStatistics m_statistics;
+    bool m_quiet;
+
+public:
+    explicit DynamicAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+
+    virtual void on_expand_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) {}
+
+    virtual void on_generate_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) {}
+
+    virtual void on_generate_state_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories)
+    {
+    }
+
+    virtual void
+    on_generate_state_not_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories)
+    {
+    }
+
+    virtual void on_close_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) {}
+
+    virtual void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
+
+    virtual void on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) {}
+
+    virtual void on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) {}
+
+    virtual void on_end_search_impl() {}
+
+    virtual void on_solved_impl(const GroundActionList& ground_action_plan) {}
+
+    virtual void on_unsolvable_impl() {}
+
+    virtual void on_exhausted_impl() {}
+
+    void on_expand_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        m_statistics.increment_num_expanded();
+
+        if (!m_quiet)
+        {
+            on_expand_state_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_generate_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        m_statistics.increment_num_generated();
+
+        if (!m_quiet)
+        {
+            on_generate_state_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_generate_state_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        if (!m_quiet)
+        {
+            on_generate_state_relaxed_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_generate_state_not_relaxed(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        if (!m_quiet)
+        {
+            on_generate_state_relaxed_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_close_state(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        if (!m_quiet)
+        {
+            on_close_state_impl(state, search_node, problem, pddl_factories);
+        }
+    }
+
+    void on_finish_f_layer(double f_value) override
+    {
+        m_statistics.on_finish_f_layer(f_value);
+
+        if (!m_quiet)
+        {
+            assert(!m_statistics.get_num_expanded_until_f_value().empty());
+            on_finish_f_layer_impl(f_value, m_statistics.get_num_expanded_until_f_value().back(), m_statistics.get_num_generated_until_f_value().back());
+        }
+    }
+
+    void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        m_statistics.increment_num_pruned();
+
+        if (!m_quiet)
+        {
+            on_prune_state_impl(state, problem, pddl_factories);
+        }
+    }
+
+    void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        m_statistics = AStarAlgorithmStatistics();
+
+        m_statistics.set_search_start_time_point(std::chrono::high_resolution_clock::now());
+
+        if (!m_quiet)
+        {
+            on_start_search_impl(start_state, problem, pddl_factories);
+        }
+    }
+
+    void on_end_search() override
+    {
+        m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
+
+        if (!m_quiet)
+        {
+            on_end_search_impl();
+        }
+    }
+
+    void on_solved(const GroundActionList& ground_action_plan) override
+    {
+        if (!m_quiet)
+        {
+            on_solved_impl(ground_action_plan);
+        }
+    }
+
+    void on_unsolvable() override
+    {
+        if (!m_quiet)
+        {
+            on_unsolvable_impl();
+        }
+    }
+
+    void on_exhausted() override
+    {
+        if (!m_quiet)
+        {
+            on_exhausted_impl();
+        }
+    }
+
+    /**
+     * Getters
+     */
+
     const AStarAlgorithmStatistics& get_statistics() const override { return m_statistics; }
     bool is_quiet() const override { return m_quiet; }
 };

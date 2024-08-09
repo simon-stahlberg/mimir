@@ -28,11 +28,11 @@ namespace mimir
 /**
  * Implementation class
  */
-class DefaultAStarAlgorithmEventHandler : public AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
+class DefaultAStarAlgorithmEventHandler : public StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
 {
 private:
-    /* Implement AStarAlgorithmEventHandlerBase interface */
-    friend class AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
+    /* Implement StaticAStarAlgorithmEventHandlerBase interface */
+    friend class StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
 
     void on_expand_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) const;
 
@@ -60,7 +60,7 @@ private:
     void on_exhausted_impl() const;
 
 public:
-    explicit DefaultAStarAlgorithmEventHandler(bool quiet = true) : AStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(quiet) {}
+    explicit DefaultAStarAlgorithmEventHandler(bool quiet = true) : StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>(quiet) {}
 };
 
 }

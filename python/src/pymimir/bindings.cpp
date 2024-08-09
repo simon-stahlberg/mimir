@@ -251,6 +251,7 @@ py::class_<IndexGroupedVector, holder_type> bind_const_index_grouped_vector(py::
 
 class IPyHeuristic : public IHeuristic
 {
+public:
     /* Inherit the constructors */
     using IHeuristic::IHeuristic;
 
@@ -263,6 +264,72 @@ class IPyHeuristic : public IHeuristic
                                state              /* Argument(s) */
         );
     }
+};
+
+/**
+ * IPyDynamicAStarAlgorithmEventHandlerBase
+ *
+ * Source: https://pybind11.readthedocs.io/en/stable/advanced/classes.html#overriding-virtual-functions-in-python
+ */
+
+class IPyDynamicAStarAlgorithmEventHandlerBase : public DynamicAStarAlgorithmEventHandlerBase
+{
+public:
+    /* Inherit the constructors */
+    using DynamicAStarAlgorithmEventHandlerBase::DynamicAStarAlgorithmEventHandlerBase;
+
+    /* Trampoline (need one for each virtual function) */
+    void on_expand_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, search_node, problem, std::cref(pddl_factories));
+    }
+
+    void on_generate_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, search_node, problem, std::cref(pddl_factories));
+    }
+    void on_generate_state_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_relaxed_impl, state, search_node, problem, std::cref(pddl_factories));
+    }
+    void
+    on_generate_state_not_relaxed_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void,
+                          DynamicAStarAlgorithmEventHandlerBase,
+                          on_generate_state_not_relaxed_impl,
+                          state,
+                          search_node,
+                          problem,
+                          std::cref(pddl_factories));
+    }
+    void on_close_state_impl(State state, ConstSearchNode<double, double> search_node, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_close_state_impl, state, search_node, problem, std::cref(pddl_factories));
+    }
+    void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_state, uint64_t num_generated_states) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_finish_f_layer_impl, f_value, num_expanded_state, num_generated_states);
+    }
+    void on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_prune_state_impl, state, problem, std::cref(pddl_factories));
+    }
+    void on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_start_search_impl, start_state, problem, std::cref(pddl_factories));
+    }
+    /**
+     * Note the trailing commas in the PYBIND11_OVERRIDE calls to name() and bark(). These are needed to portably implement a trampoline for a function that
+     * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
+     */
+    void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
+    void on_solved_impl(const GroundActionList& ground_action_plan) override
+    {
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan);
+    }
+    void on_unsolvable_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_unsolvable_impl, ); }
+    void on_exhausted_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_exhausted_impl, ); }
 };
 
 /**
@@ -903,6 +970,7 @@ void init_pymimir(py::module_& m)
         .value("FAILED", SearchStatus::FAILED)
         .value("EXHAUSTED", SearchStatus::EXHAUSTED)
         .value("SOLVED", SearchStatus::SOLVED)
+        .value("UNSOLVABLE", SearchStatus::UNSOLVABLE)
         .export_values();
 
     /* State */
@@ -1073,15 +1141,23 @@ void init_pymimir(py::module_& m)
              });
 
     // AStar
+    py::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics");
+    py::class_<ConstSearchNode<double, double>>(m, "ConstSearchNode_double_double");
     py::class_<IAStarAlgorithmEventHandler, std::shared_ptr<IAStarAlgorithmEventHandler>>(m, "IAStarAlgorithmEventHandler");
     py::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DefaultAStarAlgorithmEventHandler>>(
         m,
         "DefaultAStarAlgorithmEventHandler")  //
-        .def(py::init<>());
+        .def(py::init<bool>(), py::arg("quiet") = true);
     py::class_<DebugAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DebugAStarAlgorithmEventHandler>>(
         m,
         "DebugAStarAlgorithmEventHandler")  //
-        .def(py::init<>());
+        .def(py::init<bool>(), py::arg("quiet") = true);
+    py::class_<DynamicAStarAlgorithmEventHandlerBase,
+               IAStarAlgorithmEventHandler,
+               IPyDynamicAStarAlgorithmEventHandlerBase,
+               std::shared_ptr<DynamicAStarAlgorithmEventHandlerBase>>(m,
+                                                                       "AStarAlgorithmEventHandlerBase")  //
+        .def(py::init<bool>(), py::arg("quiet") = true);
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<IHeuristic>>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
