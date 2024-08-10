@@ -18,6 +18,7 @@
 #include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/graphs/object_graph.hpp"
@@ -150,7 +151,7 @@ static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_component
         g.add_vertex();
     }
     using StatePair = std::pair<size_t, size_t>;
-    const auto state_pair_hash = [](const auto& pair) { return loki::hash_combine(pair.first, pair.second); };
+    const auto state_pair_hash = [](const auto& pair) { return mimir::hash_combine(pair.first, pair.second); };
     std::unordered_set<StatePair, decltype(state_pair_hash)> edges;
     for (const auto t : state_space.get_graph().get_edges())
     {
@@ -248,8 +249,8 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         auto group = partitioning.at(group_index);
 
         // Reuse memory.
-        always_true_fluent_atoms = state_space->get_graph().get_vertices().at(group.front().second).get_state().get_atoms<Fluent>();
-        always_true_derived_atoms = state_space->get_graph().get_vertices().at(group.front().second).get_state().get_atoms<Derived>();
+        always_true_fluent_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second)).get_atoms<Fluent>();
+        always_true_derived_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second)).get_atoms<Derived>();
         always_false_fluent_atoms.unset_all();
         always_false_derived_atoms.unset_all();
 
@@ -259,7 +260,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         for (const auto& [group_index, state_index] : group)
         {
-            const auto& state = state_space->get_graph().get_vertices().at(state_index).get_state();
+            const auto& state = get_state(state_space->get_graph().get_vertices().at(state_index));
             always_true_fluent_atoms &= state.get_atoms<Fluent>();
             always_true_derived_atoms &= state.get_atoms<Derived>();
             always_false_fluent_atoms -= state.get_atoms<Fluent>();
@@ -386,7 +387,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         auto group = partitioning.at(group_index);
         for (const auto& [group_index, state_index] : group)
         {
-            [[maybe_unused]] const auto& state = state_space->get_graph().get_vertices().at(state_index).get_state();
+            [[maybe_unused]] const auto& state = get_state(state_space->get_graph().get_vertices().at(state_index));
 
             // std::cout << std::make_tuple(problem, state, std::cref(*factories)) << std::endl;
         }

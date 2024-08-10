@@ -18,27 +18,38 @@
 #ifndef MIMIR_COMMON_HASH_HPP_
 #define MIMIR_COMMON_HASH_HPP_
 
-#include "mimir/common/concepts.hpp"
-
-#include <loki/loki.hpp>
+#include <cstddef>
+#include <cstdint>
+#include <functional>
+#include <utility>
 
 namespace mimir
 {
-template<IsHashable T>
-struct SharedPtrHash
-{
-    std::size_t operator()(const std::shared_ptr<T>& ptr) const { return ptr->hash(); }
 
-    std::size_t operator()(const std::shared_ptr<const T>& ptr) const { return ptr->hash(); }
+template<typename T>
+concept HasHashMemberFunction = requires(T a)
+{
+    {
+        a.hash()
+        } -> std::same_as<size_t>;
 };
 
-template<IsComparable T>
-struct SharedPtrEqual
+template<typename T>
+struct Hash
 {
-    bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const { return *lhs == *rhs; }
-
-    bool operator()(const std::shared_ptr<const T>& lhs, const std::shared_ptr<const T>& rhs) const { return *lhs == *rhs; }
+    size_t operator()(const T& element) const
+    {
+        if constexpr (HasHashMemberFunction<T>)
+        {
+            return element.hash();
+        }
+        else
+        {
+            return std::hash<T>()(element);
+        }
+    }
 };
+
 }
 
 #endif

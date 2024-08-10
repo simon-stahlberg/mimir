@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/object.hpp"
 
-#include <loki/loki.hpp>
+#include "mimir/common/hash_utils.hpp"
 
 namespace mimir
 {
@@ -32,7 +32,7 @@ bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) con
     return true;
 }
 
-size_t ObjectImpl::hash_impl() const { return loki::hash_combine(m_name); }
+size_t ObjectImpl::hash_impl() const { return mimir::hash_combine(m_name); }
 
 void ObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << m_name; }
 

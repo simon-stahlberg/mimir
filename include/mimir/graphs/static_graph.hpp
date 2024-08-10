@@ -38,47 +38,41 @@ namespace mimir
 
 /* StaticGraph */
 
-/// @brief `StaticGraph` G implements a static version of a directed graph with vertices V and
-/// edges E satisfying the graph concepts:
+/// @brief `StaticGraph` G implements a static version of a directed graph with vertices of type V and edges of type E satisfying the graph concepts:
 ///   1) VertexListGraph,
 ///   2) EdgeListGraph,
 ///   3) IncidenceGraph, and
 ///   4) AdjacencyGraph.
-/// The meaning of static is that the graph allows for the addition but not for the removal of
-/// vertices and edges.
-/// Due to the restriction to addition functionality, the implementation uses more efficient vector
-/// data structures compared to `DynamicGraph`.
+/// The meaning of static is that the graph allows for the addition but not for the removal of vertices and edges. Due to the restriction to addition
+/// functionality, the implementation uses more efficient vector data structures compared to `DynamicGraph`.
 ///
-/// `StaticGraph` supports traversal of adjacent vertices and edges in forward and backward
-/// directions. The iterators filter adjacent vertices or edges of a vertex from all edges.
-/// This is not efficient and unavoidable because adjacent edges cannot be grouped efficiently
-/// when allowing for the addition of edges.
-/// The iteration in forward or backward directions by translating a `StaticGraph` to a
-/// `StaticForwardGraph`, optimized for forward traversal, or a `StaticBidirectionalGraph`, optimized
-/// for forward and backward traversal, both in O(|V|+|E|*Log2(|E|)) with minimal memory overhead.
-/// @tparam Vertex is vertex type.
-/// @tparam Edge is the edge type.
-template<IsVertex Vertex, IsEdge Edge>
+/// `StaticGraph` supports traversal of adjacent vertices and edges in forward and backward directions. The iterators filter adjacent vertices or edges of a
+/// vertex from all edges. This is not efficient and unavoidable because adjacent edges cannot be grouped efficiently when allowing for the addition of edges.
+/// The iteration in forward or backward directions by translating a `StaticGraph` to a `StaticForwardGraph`, optimized for forward traversal, or a
+/// `StaticBidirectionalGraph`, optimized for forward and backward traversal, both in O(|V|+|E|*Log2(|E|)) with minimal memory overhead.
+/// @tparam V is the vertex type.
+/// @tparam E is the edge type.
+template<IsVertex V, IsEdge E>
 class StaticGraph
 {
 public:
     using GraphTag = StaticGraphTag;
-    using VertexType = Vertex;
-    using VertexList = std::vector<Vertex>;
-    using EdgeType = Edge;
-    using EdgeList = std::vector<Edge>;
+    using VertexType = V;
+    using VertexList = std::vector<V>;
+    using EdgeType = E;
+    using EdgeList = std::vector<E>;
 
     using VertexIndexConstIteratorType = std::ranges::iterator_t<std::ranges::iota_view<VertexIndex, VertexIndex>>;
     using EdgeIndexConstIteratorType = std::ranges::iterator_t<std::ranges::iota_view<EdgeIndex, EdgeIndex>>;
 
     template<IsTraversalDirection Direction>
-    using AdjacentVertexConstIteratorType = StaticAdjacentVertexConstIterator<Vertex, Edge, Direction>;
+    using AdjacentVertexConstIteratorType = StaticAdjacentVertexConstIterator<V, E, Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentVertexIndexConstIteratorType = StaticAdjacentVertexIndexConstIterator<Edge, Direction>;
+    using AdjacentVertexIndexConstIteratorType = StaticAdjacentVertexIndexConstIterator<E, Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeConstIteratorType = StaticAdjacentEdgeConstIterator<Edge, Direction>;
+    using AdjacentEdgeConstIteratorType = StaticAdjacentEdgeConstIterator<E, Direction>;
     template<IsTraversalDirection Direction>
-    using AdjacentEdgeIndexConstIteratorType = StaticAdjacentEdgeIndexConstIterator<Edge, Direction>;
+    using AdjacentEdgeIndexConstIteratorType = StaticAdjacentEdgeIndexConstIterator<E, Direction>;
 
     /// @brief Construct an empty graph.
     StaticGraph();
@@ -117,8 +111,6 @@ public:
     /// @param target the target vertex.
     /// @param ...properties the edge properties.
     /// @return the index pair of the two newly created edges.
-
-    /// @brief
     template<typename... EdgeProperties>
     std::pair<EdgeIndex, EdgeIndex> add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
 
@@ -143,9 +135,9 @@ public:
      */
 
     const VertexList& get_vertices() const;
-    const Vertex& get_vertex(VertexIndex vertex) const;
+    const V& get_vertex(VertexIndex vertex) const;
     const EdgeList& get_edges() const;
-    const Edge& get_edge(EdgeIndex edge) const;
+    const E& get_edge(EdgeIndex edge) const;
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
 
@@ -319,14 +311,14 @@ private:
 
 /* StaticGraph */
 
-template<IsVertex Vertex, IsEdge Edge>
-StaticGraph<Vertex, Edge>::StaticGraph() : m_vertices(), m_edges(), m_degrees()
+template<IsVertex V, IsEdge E>
+StaticGraph<V, E>::StaticGraph() : m_vertices(), m_edges(), m_degrees()
 {
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<typename... VertexProperties>
-VertexIndex StaticGraph<Vertex, Edge>::add_vertex(VertexProperties&&... properties)
+VertexIndex StaticGraph<V, E>::add_vertex(VertexProperties&&... properties)
 {
     const auto index = m_vertices.size();
     m_vertices.emplace_back(index, std::forward<VertexProperties>(properties)...);
@@ -336,12 +328,12 @@ VertexIndex StaticGraph<Vertex, Edge>::add_vertex(VertexProperties&&... properti
     return index;
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<typename... EdgeProperties>
-EdgeIndex StaticGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
+EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
 {
-    vertex_index_check(source, "StaticGraph<Vertex, Edge>::add_directed_edge(...): Source vertex out of range");
-    vertex_index_check(target, "StaticGraph<Vertex, Edge>::add_directed_edge(...): Source vertex out of range");
+    vertex_index_check(source, "StaticGraph<V, E>::add_directed_edge(...): Source vertex out of range");
+    vertex_index_check(target, "StaticGraph<V, E>::add_directed_edge(...): Source vertex out of range");
 
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<EdgeProperties>(properties)...);
@@ -352,9 +344,9 @@ EdgeIndex StaticGraph<Vertex, Edge>::add_directed_edge(VertexIndex source, Verte
     return index;
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<typename... EdgeProperties>
-std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
+std::pair<EdgeIndex, EdgeIndex> StaticGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
 {
     auto properties_tuple = std::make_tuple(std::forward<EdgeProperties>(properties)...);
     auto properties_tuple_copy = properties_tuple;
@@ -369,8 +361,8 @@ std::pair<EdgeIndex, EdgeIndex> StaticGraph<Vertex, Edge>::add_undirected_edge(V
     return std::make_pair(forward_edge_index, backward_edge_index);
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-void StaticGraph<Vertex, Edge>::clear()
+template<IsVertex V, IsEdge E>
+void StaticGraph<V, E>::clear()
 {
     m_vertices.clear();
     m_edges.clear();
@@ -379,111 +371,111 @@ void StaticGraph<Vertex, Edge>::clear()
     m_slice.clear();
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::VertexIndexConstIteratorType> StaticGraph<Vertex, Edge>::get_vertex_indices() const
+template<IsVertex V, IsEdge E>
+std::ranges::subrange<typename StaticGraph<V, E>::VertexIndexConstIteratorType> StaticGraph<V, E>::get_vertex_indices() const
 {
     auto range = std::ranges::iota_view<VertexIndex, VertexIndex>(0, get_num_vertices());
     static_assert(std::ranges::borrowed_range<decltype(range)>);
     return std::ranges::subrange<VertexIndexConstIteratorType>(range.begin(), range.end());
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::EdgeIndexConstIteratorType> StaticGraph<Vertex, Edge>::get_edge_indices() const
+template<IsVertex V, IsEdge E>
+std::ranges::subrange<typename StaticGraph<V, E>::EdgeIndexConstIteratorType> StaticGraph<V, E>::get_edge_indices() const
 {
     auto range = std::ranges::iota_view<EdgeIndex, EdgeIndex>(0, get_num_edges());
     static_assert(std::ranges::borrowed_range<decltype(range)>);
     return std::ranges::subrange<EdgeIndexConstIteratorType>(range.begin(), range.end());
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentVertexConstIteratorType<Direction>>
-StaticGraph<Vertex, Edge>::get_adjacent_vertices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<V, E>::template AdjacentVertexConstIteratorType<Direction>>
+StaticGraph<V, E>::get_adjacent_vertices(VertexIndex vertex) const
 {
-    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_vertices(...): Vertex out of range");
+    vertex_index_check(vertex, "StaticGraph<V, E>::get_adjacent_vertices(...): Vertex out of range");
 
-    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, true),
-                                 typename StaticGraph<Vertex, Edge>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, false));
+    return std::ranges::subrange(typename StaticGraph<V, E>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, true),
+                                 typename StaticGraph<V, E>::AdjacentVertexConstIteratorType<Direction>(vertex, m_vertices, m_edges, m_slice, false));
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentVertexIndexConstIteratorType<Direction>>
-StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<V, E>::template AdjacentVertexIndexConstIteratorType<Direction>>
+StaticGraph<V, E>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_vertex_indices(...): Vertex out of range");
+    vertex_index_check(vertex, "StaticGraph<V, E>::get_adjacent_vertex_indices(...): Vertex out of range");
 
-    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
-                                 typename StaticGraph<Vertex, Edge>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
+    return std::ranges::subrange(typename StaticGraph<V, E>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
+                                 typename StaticGraph<V, E>::AdjacentVertexIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentEdgeConstIteratorType<Direction>>
-StaticGraph<Vertex, Edge>::get_adjacent_edges(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<V, E>::template AdjacentEdgeConstIteratorType<Direction>>
+StaticGraph<V, E>::get_adjacent_edges(VertexIndex vertex) const
 {
-    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_edges(...): Vertex out of range");
+    vertex_index_check(vertex, "StaticGraph<V, E>::get_adjacent_edges(...): Vertex out of range");
 
-    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
-                                 typename StaticGraph<Vertex, Edge>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
+    return std::ranges::subrange(typename StaticGraph<V, E>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
+                                 typename StaticGraph<V, E>::AdjacentEdgeConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename StaticGraph<Vertex, Edge>::template AdjacentEdgeIndexConstIteratorType<Direction>>
-StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(VertexIndex vertex) const
+std::ranges::subrange<typename StaticGraph<V, E>::template AdjacentEdgeIndexConstIteratorType<Direction>>
+StaticGraph<V, E>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_adjacent_edge_indices(...): Vertex out of range");
+    vertex_index_check(vertex, "StaticGraph<V, E>::get_adjacent_edge_indices(...): Vertex out of range");
 
-    return std::ranges::subrange(typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
-                                 typename StaticGraph<Vertex, Edge>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
+    return std::ranges::subrange(typename StaticGraph<V, E>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, true),
+                                 typename StaticGraph<V, E>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex, m_edges, m_slice, false));
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-const StaticGraph<Vertex, Edge>::VertexList& StaticGraph<Vertex, Edge>::get_vertices() const
+template<IsVertex V, IsEdge E>
+const StaticGraph<V, E>::VertexList& StaticGraph<V, E>::get_vertices() const
 {
     return m_vertices;
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-const Vertex& StaticGraph<Vertex, Edge>::get_vertex(VertexIndex vertex) const
+template<IsVertex V, IsEdge E>
+const V& StaticGraph<V, E>::get_vertex(VertexIndex vertex) const
 {
-    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_vertex(...): Vertex does not exist.");
+    vertex_index_check(vertex, "StaticGraph<V, E>::get_vertex(...): Vertex does not exist.");
 
     return m_vertices[vertex];
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-const StaticGraph<Vertex, Edge>::EdgeList& StaticGraph<Vertex, Edge>::get_edges() const
+template<IsVertex V, IsEdge E>
+const StaticGraph<V, E>::EdgeList& StaticGraph<V, E>::get_edges() const
 {
     return m_edges;
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-const Edge& StaticGraph<Vertex, Edge>::get_edge(EdgeIndex edge) const
+template<IsVertex V, IsEdge E>
+const E& StaticGraph<V, E>::get_edge(EdgeIndex edge) const
 {
-    edge_index_check(edge, "StaticGraph<Vertex, Edge>::get_edge(...): Edge does not exist.");
+    edge_index_check(edge, "StaticGraph<V, E>::get_edge(...): Edge does not exist.");
 
     return m_edges[edge];
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-size_t StaticGraph<Vertex, Edge>::get_num_vertices() const
+template<IsVertex V, IsEdge E>
+size_t StaticGraph<V, E>::get_num_vertices() const
 {
     return m_vertices.size();
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-size_t StaticGraph<Vertex, Edge>::get_num_edges() const
+template<IsVertex V, IsEdge E>
+size_t StaticGraph<V, E>::get_num_edges() const
 {
     return m_edges.size();
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-VertexIndex StaticGraph<Vertex, Edge>::get_source(EdgeIndex edge) const
+VertexIndex StaticGraph<V, E>::get_source(EdgeIndex edge) const
 {
-    edge_index_check(edge, "StaticGraph<Vertex, Edge>::get_source(...): Edge out of range");
+    edge_index_check(edge, "StaticGraph<V, E>::get_source(...): Edge out of range");
 
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
@@ -495,15 +487,15 @@ VertexIndex StaticGraph<Vertex, Edge>::get_source(EdgeIndex edge) const
     }
     else
     {
-        static_assert(dependent_false<Direction>::value, "StaticGraph<Vertex, Edge>::get_source(...): Missing implementation for IsTraversalDirection.");
+        static_assert(dependent_false<Direction>::value, "StaticGraph<V, E>::get_source(...): Missing implementation for IsTraversalDirection.");
     }
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-VertexIndex StaticGraph<Vertex, Edge>::get_target(EdgeIndex edge) const
+VertexIndex StaticGraph<V, E>::get_target(EdgeIndex edge) const
 {
-    edge_index_check(edge, "StaticGraph<Vertex, Edge>::get_target(...): Edge out of range");
+    edge_index_check(edge, "StaticGraph<V, E>::get_target(...): Edge out of range");
 
     if constexpr (std::is_same_v<Direction, ForwardTraversal>)
     {
@@ -515,28 +507,28 @@ VertexIndex StaticGraph<Vertex, Edge>::get_target(EdgeIndex edge) const
     }
     else
     {
-        static_assert(dependent_false<Direction>::value, "StaticGraph<Vertex, Edge>::get_target(...): Missing implementation for IsTraversalDirection.");
+        static_assert(dependent_false<Direction>::value, "StaticGraph<V, E>::get_target(...): Missing implementation for IsTraversalDirection.");
     }
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-const DegreeList& StaticGraph<Vertex, Edge>::get_degrees() const
+const DegreeList& StaticGraph<V, E>::get_degrees() const
 {
     return m_degrees.get<Direction>();
 }
 
-template<IsVertex Vertex, IsEdge Edge>
+template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
-Degree StaticGraph<Vertex, Edge>::get_degree(VertexIndex vertex) const
+Degree StaticGraph<V, E>::get_degree(VertexIndex vertex) const
 {
-    vertex_index_check(vertex, "StaticGraph<Vertex, Edge>::get_degree(...): Vertex out of range");
+    vertex_index_check(vertex, "StaticGraph<V, E>::get_degree(...): Vertex out of range");
 
     return m_degrees.get<Direction>()[vertex];
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-void StaticGraph<Vertex, Edge>::vertex_index_check(VertexIndex vertex, const std::string& error_message) const
+template<IsVertex V, IsEdge E>
+void StaticGraph<V, E>::vertex_index_check(VertexIndex vertex, const std::string& error_message) const
 {
     if (vertex >= get_num_vertices() || vertex < 0)
     {
@@ -544,8 +536,8 @@ void StaticGraph<Vertex, Edge>::vertex_index_check(VertexIndex vertex, const std
     }
 }
 
-template<IsVertex Vertex, IsEdge Edge>
-void StaticGraph<Vertex, Edge>::edge_index_check(EdgeIndex edge, const std::string& error_message) const
+template<IsVertex V, IsEdge E>
+void StaticGraph<V, E>::edge_index_check(EdgeIndex edge, const std::string& error_message) const
 {
     if (edge >= get_num_edges() || edge < 0)
     {
@@ -561,8 +553,8 @@ void StaticGraph<Vertex, Edge>::edge_index_check(EdgeIndex edge, const std::stri
 /// @param graph is the graph.
 /// @param forward true will group by source and false will group by target.
 /// @return
-template<IsVertex Vertex, IsEdge Edge>
-static IndexGroupedVector<const EdgeIndex> compute_index_grouped_edge_indices(const StaticGraph<Vertex, Edge>& graph, bool forward)
+template<IsVertex V, IsEdge E>
+static IndexGroupedVector<const EdgeIndex> compute_index_grouped_edge_indices(const StaticGraph<V, E>& graph, bool forward)
 {
     auto grouped_by_source_data = std::vector<std::pair<VertexIndex, EdgeIndex>> {};
     for (const auto& edge : graph.get_edges())

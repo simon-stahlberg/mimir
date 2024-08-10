@@ -15,8 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/languages/description_logics/grammar_constructors.hpp>
-#include <mimir/languages/description_logics/grammar_visitors.hpp>
+#include "mimir/languages/description_logics/grammar_constructors.hpp"
+
+#include "mimir/common/hash_utils.hpp"
+#include "mimir/languages/description_logics/grammar_visitors.hpp"
 
 namespace mimir::dl::grammar
 {
@@ -118,7 +120,7 @@ bool Choice<D>::operator==(const Choice& other) const
 template<dl::IsConceptOrRole D>
 size_t Choice<D>::hash() const
 {
-    return std::visit([](const auto& arg) -> size_t { return loki::hash_combine(&arg.get()); }, m_choice);
+    return std::visit([](const auto& arg) -> size_t { return mimir::hash_combine(&arg.get()); }, m_choice);
 }
 
 template<dl::IsConceptOrRole D>
@@ -175,7 +177,7 @@ template<dl::IsConceptOrRole D>
 size_t DerivationRule<D>::hash() const
 {
     size_t seed = m_choices.size();
-    std::for_each(m_choices.begin(), m_choices.end(), [&seed](const auto& choice) { loki::hash_combine(seed, &choice.get()); });
+    std::for_each(m_choices.begin(), m_choices.end(), [&seed](const auto& choice) { mimir::hash_combine(seed, &choice.get()); });
     return seed;
 }
 
@@ -233,7 +235,7 @@ bool ConceptPredicateState<P>::is_equal(const Constructor<Concept>& other) const
 template<PredicateCategory P>
 size_t ConceptPredicateState<P>::hash() const
 {
-    return loki::hash_combine(m_predicate);
+    return mimir::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -291,7 +293,7 @@ bool ConceptPredicateGoal<P>::is_equal(const Constructor<Concept>& other) const
 template<PredicateCategory P>
 size_t ConceptPredicateGoal<P>::hash() const
 {
-    return loki::hash_combine(m_predicate);
+    return mimir::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -345,7 +347,7 @@ bool ConceptAnd::is_equal(const Constructor<Concept>& other) const
     return (*this == otherDerived);
 }
 
-size_t ConceptAnd::hash() const { return loki::hash_combine(&m_concept_left, &m_concept_right); }
+size_t ConceptAnd::hash() const { return mimir::hash_combine(&m_concept_left, &m_concept_right); }
 
 bool ConceptAnd::test_match(const dl::Constructor<Concept>& constructor) const { return constructor.accept(ConceptAndVisitor(*this)); }
 
@@ -388,7 +390,7 @@ bool RolePredicateState<P>::is_equal(const Constructor<Role>& other) const
 template<PredicateCategory P>
 size_t RolePredicateState<P>::hash() const
 {
-    return loki::hash_combine(m_predicate);
+    return mimir::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -446,7 +448,7 @@ bool RolePredicateGoal<P>::is_equal(const Constructor<Role>& other) const
 template<PredicateCategory P>
 size_t RolePredicateGoal<P>::hash() const
 {
-    return loki::hash_combine(m_predicate);
+    return mimir::hash_combine(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -495,7 +497,7 @@ bool RoleAnd::is_equal(const Constructor<Role>& other) const
     return (*this == otherDerived);
 }
 
-size_t RoleAnd::hash() const { return loki::hash_combine(&m_role_left, &m_role_right); }
+size_t RoleAnd::hash() const { return mimir::hash_combine(&m_role_left, &m_role_right); }
 
 bool RoleAnd::test_match(const dl::Constructor<Role>& constructor) const { return constructor.accept(RoleAndVisitor(*this)); }
 

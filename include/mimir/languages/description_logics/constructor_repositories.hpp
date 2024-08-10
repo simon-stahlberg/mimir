@@ -20,7 +20,6 @@
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 
-#include <loki/loki.hpp>
 #include <unordered_set>
 #include <vector>
 

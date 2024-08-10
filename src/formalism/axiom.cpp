@@ -19,12 +19,12 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -52,19 +52,19 @@ bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
 {
     if (this != &other)
     {
-        return (m_literal == other.m_literal) && (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
-               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
-               && (loki::get_sorted_vector(m_derived_conditions) == loki::get_sorted_vector(other.m_derived_conditions));
+        return (m_literal == other.m_literal) && (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
+               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
+               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions));
     }
     return true;
 }
 
 size_t AxiomImpl::hash_impl() const
 {
-    return loki::hash_combine(m_literal,
-                              loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_conditions)));
+    return mimir::hash_combine(m_literal,
+                               mimir::hash_container(mimir::get_sorted_vector(m_static_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_conditions)));
 }
 
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

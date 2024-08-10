@@ -65,26 +65,35 @@ struct FaithfulAbstractionsOptions
 };
 
 /// @brief `FaithfulAbstractState` encapsulates data of an abstract state in a `FaithfulAbstraction`.
-class FaithfulAbstractState : public BaseVertex<FaithfulAbstractState>
+struct FaithfulAbstractStateTag
 {
-public:
-    FaithfulAbstractState(StateIndex index, std::span<const State> states, std::shared_ptr<const Certificate> certificate);
-
-    std::span<const State> get_states() const;
-    State get_representative_state() const;
-    const std::shared_ptr<const Certificate>& get_certificate() const;
-
-private:
-    std::span<const State> m_states;
-    std::shared_ptr<const Certificate> m_certificate;
-
-    bool is_equal_impl(const BaseVertex<FaithfulAbstractState>& other) const;
-    size_t hash_impl() const;
-
-    friend class BaseVertex<FaithfulAbstractState>;
 };
 
+using FaithfulAbstractState = Vertex<FaithfulAbstractStateTag, std::span<const State>, std::shared_ptr<const Certificate>>;
 using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
+
+inline std::span<const State> get_states(const FaithfulAbstractState& state) { return state.get_property<0>(); }
+
+inline State get_representative_state(const FaithfulAbstractState& state)
+{
+    assert(!state.get_property<0>().empty());
+    return state.get_property<0>().front();
+}
+
+inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractState& state) { return state.get_property<1>(); }
+
+/**
+ * Dedicated Hash and EqualTo structs to avoid accidentally using std::hash for shared_ptr.
+ */
+struct SharedPtrConstCertificateHash
+{
+    std::size_t operator()(const std::shared_ptr<const Certificate>& ptr) const { return ptr->hash(); }
+};
+
+struct SharedPtrConstCertificateEqualTo
+{
+    bool operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const { return *lhs == *rhs; }
+};
 
 /// @brief `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf

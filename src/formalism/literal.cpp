@@ -16,6 +16,7 @@
  */
 #include "mimir/formalism/literal.hpp"
 
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -43,7 +44,7 @@ bool LiteralImpl<P>::is_structurally_equivalent_to_impl(const LiteralImpl<P>& ot
 template<PredicateCategory P>
 size_t LiteralImpl<P>::hash_impl() const
 {
-    return loki::hash_combine(m_is_negated, m_atom);
+    return mimir::hash_combine(m_is_negated, m_atom);
 }
 
 template<PredicateCategory P>

@@ -18,94 +18,86 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
+#include "mimir/common/hash.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
-#include <loki/loki.hpp>
+#include <tuple>
 
 namespace mimir
 {
 
-/**
- * Declarations
- */
-
-/// @brief `BaseVertex` implements the `IsVertex` concept and acts as a common base class for concrete vertex types.
-/// @tparam Derived_ the concrete vertex type.
-template<typename Derived_>
-class BaseVertex
+template<typename Tag, typename... VertexProperties>
+class Vertex
 {
 public:
-    explicit BaseVertex(VertexIndex index);
+    Vertex(VertexIndex index, VertexProperties... properties) : m_index(index), m_properties(std::move(properties)...) {}
 
-    bool operator==(const BaseVertex& other) const;
-    size_t hash() const;
+    VertexIndex get_index() const { return m_index; }
 
-    VertexIndex get_index() const;
+    bool operator==(const Vertex& other) const
+    {
+        if (this != &other)
+        {
+            return (m_index == other.m_index) && (m_properties == other.m_properties);
+        }
+        return true;
+    }
+
+    size_t hash() const
+    {
+        size_t seed = 0;
+        mimir::hash_combine(seed, m_index);
+        apply_properties_hash(seed, std::make_index_sequence<sizeof...(VertexProperties)> {});
+        return seed;
+    }
+
+    template<size_t I>
+    const auto& get_property() const
+    {
+        static_assert(I < sizeof...(VertexProperties), "Index out of bounds for VertexProperties");
+        return std::get<I>(m_properties);
+    }
 
 private:
     VertexIndex m_index;
+    std::tuple<VertexProperties...> m_properties;
 
-    /// @brief Helper to cast to Derived.
-    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
-    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+    // Helper function to apply hashing to all properties
+    template<std::size_t... Is>
+    void apply_properties_hash(size_t& seed, std::index_sequence<Is...>) const
+    {
+        (..., mimir::hash_combine(seed, Hash<std::tuple_element_t<Is, std::tuple<VertexProperties...>>>()(get_property<Is>())));
+    }
 };
 
-/// @brief EmptyPropertiesVertex stores no additional edge properties.
-class EmptyPropertiesVertex : public BaseVertex<EmptyPropertiesVertex>
+template<typename Tag, typename... VertexProperties>
+VertexIndex get_index(const Vertex<Tag, VertexProperties...>& vertex)
 {
-private:
-    bool is_equal_impl(const BaseVertex<EmptyPropertiesVertex>& other) const;
-    size_t hash_impl() const;
-
-    friend class BaseVertex<EmptyPropertiesVertex>;
-
-public:
-    EmptyPropertiesVertex(VertexIndex index);
-};
-
-/// @brief ColoredVertex has an additional color property.
-class ColoredVertex : public BaseVertex<ColoredVertex>
-{
-public:
-    ColoredVertex(VertexIndex index, Color color);
-
-    Color get_color() const;
-
-private:
-    Color m_color;
-
-    bool is_equal_impl(const BaseVertex<ColoredVertex>& other) const;
-    size_t hash_impl() const;
-
-    friend class BaseVertex<ColoredVertex>;
-};
+    return vertex.get_index();
+}
 
 /**
- * Implementations
+ * EmptyVertex
  */
 
-template<typename Derived_>
-BaseVertex<Derived_>::BaseVertex(VertexIndex index) : m_index(index)
+struct EmptyVertexTag
 {
-}
+};
 
-template<typename Derived_>
-bool BaseVertex<Derived_>::operator==(const BaseVertex& other) const
-{
-    return (m_index == other.m_index) && self().is_equal_impl(other);
-}
+using EmptyVertex = Vertex<EmptyVertexTag>;
 
-template<typename Derived_>
-size_t BaseVertex<Derived_>::hash() const
-{
-    return loki::hash_combine(m_index, self().hash_impl());
-}
+/**
+ * ColoredVertex
+ */
 
-template<typename Derived_>
-VertexIndex BaseVertex<Derived_>::get_index() const
+struct ColoredVertexTag
 {
-    return m_index;
-}
+};
+
+using ColoredVertex = Vertex<ColoredVertexTag, Color>;
+
+inline Color get_color(const ColoredVertex& vertex) { return vertex.get_property<0>(); }
 
 }
 

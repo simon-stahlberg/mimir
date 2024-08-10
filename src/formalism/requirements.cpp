@@ -17,8 +17,9 @@
 
 #include "mimir/formalism/requirements.hpp"
 
+#include "mimir/common/hash_utils.hpp"
+
 #include <cassert>
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -33,7 +34,7 @@ bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl
     return true;
 }
 
-size_t RequirementsImpl::hash_impl() const { return loki::hash_container(m_requirements); }
+size_t RequirementsImpl::hash_impl() const { return mimir::hash_container(m_requirements); }
 
 void RequirementsImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
 {

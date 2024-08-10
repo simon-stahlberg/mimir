@@ -19,6 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/effects.hpp"
@@ -28,7 +29,6 @@
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -69,13 +69,13 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
 {
     if (this != &other)
     {
-        return (m_name == other.m_name) && (loki::get_sorted_vector(m_parameters) == loki::get_sorted_vector(other.m_parameters))
-               && (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
-               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
-               && (loki::get_sorted_vector(m_derived_conditions) == loki::get_sorted_vector(other.m_derived_conditions))
-               && (loki::get_sorted_vector(m_simple_effects) == loki::get_sorted_vector(other.m_simple_effects))
-               && (loki::get_sorted_vector(m_conditional_effects) == loki::get_sorted_vector(other.m_conditional_effects))
-               && (loki::get_sorted_vector(m_universal_effects) == loki::get_sorted_vector(other.m_universal_effects))
+        return (m_name == other.m_name) && (mimir::get_sorted_vector(m_parameters) == mimir::get_sorted_vector(other.m_parameters))
+               && (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
+               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
+               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions))
+               && (mimir::get_sorted_vector(m_simple_effects) == mimir::get_sorted_vector(other.m_simple_effects))
+               && (mimir::get_sorted_vector(m_conditional_effects) == mimir::get_sorted_vector(other.m_conditional_effects))
+               && (mimir::get_sorted_vector(m_universal_effects) == mimir::get_sorted_vector(other.m_universal_effects))
                && (m_function_expression == other.m_function_expression);
     }
     return true;
@@ -83,15 +83,15 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
 
 size_t ActionImpl::hash_impl() const
 {
-    return loki::hash_combine(m_name,
-                              loki::hash_container(m_parameters),
-                              loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_simple_effects)),
-                              loki::hash_container(loki::get_sorted_vector(m_conditional_effects)),
-                              loki::hash_container(loki::get_sorted_vector(m_universal_effects)),
-                              m_function_expression);
+    return mimir::hash_combine(m_name,
+                               mimir::hash_container(m_parameters),
+                               mimir::hash_container(mimir::get_sorted_vector(m_static_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_simple_effects)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_conditional_effects)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_universal_effects)),
+                               m_function_expression);
 }
 
 void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { return str(out, options, true); }

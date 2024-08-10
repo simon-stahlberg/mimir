@@ -18,6 +18,7 @@
 #include "mimir/search/state.hpp"
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/factories.hpp"
 
@@ -32,7 +33,7 @@ namespace mimir
 size_t FlatStateHash::operator()(FlatState view) const
 {
     const auto fluent_atoms = view.get<1>();
-    return loki::hash_combine(fluent_atoms.hash());
+    return mimir::hash_combine(fluent_atoms.hash());
 }
 
 /* FlatStateEqual */
@@ -77,7 +78,7 @@ State::State(FlatState view) : m_view(view) {}
 
 bool State::operator==(State other) const { return m_view.buffer() == other.m_view.buffer(); }
 
-size_t State::hash() const { return loki::hash_combine(m_view.buffer()); }
+size_t State::hash() const { return mimir::hash_combine(m_view.buffer()); }
 
 StateIndex State::get_index() const { return m_view.get<0>(); }
 

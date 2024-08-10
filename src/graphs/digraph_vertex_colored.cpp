@@ -18,7 +18,6 @@
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <algorithm>
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -33,7 +32,7 @@ ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph)
     coloring.reserve(graph.get_num_vertices());
     for (const auto& vertex : graph.get_vertices())
     {
-        coloring.push_back(vertex.get_color());
+        coloring.push_back(get_color(vertex));
     }
     return coloring;
 }
@@ -56,9 +55,9 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const StaticVertexC
     out << "digraph {\n";
     for (const auto& vertex : vertex_colored_digraph.get_vertices())
     {
-        const auto& color_name = color_function.get_color_name(vertex.get_color());
+        const auto& color_name = color_function.get_color_name(get_color(vertex));
         out << "t" << vertex.get_index() << "[";
-        out << "label=\"" << color_name << " (" << vertex.get_color() << ")"
+        out << "label=\"" << color_name << " (" << get_color(vertex) << ")"
             << "\"]\n";
     }
     for (const auto& vertex : vertex_colored_digraph.get_vertices())

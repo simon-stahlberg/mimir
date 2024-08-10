@@ -18,6 +18,7 @@
 #include "mimir/search/action.hpp"
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/factories.hpp"
 
@@ -44,7 +45,7 @@ size_t FlatActionHash::operator()(FlatAction view) const
 {
     const auto action = view.get<2>();
     const auto objects = view.get<3>();
-    return loki::hash_combine(action, objects.hash());
+    return mimir::hash_combine(action, objects.hash());
 }
 
 bool FlatActionEqual::operator()(FlatAction view_left, FlatAction view_right) const
@@ -382,7 +383,7 @@ FlatConditionalEffectsBuilder& GroundActionBuilder::get_conditional_effects() { 
 
 GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
-size_t GroundAction::hash() const { return loki::hash_combine(m_view.buffer()); }
+size_t GroundAction::hash() const { return mimir::hash_combine(m_view.buffer()); }
 
 GroundActionIndex GroundAction::get_index() const { return m_view.get<0>(); }
 

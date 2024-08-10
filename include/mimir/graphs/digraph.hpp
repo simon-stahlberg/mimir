@@ -31,11 +31,11 @@ namespace mimir
  * Type aliases
  */
 
-using StaticDigraph = StaticGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>;
-using StaticForwardDigraph = StaticForwardGraph<StaticGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>>;
-using StaticBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>>;
+using StaticDigraph = StaticGraph<EmptyVertex, EmptyPropertiesEdge>;
+using StaticForwardDigraph = StaticForwardGraph<StaticGraph<EmptyVertex, EmptyPropertiesEdge>>;
+using StaticBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<EmptyVertex, EmptyPropertiesEdge>>;
 
-using DynamicDigraph = DynamicGraph<EmptyPropertiesVertex, EmptyPropertiesEdge>;
+using DynamicDigraph = DynamicGraph<EmptyVertex, EmptyPropertiesEdge>;
 
 /**
  * Static graph assertions

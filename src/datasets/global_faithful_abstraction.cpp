@@ -120,7 +120,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
     auto certificate_to_global_state =
-        std::unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>> {};
+        std::unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, SharedPtrConstCertificateHash, SharedPtrConstCertificateEqualTo> {};
 
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();
@@ -128,8 +128,8 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
     for (auto& faithful_abstraction : faithful_abstractions)
     {
-        auto has_zero_non_isomorphic_states =
-            certificate_to_global_state.count(faithful_abstraction.get_graph().get_vertices().at(faithful_abstraction.get_initial_state()).get_certificate());
+        auto has_zero_non_isomorphic_states = certificate_to_global_state.count(
+            mimir::get_certificate(faithful_abstraction.get_graph().get_vertices().at(faithful_abstraction.get_initial_state())));
 
         if (has_zero_non_isomorphic_states)
         {
@@ -145,7 +145,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
             // Ensure ordering consistent with state in faithful abstraction.
             assert(state.get_index() == states.size());
 
-            auto it = certificate_to_global_state.find(state.get_certificate());
+            auto it = certificate_to_global_state.find(mimir::get_certificate(state));
 
             if (it != certificate_to_global_state.end())
             {
@@ -166,7 +166,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
             {
                 // Create a new global state and add it to global mapping.
                 certificate_to_global_state.emplace(
-                    state.get_certificate(),
+                    mimir::get_certificate(state),
                     states.emplace_back(state.get_index(), certificate_to_global_state.size(), abstraction_index, state.get_index()));
                 ++num_non_isomorphic_states;
             }
@@ -383,7 +383,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
             << "abstraction_index=" << gfa_state.get_faithful_abstraction_index() << " "
             << "abstract_state_index=" << gfa_state.get_faithful_abstract_state_index() << "\n";
         const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
-        for (const auto& state : fa_abstraction.get_graph().get_vertices().at(gfa_state.get_faithful_abstract_state_index()).get_states())
+        for (const auto& state : mimir::get_states(fa_abstraction.get_graph().get_vertices().at(gfa_state.get_faithful_abstract_state_index())))
         {
             out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_factories())) << "\n";
         }

@@ -23,25 +23,15 @@
 
 namespace mimir
 {
-class ConcreteState : public BaseVertex<ConcreteState>
+
+struct ConcreteStateTag
 {
-public:
-    ConcreteState(StateIndex index, State state);
-
-    State get_state() const;
-
-private:
-    State m_state;
-
-    bool is_equal_impl(const BaseVertex<ConcreteState>& other) const;
-    size_t hash_impl() const;
-
-    friend class BaseVertex<ConcreteState>;
 };
 
-static_assert(IsVertex<ConcreteState>);
-
+using ConcreteState = Vertex<ConcreteStateTag, State>;
 using ConcreteStateList = std::vector<ConcreteState>;
+
+inline State get_state(const ConcreteState concrete_state) { return concrete_state.get_property<0>(); }
 
 }
 

@@ -299,7 +299,7 @@ void TupleGraphArityZeroComputation::compute_first_layer(State root_state)
     const auto root_state_index = m_state_space->get_state_index(root_state);
     for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(root_state_index))
     {
-        const auto succ_state = concrete_succ_state.get_state();
+        const auto succ_state = get_state(concrete_succ_state);
         if (succ_state == root_state)
         {
             // Root state was already visited
@@ -384,9 +384,9 @@ bool TupleGraphArityKComputation::compute_next_state_layer()
     for (const auto& state : prev_states)
     {
         const auto state_index = m_state_space->get_state_index(state);
-        for (const auto concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))
+        for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))
         {
-            const auto succ_state = concrete_succ_state.get_state();
+            const auto succ_state = get_state(concrete_succ_state);
             if (!visited_states.count(succ_state))
             {
                 curr_states.push_back(succ_state);
@@ -447,7 +447,7 @@ void TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
             // "[...] by means of a single action".
             for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))
             {
-                const auto succ_state = concrete_succ_state.get_state();
+                const auto succ_state = get_state(concrete_succ_state);
 
                 if (state_to_novel_tuple_indices.count(succ_state))
                 {

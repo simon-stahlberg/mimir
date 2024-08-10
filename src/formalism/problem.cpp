@@ -19,6 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
@@ -33,7 +34,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <loki/loki.hpp>
 
 using namespace std;
 
@@ -115,33 +115,33 @@ bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) c
     if (this != &other)
     {
         return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements)
-               && (loki::get_sorted_vector(m_objects) == loki::get_sorted_vector(other.m_objects))
-               && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
-               && (loki::get_sorted_vector(m_static_initial_literals)) == loki::get_sorted_vector(other.m_static_initial_literals)
-               && (loki::get_sorted_vector(m_fluent_initial_literals)) == loki::get_sorted_vector(other.m_fluent_initial_literals)
-               && (loki::get_sorted_vector(m_static_goal_condition)) == loki::get_sorted_vector(other.m_static_goal_condition)
-               && (loki::get_sorted_vector(m_fluent_goal_condition)) == loki::get_sorted_vector(other.m_fluent_goal_condition)
-               && (loki::get_sorted_vector(m_derived_goal_condition)) == loki::get_sorted_vector(other.m_derived_goal_condition)
-               && (m_optimization_metric == other.m_optimization_metric) && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
+               && (mimir::get_sorted_vector(m_objects) == mimir::get_sorted_vector(other.m_objects))
+               && (mimir::get_sorted_vector(m_derived_predicates) == mimir::get_sorted_vector(other.m_derived_predicates))
+               && (mimir::get_sorted_vector(m_static_initial_literals)) == mimir::get_sorted_vector(other.m_static_initial_literals)
+               && (mimir::get_sorted_vector(m_fluent_initial_literals)) == mimir::get_sorted_vector(other.m_fluent_initial_literals)
+               && (mimir::get_sorted_vector(m_static_goal_condition)) == mimir::get_sorted_vector(other.m_static_goal_condition)
+               && (mimir::get_sorted_vector(m_fluent_goal_condition)) == mimir::get_sorted_vector(other.m_fluent_goal_condition)
+               && (mimir::get_sorted_vector(m_derived_goal_condition)) == mimir::get_sorted_vector(other.m_derived_goal_condition)
+               && (m_optimization_metric == other.m_optimization_metric) && (mimir::get_sorted_vector(m_axioms) == mimir::get_sorted_vector(other.m_axioms));
     }
     return true;
 }
 
 size_t ProblemImpl::hash_impl() const
 {
-    size_t optimization_hash = (m_optimization_metric.has_value()) ? loki::hash_combine(m_optimization_metric) : 0;
-    return loki::hash_combine(m_domain,
-                              m_name,
-                              m_requirements,
-                              loki::hash_container(loki::get_sorted_vector(m_objects)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_predicates)),
-                              loki::hash_container(loki::get_sorted_vector(m_static_initial_literals)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_initial_literals)),
-                              loki::hash_container(loki::get_sorted_vector(m_static_goal_condition)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_goal_condition)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_goal_condition)),
-                              optimization_hash,
-                              loki::hash_container(loki::get_sorted_vector(m_axioms)));
+    size_t optimization_hash = (m_optimization_metric.has_value()) ? mimir::hash_combine(m_optimization_metric) : 0;
+    return mimir::hash_combine(m_domain,
+                               m_name,
+                               m_requirements,
+                               mimir::hash_container(mimir::get_sorted_vector(m_objects)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_predicates)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_static_initial_literals)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_initial_literals)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_static_goal_condition)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_goal_condition)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_goal_condition)),
+                               optimization_hash,
+                               mimir::hash_container(mimir::get_sorted_vector(m_axioms)));
 }
 
 void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/variable.hpp"
 
-#include <loki/loki.hpp>
+#include "mimir/common/hash_utils.hpp"
 
 namespace mimir
 {
@@ -37,7 +37,7 @@ bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other)
     return true;
 }
 
-size_t VariableImpl::hash_impl() const { return loki::hash_combine(m_name, m_parameter_index); }
+size_t VariableImpl::hash_impl() const { return hash_combine(m_name, m_parameter_index); }
 
 void VariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
 

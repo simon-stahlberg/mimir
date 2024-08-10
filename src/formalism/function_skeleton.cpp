@@ -17,9 +17,8 @@
 
 #include "mimir/formalism/function_skeleton.hpp"
 
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/variable.hpp"
-
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -39,7 +38,7 @@ bool FunctionSkeletonImpl::is_structurally_equivalent_to_impl(const FunctionSkel
     return true;
 }
 
-size_t FunctionSkeletonImpl::hash_impl() const { return loki::hash_combine(m_name, loki::hash_container(m_parameters)); }
+size_t FunctionSkeletonImpl::hash_impl() const { return mimir::hash_combine(m_name, mimir::hash_container(m_parameters)); }
 
 void FunctionSkeletonImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

@@ -31,7 +31,6 @@
 #include "mimir/search/state_repository.hpp"
 
 #include <cstddef>
-#include <loki/loki.hpp>
 #include <optional>
 #include <thread>
 #include <unordered_map>

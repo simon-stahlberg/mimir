@@ -17,10 +17,11 @@
 
 #include "mimir/formalism/function_expressions.hpp"
 
+#include "mimir/common/collections.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/function.hpp"
 
 #include <cassert>
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -66,7 +67,7 @@ bool FunctionExpressionBinaryOperatorImpl::is_structurally_equivalent_to_impl(co
 
 size_t FunctionExpressionBinaryOperatorImpl::hash_impl() const
 {
-    return loki::hash_combine(m_binary_operator, m_left_function_expression, m_right_function_expression);
+    return mimir::hash_combine(m_binary_operator, m_left_function_expression, m_right_function_expression);
 }
 
 void FunctionExpressionBinaryOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -98,14 +99,15 @@ bool FunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(con
 {
     if (this != &other)
     {
-        return (m_multi_operator == other.m_multi_operator) && (get_sorted_vector(m_function_expressions) == get_sorted_vector(other.m_function_expressions));
+        return (m_multi_operator == other.m_multi_operator)
+               && (mimir::get_sorted_vector(m_function_expressions) == mimir::get_sorted_vector(other.m_function_expressions));
     }
     return true;
 }
 
 size_t FunctionExpressionMultiOperatorImpl::hash_impl() const
 {
-    return loki::hash_combine(m_multi_operator, loki::hash_container(loki::get_sorted_vector(m_function_expressions)));
+    return mimir::hash_combine(m_multi_operator, mimir::hash_container(mimir::get_sorted_vector(m_function_expressions)));
 }
 
 void FunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -140,7 +142,7 @@ bool FunctionExpressionMinusImpl::is_structurally_equivalent_to_impl(const Funct
     return true;
 }
 
-size_t FunctionExpressionMinusImpl::hash_impl() const { return loki::hash_combine(m_function_expression); }
+size_t FunctionExpressionMinusImpl::hash_impl() const { return mimir::hash_combine(m_function_expression); }
 
 void FunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -163,7 +165,7 @@ bool FunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(const Fu
     return true;
 }
 
-size_t FunctionExpressionFunctionImpl::hash_impl() const { return loki::hash_combine(m_function); }
+size_t FunctionExpressionFunctionImpl::hash_impl() const { return mimir::hash_combine(m_function); }
 
 void FunctionExpressionFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_function->str(out, options); }
 

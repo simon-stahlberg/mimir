@@ -30,46 +30,6 @@
 
 namespace mimir
 {
-/**
- * FaithfulAbstractState
- */
-
-FaithfulAbstractState::FaithfulAbstractState(StateIndex index, std::span<const State> states, std::shared_ptr<const Certificate> certificate) :
-    BaseVertex<FaithfulAbstractState>(index),
-    m_states(states),
-    m_certificate(std::move(certificate))
-{
-}
-
-bool FaithfulAbstractState::is_equal_impl(const BaseVertex<FaithfulAbstractState>& other) const
-{
-    if (this != &other)
-    {
-        const auto& otherDerived = static_cast<const FaithfulAbstractState&>(other);
-        return std::equal(m_states.begin(), m_states.end(), otherDerived.m_states.begin());
-    }
-    return true;
-}
-
-size_t FaithfulAbstractState::hash_impl() const
-{
-    size_t states_hash = m_states.size();
-    for (const auto& state : m_states)
-    {
-        loki::hash_combine(states_hash, state.hash());
-    }
-    return states_hash;
-}
-
-std::span<const State> FaithfulAbstractState::get_states() const { return m_states; }
-
-State FaithfulAbstractState::get_representative_state() const
-{
-    assert(!m_states.empty());
-    return m_states.front();
-}
-
-const std::shared_ptr<const Certificate>& FaithfulAbstractState::get_certificate() const { return m_certificate; }
 
 /**
  * FaithfulAbstraction
@@ -154,7 +114,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
     auto concrete_to_abstract_state = StateMap<StateIndex> {};
     auto abstract_states_by_certificate =
-        std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, SharedPtrHash<Certificate>, SharedPtrEqual<Certificate>> {};
+        std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, SharedPtrConstCertificateHash, SharedPtrConstCertificateEqualTo> {};
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
@@ -375,7 +335,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     auto graph = StaticGraph<FaithfulAbstractState, AbstractTransition>();
     for (const auto& abstract_state : abstract_states)
     {
-        graph.add_vertex(abstract_state.get_states(), abstract_state.get_certificate());
+        graph.add_vertex(mimir::get_states(abstract_state), mimir::get_certificate(abstract_state));
     }
     for (const auto& abstract_transition : abstract_transitions)
     {
@@ -690,7 +650,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         // label
         out << "label=\"";
         out << "state_index=" << state_index << "\n";
-        for (const auto& state : abstraction.get_graph().get_vertices().at(state_index).get_states())
+        for (const auto& state : mimir::get_states(abstraction.get_graph().get_vertices().at(state_index)))
         {
             out << std::make_tuple(abstraction.get_problem(), state, std::cref(*abstraction.get_pddl_factories())) << "\n";
         }

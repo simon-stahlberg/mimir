@@ -18,11 +18,11 @@
 #include "mimir/graphs/object_graph.hpp"
 
 #include "mimir/algorithms/nauty.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/certificate.hpp"
 
 #include <gtest/gtest.h>
-#include <loki/loki.hpp>
 #include <unordered_set>
 
 namespace mimir::tests
@@ -36,11 +36,11 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
+    auto certificates = std::unordered_set<Certificate, Hash<Certificate>> {};
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
-        const auto state = vertex.get_state();
+        const auto state = get_state(vertex);
 
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
@@ -72,7 +72,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
-        const auto state = vertex.get_state();
+        const auto state = get_state(vertex);
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
@@ -114,7 +114,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
-        const auto state = vertex.get_state();
+        const auto state = get_state(vertex);
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         const auto object_graph =

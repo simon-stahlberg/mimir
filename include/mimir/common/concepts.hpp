@@ -32,22 +32,6 @@ struct dependent_false : std::false_type
 };
 
 template<typename T>
-concept IsHashable = requires(T a)
-{
-    {
-        a.hash()
-        } -> std::same_as<size_t>;
-};
-
-template<typename T>
-concept IsComparable = requires(T a, T b)
-{
-    {
-        a == b
-        } -> std::same_as<bool>;
-};
-
-template<typename T>
 concept IsArithmetic = std::is_arithmetic_v<T>;
 
 template<typename T>

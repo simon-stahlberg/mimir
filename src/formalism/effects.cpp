@@ -19,6 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -26,7 +27,6 @@
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
-#include <loki/loki.hpp>
 
 namespace mimir
 {
@@ -45,7 +45,7 @@ bool EffectSimpleImpl::is_structurally_equivalent_to_impl(const EffectSimpleImpl
     }
     return true;
 }
-size_t EffectSimpleImpl::hash_impl() const { return loki::hash_combine(m_effect); }
+size_t EffectSimpleImpl::hash_impl() const { return mimir::hash_combine(m_effect); }
 
 void EffectSimpleImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << *m_effect; }
 
@@ -75,18 +75,18 @@ bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectCondi
 {
     if (this != &other)
     {
-        return (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
-               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
-               && (loki::get_sorted_vector(m_derived_conditions) == loki::get_sorted_vector(other.m_derived_conditions)) && m_effect == other.m_effect;
+        return (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
+               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
+               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions)) && m_effect == other.m_effect;
     }
     return true;
 }
 size_t EffectConditionalImpl::hash_impl() const
 {
-    return loki::hash_combine(loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_conditions)),
-                              m_effect);
+    return mimir::hash_combine(mimir::hash_container(mimir::get_sorted_vector(m_static_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_conditions)),
+                               m_effect);
 }
 
 void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -167,19 +167,19 @@ bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUnivers
     if (this != &other)
     {
         return (m_quantified_variables == other.m_quantified_variables)
-               && (loki::get_sorted_vector(m_static_conditions) == loki::get_sorted_vector(other.m_static_conditions))
-               && (loki::get_sorted_vector(m_fluent_conditions) == loki::get_sorted_vector(other.m_fluent_conditions))
-               && (loki::get_sorted_vector(m_derived_conditions) == loki::get_sorted_vector(other.m_derived_conditions)) && m_effect == other.m_effect;
+               && (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
+               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
+               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions)) && m_effect == other.m_effect;
     }
     return true;
 }
 size_t EffectUniversalImpl::hash_impl() const
 {
-    return loki::hash_combine(loki::hash_container(m_quantified_variables),
-                              loki::hash_container(loki::get_sorted_vector(m_static_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_conditions)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_conditions)),
-                              m_effect);
+    return mimir::hash_combine(mimir::hash_container(m_quantified_variables),
+                               mimir::hash_container(mimir::get_sorted_vector(m_static_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_conditions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_conditions)),
+                               m_effect);
 }
 
 void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

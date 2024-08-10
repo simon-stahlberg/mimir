@@ -19,6 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/axiom.hpp"
@@ -29,7 +30,6 @@
 
 #include <cassert>
 #include <iostream>
-#include <loki/loki.hpp>
 #include <unordered_map>
 
 using namespace std;
@@ -89,28 +89,28 @@ bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) con
     if (this != &other)
     {
         return (m_name == other.m_name) && (m_requirements == other.m_requirements)
-               && (loki::get_sorted_vector(m_constants) == loki::get_sorted_vector(other.m_constants))
-               && (loki::get_sorted_vector(m_static_predicates) == loki::get_sorted_vector(other.m_static_predicates))
-               && (loki::get_sorted_vector(m_fluent_predicates) == loki::get_sorted_vector(other.m_fluent_predicates))
-               && (loki::get_sorted_vector(m_derived_predicates) == loki::get_sorted_vector(other.m_derived_predicates))
-               && (loki::get_sorted_vector(m_functions) == loki::get_sorted_vector(other.m_functions))
-               && (loki::get_sorted_vector(m_actions) == loki::get_sorted_vector(other.m_actions))
-               && (loki::get_sorted_vector(m_axioms) == loki::get_sorted_vector(other.m_axioms));
+               && (mimir::get_sorted_vector(m_constants) == mimir::get_sorted_vector(other.m_constants))
+               && (mimir::get_sorted_vector(m_static_predicates) == mimir::get_sorted_vector(other.m_static_predicates))
+               && (mimir::get_sorted_vector(m_fluent_predicates) == mimir::get_sorted_vector(other.m_fluent_predicates))
+               && (mimir::get_sorted_vector(m_derived_predicates) == mimir::get_sorted_vector(other.m_derived_predicates))
+               && (mimir::get_sorted_vector(m_functions) == mimir::get_sorted_vector(other.m_functions))
+               && (mimir::get_sorted_vector(m_actions) == mimir::get_sorted_vector(other.m_actions))
+               && (mimir::get_sorted_vector(m_axioms) == mimir::get_sorted_vector(other.m_axioms));
     }
     return true;
 }
 
 size_t DomainImpl::hash_impl() const
 {
-    return loki::hash_combine(m_name,
-                              m_requirements,
-                              loki::hash_container(loki::get_sorted_vector(m_constants)),
-                              loki::hash_container(loki::get_sorted_vector(m_static_predicates)),
-                              loki::hash_container(loki::get_sorted_vector(m_fluent_predicates)),
-                              loki::hash_container(loki::get_sorted_vector(m_derived_predicates)),
-                              loki::hash_container(loki::get_sorted_vector(m_functions)),
-                              loki::hash_container(loki::get_sorted_vector(m_actions)),
-                              loki::hash_container(loki::get_sorted_vector(m_axioms)));
+    return mimir::hash_combine(m_name,
+                               m_requirements,
+                               mimir::hash_container(mimir::get_sorted_vector(m_constants)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_static_predicates)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_predicates)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_derived_predicates)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_functions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_actions)),
+                               mimir::hash_container(mimir::get_sorted_vector(m_axioms)));
 }
 
 void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

@@ -17,13 +17,15 @@
 
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 
+#include "mimir/common/hash_utils.hpp"
+
 namespace mimir::dl
 {
 
 template<IsConceptOrRole D>
 size_t DenotationRepository<D>::KeyHash::operator()(const Key& key) const
 {
-    return loki::hash_combine(key.constructor_identifier, key.state_identifier);
+    return mimir::hash_combine(key.constructor_identifier, key.state_identifier);
 }
 
 template<IsConceptOrRole D>

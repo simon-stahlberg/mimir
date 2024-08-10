@@ -20,30 +20,4 @@
 namespace mimir
 {
 
-/* EmptyPropertiesVertex */
-
-EmptyPropertiesVertex::EmptyPropertiesVertex(VertexIndex index) : BaseVertex<EmptyPropertiesVertex>(index) {}
-
-bool EmptyPropertiesVertex::is_equal_impl(const BaseVertex<EmptyPropertiesVertex>& other) const { return true; }
-
-size_t EmptyPropertiesVertex::hash_impl() const { return loki::hash_combine(0); }
-
-/* ColoredVertex */
-
-ColoredVertex::ColoredVertex(VertexIndex index, Color color) : BaseVertex<ColoredVertex>(index), m_color(color) {}
-
-bool ColoredVertex::is_equal_impl(const BaseVertex<ColoredVertex>& other) const
-{
-    if (this != &other)
-    {
-        const auto& otherDerived = static_cast<const ColoredVertex&>(other);
-        return (m_color == otherDerived.m_color);
-    }
-    return true;
-}
-
-size_t ColoredVertex::hash_impl() const { return loki::hash_combine(m_color); }
-
-Color ColoredVertex::get_color() const { return m_color; }
-
 }

@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/atom.hpp"
 
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 
@@ -43,7 +44,7 @@ bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) cons
 template<PredicateCategory P>
 size_t AtomImpl<P>::hash_impl() const
 {
-    return loki::hash_combine(m_predicate, loki::hash_container(m_terms));
+    return mimir::hash_combine(m_predicate, mimir::hash_container(m_terms));
 }
 
 template<PredicateCategory P>

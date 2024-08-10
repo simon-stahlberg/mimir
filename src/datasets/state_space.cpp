@@ -85,7 +85,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
     }
 
     auto graph = StaticGraph<ConcreteState, ConcreteTransition>();
-    const auto initial_state_index = graph.add_vertex(initial_state);
+    const auto initial_state_index = graph.add_vertex(State(initial_state));
     auto goal_states = StateIndexSet {};
     auto state_to_index = StateMap<StateIndex> {};
     state_to_index.emplace(initial_state, initial_state_index);
@@ -100,15 +100,16 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         const auto state = lifo_queue.back();
         const auto state_index = state.get_index();
         lifo_queue.pop_back();
-        if (state.get_state().literals_hold(problem->get_goal_condition<Fluent>()) && state.get_state().literals_hold(problem->get_goal_condition<Derived>()))
+        if (mimir::get_state(state).literals_hold(problem->get_goal_condition<Fluent>())
+            && mimir::get_state(state).literals_hold(problem->get_goal_condition<Derived>()))
         {
             goal_states.insert(state_index);
         }
 
-        aag->generate_applicable_actions(state.get_state(), applicable_actions);
+        aag->generate_applicable_actions(mimir::get_state(state), applicable_actions);
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = ssg->get_or_create_successor_state(state.get_state(), action);
+            const auto successor_state = ssg->get_or_create_successor_state(mimir::get_state(state), action);
             const auto it = state_to_index.find(successor_state);
             const bool exists = (it != state_to_index.end());
             if (exists)
@@ -433,7 +434,7 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
         // label
         out << "label=\""
             << std::make_tuple(state_space.get_problem(),
-                               state_space.get_graph().get_vertices().at(state_index).get_state(),
+                               mimir::get_state(state_space.get_graph().get_vertices().at(state_index)),
                                std::cref(*state_space.get_pddl_factories()))
             << "\"";
 

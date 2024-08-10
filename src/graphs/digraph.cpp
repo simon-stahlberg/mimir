@@ -18,7 +18,6 @@
 #include "mimir/graphs/digraph.hpp"
 
 #include <cassert>
-#include <loki/loki.hpp>
 #include <stdexcept>
 #include <string>
 

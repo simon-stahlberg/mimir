@@ -20,20 +20,4 @@
 namespace mimir
 {
 
-ConcreteState::ConcreteState(StateIndex index, State state) : BaseVertex<ConcreteState>(index), m_state(state) {}
-
-bool ConcreteState::is_equal_impl(const BaseVertex<ConcreteState>& other) const
-{
-    if (this != &other)
-    {
-        const auto& otherDerived = static_cast<const ConcreteState&>(other);
-        return (m_state == otherDerived.m_state);
-    }
-    return true;
-}
-
-size_t ConcreteState::hash_impl() const { return loki::hash_combine(m_state.hash()); }
-
-State ConcreteState::get_state() const { return m_state; }
-
 }

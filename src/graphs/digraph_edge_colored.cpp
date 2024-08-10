@@ -18,7 +18,6 @@
 #include "mimir/graphs/digraph_edge_colored.hpp"
 
 #include <algorithm>
-#include <loki/loki.hpp>
 
 namespace mimir
 {

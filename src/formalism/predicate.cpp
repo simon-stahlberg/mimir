@@ -18,6 +18,7 @@
 #include "mimir/formalism/predicate.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -46,7 +47,7 @@ bool PredicateImpl<P>::is_structurally_equivalent_to_impl(const PredicateImpl<P>
 template<PredicateCategory P>
 size_t PredicateImpl<P>::hash_impl() const
 {
-    return loki::hash_combine(m_name, loki::hash_container(m_parameters));
+    return mimir::hash_combine(m_name, mimir::hash_container(m_parameters));
 }
 
 template<PredicateCategory P>

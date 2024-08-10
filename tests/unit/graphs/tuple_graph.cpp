@@ -48,7 +48,7 @@ TEST(MimirTests, GraphsTupleGraphTest)
 
     for (const auto& vertex : state_space->get_graph().get_vertices())
     {
-        const auto state = vertex.get_state();
+        const auto state = get_state(vertex);
         // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(*state_space->get_aag()->get_pddl_factories())) << std::endl;
 
         tuple_graphs_0.push_back(tuple_graph_factory_0.create(state));
