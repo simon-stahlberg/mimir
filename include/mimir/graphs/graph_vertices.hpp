@@ -34,6 +34,8 @@ template<typename Tag, typename... VertexProperties>
 class Vertex
 {
 public:
+    using VertexPropertiesTypes = std::tuple<VertexProperties...>;
+
     Vertex(VertexIndex index, VertexProperties... properties) : m_index(index), m_properties(std::move(properties)...) {}
 
     VertexIndex get_index() const { return m_index; }
@@ -94,6 +96,9 @@ struct ColoredVertexTag
 
 using ColoredVertex = Vertex<ColoredVertexTag, Color>;
 
+/// @brief Get the color of a colored vertex.
+/// @param edge the colored vertex.
+/// @return the color of the vertex.
 inline Color get_color(const ColoredVertex& vertex) { return vertex.get_property<0>(); }
 
 }

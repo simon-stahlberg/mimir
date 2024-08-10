@@ -91,6 +91,10 @@ concept HasHashMemberFunction = requires(T a)
         } -> std::same_as<size_t>;
 };
 
+/// @brief `Hash` implements hashing of types T.
+/// If a type satisfies the `HasHashMemberFunction` then it will call it.
+/// Otherwise, fallback to using std::hash instead.
+/// @tparam T
 template<typename T>
 struct Hash
 {
@@ -111,12 +115,6 @@ template<typename T>
 struct Hash<std::span<T>>
 {
     size_t operator()(const std::span<T>& span) const { return hash_span(span); }
-};
-
-template<typename T>
-struct Hash<std::span<const T>>
-{
-    size_t operator()(const std::span<const T>& span) const { return hash_span(span); }
 };
 
 }

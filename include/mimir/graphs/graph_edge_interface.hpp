@@ -28,6 +28,8 @@ namespace mimir
 template<typename T>
 concept IsEdge = requires(T a)
 {
+    typename T::EdgePropertiesTypes;
+
     {
         a.get_index()
         } -> std::convertible_to<EdgeIndex>;
@@ -37,6 +39,13 @@ concept IsEdge = requires(T a)
     {
         a.get_target()
         } -> std::convertible_to<VertexIndex>;
+};
+
+template<typename T, typename... EdgeProperties>
+concept HasEdgeProperties = requires(T a)
+{
+    requires IsEdge<T>;
+    requires std::is_same_v<typename T::EdgePropertiesTypes, std::tuple<std::decay_t<EdgeProperties>...>>;
 };
 
 }

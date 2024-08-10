@@ -32,6 +32,8 @@ template<typename Tag, typename... EdgeProperties>
 class Edge
 {
 public:
+    using EdgePropertiesTypes = std::tuple<EdgeProperties...>;
+
     Edge(EdgeIndex index, VertexIndex source, VertexIndex target, EdgeProperties... properties) :
         m_index(index),
         m_source(source),
@@ -60,7 +62,7 @@ public:
         return seed;
     }
 
-    /// @brief Return a const reference to the I-th `EdgeProperties`.
+    /// @brief Get a reference to the I-th `EdgeProperties`.
     /// We recommend providing free inline functions to access properties with more meaningful names.
     /// @tparam I the index of the property in the parameter pack.
     /// @return a reference to the I-th property.
@@ -105,6 +107,9 @@ struct ColoredEdgeTag
 
 using ColoredEdge = Edge<ColoredEdgeTag, Color>;
 
+/// @brief Get the color of a colored edge.
+/// @param edge the colored edge.
+/// @return the color of the edge.
 inline Color get_color(const ColoredEdge& edge) { return edge.get_property<0>(); }
 
 }

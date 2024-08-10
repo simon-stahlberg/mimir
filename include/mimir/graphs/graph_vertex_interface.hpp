@@ -28,9 +28,18 @@ namespace mimir
 template<typename T>
 concept IsVertex = requires(T a)
 {
+    typename T::VertexPropertiesTypes;
+
     {
         a.get_index()
         } -> std::convertible_to<VertexIndex>;
+};
+
+template<typename T, typename... VertexProperties>
+concept HasVertexProperties = requires(T a)
+{
+    requires IsVertex<T>;
+    requires std::is_same_v<typename T::VertexPropertiesTypes, std::tuple<std::decay_t<VertexProperties>...>>;
 };
 
 }
