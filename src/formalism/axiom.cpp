@@ -46,26 +46,23 @@ AxiomImpl::AxiomImpl(int identifier,
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
+
+    std::sort(m_static_conditions.begin(), m_static_conditions.end());
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end());
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end());
 }
 
 bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
 {
     if (this != &other)
     {
-        return (m_literal == other.m_literal) && (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
-               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
-               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions));
+        return (m_literal == other.m_literal) && (m_static_conditions == other.m_static_conditions) && (m_fluent_conditions == other.m_fluent_conditions)
+               && (m_derived_conditions == other.m_derived_conditions);
     }
     return true;
 }
 
-size_t AxiomImpl::hash_impl() const
-{
-    return mimir::hash_combine(m_literal,
-                               mimir::get_sorted_vector(m_static_conditions),
-                               mimir::get_sorted_vector(m_fluent_conditions),
-                               mimir::get_sorted_vector(m_derived_conditions));
-}
+size_t AxiomImpl::hash_impl() const { return mimir::hash_combine(m_literal, m_static_conditions, m_fluent_conditions, m_derived_conditions); }
 
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

@@ -69,25 +69,23 @@ EffectConditionalImpl::EffectConditionalImpl(int identifier,
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
+
+    /* Canonize. */
+    std::sort(m_static_conditions.begin(), m_static_conditions.end());
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end());
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end());
 }
 
 bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectConditionalImpl& other) const
 {
     if (this != &other)
     {
-        return (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
-               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
-               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions)) && m_effect == other.m_effect;
+        return (m_static_conditions == other.m_static_conditions) && (m_fluent_conditions == other.m_fluent_conditions)
+               && (m_derived_conditions == other.m_derived_conditions) && m_effect == other.m_effect;
     }
     return true;
 }
-size_t EffectConditionalImpl::hash_impl() const
-{
-    return mimir::hash_combine(mimir::get_sorted_vector(m_static_conditions),
-                               mimir::get_sorted_vector(m_fluent_conditions),
-                               mimir::get_sorted_vector(m_derived_conditions),
-                               m_effect);
-}
+size_t EffectConditionalImpl::hash_impl() const { return mimir::hash_combine(m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect); }
 
 void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -160,26 +158,25 @@ EffectUniversalImpl::EffectUniversalImpl(int identifier,
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
+
+    /* Canonize */
+    std::sort(m_static_conditions.begin(), m_static_conditions.end());
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end());
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end());
 }
 
 bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUniversalImpl& other) const
 {
     if (this != &other)
     {
-        return (m_quantified_variables == other.m_quantified_variables)
-               && (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
-               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
-               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions)) && m_effect == other.m_effect;
+        return (m_quantified_variables == other.m_quantified_variables) && (m_static_conditions == other.m_static_conditions)
+               && (m_fluent_conditions == other.m_fluent_conditions) && (m_derived_conditions == other.m_derived_conditions) && m_effect == other.m_effect;
     }
     return true;
 }
 size_t EffectUniversalImpl::hash_impl() const
 {
-    return mimir::hash_combine(m_quantified_variables,
-                               mimir::get_sorted_vector(m_static_conditions),
-                               mimir::get_sorted_vector(m_fluent_conditions),
-                               mimir::get_sorted_vector(m_derived_conditions),
-                               m_effect);
+    return mimir::hash_combine(m_quantified_variables, m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect);
 }
 
 void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

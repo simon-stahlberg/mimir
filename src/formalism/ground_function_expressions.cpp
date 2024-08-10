@@ -93,22 +93,22 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
     m_multi_operator(multi_operator),
     m_function_expressions(function_expressions)
 {
+    assert(is_all_unique(m_function_expressions));
+
+    /* Canonize. */
+    std::sort(m_function_expressions.begin(), m_function_expressions.end());
 }
 
 bool GroundFunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionMultiOperatorImpl& other) const
 {
     if (this != &other)
     {
-        return (m_multi_operator == other.m_multi_operator)
-               && (mimir::get_sorted_vector(m_function_expressions) == mimir::get_sorted_vector(other.m_function_expressions));
+        return (m_multi_operator == other.m_multi_operator) && (m_function_expressions == other.m_function_expressions);
     }
     return true;
 }
 
-size_t GroundFunctionExpressionMultiOperatorImpl::hash_impl() const
-{
-    return mimir::hash_combine(m_multi_operator, mimir::get_sorted_vector(m_function_expressions));
-}
+size_t GroundFunctionExpressionMultiOperatorImpl::hash_impl() const { return mimir::hash_combine(m_multi_operator, m_function_expressions); }
 
 void GroundFunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

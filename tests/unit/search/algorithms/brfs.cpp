@@ -45,10 +45,10 @@ private:
 public:
     LiftedBrFSPlanner(const fs::path& domain_file, const fs::path& problem_file) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_aag_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
+        m_aag_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)),
         m_aag(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_factories(), m_aag_event_handler)),
         m_ssg(std::make_shared<StateRepository>(m_aag)),
-        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
+        m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>(false)),
         m_algorithm(std::make_unique<BrFSAlgorithm>(m_aag, m_ssg, m_brfs_event_handler))
     {
     }

@@ -28,8 +28,10 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
 
+#include <algorithm>  // For std::shuffle
 #include <cassert>
 #include <iostream>
+#include <random>  // For random number generation
 #include <unordered_map>
 
 using namespace std;
@@ -70,6 +72,22 @@ DomainImpl::DomainImpl(int identifier,
     assert(is_all_unique(m_actions));
     assert(is_all_unique(m_axioms));
 
+    /* Canonize. */
+    std::sort(m_constants.begin(), m_constants.end());
+    std::sort(m_static_predicates.begin(), m_static_predicates.end());
+    std::sort(m_fluent_predicates.begin(), m_fluent_predicates.end());
+    std::sort(m_derived_predicates.begin(), m_derived_predicates.end());
+    std::sort(m_functions.begin(), m_functions.end());
+    std::sort(m_actions.begin(), m_actions.end());
+    std::sort(m_axioms.begin(), m_axioms.end());
+
+    // TODO: there is an issue in Miconic-full adl when changing the order of actions.
+    // The number of expanded states per layer differ slightly.
+    std::random_device rd;   // Obtain a random number from hardware
+    std::mt19937 rng(rd());  // Seed the generator
+    std::shuffle(m_actions.begin(), m_actions.end(), rng);
+
+    /* Additional */
     for (const auto& predicate : m_static_predicates)
     {
         m_name_to_static_predicate.emplace(predicate->get_name(), predicate);
@@ -88,14 +106,10 @@ bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) con
 {
     if (this != &other)
     {
-        return (m_name == other.m_name) && (m_requirements == other.m_requirements)
-               && (mimir::get_sorted_vector(m_constants) == mimir::get_sorted_vector(other.m_constants))
-               && (mimir::get_sorted_vector(m_static_predicates) == mimir::get_sorted_vector(other.m_static_predicates))
-               && (mimir::get_sorted_vector(m_fluent_predicates) == mimir::get_sorted_vector(other.m_fluent_predicates))
-               && (mimir::get_sorted_vector(m_derived_predicates) == mimir::get_sorted_vector(other.m_derived_predicates))
-               && (mimir::get_sorted_vector(m_functions) == mimir::get_sorted_vector(other.m_functions))
-               && (mimir::get_sorted_vector(m_actions) == mimir::get_sorted_vector(other.m_actions))
-               && (mimir::get_sorted_vector(m_axioms) == mimir::get_sorted_vector(other.m_axioms));
+        return (m_name == other.m_name) && (m_requirements == other.m_requirements) && (m_constants == other.m_constants)
+               && (m_static_predicates == other.m_static_predicates) && (m_fluent_predicates == other.m_fluent_predicates)
+               && (m_derived_predicates == other.m_derived_predicates) && (m_functions == other.m_functions) && (m_actions == other.m_actions)
+               && (m_axioms == other.m_axioms);
     }
     return true;
 }
@@ -104,13 +118,13 @@ size_t DomainImpl::hash_impl() const
 {
     return mimir::hash_combine(m_name,
                                m_requirements,
-                               mimir::get_sorted_vector(m_constants),
-                               mimir::get_sorted_vector(m_static_predicates),
-                               mimir::get_sorted_vector(m_fluent_predicates),
-                               mimir::get_sorted_vector(m_derived_predicates),
-                               mimir::get_sorted_vector(m_functions),
-                               mimir::get_sorted_vector(m_actions),
-                               mimir::get_sorted_vector(m_axioms));
+                               m_constants,
+                               m_static_predicates,
+                               m_fluent_predicates,
+                               m_derived_predicates,
+                               m_functions,
+                               m_actions,
+                               m_axioms);
 }
 
 void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

@@ -86,18 +86,6 @@ bool is_all_unique(const std::vector<T>& vec)
     return vec.size() == set.size();
 }
 
-/// @brief Returns the sorted vector
-/// @tparam T
-/// @param vec
-/// @return
-template<typename Collection>
-boost::container::small_vector<typename Collection::value_type, 100> get_sorted_vector(const Collection& collection)
-{
-    boost::container::small_vector<typename Collection::value_type, 100> result(collection.begin(), collection.end());
-    std::sort(result.begin(), result.end());
-    return result;
-}
-
 }
 
 #endif

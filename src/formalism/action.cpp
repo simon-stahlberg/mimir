@@ -63,20 +63,24 @@ ActionImpl::ActionImpl(int identifier,
     assert(is_all_unique(m_simple_effects));
     assert(is_all_unique(m_conditional_effects));
     assert(is_all_unique(m_universal_effects));
+
+    /* Canonize. */
+    std::sort(m_static_conditions.begin(), m_static_conditions.end());
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end());
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end());
+    std::sort(m_simple_effects.begin(), m_simple_effects.end());
+    std::sort(m_conditional_effects.begin(), m_conditional_effects.end());
+    std::sort(m_universal_effects.begin(), m_universal_effects.end());
 }
 
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
 {
     if (this != &other)
     {
-        return (m_name == other.m_name) && (mimir::get_sorted_vector(m_parameters) == mimir::get_sorted_vector(other.m_parameters))
-               && (mimir::get_sorted_vector(m_static_conditions) == mimir::get_sorted_vector(other.m_static_conditions))
-               && (mimir::get_sorted_vector(m_fluent_conditions) == mimir::get_sorted_vector(other.m_fluent_conditions))
-               && (mimir::get_sorted_vector(m_derived_conditions) == mimir::get_sorted_vector(other.m_derived_conditions))
-               && (mimir::get_sorted_vector(m_simple_effects) == mimir::get_sorted_vector(other.m_simple_effects))
-               && (mimir::get_sorted_vector(m_conditional_effects) == mimir::get_sorted_vector(other.m_conditional_effects))
-               && (mimir::get_sorted_vector(m_universal_effects) == mimir::get_sorted_vector(other.m_universal_effects))
-               && (m_function_expression == other.m_function_expression);
+        return (m_name == other.m_name) && (m_parameters == other.m_parameters) && (m_static_conditions == other.m_static_conditions)
+               && (m_fluent_conditions == other.m_fluent_conditions) && (m_derived_conditions == other.m_derived_conditions)
+               && (m_simple_effects == other.m_simple_effects) && (m_conditional_effects == other.m_conditional_effects)
+               && (m_universal_effects == other.m_universal_effects) && (m_function_expression == other.m_function_expression);
     }
     return true;
 }
@@ -85,12 +89,12 @@ size_t ActionImpl::hash_impl() const
 {
     return mimir::hash_combine(m_name,
                                m_parameters,
-                               mimir::get_sorted_vector(m_static_conditions),
-                               mimir::get_sorted_vector(m_fluent_conditions),
-                               mimir::get_sorted_vector(m_derived_conditions),
-                               mimir::get_sorted_vector(m_simple_effects),
-                               mimir::get_sorted_vector(m_conditional_effects),
-                               mimir::get_sorted_vector(m_universal_effects),
+                               m_static_conditions,
+                               m_fluent_conditions,
+                               m_derived_conditions,
+                               m_simple_effects,
+                               m_conditional_effects,
+                               m_universal_effects,
                                m_function_expression);
 }
 

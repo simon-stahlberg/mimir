@@ -82,6 +82,20 @@ ProblemImpl::ProblemImpl(int identifier,
     assert(is_all_unique(m_derived_goal_condition));
     assert(is_all_unique(m_axioms));
 
+    /* Canonize. */
+
+    std::sort(m_objects.begin(), m_objects.end());
+    std::sort(m_derived_predicates.begin(), m_derived_predicates.end());
+    std::sort(m_static_initial_literals.begin(), m_static_initial_literals.end());
+    std::sort(m_fluent_initial_literals.begin(), m_fluent_initial_literals.end());
+    std::sort(m_numeric_fluents.begin(), m_numeric_fluents.end());
+    std::sort(m_static_goal_condition.begin(), m_static_goal_condition.end());
+    std::sort(m_fluent_goal_condition.begin(), m_fluent_goal_condition.end());
+    std::sort(m_derived_goal_condition.begin(), m_derived_goal_condition.end());
+    std::sort(m_axioms.begin(), m_axioms.end());
+
+    /* Additional */
+
     // Combine derived predicates
     m_problem_and_domain_derived_predicates = m_domain->get_predicates<Derived>();
     m_problem_and_domain_derived_predicates.insert(m_problem_and_domain_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
@@ -114,15 +128,11 @@ bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) c
 {
     if (this != &other)
     {
-        return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements)
-               && (mimir::get_sorted_vector(m_objects) == mimir::get_sorted_vector(other.m_objects))
-               && (mimir::get_sorted_vector(m_derived_predicates) == mimir::get_sorted_vector(other.m_derived_predicates))
-               && (mimir::get_sorted_vector(m_static_initial_literals)) == mimir::get_sorted_vector(other.m_static_initial_literals)
-               && (mimir::get_sorted_vector(m_fluent_initial_literals)) == mimir::get_sorted_vector(other.m_fluent_initial_literals)
-               && (mimir::get_sorted_vector(m_static_goal_condition)) == mimir::get_sorted_vector(other.m_static_goal_condition)
-               && (mimir::get_sorted_vector(m_fluent_goal_condition)) == mimir::get_sorted_vector(other.m_fluent_goal_condition)
-               && (mimir::get_sorted_vector(m_derived_goal_condition)) == mimir::get_sorted_vector(other.m_derived_goal_condition)
-               && (m_optimization_metric == other.m_optimization_metric) && (mimir::get_sorted_vector(m_axioms) == mimir::get_sorted_vector(other.m_axioms));
+        return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements) && (m_objects == other.m_objects)
+               && (m_derived_predicates == other.m_derived_predicates) && (m_static_initial_literals == other.m_static_initial_literals)
+               && (m_fluent_initial_literals == other.m_fluent_initial_literals) && (m_static_goal_condition == other.m_static_goal_condition)
+               && (m_fluent_goal_condition == other.m_fluent_goal_condition) && (m_derived_goal_condition == other.m_derived_goal_condition)
+               && (m_optimization_metric == other.m_optimization_metric) && (m_axioms == other.m_axioms);
     }
     return true;
 }
@@ -133,15 +143,15 @@ size_t ProblemImpl::hash_impl() const
     return mimir::hash_combine(m_domain,
                                m_name,
                                m_requirements,
-                               mimir::get_sorted_vector(m_objects),
-                               mimir::get_sorted_vector(m_derived_predicates),
-                               mimir::get_sorted_vector(m_static_initial_literals),
-                               mimir::get_sorted_vector(m_fluent_initial_literals),
-                               mimir::get_sorted_vector(m_static_goal_condition),
-                               mimir::get_sorted_vector(m_fluent_goal_condition),
-                               mimir::get_sorted_vector(m_derived_goal_condition),
+                               m_objects,
+                               m_derived_predicates,
+                               m_static_initial_literals,
+                               m_fluent_initial_literals,
+                               m_static_goal_condition,
+                               m_fluent_goal_condition,
+                               m_derived_goal_condition,
                                optimization_hash,
-                               mimir::get_sorted_vector(m_axioms));
+                               m_axioms);
 }
 
 void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
