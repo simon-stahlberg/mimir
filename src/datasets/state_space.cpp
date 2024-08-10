@@ -150,7 +150,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
     if (options.use_unit_cost_one
         || std::all_of(bidirectional_graph.get_edges().begin(),
                        bidirectional_graph.get_edges().end(),
-                       [](const auto& transition) { return transition.get_cost() == 1; }))
+                       [](const auto& transition) { return get_cost(transition) == 1; }))
     {
         auto [predecessors_, goal_distances_] =
             breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()), goal_states.begin(), goal_states.end());
@@ -162,7 +162,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         transition_costs.reserve(bidirectional_graph.get_num_edges());
         for (const auto& transition : bidirectional_graph.get_edges())
         {
-            transition_costs.push_back(transition.get_cost());
+            transition_costs.push_back(get_cost(transition));
         }
         auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
                                                                         transition_costs,
@@ -249,7 +249,7 @@ DistanceList StateSpace::compute_shortest_distances_from_states(const StateIndex
 {
     auto distances = DistanceList {};
     if (m_use_unit_cost_one
-        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return transition.get_cost() == 1; }))
+        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
     {
         auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
         distances = std::move(distances_);
@@ -260,7 +260,7 @@ DistanceList StateSpace::compute_shortest_distances_from_states(const StateIndex
         transition_costs.reserve(m_graph.get_num_edges());
         for (const auto& transition : m_graph.get_edges())
         {
-            transition_costs.push_back(transition.get_cost());
+            transition_costs.push_back(get_cost(transition));
         }
         auto [predecessors_, distances_] =
             dijkstra_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs, states.begin(), states.end());
@@ -286,7 +286,7 @@ DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances() const
         transition_costs.reserve(m_graph.get_num_edges());
         for (const auto& transition : m_graph.get_edges())
         {
-            transition_costs.push_back(transition.get_cost());
+            transition_costs.push_back(get_cost(transition));
         }
     }
 
@@ -388,7 +388,7 @@ StateSpace::get_adjacent_transition_indices<BackwardTraversal>(StateIndex state)
 
 TransitionCost StateSpace::get_transition_cost(TransitionIndex transition) const
 {
-    return (m_use_unit_cost_one) ? 1 : m_graph.get_edges().at(transition).get_cost();
+    return (m_use_unit_cost_one) ? 1 : get_cost(m_graph.get_edges().at(transition));
 }
 
 size_t StateSpace::get_num_transitions() const { return m_graph.get_num_edges(); }
@@ -469,7 +469,7 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
             << "s" << transition.get_target() << " [";
 
         // label
-        out << "label=\"" << transition.get_creating_action() << "\"";
+        out << "label=\"" << get_creating_action(transition) << "\"";
 
         out << "]\n";
     }

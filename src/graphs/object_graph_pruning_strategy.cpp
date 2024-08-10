@@ -153,7 +153,7 @@ static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_component
     using StatePair = std::pair<size_t, size_t>;
     const auto state_pair_hash = [](const auto& pair) { return mimir::hash_combine(pair.first, pair.second); };
     std::unordered_set<StatePair, decltype(state_pair_hash)> edges;
-    for (const auto t : state_space.get_graph().get_edges())
+    for (const auto& t : state_space.get_graph().get_edges())
     {
         const auto source = t.get_source();
         const auto target = t.get_target();
@@ -301,7 +301,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         {
             for (const auto& transition : state_space->get_graph().template get_adjacent_edges<ForwardTraversal>(state_index))
             {
-                const auto& precondition = StripsActionPrecondition(transition.get_creating_action().get_strips_precondition());
+                const auto& precondition = StripsActionPrecondition(get_creating_action(transition).get_strips_precondition());
                 mark_objects_as_not_prunable(
                     state_space->get_pddl_factories()->get_ground_atoms_from_ids<Static>(precondition.get_negative_precondition<Static>()),
                     pruned_objects);
@@ -321,7 +321,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
                     state_space->get_pddl_factories()->get_ground_atoms_from_ids<Derived>(precondition.get_positive_precondition<Derived>()),
                     pruned_objects);
 
-                for (const auto& flat_conditional_effect : transition.get_creating_action().get_conditional_effects())
+                for (const auto& flat_conditional_effect : get_creating_action(transition).get_conditional_effects())
                 {
                     const auto conditional_effect = ConditionalEffect(flat_conditional_effect);
                     mark_objects_as_not_prunable(

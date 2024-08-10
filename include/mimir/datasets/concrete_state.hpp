@@ -31,7 +31,7 @@ struct ConcreteStateTag
 using ConcreteState = Vertex<ConcreteStateTag, State>;
 using ConcreteStateList = std::vector<ConcreteState>;
 
-inline State get_state(const ConcreteState concrete_state) { return concrete_state.get_property<0>(); }
+inline State get_state(const ConcreteState& concrete_state) { return concrete_state.get_property<0>(); }
 
 }
 

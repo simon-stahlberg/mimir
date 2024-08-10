@@ -29,27 +29,34 @@
 namespace mimir
 {
 
-class AbstractTransition : public BaseEdge<AbstractTransition>
+/**
+ * Declarations
+ */
+
+struct AbstractTransitionTag
 {
-public:
-    AbstractTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, std::span<const GroundAction> actions);
-
-    TransitionCost get_cost() const;
-    std::span<const GroundAction> get_actions() const;
-    GroundAction get_representative_action() const;
-
-private:
-    std::span<const GroundAction> m_actions;
-
-    bool is_equal_impl(const BaseEdge<AbstractTransition>& other) const;
-    size_t hash_impl() const;
-
-    friend class BaseEdge<AbstractTransition>;
 };
 
-static_assert(IsEdge<AbstractTransition>);
-
+using AbstractTransition = Edge<AbstractTransitionTag, std::span<const GroundAction>>;
 using AbstractTransitionList = std::vector<AbstractTransition>;
+
+inline std::span<const GroundAction> get_actions(const AbstractTransition& abstract_transition) { return abstract_transition.get_property<0>(); }
+
+inline TransitionCost get_cost(const AbstractTransition& abstract_transition)
+{
+    auto cost = std::numeric_limits<double>::max();
+
+    const auto actions = get_actions(abstract_transition);
+    std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, (double) action.get_cost()); });
+
+    return cost;
+}
+
+inline GroundAction get_representative_action(const AbstractTransition& abstract_transition)
+{
+    assert(!abstract_transition.get_property<0>().empty());
+    return abstract_transition.get_property<0>().front();
+}
 
 }
 

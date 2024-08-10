@@ -29,30 +29,16 @@
 namespace mimir
 {
 
-/**
- * ConcreteTransition
- */
-
-class ConcreteTransition : public BaseEdge<ConcreteTransition>
+struct ConcreteTransitionTag
 {
-public:
-    ConcreteTransition(TransitionIndex index, StateIndex source_state, StateIndex target_state, GroundAction creating_action);
-
-    TransitionCost get_cost() const;
-    GroundAction get_creating_action() const;
-
-private:
-    GroundAction m_creating_action;
-
-    bool is_equal_impl(const BaseEdge<ConcreteTransition>& other) const;
-    size_t hash_impl() const;
-
-    friend class BaseEdge<ConcreteTransition>;
 };
 
-static_assert(IsEdge<ConcreteTransition>);
-
+using ConcreteTransition = Edge<ConcreteTransitionTag, GroundAction>;
 using ConcreteTransitionList = std::vector<ConcreteTransition>;
+
+inline GroundAction get_creating_action(const ConcreteTransition& concrete_transition) { return concrete_transition.get_property<0>(); }
+
+inline TransitionCost get_cost(const ConcreteTransition& concrete_transition) { return get_creating_action(concrete_transition).get_cost(); }
 
 }
 

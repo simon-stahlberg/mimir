@@ -18,6 +18,7 @@
 #include "mimir/datasets/global_faithful_abstraction.hpp"
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
+#include "mimir/common/hash_utils.hpp"
 #include "mimir/common/timers.hpp"
 
 #include <algorithm>
@@ -50,7 +51,7 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
     return true;
 }
 
-size_t GlobalFaithfulAbstractState::hash() const { return loki::hash_combine(m_global_index); }
+size_t GlobalFaithfulAbstractState::hash() const { return mimir::hash_combine(m_global_index); }
 
 StateIndex GlobalFaithfulAbstractState::get_index() const { return m_index; }
 
@@ -421,7 +422,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
 
         // label
         out << "label=\"";
-        for (const auto& action : transition.get_actions())
+        for (const auto& action : get_actions(transition))
         {
             out << action << "\n";
         }

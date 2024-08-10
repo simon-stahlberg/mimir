@@ -37,11 +37,11 @@ namespace mimir
  * Type aliases
  */
 
-using StaticVertexColoredDigraph = StaticGraph<ColoredVertex, EmptyPropertiesEdge>;
-using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, EmptyPropertiesEdge>>;
-using StaticVertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyPropertiesEdge>>;
+using StaticVertexColoredDigraph = StaticGraph<ColoredVertex, EmptyEdge>;
+using StaticVertexColoredForwardDigraph = StaticForwardGraph<StaticGraph<ColoredVertex, EmptyEdge>>;
+using StaticVertexColoredBidirectionalDigraph = StaticBidirectionalGraph<StaticGraph<ColoredVertex, EmptyEdge>>;
 
-using DynamicVertexColoredDigraph = DynamicGraph<ColoredVertex, EmptyPropertiesEdge>;
+using DynamicVertexColoredDigraph = DynamicGraph<ColoredVertex, EmptyEdge>;
 
 /**
  * Static graph assertions

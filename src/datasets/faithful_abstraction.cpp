@@ -308,7 +308,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     std::transform(transitions.begin(),
                    transitions.end(),
                    std::back_inserter(*ground_actions_by_source_and_target),
-                   [](const auto& transition) { return transition.get_creating_action(); });
+                   [](const auto& transition) { return get_creating_action(transition); });
 
     /* Group concrete transitions by source and target */
     auto grouped_transitions = IndexGroupedVector<const ConcreteTransition>::create(
@@ -339,7 +339,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
     for (const auto& abstract_transition : abstract_transitions)
     {
-        graph.add_directed_edge(abstract_transition.get_source(), abstract_transition.get_target(), abstract_transition.get_actions());
+        graph.add_directed_edge(abstract_transition.get_source(), abstract_transition.get_target(), get_actions(abstract_transition));
     }
     auto bidirectional_graph = typename FaithfulAbstraction::GraphType(std::move(graph));
 
@@ -349,7 +349,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     if (options.use_unit_cost_one
         || std::all_of(bidirectional_graph.get_edges().begin(),
                        bidirectional_graph.get_edges().end(),
-                       [](const auto& transition) { return transition.get_cost() == 1; }))
+                       [](const auto& transition) { return get_cost(transition) == 1; }))
     {
         auto [predecessors_, goal_distances_] = breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
                                                                      abstract_goal_states.begin(),
@@ -362,7 +362,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         transition_costs.reserve(bidirectional_graph.get_num_edges());
         for (const auto& transition : bidirectional_graph.get_edges())
         {
-            transition_costs.push_back(transition.get_cost());
+            transition_costs.push_back(get_cost(transition));
         }
         auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
                                                                         transition_costs,
@@ -467,7 +467,7 @@ DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const S
 {
     auto distances = DistanceList {};
     if (m_use_unit_cost_one
-        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return transition.get_cost() == 1; }))
+        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
     {
         auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
         distances = std::move(distances_);
@@ -478,7 +478,7 @@ DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const S
         transition_costs.reserve(m_graph.get_num_edges());
         for (const auto& transition : m_graph.get_edges())
         {
-            transition_costs.push_back(transition.get_cost());
+            transition_costs.push_back(get_cost(transition));
         }
         auto [predecessors_, distances_] =
             dijkstra_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs, states.begin(), states.end());
@@ -504,7 +504,7 @@ DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances() 
         transition_costs.reserve(m_graph.get_num_edges());
         for (const auto& transition : m_graph.get_edges())
         {
-            transition_costs.push_back(transition.get_cost());
+            transition_costs.push_back(get_cost(transition));
         }
     }
 
@@ -611,7 +611,7 @@ FaithfulAbstraction::get_adjacent_transition_indices<BackwardTraversal>(StateInd
 
 TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
 {
-    return (m_use_unit_cost_one) ? 1 : m_graph.get_edges().at(transition).get_cost();
+    return (m_use_unit_cost_one) ? 1 : get_cost(m_graph.get_edges().at(transition));
 }
 
 size_t FaithfulAbstraction::get_num_transitions() const { return m_graph.get_num_edges(); }
@@ -688,7 +688,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
 
         // label
         out << "label=\"";
-        for (const auto& action : transition.get_actions())
+        for (const auto& action : get_actions(transition))
         {
             out << action << "\n";
         }

@@ -18,7 +18,6 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
-#include "mimir/common/hash.hpp"
 #include "mimir/common/hash_utils.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
@@ -27,6 +26,9 @@
 namespace mimir
 {
 
+/// @brief `Vertex` implements a vertex with additional `VertexProperties`
+/// @tparam Tag is an empty struct used for dispatching.
+/// @tparam ...VertexProperties are additional vertex properties.
 template<typename Tag, typename... VertexProperties>
 class Vertex
 {
@@ -70,12 +72,6 @@ private:
         (..., mimir::hash_combine(seed, Hash<std::tuple_element_t<Is, std::tuple<VertexProperties...>>>()(get_property<Is>())));
     }
 };
-
-template<typename Tag, typename... VertexProperties>
-VertexIndex get_index(const Vertex<Tag, VertexProperties...>& vertex)
-{
-    return vertex.get_index();
-}
 
 /**
  * EmptyVertex
