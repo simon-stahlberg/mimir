@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/metric.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 
 #include <cassert>

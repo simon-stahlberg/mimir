@@ -18,7 +18,8 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/equal_to.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
 #include <tuple>

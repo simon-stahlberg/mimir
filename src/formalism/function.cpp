@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/function.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/term.hpp"
 

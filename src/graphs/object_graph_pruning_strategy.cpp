@@ -18,7 +18,7 @@
 #include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/graphs/object_graph.hpp"

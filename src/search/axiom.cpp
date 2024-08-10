@@ -17,7 +17,7 @@
 
 #include "mimir/search/axiom.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/factories.hpp"
 

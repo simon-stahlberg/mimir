@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/certificate.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 
 namespace mimir
 {

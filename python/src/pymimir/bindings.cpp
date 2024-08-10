@@ -1252,7 +1252,10 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &ConcreteState::operator==)
         .def("__hash__", &ConcreteState::hash)
         .def("get_index", &ConcreteState::get_index)
-        .def("get_state", &ConcreteState::get_state, py::keep_alive<0, 1>());
+        .def(
+            "get_state",
+            [](const ConcreteState& self) { return get_state(self); },
+            py::keep_alive<0, 1>());
 
     // ConcreteTransition
     py::class_<ConcreteTransition>(m, "ConcreteTransition")  //
@@ -1261,8 +1264,11 @@ void init_pymimir(py::module_& m)
         .def("get_index", &ConcreteTransition::get_index)
         .def("get_source", &ConcreteTransition::get_source)
         .def("get_target", &ConcreteTransition::get_target)
-        .def("get_cost", &ConcreteTransition::get_cost)
-        .def("get_creating_action", &ConcreteTransition::get_creating_action, py::keep_alive<0, 1>());
+        .def("get_cost", [](const ConcreteTransition& self) { return get_cost(self); })
+        .def(
+            "get_creating_action",
+            [](const ConcreteTransition& self) { return get_creating_action(self); },
+            py::keep_alive<0, 1>());
 
     // AbstractTransition
     py::class_<AbstractTransition>(m, "AbstractTransition")  //
@@ -1271,12 +1277,15 @@ void init_pymimir(py::module_& m)
         .def("get_index", &AbstractTransition::get_index)
         .def("get_source", &AbstractTransition::get_source)
         .def("get_target", &AbstractTransition::get_target)
-        .def("get_cost", &AbstractTransition::get_cost)
+        .def("get_cost", [](const AbstractTransition& self) { return get_cost(self); })
         .def(
             "get_actions",
-            [](const AbstractTransition& self) { return GroundActionList(self.get_actions().begin(), self.get_actions().end()); },
+            [](const AbstractTransition& self) { return GroundActionList(get_actions(self).begin(), get_actions(self).end()); },
             py::keep_alive<0, 1>())
-        .def("get_representative_action", &AbstractTransition::get_representative_action, py::keep_alive<0, 1>());
+        .def(
+            "get_representative_action",
+            [](const AbstractTransition& self) { return get_representative_action(self); },
+            py::keep_alive<0, 1>());
 
     // StateSpace
     py::class_<StateSpaceOptions>(m, "StateSpaceOptions")
@@ -1482,10 +1491,16 @@ void init_pymimir(py::module_& m)
         .def("get_index", &FaithfulAbstractState::get_index)
         .def(
             "get_states",
-            [](const FaithfulAbstractState& self) { return std::vector<State>(self.get_states().begin(), self.get_states().end()); },
+            [](const FaithfulAbstractState& self) { return std::vector<State>(get_states(self).begin(), get_states(self).end()); },
             py::keep_alive<0, 1>())
-        .def("get_representative_state", &FaithfulAbstractState::get_representative_state, py::keep_alive<0, 1>())
-        .def("get_certificate", &FaithfulAbstractState::get_certificate, py::return_value_policy::reference_internal);
+        .def(
+            "get_representative_state",
+            [](const FaithfulAbstractState& self) { return get_representative_state(self); },
+            py::keep_alive<0, 1>())
+        .def(
+            "get_certificate",
+            [](const FaithfulAbstractState& self) { return get_certificate(self); },
+            py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def("__str__",
@@ -1869,19 +1884,19 @@ void init_pymimir(py::module_& m)
         .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 
-    // EmptyPropertiesVertex (used in StaticDigraph)
-    py::class_<EmptyPropertiesVertex>(m, "EmptyPropertiesVertex")
-        .def("__eq__", &EmptyPropertiesVertex::operator==)
-        .def("__hash__", &EmptyPropertiesVertex::hash)
-        .def("get_index", &EmptyPropertiesVertex::get_index);
+    // EmptyVertex (used in StaticDigraph)
+    py::class_<EmptyVertex>(m, "EmptyVertex")
+        .def("__eq__", &EmptyVertex::operator==)
+        .def("__hash__", &EmptyVertex::hash)
+        .def("get_index", &EmptyVertex::get_index);
 
-    // EmptyPropertiesEdge (used in StaticDigraph)
-    py::class_<EmptyPropertiesEdge>(m, "EmptyPropertiesEdge")
-        .def("__eq__", &EmptyPropertiesEdge::operator==)
-        .def("__hash__", &EmptyPropertiesEdge::hash)
-        .def("get_index", &EmptyPropertiesEdge::get_index)
-        .def("get_source", &EmptyPropertiesEdge::get_source)
-        .def("get_target", &EmptyPropertiesEdge::get_target);
+    // EmptyEdge (used in StaticDigraph)
+    py::class_<EmptyEdge>(m, "EmptyEdge")
+        .def("__eq__", &EmptyEdge::operator==)
+        .def("__hash__", &EmptyEdge::hash)
+        .def("get_index", &EmptyEdge::get_index)
+        .def("get_source", &EmptyEdge::get_source)
+        .def("get_target", &EmptyEdge::get_target);
 
     // StaticDigraph
     py::class_<StaticDigraph>(m, "StaticDigraph")  //
@@ -1998,7 +2013,7 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &ColoredVertex::operator==)
         .def("__hash__", &ColoredVertex::hash)
         .def("get_index", &ColoredVertex::get_index)
-        .def("get_color", &ColoredVertex::get_color);
+        .def("get_color", [](const ColoredVertex& self) { return get_color(self); });
 
     // StaticVertexColoredDigraph
     py::class_<StaticVertexColoredDigraph>(m, "StaticVertexColoredDigraph")  //

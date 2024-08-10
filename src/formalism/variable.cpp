@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/variable.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 
 namespace mimir
 {

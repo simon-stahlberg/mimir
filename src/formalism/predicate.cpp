@@ -18,7 +18,7 @@
 #include "mimir/formalism/predicate.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/variable.hpp"
 

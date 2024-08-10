@@ -16,7 +16,7 @@
  */
 #include "mimir/formalism/literal.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 

@@ -21,10 +21,67 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <span>
 #include <utility>
 
 namespace mimir
 {
+
+template<typename T>
+struct Hash;
+
+template<typename T>
+inline void hash_combine(size_t& seed, const T& val)
+{
+    seed ^= mimir::Hash<T>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+template<>
+inline void hash_combine(size_t& seed, const std::size_t& val)
+{
+    seed ^= val + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+template<typename... Types>
+inline size_t hash_combine(const Types&... args)
+{
+    size_t seed = 0;
+    (mimir::hash_combine(seed, args), ...);
+    return seed;
+}
+
+template<class Container>
+inline std::size_t hash_container(const Container& container)
+{
+    using T = typename Container::value_type;
+    const auto hash_function = mimir::Hash<T>();
+    std::size_t aggregated_hash = 0;
+    for (const auto& item : container)
+    {
+        const auto item_hash = hash_function(item);
+        hash_combine(aggregated_hash, item_hash);
+    }
+    return aggregated_hash;
+}
+
+template<typename T>
+inline std::size_t hash_span(const std::span<T>& span)
+{
+    const auto hash_function = mimir::Hash<T>();
+    std::size_t aggregated_hash = 0;
+    for (const auto& item : span)
+    {
+        const auto item_hash = hash_function(item);
+        hash_combine(aggregated_hash, item_hash);
+    }
+    return aggregated_hash;
+}
+
+template<typename Container>
+struct hash_container_type
+{
+    size_t operator()(const Container& container) const { return mimir::hash_container(container); }
+};
 
 template<typename T>
 concept HasHashMemberFunction = requires(T a)
@@ -48,6 +105,18 @@ struct Hash
             return std::hash<T>()(element);
         }
     }
+};
+
+template<typename T>
+struct Hash<std::span<T>>
+{
+    size_t operator()(const std::span<T>& span) const { return hash_span(span); }
+};
+
+template<typename T>
+struct Hash<std::span<const T>>
+{
+    size_t operator()(const std::span<const T>& span) const { return hash_span(span); }
 };
 
 }

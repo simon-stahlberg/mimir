@@ -18,7 +18,7 @@
 #include "mimir/formalism/function_expressions.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/function.hpp"
 
 #include <cassert>

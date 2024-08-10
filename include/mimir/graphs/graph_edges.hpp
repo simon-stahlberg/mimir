@@ -18,7 +18,8 @@
 #ifndef MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/equal_to.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 
 namespace mimir

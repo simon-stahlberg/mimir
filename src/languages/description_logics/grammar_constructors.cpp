@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/languages/description_logics/grammar_visitors.hpp"
 
 namespace mimir::dl::grammar

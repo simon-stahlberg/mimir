@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 
 namespace mimir::dl
 {

@@ -19,7 +19,7 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/effects.hpp"

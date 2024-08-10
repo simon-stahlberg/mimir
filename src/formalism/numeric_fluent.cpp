@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/numeric_fluent.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
 namespace mimir

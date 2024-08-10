@@ -10,31 +10,30 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ *<
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/object.hpp"
+#ifndef MIMIR_COMMON_EQUAL_TO_HPP_
+#define MIMIR_COMMON_EQUAL_TO_HPP_
 
-#include "mimir/common/hash.hpp"
+#include <span>
 
 namespace mimir
 {
-ObjectImpl::ObjectImpl(int identifier, std::string name) : Base(identifier), m_name(std::move(name)) {}
 
-bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const
+/// @brief Compare two spans for equality.
+/// @tparam T
+/// @param lhs
+/// @param rhs
+/// @return
+template<typename T>
+bool operator==(const std::span<T>& lhs, const std::span<T>& rhs)
 {
-    if (this != &other)
-    {
-        return (m_name == other.m_name);
-    }
-    return true;
+    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
-size_t ObjectImpl::hash_impl() const { return mimir::hash_combine(m_name); }
-
-void ObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << m_name; }
-
-const std::string& ObjectImpl::get_name() const { return m_name; }
 }
+
+#endif

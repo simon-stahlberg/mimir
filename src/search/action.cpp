@@ -18,7 +18,7 @@
 #include "mimir/search/action.hpp"
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/factories.hpp"
 

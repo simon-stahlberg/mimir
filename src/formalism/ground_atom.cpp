@@ -17,7 +17,7 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 

@@ -18,7 +18,7 @@
 #include "mimir/datasets/global_faithful_abstraction.hpp"
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
-#include "mimir/common/hash_utils.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/timers.hpp"
 
 #include <algorithm>
