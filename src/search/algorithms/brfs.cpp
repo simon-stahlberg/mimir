@@ -133,8 +133,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            const auto const_search_node = ConstBrFsSearchNode(flat_search_node);
-            set_plan(this->m_search_nodes, const_search_node, out_plan);
+            set_plan(this->m_search_nodes, ConstBrFsSearchNode(flat_search_node), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())

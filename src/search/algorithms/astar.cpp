@@ -183,8 +183,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            auto const_search_node = ConstAStarSearchNode(flat_search_node);
-            set_plan(this->m_search_nodes, const_search_node, out_plan);
+            set_plan(this->m_search_nodes, ConstAStarSearchNode(flat_search_node), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
