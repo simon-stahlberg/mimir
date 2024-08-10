@@ -107,7 +107,7 @@ bool FunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(con
 
 size_t FunctionExpressionMultiOperatorImpl::hash_impl() const
 {
-    return mimir::hash_combine(m_multi_operator, mimir::hash_container(mimir::get_sorted_vector(m_function_expressions)));
+    return mimir::hash_combine(m_multi_operator, mimir::get_sorted_vector(m_function_expressions));
 }
 
 void FunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

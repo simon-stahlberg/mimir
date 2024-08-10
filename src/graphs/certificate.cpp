@@ -40,7 +40,7 @@ bool Certificate::operator==(const Certificate& other) const
     return true;
 }
 
-size_t Certificate::hash() const { return hash_combine(m_num_vertices, m_num_edges, m_nauty_certificate, hash_container(m_canonical_initial_coloring)); }
+size_t Certificate::hash() const { return hash_combine(m_num_vertices, m_num_edges, m_nauty_certificate, m_canonical_initial_coloring); }
 
 size_t Certificate::get_num_vertices() const { return m_num_vertices; }
 

@@ -22,6 +22,7 @@
 #include <cstddef>
 #include <ranges>
 #include <type_traits>
+#include <variant>
 
 namespace mimir
 {
@@ -42,6 +43,22 @@ concept IsUnsignedIntegral = std::is_integral_v<T> && std::is_unsigned_v<T>;
 
 template<typename T, typename Value>
 concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, Value>;
+
+template<typename T>
+struct is_variant : std::false_type
+{
+};
+
+template<typename... Types>
+struct is_variant<std::variant<Types...>> : std::true_type
+{
+};
+
+template<typename T>
+concept IsVariant = is_variant<T>::value;
+
+static_assert(IsVariant<std::variant<int, float>>);
+static_assert(!IsVariant<int>);
 
 }
 

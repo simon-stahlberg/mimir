@@ -83,9 +83,9 @@ bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectCondi
 }
 size_t EffectConditionalImpl::hash_impl() const
 {
-    return mimir::hash_combine(mimir::hash_container(mimir::get_sorted_vector(m_static_conditions)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_conditions)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_derived_conditions)),
+    return mimir::hash_combine(mimir::get_sorted_vector(m_static_conditions),
+                               mimir::get_sorted_vector(m_fluent_conditions),
+                               mimir::get_sorted_vector(m_derived_conditions),
                                m_effect);
 }
 
@@ -175,10 +175,10 @@ bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUnivers
 }
 size_t EffectUniversalImpl::hash_impl() const
 {
-    return mimir::hash_combine(mimir::hash_container(m_quantified_variables),
-                               mimir::hash_container(mimir::get_sorted_vector(m_static_conditions)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_conditions)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_derived_conditions)),
+    return mimir::hash_combine(m_quantified_variables,
+                               mimir::get_sorted_vector(m_static_conditions),
+                               mimir::get_sorted_vector(m_fluent_conditions),
+                               mimir::get_sorted_vector(m_derived_conditions),
                                m_effect);
 }
 

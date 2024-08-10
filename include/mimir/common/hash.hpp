@@ -18,6 +18,8 @@
 #ifndef MIMIR_COMMON_HASH_HPP_
 #define MIMIR_COMMON_HASH_HPP_
 
+#include "mimir/common/concepts.hpp"
+
 #include <cstddef>
 #include <cstdint>
 #include <functional>
@@ -27,8 +29,16 @@
 namespace mimir
 {
 
+/**
+ * Forward declarations
+ */
+
 template<typename T>
 struct Hash;
+
+/**
+ * Hashing utilities
+ */
 
 template<typename T>
 inline void hash_combine(size_t& seed, const T& val)
@@ -50,39 +60,6 @@ inline size_t hash_combine(const Types&... args)
     return seed;
 }
 
-template<class Container>
-inline std::size_t hash_container(const Container& container)
-{
-    using T = typename Container::value_type;
-    const auto hash_function = mimir::Hash<T>();
-    std::size_t aggregated_hash = 0;
-    for (const auto& item : container)
-    {
-        const auto item_hash = hash_function(item);
-        hash_combine(aggregated_hash, item_hash);
-    }
-    return aggregated_hash;
-}
-
-template<typename T>
-inline std::size_t hash_span(const std::span<T>& span)
-{
-    const auto hash_function = mimir::Hash<T>();
-    std::size_t aggregated_hash = 0;
-    for (const auto& item : span)
-    {
-        const auto item_hash = hash_function(item);
-        hash_combine(aggregated_hash, item_hash);
-    }
-    return aggregated_hash;
-}
-
-template<typename Container>
-struct hash_container_type
-{
-    size_t operator()(const Container& container) const { return mimir::hash_container(container); }
-};
-
 template<typename T>
 concept HasHashMemberFunction = requires(T a)
 {
@@ -91,8 +68,12 @@ concept HasHashMemberFunction = requires(T a)
         } -> std::same_as<size_t>;
 };
 
+/**
+ * Hasher
+ */
+
 /// @brief `Hash` implements hashing of types T.
-/// If a type satisfies the `HasHashMemberFunction` then it will call it.
+/// If a type T provides a function hash() that returns a size_t then use it.
 /// Otherwise, fallback to using std::hash instead.
 /// @tparam T
 template<typename T>
@@ -111,10 +92,31 @@ struct Hash
     }
 };
 
-template<typename T>
-struct Hash<std::span<T>>
+/// Spezialization for std::ranges::forward_range.
+template<typename ForwardRange>
+requires std::ranges::forward_range<ForwardRange>
+struct Hash<ForwardRange>
 {
-    size_t operator()(const std::span<T>& span) const { return hash_span(span); }
+    size_t operator()(const ForwardRange& range) const
+    {
+        std::size_t aggregated_hash = 0;
+        for (const auto& item : range)
+        {
+            mimir::hash_combine(aggregated_hash, item);
+        }
+        return aggregated_hash;
+    }
+};
+
+/// Spezialization for std::variant.
+template<typename Variant>
+requires IsVariant<Variant>
+struct Hash<Variant>
+{
+    size_t operator()(const Variant& variant) const
+    {
+        return std::visit([](const auto& arg) { return Hash<std::decay_t<decltype(arg)>>()(arg); }, variant);
+    }
 };
 
 }

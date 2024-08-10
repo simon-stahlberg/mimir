@@ -47,7 +47,7 @@ bool PredicateImpl<P>::is_structurally_equivalent_to_impl(const PredicateImpl<P>
 template<PredicateCategory P>
 size_t PredicateImpl<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_name, mimir::hash_container(m_parameters));
+    return mimir::hash_combine(m_name, m_parameters);
 }
 
 template<PredicateCategory P>

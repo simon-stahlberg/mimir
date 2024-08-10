@@ -1,6 +1,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_GROUNDING_TABLE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_GROUNDING_TABLE_HPP_
 
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/object.hpp"
 
 #include <unordered_map>
@@ -17,7 +18,7 @@ template<typename T>
 class GroundingTable
 {
 private:
-    std::unordered_map<ObjectList, T, loki::hash_container_type<ObjectList>> m_table;
+    std::unordered_map<ObjectList, T, mimir::Hash<ObjectList>> m_table;
 
 public:
     auto find(const ObjectList& binding) const { return m_table.find(binding); }

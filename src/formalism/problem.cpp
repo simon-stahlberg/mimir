@@ -133,15 +133,15 @@ size_t ProblemImpl::hash_impl() const
     return mimir::hash_combine(m_domain,
                                m_name,
                                m_requirements,
-                               mimir::hash_container(mimir::get_sorted_vector(m_objects)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_derived_predicates)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_static_initial_literals)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_initial_literals)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_static_goal_condition)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_fluent_goal_condition)),
-                               mimir::hash_container(mimir::get_sorted_vector(m_derived_goal_condition)),
+                               mimir::get_sorted_vector(m_objects),
+                               mimir::get_sorted_vector(m_derived_predicates),
+                               mimir::get_sorted_vector(m_static_initial_literals),
+                               mimir::get_sorted_vector(m_fluent_initial_literals),
+                               mimir::get_sorted_vector(m_static_goal_condition),
+                               mimir::get_sorted_vector(m_fluent_goal_condition),
+                               mimir::get_sorted_vector(m_derived_goal_condition),
                                optimization_hash,
-                               mimir::hash_container(mimir::get_sorted_vector(m_axioms)));
+                               mimir::get_sorted_vector(m_axioms));
 }
 
 void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
