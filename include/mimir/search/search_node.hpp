@@ -63,7 +63,7 @@ using FlatSearchNodeVector = flatmemory::FixedSizedTypeVector<FlatSearchNodeLayo
 /// that can be zero-cost deserialized with a `SearchNode` or `ConstSearchNode`.
 /// @tparam ...SearchNodeProperties the properties stored in a search node which must be serializable by flatmemory.
 /// For example, BrFs stores a uint32_t to track the g-value, and AStar stores two doubles to track the g-value and h-value.
-template<typename... SearchNodeProperties>
+template<typename Tag, typename... SearchNodeProperties>
 class SearchNodeBuilder
 {
 public:
@@ -125,7 +125,7 @@ private:
 };
 
 /// @brief `SearchNode` is a mutable wrapper around `FlatSearchNode` to read and write the data.
-template<typename... SearchNodeProperties>
+template<typename Tag, typename... SearchNodeProperties>
 class SearchNode
 {
 private:
@@ -166,7 +166,7 @@ public:
 };
 
 /// @brief `ConstSearchNode` is a immutable wrapper around `FlatConstSearchNode` to read the data.
-template<typename... SearchNodeProperties>
+template<typename Tag, typename... SearchNodeProperties>
 class ConstSearchNode
 {
 private:
@@ -197,9 +197,9 @@ public:
 /// @param search_node The search node from which to start backtracking.
 /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
 ///                      the to the state underlying the search node.
-template<typename... SearchNodeProperties>
+template<typename Tag, typename... SearchNodeProperties>
 void set_plan(const FlatSearchNodeVector<SearchNodeProperties...>& search_nodes,  //
-              const ConstSearchNode<SearchNodeProperties...>& search_node,
+              const ConstSearchNode<Tag, SearchNodeProperties...>& search_node,
               GroundActionList& out_plan)
 {
     out_plan.clear();
@@ -211,7 +211,7 @@ void set_plan(const FlatSearchNodeVector<SearchNodeProperties...>& search_nodes,
 
         out_plan.push_back(cur_search_node.get_creating_action().value());
 
-        cur_search_node = ConstSearchNode<SearchNodeProperties...>(search_nodes.at(cur_search_node.get_parent_state().value().get_index()));
+        cur_search_node = ConstSearchNode<Tag, SearchNodeProperties...>(search_nodes.at(cur_search_node.get_parent_state().value().get_index()));
     }
 
     std::reverse(out_plan.begin(), out_plan.end());
