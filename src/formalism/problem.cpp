@@ -84,15 +84,25 @@ ProblemImpl::ProblemImpl(int identifier,
 
     /* Canonize. */
 
-    std::sort(m_objects.begin(), m_objects.end());
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end());
-    std::sort(m_static_initial_literals.begin(), m_static_initial_literals.end());
-    std::sort(m_fluent_initial_literals.begin(), m_fluent_initial_literals.end());
-    std::sort(m_numeric_fluents.begin(), m_numeric_fluents.end());
-    std::sort(m_static_goal_condition.begin(), m_static_goal_condition.end());
-    std::sort(m_fluent_goal_condition.begin(), m_fluent_goal_condition.end());
-    std::sort(m_derived_goal_condition.begin(), m_derived_goal_condition.end());
-    std::sort(m_axioms.begin(), m_axioms.end());
+    std::sort(m_objects.begin(), m_objects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_initial_literals.begin(),
+              m_static_initial_literals.end(),
+              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_fluent_initial_literals.begin(),
+              m_fluent_initial_literals.end(),
+              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_numeric_fluents.begin(), m_numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_goal_condition.begin(),
+              m_static_goal_condition.end(),
+              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_fluent_goal_condition.begin(),
+              m_fluent_goal_condition.end(),
+              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_derived_goal_condition.begin(),
+              m_derived_goal_condition.end(),
+              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
 
     /* Additional */
 

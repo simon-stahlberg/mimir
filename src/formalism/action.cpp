@@ -65,12 +65,14 @@ ActionImpl::ActionImpl(int identifier,
     assert(is_all_unique(m_universal_effects));
 
     /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end());
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end());
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end());
-    std::sort(m_simple_effects.begin(), m_simple_effects.end());
-    std::sort(m_conditional_effects.begin(), m_conditional_effects.end());
-    std::sort(m_universal_effects.begin(), m_universal_effects.end());
+    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_conditional_effects.begin(),
+              m_conditional_effects.end(),
+              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_universal_effects.begin(), m_universal_effects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
 }
 
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const

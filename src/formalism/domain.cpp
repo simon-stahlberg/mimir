@@ -73,19 +73,13 @@ DomainImpl::DomainImpl(int identifier,
     assert(is_all_unique(m_axioms));
 
     /* Canonize. */
-    std::sort(m_constants.begin(), m_constants.end());
-    std::sort(m_static_predicates.begin(), m_static_predicates.end());
-    std::sort(m_fluent_predicates.begin(), m_fluent_predicates.end());
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end());
-    std::sort(m_functions.begin(), m_functions.end());
-    std::sort(m_actions.begin(), m_actions.end());
-    std::sort(m_axioms.begin(), m_axioms.end());
-
-    // TODO: there is an issue in Miconic-full adl when changing the order of actions.
-    // The number of expanded states per layer differ slightly.
-    std::random_device rd;   // Obtain a random number from hardware
-    std::mt19937 rng(rd());  // Seed the generator
-    std::shuffle(m_actions.begin(), m_actions.end(), rng);
+    std::sort(m_constants.begin(), m_constants.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_predicates.begin(), m_static_predicates.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_functions.begin(), m_functions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_actions.begin(), m_actions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
 
     /* Additional */
     for (const auto& predicate : m_static_predicates)
