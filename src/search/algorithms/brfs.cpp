@@ -39,11 +39,9 @@ using BrFSSearchNodeBuilder = SearchNodeBuilder<BrFSSearchNodeTag, GValue>;
 using BrFsSearchNode = SearchNode<BrFSSearchNodeTag, GValue>;
 using ConstBrFsSearchNode = ConstSearchNode<BrFSSearchNodeTag, GValue>;
 
-void set_g_value(BrFsSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
+static void set_g_value(BrFsSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
 
-GValue& get_g_value(BrFsSearchNode search_node) { return search_node.get_property<0>(); }
-
-GValue get_g_value(ConstBrFsSearchNode search_node) { return search_node.get_property<0>(); }
+static GValue& get_g_value(BrFsSearchNode search_node) { return search_node.get_property<0>(); }
 
 /**
  * BrFS
@@ -96,7 +94,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
     auto start_search_node = BrFsSearchNode(this->m_search_nodes[start_state.get_index()]);
-    start_search_node.set_status(SearchNodeStatus::OPEN);
+    set_status(start_search_node, SearchNodeStatus::OPEN);
     set_g_value(start_search_node, 0);
 
     if (!goal_strategy->test_static_goal())
@@ -168,9 +166,9 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                 continue;
             }
 
-            successor_search_node.set_status(SearchNodeStatus::OPEN);
-            successor_search_node.set_parent_state(state);
-            successor_search_node.set_creating_action(action);
+            set_status(successor_search_node, SearchNodeStatus::OPEN);
+            set_parent_state(successor_search_node, state);
+            set_creating_action(successor_search_node, action);
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
             m_queue.emplace_back(successor_state);

@@ -163,7 +163,46 @@ public:
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
         return m_view.template get<I + 3>();
     }
+
+    // No immutable getters because they are unsafe anyways since constness of
+    // flatmemory views can be cast away by simply copying the view into a non const object.
 };
+
+template<typename Tag, typename... SearchNodeProperties>
+void set_status(SearchNode<Tag, SearchNodeProperties...> search_node, SearchNodeStatus status)
+{
+    return search_node.set_status(status);
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+void set_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node, State parent_state)
+{
+    return search_node.set_parent_state(parent_state);
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+void set_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node, GroundAction creating_action)
+{
+    return search_node.set_creating_action(creating_action);
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+SearchNodeStatus& get_status(SearchNode<Tag, SearchNodeProperties...> search_node)
+{
+    return search_node.get_status();
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+std::optional<State>& get_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node)
+{
+    return search_node.get_parent_state();
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+std::optional<GroundAction>& get_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node)
+{
+    return search_node.get_creating_action();
+}
 
 /// @brief `ConstSearchNode` is a immutable wrapper around `FlatConstSearchNode` to read the data.
 template<typename Tag, typename... SearchNodeProperties>
@@ -190,6 +229,24 @@ public:
         return m_view.template get<I + 3>();
     }
 };
+
+template<typename Tag, typename... SearchNodeProperties>
+SearchNodeStatus get_status(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+{
+    return search_node.get_status();
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+std::optional<State> get_parent_state(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+{
+    return search_node.get_parent_state();
+}
+
+template<typename Tag, typename... SearchNodeProperties>
+std::optional<GroundAction> get_creating_action(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+{
+    return search_node.get_creating_action();
+}
 
 /// @brief Compute the plan consisting of ground actions by collecting the creating actions
 ///        and reversing them.

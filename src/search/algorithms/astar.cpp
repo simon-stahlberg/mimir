@@ -42,14 +42,11 @@ using AStarSearchNodeBuilder = SearchNodeBuilder<AStarSearchNodeTag, GValue, HVa
 using AStarSearchNode = SearchNode<AStarSearchNodeTag, GValue, HValue>;
 using ConstAStarSearchNode = ConstSearchNode<AStarSearchNodeTag, GValue, HValue>;
 
-void set_g_value(AStarSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
-void set_h_value(AStarSearchNode search_node, GValue g_value) { return search_node.set_property<1>(g_value); }
+static void set_g_value(AStarSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
+static void set_h_value(AStarSearchNode search_node, GValue g_value) { return search_node.set_property<1>(g_value); }
 
-GValue& get_g_value(AStarSearchNode search_node) { return search_node.get_property<0>(); }
-HValue& get_h_value(AStarSearchNode search_node) { return search_node.get_property<1>(); }
-
-GValue get_g_value(ConstAStarSearchNode search_node) { return search_node.get_property<0>(); }
-HValue get_h_value(ConstAStarSearchNode search_node) { return search_node.get_property<1>(); }
+static GValue& get_g_value(AStarSearchNode search_node) { return search_node.get_property<0>(); }
+static HValue& get_h_value(AStarSearchNode search_node) { return search_node.get_property<1>(); }
 
 /**
  * AStar
@@ -108,20 +105,19 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
-    const auto start_g_value = double();
+    const auto start_g_value = GValue();
     const auto start_h_value = m_heuristic->compute_heuristic(start_state);
     const auto start_f_value = start_g_value + start_h_value;
 
     const auto flat_start_search_node = this->m_search_nodes[start_state.get_index()];
     auto start_search_node = AStarSearchNode(flat_start_search_node);
-    const auto const_start_search_node = ConstAStarSearchNode(flat_start_search_node);
-    start_search_node.set_status((start_h_value == std::numeric_limits<double>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
+    set_status(start_search_node, (start_h_value == std::numeric_limits<HValue>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
 
     /* Test whether start state is deadend. */
 
-    if (const_start_search_node.get_status() == SearchNodeStatus::DEAD_END)
+    if (start_search_node.get_status() == SearchNodeStatus::DEAD_END)
     {
         m_event_handler->on_unsolvable();
 
@@ -145,7 +141,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     }
 
     auto applicable_actions = GroundActionList {};
-    auto f_value = double();
+    auto f_value = GValue();
     m_openlist.insert(start_f_value, start_state);
 
     while (!m_openlist.empty())
@@ -231,14 +227,21 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             {
                 /* Open/Reopen state with updated f_value. */
 
-                successor_search_node.set_status(SearchNodeStatus::OPEN);
-                successor_search_node.set_parent_state(state);
-                successor_search_node.set_creating_action(action);
+                set_status(successor_search_node, SearchNodeStatus::OPEN);
+                set_parent_state(successor_search_node, state);
+                set_creating_action(successor_search_node, action);
                 set_g_value(successor_search_node, new_successor_g_value);
                 if (is_new_successor_state)
                 {
                     // Compute heuristic if state is new.
-                    set_h_value(successor_search_node, m_heuristic->compute_heuristic(successor_state));
+                    const auto successor_h_value = m_heuristic->compute_heuristic(successor_state);
+                    set_h_value(successor_search_node, successor_h_value);
+
+                    if (successor_h_value == std::numeric_limits<HValue>::infinity())
+                    {
+                        set_status(successor_search_node, SearchNodeStatus::DEAD_END);
+                        continue;
+                    }
                 }
                 m_event_handler->on_generate_state_relaxed(successor_state, action, problem, pddl_factories);
 
