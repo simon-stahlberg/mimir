@@ -41,12 +41,9 @@ concept IsEdge = requires(T a)
         } -> std::convertible_to<VertexIndex>;
 };
 
+/// Check whether `T` is an Edge with the given `EdgeProperties`s.
 template<typename T, typename... EdgeProperties>
-concept HasEdgeProperties = requires(T a)
-{
-    requires IsEdge<T>;
-    requires std::is_same_v<typename T::EdgePropertiesTypes, std::tuple<std::decay_t<EdgeProperties>...>>;
-};
+concept HasEdgeProperties = IsEdge<T> && std::is_same_v<typename T::EdgePropertiesTypes, std::tuple<std::decay_t<EdgeProperties>...>>;
 
 }
 

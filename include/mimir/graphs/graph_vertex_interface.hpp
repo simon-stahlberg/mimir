@@ -35,12 +35,9 @@ concept IsVertex = requires(T a)
         } -> std::convertible_to<VertexIndex>;
 };
 
+/// Check whether `T` is a vertex with the given `VertexProperties`s.
 template<typename T, typename... VertexProperties>
-concept HasVertexProperties = requires(T a)
-{
-    requires IsVertex<T>;
-    requires std::is_same_v<typename T::VertexPropertiesTypes, std::tuple<std::decay_t<VertexProperties>...>>;
-};
+concept HasVertexProperties = IsVertex<T> && std::is_same_v<typename T::VertexPropertiesTypes, std::tuple<std::decay_t<VertexProperties>...>>;
 
 }
 
