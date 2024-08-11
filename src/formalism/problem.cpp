@@ -149,19 +149,19 @@ bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) c
 
 size_t ProblemImpl::hash_impl() const
 {
-    size_t optimization_hash = (m_optimization_metric.has_value()) ? mimir::hash_combine(m_optimization_metric) : 0;
-    return mimir::hash_combine(m_domain,
-                               m_name,
-                               m_requirements,
-                               m_objects,
-                               m_derived_predicates,
-                               m_static_initial_literals,
-                               m_fluent_initial_literals,
-                               m_static_goal_condition,
-                               m_fluent_goal_condition,
-                               m_derived_goal_condition,
-                               optimization_hash,
-                               m_axioms);
+    size_t optimization_hash = (m_optimization_metric.has_value()) ? HashCombiner()(m_optimization_metric) : 0;
+    return HashCombiner()(m_domain,
+                          m_name,
+                          m_requirements,
+                          m_objects,
+                          m_derived_predicates,
+                          m_static_initial_literals,
+                          m_fluent_initial_literals,
+                          m_static_goal_condition,
+                          m_fluent_goal_condition,
+                          m_derived_goal_condition,
+                          optimization_hash,
+                          m_axioms);
 }
 
 void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

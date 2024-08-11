@@ -106,15 +106,15 @@ bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) con
 
 size_t ActionImpl::hash_impl() const
 {
-    return mimir::hash_combine(m_name,
-                               m_parameters,
-                               m_static_conditions,
-                               m_fluent_conditions,
-                               m_derived_conditions,
-                               m_simple_effects,
-                               m_conditional_effects,
-                               m_universal_effects,
-                               m_function_expression);
+    return HashCombiner()(m_name,
+                          m_parameters,
+                          m_static_conditions,
+                          m_fluent_conditions,
+                          m_derived_conditions,
+                          m_simple_effects,
+                          m_conditional_effects,
+                          m_universal_effects,
+                          m_function_expression);
 }
 
 void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { return str(out, options, true); }

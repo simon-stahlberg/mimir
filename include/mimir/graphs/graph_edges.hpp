@@ -25,7 +25,8 @@
 namespace mimir
 {
 
-/// @brief `Edge` implements a directed edge with additional `EdgeProperties`
+/// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
+/// See examples on how to define edges below.
 /// @tparam Tag is an empty struct used for dispatching.
 /// @tparam ...EdgeProperties are additional edge properties.
 template<typename Tag, typename... EdgeProperties>
@@ -57,7 +58,7 @@ public:
 
     size_t hash() const
     {
-        size_t seed = hash_combine(m_index, m_source, m_target);
+        size_t seed = HashCombiner()(m_index, m_source, m_target);
         apply_properties_hash(seed, std::make_index_sequence<sizeof...(EdgeProperties)> {});
         return seed;
     }
@@ -83,7 +84,7 @@ private:
     template<std::size_t... Is>
     void apply_properties_hash(size_t& seed, std::index_sequence<Is...>) const
     {
-        (..., mimir::hash_combine(seed, Hash<std::tuple_element_t<Is, std::tuple<EdgeProperties...>>>()(get_property<Is>())));
+        (..., HashCombiner()(seed, Hash<std::tuple_element_t<Is, std::tuple<EdgeProperties...>>>()(get_property<Is>())));
     }
 };
 
@@ -95,6 +96,7 @@ struct EmptyEdgeTag
 {
 };
 
+/// @brief `EmptyEdge` has name tag `EmptyEdgeTag` and is an edge without `EdgeProperties`.
 using EmptyEdge = Edge<EmptyEdgeTag>;
 
 /**
@@ -105,6 +107,8 @@ struct ColoredEdgeTag
 {
 };
 
+/// @brief `ColoredEdge` has name tag `ColoredEdgeTag` and is an edge with a color `EdgeProperties`.
+/// For readability of code that uses a `ColoredEdge`, we provide a free function get_color to access the color of a given edge.
 using ColoredEdge = Edge<ColoredEdgeTag, Color>;
 
 /// @brief Get the color of a colored edge.

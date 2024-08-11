@@ -18,6 +18,7 @@
 #include "mimir/datasets/global_faithful_abstraction.hpp"
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
+#include "mimir/common/equal_to.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/timers.hpp"
 
@@ -51,7 +52,7 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
     return true;
 }
 
-size_t GlobalFaithfulAbstractState::hash() const { return mimir::hash_combine(m_global_index); }
+size_t GlobalFaithfulAbstractState::hash() const { return HashCombiner()(m_global_index); }
 
 StateIndex GlobalFaithfulAbstractState::get_index() const { return m_index; }
 
@@ -120,8 +121,10 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
-    auto certificate_to_global_state =
-        std::unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, SharedPtrConstCertificateHash, SharedPtrConstCertificateEqualTo> {};
+    auto certificate_to_global_state = std::unordered_map<std::shared_ptr<const Certificate>,
+                                                          GlobalFaithfulAbstractState,
+                                                          Hash<std::shared_ptr<const Certificate>, true>,
+                                                          EqualTo<std::shared_ptr<const Certificate>, true>> {};
 
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();

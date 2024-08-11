@@ -33,32 +33,37 @@ namespace mimir
  * Forward declarations
  */
 
-template<typename T>
+template<typename T, bool Deref = false>
 struct Hash;
 
 /**
  * Hashing utilities
  */
 
-template<typename T>
-inline void hash_combine(size_t& seed, const T& val)
+template<bool Deref = false>
+struct HashCombiner
 {
-    seed ^= mimir::Hash<T>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
+public:
+    template<typename T>
+    void operator()(size_t& seed, const T& value) const
+    {
+        seed ^= mimir::Hash<T, Deref>()(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+    }
 
-template<>
-inline void hash_combine(size_t& seed, const std::size_t& val)
-{
-    seed ^= val + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-}
+    void operator()(size_t& seed, const std::size_t& value) const { seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2); }
 
-template<typename... Types>
-inline size_t hash_combine(const Types&... args)
-{
-    size_t seed = 0;
-    (mimir::hash_combine(seed, args), ...);
-    return seed;
-}
+    template<typename... Types>
+    size_t operator()(const Types&... args) const
+    {
+        size_t seed = 0;
+        ((*this)(seed, args), ...);
+        return seed;
+    }
+};
+
+/**
+ * Hasher
+ */
 
 template<typename T>
 concept HasHashMemberFunction = requires(T a)
@@ -68,20 +73,26 @@ concept HasHashMemberFunction = requires(T a)
         } -> std::same_as<size_t>;
 };
 
-/**
- * Hasher
- */
-
 /// @brief `Hash` implements hashing of types T.
 /// If a type T provides a function hash() that returns a size_t then use it.
 /// Otherwise, fallback to using std::hash instead.
 /// @tparam T
-template<typename T>
+/// @tparam Deref
+template<typename T, bool Deref>
 struct Hash
 {
     size_t operator()(const T& element) const
     {
-        if constexpr (HasHashMemberFunction<T>)
+        if constexpr (Deref && IsDereferencable<T>)
+        {
+            if (!element)
+            {
+                throw std::logic_error("Hash<T, Deref>::operator(): Tried to illegally dereference an object.");
+            }
+            using DereferencedType = std::decay_t<decltype(*element)>;
+            return mimir::Hash<DereferencedType, Deref>()(*element);
+        }
+        else if constexpr (HasHashMemberFunction<T>)
         {
             return element.hash();
         }
@@ -93,29 +104,29 @@ struct Hash
 };
 
 /// Spezialization for std::ranges::forward_range.
-template<typename ForwardRange>
+template<typename ForwardRange, bool Deref>
 requires std::ranges::forward_range<ForwardRange>
-struct Hash<ForwardRange>
+struct Hash<ForwardRange, Deref>
 {
     size_t operator()(const ForwardRange& range) const
     {
         std::size_t aggregated_hash = 0;
         for (const auto& item : range)
         {
-            mimir::hash_combine(aggregated_hash, item);
+            mimir::HashCombiner<Deref>()(aggregated_hash, item);
         }
         return aggregated_hash;
     }
 };
 
 /// Spezialization for std::variant.
-template<typename Variant>
+template<typename Variant, bool Deref>
 requires IsVariant<Variant>
-struct Hash<Variant>
+struct Hash<Variant, Deref>
 {
     size_t operator()(const Variant& variant) const
     {
-        return std::visit([](const auto& arg) { return Hash<std::decay_t<decltype(arg)>>()(arg); }, variant);
+        return std::visit([](const auto& arg) { return Hash<std::decay_t<decltype(arg)>, Deref>()(arg); }, variant);
     }
 };
 

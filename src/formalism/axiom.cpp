@@ -63,7 +63,7 @@ bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
     return true;
 }
 
-size_t AxiomImpl::hash_impl() const { return mimir::hash_combine(m_literal, m_static_conditions, m_fluent_conditions, m_derived_conditions); }
+size_t AxiomImpl::hash_impl() const { return HashCombiner()(m_literal, m_static_conditions, m_fluent_conditions, m_derived_conditions); }
 
 void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

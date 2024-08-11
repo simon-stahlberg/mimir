@@ -45,7 +45,7 @@ size_t FlatActionHash::operator()(FlatAction view) const
 {
     const auto action = view.get<2>();
     const auto objects = view.get<3>();
-    return mimir::hash_combine(action, objects.hash());
+    return HashCombiner()(action, objects.hash());
 }
 
 bool FlatActionEqual::operator()(FlatAction view_left, FlatAction view_right) const
@@ -383,7 +383,7 @@ FlatConditionalEffectsBuilder& GroundActionBuilder::get_conditional_effects() { 
 
 GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
-size_t GroundAction::hash() const { return mimir::hash_combine(m_view.buffer()); }
+size_t GroundAction::hash() const { return HashCombiner()(m_view.buffer()); }
 
 GroundActionIndex GroundAction::get_index() const { return m_view.get<0>(); }
 

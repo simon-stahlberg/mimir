@@ -42,7 +42,7 @@ bool OptimizationMetricImpl::is_structurally_equivalent_to_impl(const Optimizati
     return true;
 }
 
-size_t OptimizationMetricImpl::hash_impl() const { return mimir::hash_combine(m_optimization_metric, m_function_expression); }
+size_t OptimizationMetricImpl::hash_impl() const { return HashCombiner()(m_optimization_metric, m_function_expression); }
 
 void OptimizationMetricImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

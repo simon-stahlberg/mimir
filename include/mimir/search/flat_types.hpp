@@ -58,13 +58,6 @@ using FlatObjectListLayout = flatmemory::Vector<Object>;
 using FlatObjectListBuilder = flatmemory::Builder<FlatObjectListLayout>;
 using FlatObjectList = flatmemory::ConstView<FlatObjectListLayout>;
 
-/* DoubleList */
-
-using FlatDoubleListLayout = flatmemory::Vector<double>;
-using FlatDoubleListBuilder = flatmemory::Builder<FlatDoubleListLayout>;
-using FlatDoubleList = flatmemory::View<FlatDoubleListLayout>;
-using FlatConstDoubleList = flatmemory::ConstView<FlatDoubleListLayout>;
-
 /* IndexList */
 
 using FlatIndexListLayout = flatmemory::Vector<uint32_t>;

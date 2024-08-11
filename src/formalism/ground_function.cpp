@@ -39,7 +39,7 @@ bool GroundFunctionImpl::is_structurally_equivalent_to_impl(const GroundFunction
     return true;
 }
 
-size_t GroundFunctionImpl::hash_impl() const { return mimir::hash_combine(m_function_skeleton, m_objects); }
+size_t GroundFunctionImpl::hash_impl() const { return HashCombiner()(m_function_skeleton, m_objects); }
 
 void GroundFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
 {

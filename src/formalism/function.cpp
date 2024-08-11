@@ -39,7 +39,7 @@ bool FunctionImpl::is_structurally_equivalent_to_impl(const FunctionImpl& other)
     return true;
 }
 
-size_t FunctionImpl::hash_impl() const { return mimir::hash_combine(m_function_skeleton, m_terms); }
+size_t FunctionImpl::hash_impl() const { return HashCombiner()(m_function_skeleton, m_terms); }
 
 void FunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {

@@ -151,7 +151,7 @@ static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_component
         g.add_vertex();
     }
     using StatePair = std::pair<size_t, size_t>;
-    const auto state_pair_hash = [](const auto& pair) { return mimir::hash_combine(pair.first, pair.second); };
+    const auto state_pair_hash = [](const auto& pair) { return HashCombiner()(pair.first, pair.second); };
     std::unordered_set<StatePair, decltype(state_pair_hash)> edges;
     for (const auto& t : state_space.get_graph().get_edges())
     {

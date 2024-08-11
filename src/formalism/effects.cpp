@@ -45,7 +45,7 @@ bool EffectSimpleImpl::is_structurally_equivalent_to_impl(const EffectSimpleImpl
     }
     return true;
 }
-size_t EffectSimpleImpl::hash_impl() const { return mimir::hash_combine(m_effect); }
+size_t EffectSimpleImpl::hash_impl() const { return HashCombiner()(m_effect); }
 
 void EffectSimpleImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << *m_effect; }
 
@@ -85,7 +85,7 @@ bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectCondi
     }
     return true;
 }
-size_t EffectConditionalImpl::hash_impl() const { return mimir::hash_combine(m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect); }
+size_t EffectConditionalImpl::hash_impl() const { return HashCombiner()(m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect); }
 
 void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -176,7 +176,7 @@ bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUnivers
 }
 size_t EffectUniversalImpl::hash_impl() const
 {
-    return mimir::hash_combine(m_quantified_variables, m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect);
+    return HashCombiner()(m_quantified_variables, m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect);
 }
 
 void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

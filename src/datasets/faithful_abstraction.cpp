@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/algorithms/nauty.hpp"
+#include "mimir/common/equal_to.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 
@@ -113,8 +114,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     auto concrete_to_abstract_state = StateMap<StateIndex> {};
-    auto abstract_states_by_certificate =
-        std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, SharedPtrConstCertificateHash, SharedPtrConstCertificateEqualTo> {};
+    auto abstract_states_by_certificate = std::unordered_map<std::shared_ptr<const Certificate>,
+                                                             StateIndex,
+                                                             Hash<std::shared_ptr<const Certificate>, true>,
+                                                             EqualTo<std::shared_ptr<const Certificate>, true>> {};
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);

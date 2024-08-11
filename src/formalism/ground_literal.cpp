@@ -44,7 +44,7 @@ bool GroundLiteralImpl<P>::is_structurally_equivalent_to_impl(const GroundLitera
 template<PredicateCategory P>
 size_t GroundLiteralImpl<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_is_negated, m_atom);
+    return HashCombiner()(m_is_negated, m_atom);
 }
 
 template<PredicateCategory P>

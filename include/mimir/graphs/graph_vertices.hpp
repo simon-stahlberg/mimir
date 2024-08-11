@@ -27,7 +27,8 @@
 namespace mimir
 {
 
-/// @brief `Vertex` implements a vertex with additional `VertexProperties`
+/// @brief `Vertex` implements a vertex with additional `VertexProperties`.
+/// See examples on how to define vertices below.
 /// @tparam Tag is an empty struct used for dispatching.
 /// @tparam ...VertexProperties are additional vertex properties.
 template<typename Tag, typename... VertexProperties>
@@ -52,7 +53,7 @@ public:
     size_t hash() const
     {
         size_t seed = 0;
-        mimir::hash_combine(seed, m_index);
+        HashCombiner()(seed, m_index);
         apply_properties_hash(seed, std::make_index_sequence<sizeof...(VertexProperties)> {});
         return seed;
     }
@@ -72,7 +73,7 @@ private:
     template<std::size_t... Is>
     void apply_properties_hash(size_t& seed, std::index_sequence<Is...>) const
     {
-        (..., mimir::hash_combine(seed, Hash<std::tuple_element_t<Is, std::tuple<VertexProperties...>>>()(get_property<Is>())));
+        (..., HashCombiner()(seed, Hash<std::tuple_element_t<Is, std::tuple<VertexProperties...>>>()(get_property<Is>())));
     }
 };
 
@@ -84,6 +85,7 @@ struct EmptyVertexTag
 {
 };
 
+/// @brief `EmptyVertex` has name tag `EmptyVertexTag` and is a vertex without `VertexProperties`.
 using EmptyVertex = Vertex<EmptyVertexTag>;
 
 /**
@@ -94,6 +96,8 @@ struct ColoredVertexTag
 {
 };
 
+/// @brief `ColoredVertex` has name tag `ColoredVertexTag` and is a vertex with a color `VertexProperties`.
+/// For readability of code that uses a `ColoredVertex`, we provide a free function get_color to access the color of a given vertex.
 using ColoredVertex = Vertex<ColoredVertexTag, Color>;
 
 /// @brief Get the color of a colored vertex.

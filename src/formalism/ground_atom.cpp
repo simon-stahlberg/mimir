@@ -44,7 +44,7 @@ bool GroundAtomImpl<P>::is_structurally_equivalent_to_impl(const GroundAtomImpl<
 template<PredicateCategory P>
 size_t GroundAtomImpl<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_predicate, m_objects);
+    return HashCombiner()(m_predicate, m_objects);
 }
 
 template<PredicateCategory P>

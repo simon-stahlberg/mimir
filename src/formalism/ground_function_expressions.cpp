@@ -67,7 +67,7 @@ bool GroundFunctionExpressionBinaryOperatorImpl::is_structurally_equivalent_to_i
 
 size_t GroundFunctionExpressionBinaryOperatorImpl::hash_impl() const
 {
-    return mimir::hash_combine(m_binary_operator, m_left_function_expression, m_right_function_expression);
+    return HashCombiner()(m_binary_operator, m_left_function_expression, m_right_function_expression);
 }
 
 void GroundFunctionExpressionBinaryOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
@@ -113,7 +113,7 @@ bool GroundFunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_im
     return true;
 }
 
-size_t GroundFunctionExpressionMultiOperatorImpl::hash_impl() const { return mimir::hash_combine(m_multi_operator, m_function_expressions); }
+size_t GroundFunctionExpressionMultiOperatorImpl::hash_impl() const { return HashCombiner()(m_multi_operator, m_function_expressions); }
 
 void GroundFunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -147,7 +147,7 @@ bool GroundFunctionExpressionMinusImpl::is_structurally_equivalent_to_impl(const
     return true;
 }
 
-size_t GroundFunctionExpressionMinusImpl::hash_impl() const { return mimir::hash_combine(m_function_expression); }
+size_t GroundFunctionExpressionMinusImpl::hash_impl() const { return HashCombiner()(m_function_expression); }
 
 void GroundFunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
 {
@@ -174,7 +174,7 @@ bool GroundFunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(co
     return true;
 }
 
-size_t GroundFunctionExpressionFunctionImpl::hash_impl() const { return mimir::hash_combine(m_function); }
+size_t GroundFunctionExpressionFunctionImpl::hash_impl() const { return HashCombiner()(m_function); }
 
 void GroundFunctionExpressionFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_function->str(out, options); }
 

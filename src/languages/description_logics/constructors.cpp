@@ -55,7 +55,7 @@ bool ConceptPredicateState<P>::is_equal_impl(const Constructor<Concept>& other) 
 template<PredicateCategory P>
 size_t ConceptPredicateState<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_predicate);
+    return HashCombiner()(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -140,7 +140,7 @@ bool ConceptPredicateGoal<P>::is_equal_impl(const Constructor<Concept>& other) c
 template<PredicateCategory P>
 size_t ConceptPredicateGoal<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_predicate);
+    return HashCombiner()(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -212,7 +212,7 @@ bool ConceptAnd::is_equal_impl(const Constructor<Concept>& other) const
     return (*this == otherDerived);
 }
 
-size_t ConceptAnd::hash_impl() const { return mimir::hash_combine(&m_concept_left, &m_concept_right); }
+size_t ConceptAnd::hash_impl() const { return HashCombiner()(&m_concept_left, &m_concept_right); }
 
 void ConceptAnd::evaluate_impl(EvaluationContext& context) const
 {
@@ -270,7 +270,7 @@ bool RolePredicateState<P>::is_equal_impl(const Constructor<Role>& other) const
 template<PredicateCategory P>
 size_t RolePredicateState<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_predicate);
+    return HashCombiner()(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -364,7 +364,7 @@ bool RolePredicateGoal<P>::is_equal_impl(const Constructor<Role>& other) const
 template<PredicateCategory P>
 size_t RolePredicateGoal<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_predicate);
+    return HashCombiner()(m_predicate);
 }
 
 template<PredicateCategory P>
@@ -441,7 +441,7 @@ bool RoleAnd::is_equal_impl(const Constructor<Role>& other) const
     return (*this == otherDerived);
 }
 
-size_t RoleAnd::hash_impl() const { return mimir::hash_combine(&m_role_left, &m_role_right); }
+size_t RoleAnd::hash_impl() const { return HashCombiner()(&m_role_left, &m_role_right); }
 
 void RoleAnd::evaluate_impl(EvaluationContext& context) const
 {

@@ -25,7 +25,7 @@ namespace mimir::dl
 template<IsConceptOrRole D>
 size_t DenotationRepository<D>::KeyHash::operator()(const Key& key) const
 {
-    return mimir::hash_combine(key.constructor_identifier, key.state_identifier);
+    return HashCombiner()(key.constructor_identifier, key.state_identifier);
 }
 
 template<IsConceptOrRole D>

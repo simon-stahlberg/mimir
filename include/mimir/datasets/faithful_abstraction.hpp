@@ -82,19 +82,6 @@ inline State get_representative_state(const FaithfulAbstractState& state)
 
 inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractState& state) { return state.get_property<1>(); }
 
-/**
- * Dedicated Hash and EqualTo structs to avoid accidentally using std::hash for shared_ptr.
- */
-struct SharedPtrConstCertificateHash
-{
-    std::size_t operator()(const std::shared_ptr<const Certificate>& ptr) const { return ptr->hash(); }
-};
-
-struct SharedPtrConstCertificateEqualTo
-{
-    bool operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const { return *lhs == *rhs; }
-};
-
 /// @brief `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
 ///

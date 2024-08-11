@@ -44,7 +44,7 @@ size_t FlatAxiomHash::operator()(const FlatAxiom& view) const
 {
     const auto axiom = view.get<1>();
     const auto objects = view.get<2>();
-    return mimir::hash_combine(axiom, objects.hash());
+    return HashCombiner()(axiom, objects.hash());
 }
 
 /* FlatAxiomEqual */
@@ -80,7 +80,7 @@ FlatDerivedEffect& GroundAxiomBuilder::get_derived_effect() { return m_builder.g
 
 GroundAxiom::GroundAxiom(FlatAxiom view) : m_view(view) {}
 
-size_t GroundAxiom::hash() const { return mimir::hash_combine(m_view.buffer()); }
+size_t GroundAxiom::hash() const { return HashCombiner()(m_view.buffer()); }
 
 GroundAxiomIndex GroundAxiom::get_index() const { return m_view.get<0>(); }
 

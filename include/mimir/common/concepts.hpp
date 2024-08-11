@@ -20,6 +20,7 @@
 
 #include <concepts>
 #include <cstddef>
+#include <memory>
 #include <ranges>
 #include <type_traits>
 #include <variant>
@@ -59,6 +60,19 @@ concept IsVariant = is_variant<T>::value;
 
 static_assert(IsVariant<std::variant<int, float>>);
 static_assert(!IsVariant<int>);
+
+template<typename T>
+concept IsDereferencable = requires(T a)
+{
+    // Check that the type supports dereferencing
+    { *a };
+    // Check that the type can be converted to bool
+    { static_cast<bool>(a) };
+};
+
+static_assert(IsDereferencable<std::shared_ptr<int>>);
+static_assert(IsDereferencable<int*>);
+static_assert(!IsDereferencable<int>);
 
 }
 

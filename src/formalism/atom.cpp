@@ -44,7 +44,7 @@ bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) cons
 template<PredicateCategory P>
 size_t AtomImpl<P>::hash_impl() const
 {
-    return mimir::hash_combine(m_predicate, m_terms);
+    return HashCombiner()(m_predicate, m_terms);
 }
 
 template<PredicateCategory P>

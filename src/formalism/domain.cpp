@@ -110,15 +110,15 @@ bool DomainImpl::is_structurally_equivalent_to_impl(const DomainImpl& other) con
 
 size_t DomainImpl::hash_impl() const
 {
-    return mimir::hash_combine(m_name,
-                               m_requirements,
-                               m_constants,
-                               m_static_predicates,
-                               m_fluent_predicates,
-                               m_derived_predicates,
-                               m_functions,
-                               m_actions,
-                               m_axioms);
+    return HashCombiner()(m_name,
+                          m_requirements,
+                          m_constants,
+                          m_static_predicates,
+                          m_fluent_predicates,
+                          m_derived_predicates,
+                          m_functions,
+                          m_actions,
+                          m_axioms);
 }
 
 void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const

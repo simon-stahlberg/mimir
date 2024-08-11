@@ -18,6 +18,9 @@
 #ifndef MIMIR_COMMON_EQUAL_TO_HPP_
 #define MIMIR_COMMON_EQUAL_TO_HPP_
 
+#include "mimir/common/concepts.hpp"
+
+#include <functional>
 #include <span>
 
 namespace mimir
@@ -33,6 +36,27 @@ bool operator==(const std::span<T>& lhs, const std::span<T>& rhs)
 {
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
+
+template<typename T, bool Deref = false>
+struct EqualTo
+{
+    bool operator()(const T& l, const T& r) const
+    {
+        if constexpr (Deref && IsDereferencable<T>)
+        {
+            if (!(l && r))
+            {
+                throw std::logic_error("EqualTo<T, Deref>::operator(): Tried to illegally dereference an object.");
+            }
+            using DereferencedType = std::decay_t<decltype(*l)>;
+            return mimir::EqualTo<DereferencedType, Deref>()(*l, *r);
+        }
+        else
+        {
+            return std::equal_to<T>()(l, r);
+        }
+    }
+};
 
 }
 
