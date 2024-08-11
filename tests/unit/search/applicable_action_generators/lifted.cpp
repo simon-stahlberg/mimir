@@ -25,7 +25,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchAAGsDenseLiftedTest)
+TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
@@ -41,16 +41,16 @@ TEST(MimirTests, SearchAAGsDenseLiftedTest)
 
     const auto& aag_statistics = aag_event_handler->get_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 84);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 95);
     EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 377);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
 
 }

@@ -848,8 +848,8 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
 
 TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFullAdlTest)
@@ -862,16 +862,16 @@ TEST(MimirTests, SearchAlgorithmsBrFSLiftedMiconicFullAdlTest)
 
     const auto& aag_statistics = brfs.get_aag_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 84);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 95);
     EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 377);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
     EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
 
 /**

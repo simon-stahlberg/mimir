@@ -25,7 +25,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchAAGsDenseGroundedTest)
+TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
@@ -53,8 +53,8 @@ TEST(MimirTests, SearchAAGsDenseGroundedTest)
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 
-    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 94);
-    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 36);
+    EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);
+    EXPECT_EQ(brfs_statistics.get_num_expanded_until_g_value().back(), 41);
 }
 
 }

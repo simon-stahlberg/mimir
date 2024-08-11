@@ -69,10 +69,27 @@ ActionImpl::ActionImpl(int identifier,
     std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
     std::sort(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    // Sort negative conditional effects to the beginning to process them first, additionally sort then by identifier.
     std::sort(m_conditional_effects.begin(),
               m_conditional_effects.end(),
-              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_universal_effects.begin(), m_universal_effects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+              [](const auto& l, const auto& r)
+              {
+                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+                  {
+                      return l->get_identifier() < r->get_identifier();
+                  }
+                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+              });
+    std::sort(m_universal_effects.begin(),
+              m_universal_effects.end(),
+              [](const auto& l, const auto& r)
+              {
+                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+                  {
+                      return l->get_identifier() < r->get_identifier();
+                  }
+                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+              });
 }
 
 bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
