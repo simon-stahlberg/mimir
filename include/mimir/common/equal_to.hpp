@@ -37,7 +37,23 @@ bool operator==(const std::span<T>& lhs, const std::span<T>& rhs)
     return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
-template<typename T, bool Deref = false>
+template<typename T>
+concept IsShallowComparable = requires(T a)
+{
+    {
+        a.is_equal_shallow(a)
+        } -> std::same_as<size_t>;
+};
+
+template<typename T>
+concept IsDeepComparable = requires(T a)
+{
+    {
+        a.is_equal_deep(a)
+        } -> std::same_as<size_t>;
+};
+
+template<typename T, bool Deref = false, bool Deep = false>
 struct EqualTo
 {
     bool operator()(const T& l, const T& r) const
@@ -46,10 +62,18 @@ struct EqualTo
         {
             if (!(l && r))
             {
-                throw std::logic_error("EqualTo<T, Deref>::operator(): Tried to illegally dereference an object.");
+                throw std::logic_error("EqualTo<T, Deref>::operator(): Tried to dereference a nullptr.");
             }
             using DereferencedType = std::decay_t<decltype(*l)>;
             return mimir::EqualTo<DereferencedType, Deref>()(*l, *r);
+        }
+        else if constexpr (Deep && IsDeepComparable<T>)
+        {
+            return l.is_equal_deep(r);
+        }
+        else if constexpr (!Deep && IsShallowComparable<T>)
+        {
+            return l.is_equal_shallow(r);
         }
         else
         {

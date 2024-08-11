@@ -15,16 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/state_repository.hpp"
+
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
 
 namespace mimir::tests
 {
 
-TEST(MimirTests, SearchSuccessorStateGeneratorTest)
+TEST(MimirTests, SearchStateRepositoryTest)
 {
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
