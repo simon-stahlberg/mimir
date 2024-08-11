@@ -67,7 +67,7 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            bitset.set(atom->get_objects().at(0)->get_identifier());
+            bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
@@ -80,7 +80,7 @@ void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) co
     {
         if (atom->get_predicate() == m_predicate)
         {
-            bitset.set(atom->get_identifier());
+            bitset.set(atom->get_index());
         }
     }
 }
@@ -155,7 +155,7 @@ void ConceptPredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            bitset.set(atom->get_objects().at(0)->get_identifier());
+            bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
@@ -284,8 +284,8 @@ void RolePredicateState<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
-            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
+            const auto object_left_id = atom->get_objects().at(0)->get_index();
+            const auto object_right_id = atom->get_objects().at(1)->get_index();
             bitsets.at(object_left_id).set(object_right_id);
         }
     }
@@ -302,8 +302,8 @@ void RolePredicateState<Static>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
-            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
+            const auto object_left_id = atom->get_objects().at(0)->get_index();
+            const auto object_right_id = atom->get_objects().at(1)->get_index();
             bitsets.at(object_left_id).set(object_right_id);
         }
     }
@@ -382,8 +382,8 @@ void RolePredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0)->get_identifier();
-            const auto object_right_id = atom->get_objects().at(1)->get_identifier();
+            const auto object_left_id = atom->get_objects().at(0)->get_index();
+            const auto object_right_id = atom->get_objects().at(1)->get_index();
             bitsets.at(object_left_id).set(object_right_id);
         }
     }

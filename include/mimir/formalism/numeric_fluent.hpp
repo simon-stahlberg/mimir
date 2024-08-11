@@ -30,10 +30,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    NumericFluentImpl(int identifier, GroundFunction function, double number);
+    NumericFluentImpl(size_t index, GroundFunction function, double number);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<NumericFluentImpl, loki::Hash<NumericFluentImpl*>, loki::EqualTo<NumericFluentImpl*>>;
+    friend class loki::UniqueValueTypeFactory<NumericFluentImpl, loki::Hash<const NumericFluentImpl*, true>, loki::EqualTo<const NumericFluentImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const;

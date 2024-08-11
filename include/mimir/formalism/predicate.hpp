@@ -41,10 +41,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    PredicateImpl(int identifier, std::string name, VariableList parameters);
+    PredicateImpl(size_t index, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<PredicateImpl<P>, loki::Hash<PredicateImpl<P>*>, loki::EqualTo<PredicateImpl<P>*>>;
+    friend class loki::UniqueValueTypeFactory<PredicateImpl<P>, loki::Hash<const PredicateImpl<P>*, true>, loki::EqualTo<const PredicateImpl<P>*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const PredicateImpl<P>& other) const;

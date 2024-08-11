@@ -48,7 +48,7 @@ ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(size_t 
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object) const
 {
     const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
-    return pruned_objects.get(object->get_identifier());
+    return pruned_objects.get(object->get_index());
 }
 
 template<PredicateCategory P>
@@ -61,7 +61,7 @@ static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPrun
     const auto& pruned_objects = pruning_components.at(component_map.at(state)).m_pruned_objects;
     for (const auto& object : atom->get_objects())
     {
-        if (pruned_objects.get(object->get_identifier()))
+        if (pruned_objects.get(object->get_index()))
         {
             return true;
         }
@@ -90,7 +90,7 @@ static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPrun
                   StateIndex state,
                   GroundLiteral<P> literal)
 {
-    return pruning_components.at(component_map.at(state)).get_pruned_goal_literals<P>().get(literal->get_identifier());
+    return pruning_components.at(component_map.at(state)).get_pruned_goal_literals<P>().get(literal->get_index());
 }
 
 bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Static> literal) const
@@ -174,19 +174,19 @@ void mark_objects_as_not_prunable(const GroundLiteralList<P>& goal_condition,
 {
     for (const auto& literal : goal_condition)
     {
-        if ((!literal->is_negated() && !always_true_state_atoms.get(literal->get_atom()->get_identifier()))
-            || (literal->is_negated() && !always_false_state_atoms.get(literal->get_atom()->get_identifier())))
+        if ((!literal->is_negated() && !always_true_state_atoms.get(literal->get_atom()->get_index()))
+            || (literal->is_negated() && !always_false_state_atoms.get(literal->get_atom()->get_index())))
         {
             // literal not always satisfied or unsatisfied
             for (const auto& object : literal->get_atom()->get_objects())
             {
-                ref_pruned_objects.unset(object->get_identifier());
+                ref_pruned_objects.unset(object->get_index());
             }
         }
-        if (!literal->is_negated() && always_true_state_atoms.get(literal->get_atom()->get_identifier()))
+        if (!literal->is_negated() && always_true_state_atoms.get(literal->get_atom()->get_index()))
         {
             // literal always satisfied
-            ref_pruned_goal_literals.set(literal->get_identifier());
+            ref_pruned_goal_literals.set(literal->get_index());
         }
     }
 }
@@ -198,7 +198,7 @@ void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitsetBuil
     {
         for (const auto& object : atom->get_objects())
         {
-            ref_pruned_objects.unset(object->get_identifier());
+            ref_pruned_objects.unset(object->get_index());
         }
     }
 }
@@ -272,7 +272,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         auto pruned_objects = FlatBitsetBuilder<>();
         for (const auto& object : state_space->get_problem()->get_objects())
         {
-            pruned_objects.set(object->get_identifier());
+            pruned_objects.set(object->get_index());
         }
 
         /* 3. Do not prune objects that appear in unsatisfied goal literals.

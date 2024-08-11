@@ -35,7 +35,7 @@ namespace mimir
  * Type 1 effect
  */
 
-EffectSimpleImpl::EffectSimpleImpl(int identifier, Literal<Fluent> effect) : Base(identifier), m_effect(std::move(effect)) {}
+EffectSimpleImpl::EffectSimpleImpl(size_t index, Literal<Fluent> effect) : Base(index), m_effect(std::move(effect)) {}
 
 bool EffectSimpleImpl::is_structurally_equivalent_to_impl(const EffectSimpleImpl& other) const
 {
@@ -55,12 +55,12 @@ const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
  * Type 2 effect
  */
 
-EffectConditionalImpl::EffectConditionalImpl(int identifier,
+EffectConditionalImpl::EffectConditionalImpl(size_t index,
                                              LiteralList<Static> static_conditions,
                                              LiteralList<Fluent> fluent_conditions,
                                              LiteralList<Derived> derived_conditions,
                                              Literal<Fluent> effect) :
-    Base(identifier),
+    Base(index),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
@@ -71,9 +71,9 @@ EffectConditionalImpl::EffectConditionalImpl(int identifier,
     assert(is_all_unique(m_derived_conditions));
 
     /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
 bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectConditionalImpl& other) const
@@ -140,13 +140,13 @@ const Literal<Fluent>& EffectConditionalImpl::get_effect() const { return m_effe
  * Type 3 effect
  */
 
-EffectUniversalImpl::EffectUniversalImpl(int identifier,
+EffectUniversalImpl::EffectUniversalImpl(size_t index,
                                          VariableList quantified_variables,
                                          LiteralList<Static> static_conditions,
                                          LiteralList<Fluent> fluent_conditions,
                                          LiteralList<Derived> derived_conditions,
                                          Literal<Fluent> effect) :
-    Base(identifier),
+    Base(index),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
@@ -160,9 +160,9 @@ EffectUniversalImpl::EffectUniversalImpl(int identifier,
     assert(is_all_unique(m_derived_conditions));
 
     /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
 bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUniversalImpl& other) const

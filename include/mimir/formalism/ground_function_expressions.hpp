@@ -31,10 +31,12 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionNumberImpl(int identifier, double number);
+    GroundFunctionExpressionNumberImpl(size_t index, double number);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundFunctionExpressionImpl, loki::Hash<GroundFunctionExpressionImpl*>, loki::EqualTo<GroundFunctionExpressionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundFunctionExpressionImpl,
+                                              loki::Hash<const GroundFunctionExpressionImpl*, true>,
+                                              loki::EqualTo<const GroundFunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const GroundFunctionExpressionNumberImpl& other) const;
     size_t hash_impl() const;
@@ -57,13 +59,15 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionBinaryOperatorImpl(int identifier,
+    GroundFunctionExpressionBinaryOperatorImpl(size_t index,
                                                loki::BinaryOperatorEnum binary_operator,
                                                GroundFunctionExpression left_function_expression,
                                                GroundFunctionExpression right_function_expression);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundFunctionExpressionImpl, loki::Hash<GroundFunctionExpressionImpl*>, loki::EqualTo<GroundFunctionExpressionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundFunctionExpressionImpl,
+                                              loki::Hash<const GroundFunctionExpressionImpl*, true>,
+                                              loki::EqualTo<const GroundFunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const GroundFunctionExpressionBinaryOperatorImpl& other) const;
     size_t hash_impl() const;
@@ -87,10 +91,12 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionMultiOperatorImpl(int identifier, loki::MultiOperatorEnum multi_operator, GroundFunctionExpressionList function_expressions);
+    GroundFunctionExpressionMultiOperatorImpl(size_t index, loki::MultiOperatorEnum multi_operator, GroundFunctionExpressionList function_expressions);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundFunctionExpressionImpl, loki::Hash<GroundFunctionExpressionImpl*>, loki::EqualTo<GroundFunctionExpressionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundFunctionExpressionImpl,
+                                              loki::Hash<const GroundFunctionExpressionImpl*, true>,
+                                              loki::EqualTo<const GroundFunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const GroundFunctionExpressionMultiOperatorImpl& other) const;
     size_t hash_impl() const;
@@ -112,10 +118,12 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionMinusImpl(int identifier, GroundFunctionExpression function_expression);
+    GroundFunctionExpressionMinusImpl(size_t index, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundFunctionExpressionImpl, loki::Hash<GroundFunctionExpressionImpl*>, loki::EqualTo<GroundFunctionExpressionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundFunctionExpressionImpl,
+                                              loki::Hash<const GroundFunctionExpressionImpl*, true>,
+                                              loki::EqualTo<const GroundFunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const GroundFunctionExpressionMinusImpl& other) const;
     size_t hash_impl() const;
@@ -136,10 +144,12 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionFunctionImpl(int identifier, GroundFunction function);
+    GroundFunctionExpressionFunctionImpl(size_t index, GroundFunction function);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundFunctionExpressionImpl, loki::Hash<GroundFunctionExpressionImpl*>, loki::EqualTo<GroundFunctionExpressionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundFunctionExpressionImpl,
+                                              loki::Hash<const GroundFunctionExpressionImpl*, true>,
+                                              loki::EqualTo<const GroundFunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const GroundFunctionExpressionFunctionImpl& other) const;
     size_t hash_impl() const;

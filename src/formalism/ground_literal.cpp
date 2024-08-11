@@ -24,8 +24,8 @@
 namespace mimir
 {
 template<PredicateCategory P>
-GroundLiteralImpl<P>::GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom) :
-    loki::Base<GroundLiteralImpl<P>>(identifier),
+GroundLiteralImpl<P>::GroundLiteralImpl(size_t index, bool is_negated, GroundAtom<P> atom) :
+    loki::Base<GroundLiteralImpl<P>>(index),
     m_is_negated(is_negated),
     m_atom(std::move(atom))
 {

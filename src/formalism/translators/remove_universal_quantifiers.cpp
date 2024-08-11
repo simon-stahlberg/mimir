@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/translators/remove_universal_quantifiers.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 using namespace std::string_literals;

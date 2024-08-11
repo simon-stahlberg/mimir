@@ -31,7 +31,7 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
 
-    AxiomImpl(int identifier,
+    AxiomImpl(size_t index,
               VariableList parameters,
               Literal<Derived> literal,
               LiteralList<Static> static_conditions,
@@ -39,7 +39,7 @@ private:
               LiteralList<Derived> derived_conditions);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<AxiomImpl, loki::Hash<AxiomImpl*>, loki::EqualTo<AxiomImpl*>>;
+    friend class loki::UniqueValueTypeFactory<AxiomImpl, loki::Hash<const AxiomImpl*, true>, loki::EqualTo<const AxiomImpl*, true>>;
 
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const AxiomImpl& other) const;

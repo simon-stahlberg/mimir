@@ -21,7 +21,7 @@
 
 namespace mimir
 {
-ObjectImpl::ObjectImpl(int identifier, std::string name) : Base(identifier), m_name(std::move(name)) {}
+ObjectImpl::ObjectImpl(size_t index, std::string name) : Base(index), m_name(std::move(name)) {}
 
 bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const
 {

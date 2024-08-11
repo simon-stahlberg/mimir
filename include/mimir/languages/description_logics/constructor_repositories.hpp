@@ -18,6 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORY_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORY_HPP_
 
+#include "mimir/common/equal_to.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 
 #include <unordered_set>
@@ -33,7 +35,7 @@ private:
     // Persistent segmented storage of constructors to avoid frequent allocations.
     loki::SegmentedVector<T> m_persistent_vector;
 
-    std::unordered_set<const T*, loki::Hash<T*>, loki::EqualTo<T*>> m_uniqueness;
+    std::unordered_set<const T*, Hash<const T*, true>, EqualTo<const T*, true>> m_uniqueness;
 
 public:
     ConstructorRepository(size_t elements_per_segment) : m_persistent_vector(loki::SegmentedVector<T>(elements_per_segment)) {}

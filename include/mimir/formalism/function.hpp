@@ -30,10 +30,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionImpl(int identifier, FunctionSkeleton function_skeleton, TermList terms);
+    FunctionImpl(size_t index, FunctionSkeleton function_skeleton, TermList terms);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionImpl, loki::Hash<FunctionImpl*>, loki::EqualTo<FunctionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<FunctionImpl, loki::Hash<const FunctionImpl*, true>, loki::EqualTo<const FunctionImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const FunctionImpl& other) const;

@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-RequirementsImpl::RequirementsImpl(int identifier, loki::RequirementEnumSet requirements) : Base(identifier), m_requirements(std::move(requirements)) {}
+RequirementsImpl::RequirementsImpl(size_t index, loki::RequirementEnumSet requirements) : Base(index), m_requirements(std::move(requirements)) {}
 
 bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl& other) const
 {

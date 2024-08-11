@@ -32,7 +32,7 @@
 
 namespace mimir
 {
-ActionImpl::ActionImpl(int identifier,
+ActionImpl::ActionImpl(size_t index,
                        std::string name,
                        size_t original_arity,
                        VariableList parameters,
@@ -43,7 +43,7 @@ ActionImpl::ActionImpl(int identifier,
                        EffectConditionalList conditional_effects,
                        EffectUniversalList universal_effects,
                        FunctionExpression function_expression) :
-    Base(identifier),
+    Base(index),
     m_name(std::move(name)),
     m_original_arity(std::move(original_arity)),
     m_parameters(std::move(parameters)),
@@ -65,10 +65,10 @@ ActionImpl::ActionImpl(int identifier,
     assert(is_all_unique(m_universal_effects));
 
     /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     // Sort negative conditional effects to the beginning to process them first, additionally sort then by identifier.
     std::sort(m_conditional_effects.begin(),
               m_conditional_effects.end(),
@@ -76,7 +76,7 @@ ActionImpl::ActionImpl(int identifier,
               {
                   if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
                   {
-                      return l->get_identifier() < r->get_identifier();
+                      return l->get_index() < r->get_index();
                   }
                   return l->get_effect()->is_negated() > r->get_effect()->is_negated();
               });
@@ -86,7 +86,7 @@ ActionImpl::ActionImpl(int identifier,
               {
                   if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
                   {
-                      return l->get_identifier() < r->get_identifier();
+                      return l->get_index() < r->get_index();
                   }
                   return l->get_effect()->is_negated() > r->get_effect()->is_negated();
               });

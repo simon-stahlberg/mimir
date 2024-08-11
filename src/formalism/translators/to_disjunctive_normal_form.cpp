@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/translators/to_disjunctive_normal_form.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 namespace mimir

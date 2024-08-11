@@ -23,8 +23,8 @@
 
 namespace mimir
 {
-GroundFunctionImpl::GroundFunctionImpl(int identifier, FunctionSkeleton function_skeleton, ObjectList objects) :
-    Base(identifier),
+GroundFunctionImpl::GroundFunctionImpl(size_t index, FunctionSkeleton function_skeleton, ObjectList objects) :
+    Base(index),
     m_function_skeleton(std::move(function_skeleton)),
     m_objects(std::move(objects))
 {

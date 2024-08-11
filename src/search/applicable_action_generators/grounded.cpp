@@ -72,7 +72,7 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
         for (const auto& grounded_atom : sorted_group)
 
         {
-            ground_atoms_order.push_back(grounded_atom->get_identifier());
+            ground_atoms_order.push_back(grounded_atom->get_index());
         }
     }
     return ground_atoms_order;

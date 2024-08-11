@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/transformers/delete_relax.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 namespace mimir

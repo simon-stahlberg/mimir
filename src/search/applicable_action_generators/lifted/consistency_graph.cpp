@@ -48,7 +48,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
         for (const auto& object : m_problem->get_objects())
         {
-            const auto object_id = object->get_identifier();
+            const auto object_id = object->get_index();
             const auto vertex_id = VertexID { m_vertices.size() };
             auto vertex = Vertex(vertex_id, parameter_index, object_id);
 

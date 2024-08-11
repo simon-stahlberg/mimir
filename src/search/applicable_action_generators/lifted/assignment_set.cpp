@@ -48,7 +48,7 @@ size_t VertexAssignmentIterator::get_object_if_overlap(const Term& term)
 {
     if (const auto term_object = std::get_if<TermObjectImpl>(term))
     {
-        return term_object->get_object()->get_identifier();
+        return term_object->get_object()->get_index();
     }
 
     if (const auto term_variable = std::get_if<TermVariableImpl>(term))
@@ -119,7 +119,7 @@ size_t EdgeAssignmentIterator::get_object_if_overlap(const Term& term)
 {
     if (const auto term_object = std::get_if<TermObjectImpl>(term))
     {
-        return term_object->get_object()->get_identifier();
+        return term_object->get_object()->get_index();
     }
 
     if (const auto term_variable = std::get_if<TermVariableImpl>(term))

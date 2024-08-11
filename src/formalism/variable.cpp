@@ -21,12 +21,7 @@
 
 namespace mimir
 {
-VariableImpl::VariableImpl(int identifier, std::string name, size_t parameter_index) :
-    Base(identifier),
-    m_name(std::move(name)),
-    m_parameter_index(parameter_index)
-{
-}
+VariableImpl::VariableImpl(size_t index, std::string name, size_t parameter_index) : Base(index), m_name(std::move(name)), m_parameter_index(parameter_index) {}
 
 bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const
 {

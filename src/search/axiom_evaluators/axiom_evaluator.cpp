@@ -252,7 +252,7 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
             m_pddl_factories->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_derived_effect().is_negated = false;
-    m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_identifier();
+    m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_index();
 
     auto& flatmemory_builder = m_axiom_builder.get_flatmemory_builder();
     flatmemory_builder.finish();

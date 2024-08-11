@@ -34,10 +34,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundLiteralImpl(int identifier, bool is_negated, GroundAtom<P> atom);
+    GroundLiteralImpl(size_t index, bool is_negated, GroundAtom<P> atom);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundLiteralImpl, loki::Hash<GroundLiteralImpl*>, loki::EqualTo<GroundLiteralImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundLiteralImpl, loki::Hash<const GroundLiteralImpl*, true>, loki::EqualTo<const GroundLiteralImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const GroundLiteralImpl& other) const;

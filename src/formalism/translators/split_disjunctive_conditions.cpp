@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/translators/split_disjunctive_conditions.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 using namespace std::string_literals;

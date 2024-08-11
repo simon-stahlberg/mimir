@@ -28,10 +28,10 @@ private:
     FunctionSkeleton m_function_skeleton;
     ObjectList m_objects;
 
-    GroundFunctionImpl(int identifier, FunctionSkeleton function_skeleton, ObjectList objects);
+    GroundFunctionImpl(size_t index, FunctionSkeleton function_skeleton, ObjectList objects);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundFunctionImpl, loki::Hash<GroundFunctionImpl*>, loki::EqualTo<GroundFunctionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundFunctionImpl, loki::Hash<const GroundFunctionImpl*, true>, loki::EqualTo<const GroundFunctionImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const GroundFunctionImpl& other) const;

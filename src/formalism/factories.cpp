@@ -299,14 +299,14 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
 
 // Factory
 template<typename T>
-const loki::PDDLFactory<T>& PDDLFactories::get_factory() const
+const loki::UniqueValueTypeFactory<T>& PDDLFactories::get_factory() const
 {
     return m_factories.get<T>();
 }
 
-template const loki::PDDLFactory<GroundAtomImpl<Static>>& PDDLFactories::get_factory<GroundAtomImpl<Static>>() const;
-template const loki::PDDLFactory<GroundAtomImpl<Fluent>>& PDDLFactories::get_factory<GroundAtomImpl<Fluent>>() const;
-template const loki::PDDLFactory<GroundAtomImpl<Derived>>& PDDLFactories::get_factory<GroundAtomImpl<Derived>>() const;
+template const loki::UniqueValueTypeFactory<GroundAtomImpl<Static>>& PDDLFactories::get_factory<GroundAtomImpl<Static>>() const;
+template const loki::UniqueValueTypeFactory<GroundAtomImpl<Fluent>>& PDDLFactories::get_factory<GroundAtomImpl<Fluent>>() const;
+template const loki::UniqueValueTypeFactory<GroundAtomImpl<Derived>>& PDDLFactories::get_factory<GroundAtomImpl<Derived>>() const;
 
 // GroundAtom
 template<PredicateCategory P>
@@ -354,7 +354,7 @@ GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const O
     auto& grounding_tables = m_grounding_tables.get<GroundLiteral<P>>();
 
     /* 2. Access the literal specific grounding table */
-    const auto literal_id = literal->get_identifier();
+    const auto literal_id = literal->get_index();
     if (literal_id >= grounding_tables.size())
     {
         grounding_tables.resize(literal_id + 1);
@@ -397,11 +397,11 @@ void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<P>>& litera
 
         if (grounded_literal->is_negated())
         {
-            ref_negative_bitset.set(grounded_literal->get_atom()->get_identifier());
+            ref_negative_bitset.set(grounded_literal->get_atom()->get_index());
         }
         else
         {
-            ref_positive_bitset.set(grounded_literal->get_atom()->get_identifier());
+            ref_positive_bitset.set(grounded_literal->get_atom()->get_index());
         }
     }
 }
@@ -431,11 +431,11 @@ void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& litera
 
         if (grounded_literal->is_negated())
         {
-            ref_negative_indices.push_back(grounded_literal->get_atom()->get_identifier());
+            ref_negative_indices.push_back(grounded_literal->get_atom()->get_index());
         }
         else
         {
-            ref_positive_indices.push_back(grounded_literal->get_atom()->get_identifier());
+            ref_positive_indices.push_back(grounded_literal->get_atom()->get_index());
         }
     }
     std::sort(ref_positive_indices.begin(), ref_positive_indices.end());

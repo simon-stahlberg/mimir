@@ -41,7 +41,7 @@ private:
     ToPredicateMap<std::string, Fluent> m_name_to_fluent_predicate;
     ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
 
-    DomainImpl(int identifier,
+    DomainImpl(size_t index,
                std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
@@ -54,7 +54,7 @@ private:
                AxiomList axioms);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<DomainImpl, loki::Hash<DomainImpl*>, loki::EqualTo<DomainImpl*>>;
+    friend class loki::UniqueValueTypeFactory<DomainImpl, loki::Hash<const DomainImpl*, true>, loki::EqualTo<const DomainImpl*, true>>;
 
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const DomainImpl& other) const;

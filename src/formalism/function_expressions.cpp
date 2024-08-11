@@ -26,7 +26,7 @@
 namespace mimir
 {
 /* FunctionExpressionNumber */
-FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(int identifier, double number) : Base(identifier), m_number(number) {}
+FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(size_t index, double number) : Base(index), m_number(number) {}
 
 bool FunctionExpressionNumberImpl::is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const
 {
@@ -44,11 +44,11 @@ void FunctionExpressionNumberImpl::str_impl(std::ostream& out, const loki::Forma
 double FunctionExpressionNumberImpl::get_number() const { return m_number; }
 
 /* FunctionExpressionBinaryOperator */
-FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(int identifier,
+FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(size_t index,
                                                                            loki::BinaryOperatorEnum binary_operator,
                                                                            FunctionExpression left_function_expression,
                                                                            FunctionExpression right_function_expression) :
-    Base(identifier),
+    Base(index),
     m_binary_operator(binary_operator),
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
@@ -86,10 +86,10 @@ const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_left_functio
 const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
-FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(int identifier,
+FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(size_t index,
                                                                          loki::MultiOperatorEnum multi_operator,
                                                                          FunctionExpressionList function_expressions) :
-    Base(identifier),
+    Base(index),
     m_multi_operator(multi_operator),
     m_function_expressions(function_expressions)
 {
@@ -98,10 +98,8 @@ FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(int ide
     /* Canonize. */
     std::sort(m_function_expressions.begin(),
               m_function_expressions.end(),
-              [](const auto& l, const auto& r) {
-                  return std::visit([](const auto& arg) { return arg.get_identifier(); }, *l)
-                         < std::visit([](const auto& arg) { return arg.get_identifier(); }, *r);
-              });
+              [](const auto& l, const auto& r)
+              { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
 }
 
 bool FunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const
@@ -132,8 +130,8 @@ loki::MultiOperatorEnum FunctionExpressionMultiOperatorImpl::get_multi_operator(
 const FunctionExpressionList& FunctionExpressionMultiOperatorImpl::get_function_expressions() const { return m_function_expressions; }
 
 /* FunctionExpressionMinus */
-FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(int identifier, FunctionExpression function_expression) :
-    Base(identifier),
+FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(size_t index, FunctionExpression function_expression) :
+    Base(index),
     m_function_expression(std::move(function_expression))
 {
 }
@@ -159,7 +157,7 @@ void FunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::Format
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(int identifier, Function function) : Base(identifier), m_function(std::move(function)) {}
+FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(size_t index, Function function) : Base(index), m_function(std::move(function)) {}
 
 bool FunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const
 {

@@ -37,10 +37,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    TermObjectImpl(int identifier, Object object);
+    TermObjectImpl(size_t index, Object object);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<TermImpl, loki::Hash<TermImpl*>, loki::EqualTo<TermImpl*>>;
+    friend class loki::UniqueValueTypeFactory<TermImpl, loki::Hash<const TermImpl*, true>, loki::EqualTo<const TermImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
     size_t hash_impl() const;
@@ -58,10 +58,10 @@ class TermVariableImpl : public loki::Base<TermVariableImpl>
 private:
     Variable m_variable;
 
-    TermVariableImpl(int identifier, Variable variable);
+    TermVariableImpl(size_t index, Variable variable);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<TermImpl, loki::Hash<TermImpl*>, loki::EqualTo<TermImpl*>>;
+    friend class loki::UniqueValueTypeFactory<TermImpl, loki::Hash<const TermImpl*, true>, loki::EqualTo<const TermImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;
     size_t hash_impl() const;

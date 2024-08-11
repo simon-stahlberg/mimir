@@ -22,8 +22,8 @@
 
 namespace mimir
 {
-FunctionSkeletonImpl::FunctionSkeletonImpl(int identifier, std::string name, VariableList parameters) :
-    Base(identifier),
+FunctionSkeletonImpl::FunctionSkeletonImpl(size_t index, std::string name, VariableList parameters) :
+    Base(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {

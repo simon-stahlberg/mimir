@@ -31,10 +31,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AtomImpl(int identifier, Predicate<P> predicate, TermList terms);
+    AtomImpl(size_t index, Predicate<P> predicate, TermList terms);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<AtomImpl, loki::Hash<AtomImpl*>, loki::EqualTo<AtomImpl*>>;
+    friend class loki::UniqueValueTypeFactory<AtomImpl, loki::Hash<const AtomImpl*, true>, loki::EqualTo<const AtomImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const AtomImpl& other) const;

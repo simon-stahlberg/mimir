@@ -59,7 +59,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     for (const auto& atom : atoms)
     {
-        fluent_state_atoms.set(atom->get_identifier());
+        fluent_state_atoms.set(atom->get_index());
     }
     m_reached_fluent_atoms |= fluent_state_atoms;
 

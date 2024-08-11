@@ -41,10 +41,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(int identifier, Predicate<P> predicate, ObjectList objects);
+    GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectList objects);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<GroundAtomImpl, loki::Hash<GroundAtomImpl*>, loki::EqualTo<GroundAtomImpl*>>;
+    friend class loki::UniqueValueTypeFactory<GroundAtomImpl, loki::Hash<const GroundAtomImpl*, true>, loki::EqualTo<const GroundAtomImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const;

@@ -31,10 +31,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionNumberImpl(int identifier, double number);
+    FunctionExpressionNumberImpl(size_t index, double number);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionExpressionImpl, loki::Hash<FunctionExpressionImpl*>, loki::EqualTo<FunctionExpressionImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const;
     size_t hash_impl() const;
@@ -57,13 +58,14 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionBinaryOperatorImpl(int identifier,
+    FunctionExpressionBinaryOperatorImpl(size_t index,
                                          loki::BinaryOperatorEnum binary_operator,
                                          FunctionExpression left_function_expression,
                                          FunctionExpression right_function_expression);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionExpressionImpl, loki::Hash<FunctionExpressionImpl*>, loki::EqualTo<FunctionExpressionImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const;
     size_t hash_impl() const;
@@ -87,10 +89,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionMultiOperatorImpl(int identifier, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
+    FunctionExpressionMultiOperatorImpl(size_t index, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionExpressionImpl, loki::Hash<FunctionExpressionImpl*>, loki::EqualTo<FunctionExpressionImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const;
     size_t hash_impl() const;
@@ -112,10 +115,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionMinusImpl(int identifier, FunctionExpression function_expression);
+    FunctionExpressionMinusImpl(size_t index, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionExpressionImpl, loki::Hash<FunctionExpressionImpl*>, loki::EqualTo<FunctionExpressionImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const;
     size_t hash_impl() const;
@@ -136,10 +140,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionFunctionImpl(int identifier, Function function);
+    FunctionExpressionFunctionImpl(size_t index, Function function);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionExpressionImpl, loki::Hash<FunctionExpressionImpl*>, loki::EqualTo<FunctionExpressionImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
 
     bool is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const;
     size_t hash_impl() const;

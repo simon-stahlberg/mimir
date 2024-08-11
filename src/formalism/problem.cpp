@@ -39,7 +39,7 @@ using namespace std;
 
 namespace mimir
 {
-ProblemImpl::ProblemImpl(int identifier,
+ProblemImpl::ProblemImpl(size_t index,
                          std::optional<fs::path> filepath,
                          Domain domain,
                          std::string name,
@@ -54,7 +54,7 @@ ProblemImpl::ProblemImpl(int identifier,
                          GroundLiteralList<Derived> derived_goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms) :
-    Base(identifier),
+    Base(index),
     m_filepath(std::move(filepath)),
     m_domain(std::move(domain)),
     m_name(std::move(name)),
@@ -84,25 +84,15 @@ ProblemImpl::ProblemImpl(int identifier,
 
     /* Canonize. */
 
-    std::sort(m_objects.begin(), m_objects.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_static_initial_literals.begin(),
-              m_static_initial_literals.end(),
-              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_fluent_initial_literals.begin(),
-              m_fluent_initial_literals.end(),
-              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_numeric_fluents.begin(), m_numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_static_goal_condition.begin(),
-              m_static_goal_condition.end(),
-              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_fluent_goal_condition.begin(),
-              m_fluent_goal_condition.end(),
-              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_derived_goal_condition.begin(),
-              m_derived_goal_condition.end(),
-              [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_objects.begin(), m_objects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_static_initial_literals.begin(), m_static_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_fluent_initial_literals.begin(), m_fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_numeric_fluents.begin(), m_numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_static_goal_condition.begin(), m_static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_fluent_goal_condition.begin(), m_fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_derived_goal_condition.begin(), m_derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     /* Additional */
 
@@ -116,7 +106,7 @@ ProblemImpl::ProblemImpl(int identifier,
     {
         if (!literal->is_negated())
         {
-            m_static_initial_positive_atoms_builder.set(literal->get_atom()->get_identifier());
+            m_static_initial_positive_atoms_builder.set(literal->get_atom()->get_index());
         }
     }
     m_static_initial_positive_atoms_builder.finish();
@@ -127,7 +117,7 @@ ProblemImpl::ProblemImpl(int identifier,
     m_static_goal_holds = true;
     for (const auto& literal : m_static_goal_condition)
     {
-        if (literal->is_negated() == m_static_initial_positive_atoms_builder.get(literal->get_atom()->get_identifier()))
+        if (literal->is_negated() == m_static_initial_positive_atoms_builder.get(literal->get_atom()->get_index()))
         {
             m_static_goal_holds = false;
         }
@@ -316,7 +306,7 @@ bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 
 bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
 {
-    return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_identifier()));
+    return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
 
 }

@@ -85,7 +85,7 @@ StateIndex State::get_index() const { return m_view.get<0>(); }
 template<DynamicPredicateCategory P>
 bool State::contains(GroundAtom<P> atom) const
 {
-    return get_atoms<P>().get(atom->get_identifier());
+    return get_atoms<P>().get(atom->get_index());
 }
 
 template bool State::contains(GroundAtom<Fluent> atom) const;

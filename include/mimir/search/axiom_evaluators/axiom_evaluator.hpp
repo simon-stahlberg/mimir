@@ -54,12 +54,12 @@ public:
 
     bool literal_holds(GroundLiteral<Fluent> fluent_literal) const
     {
-        return m_fluent_state_atoms.get(fluent_literal->get_atom()->get_identifier()) != fluent_literal->is_negated();
+        return m_fluent_state_atoms.get(fluent_literal->get_atom()->get_index()) != fluent_literal->is_negated();
     }
 
     bool literal_holds(GroundLiteral<Derived> derived_literal) const
     {
-        return m_ref_derived_state_atoms.get(derived_literal->get_atom()->get_identifier()) != derived_literal->is_negated();
+        return m_ref_derived_state_atoms.get(derived_literal->get_atom()->get_index()) != derived_literal->is_negated();
     }
 };
 

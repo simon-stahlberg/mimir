@@ -69,11 +69,11 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const G
     auto derived_atom_bitset = FlatBitsetBuilder<Derived>();
     for (const auto& atom : fluent_atoms)
     {
-        fluent_atom_bitset.set(atom->get_identifier());
+        fluent_atom_bitset.set(atom->get_index());
     }
     for (const auto& atom : derived_atoms)
     {
-        derived_atom_bitset.set(atom->get_identifier());
+        derived_atom_bitset.set(atom->get_index());
     }
     for (const auto group : m_states_grouped_by_distance)
     {

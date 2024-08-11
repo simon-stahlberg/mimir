@@ -22,12 +22,7 @@
 
 namespace mimir
 {
-NumericFluentImpl::NumericFluentImpl(int identifier, GroundFunction function, double number) :
-    Base(identifier),
-    m_function(std::move(function)),
-    m_number(number)
-{
-}
+NumericFluentImpl::NumericFluentImpl(size_t index, GroundFunction function, double number) : Base(index), m_function(std::move(function)), m_number(number) {}
 
 bool NumericFluentImpl::is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const
 {

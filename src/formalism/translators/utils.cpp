@@ -17,6 +17,8 @@
 
 #include "mimir/formalism/translators/utils.hpp"
 
+#include "mimir/common/collections.hpp"
+
 #include <iomanip>
 #include <sstream>
 #include <string>

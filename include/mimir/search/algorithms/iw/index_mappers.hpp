@@ -84,7 +84,8 @@ private:
 
 public:
     FluentAndDerivedMapper();
-    FluentAndDerivedMapper(const loki::PDDLFactory<GroundAtomImpl<Fluent>>& fluent_atoms, const loki::PDDLFactory<GroundAtomImpl<Derived>>& derived_atoms);
+    FluentAndDerivedMapper(const loki::UniqueValueTypeFactory<GroundAtomImpl<Fluent>>& fluent_atoms,
+                           const loki::UniqueValueTypeFactory<GroundAtomImpl<Derived>>& derived_atoms);
 
     /**
      * Forward Remapping

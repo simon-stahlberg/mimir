@@ -30,10 +30,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    OptimizationMetricImpl(int identifier, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
+    OptimizationMetricImpl(size_t index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<OptimizationMetricImpl, loki::Hash<OptimizationMetricImpl*>, loki::EqualTo<OptimizationMetricImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<OptimizationMetricImpl, loki::Hash<const OptimizationMetricImpl*, true>, loki::EqualTo<const OptimizationMetricImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const OptimizationMetricImpl& other) const;

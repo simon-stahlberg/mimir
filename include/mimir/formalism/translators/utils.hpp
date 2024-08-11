@@ -84,18 +84,6 @@ extern loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, lok
 
 extern std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set<std::string>& simple_and_derived_predicate_names);
 
-/**
- * General
- */
-
-/// @brief Uniquify elements in a vector of elements.
-template<typename T>
-extern std::vector<T> uniquify_elements(const std::vector<T>& vec)
-{
-    std::unordered_set<T> set(vec.begin(), vec.end());
-    return std::vector<T>(set.begin(), set.end());
-}
-
 }
 
 #endif

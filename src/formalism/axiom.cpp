@@ -28,13 +28,13 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(int identifier,
+AxiomImpl::AxiomImpl(size_t index,
                      VariableList parameters,
                      Literal<Derived> literal,
                      LiteralList<Static> static_conditions,
                      LiteralList<Fluent> fluent_conditions,
                      LiteralList<Derived> derived_conditions) :
-    Base(identifier),
+    Base(index),
     m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
     m_static_conditions(std::move(static_conditions)),
@@ -48,9 +48,9 @@ AxiomImpl::AxiomImpl(int identifier,
     assert(is_all_unique(m_derived_conditions));
 
     /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_identifier() < r->get_identifier(); });
+    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
 bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const

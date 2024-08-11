@@ -24,8 +24,8 @@
 namespace mimir
 {
 template<PredicateCategory P>
-AtomImpl<P>::AtomImpl(int identifier, Predicate<P> predicate, TermList terms) :
-    loki::Base<AtomImpl<P>>(identifier),
+AtomImpl<P>::AtomImpl(size_t index, Predicate<P> predicate, TermList terms) :
+    loki::Base<AtomImpl<P>>(index),
     m_predicate(std::move(predicate)),
     m_terms(std::move(terms))
 {

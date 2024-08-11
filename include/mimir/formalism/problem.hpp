@@ -46,7 +46,7 @@ private:
     bool m_static_goal_holds;
     PredicateList<Derived> m_problem_and_domain_derived_predicates;
 
-    ProblemImpl(int identifier,
+    ProblemImpl(size_t index,
                 std::optional<fs::path> filepath,
                 Domain domain,
                 std::string name,
@@ -63,7 +63,7 @@ private:
                 AxiomList axioms);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<ProblemImpl, loki::Hash<ProblemImpl*>, loki::EqualTo<ProblemImpl*>>;
+    friend class loki::UniqueValueTypeFactory<ProblemImpl, loki::Hash<const ProblemImpl*, true>, loki::EqualTo<const ProblemImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ProblemImpl& other) const;

@@ -41,7 +41,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ActionImpl(int identifier,
+    ActionImpl(size_t index,
                std::string name,
                size_t original_arity,
                VariableList parameters,
@@ -54,7 +54,7 @@ private:
                FunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<ActionImpl, loki::Hash<ActionImpl*>, loki::EqualTo<ActionImpl*>>;
+    friend class loki::UniqueValueTypeFactory<ActionImpl, loki::Hash<const ActionImpl*, true>, loki::EqualTo<const ActionImpl*, true>>;
 
     /// @brief Test for structural equivalence
     bool is_structurally_equivalent_to_impl(const ActionImpl& other) const;

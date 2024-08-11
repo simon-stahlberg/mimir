@@ -36,10 +36,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ObjectImpl(int identifier, std::string name);
+    ObjectImpl(size_t index, std::string name);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<ObjectImpl, loki::Hash<ObjectImpl*>, loki::EqualTo<ObjectImpl*>>;
+    friend class loki::UniqueValueTypeFactory<ObjectImpl, loki::Hash<const ObjectImpl*, true>, loki::EqualTo<const ObjectImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;

@@ -24,10 +24,7 @@ namespace mimir
 {
 
 template<PredicateCategory P>
-LiteralImpl<P>::LiteralImpl(int identifier, bool is_negated, Atom<P> atom) :
-    loki::Base<LiteralImpl<P>>(identifier),
-    m_is_negated(is_negated),
-    m_atom(std::move(atom))
+LiteralImpl<P>::LiteralImpl(size_t index, bool is_negated, Atom<P> atom) : loki::Base<LiteralImpl<P>>(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
 }
 

@@ -185,7 +185,7 @@ void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::AxiomImpl& ax
 
 loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
 {
-    return (m_renaming_enabled) ? m_pddl_factories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_identifier()) + "_"
+    return (m_renaming_enabled) ? m_pddl_factories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_index()) + "_"
                                                                           + std::to_string(m_num_quantifications.at(&variable))) :
                                   m_pddl_factories.get_or_create_variable(variable.get_name());
 }

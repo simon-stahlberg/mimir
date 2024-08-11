@@ -130,7 +130,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     {
         const auto grounded_literal = m_pddl_factories->ground_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
-        ref_effect.atom_id = grounded_literal->get_atom()->get_identifier();
+        ref_effect.atom_id = grounded_literal->get_atom()->get_index();
     };
 
     /* Header */

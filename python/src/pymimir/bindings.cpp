@@ -383,31 +383,31 @@ void init_pymimir(py::module_& m)
 
     py::class_<RequirementsImpl>(m, "Requirements")  // s
         .def("__str__", py::overload_cast<>(&loki::Base<RequirementsImpl>::str, py::const_))
-        .def("get_identifier", &RequirementsImpl::get_identifier)
+        .def("get_index", &RequirementsImpl::get_index)
         .def("get_requirements", &RequirementsImpl::get_requirements, py::return_value_policy::reference_internal);
 
     py::class_<ObjectImpl>(m, "Object")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ObjectImpl>::str, py::const_))
-        .def("get_identifier", &ObjectImpl::get_identifier)
+        .def("get_index", &ObjectImpl::get_index)
         .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<ObjectList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<ObjectList>(m, "ObjectList");
 
     py::class_<VariableImpl>(m, "Variable")  //
         .def("__str__", py::overload_cast<>(&loki::Base<VariableImpl>::str, py::const_))
-        .def("get_identifier", &VariableImpl::get_identifier)
+        .def("get_index", &VariableImpl::get_index)
         .def("get_name", &VariableImpl::get_name, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<VariableList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<VariableList>(m, "VariableList");
 
     py::class_<TermObjectImpl>(m, "TermObject")  //
         .def("__str__", py::overload_cast<>(&loki::Base<TermObjectImpl>::str, py::const_))
-        .def("get_identifier", &TermObjectImpl::get_identifier)
+        .def("get_index", &TermObjectImpl::get_index)
         .def("get_object", &TermObjectImpl::get_object, py::return_value_policy::reference_internal);
 
     py::class_<TermVariableImpl>(m, "TermVariable")  //
         .def("__str__", py::overload_cast<>(&loki::Base<TermVariableImpl>::str, py::const_))
-        .def("get_identifier", &TermVariableImpl::get_identifier)
+        .def("get_index", &TermVariableImpl::get_index)
         .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference_internal);
 
     py::class_<TermVariant>(m, "Term")  //
@@ -420,7 +420,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<PredicateImpl<Static>>(m, "StaticPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Static>>::str, py::const_))
-        .def("get_identifier", &PredicateImpl<Static>::get_identifier)
+        .def("get_index", &PredicateImpl<Static>::get_index)
         .def("get_name", &PredicateImpl<Static>::get_name, py::return_value_policy::reference_internal)
         .def(
             "get_parameters",
@@ -433,7 +433,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<PredicateImpl<Fluent>>(m, "FluentPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Fluent>>::str, py::const_))
-        .def("get_identifier", &PredicateImpl<Fluent>::get_identifier)
+        .def("get_index", &PredicateImpl<Fluent>::get_index)
         .def("get_name", &PredicateImpl<Fluent>::get_name, py::return_value_policy::reference_internal)
         .def(
             "get_parameters",
@@ -446,7 +446,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<PredicateImpl<Derived>>(m, "DerivedPredicate")  //
         .def("__str__", py::overload_cast<>(&loki::Base<PredicateImpl<Derived>>::str, py::const_))
-        .def("get_identifier", &PredicateImpl<Derived>::get_identifier)
+        .def("get_index", &PredicateImpl<Derived>::get_index)
         .def("get_name", &PredicateImpl<Derived>::get_name, py::return_value_policy::reference_internal)
         .def(
             "get_parameters",
@@ -459,7 +459,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<AtomImpl<Static>>(m, "StaticAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Static>>::str, py::const_))
-        .def("get_identifier", &AtomImpl<Static>::get_identifier)
+        .def("get_index", &AtomImpl<Static>::get_index)
         .def("get_predicate", &AtomImpl<Static>::get_predicate, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
@@ -470,7 +470,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<AtomImpl<Fluent>>(m, "FluentAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Fluent>>::str, py::const_))
-        .def("get_identifier", &AtomImpl<Fluent>::get_identifier)
+        .def("get_index", &AtomImpl<Fluent>::get_index)
         .def("get_predicate", &AtomImpl<Fluent>::get_predicate, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
@@ -481,7 +481,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<AtomImpl<Derived>>(m, "DerivedAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AtomImpl<Derived>>::str, py::const_))
-        .def("get_identifier", &AtomImpl<Derived>::get_identifier)
+        .def("get_index", &AtomImpl<Derived>::get_index)
         .def("get_predicate", &AtomImpl<Derived>::get_predicate, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
@@ -492,7 +492,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<FunctionSkeletonImpl>(m, "FunctionSkeleton")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionSkeletonImpl>::str, py::const_))
-        .def("get_identifier", &FunctionSkeletonImpl::get_identifier)
+        .def("get_index", &FunctionSkeletonImpl::get_index)
         .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference_internal)
         .def(
             "get_parameters",
@@ -503,7 +503,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<FunctionImpl>(m, "Function")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionImpl>::str, py::const_))
-        .def("get_identifier", &FunctionImpl::get_identifier)
+        .def("get_index", &FunctionImpl::get_index)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
         .def(
             "get_terms",
@@ -514,7 +514,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundFunctionImpl>(m, "GroundFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionImpl>::str, py::const_))
-        .def("get_identifier", &GroundFunctionImpl::get_identifier)
+        .def("get_index", &GroundFunctionImpl::get_index)
         .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
         .def(
             "get_objects",
@@ -525,7 +525,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundAtomImpl<Static>>(m, "StaticGroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Static>>::str, py::const_))
-        .def("get_identifier", &GroundAtomImpl<Static>::get_identifier)
+        .def("get_index", &GroundAtomImpl<Static>::get_index)
         .def("get_arity", &GroundAtomImpl<Static>::get_arity)
         .def("get_predicate", &GroundAtomImpl<Static>::get_predicate, py::return_value_policy::reference_internal)
         .def(
@@ -537,7 +537,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundAtomImpl<Fluent>>(m, "FluentGroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Fluent>>::str, py::const_))
-        .def("get_identifier", &GroundAtomImpl<Fluent>::get_identifier)
+        .def("get_index", &GroundAtomImpl<Fluent>::get_index)
         .def("get_arity", &GroundAtomImpl<Fluent>::get_arity)
         .def("get_predicate", &GroundAtomImpl<Fluent>::get_predicate, py::return_value_policy::reference_internal)
         .def(
@@ -549,7 +549,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundAtomImpl<Derived>>(m, "DerivedGroundAtom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundAtomImpl<Derived>>::str, py::const_))
-        .def("get_identifier", &GroundAtomImpl<Derived>::get_identifier)
+        .def("get_index", &GroundAtomImpl<Derived>::get_index)
         .def("get_arity", &GroundAtomImpl<Derived>::get_arity)
         .def("get_predicate", &GroundAtomImpl<Derived>::get_predicate, py::return_value_policy::reference_internal)
         .def(
@@ -561,7 +561,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundLiteralImpl<Static>>(m, "StaticGroundLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Static>>::str, py::const_))
-        .def("get_identifier", &GroundLiteralImpl<Static>::get_identifier)
+        .def("get_index", &GroundLiteralImpl<Static>::get_index)
         .def("get_atom", &GroundLiteralImpl<Static>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &GroundLiteralImpl<Static>::is_negated);
     static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Static>>::value);  // Ensure return by reference + keep alive
@@ -569,7 +569,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundLiteralImpl<Fluent>>(m, "FluentGroundLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Fluent>>::str, py::const_))
-        .def("get_identifier", &GroundLiteralImpl<Fluent>::get_identifier)
+        .def("get_index", &GroundLiteralImpl<Fluent>::get_index)
         .def("get_atom", &GroundLiteralImpl<Fluent>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &GroundLiteralImpl<Fluent>::is_negated);
     static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Fluent>>::value);  // Ensure return by reference + keep alive
@@ -577,7 +577,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundLiteralImpl<Derived>>(m, "DerivedGroundLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundLiteralImpl<Derived>>::str, py::const_))
-        .def("get_identifier", &GroundLiteralImpl<Derived>::get_identifier)
+        .def("get_index", &GroundLiteralImpl<Derived>::get_index)
         .def("get_atom", &GroundLiteralImpl<Derived>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &GroundLiteralImpl<Derived>::is_negated);
     static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Derived>>::value);  // Ensure return by reference + keep alive
@@ -585,7 +585,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<LiteralImpl<Static>>(m, "StaticLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Static>>::str, py::const_))
-        .def("get_identifier", &LiteralImpl<Static>::get_identifier)
+        .def("get_index", &LiteralImpl<Static>::get_index)
         .def("get_atom", &LiteralImpl<Static>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &LiteralImpl<Static>::is_negated);
     static_assert(!py::detail::vector_needs_copy<LiteralList<Static>>::value);  // Ensure return by reference + keep alive
@@ -593,7 +593,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<LiteralImpl<Fluent>>(m, "FluentLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Fluent>>::str, py::const_))
-        .def("get_identifier", &LiteralImpl<Fluent>::get_identifier)
+        .def("get_index", &LiteralImpl<Fluent>::get_index)
         .def("get_atom", &LiteralImpl<Fluent>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &LiteralImpl<Fluent>::is_negated);
     static_assert(!py::detail::vector_needs_copy<LiteralList<Fluent>>::value);  // Ensure return by reference + keep alive
@@ -601,7 +601,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<LiteralImpl<Derived>>(m, "DerivedLiteral")  //
         .def("__str__", py::overload_cast<>(&loki::Base<LiteralImpl<Derived>>::str, py::const_))
-        .def("get_identifier", &LiteralImpl<Derived>::get_identifier)
+        .def("get_index", &LiteralImpl<Derived>::get_index)
         .def("get_atom", &LiteralImpl<Derived>::get_atom, py::return_value_policy::reference_internal)
         .def("is_negated", &LiteralImpl<Derived>::is_negated);
     static_assert(!py::detail::vector_needs_copy<LiteralList<Derived>>::value);  // Ensure return by reference + keep alive
@@ -609,7 +609,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<NumericFluentImpl>(m, "NumericFluent")  //
         .def("__str__", py::overload_cast<>(&loki::Base<NumericFluentImpl>::str, py::const_))
-        .def("get_identifier", &NumericFluentImpl::get_identifier)
+        .def("get_index", &NumericFluentImpl::get_index)
         .def("get_function", &NumericFluentImpl::get_function, py::return_value_policy::reference_internal)
         .def("get_number", &NumericFluentImpl::get_number);
     static_assert(!py::detail::vector_needs_copy<NumericFluentList>::value);  // Ensure return by reference + keep alive
@@ -617,14 +617,14 @@ void init_pymimir(py::module_& m)
 
     py::class_<EffectSimpleImpl>(m, "EffectSimple")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectSimpleImpl>::str, py::const_))
-        .def("get_identifier", &EffectSimpleImpl::get_identifier)
+        .def("get_index", &EffectSimpleImpl::get_index)
         .def("get_effect", &EffectSimpleImpl::get_effect, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<EffectSimpleList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<EffectSimpleList>(m, "EffectSimpleList");
 
     py::class_<EffectConditionalImpl>(m, "EffectConditional")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectConditionalImpl>::str, py::const_))
-        .def("get_identifier", &EffectConditionalImpl::get_identifier)
+        .def("get_index", &EffectConditionalImpl::get_index)
         .def(
             "get_static_conditions",
             [](const EffectUniversalImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
@@ -652,7 +652,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<EffectUniversalImpl>(m, "EffectUniversal")  //
         .def("__str__", py::overload_cast<>(&loki::Base<EffectUniversalImpl>::str, py::const_))
-        .def("get_identifier", &EffectUniversalImpl::get_identifier)
+        .def("get_index", &EffectUniversalImpl::get_index)
         .def(
             "get_parameters",
             [](const EffectUniversalImpl& self) { return VariableList(self.get_parameters()); },
@@ -675,12 +675,12 @@ void init_pymimir(py::module_& m)
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionNumberImpl>::str, py::const_))
-        .def("get_identifier", &FunctionExpressionNumberImpl::get_identifier)
+        .def("get_index", &FunctionExpressionNumberImpl::get_index)
         .def("get_number", &FunctionExpressionNumberImpl::get_number);
 
     py::class_<FunctionExpressionBinaryOperatorImpl>(m, "FunctionExpressionBinaryOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionBinaryOperatorImpl>::str, py::const_))
-        .def("get_identifier", &FunctionExpressionBinaryOperatorImpl::get_identifier)
+        .def("get_index", &FunctionExpressionBinaryOperatorImpl::get_index)
         .def("get_binary_operator", &FunctionExpressionBinaryOperatorImpl::get_binary_operator)
         .def(
             "get_left_function_expression",
@@ -695,7 +695,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<FunctionExpressionMultiOperatorImpl>(m, "FunctionExpressionMultiOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMultiOperatorImpl>::str, py::const_))
-        .def("get_identifier", &FunctionExpressionMultiOperatorImpl::get_identifier)
+        .def("get_index", &FunctionExpressionMultiOperatorImpl::get_index)
         .def("get_multi_operator", &FunctionExpressionMultiOperatorImpl::get_multi_operator)
         .def(
             "get_function_expressions",
@@ -705,7 +705,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<FunctionExpressionMinusImpl>(m, "FunctionExpressionMinus")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionMinusImpl>::str, py::const_))
-        .def("get_identifier", &FunctionExpressionMinusImpl::get_identifier)
+        .def("get_index", &FunctionExpressionMinusImpl::get_index)
         .def(
             "get_function_expression",
             [](const FunctionExpressionMinusImpl& function_expression) { return FunctionExpressionVariant(function_expression.get_function_expression()); },
@@ -714,7 +714,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<FunctionExpressionFunctionImpl>(m, "FunctionExpressionFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<FunctionExpressionFunctionImpl>::str, py::const_))
-        .def("get_identifier", &FunctionExpressionFunctionImpl::get_identifier)
+        .def("get_index", &FunctionExpressionFunctionImpl::get_index)
         .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionVariant>(m, "GroundFunctionExpression")  //
@@ -728,12 +728,12 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundFunctionExpressionNumberImpl>(m, "GroundFunctionExpressionNumber")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionNumberImpl>::str, py::const_))
-        .def("get_identifier", &GroundFunctionExpressionNumberImpl::get_identifier)
+        .def("get_index", &GroundFunctionExpressionNumberImpl::get_index)
         .def("get_number", &GroundFunctionExpressionNumberImpl::get_number);
 
     py::class_<GroundFunctionExpressionBinaryOperatorImpl>(m, "GroundFunctionExpressionBinaryOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionBinaryOperatorImpl>::str, py::const_))
-        .def("get_identifier", &GroundFunctionExpressionBinaryOperatorImpl::get_identifier)
+        .def("get_index", &GroundFunctionExpressionBinaryOperatorImpl::get_index)
         .def("get_binary_operator", &GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator)
         .def(
             "get_left_function_expression",
@@ -748,7 +748,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundFunctionExpressionMultiOperatorImpl>(m, "GroundFunctionExpressionMultiOperator")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionMultiOperatorImpl>::str, py::const_))
-        .def("get_identifier", &GroundFunctionExpressionMultiOperatorImpl::get_identifier)
+        .def("get_index", &GroundFunctionExpressionMultiOperatorImpl::get_index)
         .def("get_multi_operator", &GroundFunctionExpressionMultiOperatorImpl::get_multi_operator)
         .def(
             "get_function_expressions",
@@ -758,7 +758,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundFunctionExpressionMinusImpl>(m, "GroundFunctionExpressionMinus")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionMinusImpl>::str, py::const_))
-        .def("get_identifier", &GroundFunctionExpressionMinusImpl::get_identifier)
+        .def("get_index", &GroundFunctionExpressionMinusImpl::get_index)
         .def(
             "get_function_expression",
             [](const GroundFunctionExpressionMinusImpl& function_expression)
@@ -768,18 +768,18 @@ void init_pymimir(py::module_& m)
 
     py::class_<GroundFunctionExpressionFunctionImpl>(m, "GroundFunctionExpressionFunction")  //
         .def("__str__", py::overload_cast<>(&loki::Base<GroundFunctionExpressionFunctionImpl>::str, py::const_))
-        .def("get_identifier", &GroundFunctionExpressionFunctionImpl::get_identifier)
+        .def("get_index", &GroundFunctionExpressionFunctionImpl::get_index)
         .def("get_function", &GroundFunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
     py::class_<OptimizationMetricImpl>(m, "OptimizationMetric")  //
         .def("__str__", py::overload_cast<>(&loki::Base<OptimizationMetricImpl>::str, py::const_))
-        .def("get_identifier", &OptimizationMetricImpl::get_identifier)
+        .def("get_index", &OptimizationMetricImpl::get_index)
         .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return GroundFunctionExpressionVariant(metric.get_function_expression()); })
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
     py::class_<ActionImpl>(m, "Action")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ActionImpl>::str, py::const_))
-        .def("get_identifier", &ActionImpl::get_identifier)
+        .def("get_index", &ActionImpl::get_index)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::copy)
         .def(
             "get_parameters",
@@ -815,7 +815,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<AxiomImpl>(m, "Axiom")  //
         .def("__str__", py::overload_cast<>(&loki::Base<AxiomImpl>::str, py::const_))
-        .def("get_identifier", &AxiomImpl::get_identifier)
+        .def("get_index", &AxiomImpl::get_index)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference_internal)
         .def(
             "get_static_conditions",
@@ -835,7 +835,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", py::overload_cast<>(&loki::Base<DomainImpl>::str, py::const_))
-        .def("get_identifier", &DomainImpl::get_identifier)
+        .def("get_index", &DomainImpl::get_index)
         .def(
             "get_filepath",
             [](const DomainImpl& self) { return (self.get_filepath().has_value()) ? std::optional<std::string>(self.get_filepath()->string()) : std::nullopt; },
@@ -883,7 +883,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<ProblemImpl>(m, "Problem")  //
         .def("__str__", py::overload_cast<>(&loki::Base<ProblemImpl>::str, py::const_))
-        .def("get_identifier", &ProblemImpl::get_identifier)
+        .def("get_index", &ProblemImpl::get_index)
         .def(
             "get_filepath",
             [](const ProblemImpl& self)

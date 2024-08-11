@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/transformers/to_positive_normal_form.hpp"
 
+#include "mimir/common/collections.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 #include <source_location>

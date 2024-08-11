@@ -46,39 +46,39 @@
 
 namespace mimir
 {
-using VariadicPDDLFactories = loki::VariadicPDDLFactory<RequirementsImpl,
-                                                        VariableImpl,
-                                                        TermImpl,
-                                                        ObjectImpl,
-                                                        AtomImpl<Static>,
-                                                        AtomImpl<Fluent>,
-                                                        AtomImpl<Derived>,
-                                                        GroundAtomImpl<Static>,
-                                                        GroundAtomImpl<Fluent>,
-                                                        GroundAtomImpl<Derived>,
-                                                        LiteralImpl<Static>,
-                                                        LiteralImpl<Fluent>,
-                                                        LiteralImpl<Derived>,
-                                                        GroundLiteralImpl<Static>,
-                                                        GroundLiteralImpl<Fluent>,
-                                                        GroundLiteralImpl<Derived>,
-                                                        PredicateImpl<Static>,
-                                                        PredicateImpl<Fluent>,
-                                                        PredicateImpl<Derived>,
-                                                        FunctionExpressionImpl,
-                                                        GroundFunctionExpressionImpl,
-                                                        FunctionImpl,
-                                                        GroundFunctionImpl,
-                                                        FunctionSkeletonImpl,
-                                                        EffectSimpleImpl,
-                                                        EffectConditionalImpl,
-                                                        EffectUniversalImpl,
-                                                        ActionImpl,
-                                                        AxiomImpl,
-                                                        OptimizationMetricImpl,
-                                                        NumericFluentImpl,
-                                                        DomainImpl,
-                                                        ProblemImpl>;
+using VariadicPDDLFactories = loki::VariadicUniqueValueTypeFactory<RequirementsImpl,
+                                                                   VariableImpl,
+                                                                   TermImpl,
+                                                                   ObjectImpl,
+                                                                   AtomImpl<Static>,
+                                                                   AtomImpl<Fluent>,
+                                                                   AtomImpl<Derived>,
+                                                                   GroundAtomImpl<Static>,
+                                                                   GroundAtomImpl<Fluent>,
+                                                                   GroundAtomImpl<Derived>,
+                                                                   LiteralImpl<Static>,
+                                                                   LiteralImpl<Fluent>,
+                                                                   LiteralImpl<Derived>,
+                                                                   GroundLiteralImpl<Static>,
+                                                                   GroundLiteralImpl<Fluent>,
+                                                                   GroundLiteralImpl<Derived>,
+                                                                   PredicateImpl<Static>,
+                                                                   PredicateImpl<Fluent>,
+                                                                   PredicateImpl<Derived>,
+                                                                   FunctionExpressionImpl,
+                                                                   GroundFunctionExpressionImpl,
+                                                                   FunctionImpl,
+                                                                   GroundFunctionImpl,
+                                                                   FunctionSkeletonImpl,
+                                                                   EffectSimpleImpl,
+                                                                   EffectConditionalImpl,
+                                                                   EffectUniversalImpl,
+                                                                   ActionImpl,
+                                                                   AxiomImpl,
+                                                                   OptimizationMetricImpl,
+                                                                   NumericFluentImpl,
+                                                                   DomainImpl,
+                                                                   ProblemImpl>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLFactories
@@ -244,7 +244,7 @@ public:
 
     // Factory
     template<typename T>
-    const loki::PDDLFactory<T>& get_factory() const;
+    const loki::UniqueValueTypeFactory<T>& get_factory() const;
 
     // GroundAtom
     template<PredicateCategory P>

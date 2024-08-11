@@ -86,6 +86,14 @@ bool is_all_unique(const std::vector<T>& vec)
     return vec.size() == set.size();
 }
 
+/// @brief Uniquify elements in a vector of elements.
+template<typename T>
+extern std::vector<T> uniquify_elements(const std::vector<T>& vec)
+{
+    std::unordered_set<T> set(vec.begin(), vec.end());
+    return std::vector<T>(set.begin(), set.end());
+}
+
 }
 
 #endif

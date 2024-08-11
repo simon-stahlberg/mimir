@@ -50,7 +50,7 @@ bool ground_and_test_nullary_literals(const LiteralList<P>& literals, const Flat
         {
             const auto grounded_literal = pddl_factories.ground_literal(literal, {});
 
-            if (grounded_atoms_ids.get(grounded_literal->get_atom()->get_identifier()) == grounded_literal->is_negated())
+            if (grounded_atoms_ids.get(grounded_literal->get_atom()->get_index()) == grounded_literal->is_negated())
             {
                 return false;
             }

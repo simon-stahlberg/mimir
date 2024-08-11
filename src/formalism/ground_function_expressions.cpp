@@ -26,7 +26,7 @@
 namespace mimir
 {
 /* FunctionExpressionNumber */
-GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(int identifier, double number) : Base(identifier), m_number(number) {}
+GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(size_t index, double number) : Base(index), m_number(number) {}
 
 bool GroundFunctionExpressionNumberImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionNumberImpl& other) const
 {
@@ -44,11 +44,11 @@ void GroundFunctionExpressionNumberImpl::str_impl(std::ostream& out, const loki:
 double GroundFunctionExpressionNumberImpl::get_number() const { return m_number; }
 
 /* FunctionExpressionBinaryOperator */
-GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperatorImpl(int identifier,
+GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperatorImpl(size_t index,
                                                                                        loki::BinaryOperatorEnum binary_operator,
                                                                                        GroundFunctionExpression left_function_expression,
                                                                                        GroundFunctionExpression right_function_expression) :
-    Base(identifier),
+    Base(index),
     m_binary_operator(binary_operator),
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
@@ -86,10 +86,10 @@ const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_
 const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
-GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperatorImpl(int identifier,
+GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperatorImpl(size_t index,
                                                                                      loki::MultiOperatorEnum multi_operator,
                                                                                      GroundFunctionExpressionList function_expressions) :
-    Base(identifier),
+    Base(index),
     m_multi_operator(multi_operator),
     m_function_expressions(function_expressions)
 {
@@ -98,10 +98,8 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
     /* Canonize. */
     std::sort(m_function_expressions.begin(),
               m_function_expressions.end(),
-              [](const auto& l, const auto& r) {
-                  return std::visit([](const auto& arg) { return arg.get_identifier(); }, *l)
-                         < std::visit([](const auto& arg) { return arg.get_identifier(); }, *r);
-              });
+              [](const auto& l, const auto& r)
+              { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
 }
 
 bool GroundFunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionMultiOperatorImpl& other) const
@@ -132,8 +130,8 @@ loki::MultiOperatorEnum GroundFunctionExpressionMultiOperatorImpl::get_multi_ope
 const GroundFunctionExpressionList& GroundFunctionExpressionMultiOperatorImpl::get_function_expressions() const { return m_function_expressions; }
 
 /* FunctionExpressionMinus */
-GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(int identifier, GroundFunctionExpression function_expression) :
-    Base(identifier),
+GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(size_t index, GroundFunctionExpression function_expression) :
+    Base(index),
     m_function_expression(std::move(function_expression))
 {
 }
@@ -159,9 +157,7 @@ void GroundFunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::
 const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(int identifier, GroundFunction function) :
-    Base(identifier),
-    m_function(std::move(function))
+GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(size_t index, GroundFunction function) : Base(index), m_function(std::move(function))
 {
 }
 

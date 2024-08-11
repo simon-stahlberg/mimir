@@ -33,10 +33,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectSimpleImpl(int identifier, Literal<Fluent> effect);
+    EffectSimpleImpl(size_t index, Literal<Fluent> effect);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectSimpleImpl, loki::Hash<EffectSimpleImpl*>, loki::EqualTo<EffectSimpleImpl*>>;
+    friend class loki::UniqueValueTypeFactory<EffectSimpleImpl, loki::Hash<const EffectSimpleImpl*, true>, loki::EqualTo<const EffectSimpleImpl*, true>>;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectSimpleImpl>;
@@ -62,14 +62,15 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(int identifier,
+    EffectConditionalImpl(size_t index,
                           LiteralList<Static> static_conditions,
                           LiteralList<Fluent> fluent_conditions,
                           LiteralList<Derived> derived_conditions,
                           Literal<Fluent> effect);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectConditionalImpl, loki::Hash<EffectConditionalImpl*>, loki::EqualTo<EffectConditionalImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<EffectConditionalImpl, loki::Hash<const EffectConditionalImpl*, true>, loki::EqualTo<const EffectConditionalImpl*, true>>;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectConditionalImpl>;
@@ -98,7 +99,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectUniversalImpl(int identifier,
+    EffectUniversalImpl(size_t index,
                         VariableList quantified_variables,
                         LiteralList<Static> static_conditions,
                         LiteralList<Fluent> fluent_conditions,
@@ -106,7 +107,8 @@ private:
                         Literal<Fluent> effect);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<EffectUniversalImpl, loki::Hash<EffectUniversalImpl*>, loki::EqualTo<EffectUniversalImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<EffectUniversalImpl, loki::Hash<const EffectUniversalImpl*, true>, loki::EqualTo<const EffectUniversalImpl*, true>>;
 
     // Give access to the private interface implementations.
     friend class loki::Base<EffectUniversalImpl>;

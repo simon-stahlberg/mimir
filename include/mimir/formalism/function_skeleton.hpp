@@ -30,10 +30,11 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionSkeletonImpl(int identifier, std::string name, VariableList parameters);
+    FunctionSkeletonImpl(size_t index, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<FunctionSkeletonImpl, loki::Hash<FunctionSkeletonImpl*>, loki::EqualTo<FunctionSkeletonImpl*>>;
+    friend class loki::
+        UniqueValueTypeFactory<FunctionSkeletonImpl, loki::Hash<const FunctionSkeletonImpl*, true>, loki::EqualTo<const FunctionSkeletonImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const;

@@ -38,10 +38,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    VariableImpl(int identifier, std::string name, size_t parameter_index);
+    VariableImpl(size_t index, std::string name, size_t parameter_index);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<VariableImpl, loki::Hash<VariableImpl*>, loki::EqualTo<VariableImpl*>>;
+    friend class loki::UniqueValueTypeFactory<VariableImpl, loki::Hash<const VariableImpl*, true>, loki::EqualTo<const VariableImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;

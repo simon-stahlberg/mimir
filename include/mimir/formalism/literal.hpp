@@ -34,10 +34,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    LiteralImpl(int identifier, bool is_negated, Atom<P> atom);
+    LiteralImpl(size_t index, bool is_negated, Atom<P> atom);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<LiteralImpl, loki::Hash<LiteralImpl*>, loki::EqualTo<LiteralImpl*>>;
+    friend class loki::UniqueValueTypeFactory<LiteralImpl, loki::Hash<const LiteralImpl*, true>, loki::EqualTo<const LiteralImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const LiteralImpl& other) const;

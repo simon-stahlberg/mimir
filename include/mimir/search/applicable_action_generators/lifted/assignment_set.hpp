@@ -175,13 +175,13 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
     auto max_predicate_index = (size_t) 0;
     for (const auto& predicate : predicates)
     {
-        max_predicate_index = std::max(max_predicate_index, predicate->get_identifier());
+        max_predicate_index = std::max(max_predicate_index, predicate->get_index());
     }
     m_f.resize(max_predicate_index + 1);
 
     for (const auto& predicate : predicates)
     {
-        auto& assignment_set = m_f.at(predicate->get_identifier());
+        auto& assignment_set = m_f.at(predicate->get_index());
         assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
     }
 
@@ -190,17 +190,17 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
         const auto& arity = ground_atom->get_arity();
         const auto& predicate = ground_atom->get_predicate();
         const auto& arguments = ground_atom->get_objects();
-        auto& assignment_set = m_f.at(predicate->get_identifier());
+        auto& assignment_set = m_f.at(predicate->get_index());
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier()), arity, num_objects)] = true;
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, num_objects)] = true;
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
                 const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier(), second_index, second_object->get_identifier()),
+                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                    arity,
                                                    num_objects)] = true;
             }
@@ -216,17 +216,17 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     const auto& arity = ground_atom->get_arity();
     const auto& predicate = ground_atom->get_predicate();
     const auto& arguments = ground_atom->get_objects();
-    auto& assignment_set = m_f.at(predicate->get_identifier());
+    auto& assignment_set = m_f.at(predicate->get_index());
 
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
         const auto& first_object = arguments[first_index];
-        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier()), arity, num_objects)] = true;
+        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, num_objects)] = true;
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_identifier(), second_index, second_object->get_identifier()),
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                arity,
                                                num_objects)] = true;
         }
@@ -257,7 +257,7 @@ bool consistent_literals_helper(const Problem& problem,
         }
 
         const auto num_objects = problem->get_objects().size();
-        const auto& assignment_set = assignment_sets[literal->get_atom()->get_predicate()->get_identifier()];
+        const auto& assignment_set = assignment_sets[literal->get_atom()->get_predicate()->get_index()];
         const auto& terms = literal->get_atom()->get_terms();
         auto assignment_iterator = AssignmentIterator(terms, element);
 

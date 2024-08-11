@@ -29,10 +29,10 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    RequirementsImpl(int identifier, loki::RequirementEnumSet requirements);
+    RequirementsImpl(size_t index, loki::RequirementEnumSet requirements);
 
     // Give access to the constructor.
-    friend class loki::PDDLFactory<RequirementsImpl, loki::Hash<RequirementsImpl*>, loki::EqualTo<RequirementsImpl*>>;
+    friend class loki::UniqueValueTypeFactory<RequirementsImpl, loki::Hash<const RequirementsImpl*, true>, loki::EqualTo<const RequirementsImpl*, true>>;
 
     /// @brief Test for semantic equivalence
     bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;
