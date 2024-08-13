@@ -78,7 +78,6 @@ class CustomAStarAlgorithmEventHandler(AStarAlgorithmEventHandlerBase):
     def on_exhausted_impl(self):
         pass
 
-
 def test_astar_search():
     """ Test parsing a PDDL domain and problem file.
     """

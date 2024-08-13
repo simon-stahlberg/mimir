@@ -38,11 +38,11 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& 
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem,
                                                              m_problem->get_domain()->get_predicates<Fluent>(),
-                                                             m_pddl_factories->get_ground_atoms_from_ids<Fluent>(fluent_state_atoms));
+                                                             m_pddl_factories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms));
 
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem,
                                                          m_problem->get_problem_and_domain_derived_predicates(),
-                                                         m_pddl_factories->get_ground_atoms_from_ids<Derived>(ref_derived_state_atoms));
+                                                         m_pddl_factories->get_ground_atoms_from_indices<Derived>(ref_derived_state_atoms));
 
     /* 2. Fixed point computation */
 
@@ -278,6 +278,8 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
 }
 
 const GroundAxiomList& AxiomEvaluator::get_ground_axioms() const { return m_axioms_by_index; }
+
+GroundAxiom AxiomEvaluator::get_ground_axiom(size_t axiom_index) const { return m_axioms_by_index.at(axiom_index); }
 
 size_t AxiomEvaluator::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
 

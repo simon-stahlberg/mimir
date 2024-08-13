@@ -62,7 +62,7 @@ private:
 
         /* Common */
 
-        [[nodiscard]] NodeType get_node_type() const noexcept { return type; }
+        NodeType get_node_type() const noexcept { return type; }
 
         /* Selector specific accessors */
 
@@ -78,20 +78,20 @@ private:
             assert(type == NodeType::FLUENT_SELECTOR || type == NodeType::DERIVED_SELECTOR);
         }
 
-        [[nodiscard]] bool is_selector_node() const noexcept { return first_data != MAX_VALUE; }
+        bool is_selector_node() const noexcept { return first_data != MAX_VALUE; }
 
-        [[nodiscard]] size_t get_ground_atom_id() const noexcept { return first_data; }
+        size_t get_ground_atom_id() const noexcept { return first_data; }
 
-        [[nodiscard]] bool has_true_succ() const noexcept { return second_data != MAX_VALUE; }
-        [[nodiscard]] NodeID get_true_succ() const noexcept { return second_data; }
+        bool has_true_succ() const noexcept { return second_data != MAX_VALUE; }
+        NodeID get_true_succ() const noexcept { return second_data; }
         void set_true_succ(NodeID true_succ) noexcept { second_data = true_succ; }
 
-        [[nodiscard]] bool has_false_succ() const noexcept { return third_data != MAX_VALUE; }
-        [[nodiscard]] NodeID get_false_succ() const noexcept { return third_data; }
+        bool has_false_succ() const noexcept { return third_data != MAX_VALUE; }
+        NodeID get_false_succ() const noexcept { return third_data; }
         void set_false_succ(NodeID false_succ) noexcept { third_data = false_succ; }
 
-        [[nodiscard]] bool has_dontcare_succ() const noexcept { return fourth_data != MAX_VALUE; }
-        [[nodiscard]] NodeID get_dontcare_succ() const noexcept { return fourth_data; }
+        bool has_dontcare_succ() const noexcept { return fourth_data != MAX_VALUE; }
+        NodeID get_dontcare_succ() const noexcept { return fourth_data; }
         void set_dontcare_succ(NodeID dontcare_succ) noexcept { fourth_data = dontcare_succ; }
 
         /* Generator specific accessors */
@@ -108,11 +108,11 @@ private:
             assert(type == NodeType::GENERATOR);
         }
 
-        [[nodiscard]] bool is_generator_node() const noexcept { return first_data == MAX_VALUE; }
+        bool is_generator_node() const noexcept { return first_data == MAX_VALUE; }
 
-        [[nodiscard]] ActionIter get_begin() const noexcept { return second_data; }
+        ActionIter get_begin() const noexcept { return second_data; }
 
-        [[nodiscard]] ActionIter get_end() const noexcept { return third_data; }
+        ActionIter get_end() const noexcept { return third_data; }
     };
 
     std::vector<GeneratorOrSelectorNode> m_nodes;
@@ -136,7 +136,7 @@ public:
     template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
     void get_applicable_elements(const Bitset1& fluent_ground_atoms, const Bitset2& derived_ground_atoms, std::vector<T>& out_applicable_elements);
 
-    [[nodiscard]] size_t get_num_nodes() const;
+    size_t get_num_nodes() const;
 
     void print() const;
 };

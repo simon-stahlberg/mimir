@@ -74,10 +74,13 @@ public:
 
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
 
-    /// @brief Return all actions.
-    const GroundActionList& get_ground_actions() const;
+    const GroundActionList& get_ground_actions() const override;
 
-    GroundAction get_action(size_t action_id) const override;
+    GroundAction get_ground_action(size_t action_index) const override;
+
+    const GroundAxiomList& get_ground_axioms() const override;
+
+    GroundAxiom get_ground_axiom(size_t axiom_index) const override;
 
     size_t get_num_ground_actions() const override;
 

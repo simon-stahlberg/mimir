@@ -459,12 +459,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
     auto positive_derived_precondition = GroundAtomList<Derived> {};
     auto negative_derived_precondition = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_ids<Static>(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Static>(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
     os << "positive static precondition=" << positive_static_precondition << ", "
        << "negative static precondition=" << negative_static_precondition << ", "
@@ -486,8 +486,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
     auto positive_simple_effects = GroundAtomList<Fluent> {};
     auto negative_simple_effects = GroundAtomList<Fluent> {};
 
-    pddl_factories.get_ground_atoms_from_ids<Fluent>(positive_effect_bitset, positive_simple_effects);
-    pddl_factories.get_ground_atoms_from_ids<Fluent>(negative_effect_bitset, negative_simple_effects);
+    pddl_factories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
+    pddl_factories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
     os << "delete effects=" << negative_simple_effects << ", "
        << "add effects=" << positive_simple_effects;
@@ -514,12 +514,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
     auto positive_derived_precondition = GroundAtomList<Derived> {};
     auto negative_derived_precondition = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_ids<Static>(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Static>(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
-    pddl_factories.get_ground_atoms_from_ids<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
+    pddl_factories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
     os << "positive static precondition=" << positive_static_precondition << ", "
        << "negative static precondition=" << negative_static_precondition << ", "

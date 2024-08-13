@@ -46,8 +46,17 @@ public:
     /// @brief Notify that the search has finished
     virtual void on_end_search() const = 0;
 
-    /// @brief Return the action with the given id.
-    virtual GroundAction get_action(size_t action_id) const = 0;
+    /// @brief Return the ground actions.
+    virtual const GroundActionList& get_ground_actions() const = 0;
+
+    /// @brief Return the ground action with the given index.
+    virtual GroundAction get_ground_action(size_t action_index) const = 0;
+
+    /// @brief Return the ground axioms.
+    virtual const GroundAxiomList& get_ground_axioms() const = 0;
+
+    /// @brief Return the ground axiom with the given index.
+    virtual GroundAxiom get_ground_axiom(size_t action_index) const = 0;
 
     virtual size_t get_num_ground_actions() const = 0;
     virtual size_t get_num_ground_axioms() const = 0;

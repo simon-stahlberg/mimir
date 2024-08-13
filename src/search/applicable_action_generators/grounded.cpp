@@ -144,13 +144,14 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories->get_ground_atoms_from_ids<Fluent>(fluent_state_atoms),
-                                                       m_pddl_factories->get_ground_atoms_from_ids<Derived>(derived_state_atoms),
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms),
+                                                       m_pddl_factories->get_ground_atoms_from_indices<Derived>(derived_state_atoms),
                                                        delete_free_lifted_aag->get_ground_actions(),
                                                        delete_free_lifted_aag->get_ground_axioms());
 
-    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_ids<Fluent>(fluent_state_atoms), *m_pddl_factories);
-    auto derived_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_ids<Derived>(derived_state_atoms), *m_pddl_factories);
+    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms), *m_pddl_factories);
+    auto derived_ground_atoms_order =
+        compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_indices<Derived>(derived_state_atoms), *m_pddl_factories);
 
     // 2. Create ground actions
     /* TODO: we want ground actions in PNF and problem with modified initial state.
@@ -263,7 +264,11 @@ void GroundedApplicableActionGenerator::on_end_search() const { m_event_handler-
 
 const GroundActionList& GroundedApplicableActionGenerator::get_ground_actions() const { return m_lifted_aag.get_ground_actions(); }
 
-GroundAction GroundedApplicableActionGenerator::get_action(size_t action_id) const { return m_lifted_aag.get_action(action_id); }
+GroundAction GroundedApplicableActionGenerator::get_ground_action(size_t action_index) const { return m_lifted_aag.get_ground_action(action_index); }
+
+const GroundAxiomList& GroundedApplicableActionGenerator::get_ground_axioms() const { return m_lifted_aag.get_ground_axioms(); }
+
+GroundAxiom GroundedApplicableActionGenerator::get_ground_axiom(size_t axiom_index) const { return m_lifted_aag.get_ground_axiom(axiom_index); }
 
 size_t GroundedApplicableActionGenerator::get_num_ground_actions() const { return m_lifted_aag.get_num_ground_actions(); }
 

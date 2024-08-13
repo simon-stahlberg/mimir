@@ -251,19 +251,19 @@ public:
     GroundAtom<P> get_ground_atom(size_t atom_id) const;
 
     template<PredicateCategory P, std::ranges::forward_range Iterable>
-    void get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const;
+    void get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const;
 
     template<PredicateCategory P, std::ranges::forward_range Iterable>
-    GroundAtomList<P> get_ground_atoms_from_ids(const Iterable& atom_ids) const;
+    GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_ids) const;
 
     // Object
     Object get_object(size_t object_id) const;
 
     template<std::ranges::forward_range Iterable>
-    void get_objects_from_ids(const Iterable& object_ids, ObjectList& out_objects) const;
+    void get_objects_from_indices(const Iterable& object_ids, ObjectList& out_objects) const;
 
     template<std::ranges::forward_range Iterable>
-    ObjectList get_objects_from_ids(const Iterable& object_ids) const;
+    ObjectList get_objects_from_indices(const Iterable& object_ids) const;
 
     /* Grounding */
 
@@ -290,7 +290,7 @@ public:
  */
 
 template<PredicateCategory P, std::ranges::forward_range Iterable>
-void PDDLFactories::get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
+void PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
 
@@ -301,15 +301,15 @@ void PDDLFactories::get_ground_atoms_from_ids(const Iterable& atom_ids, GroundAt
 }
 
 template<PredicateCategory P, std::ranges::forward_range Iterable>
-GroundAtomList<P> PDDLFactories::get_ground_atoms_from_ids(const Iterable& atom_ids) const
+GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids) const
 {
     auto result = GroundAtomList<P> {};
-    get_ground_atoms_from_ids(atom_ids, result);
+    get_ground_atoms_from_indices(atom_ids, result);
     return result;
 }
 
 template<std::ranges::forward_range Iterable>
-void PDDLFactories::get_objects_from_ids(const Iterable& object_ids, ObjectList& out_objects) const
+void PDDLFactories::get_objects_from_indices(const Iterable& object_ids, ObjectList& out_objects) const
 {
     out_objects.clear();
     for (const auto& object_id : object_ids)
@@ -319,10 +319,10 @@ void PDDLFactories::get_objects_from_ids(const Iterable& object_ids, ObjectList&
 }
 
 template<std::ranges::forward_range Iterable>
-ObjectList PDDLFactories::get_objects_from_ids(const Iterable& object_ids) const
+ObjectList PDDLFactories::get_objects_from_indices(const Iterable& object_ids) const
 {
     auto objects = ObjectList {};
-    get_objects_from_ids(object_ids, objects);
+    get_objects_from_indices(object_ids, objects);
     return objects;
 }
 

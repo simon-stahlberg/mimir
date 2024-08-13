@@ -976,14 +976,14 @@ void init_pymimir(py::module_& m)
         .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference_internal)
         .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>, py::return_value_policy::reference_internal)
         .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>, py::return_value_policy::reference_internal)
-        .def("get_static_ground_atoms_from_ids",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Static, std::vector<size_t>>, py::const_),
+        .def("get_static_ground_atoms_from_indices",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
-        .def("get_fluent_ground_atoms_from_ids",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Fluent, std::vector<size_t>>, py::const_),
+        .def("get_fluent_ground_atoms_from_indices",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Fluent, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
-        .def("get_derived_ground_atoms_from_ids",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_ids<Derived, std::vector<size_t>>, py::const_),
+        .def("get_derived_ground_atoms_from_indices",
+             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
         .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal);
 
@@ -1120,7 +1120,24 @@ void init_pymimir(py::module_& m)
             },
             py::keep_alive<0, 1>(),
             py::arg("state"))
-        .def("get_action", &IApplicableActionGenerator::get_action, py::keep_alive<0, 1>(), py::arg("action_id"))
+        .def(
+            "get_ground_actions",
+            [](const IApplicableActionGenerator& self)
+            {
+                auto actions = self.get_ground_actions();
+                return actions;
+            },
+            py::keep_alive<0, 1>())
+        .def("get_ground_action", &IApplicableActionGenerator::get_ground_action, py::keep_alive<0, 1>(), py::arg("action_index"))
+        .def(
+            "get_ground_axioms",
+            [](const IApplicableActionGenerator& self)
+            {
+                auto axioms = self.get_ground_axioms();
+                return axioms;
+            },
+            py::keep_alive<0, 1>())
+        .def("get_ground_action", &IApplicableActionGenerator::get_ground_axiom, py::keep_alive<0, 1>(), py::arg("axiom_index"))
         .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &IApplicableActionGenerator::get_pddl_factories);
 

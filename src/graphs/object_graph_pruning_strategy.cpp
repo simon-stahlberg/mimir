@@ -303,44 +303,44 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
             {
                 const auto& precondition = StripsActionPrecondition(get_creating_action(transition).get_strips_precondition());
                 mark_objects_as_not_prunable(
-                    state_space->get_pddl_factories()->get_ground_atoms_from_ids<Static>(precondition.get_negative_precondition<Static>()),
+                    state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(precondition.get_negative_precondition<Static>()),
                     pruned_objects);
                 mark_objects_as_not_prunable(
-                    state_space->get_pddl_factories()->get_ground_atoms_from_ids<Static>(precondition.get_positive_precondition<Static>()),
+                    state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(precondition.get_positive_precondition<Static>()),
                     pruned_objects);
                 mark_objects_as_not_prunable(
-                    state_space->get_pddl_factories()->get_ground_atoms_from_ids<Fluent>(precondition.get_negative_precondition<Fluent>()),
+                    state_space->get_pddl_factories()->get_ground_atoms_from_indices<Fluent>(precondition.get_negative_precondition<Fluent>()),
                     pruned_objects);
                 mark_objects_as_not_prunable(
-                    state_space->get_pddl_factories()->get_ground_atoms_from_ids<Fluent>(precondition.get_positive_precondition<Fluent>()),
+                    state_space->get_pddl_factories()->get_ground_atoms_from_indices<Fluent>(precondition.get_positive_precondition<Fluent>()),
                     pruned_objects);
                 mark_objects_as_not_prunable(
-                    state_space->get_pddl_factories()->get_ground_atoms_from_ids<Derived>(precondition.get_negative_precondition<Derived>()),
+                    state_space->get_pddl_factories()->get_ground_atoms_from_indices<Derived>(precondition.get_negative_precondition<Derived>()),
                     pruned_objects);
                 mark_objects_as_not_prunable(
-                    state_space->get_pddl_factories()->get_ground_atoms_from_ids<Derived>(precondition.get_positive_precondition<Derived>()),
+                    state_space->get_pddl_factories()->get_ground_atoms_from_indices<Derived>(precondition.get_positive_precondition<Derived>()),
                     pruned_objects);
 
                 for (const auto& flat_conditional_effect : get_creating_action(transition).get_conditional_effects())
                 {
                     const auto conditional_effect = ConditionalEffect(flat_conditional_effect);
                     mark_objects_as_not_prunable(
-                        state_space->get_pddl_factories()->get_ground_atoms_from_ids<Static>(conditional_effect.get_negative_precondition<Static>()),
+                        state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(conditional_effect.get_negative_precondition<Static>()),
                         pruned_objects);
                     mark_objects_as_not_prunable(
-                        state_space->get_pddl_factories()->get_ground_atoms_from_ids<Static>(conditional_effect.get_positive_precondition<Static>()),
+                        state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(conditional_effect.get_positive_precondition<Static>()),
                         pruned_objects);
                     mark_objects_as_not_prunable(
-                        state_space->get_pddl_factories()->get_ground_atoms_from_ids<Fluent>(conditional_effect.get_negative_precondition<Fluent>()),
+                        state_space->get_pddl_factories()->get_ground_atoms_from_indices<Fluent>(conditional_effect.get_negative_precondition<Fluent>()),
                         pruned_objects);
                     mark_objects_as_not_prunable(
-                        state_space->get_pddl_factories()->get_ground_atoms_from_ids<Fluent>(conditional_effect.get_positive_precondition<Fluent>()),
+                        state_space->get_pddl_factories()->get_ground_atoms_from_indices<Fluent>(conditional_effect.get_positive_precondition<Fluent>()),
                         pruned_objects);
                     mark_objects_as_not_prunable(
-                        state_space->get_pddl_factories()->get_ground_atoms_from_ids<Derived>(conditional_effect.get_negative_precondition<Derived>()),
+                        state_space->get_pddl_factories()->get_ground_atoms_from_indices<Derived>(conditional_effect.get_negative_precondition<Derived>()),
                         pruned_objects);
                     mark_objects_as_not_prunable(
-                        state_space->get_pddl_factories()->get_ground_atoms_from_ids<Derived>(conditional_effect.get_positive_precondition<Derived>()),
+                        state_space->get_pddl_factories()->get_ground_atoms_from_indices<Derived>(conditional_effect.get_positive_precondition<Derived>()),
                         pruned_objects);
                 }
             }
@@ -416,7 +416,7 @@ std::ostream& operator<<(std::ostream& out,
 {
     const auto& [pruning_component, problem, factories] = data;
 
-    out << "pruned_objects: " << factories.get_objects_from_ids(pruning_component.m_pruned_objects) << std::endl;
+    out << "pruned_objects: " << factories.get_objects_from_indices(pruning_component.m_pruned_objects) << std::endl;
 
     return out;
 }

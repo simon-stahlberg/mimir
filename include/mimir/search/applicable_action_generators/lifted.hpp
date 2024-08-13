@@ -103,13 +103,13 @@ public:
     /// @brief Ground an action and return a view onto it.
     GroundAction ground_action(Action action, ObjectList&& binding);
 
-    /// @brief Return all axioms.
-    const GroundAxiomList& get_ground_axioms() const;
+    const GroundActionList& get_ground_actions() const override;
 
-    /// @brief Return all actions.
-    const GroundActionList& get_ground_actions() const;
+    GroundAction get_ground_action(size_t action_index) const override;
 
-    GroundAction get_action(size_t action_id) const override;
+    const GroundAxiomList& get_ground_axioms() const override;
+
+    GroundAxiom get_ground_axiom(size_t axiom_index) const override;
 
     size_t get_num_ground_actions() const override;
 

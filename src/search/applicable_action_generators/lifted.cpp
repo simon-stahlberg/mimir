@@ -323,11 +323,11 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     // Create the assignment sets that are shared by all action schemas.
 
     auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
-    auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_ids<Fluent>(state.get_atoms<Fluent>());
+    auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state.get_atoms<Fluent>());
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
-    auto derived_atoms = m_pddl_factories->get_ground_atoms_from_ids<Derived>(state.get_atoms<Derived>());
+    auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state.get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
 
     // Get all applicable ground actions.
@@ -413,11 +413,13 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     }
 }
 
-const GroundAxiomList& LiftedApplicableActionGenerator::get_ground_axioms() const { return m_axiom_evaluator.get_ground_axioms(); }
-
 const GroundActionList& LiftedApplicableActionGenerator::get_ground_actions() const { return m_actions_by_index; }
 
-GroundAction LiftedApplicableActionGenerator::get_action(size_t action_id) const { return m_actions_by_index.at(action_id); }
+GroundAction LiftedApplicableActionGenerator::get_ground_action(size_t action_id) const { return m_actions_by_index.at(action_id); }
+
+const GroundAxiomList& LiftedApplicableActionGenerator::get_ground_axioms() const { return m_axiom_evaluator.get_ground_axioms(); }
+
+GroundAxiom LiftedApplicableActionGenerator::get_ground_axiom(size_t axiom_index) const { return m_axiom_evaluator.get_ground_axiom(axiom_index); }
 
 size_t LiftedApplicableActionGenerator::get_num_ground_actions() const { return m_actions_by_index.size(); }
 
@@ -425,7 +427,7 @@ size_t LiftedApplicableActionGenerator::get_num_ground_axioms() const { return m
 
 Problem LiftedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-[[nodiscard]] const std::shared_ptr<PDDLFactories>& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLFactories>& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
 
 std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag)
 {

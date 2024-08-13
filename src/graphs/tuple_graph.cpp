@@ -695,8 +695,8 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 
             tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), combined_atom_indices);
             tuple_graph.get_atom_index_mapper()->inverse_remap_and_separate(combined_atom_indices, fluent_atom_indices, derived_atom_indices);
-            const auto fluent_atoms = pddl_factories.get_ground_atoms_from_ids<Fluent>(fluent_atom_indices);
-            const auto derived_atoms = pddl_factories.get_ground_atoms_from_ids<Derived>(derived_atom_indices);
+            const auto fluent_atoms = pddl_factories.get_ground_atoms_from_indices<Fluent>(fluent_atom_indices);
+            const auto derived_atoms = pddl_factories.get_ground_atoms_from_indices<Derived>(derived_atom_indices);
             out << "fluent_atoms=" << fluent_atoms << ", derived_atoms=" << derived_atoms << "<BR/>";
             out << "states=[";
             for (size_t i = 0; i < vertex.get_states().size(); ++i)
