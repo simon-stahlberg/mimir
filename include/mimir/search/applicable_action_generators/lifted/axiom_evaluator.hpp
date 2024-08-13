@@ -15,23 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATOR_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATOR_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_AXIOM_EVALUATOR_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_AXIOM_EVALUATOR_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
+#include "mimir/search/applicable_action_generators/lifted/axiom_stratification.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/axiom.hpp"
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
-#include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/condition_grounders.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
-#include <flatmemory/details/view_const.hpp>
 #include <stdexcept>
 #include <unordered_map>
 #include <vector>
@@ -63,10 +62,7 @@ public:
     }
 };
 
-/**
- * Fully specialized implementation class.
- */
-class AxiomEvaluator : public IAxiomEvaluator
+class AxiomEvaluator
 {
 private:
     Problem m_problem;
@@ -94,7 +90,7 @@ public:
     AxiomEvaluator& operator=(AxiomEvaluator&& other) = delete;
 
     /// @brief Generate and apply all applicable axioms.
-    void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
+    void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms);
 
     /// @brief Return the axiom partitioning.
     const std::vector<AxiomPartition>& get_axiom_partitioning() const;
@@ -107,14 +103,8 @@ public:
 
     GroundAxiom get_ground_axiom(size_t axiom_index) const;
 
-    size_t get_num_ground_axioms() const override;
+    size_t get_num_ground_axioms() const;
 };
-
-/**
- * Types
- */
-
-using AE = AxiomEvaluator;
 
 }  // namespace mimir
 

@@ -25,7 +25,6 @@
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <deque>

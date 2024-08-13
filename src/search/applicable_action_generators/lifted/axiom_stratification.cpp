@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
+#include "mimir/search/applicable_action_generators/lifted/axiom_stratification.hpp"
 
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
