@@ -3,7 +3,7 @@ name: Build Wheels
 on:
   push:
     branches:
-      - v2
+      - main
 
 jobs:
   build_wheels:
@@ -18,7 +18,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        ref: v2
+        ref: main
 
     - name: Set up Python
       uses: actions/setup-python@v2

@@ -3,7 +3,7 @@ name: Pip
 on:
   push:
     branches:
-      - v2
+      - main
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
-          ref: v2
+          ref: main
 
       - uses: actions/setup-python@v2
         with:
