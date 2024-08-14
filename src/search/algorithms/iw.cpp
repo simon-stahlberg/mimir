@@ -120,8 +120,7 @@ TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tupl
 
 FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_is_remapped_fluent(), m_inverse_remap(), m_num_atoms(0) {}
 
-FluentAndDerivedMapper::FluentAndDerivedMapper(const loki::UniqueValueTypeFactory<GroundAtomImpl<Fluent>>& fluent_atoms,
-                                               const loki::UniqueValueTypeFactory<GroundAtomImpl<Derived>>& derived_atoms) :
+FluentAndDerivedMapper::FluentAndDerivedMapper(const GroundAtomFactory<Fluent>& fluent_atoms, const GroundAtomFactory<Derived>& derived_atoms) :
     m_fluent_remap(fluent_atoms.size(), -1),
     m_derived_remap(derived_atoms.size(), -1),
     m_is_remapped_fluent(fluent_atoms.size() + derived_atoms.size(), false),

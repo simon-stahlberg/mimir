@@ -27,7 +27,7 @@ namespace mimir
 
 template<PredicateCategory P>
 PredicateImpl<P>::PredicateImpl(size_t index, std::string name, VariableList parameters) :
-    loki::Base<PredicateImpl<P>>(index),
+    m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {

@@ -26,10 +26,8 @@
 namespace mimir
 {
 
-/// @brief `UniquePDDLEqualTo` is a comparator that should be implemented to work in the context where
-/// all objects of a custom type `T` are uniquely created and uncopieable.
-/// This ensures that pointers can simply be compared and do not need to be dereferenced.
-/// @tparam T the type of the object to compare.
+/// @brief `UniquePDDLEqualTo` is used to compare newly created PDDL objects for uniqueness.
+/// Since the children are unique, it suffices to compare nested pointers.
 template<typename T>
 struct UniquePDDLEqualTo
 {
@@ -62,6 +60,18 @@ struct UniquePDDLEqualTo<std::variant<Ts...>>
             l,
             r);
     }
+};
+
+template<>
+struct UniquePDDLEqualTo<const ActionImpl*>
+{
+    bool operator()(const ActionImpl* l, const ActionImpl* r) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const AtomImpl<P>*>
+{
+    bool operator()(const AtomImpl<P>* l, const AtomImpl<P>* r) const;
 };
 
 }

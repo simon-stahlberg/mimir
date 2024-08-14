@@ -84,8 +84,7 @@ private:
 
 public:
     FluentAndDerivedMapper();
-    FluentAndDerivedMapper(const loki::UniqueValueTypeFactory<GroundAtomImpl<Fluent>>& fluent_atoms,
-                           const loki::UniqueValueTypeFactory<GroundAtomImpl<Derived>>& derived_atoms);
+    FluentAndDerivedMapper(const GroundAtomFactory<Fluent>& fluent_atoms, const GroundAtomFactory<Derived>& derived_atoms);
 
     /**
      * Forward Remapping

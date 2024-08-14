@@ -128,12 +128,29 @@ public:
     bool is_statically_applicable(const FlatBitset<Static> static_positive_bitset) const;
 };
 
+}
+
+template<>
+struct std::hash<mimir::GroundAxiom>
+{
+    size_t operator()(const mimir::GroundAxiom& e) const;
+};
+
+template<>
+struct std::equal_to<mimir::GroundAxiom>
+{
+    size_t operator()(const mimir::GroundAxiom& l, const mimir::GroundAxiom& r) const;
+};
+
+namespace mimir
+{
+
 /**
  * Mimir types
  */
 
 using GroundAxiomList = std::vector<GroundAxiom>;
-using GroundAxiomSet = std::unordered_set<GroundAxiom, loki::Hash<GroundAxiom>, loki::EqualTo<GroundAxiom>>;
+using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 
 /**
  * Pretty printing

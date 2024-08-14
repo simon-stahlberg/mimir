@@ -258,23 +258,10 @@ public:
     /// @brief Create a view on a DefaultAction.
     explicit GroundAction(FlatAction view);
 
-    /// @brief Return a hash value for the grounded action.
-    ///
-    /// Same argument from operator== applies.
-    size_t hash() const;
-
     GroundActionIndex get_index() const;
     GroundActionCost get_cost() const;
     Action get_action() const;
     FlatObjectList get_objects() const;
-
-    /// Return true iff two grounded actions are equal.
-    ///
-    /// For grounded actions in same AAG, we know they are already unique.
-    /// Hence, comparison of the buffer pointer suffices.
-    /// For grounded actions in different AAG, buffer pointers are always different.
-    /// Hence, comparison always returns false.
-    bool operator==(GroundAction other) const;
 
     /* STRIPS part */
     FlatStripsActionPrecondition get_strips_precondition() const;
@@ -291,12 +278,29 @@ public:
 
 static_assert(std::is_trivially_copyable_v<std::optional<GroundAction>>);
 
+}
+
+template<>
+struct std::hash<mimir::GroundAction>
+{
+    size_t operator()(const mimir::GroundAction& e) const;
+};
+
+template<>
+struct std::equal_to<mimir::GroundAction>
+{
+    size_t operator()(const mimir::GroundAction& l, const mimir::GroundAction& r) const;
+};
+
+namespace mimir
+{
+
 /**
  * Mimir types
  */
 
 using GroundActionList = std::vector<GroundAction>;
-using GroundActionSet = std::unordered_set<GroundAction, loki::Hash<GroundAction>, loki::EqualTo<GroundAction>>;
+using GroundActionSet = std::unordered_set<GroundAction>;
 
 /**
  * Pretty printing

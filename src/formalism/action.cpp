@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/action.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
@@ -92,101 +93,6 @@ ActionImpl::ActionImpl(size_t index,
               });
 }
 
-bool ActionImpl::is_structurally_equivalent_to_impl(const ActionImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_name == other.m_name) && (m_parameters == other.m_parameters) && (m_static_conditions == other.m_static_conditions)
-               && (m_fluent_conditions == other.m_fluent_conditions) && (m_derived_conditions == other.m_derived_conditions)
-               && (m_simple_effects == other.m_simple_effects) && (m_conditional_effects == other.m_conditional_effects)
-               && (m_universal_effects == other.m_universal_effects) && (m_function_expression == other.m_function_expression);
-    }
-    return true;
-}
-
-size_t ActionImpl::hash_impl() const
-{
-    return HashCombiner()(m_name,
-                          m_parameters,
-                          m_static_conditions,
-                          m_fluent_conditions,
-                          m_derived_conditions,
-                          m_simple_effects,
-                          m_conditional_effects,
-                          m_universal_effects,
-                          m_function_expression);
-}
-
-void ActionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { return str(out, options, true); }
-
-void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, bool action_costs) const
-{
-    auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
-    out << std::string(options.indent, ' ') << "(:action " << m_name << "\n" << std::string(nested_options.indent, ' ') << ":parameters (";
-    for (size_t i = 0; i < m_parameters.size(); ++i)
-    {
-        if (i != 0)
-            out << " ";
-        m_parameters[i]->str(out, options);
-    }
-    out << ")\n";
-
-    out << std::string(nested_options.indent, ' ') << ":conditions ";
-    if (m_static_conditions.empty() && m_fluent_conditions.empty())
-    {
-        out << "()\n";
-    }
-    else
-    {
-        out << "(and";
-        for (const auto& condition : m_static_conditions)
-        {
-            out << " " << *condition;
-        }
-        for (const auto& condition : m_fluent_conditions)
-        {
-            out << " " << *condition;
-        }
-        for (const auto& condition : m_derived_conditions)
-        {
-            out << " " << *condition;
-        }
-        out << ")\n";
-    }
-
-    out << std::string(nested_options.indent, ' ') << ":effects ";
-    if (m_simple_effects.empty() && m_conditional_effects.empty() && m_universal_effects.empty())
-    {
-        out << "()\n";
-    }
-    else
-    {
-        out << "(and";
-        for (const auto& effect : m_simple_effects)
-        {
-            out << " " << *effect;
-        }
-        for (const auto& effect : m_conditional_effects)
-        {
-            out << " " << *effect;
-        }
-        for (const auto& effect : m_universal_effects)
-        {
-            out << " " << *effect;
-        }
-        if (action_costs)
-        {
-            out << " "
-                << "(increase total-cost ";
-            std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
-            out << ")";
-        }
-        out << ")";  // end and
-    }
-
-    out << ")\n";  // end action
-}
-
 size_t ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
@@ -229,5 +135,12 @@ const EffectUniversalList& ActionImpl::get_universal_effects() const { return m_
 const FunctionExpression& ActionImpl::get_function_expression() const { return m_function_expression; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
+
+std::ostream& operator<<(std::ostream& out, const ActionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 
 }

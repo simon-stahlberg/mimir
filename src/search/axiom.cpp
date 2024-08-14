@@ -24,6 +24,10 @@
 #include <ostream>
 #include <tuple>
 
+size_t std::hash<mimir::GroundAxiom>::operator()(const mimir::GroundAxiom& e) const { return e.get_index(); }
+
+size_t std::equal_to<mimir::GroundAxiom>::operator()(const mimir::GroundAxiom& l, const mimir::GroundAxiom& r) const { return l.get_index() == r.get_index(); }
+
 namespace mimir
 {
 

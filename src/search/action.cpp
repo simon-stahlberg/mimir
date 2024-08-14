@@ -25,6 +25,13 @@
 #include <ostream>
 #include <tuple>
 
+size_t std::hash<mimir::GroundAction>::operator()(const mimir::GroundAction& e) const { return e.get_index(); }
+
+size_t std::equal_to<mimir::GroundAction>::operator()(const mimir::GroundAction& l, const mimir::GroundAction& r) const
+{
+    return l.get_index() == r.get_index();
+}
+
 namespace mimir
 {
 
@@ -383,8 +390,6 @@ FlatConditionalEffectsBuilder& GroundActionBuilder::get_conditional_effects() { 
 
 GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
-size_t GroundAction::hash() const { return HashCombiner()(m_view.buffer()); }
-
 GroundActionIndex GroundAction::get_index() const { return m_view.get<0>(); }
 
 GroundActionCost GroundAction::get_cost() const { return m_view.get<1>(); }
@@ -392,8 +397,6 @@ GroundActionCost GroundAction::get_cost() const { return m_view.get<1>(); }
 Action GroundAction::get_action() const { return m_view.get<2>(); }
 
 FlatObjectList GroundAction::get_objects() const { return m_view.get<3>(); }
-
-bool GroundAction::operator==(GroundAction other) const { return m_view.buffer() == other.m_view.buffer(); }
 
 FlatStripsActionPrecondition GroundAction::get_strips_precondition() const { return m_view.get<4>(); }
 

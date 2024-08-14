@@ -24,39 +24,8 @@
 namespace mimir
 {
 template<PredicateCategory P>
-AtomImpl<P>::AtomImpl(size_t index, Predicate<P> predicate, TermList terms) :
-    loki::Base<AtomImpl<P>>(index),
-    m_predicate(std::move(predicate)),
-    m_terms(std::move(terms))
+AtomImpl<P>::AtomImpl(size_t index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))
 {
-}
-
-template<PredicateCategory P>
-bool AtomImpl<P>::is_structurally_equivalent_to_impl(const AtomImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate) && (m_terms == other.m_terms);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-size_t AtomImpl<P>::hash_impl() const
-{
-    return HashCombiner()(m_predicate, m_terms);
-}
-
-template<PredicateCategory P>
-void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << m_predicate->get_name();
-    for (size_t i = 0; i < m_terms.size(); ++i)
-    {
-        out << " ";
-        std::visit(loki::StringifyVisitor(out, options), *m_terms[i]);
-    }
-    out << ")";
 }
 
 template<PredicateCategory P>

@@ -75,18 +75,6 @@ public:
     size_t get_arity() const;
 };
 
-template<>
-struct UniquePDDLHasher<const ActionImpl*>
-{
-    size_t operator()(const ActionImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const ActionImpl*>
-{
-    bool operator()(const ActionImpl* l, const ActionImpl* r) const;
-};
-
 extern std::ostream& operator<<(std::ostream& out, const ActionImpl& element);
 
 }

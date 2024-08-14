@@ -50,18 +50,6 @@ public:
 };
 
 template<PredicateCategory P>
-struct UniquePDDLHasher<const AtomImpl<P>*>
-{
-    size_t operator()(const AtomImpl<P>* e) const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLEqualTo<const AtomImpl<P>*>
-{
-    bool operator()(const AtomImpl<P>* l, const AtomImpl<P>* r) const;
-};
-
-template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
 }

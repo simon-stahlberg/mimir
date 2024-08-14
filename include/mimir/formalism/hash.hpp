@@ -30,10 +30,8 @@
 namespace mimir
 {
 
-/// @brief `UniquePDDLHasher` is a hasher that should be implemented to work in the context where
-/// all objects of a custom type `T` are uniquely created and uncopieable.
-/// This ensures that pointers can simply be hashed and do not need to be dereferenced.
-/// @tparam T the type of the object to hash.
+/// @brief `UniquePDDLEqualTo` is used to compare newly created PDDL objects for uniqueness.
+/// Since the children are unique, it suffices to create a combined hash from nested pointers.
 template<typename T>
 struct UniquePDDLHasher
 {
@@ -84,6 +82,18 @@ struct UniquePDDLHasher<std::variant<Ts...>>
     {
         return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, variant);
     }
+};
+
+template<>
+struct UniquePDDLHasher<const ActionImpl*>
+{
+    size_t operator()(const ActionImpl* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const AtomImpl<P>*>
+{
+    size_t operator()(const AtomImpl<P>* e) const;
 };
 
 }

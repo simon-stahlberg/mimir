@@ -25,7 +25,7 @@ namespace mimir
 {
 template<PredicateCategory P>
 GroundAtomImpl<P>::GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectList objects) :
-    loki::Base<GroundAtomImpl<P>>(index),
+    m_index(index),
     m_predicate(std::move(predicate)),
     m_objects(std::move(objects))
 {

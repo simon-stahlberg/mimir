@@ -37,6 +37,9 @@ PDDLFactories::PDDLFactories() :
                 GroundLiteralFactory<Static>(),
                 GroundLiteralFactory<Fluent>(),
                 GroundLiteralFactory<Derived>(),
+                PredicateFactory<Static>(),
+                PredicateFactory<Fluent>(),
+                PredicateFactory<Derived>(),
                 FunctionExpressionFactory(),
                 GroundFunctionExpressionFactory(),
                 FunctionFactory(),
@@ -334,14 +337,14 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
 
 // Factory
 template<typename T>
-const auto& PDDLFactories::get_factory() const
+const T& PDDLFactories::get_factory() const
 {
     return m_factories.get<T>();
 }
 
-template const auto& PDDLFactories::get_factory<GroundAtomFactory<Static>>() const;
-template const auto& PDDLFactories::get_factory<GroundAtomFactory<Fluent>>() const;
-template const auto& PDDLFactories::get_factory<GroundAtomFactory<Derived>>() const;
+template const GroundAtomFactory<Static>& PDDLFactories::get_factory<GroundAtomFactory<Static>>() const;
+template const GroundAtomFactory<Fluent>& PDDLFactories::get_factory<GroundAtomFactory<Fluent>>() const;
+template const GroundAtomFactory<Derived>& PDDLFactories::get_factory<GroundAtomFactory<Derived>>() const;
 
 // GroundAtom
 template<PredicateCategory P>

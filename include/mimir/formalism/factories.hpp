@@ -48,6 +48,7 @@
 
 namespace mimir
 {
+
 using RequirementsFactory = loki::UniqueFactory<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
 using VariableFactory = loki::UniqueFactory<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
 using TermFactory = loki::UniqueFactory<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
@@ -101,6 +102,9 @@ using VariadicPDDLConstructorFactory = loki::VariadicContainer<RequirementsFacto
                                                                GroundLiteralFactory<Static>,
                                                                GroundLiteralFactory<Fluent>,
                                                                GroundLiteralFactory<Derived>,
+                                                               PredicateFactory<Static>,
+                                                               PredicateFactory<Fluent>,
+                                                               PredicateFactory<Derived>,
                                                                FunctionExpressionFactory,
                                                                GroundFunctionExpressionFactory,
                                                                FunctionFactory,
@@ -280,7 +284,7 @@ public:
 
     // Factory
     template<typename T>
-    const auto& get_factory() const;
+    const T& get_factory() const;
 
     // GroundAtom
     template<PredicateCategory P>
