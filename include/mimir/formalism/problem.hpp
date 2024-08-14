@@ -19,13 +19,16 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 #include "mimir/search/flat_types.hpp"
 
 namespace mimir
 {
-class ProblemImpl : public loki::Base<ProblemImpl>
+class ProblemImpl
 {
 private:
+    size_t m_index;
     std::optional<fs::path> m_filepath;
     Domain m_domain;
     std::string m_name;
@@ -63,17 +66,11 @@ private:
                 AxiomList axioms);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<ProblemImpl, loki::Hash<const ProblemImpl*, true>, loki::EqualTo<const ProblemImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const ProblemImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<ProblemImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const std::optional<fs::path>& get_filepath() const;
     const Domain& get_domain() const;
     const std::string& get_name() const;
@@ -93,6 +90,20 @@ public:
     bool static_goal_holds() const;
     bool static_literal_holds(const GroundLiteral<Static> literal) const;
 };
+
+template<>
+struct UniquePDDLHasher<const ProblemImpl*>
+{
+    size_t operator()(const ProblemImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const ProblemImpl*>
+{
+    bool operator()(const ProblemImpl* l, const ProblemImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);
 
 }
 

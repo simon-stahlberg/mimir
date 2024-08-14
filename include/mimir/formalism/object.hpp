@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_OBJECT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -29,9 +31,10 @@ namespace mimir
    2) Data views
    - ConstView<String> m_name; (8 byte)
 */
-class ObjectImpl : public loki::Base<ObjectImpl>
+class ObjectImpl
 {
 private:
+    size_t m_index;
     std::string m_name;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -39,19 +42,27 @@ private:
     ObjectImpl(size_t index, std::string name);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<ObjectImpl, loki::Hash<const ObjectImpl*, true>, loki::EqualTo<const ObjectImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const ObjectImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<ObjectImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const std::string& get_name() const;
 };
+
+template<>
+struct UniquePDDLHasher<const ObjectImpl*>
+{
+    size_t operator()(const ObjectImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const ObjectImpl*>
+{
+    bool operator()(const ObjectImpl* l, const ObjectImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const ObjectImpl& element);
 
 }
 

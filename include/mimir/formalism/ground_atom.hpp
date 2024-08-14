@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -33,9 +35,10 @@ namespace mimir
    - ConstView<Vector<Object>> m_objects; (8 byte)
 */
 template<PredicateCategory P>
-class GroundAtomImpl : public loki::Base<GroundAtomImpl<P>>
+class GroundAtomImpl
 {
 private:
+    size_t m_index;
     Predicate<P> m_predicate;
     ObjectList m_objects;
 
@@ -44,23 +47,32 @@ private:
     GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectList objects);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<GroundAtomImpl, loki::Hash<const GroundAtomImpl*, true>, loki::EqualTo<const GroundAtomImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const GroundAtomImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<GroundAtomImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     using Category = P;
 
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
 };
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const GroundAtomImpl<P>*>
+{
+    size_t operator()(const GroundAtomImpl<P>* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const GroundAtomImpl<P>*>
+{
+    bool operator()(const GroundAtomImpl<P>* l, const GroundAtomImpl<P>* r) const;
+};
+
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
 
 }
 

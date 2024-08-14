@@ -24,7 +24,7 @@
 namespace mimir
 {
 /* TermObjectImpl */
-TermObjectImpl::TermObjectImpl(size_t index, Object object) : Base(index), m_object(std::move(object)) {}
+TermObjectImpl::TermObjectImpl(size_t index, Object object) : m_index(index), m_object(std::move(object)) {}
 
 bool TermObjectImpl::is_structurally_equivalent_to_impl(const TermObjectImpl& other) const
 {
@@ -39,10 +39,12 @@ size_t TermObjectImpl::hash_impl() const { return HashCombiner()(m_object); }
 
 void TermObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_object->get_name(); }
 
+size_t TermObjectImpl::get_index() const { return m_index; }
+
 const Object& TermObjectImpl::get_object() const { return m_object; }
 
 /* TermVariableImpl */
-TermVariableImpl::TermVariableImpl(size_t index, Variable variable) : Base(index), m_variable(std::move(variable)) {}
+TermVariableImpl::TermVariableImpl(size_t index, Variable variable) : m_index(index), m_variable(std::move(variable)) {}
 
 bool TermVariableImpl::is_structurally_equivalent_to_impl(const TermVariableImpl& other) const
 {
@@ -56,6 +58,8 @@ bool TermVariableImpl::is_structurally_equivalent_to_impl(const TermVariableImpl
 size_t TermVariableImpl::hash_impl() const { return HashCombiner()(m_variable); }
 
 void TermVariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_variable->get_name(); }
+
+size_t TermVariableImpl::get_index() const { return m_index; }
 
 const Variable& TermVariableImpl::get_variable() const { return m_variable; }
 }

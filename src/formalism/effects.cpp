@@ -35,7 +35,7 @@ namespace mimir
  * Type 1 effect
  */
 
-EffectSimpleImpl::EffectSimpleImpl(size_t index, Literal<Fluent> effect) : Base(index), m_effect(std::move(effect)) {}
+EffectSimpleImpl::EffectSimpleImpl(size_t index, Literal<Fluent> effect) : m_index(index), m_effect(std::move(effect)) {}
 
 bool EffectSimpleImpl::is_structurally_equivalent_to_impl(const EffectSimpleImpl& other) const
 {
@@ -49,6 +49,8 @@ size_t EffectSimpleImpl::hash_impl() const { return HashCombiner()(m_effect); }
 
 void EffectSimpleImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << *m_effect; }
 
+size_t EffectSimpleImpl::get_index() const { return m_index; }
+
 const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
 
 /**
@@ -60,7 +62,7 @@ EffectConditionalImpl::EffectConditionalImpl(size_t index,
                                              LiteralList<Fluent> fluent_conditions,
                                              LiteralList<Derived> derived_conditions,
                                              Literal<Fluent> effect) :
-    Base(index),
+    m_index(index),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
@@ -109,6 +111,8 @@ void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOp
     out << ")";  // end when
 }
 
+size_t EffectSimpleImpl::get_index() const { return m_index; }
+
 template<PredicateCategory P>
 const LiteralList<P>& EffectConditionalImpl::get_conditions() const
 {
@@ -146,7 +150,7 @@ EffectUniversalImpl::EffectUniversalImpl(size_t index,
                                          LiteralList<Fluent> fluent_conditions,
                                          LiteralList<Derived> derived_conditions,
                                          Literal<Fluent> effect) :
-    Base(index),
+    m_index(index),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
@@ -219,6 +223,8 @@ void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOpti
 
     out << ")";  // end forall
 }
+
+size_t EffectUniversalImpl::get_index() const { return m_index; }
 
 const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
 

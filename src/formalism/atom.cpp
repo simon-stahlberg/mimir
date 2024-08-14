@@ -60,6 +60,12 @@ void AtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& opt
 }
 
 template<PredicateCategory P>
+size_t AtomImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<PredicateCategory P>
 Predicate<P> AtomImpl<P>::get_predicate() const
 {
     return m_predicate;

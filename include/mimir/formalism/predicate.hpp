@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -33,9 +35,10 @@ namespace mimir
    - ConstView<Vector<Variable>> m_variables (8 byte)
 */
 template<PredicateCategory P>
-class PredicateImpl : public loki::Base<PredicateImpl<P>>
+class PredicateImpl
 {
 private:
+    size_t m_index;
     std::string m_name;
     VariableList m_parameters;
 
@@ -44,23 +47,32 @@ private:
     PredicateImpl(size_t index, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<PredicateImpl<P>, loki::Hash<const PredicateImpl<P>*, true>, loki::EqualTo<const PredicateImpl<P>*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const PredicateImpl<P>& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<PredicateImpl<P>>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     using Category = P;
 
+    size_t get_index() const;
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
     size_t get_arity() const;
 };
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const PredicateImpl<P>*>
+{
+    size_t operator()(const PredicateImpl<P>* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const PredicateImpl<P>*>
+{
+    bool operator()(const PredicateImpl<P>* l, const PredicateImpl<P>* r) const;
+};
+
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element);
 
 }
 

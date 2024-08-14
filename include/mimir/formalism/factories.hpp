@@ -23,6 +23,7 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/equal_to.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -31,6 +32,7 @@
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/grounding_table.hpp"
+#include "mimir/formalism/hash.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_fluent.hpp"
@@ -46,45 +48,79 @@
 
 namespace mimir
 {
-using VariadicPDDLFactories = loki::VariadicUniqueValueTypeFactory<RequirementsImpl,
-                                                                   VariableImpl,
-                                                                   TermImpl,
-                                                                   ObjectImpl,
-                                                                   AtomImpl<Static>,
-                                                                   AtomImpl<Fluent>,
-                                                                   AtomImpl<Derived>,
-                                                                   GroundAtomImpl<Static>,
-                                                                   GroundAtomImpl<Fluent>,
-                                                                   GroundAtomImpl<Derived>,
-                                                                   LiteralImpl<Static>,
-                                                                   LiteralImpl<Fluent>,
-                                                                   LiteralImpl<Derived>,
-                                                                   GroundLiteralImpl<Static>,
-                                                                   GroundLiteralImpl<Fluent>,
-                                                                   GroundLiteralImpl<Derived>,
-                                                                   PredicateImpl<Static>,
-                                                                   PredicateImpl<Fluent>,
-                                                                   PredicateImpl<Derived>,
-                                                                   FunctionExpressionImpl,
-                                                                   GroundFunctionExpressionImpl,
-                                                                   FunctionImpl,
-                                                                   GroundFunctionImpl,
-                                                                   FunctionSkeletonImpl,
-                                                                   EffectSimpleImpl,
-                                                                   EffectConditionalImpl,
-                                                                   EffectUniversalImpl,
-                                                                   ActionImpl,
-                                                                   AxiomImpl,
-                                                                   OptimizationMetricImpl,
-                                                                   NumericFluentImpl,
-                                                                   DomainImpl,
-                                                                   ProblemImpl>;
+using RequirementsFactory = loki::UniqueFactory<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
+using VariableFactory = loki::UniqueFactory<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
+using TermFactory = loki::UniqueFactory<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
+using ObjectFactory = loki::UniqueFactory<ObjectImpl, UniquePDDLHasher<const ObjectImpl*>, UniquePDDLEqualTo<const ObjectImpl*>>;
+template<PredicateCategory P>
+using AtomFactory = loki::UniqueFactory<AtomImpl<P>, UniquePDDLHasher<const AtomImpl<P>*>, UniquePDDLEqualTo<const AtomImpl<P>*>>;
+template<PredicateCategory P>
+using GroundAtomFactory = loki::UniqueFactory<GroundAtomImpl<P>, UniquePDDLHasher<const GroundAtomImpl<P>*>, UniquePDDLEqualTo<const GroundAtomImpl<P>*>>;
+template<PredicateCategory P>
+using LiteralFactory = loki::UniqueFactory<LiteralImpl<P>, UniquePDDLHasher<const LiteralImpl<P>*>, UniquePDDLEqualTo<const LiteralImpl<P>*>>;
+template<PredicateCategory P>
+using GroundLiteralFactory =
+    loki::UniqueFactory<GroundLiteralImpl<P>, UniquePDDLHasher<const GroundLiteralImpl<P>*>, UniquePDDLEqualTo<const GroundLiteralImpl<P>*>>;
+template<PredicateCategory P>
+using PredicateFactory = loki::UniqueFactory<PredicateImpl<P>, UniquePDDLHasher<const PredicateImpl<P>*>, UniquePDDLEqualTo<const PredicateImpl<P>*>>;
+using FunctionExpressionFactory =
+    loki::UniqueFactory<FunctionExpressionImpl, UniquePDDLHasher<const FunctionExpressionImpl*>, UniquePDDLEqualTo<const FunctionExpressionImpl*>>;
+using GroundFunctionExpressionFactory = loki::
+    UniqueFactory<GroundFunctionExpressionImpl, UniquePDDLHasher<const GroundFunctionExpressionImpl*>, UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>>;
+using FunctionFactory = loki::UniqueFactory<FunctionImpl, UniquePDDLHasher<const FunctionImpl*>, UniquePDDLEqualTo<const FunctionImpl*>>;
+using GroundFunctionFactory =
+    loki::UniqueFactory<GroundFunctionImpl, UniquePDDLHasher<const GroundFunctionImpl*>, UniquePDDLEqualTo<const GroundFunctionImpl*>>;
+using FunctionSkeletonFactory =
+    loki::UniqueFactory<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
+using EffectSimpleFactory = loki::UniqueFactory<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
+using EffectConditionalFactory =
+    loki::UniqueFactory<EffectConditionalImpl, UniquePDDLHasher<const EffectConditionalImpl*>, UniquePDDLEqualTo<const EffectConditionalImpl*>>;
+using EffectUniversalFactory =
+    loki::UniqueFactory<EffectUniversalImpl, UniquePDDLHasher<const EffectUniversalImpl*>, UniquePDDLEqualTo<const EffectUniversalImpl*>>;
+using ActionFactory = loki::UniqueFactory<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
+using AxiomFactory = loki::UniqueFactory<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
+using OptimizationMetricFactory =
+    loki::UniqueFactory<OptimizationMetricImpl, UniquePDDLHasher<const OptimizationMetricImpl*>, UniquePDDLEqualTo<const OptimizationMetricImpl*>>;
+using NumericFluentFactory = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHasher<const NumericFluentImpl*>, UniquePDDLEqualTo<const NumericFluentImpl*>>;
+using DomainFactory = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
+using ProblemFactory = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
+
+using VariadicPDDLConstructorFactory = loki::VariadicContainer<RequirementsFactory,
+                                                               VariableFactory,
+                                                               TermFactory,
+                                                               ObjectFactory,
+                                                               AtomFactory<Static>,
+                                                               AtomFactory<Fluent>,
+                                                               AtomFactory<Derived>,
+                                                               GroundAtomFactory<Static>,
+                                                               GroundAtomFactory<Fluent>,
+                                                               GroundAtomFactory<Derived>,
+                                                               LiteralFactory<Static>,
+                                                               LiteralFactory<Fluent>,
+                                                               LiteralFactory<Derived>,
+                                                               GroundLiteralFactory<Static>,
+                                                               GroundLiteralFactory<Fluent>,
+                                                               GroundLiteralFactory<Derived>,
+                                                               FunctionExpressionFactory,
+                                                               GroundFunctionExpressionFactory,
+                                                               FunctionFactory,
+                                                               GroundFunctionFactory,
+                                                               FunctionSkeletonFactory,
+                                                               EffectSimpleFactory,
+                                                               EffectConditionalFactory,
+                                                               EffectUniversalFactory,
+                                                               ActionFactory,
+                                                               AxiomFactory,
+                                                               OptimizationMetricFactory,
+                                                               NumericFluentFactory,
+                                                               DomainFactory,
+                                                               ProblemFactory>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLFactories
 {
 private:
-    VariadicPDDLFactories m_factories;
+    VariadicPDDLConstructorFactory m_factories;
 
     VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
 
@@ -244,7 +280,7 @@ public:
 
     // Factory
     template<typename T>
-    const loki::UniqueValueTypeFactory<T>& get_factory() const;
+    const auto& get_factory() const;
 
     // GroundAtom
     template<PredicateCategory P>

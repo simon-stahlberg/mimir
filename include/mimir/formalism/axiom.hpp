@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_AXIOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class AxiomImpl : public loki::Base<AxiomImpl>
+class AxiomImpl
 {
 private:
+    size_t m_index;
     VariableList m_parameters;
     Literal<Derived> m_literal;
     LiteralList<Static> m_static_conditions;
@@ -39,17 +42,11 @@ private:
               LiteralList<Derived> derived_conditions);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<AxiomImpl, loki::Hash<const AxiomImpl*, true>, loki::EqualTo<const AxiomImpl*, true>>;
-
-    /// @brief Test for structural equivalence
-    bool is_structurally_equivalent_to_impl(const AxiomImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<AxiomImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const VariableList& get_parameters() const;
     const Literal<Derived>& get_literal() const;
     template<PredicateCategory P>
@@ -57,6 +54,20 @@ public:
 
     size_t get_arity() const;
 };
+
+template<>
+struct UniquePDDLHasher<const AxiomImpl*>
+{
+    size_t operator()(const AxiomImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const AxiomImpl*>
+{
+    bool operator()(const AxiomImpl* l, const AxiomImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const AxiomImpl& element);
 
 }
 

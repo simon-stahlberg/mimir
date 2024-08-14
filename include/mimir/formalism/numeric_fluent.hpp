@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class NumericFluentImpl : public loki::Base<NumericFluentImpl>
+class NumericFluentImpl
 {
 private:
+    size_t m_index;
     GroundFunction m_function;
     double m_number;
 
@@ -33,20 +36,28 @@ private:
     NumericFluentImpl(size_t index, GroundFunction function, double number);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<NumericFluentImpl, loki::Hash<const NumericFluentImpl*, true>, loki::EqualTo<const NumericFluentImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<NumericFluentImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const GroundFunction& get_function() const;
     double get_number() const;
 };
+
+template<>
+struct UniquePDDLHasher<const NumericFluentImpl*>
+{
+    size_t operator()(const NumericFluentImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const NumericFluentImpl*>
+{
+    bool operator()(const NumericFluentImpl* l, const NumericFluentImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element);
 
 }
 

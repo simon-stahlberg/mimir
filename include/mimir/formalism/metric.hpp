@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_METRIC_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class OptimizationMetricImpl : public loki::Base<OptimizationMetricImpl>
+class OptimizationMetricImpl
 {
 private:
+    size_t m_index;
     loki::OptimizationMetricEnum m_optimization_metric;
     GroundFunctionExpression m_function_expression;
 
@@ -33,21 +36,28 @@ private:
     OptimizationMetricImpl(size_t index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<OptimizationMetricImpl, loki::Hash<const OptimizationMetricImpl*, true>, loki::EqualTo<const OptimizationMetricImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const OptimizationMetricImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<OptimizationMetricImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     loki::OptimizationMetricEnum get_optimization_metric() const;
     const GroundFunctionExpression& get_function_expression() const;
 };
+
+template<>
+struct UniquePDDLHasher<const OptimizationMetricImpl*>
+{
+    size_t operator()(const OptimizationMetricImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const OptimizationMetricImpl*>
+{
+    bool operator()(const OptimizationMetricImpl* l, const OptimizationMetricImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element);
 
 }
 

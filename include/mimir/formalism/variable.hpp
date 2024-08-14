@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_VARIABLE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -30,9 +32,10 @@ namespace mimir
    2) Data views
    - ConstView<String> m_name; (8 byte)
 */
-class VariableImpl : public loki::Base<VariableImpl>
+class VariableImpl
 {
 private:
+    size_t m_index;
     std::string m_name;
     size_t m_parameter_index;
 
@@ -41,20 +44,28 @@ private:
     VariableImpl(size_t index, std::string name, size_t parameter_index);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<VariableImpl, loki::Hash<const VariableImpl*, true>, loki::EqualTo<const VariableImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const VariableImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<VariableImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const std::string& get_name() const;
     const size_t get_parameter_index() const;
 };
+
+template<>
+struct UniquePDDLHasher<const VariableImpl*>
+{
+    size_t operator()(const VariableImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const VariableImpl*>
+{
+    bool operator()(const VariableImpl* l, const VariableImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
 
 }
 

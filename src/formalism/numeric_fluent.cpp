@@ -22,7 +22,9 @@
 
 namespace mimir
 {
-NumericFluentImpl::NumericFluentImpl(size_t index, GroundFunction function, double number) : Base(index), m_function(std::move(function)), m_number(number) {}
+NumericFluentImpl::NumericFluentImpl(size_t index, GroundFunction function, double number) : m_index(index), m_function(std::move(function)), m_number(number)
+{
+}
 
 bool NumericFluentImpl::is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const
 {
@@ -41,6 +43,8 @@ void NumericFluentImpl::str_impl(std::ostream& out, const loki::FormattingOption
     m_function->str(out, options);
     out << " " << m_number << ")";
 }
+
+size_t NumericFluentImpl::get_index() const { return m_index; }
 
 const GroundFunction& NumericFluentImpl::get_function() const { return m_function; }
 

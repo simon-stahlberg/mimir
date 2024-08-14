@@ -49,7 +49,7 @@ DomainImpl::DomainImpl(size_t index,
                        FunctionSkeletonList functions,
                        ActionList actions,
                        AxiomList axioms) :
-    Base(index),
+    m_index(index),
     m_filepath(std::move(filepath)),
     m_name(std::move(name)),
     m_requirements(std::move(requirements)),
@@ -185,6 +185,8 @@ void DomainImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opti
 
     out << std::string(options.indent, ' ') << ")";
 }
+
+size_t DomainImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }
 

@@ -63,6 +63,12 @@ void PredicateImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions
 }
 
 template<PredicateCategory P>
+size_t PredicateImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<PredicateCategory P>
 const std::string& PredicateImpl<P>::get_name() const
 {
     return m_name;

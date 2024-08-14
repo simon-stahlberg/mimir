@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_REQUIREMENTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class RequirementsImpl : public loki::Base<RequirementsImpl>
+class RequirementsImpl
 {
 private:
+    size_t m_index;
     loki::RequirementEnumSet m_requirements;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -32,21 +35,29 @@ private:
     RequirementsImpl(size_t index, loki::RequirementEnumSet requirements);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<RequirementsImpl, loki::Hash<const RequirementsImpl*, true>, loki::EqualTo<const RequirementsImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const RequirementsImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<RequirementsImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     bool test(loki::RequirementEnum requirement) const;
 
+    size_t get_index() const;
     const loki::RequirementEnumSet& get_requirements() const;
 };
+
+template<>
+struct UniquePDDLHasher<const RequirementsImpl*>
+{
+    size_t operator()(const RequirementsImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const RequirementsImpl*>
+{
+    bool operator()(const RequirementsImpl* l, const RequirementsImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element);
 
 }
 

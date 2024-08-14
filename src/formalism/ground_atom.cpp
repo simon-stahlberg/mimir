@@ -59,6 +59,12 @@ void GroundAtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOption
 }
 
 template<PredicateCategory P>
+size_t GroundAtomImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<PredicateCategory P>
 Predicate<P> GroundAtomImpl<P>::get_predicate() const
 {
     return m_predicate;

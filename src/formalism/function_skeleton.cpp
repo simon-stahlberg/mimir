@@ -23,7 +23,7 @@
 namespace mimir
 {
 FunctionSkeletonImpl::FunctionSkeletonImpl(size_t index, std::string name, VariableList parameters) :
-    Base(index),
+    m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {
@@ -50,6 +50,8 @@ void FunctionSkeletonImpl::str_impl(std::ostream& out, const loki::FormattingOpt
     }
     out << ")";
 }
+
+size_t FunctionSkeletonImpl::get_index() const { return m_index; }
 
 const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }
 

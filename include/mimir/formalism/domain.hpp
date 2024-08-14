@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class DomainImpl : public loki::Base<DomainImpl>
+class DomainImpl
 {
 private:
+    size_t m_index;
     std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
@@ -54,17 +57,11 @@ private:
                AxiomList axioms);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<DomainImpl, loki::Hash<const DomainImpl*, true>, loki::EqualTo<const DomainImpl*, true>>;
-
-    /// @brief Test for structural equivalence
-    bool is_structurally_equivalent_to_impl(const DomainImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<DomainImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
@@ -78,6 +75,20 @@ public:
     template<PredicateCategory P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
 };
+
+template<>
+struct UniquePDDLHasher<const DomainImpl*>
+{
+    size_t operator()(const DomainImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const DomainImpl*>
+{
+    bool operator()(const DomainImpl* l, const DomainImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const DomainImpl& element);
 
 }
 

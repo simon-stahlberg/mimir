@@ -24,7 +24,7 @@
 namespace mimir
 {
 GroundFunctionImpl::GroundFunctionImpl(size_t index, FunctionSkeleton function_skeleton, ObjectList objects) :
-    Base(index),
+    m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
     m_objects(std::move(objects))
 {
@@ -59,6 +59,8 @@ void GroundFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptio
         out << "))";
     }
 }
+
+size_t GroundFunctionImpl::get_index() const { return m_index; }
 
 const FunctionSkeleton& GroundFunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
 

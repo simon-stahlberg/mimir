@@ -19,32 +19,43 @@
 #define MIMIR_FORMALISM_GROUND_GROUND_FUNCTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class GroundFunctionImpl : public loki::Base<GroundFunctionImpl>
+class GroundFunctionImpl
 {
 private:
+    size_t m_index;
     FunctionSkeleton m_function_skeleton;
     ObjectList m_objects;
 
     GroundFunctionImpl(size_t index, FunctionSkeleton function_skeleton, ObjectList objects);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<GroundFunctionImpl, loki::Hash<const GroundFunctionImpl*, true>, loki::EqualTo<const GroundFunctionImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const GroundFunctionImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<GroundFunctionImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;
 };
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionImpl*>
+{
+    size_t operator()(const GroundFunctionImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionImpl*>
+{
+    bool operator()(const GroundFunctionImpl* l, const GroundFunctionImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element);
 
 }
 

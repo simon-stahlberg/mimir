@@ -19,13 +19,16 @@
 #define MIMIR_FORMALISM_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
 template<PredicateCategory P>
-class AtomImpl : public loki::Base<AtomImpl<P>>
+class AtomImpl
 {
 private:
+    size_t m_index;
     Predicate<P> m_predicate;
     TermList m_terms;
 
@@ -34,23 +37,32 @@ private:
     AtomImpl(size_t index, Predicate<P> predicate, TermList terms);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<AtomImpl, loki::Hash<const AtomImpl*, true>, loki::EqualTo<const AtomImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const AtomImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<AtomImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     using Category = P;
 
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
     size_t get_arity() const;
 };
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const AtomImpl<P>*>
+{
+    size_t operator()(const AtomImpl<P>* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const AtomImpl<P>*>
+{
+    bool operator()(const AtomImpl<P>* l, const AtomImpl<P>* r) const;
+};
+
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
 }
 

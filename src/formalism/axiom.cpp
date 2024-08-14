@@ -34,7 +34,7 @@ AxiomImpl::AxiomImpl(size_t index,
                      LiteralList<Static> static_conditions,
                      LiteralList<Fluent> fluent_conditions,
                      LiteralList<Derived> derived_conditions) :
-    Base(index),
+    m_index(index),
     m_parameters(std::move(parameters)),
     m_literal(std::move(literal)),
     m_static_conditions(std::move(static_conditions)),
@@ -85,6 +85,8 @@ void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& optio
     out << ")" << std::endl;
     out << std::string(options.indent, ' ') << ")" << std::endl;
 }
+
+size_t AxiomImpl::get_index() const { return m_index; }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 

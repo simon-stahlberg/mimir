@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_TERM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -30,9 +32,10 @@ namespace mimir
    - Variant<Object, Variable> m_element; (variable sized)
 */
 
-class TermObjectImpl : public loki::Base<TermObjectImpl>
+class TermObjectImpl
 {
 private:
+    size_t m_index;
     Object m_object;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -40,39 +43,57 @@ private:
     TermObjectImpl(size_t index, Object object);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<TermImpl, loki::Hash<const TermImpl*, true>, loki::EqualTo<const TermImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const TermObjectImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<TermObjectImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const Object& get_object() const;
 };
 
-class TermVariableImpl : public loki::Base<TermVariableImpl>
+class TermVariableImpl
 {
 private:
+    size_t m_index;
     Variable m_variable;
 
     TermVariableImpl(size_t index, Variable variable);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<TermImpl, loki::Hash<const TermImpl*, true>, loki::EqualTo<const TermImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const TermVariableImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<TermVariableImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const Variable& get_variable() const;
 };
+
+template<>
+struct UniquePDDLHasher<const TermObjectImpl*>
+{
+    size_t operator()(const TermObjectImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const TermVariableImpl*>
+{
+    size_t operator()(const TermVariableImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const TermObjectImpl*>
+{
+    bool operator()(const TermObjectImpl* l, const TermObjectImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const TermVariableImpl*>
+{
+    bool operator()(const TermVariableImpl* l, const TermVariableImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const TermObjectImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const TermVariableImpl& element);
 }
 
 #endif

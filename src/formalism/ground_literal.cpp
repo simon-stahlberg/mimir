@@ -63,6 +63,12 @@ void GroundLiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOpt
 }
 
 template<PredicateCategory P>
+size_t GroundLiteralImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<PredicateCategory P>
 bool GroundLiteralImpl<P>::is_negated() const
 {
     return m_is_negated;

@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_FUNCTION_SKELETON_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class FunctionSkeletonImpl : public loki::Base<FunctionSkeletonImpl>
+class FunctionSkeletonImpl
 {
 private:
+    size_t m_index;
     std::string m_name;
     VariableList m_parameters;
 
@@ -33,21 +36,28 @@ private:
     FunctionSkeletonImpl(size_t index, std::string name, VariableList parameters);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<FunctionSkeletonImpl, loki::Hash<const FunctionSkeletonImpl*, true>, loki::EqualTo<const FunctionSkeletonImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionSkeletonImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
 };
+
+template<>
+struct UniquePDDLHasher<const FunctionSkeletonImpl*>
+{
+    size_t operator()(const FunctionSkeletonImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionSkeletonImpl*>
+{
+    bool operator()(const FunctionSkeletonImpl* l, const FunctionSkeletonImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element);
 
 }
 

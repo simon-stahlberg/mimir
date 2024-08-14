@@ -60,6 +60,12 @@ void LiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& 
 }
 
 template<PredicateCategory P>
+size_t LiteralImpl<P>::get_index() const
+{
+    return m_index;
+}
+
+template<PredicateCategory P>
 bool LiteralImpl<P>::is_negated() const
 {
     return m_is_negated;

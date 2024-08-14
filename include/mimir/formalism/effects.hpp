@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_EFFECTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -26,9 +28,10 @@ namespace mimir
 /**
  * Type 1 effects
  */
-class EffectSimpleImpl : public loki::Base<EffectSimpleImpl>
+class EffectSimpleImpl
 {
 private:
+    size_t m_index;
     Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -36,25 +39,21 @@ private:
     EffectSimpleImpl(size_t index, Literal<Fluent> effect);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<EffectSimpleImpl, loki::Hash<const EffectSimpleImpl*, true>, loki::EqualTo<const EffectSimpleImpl*, true>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectSimpleImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectSimpleImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const Literal<Fluent>& get_effect() const;
 };
 
 /**
  * Type 2 effects
  */
-class EffectConditionalImpl : public loki::Base<EffectConditionalImpl>
+class EffectConditionalImpl
 {
 private:
+    size_t m_index;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
@@ -69,17 +68,11 @@ private:
                           Literal<Fluent> effect);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<EffectConditionalImpl, loki::Hash<const EffectConditionalImpl*, true>, loki::EqualTo<const EffectConditionalImpl*, true>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectConditionalImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectConditionalImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     template<PredicateCategory P>
     const LiteralList<P>& get_conditions() const;
     const Literal<Fluent>& get_effect() const;
@@ -88,9 +81,10 @@ public:
 /**
  * Type 3 effects
  */
-class EffectUniversalImpl : public loki::Base<EffectUniversalImpl>
+class EffectUniversalImpl
 {
 private:
+    size_t m_index;
     VariableList m_quantified_variables;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
@@ -107,17 +101,11 @@ private:
                         Literal<Fluent> effect);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<EffectUniversalImpl, loki::Hash<const EffectUniversalImpl*, true>, loki::EqualTo<const EffectUniversalImpl*, true>>;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<EffectUniversalImpl>;
-
-    bool is_structurally_equivalent_to_impl(const EffectUniversalImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const VariableList& get_parameters() const;
     template<PredicateCategory P>
     const LiteralList<P>& get_conditions() const;
@@ -125,6 +113,46 @@ public:
 
     size_t get_arity() const;
 };
+
+template<>
+struct UniquePDDLHasher<const EffectSimpleImpl*>
+{
+    size_t operator()(const EffectSimpleImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const EffectConditionalImpl*>
+{
+    size_t operator()(const EffectConditionalImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const EffectUniversalImpl*>
+{
+    size_t operator()(const EffectUniversalImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const EffectSimpleImpl*>
+{
+    bool operator()(const EffectSimpleImpl* l, const EffectSimpleImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const EffectConditionalImpl*>
+{
+    bool operator()(const EffectConditionalImpl* l, const EffectConditionalImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const EffectUniversalImpl*>
+{
+    bool operator()(const EffectUniversalImpl* l, const EffectUniversalImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const EffectUniversalImpl& element);
 
 }
 

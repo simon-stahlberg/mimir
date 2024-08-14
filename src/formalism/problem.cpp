@@ -54,7 +54,7 @@ ProblemImpl::ProblemImpl(size_t index,
                          GroundLiteralList<Derived> derived_goal_condition,
                          std::optional<OptimizationMetric> optimization_metric,
                          AxiomList axioms) :
-    Base(index),
+    m_index(index),
     m_filepath(std::move(filepath)),
     m_domain(std::move(domain)),
     m_name(std::move(name)),
@@ -245,6 +245,8 @@ void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& opt
 
     out << string(options.indent, ' ') << ")";
 }
+
+size_t ProblemImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 

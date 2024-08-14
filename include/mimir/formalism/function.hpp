@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_FUNCTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class FunctionImpl : public loki::Base<FunctionImpl>
+class FunctionImpl
 {
 private:
+    size_t m_index;
     FunctionSkeleton m_function_skeleton;
     TermList m_terms;
 
@@ -33,20 +36,28 @@ private:
     FunctionImpl(size_t index, FunctionSkeleton function_skeleton, TermList terms);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<FunctionImpl, loki::Hash<const FunctionImpl*, true>, loki::EqualTo<const FunctionImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const FunctionImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const TermList& get_terms() const;
 };
+
+template<>
+struct UniquePDDLHasher<const FunctionImpl*>
+{
+    size_t operator()(const FunctionImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionImpl*>
+{
+    bool operator()(const FunctionImpl* l, const FunctionImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const FunctionImpl& element);
 
 }
 

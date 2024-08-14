@@ -20,7 +20,39 @@
 namespace mimir
 {
 
-PDDLFactories::PDDLFactories() : m_factories() {}
+PDDLFactories::PDDLFactories() :
+    m_factories(RequirementsFactory(),
+                VariableFactory(),
+                TermFactory(),
+                ObjectFactory(),
+                AtomFactory<Static>(),
+                AtomFactory<Fluent>(),
+                AtomFactory<Derived>(),
+                GroundAtomFactory<Static>(),
+                GroundAtomFactory<Fluent>(),
+                GroundAtomFactory<Derived>(),
+                LiteralFactory<Static>(),
+                LiteralFactory<Fluent>(),
+                LiteralFactory<Derived>(),
+                GroundLiteralFactory<Static>(),
+                GroundLiteralFactory<Fluent>(),
+                GroundLiteralFactory<Derived>(),
+                FunctionExpressionFactory(),
+                GroundFunctionExpressionFactory(),
+                FunctionFactory(),
+                GroundFunctionFactory(),
+                FunctionSkeletonFactory(),
+                EffectSimpleFactory(),
+                EffectConditionalFactory(),
+                EffectUniversalFactory(),
+                ActionFactory(),
+                AxiomFactory(),
+                OptimizationMetricFactory(),
+                NumericFluentFactory(),
+                DomainFactory(),
+                ProblemFactory())
+{
+}
 
 PDDLFactories::PDDLFactories(PDDLFactories&& other) = default;
 
@@ -28,24 +60,27 @@ PDDLFactories& PDDLFactories::operator=(PDDLFactories&& other) = default;
 
 Requirements PDDLFactories::get_or_create_requirements(loki::RequirementEnumSet requirement_set)
 {
-    return m_factories.get<RequirementsImpl>().get_or_create<RequirementsImpl>(std::move(requirement_set));
+    return m_factories.get<RequirementsFactory>().get_or_create<RequirementsImpl>(std::move(requirement_set));
 }
 
 Variable PDDLFactories::get_or_create_variable(std::string name, size_t parameter_index)
 {
-    return m_factories.get<VariableImpl>().get_or_create<VariableImpl>(std::move(name), std::move(parameter_index));
+    return m_factories.get<VariableFactory>().get_or_create<VariableImpl>(std::move(name), std::move(parameter_index));
 }
 
-Term PDDLFactories::get_or_create_term_variable(Variable variable) { return m_factories.get<TermImpl>().get_or_create<TermVariableImpl>(std::move(variable)); }
+Term PDDLFactories::get_or_create_term_variable(Variable variable)
+{
+    return m_factories.get<TermFactory>().get_or_create<TermVariableImpl>(std::move(variable));
+}
 
-Term PDDLFactories::get_or_create_term_object(Object object) { return m_factories.get<TermImpl>().get_or_create<TermObjectImpl>(std::move(object)); }
+Term PDDLFactories::get_or_create_term_object(Object object) { return m_factories.get<TermFactory>().get_or_create<TermObjectImpl>(std::move(object)); }
 
-Object PDDLFactories::get_or_create_object(std::string name) { return m_factories.get<ObjectImpl>().get_or_create<ObjectImpl>(std::move(name)); }
+Object PDDLFactories::get_or_create_object(std::string name) { return m_factories.get<ObjectFactory>().get_or_create<ObjectImpl>(std::move(name)); }
 
 template<PredicateCategory P>
 Atom<P> PDDLFactories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
-    return m_factories.get<AtomImpl<P>>().template get_or_create<AtomImpl<P>>(std::move(predicate), std::move(terms));
+    return m_factories.get<AtomFactory<P>>().template get_or_create<AtomImpl<P>>(std::move(predicate), std::move(terms));
 }
 
 template Atom<Static> PDDLFactories::get_or_create_atom(Predicate<Static> predicate, TermList terms);
@@ -55,7 +90,7 @@ template Atom<Derived> PDDLFactories::get_or_create_atom(Predicate<Derived> pred
 template<PredicateCategory P>
 GroundAtom<P> PDDLFactories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
 {
-    return m_factories.get<GroundAtomImpl<P>>().template get_or_create<GroundAtomImpl<P>>(std::move(predicate), std::move(objects));
+    return m_factories.get<GroundAtomFactory<P>>().template get_or_create<GroundAtomImpl<P>>(std::move(predicate), std::move(objects));
 }
 
 template GroundAtom<Static> PDDLFactories::get_or_create_ground_atom(Predicate<Static> predicate, ObjectList ObjectList);
@@ -65,7 +100,7 @@ template GroundAtom<Derived> PDDLFactories::get_or_create_ground_atom(Predicate<
 template<PredicateCategory P>
 Literal<P> PDDLFactories::get_or_create_literal(bool is_negated, Atom<P> atom)
 {
-    return m_factories.get<LiteralImpl<P>>().template get_or_create<LiteralImpl<P>>(is_negated, std::move(atom));
+    return m_factories.get<LiteralFactory<P>>().template get_or_create<LiteralImpl<P>>(is_negated, std::move(atom));
 }
 
 template Literal<Static> PDDLFactories::get_or_create_literal(bool is_negated, Atom<Static> atom);
@@ -75,7 +110,7 @@ template Literal<Derived> PDDLFactories::get_or_create_literal(bool is_negated, 
 template<PredicateCategory P>
 GroundLiteral<P> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
 {
-    return m_factories.get<GroundLiteralImpl<P>>().template get_or_create<GroundLiteralImpl<P>>(is_negated, std::move(atom));
+    return m_factories.get<GroundLiteralFactory<P>>().template get_or_create<GroundLiteralImpl<P>>(is_negated, std::move(atom));
 }
 
 template GroundLiteral<Static> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<Static> atom);
@@ -85,7 +120,7 @@ template GroundLiteral<Derived> PDDLFactories::get_or_create_ground_literal(bool
 template<PredicateCategory P>
 Predicate<P> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters)
 {
-    return m_factories.get<PredicateImpl<P>>().template get_or_create<PredicateImpl<P>>(name, std::move(parameters));
+    return m_factories.get<PredicateFactory<P>>().template get_or_create<PredicateImpl<P>>(name, std::move(parameters));
 }
 
 template Predicate<Static> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters);
@@ -94,83 +129,83 @@ template Predicate<Derived> PDDLFactories::get_or_create_predicate(std::string n
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_number(double number)
 {
-    return m_factories.get<FunctionExpressionImpl>().get_or_create<FunctionExpressionNumberImpl>(number);
+    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionNumberImpl>(number);
 }
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
                                                                                     FunctionExpression left_function_expression,
                                                                                     FunctionExpression right_function_expression)
 {
-    return m_factories.get<FunctionExpressionImpl>().get_or_create<FunctionExpressionBinaryOperatorImpl>(binary_operator,
-                                                                                                         std::move(left_function_expression),
-                                                                                                         std::move(right_function_expression));
+    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionBinaryOperatorImpl>(binary_operator,
+                                                                                                            std::move(left_function_expression),
+                                                                                                            std::move(right_function_expression));
 }
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
                                                                                    FunctionExpressionList function_expressions_)
 {
-    return m_factories.get<FunctionExpressionImpl>().get_or_create<FunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions_));
+    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions_));
 }
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_minus(FunctionExpression function_expression)
 {
-    return m_factories.get<FunctionExpressionImpl>().get_or_create<FunctionExpressionMinusImpl>(std::move(function_expression));
+    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionMinusImpl>(std::move(function_expression));
 }
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_function(Function function)
 {
-    return m_factories.get<FunctionExpressionImpl>().get_or_create<FunctionExpressionFunctionImpl>(std::move(function));
+    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionFunctionImpl>(std::move(function));
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_number(double number)
 {
-    return m_factories.get<GroundFunctionExpressionImpl>().get_or_create<GroundFunctionExpressionNumberImpl>(number);
+    return m_factories.get<GroundFunctionExpressionFactory>().get_or_create<GroundFunctionExpressionNumberImpl>(number);
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
                                                                                                  GroundFunctionExpression left_function_expression,
                                                                                                  GroundFunctionExpression right_function_expression)
 {
-    return m_factories.get<GroundFunctionExpressionImpl>().get_or_create<GroundFunctionExpressionBinaryOperatorImpl>(binary_operator,
-                                                                                                                     std::move(left_function_expression),
-                                                                                                                     std::move(right_function_expression));
+    return m_factories.get<GroundFunctionExpressionFactory>().get_or_create<GroundFunctionExpressionBinaryOperatorImpl>(binary_operator,
+                                                                                                                        std::move(left_function_expression),
+                                                                                                                        std::move(right_function_expression));
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
                                                                                                 GroundFunctionExpressionList function_expressions_)
 {
-    return m_factories.get<GroundFunctionExpressionImpl>().get_or_create<GroundFunctionExpressionMultiOperatorImpl>(multi_operator,
-                                                                                                                    std::move(function_expressions_));
+    return m_factories.get<GroundFunctionExpressionFactory>().get_or_create<GroundFunctionExpressionMultiOperatorImpl>(multi_operator,
+                                                                                                                       std::move(function_expressions_));
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
 {
-    return m_factories.get<GroundFunctionExpressionImpl>().get_or_create<GroundFunctionExpressionMinusImpl>(std::move(function_expression));
+    return m_factories.get<GroundFunctionExpressionFactory>().get_or_create<GroundFunctionExpressionMinusImpl>(std::move(function_expression));
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_function(GroundFunction function)
 {
-    return m_factories.get<GroundFunctionExpressionImpl>().get_or_create<GroundFunctionExpressionFunctionImpl>(std::move(function));
+    return m_factories.get<GroundFunctionExpressionFactory>().get_or_create<GroundFunctionExpressionFunctionImpl>(std::move(function));
 }
 
 Function PDDLFactories::get_or_create_function(FunctionSkeleton function_skeleton, TermList terms)
 {
-    return m_factories.get<FunctionImpl>().get_or_create<FunctionImpl>(std::move(function_skeleton), std::move(terms));
+    return m_factories.get<FunctionFactory>().get_or_create<FunctionImpl>(std::move(function_skeleton), std::move(terms));
 }
 
 GroundFunction PDDLFactories::get_or_create_ground_function(FunctionSkeleton function_skeleton, ObjectList objects)
 {
-    return m_factories.get<GroundFunctionImpl>().get_or_create<GroundFunctionImpl>(std::move(function_skeleton), std::move(objects));
+    return m_factories.get<GroundFunctionFactory>().get_or_create<GroundFunctionImpl>(std::move(function_skeleton), std::move(objects));
 }
 
 FunctionSkeleton PDDLFactories::get_or_create_function_skeleton(std::string name, VariableList parameters)
 {
-    return m_factories.get<FunctionSkeletonImpl>().get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
+    return m_factories.get<FunctionSkeletonFactory>().get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
 }
 
 EffectSimple PDDLFactories::get_or_create_simple_effect(Literal<Fluent> effect)
 {
-    return m_factories.get<EffectSimpleImpl>().get_or_create<EffectSimpleImpl>(std::move(effect));
+    return m_factories.get<EffectSimpleFactory>().get_or_create<EffectSimpleImpl>(std::move(effect));
 }
 
 EffectConditional PDDLFactories::get_or_create_conditional_effect(LiteralList<Static> static_conditions,
@@ -178,10 +213,10 @@ EffectConditional PDDLFactories::get_or_create_conditional_effect(LiteralList<St
                                                                   LiteralList<Derived> derived_conditions,
                                                                   Literal<Fluent> effect)
 {
-    return m_factories.get<EffectConditionalImpl>().get_or_create<EffectConditionalImpl>(std::move(static_conditions),
-                                                                                         std::move(fluent_conditions),
-                                                                                         std::move(derived_conditions),
-                                                                                         std::move(effect));
+    return m_factories.get<EffectConditionalFactory>().get_or_create<EffectConditionalImpl>(std::move(static_conditions),
+                                                                                            std::move(fluent_conditions),
+                                                                                            std::move(derived_conditions),
+                                                                                            std::move(effect));
 }
 
 EffectUniversal PDDLFactories::get_or_create_universal_effect(VariableList parameters,
@@ -190,11 +225,11 @@ EffectUniversal PDDLFactories::get_or_create_universal_effect(VariableList param
                                                               LiteralList<Derived> derived_conditions,
                                                               Literal<Fluent> effect)
 {
-    return m_factories.get<EffectUniversalImpl>().get_or_create<EffectUniversalImpl>(std::move(parameters),
-                                                                                     std::move(static_conditions),
-                                                                                     std::move(fluent_conditions),
-                                                                                     std::move(derived_conditions),
-                                                                                     std::move(effect));
+    return m_factories.get<EffectUniversalFactory>().get_or_create<EffectUniversalImpl>(std::move(parameters),
+                                                                                        std::move(static_conditions),
+                                                                                        std::move(fluent_conditions),
+                                                                                        std::move(derived_conditions),
+                                                                                        std::move(effect));
 }
 
 Action PDDLFactories::get_or_create_action(std::string name,
@@ -208,16 +243,16 @@ Action PDDLFactories::get_or_create_action(std::string name,
                                            EffectUniversalList universal_effects,
                                            FunctionExpression function_expression)
 {
-    return m_factories.get<ActionImpl>().get_or_create<ActionImpl>(std::move(name),
-                                                                   std::move(original_arity),
-                                                                   std::move(parameters),
-                                                                   std::move(static_conditions),
-                                                                   std::move(fluent_conditions),
-                                                                   std::move(derived_conditions),
-                                                                   std::move(simple_effects),
-                                                                   std::move(conditional_effects),
-                                                                   std::move(universal_effects),
-                                                                   std::move(function_expression));
+    return m_factories.get<ActionFactory>().get_or_create<ActionImpl>(std::move(name),
+                                                                      std::move(original_arity),
+                                                                      std::move(parameters),
+                                                                      std::move(static_conditions),
+                                                                      std::move(fluent_conditions),
+                                                                      std::move(derived_conditions),
+                                                                      std::move(simple_effects),
+                                                                      std::move(conditional_effects),
+                                                                      std::move(universal_effects),
+                                                                      std::move(function_expression));
 }
 
 Axiom PDDLFactories::get_or_create_axiom(VariableList parameters,
@@ -226,21 +261,21 @@ Axiom PDDLFactories::get_or_create_axiom(VariableList parameters,
                                          LiteralList<Fluent> fluent_condition,
                                          LiteralList<Derived> derived_conditions)
 {
-    return m_factories.get<AxiomImpl>().get_or_create<AxiomImpl>(std::move(parameters),
-                                                                 std::move(literal),
-                                                                 std::move(static_condition),
-                                                                 std::move(fluent_condition),
-                                                                 std::move(derived_conditions));
+    return m_factories.get<AxiomFactory>().get_or_create<AxiomImpl>(std::move(parameters),
+                                                                    std::move(literal),
+                                                                    std::move(static_condition),
+                                                                    std::move(fluent_condition),
+                                                                    std::move(derived_conditions));
 }
 
 OptimizationMetric PDDLFactories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)
 {
-    return m_factories.get<OptimizationMetricImpl>().get_or_create<OptimizationMetricImpl>(std::move(metric), std::move(function_expression));
+    return m_factories.get<OptimizationMetricFactory>().get_or_create<OptimizationMetricImpl>(std::move(metric), std::move(function_expression));
 }
 
 NumericFluent PDDLFactories::get_or_create_numeric_fluent(GroundFunction function, double number)
 {
-    return m_factories.get<NumericFluentImpl>().get_or_create<NumericFluentImpl>(std::move(function), std::move(number));
+    return m_factories.get<NumericFluentFactory>().get_or_create<NumericFluentImpl>(std::move(function), std::move(number));
 }
 
 Domain PDDLFactories::get_or_create_domain(std::optional<fs::path> filepath,
@@ -254,16 +289,16 @@ Domain PDDLFactories::get_or_create_domain(std::optional<fs::path> filepath,
                                            ActionList actions,
                                            AxiomList axioms)
 {
-    return m_factories.get<DomainImpl>().get_or_create<DomainImpl>(std::move(filepath),
-                                                                   std::move(name),
-                                                                   std::move(requirements),
-                                                                   std::move(constants),
-                                                                   std::move(static_predicates),
-                                                                   std::move(fluent_predicates),
-                                                                   std::move(derived_predicates),
-                                                                   std::move(functions),
-                                                                   std::move(actions),
-                                                                   std::move(axioms));
+    return m_factories.get<DomainFactory>().get_or_create<DomainImpl>(std::move(filepath),
+                                                                      std::move(name),
+                                                                      std::move(requirements),
+                                                                      std::move(constants),
+                                                                      std::move(static_predicates),
+                                                                      std::move(fluent_predicates),
+                                                                      std::move(derived_predicates),
+                                                                      std::move(functions),
+                                                                      std::move(actions),
+                                                                      std::move(axioms));
 }
 
 Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
@@ -281,45 +316,45 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
                                              std::optional<OptimizationMetric> optimization_metric,
                                              AxiomList axioms)
 {
-    return m_factories.get<ProblemImpl>().get_or_create<ProblemImpl>(std::move(filepath),
-                                                                     std::move(domain),
-                                                                     std::move(name),
-                                                                     std::move(requirements),
-                                                                     std::move(objects),
-                                                                     std::move(derived_predicates),
-                                                                     std::move(static_initial_literals),
-                                                                     std::move(fluent_initial_literals),
-                                                                     std::move(numeric_fluents),
-                                                                     std::move(static_goal_condition),
-                                                                     std::move(fluent_goal_condition),
-                                                                     std::move(derived_goal_condition),
-                                                                     std::move(optimization_metric),
-                                                                     std::move(axioms));
+    return m_factories.get<ProblemFactory>().get_or_create<ProblemImpl>(std::move(filepath),
+                                                                        std::move(domain),
+                                                                        std::move(name),
+                                                                        std::move(requirements),
+                                                                        std::move(objects),
+                                                                        std::move(derived_predicates),
+                                                                        std::move(static_initial_literals),
+                                                                        std::move(fluent_initial_literals),
+                                                                        std::move(numeric_fluents),
+                                                                        std::move(static_goal_condition),
+                                                                        std::move(fluent_goal_condition),
+                                                                        std::move(derived_goal_condition),
+                                                                        std::move(optimization_metric),
+                                                                        std::move(axioms));
 }
 
 // Factory
 template<typename T>
-const loki::UniqueValueTypeFactory<T>& PDDLFactories::get_factory() const
+const auto& PDDLFactories::get_factory() const
 {
     return m_factories.get<T>();
 }
 
-template const loki::UniqueValueTypeFactory<GroundAtomImpl<Static>>& PDDLFactories::get_factory<GroundAtomImpl<Static>>() const;
-template const loki::UniqueValueTypeFactory<GroundAtomImpl<Fluent>>& PDDLFactories::get_factory<GroundAtomImpl<Fluent>>() const;
-template const loki::UniqueValueTypeFactory<GroundAtomImpl<Derived>>& PDDLFactories::get_factory<GroundAtomImpl<Derived>>() const;
+template const auto& PDDLFactories::get_factory<GroundAtomFactory<Static>>() const;
+template const auto& PDDLFactories::get_factory<GroundAtomFactory<Fluent>>() const;
+template const auto& PDDLFactories::get_factory<GroundAtomFactory<Derived>>() const;
 
 // GroundAtom
 template<PredicateCategory P>
 GroundAtom<P> PDDLFactories::get_ground_atom(size_t atom_id) const
 {
-    return m_factories.get<GroundAtomImpl<P>>().at(atom_id);
+    return m_factories.get<GroundAtomFactory<P>>().at(atom_id);
 }
 
 template GroundAtom<Static> PDDLFactories::get_ground_atom<Static>(size_t atom_id) const;
 template GroundAtom<Fluent> PDDLFactories::get_ground_atom<Fluent>(size_t atom_id) const;
 template GroundAtom<Derived> PDDLFactories::get_ground_atom<Derived>(size_t atom_id) const;
 
-Object PDDLFactories::get_object(size_t object_id) const { return get_factory<ObjectImpl>().at(object_id); }
+Object PDDLFactories::get_object(size_t object_id) const { return get_factory<ObjectFactory>().at(object_id); }
 
 /* Grounding */
 

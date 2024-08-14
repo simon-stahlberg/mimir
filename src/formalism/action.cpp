@@ -43,7 +43,7 @@ ActionImpl::ActionImpl(size_t index,
                        EffectConditionalList conditional_effects,
                        EffectUniversalList universal_effects,
                        FunctionExpression function_expression) :
-    Base(index),
+    m_index(index),
     m_name(std::move(name)),
     m_original_arity(std::move(original_arity)),
     m_parameters(std::move(parameters)),
@@ -186,6 +186,8 @@ void ActionImpl::str(std::ostream& out, const loki::FormattingOptions& options, 
 
     out << ")\n";  // end action
 }
+
+size_t ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
 

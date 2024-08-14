@@ -19,6 +19,8 @@
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -26,9 +28,10 @@ namespace mimir
     TODO: Flattening LiteralImpl is unnecessary. It is already flat.
 */
 template<PredicateCategory P>
-class LiteralImpl : public loki::Base<LiteralImpl<P>>
+class LiteralImpl
 {
 private:
+    size_t m_index;
     bool m_is_negated;
     Atom<P> m_atom;
 
@@ -37,22 +40,31 @@ private:
     LiteralImpl(size_t index, bool is_negated, Atom<P> atom);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<LiteralImpl, loki::Hash<const LiteralImpl*, true>, loki::EqualTo<const LiteralImpl*, true>>;
-
-    /// @brief Test for semantic equivalence
-    bool is_structurally_equivalent_to_impl(const LiteralImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<LiteralImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     using Category = P;
 
+    size_t get_index() const;
     bool is_negated() const;
     const Atom<P>& get_atom() const;
 };
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const LiteralImpl<P>*>
+{
+    size_t operator()(const LiteralImpl<P>* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const LiteralImpl<P>*>
+{
+    bool operator()(const LiteralImpl<P>* l, const LiteralImpl<P>* r) const;
+};
+
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element);
 
 }
 

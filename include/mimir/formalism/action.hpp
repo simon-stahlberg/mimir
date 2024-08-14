@@ -19,12 +19,15 @@
 #define MIMIR_FORMALISM_ACTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
-class ActionImpl : public loki::Base<ActionImpl>
+class ActionImpl
 {
 private:
+    size_t m_index;
     std::string m_name;
     size_t m_original_arity;
     VariableList m_parameters;
@@ -54,17 +57,11 @@ private:
                FunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::UniqueValueTypeFactory<ActionImpl, loki::Hash<const ActionImpl*, true>, loki::EqualTo<const ActionImpl*, true>>;
-
-    /// @brief Test for structural equivalence
-    bool is_structurally_equivalent_to_impl(const ActionImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<ActionImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
@@ -75,11 +72,22 @@ public:
     const EffectUniversalList& get_universal_effects() const;
     const FunctionExpression& get_function_expression() const;
 
-    using loki::Base<ActionImpl>::str;
-    void str(std::ostream& out, const loki::FormattingOptions& options, bool action_costs) const;
-
     size_t get_arity() const;
 };
+
+template<>
+struct UniquePDDLHasher<const ActionImpl*>
+{
+    size_t operator()(const ActionImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const ActionImpl*>
+{
+    bool operator()(const ActionImpl* l, const ActionImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const ActionImpl& element);
 
 }
 

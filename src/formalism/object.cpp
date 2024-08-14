@@ -21,7 +21,7 @@
 
 namespace mimir
 {
-ObjectImpl::ObjectImpl(size_t index, std::string name) : Base(index), m_name(std::move(name)) {}
+ObjectImpl::ObjectImpl(size_t index, std::string name) : m_index(index), m_name(std::move(name)) {}
 
 bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const
 {
@@ -35,6 +35,8 @@ bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) con
 size_t ObjectImpl::hash_impl() const { return HashCombiner()(m_name); }
 
 void ObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << m_name; }
+
+size_t ObjectImpl::get_index() const { return m_index; }
 
 const std::string& ObjectImpl::get_name() const { return m_name; }
 }

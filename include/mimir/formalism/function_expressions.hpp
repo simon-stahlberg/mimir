@@ -19,14 +19,17 @@
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
 
 /* FunctionExpressionNumber */
-class FunctionExpressionNumberImpl : public loki::Base<FunctionExpressionNumberImpl>
+class FunctionExpressionNumberImpl
 {
 private:
+    size_t m_index;
     double m_number;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -34,24 +37,19 @@ private:
     FunctionExpressionNumberImpl(size_t index, double number);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionNumberImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     double get_number() const;
 };
 
 /* FunctionExpressionBinaryOperator */
-class FunctionExpressionBinaryOperatorImpl : public loki::Base<FunctionExpressionBinaryOperatorImpl>
+class FunctionExpressionBinaryOperatorImpl
 {
 private:
+    size_t m_index;
     loki::BinaryOperatorEnum m_binary_operator;
     FunctionExpression m_left_function_expression;
     FunctionExpression m_right_function_expression;
@@ -64,26 +62,21 @@ private:
                                          FunctionExpression right_function_expression);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionBinaryOperatorImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
     const FunctionExpression& get_left_function_expression() const;
     const FunctionExpression& get_right_function_expression() const;
 };
 
 /* FunctionExpressionMultiOperator */
-class FunctionExpressionMultiOperatorImpl : public loki::Base<FunctionExpressionMultiOperatorImpl>
+class FunctionExpressionMultiOperatorImpl
 {
 private:
+    size_t m_index;
     loki::MultiOperatorEnum m_multi_operator;
     FunctionExpressionList m_function_expressions;
 
@@ -92,25 +85,20 @@ private:
     FunctionExpressionMultiOperatorImpl(size_t index, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionMultiOperatorImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const FunctionExpressionList& get_function_expressions() const;
 };
 
 /* FunctionExpressionMinus */
-class FunctionExpressionMinusImpl : public loki::Base<FunctionExpressionMinusImpl>
+class FunctionExpressionMinusImpl
 {
 private:
+    size_t m_index;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -118,24 +106,19 @@ private:
     FunctionExpressionMinusImpl(size_t index, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionMinusImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const FunctionExpression& get_function_expression() const;
 };
 
 /* FunctionExpressionFunction */
-class FunctionExpressionFunctionImpl : public loki::Base<FunctionExpressionFunctionImpl>
+class FunctionExpressionFunctionImpl
 {
 private:
+    size_t m_index;
     Function m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -143,17 +126,11 @@ private:
     FunctionExpressionFunctionImpl(size_t index, Function function);
 
     // Give access to the constructor.
-    friend class loki::
-        UniqueValueTypeFactory<FunctionExpressionImpl, loki::Hash<const FunctionExpressionImpl*, true>, loki::EqualTo<const FunctionExpressionImpl*, true>>;
-
-    bool is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const;
-    size_t hash_impl() const;
-    void str_impl(std::ostream& out, const loki::FormattingOptions& options) const;
-
-    // Give access to the private interface implementations.
-    friend class loki::Base<FunctionExpressionFunctionImpl>;
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
+    size_t get_index() const;
     const Function& get_function() const;
 };
 
@@ -207,6 +184,84 @@ inline double evaluate_multi(const loki::MultiOperatorEnum& op, const double val
     }
 }
 
+template<>
+struct UniquePDDLHasher<const FunctionExpressionNumberImpl&>
+{
+    size_t operator()(const FunctionExpressionNumberImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionBinaryOperatorImpl&>
+{
+    size_t operator()(const FunctionExpressionBinaryOperatorImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionMultiOperatorImpl&>
+{
+    size_t operator()(const FunctionExpressionMultiOperatorImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionMinusImpl&>
+{
+    size_t operator()(const FunctionExpressionMinusImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionFunctionImpl&>
+{
+    size_t operator()(const FunctionExpressionFunctionImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionImpl*>
+{
+    size_t operator()(const FunctionExpressionImpl* e) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionNumberImpl&>
+{
+    bool operator()(const FunctionExpressionNumberImpl& l, const FunctionExpressionNumberImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionBinaryOperatorImpl&>
+{
+    bool operator()(const FunctionExpressionBinaryOperatorImpl& l, const FunctionExpressionBinaryOperatorImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionMultiOperatorImpl&>
+{
+    bool operator()(const FunctionExpressionMultiOperatorImpl& l, const FunctionExpressionMultiOperatorImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionMinusImpl&>
+{
+    bool operator()(const FunctionExpressionMinusImpl& l, const FunctionExpressionMinusImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionFunctionImpl&>
+{
+    bool operator()(const FunctionExpressionFunctionImpl& l, const FunctionExpressionFunctionImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionImpl*>
+{
+    bool operator()(const FunctionExpressionImpl* l, const FunctionExpressionImpl* r) const;
+};
+
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 }
 
 #endif
