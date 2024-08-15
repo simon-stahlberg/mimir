@@ -44,6 +44,8 @@ private:
 public:
     using Category = P;
 
+    std::string str() const;
+
     size_t get_index() const;
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;

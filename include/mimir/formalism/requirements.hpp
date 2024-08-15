@@ -39,6 +39,8 @@ private:
 public:
     bool test(loki::RequirementEnum requirement) const;
 
+    std::string str() const;
+
     size_t get_index() const;
     const loki::RequirementEnumSet& get_requirements() const;
 };

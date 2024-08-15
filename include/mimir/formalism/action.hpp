@@ -59,6 +59,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const std::string& get_name() const;
     size_t get_original_arity() const;
@@ -72,6 +74,10 @@ public:
 
     size_t get_arity() const;
 };
+
+/**
+ * Pretty printing
+ */
 
 extern std::ostream& operator<<(std::ostream& out, const ActionImpl& element);
 

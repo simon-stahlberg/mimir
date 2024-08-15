@@ -102,69 +102,148 @@ size_t UniquePDDLHasher<const EffectUniversalImpl*>::operator()(const EffectUniv
                                     e->get_conditions<Derived>());
 }
 
-size_t UniquePDDLHasher<const FunctionExpressionNumberImpl&>::operator()(const FunctionExpressionNumberImpl& e) const {}
+size_t UniquePDDLHasher<const FunctionExpressionNumberImpl&>::operator()(const FunctionExpressionNumberImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_number());
+}
 
-size_t UniquePDDLHasher<const FunctionExpressionBinaryOperatorImpl&>::operator()(const FunctionExpressionBinaryOperatorImpl& e) const {}
+size_t UniquePDDLHasher<const FunctionExpressionBinaryOperatorImpl&>::operator()(const FunctionExpressionBinaryOperatorImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_binary_operator(), e.get_left_function_expression(), e.get_right_function_expression());
+}
 
-size_t UniquePDDLHasher<const FunctionExpressionMultiOperatorImpl&>::operator()(const FunctionExpressionMultiOperatorImpl& e) const {}
+size_t UniquePDDLHasher<const FunctionExpressionMultiOperatorImpl&>::operator()(const FunctionExpressionMultiOperatorImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_multi_operator(), e.get_function_expressions());
+}
 
-size_t UniquePDDLHasher<const FunctionExpressionMinusImpl&>::operator()(const FunctionExpressionMinusImpl& e) const {}
+size_t UniquePDDLHasher<const FunctionExpressionMinusImpl&>::operator()(const FunctionExpressionMinusImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_function_expression());
+}
 
-size_t UniquePDDLHasher<const FunctionExpressionFunctionImpl&>::operator()(const FunctionExpressionFunctionImpl& e) const {}
+size_t UniquePDDLHasher<const FunctionExpressionFunctionImpl&>::operator()(const FunctionExpressionFunctionImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_function());
+}
 
 size_t UniquePDDLHasher<const FunctionExpressionImpl*>::operator()(const FunctionExpressionImpl* e) const
 {
     return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, *e);
 }
 
-size_t UniquePDDLHasher<const FunctionSkeletonImpl*>::operator()(const FunctionSkeletonImpl* e) const {}
+size_t UniquePDDLHasher<const FunctionSkeletonImpl*>::operator()(const FunctionSkeletonImpl* e) const
+{
+    return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters());
+}
 
-size_t UniquePDDLHasher<const FunctionImpl*>::operator()(const FunctionImpl* e) const {}
+size_t UniquePDDLHasher<const FunctionImpl*>::operator()(const FunctionImpl* e) const
+{
+    return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_terms());
+}
 
 template<PredicateCategory P>
 size_t UniquePDDLHasher<const GroundAtomImpl<P>*>::operator()(const GroundAtomImpl<P>* e) const
 {
+    return UniquePDDLHashCombiner()(e->get_predicate(), e->get_objects());
 }
 
-size_t UniquePDDLHasher<const GroundFunctionExpressionNumberImpl&>::operator()(const GroundFunctionExpressionNumberImpl& e) const {}
+template size_t UniquePDDLHasher<const GroundAtomImpl<Static>*>::operator()(const GroundAtomImpl<Static>* e) const;
+template size_t UniquePDDLHasher<const GroundAtomImpl<Fluent>*>::operator()(const GroundAtomImpl<Fluent>* e) const;
+template size_t UniquePDDLHasher<const GroundAtomImpl<Derived>*>::operator()(const GroundAtomImpl<Derived>* e) const;
 
-size_t UniquePDDLHasher<const GroundFunctionExpressionBinaryOperatorImpl&>::operator()(const GroundFunctionExpressionBinaryOperatorImpl& e) const {}
+size_t UniquePDDLHasher<const GroundFunctionExpressionNumberImpl&>::operator()(const GroundFunctionExpressionNumberImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_number());
+}
 
-size_t UniquePDDLHasher<const GroundFunctionExpressionMultiOperatorImpl&>::operator()(const GroundFunctionExpressionMultiOperatorImpl& e) const {}
+size_t UniquePDDLHasher<const GroundFunctionExpressionBinaryOperatorImpl&>::operator()(const GroundFunctionExpressionBinaryOperatorImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_binary_operator(), e.get_left_function_expression(), e.get_right_function_expression());
+}
 
-size_t UniquePDDLHasher<const GroundFunctionExpressionMinusImpl&>::operator()(const GroundFunctionExpressionMinusImpl& e) const {}
+size_t UniquePDDLHasher<const GroundFunctionExpressionMultiOperatorImpl&>::operator()(const GroundFunctionExpressionMultiOperatorImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_multi_operator(), e.get_function_expressions());
+}
 
-size_t UniquePDDLHasher<const GroundFunctionExpressionFunctionImpl&>::operator()(const GroundFunctionExpressionFunctionImpl& e) const {}
+size_t UniquePDDLHasher<const GroundFunctionExpressionMinusImpl&>::operator()(const GroundFunctionExpressionMinusImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_function_expression());
+}
+
+size_t UniquePDDLHasher<const GroundFunctionExpressionFunctionImpl&>::operator()(const GroundFunctionExpressionFunctionImpl& e) const
+{
+    return UniquePDDLHashCombiner()(e.get_function());
+}
 
 size_t UniquePDDLHasher<const GroundFunctionExpressionImpl*>::operator()(const GroundFunctionExpressionImpl* e) const
 {
     return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, *e);
 }
 
-size_t UniquePDDLHasher<const GroundFunctionImpl*>::operator()(const GroundFunctionImpl* e) const {}
+size_t UniquePDDLHasher<const GroundFunctionImpl*>::operator()(const GroundFunctionImpl* e) const
+{
+    return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_objects());
+}
 
 template<PredicateCategory P>
 size_t UniquePDDLHasher<const GroundLiteralImpl<P>*>::operator()(const GroundLiteralImpl<P>* e) const
 {
+    return UniquePDDLHashCombiner()(e->is_negated(), e->get_atom());
 }
+
+template size_t UniquePDDLHasher<const GroundLiteralImpl<Static>*>::operator()(const GroundLiteralImpl<Static>* e) const;
+template size_t UniquePDDLHasher<const GroundLiteralImpl<Fluent>*>::operator()(const GroundLiteralImpl<Fluent>* e) const;
+template size_t UniquePDDLHasher<const GroundLiteralImpl<Derived>*>::operator()(const GroundLiteralImpl<Derived>* e) const;
 
 template<PredicateCategory P>
 size_t UniquePDDLHasher<const LiteralImpl<P>*>::operator()(const LiteralImpl<P>* e) const
 {
+    return UniquePDDLHashCombiner()(e->is_negated(), e->get_atom());
 }
 
-size_t UniquePDDLHasher<const OptimizationMetricImpl*>::operator()(const OptimizationMetricImpl* e) const {}
+template size_t UniquePDDLHasher<const LiteralImpl<Static>*>::operator()(const LiteralImpl<Static>* e) const;
+template size_t UniquePDDLHasher<const LiteralImpl<Fluent>*>::operator()(const LiteralImpl<Fluent>* e) const;
+template size_t UniquePDDLHasher<const LiteralImpl<Derived>*>::operator()(const LiteralImpl<Derived>* e) const;
 
-size_t UniquePDDLHasher<const NumericFluentImpl*>::operator()(const NumericFluentImpl* e) const {}
+size_t UniquePDDLHasher<const OptimizationMetricImpl*>::operator()(const OptimizationMetricImpl* e) const
+{
+    return UniquePDDLHashCombiner()(e->get_optimization_metric(), e->get_function_expression());
+}
 
-size_t UniquePDDLHasher<const ObjectImpl*>::operator()(const ObjectImpl* e) const {}
+size_t UniquePDDLHasher<const NumericFluentImpl*>::operator()(const NumericFluentImpl* e) const
+{
+    return UniquePDDLHashCombiner()(e->get_number(), e->get_function());
+}
+
+size_t UniquePDDLHasher<const ObjectImpl*>::operator()(const ObjectImpl* e) const { return UniquePDDLHashCombiner()(e->get_name()); }
 
 template<PredicateCategory P>
 size_t UniquePDDLHasher<const PredicateImpl<P>*>::operator()(const PredicateImpl<P>* e) const
 {
+    return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters());
 }
 
-size_t UniquePDDLHasher<const ProblemImpl*>::operator()(const ProblemImpl* e) const {}
+template size_t UniquePDDLHasher<const PredicateImpl<Static>*>::operator()(const PredicateImpl<Static>* e) const;
+template size_t UniquePDDLHasher<const PredicateImpl<Fluent>*>::operator()(const PredicateImpl<Fluent>* e) const;
+template size_t UniquePDDLHasher<const PredicateImpl<Derived>*>::operator()(const PredicateImpl<Derived>* e) const;
+
+size_t UniquePDDLHasher<const ProblemImpl*>::operator()(const ProblemImpl* e) const
+{
+    return UniquePDDLHashCombiner()(e->get_name(),
+                                    e->get_requirements(),
+                                    e->get_objects(),
+                                    e->get_derived_predicates(),
+                                    e->get_static_initial_literals(),
+                                    e->get_fluent_initial_literals(),
+                                    e->get_numeric_fluents(),
+                                    e->get_goal_condition<Static>(),
+                                    e->get_goal_condition<Fluent>(),
+                                    e->get_goal_condition<Derived>(),
+                                    e->get_optimization_metric(),
+                                    e->get_axioms());
+}
 
 size_t UniquePDDLHasher<const RequirementsImpl*>::operator()(const RequirementsImpl* e) const { return UniquePDDLHashCombiner()(e->get_requirements()); }
 

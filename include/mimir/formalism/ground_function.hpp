@@ -36,6 +36,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;

@@ -51,6 +51,8 @@ private:
 public:
     using Category = P;
 
+    std::string str() const;
+
     size_t get_index() const;
     const std::string& get_name() const;
     const VariableList& get_parameters() const;

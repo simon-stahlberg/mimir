@@ -122,30 +122,50 @@ bool UniquePDDLEqualTo<const EffectUniversalImpl*>::operator()(const EffectUnive
 
 bool UniquePDDLEqualTo<const FunctionExpressionNumberImpl&>::operator()(const FunctionExpressionNumberImpl& l, const FunctionExpressionNumberImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_number() == r.get_number());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const FunctionExpressionBinaryOperatorImpl&>::operator()(const FunctionExpressionBinaryOperatorImpl& l,
                                                                                 const FunctionExpressionBinaryOperatorImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_binary_operator() == r.get_binary_operator()) && (l.get_left_function_expression() == r.get_left_function_expression())
+               && (l.get_right_function_expression() == r.get_right_function_expression());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const FunctionExpressionMultiOperatorImpl&>::operator()(const FunctionExpressionMultiOperatorImpl& l,
                                                                                const FunctionExpressionMultiOperatorImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_multi_operator() == r.get_multi_operator()) && (l.get_function_expressions() == r.get_function_expressions());
+    }
     return true;
 }
 
-bool UniquePDDLEqualTo<const FunctionExpressionMinusImpl&>::operator()(const FunctionExpressionMinusImpl& l, const FunctionExpressionMinusImpl& r) const {}
+bool UniquePDDLEqualTo<const FunctionExpressionMinusImpl&>::operator()(const FunctionExpressionMinusImpl& l, const FunctionExpressionMinusImpl& r) const
+{
+    if (&l != &r)
+    {
+        return (l.get_function_expression() == r.get_function_expression());
+    }
+    return true;
+}
 
 bool UniquePDDLEqualTo<const FunctionExpressionFunctionImpl&>::operator()(const FunctionExpressionFunctionImpl& l,
                                                                           const FunctionExpressionFunctionImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_function() == r.get_function());
+    }
     return true;
 }
 
@@ -156,55 +176,84 @@ bool UniquePDDLEqualTo<const FunctionExpressionImpl*>::operator()(const Function
 
 bool UniquePDDLEqualTo<const FunctionSkeletonImpl*>::operator()(const FunctionSkeletonImpl* l, const FunctionSkeletonImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const FunctionImpl*>::operator()(const FunctionImpl* l, const FunctionImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_function_skeleton() == r->get_function_skeleton()) && (l->get_terms() == r->get_terms());
+    }
     return true;
 }
 
 template<PredicateCategory P>
 bool UniquePDDLEqualTo<const GroundAtomImpl<P>*>::operator()(const GroundAtomImpl<P>* l, const GroundAtomImpl<P>* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_predicate() == r->get_predicate()) && (l->get_objects() == r->get_objects());
+    }
     return true;
 }
+
+template bool UniquePDDLEqualTo<const GroundAtomImpl<Static>*>::operator()(const GroundAtomImpl<Static>* l, const GroundAtomImpl<Static>* r) const;
+template bool UniquePDDLEqualTo<const GroundAtomImpl<Fluent>*>::operator()(const GroundAtomImpl<Fluent>* l, const GroundAtomImpl<Fluent>* r) const;
+template bool UniquePDDLEqualTo<const GroundAtomImpl<Derived>*>::operator()(const GroundAtomImpl<Derived>* l, const GroundAtomImpl<Derived>* r) const;
 
 bool UniquePDDLEqualTo<const GroundFunctionExpressionNumberImpl&>::operator()(const GroundFunctionExpressionNumberImpl& l,
                                                                               const GroundFunctionExpressionNumberImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_number() == r.get_number());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const GroundFunctionExpressionBinaryOperatorImpl&>::operator()(const GroundFunctionExpressionBinaryOperatorImpl& l,
                                                                                       const GroundFunctionExpressionBinaryOperatorImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_binary_operator() == r.get_binary_operator()) && (l.get_left_function_expression() == r.get_left_function_expression())
+               && (l.get_right_function_expression() == r.get_right_function_expression());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const GroundFunctionExpressionMultiOperatorImpl&>::operator()(const GroundFunctionExpressionMultiOperatorImpl& l,
                                                                                      const GroundFunctionExpressionMultiOperatorImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_multi_operator() == r.get_multi_operator()) && (l.get_function_expressions() == r.get_function_expressions());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const GroundFunctionExpressionMinusImpl&>::operator()(const GroundFunctionExpressionMinusImpl& l,
                                                                              const GroundFunctionExpressionMinusImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_function_expression() == r.get_function_expression());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const GroundFunctionExpressionFunctionImpl&>::operator()(const GroundFunctionExpressionFunctionImpl& l,
                                                                                 const GroundFunctionExpressionFunctionImpl& r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l.get_function() == r.get_function());
+    }
     return true;
 }
 
@@ -215,52 +264,93 @@ bool UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>::operator()(const Gr
 
 bool UniquePDDLEqualTo<const GroundFunctionImpl*>::operator()(const GroundFunctionImpl* l, const GroundFunctionImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_function_skeleton() == r->get_function_skeleton() && l->get_objects() == r->get_objects());
+    }
     return true;
 }
 
 template<PredicateCategory P>
 bool UniquePDDLEqualTo<const GroundLiteralImpl<P>*>::operator()(const GroundLiteralImpl<P>* l, const GroundLiteralImpl<P>* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->is_negated() == r->is_negated()) && (l->get_atom() == r->get_atom());
+    }
     return true;
 }
+
+template bool UniquePDDLEqualTo<const GroundLiteralImpl<Static>*>::operator()(const GroundLiteralImpl<Static>* l, const GroundLiteralImpl<Static>* r) const;
+template bool UniquePDDLEqualTo<const GroundLiteralImpl<Fluent>*>::operator()(const GroundLiteralImpl<Fluent>* l, const GroundLiteralImpl<Fluent>* r) const;
+template bool UniquePDDLEqualTo<const GroundLiteralImpl<Derived>*>::operator()(const GroundLiteralImpl<Derived>* l, const GroundLiteralImpl<Derived>* r) const;
 
 template<PredicateCategory P>
 bool UniquePDDLEqualTo<const LiteralImpl<P>*>::operator()(const LiteralImpl<P>* l, const LiteralImpl<P>* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->is_negated() == r->is_negated()) && (l->get_atom() == r->get_atom());
+    }
     return true;
 }
 
+template bool UniquePDDLEqualTo<const LiteralImpl<Static>*>::operator()(const LiteralImpl<Static>* l, const LiteralImpl<Static>* r) const;
+template bool UniquePDDLEqualTo<const LiteralImpl<Fluent>*>::operator()(const LiteralImpl<Fluent>* l, const LiteralImpl<Fluent>* r) const;
+template bool UniquePDDLEqualTo<const LiteralImpl<Derived>*>::operator()(const LiteralImpl<Derived>* l, const LiteralImpl<Derived>* r) const;
+
 bool UniquePDDLEqualTo<const OptimizationMetricImpl*>::operator()(const OptimizationMetricImpl* l, const OptimizationMetricImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_optimization_metric() == r->get_optimization_metric()) && (l->get_function_expression() == r->get_function_expression());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const NumericFluentImpl*>::operator()(const NumericFluentImpl* l, const NumericFluentImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_number() == r->get_number()) && (l->get_function() == r->get_function());
+    }
     return true;
 }
 
 bool UniquePDDLEqualTo<const ObjectImpl*>::operator()(const ObjectImpl* l, const ObjectImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_name() == r->get_name());
+    }
     return true;
 }
 
 template<PredicateCategory P>
 bool UniquePDDLEqualTo<const PredicateImpl<P>*>::operator()(const PredicateImpl<P>* l, const PredicateImpl<P>* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters());
+    }
     return true;
 }
 
+template bool UniquePDDLEqualTo<const PredicateImpl<Static>*>::operator()(const PredicateImpl<Static>* l, const PredicateImpl<Static>* r) const;
+template bool UniquePDDLEqualTo<const PredicateImpl<Fluent>*>::operator()(const PredicateImpl<Fluent>* l, const PredicateImpl<Fluent>* r) const;
+template bool UniquePDDLEqualTo<const PredicateImpl<Derived>*>::operator()(const PredicateImpl<Derived>* l, const PredicateImpl<Derived>* r) const;
+
 bool UniquePDDLEqualTo<const ProblemImpl*>::operator()(const ProblemImpl* l, const ProblemImpl* r) const
 {
-    if (&l != &r) {}
+    if (&l != &r)
+    {
+        return (l->get_name() == r->get_name()) && (l->get_requirements() == r->get_requirements()) && (l->get_objects() == r->get_objects())
+               && (l->get_derived_predicates() == r->get_derived_predicates()) && (l->get_static_initial_literals() == r->get_static_initial_literals())
+               && (l->get_fluent_initial_literals() == r->get_fluent_initial_literals()) && (l->get_numeric_fluents() == r->get_numeric_fluents())
+               && (l->get_goal_condition<Static>() == r->get_goal_condition<Static>()) && (l->get_goal_condition<Fluent>() == r->get_goal_condition<Fluent>())
+               && (l->get_goal_condition<Derived>() == r->get_goal_condition<Derived>()) && (l->get_optimization_metric() == r->get_optimization_metric())
+               && (l->get_axioms() == r->get_axioms());
+    }
     return true;
 }
 

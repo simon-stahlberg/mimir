@@ -41,6 +41,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const Literal<Fluent>& get_effect() const;
 };
@@ -70,6 +72,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     template<PredicateCategory P>
     const LiteralList<P>& get_conditions() const;
@@ -103,6 +107,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const VariableList& get_parameters() const;
     template<PredicateCategory P>

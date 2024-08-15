@@ -38,6 +38,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const GroundFunction& get_function() const;
     double get_number() const;

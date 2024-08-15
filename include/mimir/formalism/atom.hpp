@@ -41,6 +41,8 @@ private:
 public:
     using Category = P;
 
+    std::string str() const;
+
     size_t get_index() const;
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;

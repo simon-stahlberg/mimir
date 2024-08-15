@@ -93,6 +93,13 @@ ActionImpl::ActionImpl(size_t index,
               });
 }
 
+std::string ActionImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }

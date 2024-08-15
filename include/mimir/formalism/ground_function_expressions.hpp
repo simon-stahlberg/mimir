@@ -39,6 +39,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     double get_number() const;
 };
@@ -64,6 +66,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
     const GroundFunctionExpression& get_left_function_expression() const;
@@ -87,6 +91,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const GroundFunctionExpressionList& get_function_expressions() const;
@@ -108,6 +114,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const GroundFunctionExpression& get_function_expression() const;
 };
@@ -128,6 +136,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const GroundFunction& get_function() const;
 };

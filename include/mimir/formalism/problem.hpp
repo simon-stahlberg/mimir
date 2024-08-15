@@ -68,6 +68,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const std::optional<fs::path>& get_filepath() const;
     const Domain& get_domain() const;

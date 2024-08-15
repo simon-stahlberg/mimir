@@ -45,6 +45,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const Object& get_object() const;
 };
@@ -62,6 +64,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const Variable& get_variable() const;
 };

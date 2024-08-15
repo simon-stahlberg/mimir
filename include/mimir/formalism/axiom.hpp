@@ -44,6 +44,8 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    std::string str() const;
+
     size_t get_index() const;
     const VariableList& get_parameters() const;
     const Literal<Derived>& get_literal() const;
