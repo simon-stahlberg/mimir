@@ -56,13 +56,6 @@ public:
         return true;
     }
 
-    size_t hash() const
-    {
-        size_t seed = HashCombiner()(m_index, m_source, m_target);
-        apply_properties_hash(seed, std::make_index_sequence<sizeof...(EdgeProperties)> {});
-        return seed;
-    }
-
     /// @brief Get a reference to the I-th `EdgeProperties`.
     /// We recommend providing free inline functions to access properties with more meaningful names.
     /// @tparam I the index of the property in the parameter pack.
@@ -79,14 +72,29 @@ private:
     VertexIndex m_source;
     VertexIndex m_target;
     std::tuple<EdgeProperties...> m_properties;
+};
+}
+
+template<typename Tag, typename... EdgeProperties>
+struct std::hash<mimir::Edge<Tag, EdgeProperties...>>
+{
+    size_t operator()(const mimir::Edge<Tag, EdgeProperties...>& element) const
+    {
+        size_t seed = mimir::hash_combine(element.get_index(), element.get_source(), element.get_target());
+        apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(EdgeProperties)> {});
+        return seed;
+    }
 
     // Helper function to apply hashing to all properties
     template<std::size_t... Is>
-    void apply_properties_hash(size_t& seed, std::index_sequence<Is...>) const
+    void apply_properties_hash(size_t& seed, const mimir::Edge<Tag, EdgeProperties...>& element, std::index_sequence<Is...>) const
     {
-        (..., HashCombiner()(seed, Hash<std::tuple_element_t<Is, std::tuple<EdgeProperties...>>>()(get_property<Is>())));
+        (..., mimir::hash_combine(seed, element.template get_property<Is>()));
     }
 };
+
+namespace mimir
+{
 
 /**
  * EmptyEdge

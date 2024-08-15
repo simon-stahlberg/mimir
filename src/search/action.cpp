@@ -25,11 +25,24 @@
 #include <ostream>
 #include <tuple>
 
-size_t std::hash<mimir::GroundAction>::operator()(const mimir::GroundAction& e) const { return e.get_index(); }
+size_t std::hash<mimir::GroundAction>::operator()(mimir::GroundAction element) const { return element.get_index(); }
 
-size_t std::equal_to<mimir::GroundAction>::operator()(const mimir::GroundAction& l, const mimir::GroundAction& r) const
+size_t std::equal_to<mimir::GroundAction>::operator()(mimir::GroundAction lhs, mimir::GroundAction rhs) const { return lhs.get_index() == rhs.get_index(); }
+
+size_t std::hash<mimir::FlatAction>::operator()(mimir::FlatAction element) const
 {
-    return l.get_index() == r.get_index();
+    const auto action = element.get<2>();
+    const auto objects = element.get<3>();
+    return mimir::hash_combine(action, objects);
+}
+
+bool std::equal_to<mimir::FlatAction>::operator()(mimir::FlatAction lhs, mimir::FlatAction rhs) const
+{
+    const auto action_left = lhs.get<2>();
+    const auto objects_left = lhs.get<3>();
+    const auto action_right = rhs.get<2>();
+    const auto objects_right = rhs.get<3>();
+    return (action_left == action_right) && (objects_left == objects_right);
 }
 
 namespace mimir
@@ -44,24 +57,6 @@ bool FlatSimpleEffect::operator==(const FlatSimpleEffect& other) const
         return is_negated == other.is_negated && atom_id == other.atom_id;
     }
     return true;
-}
-
-/* FlatActionHash */
-
-size_t FlatActionHash::operator()(FlatAction view) const
-{
-    const auto action = view.get<2>();
-    const auto objects = view.get<3>();
-    return HashCombiner()(action, objects.hash());
-}
-
-bool FlatActionEqual::operator()(FlatAction view_left, FlatAction view_right) const
-{
-    const auto action_left = view_left.get<2>();
-    const auto objects_left = view_left.get<3>();
-    const auto action_right = view_right.get<2>();
-    const auto objects_right = view_right.get<3>();
-    return (action_left == action_right) && (objects_left == objects_right);
 }
 
 /* StripsActionPreconditionBuilderProxy */

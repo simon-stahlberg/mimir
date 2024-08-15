@@ -44,13 +44,13 @@ using FlatState = flatmemory::ConstView<FlatStateLayout>;
 template<>
 struct std::hash<mimir::FlatState>
 {
-    size_t operator()(mimir::FlatState view) const;
+    size_t operator()(mimir::FlatState element) const;
 };
 
 template<>
 struct std::equal_to<mimir::FlatState>
 {
-    bool operator()(mimir::FlatState view_left, mimir::FlatState view_right) const;
+    bool operator()(mimir::FlatState lhs, mimir::FlatState rhs) const;
 };
 
 namespace mimir
@@ -115,13 +115,13 @@ static_assert(std::is_trivially_copyable_v<std::optional<State>>);
 template<>
 struct std::hash<mimir::State>
 {
-    size_t operator()(const mimir::State& e) const;
+    size_t operator()(mimir::State element) const;
 };
 
 template<>
 struct std::equal_to<mimir::State>
 {
-    bool operator()(const mimir::State& l, const mimir::State& r) const;
+    bool operator()(mimir::State lhs, mimir::State rhs) const;
 };
 
 namespace mimir

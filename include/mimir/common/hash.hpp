@@ -28,6 +28,55 @@
 
 namespace mimir
 {
+/**
+ * Forward declarations
+ */
+
+template<typename T>
+inline void hash_combine(size_t& seed, const T& value);
+
+template<typename T, typename... Rest>
+inline void hash_combine(size_t& seed, const Rest&... rest);
+
+template<typename... Ts>
+inline size_t hash_combine(const Ts&... rest);
+}
+
+/**
+ * std::hash specializations
+ */
+
+/// @brief std::hash specialization for a forward range.
+/// @tparam ForwardRange
+template<std::ranges::forward_range ForwardRange>
+struct std::hash<ForwardRange>
+{
+    size_t operator()(const ForwardRange& range) const
+    {
+        std::size_t aggregated_hash = 0;
+        for (const auto& item : range)
+        {
+            mimir::hash_combine(aggregated_hash, item);
+        }
+        return aggregated_hash;
+    }
+};
+
+/// @brief std::hash specialization for a pair.
+/// @tparam T1
+/// @tparam T2
+template<typename T1, typename T2>
+struct std::hash<std::pair<T1, T2>>
+{
+    size_t operator()(const std::pair<T1, T2>& pair) const { return mimir::hash_combine(pair.first, pair.second); }
+};
+
+/**
+ * Definitions
+ */
+
+namespace mimir
+{
 
 template<typename T>
 inline void hash_combine(size_t& seed, const T& value)
@@ -48,6 +97,8 @@ inline size_t hash_combine(const Ts&... rest)
     (mimir::hash_combine(seed, rest), ...);
     return seed;
 }
+
+/////////// The code below is supposed to be deleted soon.
 
 /**
  * Forward declarations

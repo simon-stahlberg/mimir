@@ -40,8 +40,6 @@ bool Certificate::operator==(const Certificate& other) const
     return true;
 }
 
-size_t Certificate::hash() const { return HashCombiner()(m_num_vertices, m_num_edges, m_nauty_certificate, m_canonical_initial_coloring); }
-
 size_t Certificate::get_num_vertices() const { return m_num_vertices; }
 
 size_t Certificate::get_num_edges() const { return m_num_edges; }
@@ -50,4 +48,9 @@ const std::string& Certificate::get_nauty_certificate() const { return m_nauty_c
 
 const ColorList& Certificate::get_canonical_initial_coloring() const { return m_canonical_initial_coloring; }
 
+}
+
+size_t std::hash<mimir::Certificate>::operator()(const mimir::Certificate& element) const
+{
+    return mimir::hash_combine(element.get_nauty_certificate(), element.get_canonical_initial_coloring());
 }

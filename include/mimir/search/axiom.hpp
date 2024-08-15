@@ -51,18 +51,23 @@ using FlatAxiomLayout = flatmemory::Tuple<GroundAxiomIndex,  //
 using FlatAxiomBuilder = flatmemory::Builder<FlatAxiomLayout>;
 using FlatAxiom = flatmemory::ConstView<FlatAxiomLayout>;
 using FlatAxiomVector = flatmemory::VariableSizedTypeVector<FlatAxiomLayout>;
+}
 
-struct FlatAxiomHash
+template<>
+struct std::hash<mimir::FlatAxiom>
 {
-    size_t operator()(const FlatAxiom& view) const;
+    size_t operator()(mimir::FlatAxiom element) const;
 };
 
-struct FlatAxiomEqual
+template<>
+struct std::equal_to<mimir::FlatAxiom>
 {
-    bool operator()(const FlatAxiom& view_left, const FlatAxiom& view_right) const;
+    bool operator()(mimir::FlatAxiom lhs, mimir::FlatAxiom rhs) const;
 };
 
-using FlatAxiomSet = flatmemory::UnorderedSet<FlatAxiomLayout, FlatAxiomHash, FlatAxiomEqual>;
+namespace mimir
+{
+using FlatAxiomSet = flatmemory::UnorderedSet<FlatAxiomLayout>;
 
 /**
  * GroundAxiomBuilder
@@ -122,13 +127,13 @@ public:
 template<>
 struct std::hash<mimir::GroundAxiom>
 {
-    size_t operator()(const mimir::GroundAxiom& e) const;
+    size_t operator()(mimir::GroundAxiom element) const;
 };
 
 template<>
 struct std::equal_to<mimir::GroundAxiom>
 {
-    size_t operator()(const mimir::GroundAxiom& l, const mimir::GroundAxiom& r) const;
+    size_t operator()(mimir::GroundAxiom lhs, mimir::GroundAxiom rhs) const;
 };
 
 namespace mimir

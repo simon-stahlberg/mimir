@@ -50,14 +50,6 @@ public:
         return true;
     }
 
-    size_t hash() const
-    {
-        size_t seed = 0;
-        HashCombiner()(seed, m_index);
-        apply_properties_hash(seed, std::make_index_sequence<sizeof...(VertexProperties)> {});
-        return seed;
-    }
-
     template<size_t I>
     const auto& get_property() const
     {
@@ -68,14 +60,29 @@ public:
 private:
     VertexIndex m_index;
     std::tuple<VertexProperties...> m_properties;
+};
+}
+
+template<typename Tag, typename... VertexProperties>
+struct std::hash<mimir::Vertex<Tag, VertexProperties...>>
+{
+    size_t operator()(const mimir::Vertex<Tag, VertexProperties...>& element) const
+    {
+        size_t seed = element.get_index();
+        apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(VertexProperties)> {});
+        return seed;
+    }
 
     // Helper function to apply hashing to all properties
     template<std::size_t... Is>
-    void apply_properties_hash(size_t& seed, std::index_sequence<Is...>) const
+    void apply_properties_hash(size_t& seed, const mimir::Vertex<Tag, VertexProperties...>& element, std::index_sequence<Is...>) const
     {
-        (..., HashCombiner()(seed, Hash<std::tuple_element_t<Is, std::tuple<VertexProperties...>>>()(get_property<Is>())));
+        (..., mimir::hash_combine(seed, element.template get_property<Is>()));
     }
 };
+
+namespace mimir
+{
 
 /**
  * EmptyVertex

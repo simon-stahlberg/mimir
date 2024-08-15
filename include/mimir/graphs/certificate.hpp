@@ -39,13 +39,18 @@ public:
     Certificate(size_t num_vertices, size_t num_edges, std::string nauty_certificate, ColorList canonical_initial_coloring);
 
     bool operator==(const Certificate& other) const;
-    size_t hash() const;
 
     size_t get_num_vertices() const;
     size_t get_num_edges() const;
     const std::string& get_nauty_certificate() const;
     const ColorList& get_canonical_initial_coloring() const;
 };
-
 }
+
+template<>
+struct std::hash<mimir::Certificate>
+{
+    size_t operator()(const mimir::Certificate& element) const;
+};
+
 #endif

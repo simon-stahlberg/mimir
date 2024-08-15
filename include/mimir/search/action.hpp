@@ -85,17 +85,24 @@ using FlatActionBuilder = flatmemory::Builder<FlatActionLayout>;
 using FlatAction = flatmemory::ConstView<FlatActionLayout>;
 using FlatActionVector = flatmemory::VariableSizedTypeVector<FlatActionLayout>;
 
-struct FlatActionHash
+}
+
+template<>
+struct std::hash<mimir::FlatAction>
 {
-    size_t operator()(FlatAction view) const;
+    size_t operator()(mimir::FlatAction element) const;
 };
 
-struct FlatActionEqual
+template<>
+struct std::equal_to<mimir::FlatAction>
 {
-    bool operator()(FlatAction view_left, FlatAction view_right) const;
+    bool operator()(mimir::FlatAction lhs, mimir::FlatAction rhs) const;
 };
 
-using FlatActionSet = flatmemory::UnorderedSet<FlatActionLayout, FlatActionHash, FlatActionEqual>;
+namespace mimir
+{
+
+using FlatActionSet = flatmemory::UnorderedSet<FlatActionLayout>;
 
 /**
  * Implementation class
@@ -285,13 +292,13 @@ static_assert(std::is_trivially_copyable_v<std::optional<GroundAction>>);
 template<>
 struct std::hash<mimir::GroundAction>
 {
-    size_t operator()(const mimir::GroundAction& e) const;
+    size_t operator()(mimir::GroundAction element) const;
 };
 
 template<>
 struct std::equal_to<mimir::GroundAction>
 {
-    size_t operator()(const mimir::GroundAction& l, const mimir::GroundAction& r) const;
+    size_t operator()(mimir::GroundAction lhs, mimir::GroundAction rhs) const;
 };
 
 namespace mimir

@@ -24,9 +24,25 @@
 #include <ostream>
 #include <tuple>
 
-size_t std::hash<mimir::GroundAxiom>::operator()(const mimir::GroundAxiom& e) const { return e.get_index(); }
+size_t std::hash<mimir::GroundAxiom>::operator()(mimir::GroundAxiom element) const { return element.get_index(); }
 
-size_t std::equal_to<mimir::GroundAxiom>::operator()(const mimir::GroundAxiom& l, const mimir::GroundAxiom& r) const { return l.get_index() == r.get_index(); }
+size_t std::equal_to<mimir::GroundAxiom>::operator()(mimir::GroundAxiom lhs, mimir::GroundAxiom rhs) const { return lhs.get_index() == rhs.get_index(); }
+
+size_t std::hash<mimir::FlatAxiom>::operator()(mimir::FlatAxiom element) const
+{
+    const auto axiom = element.get<1>();
+    const auto objects = element.get<2>();
+    return mimir::hash_combine(axiom, objects);
+}
+
+bool std::equal_to<mimir::FlatAxiom>::operator()(mimir::FlatAxiom lhs, mimir::FlatAxiom rhs) const
+{
+    const auto axiom_left = lhs.get<1>();
+    const auto objects_left = lhs.get<2>();
+    const auto axiom_right = rhs.get<1>();
+    const auto objects_right = rhs.get<2>();
+    return (axiom_left == axiom_right) && (objects_left == objects_right);
+}
 
 namespace mimir
 {
@@ -40,26 +56,6 @@ bool FlatDerivedEffect::operator==(const FlatDerivedEffect& other) const
         return is_negated == other.is_negated && atom_id == other.atom_id;
     }
     return true;
-}
-
-/* FlatAxiomHash */
-
-size_t FlatAxiomHash::operator()(const FlatAxiom& view) const
-{
-    const auto axiom = view.get<1>();
-    const auto objects = view.get<2>();
-    return HashCombiner()(axiom, objects.hash());
-}
-
-/* FlatAxiomEqual */
-
-bool FlatAxiomEqual::operator()(const FlatAxiom& view_left, const FlatAxiom& view_right) const
-{
-    const auto axiom_left = view_left.get<1>();
-    const auto objects_left = view_left.get<2>();
-    const auto axiom_right = view_right.get<1>();
-    const auto objects_right = view_right.get<2>();
-    return (axiom_left == axiom_right) && (objects_left == objects_right);
 }
 
 /* GroundAxiomBuilder */

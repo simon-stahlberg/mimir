@@ -25,20 +25,20 @@
 #include <ostream>
 #include <tuple>
 
-size_t std::hash<mimir::State>::operator()(const mimir::State& e) const { return e.get_index(); }
+size_t std::hash<mimir::State>::operator()(mimir::State element) const { return element.get_index(); }
 
-bool std::equal_to<mimir::State>::operator()(const mimir::State& l, const mimir::State& r) const { return l.get_index() == r.get_index(); }
+bool std::equal_to<mimir::State>::operator()(mimir::State lhs, mimir::State rhs) const { return lhs.get_index() == rhs.get_index(); }
 
-size_t std::hash<mimir::FlatState>::operator()(mimir::FlatState e) const
+size_t std::hash<mimir::FlatState>::operator()(mimir::FlatState element) const
 {
-    const auto fluent_atoms = e.get<1>();
+    const auto fluent_atoms = element.get<1>();
     return mimir::hash_combine(fluent_atoms);
 }
 
-bool std::equal_to<mimir::FlatState>::operator()(mimir::FlatState l, mimir::FlatState r) const
+bool std::equal_to<mimir::FlatState>::operator()(mimir::FlatState lhs, mimir::FlatState rhs) const
 {
-    const auto fluent_atoms_left = l.get<1>();
-    const auto fluent_atoms_right = r.get<1>();
+    const auto fluent_atoms_left = lhs.get<1>();
+    const auto fluent_atoms_right = rhs.get<1>();
     return (fluent_atoms_left == fluent_atoms_right);
 }
 
