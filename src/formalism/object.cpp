@@ -17,11 +17,27 @@
 
 #include "mimir/formalism/object.hpp"
 
+#include "formatter.hpp"
+
 namespace mimir
 {
 ObjectImpl::ObjectImpl(size_t index, std::string name) : m_index(index), m_name(std::move(name)) {}
 
+std::string ObjectImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t ObjectImpl::get_index() const { return m_index; }
 
 const std::string& ObjectImpl::get_name() const { return m_name; }
+
+std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

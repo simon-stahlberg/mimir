@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/atom.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
@@ -26,6 +27,14 @@ namespace mimir
 template<PredicateCategory P>
 AtomImpl<P>::AtomImpl(size_t index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))
 {
+}
+
+template<PredicateCategory P>
+std::string AtomImpl<P>::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 template<PredicateCategory P>
@@ -55,5 +64,17 @@ size_t AtomImpl<P>::get_arity() const
 template class AtomImpl<Static>;
 template class AtomImpl<Fluent>;
 template class AtomImpl<Derived>;
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const AtomImpl<Derived>& element);
 
 }

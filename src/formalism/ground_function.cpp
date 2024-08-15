@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_function.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/object.hpp"
 
@@ -29,10 +30,24 @@ GroundFunctionImpl::GroundFunctionImpl(size_t index, FunctionSkeleton function_s
 {
 }
 
+std::string GroundFunctionImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t GroundFunctionImpl::get_index() const { return m_index; }
 
 const FunctionSkeleton& GroundFunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
 
 const ObjectList& GroundFunctionImpl::get_objects() const { return m_objects; }
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 
 }

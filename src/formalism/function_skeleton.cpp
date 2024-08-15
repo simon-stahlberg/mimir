@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/function_skeleton.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/variable.hpp"
 
 namespace mimir
@@ -28,9 +29,23 @@ FunctionSkeletonImpl::FunctionSkeletonImpl(size_t index, std::string name, Varia
 {
 }
 
+std::string FunctionSkeletonImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t FunctionSkeletonImpl::get_index() const { return m_index; }
 
 const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }
 
 const VariableList& FunctionSkeletonImpl::get_parameters() const { return m_parameters; }
+
+std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

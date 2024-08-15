@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/function.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/term.hpp"
 
@@ -29,9 +30,23 @@ FunctionImpl::FunctionImpl(size_t index, FunctionSkeleton function_skeleton, Ter
 {
 }
 
+std::string FunctionImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t FunctionImpl::get_index() const { return m_index; }
 
 const FunctionSkeleton& FunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
 
 const TermList& FunctionImpl::get_terms() const { return m_terms; }
+
+std::ostream& operator<<(std::ostream& out, const FunctionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

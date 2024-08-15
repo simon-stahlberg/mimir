@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/variable.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/hash.hpp"
 
 namespace mimir
@@ -25,9 +26,23 @@ VariableImpl::VariableImpl(size_t index, std::string name, size_t parameter_inde
 {
 }
 
+std::string VariableImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t VariableImpl::get_index() const { return m_index; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }
 
 const size_t VariableImpl::get_parameter_index() const { return m_parameter_index; }
+
+std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

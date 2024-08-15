@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/axiom.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
@@ -53,6 +54,13 @@ AxiomImpl::AxiomImpl(size_t index,
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
+std::string AxiomImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t AxiomImpl::get_index() const { return m_index; }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
@@ -85,5 +93,12 @@ template const LiteralList<Fluent>& AxiomImpl::get_conditions<Fluent>() const;
 template const LiteralList<Derived>& AxiomImpl::get_conditions<Derived>() const;
 
 size_t AxiomImpl::get_arity() const { return m_parameters.size(); }
+
+std::ostream& operator<<(std::ostream& out, const AxiomImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 
 }

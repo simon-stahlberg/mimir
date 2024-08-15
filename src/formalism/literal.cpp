@@ -16,6 +16,7 @@
  */
 #include "mimir/formalism/literal.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -25,6 +26,14 @@ namespace mimir
 template<PredicateCategory P>
 LiteralImpl<P>::LiteralImpl(size_t index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
+}
+
+template<PredicateCategory P>
+std::string LiteralImpl<P>::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 template<PredicateCategory P>
@@ -48,5 +57,17 @@ const Atom<P>& LiteralImpl<P>::get_atom() const
 template class LiteralImpl<Static>;
 template class LiteralImpl<Fluent>;
 template class LiteralImpl<Derived>;
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Derived>& element);
 
 }

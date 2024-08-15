@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/predicate.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/variable.hpp"
@@ -31,6 +32,14 @@ PredicateImpl<P>::PredicateImpl(size_t index, std::string name, VariableList par
     m_parameters(std::move(parameters))
 {
     assert(is_all_unique(m_parameters));
+}
+
+template<PredicateCategory P>
+std::string PredicateImpl<P>::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 template<PredicateCategory P>
@@ -60,5 +69,17 @@ size_t PredicateImpl<P>::get_arity() const
 template class PredicateImpl<Static>;
 template class PredicateImpl<Fluent>;
 template class PredicateImpl<Derived>;
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived>& element);
 
 }

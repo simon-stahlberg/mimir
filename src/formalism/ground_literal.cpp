@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_literal.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -25,6 +26,14 @@ namespace mimir
 template<PredicateCategory P>
 GroundLiteralImpl<P>::GroundLiteralImpl(size_t index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
+}
+
+template<PredicateCategory P>
+std::string GroundLiteralImpl<P>::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 template<PredicateCategory P>
@@ -48,4 +57,16 @@ const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
 template class GroundLiteralImpl<Static>;
 template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Derived>& element);
 }

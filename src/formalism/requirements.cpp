@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/requirements.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/hash.hpp"
 
 #include <cassert>
@@ -27,7 +28,21 @@ RequirementsImpl::RequirementsImpl(size_t index, loki::RequirementEnumSet requir
 
 bool RequirementsImpl::test(loki::RequirementEnum requirement) const { return m_requirements.count(requirement); }
 
+std::string RequirementsImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t RequirementsImpl::get_index() const { return m_index; }
 
 const loki::RequirementEnumSet& RequirementsImpl::get_requirements() const { return m_requirements; }
+
+std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

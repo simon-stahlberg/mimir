@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/effects.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
@@ -36,6 +37,13 @@ namespace mimir
  */
 
 EffectSimpleImpl::EffectSimpleImpl(size_t index, Literal<Fluent> effect) : m_index(index), m_effect(std::move(effect)) {}
+
+std::string EffectSimpleImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
 
 size_t EffectSimpleImpl::get_index() const { return m_index; }
 
@@ -64,6 +72,13 @@ EffectConditionalImpl::EffectConditionalImpl(size_t index,
     std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+}
+
+std::string EffectConditionalImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 size_t EffectConditionalImpl::get_index() const { return m_index; }
@@ -124,6 +139,13 @@ EffectUniversalImpl::EffectUniversalImpl(size_t index,
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
+std::string EffectUniversalImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t EffectUniversalImpl::get_index() const { return m_index; }
 
 const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
@@ -156,5 +178,26 @@ template const LiteralList<Derived>& EffectUniversalImpl::get_conditions<Derived
 const Literal<Fluent>& EffectUniversalImpl::get_effect() const { return m_effect; }
 
 size_t EffectUniversalImpl::get_arity() const { return m_quantified_variables.size(); }
+
+std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const EffectUniversalImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 
 }

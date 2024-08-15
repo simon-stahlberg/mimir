@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/domain.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
@@ -28,10 +29,8 @@
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
 
-#include <algorithm>  // For std::shuffle
 #include <cassert>
 #include <iostream>
-#include <random>  // For random number generation
 #include <unordered_map>
 
 using namespace std;
@@ -94,6 +93,13 @@ DomainImpl::DomainImpl(size_t index,
     {
         m_name_to_derived_predicate.emplace(predicate->get_name(), predicate);
     }
+}
+
+std::string DomainImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 size_t DomainImpl::get_index() const { return m_index; }
@@ -161,5 +167,12 @@ const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
 template const ToPredicateMap<std::string, Static>& DomainImpl::get_name_to_predicate<Static>() const;
 template const ToPredicateMap<std::string, Fluent>& DomainImpl::get_name_to_predicate<Fluent>() const;
 template const ToPredicateMap<std::string, Derived>& DomainImpl::get_name_to_predicate<Derived>() const;
+
+std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 
 }

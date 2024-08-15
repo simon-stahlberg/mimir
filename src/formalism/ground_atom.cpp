@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -28,6 +29,14 @@ GroundAtomImpl<P>::GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectLi
     m_predicate(std::move(predicate)),
     m_objects(std::move(objects))
 {
+}
+
+template<PredicateCategory P>
+std::string GroundAtomImpl<P>::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 template<PredicateCategory P>
@@ -57,4 +66,16 @@ size_t GroundAtomImpl<P>::get_arity() const
 template class GroundAtomImpl<Static>;
 template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derived>& element);
 }

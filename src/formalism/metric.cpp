@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/metric.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 
 #include <cassert>
@@ -32,10 +33,24 @@ OptimizationMetricImpl::OptimizationMetricImpl(size_t index, loki::OptimizationM
 {
 }
 
+std::string OptimizationMetricImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t OptimizationMetricImpl::get_index() const { return m_index; }
 
 loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const GroundFunctionExpression& OptimizationMetricImpl::get_function_expression() const { return m_function_expression; }
+
+std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 
 }

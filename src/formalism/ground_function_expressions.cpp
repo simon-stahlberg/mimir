@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/ground_function_expressions.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
@@ -26,6 +27,13 @@ namespace mimir
 {
 /* FunctionExpressionNumber */
 GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(size_t index, double number) : m_index(index), m_number(number) {}
+
+std::string GroundFunctionExpressionNumberImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
 
 size_t GroundFunctionExpressionNumberImpl::get_index() const { return m_index; }
 
@@ -41,6 +49,13 @@ GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperat
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
 {
+}
+
+std::string GroundFunctionExpressionBinaryOperatorImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 size_t GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
@@ -68,6 +83,13 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
               { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
 }
 
+std::string GroundFunctionExpressionMultiOperatorImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t GroundFunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum GroundFunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
@@ -81,6 +103,13 @@ GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(size_t inde
 {
 }
 
+std::string GroundFunctionExpressionMinusImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
@@ -92,7 +121,56 @@ GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(size_
 {
 }
 
+std::string GroundFunctionExpressionFunctionImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }
 
 const GroundFunction& GroundFunctionExpressionFunctionImpl::get_function() const { return m_function; }
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

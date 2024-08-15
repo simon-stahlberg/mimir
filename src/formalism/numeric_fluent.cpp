@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/numeric_fluent.hpp"
 
+#include "formatter.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
 namespace mimir
@@ -25,9 +26,23 @@ NumericFluentImpl::NumericFluentImpl(size_t index, GroundFunction function, doub
 {
 }
 
+std::string NumericFluentImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t NumericFluentImpl::get_index() const { return m_index; }
 
 const GroundFunction& NumericFluentImpl::get_function() const { return m_function; }
 
 double NumericFluentImpl::get_number() const { return m_number; }
+
+std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

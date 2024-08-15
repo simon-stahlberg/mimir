@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/function_expressions.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/formalism/function.hpp"
 
@@ -26,6 +27,13 @@ namespace mimir
 {
 /* FunctionExpressionNumber */
 FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(size_t index, double number) : m_index(index), m_number(number) {}
+
+std::string FunctionExpressionNumberImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
 
 size_t FunctionExpressionNumberImpl::get_index() const { return m_index; }
 
@@ -41,6 +49,13 @@ FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(size_
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
 {
+}
+
+std::string FunctionExpressionBinaryOperatorImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
 }
 
 size_t FunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
@@ -68,6 +83,13 @@ FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(size_t 
               { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
 }
 
+std::string FunctionExpressionMultiOperatorImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t FunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum FunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
@@ -81,6 +103,13 @@ FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(size_t index, FunctionE
 {
 }
 
+std::string FunctionExpressionMinusImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t FunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
@@ -88,7 +117,56 @@ const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression()
 /* FunctionExpressionFunction */
 FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(size_t index, Function function) : m_index(index), m_function(std::move(function)) {}
 
+std::string FunctionExpressionFunctionImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t FunctionExpressionFunctionImpl::get_index() const { return m_index; }
 
 const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
 }

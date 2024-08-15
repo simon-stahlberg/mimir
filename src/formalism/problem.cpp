@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/problem.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/formalism/axiom.hpp"
@@ -122,6 +123,13 @@ ProblemImpl::ProblemImpl(size_t index,
     }
 }
 
+std::string ProblemImpl::str() const
+{
+    auto out = std::stringstream();
+    out << *this;
+    return out.str();
+}
+
 size_t ProblemImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
@@ -185,6 +193,13 @@ bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
 {
     return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
+}
+
+std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
 }
 
 }
