@@ -47,11 +47,12 @@ AxiomImpl::AxiomImpl(size_t index,
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
-
-    /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    assert(
+        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 std::string AxiomImpl::str() const

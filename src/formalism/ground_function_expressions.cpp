@@ -75,12 +75,12 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
     m_function_expressions(function_expressions)
 {
     assert(is_all_unique(m_function_expressions));
-
-    /* Canonize. */
-    std::sort(m_function_expressions.begin(),
-              m_function_expressions.end(),
-              [](const auto& l, const auto& r)
-              { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
+    assert(std::is_sorted(m_function_expressions.begin(),
+                          m_function_expressions.end(),
+                          [](const auto& l, const auto& r) {
+                              return std::visit([](const auto& arg) { return arg.get_index(); }, *l)
+                                     < std::visit([](const auto& arg) { return arg.get_index(); }, *r);
+                          }));
 }
 
 std::string GroundFunctionExpressionMultiOperatorImpl::str() const

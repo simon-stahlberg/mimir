@@ -37,20 +37,26 @@ namespace mimir
 using FlatStateLayout = flatmemory::Tuple<StateIndex, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
 using FlatStateBuilder = flatmemory::Builder<FlatStateLayout>;
 using FlatState = flatmemory::ConstView<FlatStateLayout>;
+}
 
 // Only hash/compare the non-extended portion of a state, and the problem.
-// The extended portion is computed automatically, when calling ssg.create_state(...)
-struct FlatStateHash
+// The extended portion is always equal for the same non-extended portion.
+template<>
+struct std::hash<mimir::FlatState>
 {
-    size_t operator()(FlatState view) const;
+    size_t operator()(mimir::FlatState view) const;
 };
 
-struct FlatStateEqual
+template<>
+struct std::equal_to<mimir::FlatState>
 {
-    bool operator()(FlatState view_left, FlatState view_right) const;
+    bool operator()(mimir::FlatState view_left, mimir::FlatState view_right) const;
 };
 
-using FlatStateSet = flatmemory::UnorderedSet<FlatStateLayout, FlatStateHash, FlatStateEqual>;
+namespace mimir
+{
+
+using FlatStateSet = flatmemory::UnorderedSet<FlatStateLayout>;
 using FlatStateVector = flatmemory::FixedSizedTypeVector<FlatStateLayout>;
 
 /**
@@ -104,7 +110,6 @@ public:
 };
 
 static_assert(std::is_trivially_copyable_v<std::optional<State>>);
-
 }
 
 template<>
@@ -116,7 +121,7 @@ struct std::hash<mimir::State>
 template<>
 struct std::equal_to<mimir::State>
 {
-    size_t operator()(const mimir::State& l, const mimir::State& r) const;
+    bool operator()(const mimir::State& l, const mimir::State& r) const;
 };
 
 namespace mimir

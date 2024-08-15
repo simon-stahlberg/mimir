@@ -145,9 +145,15 @@ FunctionExpression PDDLFactories::get_or_create_function_expression_binary_opera
 }
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                   FunctionExpressionList function_expressions_)
+                                                                                   FunctionExpressionList function_expressions)
 {
-    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions_));
+    /* Canonize before uniqueness test. */
+    std::sort(function_expressions.begin(),
+              function_expressions.end(),
+              [](const auto& l, const auto& r)
+              { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
+
+    return m_factories.get<FunctionExpressionFactory>().get_or_create<FunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions));
 }
 
 FunctionExpression PDDLFactories::get_or_create_function_expression_minus(FunctionExpression function_expression)
@@ -175,10 +181,15 @@ GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                                GroundFunctionExpressionList function_expressions_)
+                                                                                                GroundFunctionExpressionList function_expressions)
 {
+    std::sort(function_expressions.begin(),
+              function_expressions.end(),
+              [](const auto& l, const auto& r)
+              { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
+
     return m_factories.get<GroundFunctionExpressionFactory>().get_or_create<GroundFunctionExpressionMultiOperatorImpl>(multi_operator,
-                                                                                                                       std::move(function_expressions_));
+                                                                                                                       std::move(function_expressions));
 }
 
 GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
@@ -295,14 +306,19 @@ Action PDDLFactories::get_or_create_action(std::string name,
 
 Axiom PDDLFactories::get_or_create_axiom(VariableList parameters,
                                          Literal<Derived> literal,
-                                         LiteralList<Static> static_condition,
-                                         LiteralList<Fluent> fluent_condition,
+                                         LiteralList<Static> static_conditions,
+                                         LiteralList<Fluent> fluent_conditions,
                                          LiteralList<Derived> derived_conditions)
 {
+    /* Canonize before uniqueness test. */
+    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return m_factories.get<AxiomFactory>().get_or_create<AxiomImpl>(std::move(parameters),
                                                                     std::move(literal),
-                                                                    std::move(static_condition),
-                                                                    std::move(fluent_condition),
+                                                                    std::move(static_conditions),
+                                                                    std::move(fluent_conditions),
                                                                     std::move(derived_conditions));
 }
 

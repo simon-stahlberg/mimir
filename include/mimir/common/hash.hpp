@@ -29,6 +29,26 @@
 namespace mimir
 {
 
+template<typename T>
+inline void hash_combine(size_t& seed, const T& value)
+{
+    seed ^= std::hash<T>()(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+template<typename T, typename... Rest>
+inline void hash_combine(size_t& seed, const Rest&... rest)
+{
+    (mimir::hash_combine(seed, rest), ...);
+}
+
+template<typename... Ts>
+inline size_t hash_combine(const Ts&... rest)
+{
+    size_t seed = 0;
+    (mimir::hash_combine(seed, rest), ...);
+    return seed;
+}
+
 /**
  * Forward declarations
  */

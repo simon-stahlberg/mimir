@@ -1016,7 +1016,7 @@ void init_pymimir(py::module_& m)
 
     /* State */
     py::class_<State>(m, "State")  //
-        .def("__hash__", &State::hash)
+        .def("__hash__", [](const State& self) { return std::hash<State>()(self); })
         .def("__eq__", &State::operator==)
         .def("__repr__",
              [](State self)

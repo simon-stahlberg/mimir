@@ -27,27 +27,23 @@
 
 size_t std::hash<mimir::State>::operator()(const mimir::State& e) const { return e.get_index(); }
 
-size_t std::equal_to<mimir::State>::operator()(const mimir::State& l, const mimir::State& r) const { return l.get_index() == r.get_index(); }
+bool std::equal_to<mimir::State>::operator()(const mimir::State& l, const mimir::State& r) const { return l.get_index() == r.get_index(); }
+
+size_t std::hash<mimir::FlatState>::operator()(mimir::FlatState e) const
+{
+    const auto fluent_atoms = e.get<1>();
+    return mimir::hash_combine(fluent_atoms);
+}
+
+bool std::equal_to<mimir::FlatState>::operator()(mimir::FlatState l, mimir::FlatState r) const
+{
+    const auto fluent_atoms_left = l.get<1>();
+    const auto fluent_atoms_right = r.get<1>();
+    return (fluent_atoms_left == fluent_atoms_right);
+}
 
 namespace mimir
 {
-
-/* FlatStateHash*/
-
-size_t FlatStateHash::operator()(FlatState view) const
-{
-    const auto fluent_atoms = view.get<1>();
-    return HashCombiner()(fluent_atoms.hash());
-}
-
-/* FlatStateEqual */
-
-bool FlatStateEqual::operator()(FlatState view_left, FlatState view_right) const
-{
-    const auto fluent_atoms_left = view_left.get<1>();
-    const auto fluent_atoms_right = view_right.get<1>();
-    return (fluent_atoms_left == fluent_atoms_right);
-}
 
 /* StateBuilder */
 
