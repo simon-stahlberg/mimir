@@ -50,7 +50,6 @@ public:
 
     bool operator==(const Constructor& other) const { return is_equal(other); }
     virtual bool is_equal(const Constructor& other) const = 0;
-    virtual size_t hash() const = 0;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;

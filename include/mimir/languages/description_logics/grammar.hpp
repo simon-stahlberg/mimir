@@ -21,10 +21,12 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/description_logics/equal_to.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/hash.hpp"
 
 #include <functional>
+#include <loki/loki.hpp>
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -36,32 +38,46 @@ namespace mimir::dl::grammar
  * Grammar
  */
 
-using GrammarConstructorRepositories = VariadicConstructorRepository<NonTerminal<Concept>,
-                                                                     Choice<Concept>,
-                                                                     DerivationRule<Concept>,
-                                                                     ConceptPredicateState<Static>,
-                                                                     ConceptPredicateState<Fluent>,
-                                                                     ConceptPredicateState<Derived>,
-                                                                     ConceptPredicateGoal<Static>,
-                                                                     ConceptPredicateGoal<Fluent>,
-                                                                     ConceptPredicateGoal<Derived>,
-                                                                     ConceptAnd,
-                                                                     NonTerminal<Role>,
-                                                                     Choice<Role>,
-                                                                     DerivationRule<Role>,
-                                                                     RolePredicateState<Static>,
-                                                                     RolePredicateState<Fluent>,
-                                                                     RolePredicateState<Derived>,
-                                                                     RolePredicateGoal<Static>,
-                                                                     RolePredicateGoal<Fluent>,
-                                                                     RolePredicateGoal<Derived>,
-                                                                     RoleAnd>;
+template<IsConceptOrRole D>
+using NonTerminalFactory = loki::UniqueFactory<NonTerminal<D>, UniquePDDLHasher<const NonTerminal<D>*>, UniquePDDLEqualTo<const NonTerminal<D>*>>;
+template<IsConceptOrRole D>
+using ChoiceFactory = loki::UniqueFactory<Choice<D>, UniquePDDLHasher<const Choice<D>*>, UniquePDDLEqualTo<const Choice<D>*>>;
+template<IsConceptOrRole D>
+using DerivationRuleFactory = loki::UniqueFactory<DerivationRule<D>, UniquePDDLHasher<const DerivationRule<D>*>, UniquePDDLEqualTo<const DerivationRule<D>*>>;
+
+using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFactory<Concept>,  //
+                                                                  ChoiceFactory<Concept>,
+                                                                  DerivationRuleFactory<Concept>,
+                                                                  NonTerminalFactory<Role>,
+                                                                  ChoiceFactory<Role>,
+                                                                  DerivationRuleFactory<Role>>;
+
+// using GrammarConstructorRepositories = VariadicConstructorRepository<NonTerminal<Concept>,
+//                                                                      Choice<Concept>,
+//                                                                      DerivationRule<Concept>,
+//                                                                      ConceptPredicateState<Static>,
+//                                                                      ConceptPredicateState<Fluent>,
+//                                                                      ConceptPredicateState<Derived>,
+//                                                                      ConceptPredicateGoal<Static>,
+//                                                                      ConceptPredicateGoal<Fluent>,
+//                                                                      ConceptPredicateGoal<Derived>,
+//                                                                      ConceptAnd,
+//                                                                      NonTerminal<Role>,
+//                                                                      Choice<Role>,
+//                                                                      DerivationRule<Role>,
+//                                                                      RolePredicateState<Static>,
+//                                                                      RolePredicateState<Fluent>,
+//                                                                      RolePredicateState<Derived>,
+//                                                                      RolePredicateGoal<Static>,
+//                                                                      RolePredicateGoal<Fluent>,
+//                                                                      RolePredicateGoal<Derived>,
+//                                                                      RoleAnd>;
 
 class Grammar
 {
 private:
     /* Memory */
-    GrammarConstructorRepositories m_grammar_constructor_repos;
+    VariadicGrammarConstructorFactory m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
     DerivationRuleList<Concept> m_concept_rules;

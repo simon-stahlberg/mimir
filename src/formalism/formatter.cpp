@@ -502,6 +502,10 @@ void PDDLFormatter::write(const PredicateImpl<P>& element, std::ostream& out)
     out << ")";
 }
 
+template void PDDLFormatter::write(const PredicateImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const PredicateImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const PredicateImpl<Derived>& element, std::ostream& out);
+
 void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
 {
     out << std::string(m_indent, ' ') << "(define (problem " << element.get_name() << ")" << std::endl;

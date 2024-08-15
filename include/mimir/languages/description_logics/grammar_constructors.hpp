@@ -61,7 +61,6 @@ public:
     NonTerminal& operator=(NonTerminal&& other) = default;
 
     bool operator==(const NonTerminal& other) const;
-    size_t hash() const;
 
     bool test_match(const dl::Constructor<D>& constructor) const;
 
@@ -97,7 +96,6 @@ public:
     Choice& operator=(Choice&& other) = default;
 
     bool operator==(const Choice& other) const;
-    size_t hash() const;
 
     bool test_match(const dl::Constructor<D>& constructor) const;
 
@@ -129,7 +127,6 @@ public:
     DerivationRule& operator=(DerivationRule&& other) = default;
 
     bool operator==(const DerivationRule& other) const;
-    size_t hash() const;
 
     bool test_match(const dl::Constructor<D>& constructor) const;
 
@@ -162,7 +159,6 @@ public:
 
     bool operator==(const ConceptPredicateState& other) const;
     bool is_equal(const Constructor<Concept>& other) const override;
-    size_t hash() const override;
 
     bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
@@ -191,7 +187,6 @@ public:
 
     bool operator==(const ConceptPredicateGoal& other) const;
     bool is_equal(const Constructor<Concept>& other) const override;
-    size_t hash() const override;
 
     bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
@@ -220,7 +215,6 @@ public:
 
     bool operator==(const ConceptAnd& other) const;
     bool is_equal(const Constructor<Concept>& other) const override;
-    size_t hash() const override;
 
     bool test_match(const dl::Constructor<Concept>& constructor) const override;
 
@@ -254,7 +248,6 @@ public:
 
     bool operator==(const RolePredicateState& other) const;
     bool is_equal(const Constructor<Role>& other) const override;
-    size_t hash() const override;
 
     bool test_match(const dl::Constructor<Role>& constructor) const override;
 
@@ -283,7 +276,6 @@ public:
 
     bool operator==(const RolePredicateGoal& other) const;
     bool is_equal(const Constructor<Role>& other) const override;
-    size_t hash() const override;
 
     bool test_match(const dl::Constructor<Role>& constructor) const override;
 
@@ -312,7 +304,6 @@ public:
 
     bool operator==(const RoleAnd& other) const;
     bool is_equal(const Constructor<Role>& other) const override;
-    size_t hash() const override;
 
     bool test_match(const dl::Constructor<Role>& constructor) const override;
 

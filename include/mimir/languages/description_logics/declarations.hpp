@@ -85,6 +85,20 @@ class Choice;
 template<dl::IsConceptOrRole D>
 using ChoiceList = std::vector<std::reference_wrapper<const Choice<D>>>;
 
+/* Concrete concepts */
+template<PredicateCategory P>
+class ConceptPredicateState;
+template<PredicateCategory P>
+class ConceptPredicateGoal;
+class ConceptAnd;
+
+/* Concrete roles */
+template<PredicateCategory P>
+class RolePredicateState;
+template<PredicateCategory P>
+class RolePredicateGoal;
+class RoleAnd;
+
 /**
  * Visitors
  */

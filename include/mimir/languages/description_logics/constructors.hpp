@@ -49,7 +49,6 @@ private:
     friend class ConstructorRepository;
 
     bool is_equal_impl(const Constructor<Concept>& other) const;
-    size_t hash_impl() const;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -84,7 +83,6 @@ private:
     friend class ConstructorRepository;
 
     bool is_equal_impl(const Constructor<Concept>& other) const;
-    size_t hash_impl() const;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -119,7 +117,6 @@ private:
     friend class ConstructorRepository;
 
     bool is_equal_impl(const Constructor<Concept>& other) const;
-    size_t hash_impl() const;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -159,7 +156,6 @@ private:
     friend class ConstructorRepository;
 
     bool is_equal_impl(const Constructor<Role>& other) const;
-    size_t hash_impl() const;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -194,7 +190,6 @@ private:
     friend class ConstructorRepository;
 
     bool is_equal_impl(const Constructor<Role>& other) const;
-    size_t hash_impl() const;
 
     void evaluate_impl(EvaluationContext& context) const;
 
@@ -229,7 +224,6 @@ private:
     friend class ConstructorRepository;
 
     bool is_equal_impl(const Constructor<Role>& other) const;
-    size_t hash_impl() const;
 
     void evaluate_impl(EvaluationContext& context) const;
 

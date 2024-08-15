@@ -26,61 +26,16 @@
 namespace mimir
 {
 
-/// @brief Compare two spans for equality.
-/// @tparam T
+/// @brief Compare two sized ranges for equality.
+/// @tparam R1, R2
 /// @param lhs
 /// @param rhs
-/// @return
-template<typename T>
-bool operator==(const std::span<T>& lhs, const std::span<T>& rhs)
+/// @return true if ranges are equal, false otherwise
+template<std::ranges::sized_range R1, std::ranges::sized_range R2>
+bool operator==(const R1& lhs, const R2& rhs)
 {
-    return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    return std::ranges::size(lhs) == std::ranges::size(rhs) && std::ranges::equal(lhs, rhs);
 }
-
-template<typename T>
-concept IsShallowComparable = requires(T a)
-{
-    {
-        a.is_equal_shallow(a)
-        } -> std::same_as<size_t>;
-};
-
-template<typename T>
-concept IsDeepComparable = requires(T a)
-{
-    {
-        a.is_equal_deep(a)
-        } -> std::same_as<size_t>;
-};
-
-template<typename T, bool Deref = false, bool Deep = false>
-struct EqualTo
-{
-    bool operator()(const T& l, const T& r) const
-    {
-        if constexpr (Deref && IsDereferencable<T>)
-        {
-            if (!(l && r))
-            {
-                throw std::logic_error("EqualTo<T, Deref>::operator(): Tried to dereference a nullptr.");
-            }
-            using DereferencedType = std::decay_t<decltype(*l)>;
-            return mimir::EqualTo<DereferencedType, Deref>()(*l, *r);
-        }
-        else if constexpr (Deep && IsDeepComparable<T>)
-        {
-            return l.is_equal_deep(r);
-        }
-        else if constexpr (!Deep && IsShallowComparable<T>)
-        {
-            return l.is_equal_shallow(r);
-        }
-        else
-        {
-            return std::equal_to<T>()(l, r);
-        }
-    }
-};
 
 }
 

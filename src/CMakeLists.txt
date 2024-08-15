@@ -1,9 +1,22 @@
-file(GLOB_RECURSE MIMIR_SRC_FILES
-   "*.cpp" "**/*.cpp")
-file(GLOB_RECURSE MIMIR_PRIVATE_HEADER_FILES
-    "*.hpp" "**/*.hpp")
-file(GLOB_RECURSE MIMIR_PUBLIC_HEADER_FILES
-    "../include/*.hpp" "../include/**/*.hpp")
+# List of subdirectory names
+set(SUBDIRECTORIES "algorithms" "common" "datasets" "formalism" "graphs" "search")
+
+# Initialize empty lists for source and header files
+set(MIMIR_SRC_FILES "")
+set(MIMIR_PRIVATE_HEADER_FILES "")
+set(MIMIR_PUBLIC_HEADER_FILES "")
+
+# Loop over the subdirectories for source files
+foreach(subdir ${SUBDIRECTORIES})
+    file(GLOB_RECURSE TMP_SRC_FILES "${subdir}/*.cpp" "${subdir}/**/*.cpp")
+    list(APPEND MIMIR_SRC_FILES ${TMP_SRC_FILES})
+
+    file(GLOB_RECURSE TMP_PRIVATE_HEADER_FILES "${subdir}/*.hpp" "${subdir}/**/*.hpp")
+    list(APPEND MIMIR_PRIVATE_HEADER_FILES ${TMP_PRIVATE_HEADER_FILES})
+
+    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/${subdir}/*.hpp" "../include/${subdir}/**/*.hpp")
+    list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
+endforeach()
 
 add_library(core STATIC ${MIMIR_SRC_FILES} ${MIMIR_PRIVATE_HEADER_FILES} ${MIMIR_PUBLIC_HEADER_FILES})
 set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)

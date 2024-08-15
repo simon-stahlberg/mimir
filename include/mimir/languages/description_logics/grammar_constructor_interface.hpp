@@ -52,7 +52,6 @@ public:
     bool operator==(const Constructor& other) const { return is_equal(other); }
 
     virtual bool is_equal(const Constructor& other) const = 0;
-    virtual size_t hash() const = 0;
 
     virtual bool test_match(const dl::Constructor<D>& constructor) const = 0;
 
