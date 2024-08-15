@@ -53,39 +53,6 @@ AxiomImpl::AxiomImpl(size_t index,
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
-bool AxiomImpl::is_structurally_equivalent_to_impl(const AxiomImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_literal == other.m_literal) && (m_static_conditions == other.m_static_conditions) && (m_fluent_conditions == other.m_fluent_conditions)
-               && (m_derived_conditions == other.m_derived_conditions);
-    }
-    return true;
-}
-
-size_t AxiomImpl::hash_impl() const { return HashCombiner()(m_literal, m_static_conditions, m_fluent_conditions, m_derived_conditions); }
-
-void AxiomImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
-    out << std::string(options.indent, ' ') << "(:derived " << *m_literal << std::endl;
-    out << std::string(nested_options.indent, ' ') << "(and";
-    for (const auto& condition : m_static_conditions)
-    {
-        out << " " << *condition;
-    }
-    for (const auto& condition : m_fluent_conditions)
-    {
-        out << " " << *condition;
-    }
-    for (const auto& condition : m_derived_conditions)
-    {
-        out << " " << *condition;
-    }
-    out << ")" << std::endl;
-    out << std::string(options.indent, ' ') << ")" << std::endl;
-}
-
 size_t AxiomImpl::get_index() const { return m_index; }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }

@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_OBJECT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -48,18 +46,6 @@ private:
 public:
     size_t get_index() const;
     const std::string& get_name() const;
-};
-
-template<>
-struct UniquePDDLHasher<const ObjectImpl*>
-{
-    size_t operator()(const ObjectImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const ObjectImpl*>
-{
-    bool operator()(const ObjectImpl* l, const ObjectImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ObjectImpl& element);

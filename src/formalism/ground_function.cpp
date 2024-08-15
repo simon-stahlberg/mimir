@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_function.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/object.hpp"
 
@@ -28,36 +27,6 @@ GroundFunctionImpl::GroundFunctionImpl(size_t index, FunctionSkeleton function_s
     m_function_skeleton(std::move(function_skeleton)),
     m_objects(std::move(objects))
 {
-}
-
-bool GroundFunctionImpl::is_structurally_equivalent_to_impl(const GroundFunctionImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_function_skeleton == other.m_function_skeleton) && (m_objects == other.m_objects);
-    }
-    return true;
-}
-
-size_t GroundFunctionImpl::hash_impl() const { return HashCombiner()(m_function_skeleton, m_objects); }
-
-void GroundFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
-{
-    if (m_objects.empty())
-    {
-        out << "(" << m_function_skeleton->get_name() << ")";
-    }
-    else
-    {
-        out << "(" << m_function_skeleton->get_name() << "(";
-        for (size_t i = 0; i < m_objects.size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            out << *m_objects[i];
-        }
-        out << "))";
-    }
 }
 
 size_t GroundFunctionImpl::get_index() const { return m_index; }

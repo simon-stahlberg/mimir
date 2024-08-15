@@ -74,6 +74,204 @@ struct UniquePDDLEqualTo<const AtomImpl<P>*>
     bool operator()(const AtomImpl<P>* l, const AtomImpl<P>* r) const;
 };
 
+template<>
+struct UniquePDDLEqualTo<const AxiomImpl*>
+{
+    bool operator()(const AxiomImpl* l, const AxiomImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const DomainImpl*>
+{
+    bool operator()(const DomainImpl* l, const DomainImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const EffectSimpleImpl*>
+{
+    bool operator()(const EffectSimpleImpl* l, const EffectSimpleImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const EffectConditionalImpl*>
+{
+    bool operator()(const EffectConditionalImpl* l, const EffectConditionalImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const EffectUniversalImpl*>
+{
+    bool operator()(const EffectUniversalImpl* l, const EffectUniversalImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionNumberImpl&>
+{
+    bool operator()(const FunctionExpressionNumberImpl& l, const FunctionExpressionNumberImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionBinaryOperatorImpl&>
+{
+    bool operator()(const FunctionExpressionBinaryOperatorImpl& l, const FunctionExpressionBinaryOperatorImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionMultiOperatorImpl&>
+{
+    bool operator()(const FunctionExpressionMultiOperatorImpl& l, const FunctionExpressionMultiOperatorImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionMinusImpl&>
+{
+    bool operator()(const FunctionExpressionMinusImpl& l, const FunctionExpressionMinusImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionFunctionImpl&>
+{
+    bool operator()(const FunctionExpressionFunctionImpl& l, const FunctionExpressionFunctionImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionExpressionImpl*>
+{
+    bool operator()(const FunctionExpressionImpl* l, const FunctionExpressionImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionSkeletonImpl*>
+{
+    bool operator()(const FunctionSkeletonImpl* l, const FunctionSkeletonImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const FunctionImpl*>
+{
+    bool operator()(const FunctionImpl* l, const FunctionImpl* r) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const GroundAtomImpl<P>*>
+{
+    bool operator()(const GroundAtomImpl<P>* l, const GroundAtomImpl<P>* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionExpressionNumberImpl&>
+{
+    bool operator()(const GroundFunctionExpressionNumberImpl& l, const GroundFunctionExpressionNumberImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionExpressionBinaryOperatorImpl&>
+{
+    bool operator()(const GroundFunctionExpressionBinaryOperatorImpl& l, const GroundFunctionExpressionBinaryOperatorImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionExpressionMultiOperatorImpl&>
+{
+    bool operator()(const GroundFunctionExpressionMultiOperatorImpl& l, const GroundFunctionExpressionMultiOperatorImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionExpressionMinusImpl&>
+{
+    bool operator()(const GroundFunctionExpressionMinusImpl& l, const GroundFunctionExpressionMinusImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionExpressionFunctionImpl&>
+{
+    bool operator()(const GroundFunctionExpressionFunctionImpl& l, const GroundFunctionExpressionFunctionImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>
+{
+    bool operator()(const GroundFunctionExpressionImpl* l, const GroundFunctionExpressionImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const GroundFunctionImpl*>
+{
+    bool operator()(const GroundFunctionImpl* l, const GroundFunctionImpl* r) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const GroundLiteralImpl<P>*>
+{
+    bool operator()(const GroundLiteralImpl<P>* l, const GroundLiteralImpl<P>* r) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const LiteralImpl<P>*>
+{
+    bool operator()(const LiteralImpl<P>* l, const LiteralImpl<P>* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const OptimizationMetricImpl*>
+{
+    bool operator()(const OptimizationMetricImpl* l, const OptimizationMetricImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const NumericFluentImpl*>
+{
+    bool operator()(const NumericFluentImpl* l, const NumericFluentImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const ObjectImpl*>
+{
+    bool operator()(const ObjectImpl* l, const ObjectImpl* r) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLEqualTo<const PredicateImpl<P>*>
+{
+    bool operator()(const PredicateImpl<P>* l, const PredicateImpl<P>* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const ProblemImpl*>
+{
+    bool operator()(const ProblemImpl* l, const ProblemImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const RequirementsImpl*>
+{
+    bool operator()(const RequirementsImpl* l, const RequirementsImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const TermObjectImpl&>
+{
+    bool operator()(const TermObjectImpl& l, const TermObjectImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const TermVariableImpl&>
+{
+    bool operator()(const TermVariableImpl& l, const TermVariableImpl& r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const TermImpl*>
+{
+    bool operator()(const TermImpl* l, const TermImpl* r) const;
+};
+
+template<>
+struct UniquePDDLEqualTo<const VariableImpl*>
+{
+    bool operator()(const VariableImpl* l, const VariableImpl* r) const;
+};
+
 }
 
 #endif

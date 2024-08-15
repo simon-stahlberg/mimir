@@ -18,7 +18,6 @@
 #include "mimir/formalism/function_expressions.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/function.hpp"
 
 #include <cassert>
@@ -27,19 +26,6 @@ namespace mimir
 {
 /* FunctionExpressionNumber */
 FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(size_t index, double number) : m_index(index), m_number(number) {}
-
-bool FunctionExpressionNumberImpl::is_structurally_equivalent_to_impl(const FunctionExpressionNumberImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_number == other.m_number;
-    }
-    return true;
-}
-
-size_t FunctionExpressionNumberImpl::hash_impl() const { return std::hash<double>()(m_number); }
-
-void FunctionExpressionNumberImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_number; }
 
 size_t FunctionExpressionNumberImpl::get_index() const { return m_index; }
 
@@ -55,30 +41,6 @@ FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(size_
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
 {
-}
-
-bool FunctionExpressionBinaryOperatorImpl::is_structurally_equivalent_to_impl(const FunctionExpressionBinaryOperatorImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_binary_operator == other.m_binary_operator) && (m_left_function_expression == other.m_left_function_expression)
-               && (m_right_function_expression == other.m_right_function_expression);
-    }
-    return true;
-}
-
-size_t FunctionExpressionBinaryOperatorImpl::hash_impl() const
-{
-    return HashCombiner()(m_binary_operator, m_left_function_expression, m_right_function_expression);
-}
-
-void FunctionExpressionBinaryOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << to_string(m_binary_operator) << " ";
-    std::visit(loki::StringifyVisitor(out, options), *m_left_function_expression);
-    out << " ";
-    std::visit(loki::StringifyVisitor(out, options), *m_right_function_expression);
-    out << ")";
 }
 
 size_t FunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
@@ -106,29 +68,6 @@ FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(size_t 
               { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
 }
 
-bool FunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(const FunctionExpressionMultiOperatorImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_multi_operator == other.m_multi_operator) && (m_function_expressions == other.m_function_expressions);
-    }
-    return true;
-}
-
-size_t FunctionExpressionMultiOperatorImpl::hash_impl() const { return HashCombiner()(m_multi_operator, m_function_expressions); }
-
-void FunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << to_string(m_multi_operator);
-    assert(!m_function_expressions.empty());
-    for (const auto& function_expression : m_function_expressions)
-    {
-        out << " ";
-        std::visit(loki::StringifyVisitor(out, options), *function_expression);
-    }
-    out << ")";
-}
-
 size_t FunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum FunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
@@ -142,43 +81,12 @@ FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(size_t index, FunctionE
 {
 }
 
-bool FunctionExpressionMinusImpl::is_structurally_equivalent_to_impl(const FunctionExpressionMinusImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_function_expression == other.m_function_expression;
-    }
-    return true;
-}
-
-size_t FunctionExpressionMinusImpl::hash_impl() const { return HashCombiner()(m_function_expression); }
-
-void FunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(- ";
-    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
-    out << ")";
-}
-
 size_t FunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
 FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(size_t index, Function function) : m_index(index), m_function(std::move(function)) {}
-
-bool FunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(const FunctionExpressionFunctionImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_function == other.m_function;
-    }
-    return true;
-}
-
-size_t FunctionExpressionFunctionImpl::hash_impl() const { return HashCombiner()(m_function); }
-
-void FunctionExpressionFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_function->str(out, options); }
 
 size_t FunctionExpressionFunctionImpl::get_index() const { return m_index; }
 

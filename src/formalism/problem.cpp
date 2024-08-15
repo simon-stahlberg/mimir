@@ -19,8 +19,6 @@
 
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"
@@ -122,128 +120,6 @@ ProblemImpl::ProblemImpl(size_t index,
             m_static_goal_holds = false;
         }
     }
-}
-
-bool ProblemImpl::is_structurally_equivalent_to_impl(const ProblemImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_domain == other.m_domain) && (m_name == other.m_name) && (m_requirements == other.m_requirements) && (m_objects == other.m_objects)
-               && (m_derived_predicates == other.m_derived_predicates) && (m_static_initial_literals == other.m_static_initial_literals)
-               && (m_fluent_initial_literals == other.m_fluent_initial_literals) && (m_static_goal_condition == other.m_static_goal_condition)
-               && (m_fluent_goal_condition == other.m_fluent_goal_condition) && (m_derived_goal_condition == other.m_derived_goal_condition)
-               && (m_optimization_metric == other.m_optimization_metric) && (m_axioms == other.m_axioms);
-    }
-    return true;
-}
-
-size_t ProblemImpl::hash_impl() const
-{
-    size_t optimization_hash = (m_optimization_metric.has_value()) ? HashCombiner()(m_optimization_metric) : 0;
-    return HashCombiner()(m_domain,
-                          m_name,
-                          m_requirements,
-                          m_objects,
-                          m_derived_predicates,
-                          m_static_initial_literals,
-                          m_fluent_initial_literals,
-                          m_static_goal_condition,
-                          m_fluent_goal_condition,
-                          m_derived_goal_condition,
-                          optimization_hash,
-                          m_axioms);
-}
-
-void ProblemImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << string(options.indent, ' ') << "(define (problem " << m_name << ")" << std::endl;
-    auto nested_options = loki::FormattingOptions { options.indent + options.add_indent, options.add_indent };
-    out << string(nested_options.indent, ' ') << "(:domain " << m_domain->get_name() << ")" << std::endl;
-    if (!m_requirements->get_requirements().empty())
-    {
-        out << string(nested_options.indent, ' ');
-        m_requirements->str(out, nested_options);
-        out << std::endl;
-    }
-
-    if (!m_objects.empty())
-    {
-        out << string(nested_options.indent, ' ') << "(:objects ";
-        for (size_t i = 0; i < m_objects.size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            out << *m_objects[i];
-        }
-        out << ")" << std::endl;
-    }
-
-    if (!m_derived_predicates.empty())
-    {
-        out << string(nested_options.indent, ' ') << "(:predicates ";
-        for (size_t i = 0; i < m_derived_predicates.size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            m_derived_predicates[i]->str(out, nested_options);
-        }
-        out << ")" << std::endl;
-    }
-
-    if (!(m_static_initial_literals.empty() && m_fluent_initial_literals.empty() && m_numeric_fluents.empty()))
-    {
-        out << string(nested_options.indent, ' ') << "(:init ";
-        for (size_t i = 0; i < m_static_initial_literals.size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            m_static_initial_literals[i]->str(out, nested_options);
-        }
-        for (size_t i = 0; i < m_fluent_initial_literals.size(); ++i)
-        {
-            out << " ";
-            m_fluent_initial_literals[i]->str(out, nested_options);
-        }
-        for (size_t i = 0; i < m_numeric_fluents.size(); ++i)
-        {
-            out << " ";
-            m_numeric_fluents[i]->str(out, nested_options);
-        }
-    }
-    out << ")" << std::endl;
-
-    if (!(m_static_goal_condition.empty() && m_fluent_goal_condition.empty() && m_derived_goal_condition.empty()))
-    {
-        out << string(nested_options.indent, ' ') << "(:goal ";
-        out << "(and";
-        for (const auto& literal : m_static_goal_condition)
-        {
-            out << " " << *literal;
-        }
-        for (const auto& literal : m_fluent_goal_condition)
-        {
-            out << " " << *literal;
-        }
-        for (const auto& literal : m_derived_goal_condition)
-        {
-            out << " " << *literal;
-        }
-        out << " ))";
-    }
-
-    if (m_optimization_metric.has_value())
-    {
-        out << string(nested_options.indent, ' ') << "(:metric ";
-        m_optimization_metric.value()->str(out, nested_options);
-        out << ")" << std::endl;
-    }
-
-    for (const auto& axiom : m_axioms)
-    {
-        axiom->str(out, nested_options);
-    }
-
-    out << string(options.indent, ' ') << ")";
 }
 
 size_t ProblemImpl::get_index() const { return m_index; }

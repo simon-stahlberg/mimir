@@ -18,7 +18,6 @@
 #include "mimir/formalism/predicate.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -32,34 +31,6 @@ PredicateImpl<P>::PredicateImpl(size_t index, std::string name, VariableList par
     m_parameters(std::move(parameters))
 {
     assert(is_all_unique(m_parameters));
-}
-
-template<PredicateCategory P>
-bool PredicateImpl<P>::is_structurally_equivalent_to_impl(const PredicateImpl<P>& other) const
-{
-    if (this != &other)
-    {
-        return (m_name == other.m_name) && (m_parameters == other.m_parameters);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-size_t PredicateImpl<P>::hash_impl() const
-{
-    return HashCombiner()(m_name, m_parameters);
-}
-
-template<PredicateCategory P>
-void PredicateImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << m_name;
-    for (size_t i = 0; i < m_parameters.size(); ++i)
-    {
-        out << " ";
-        m_parameters[i]->str(out, options);
-    }
-    out << ")";
 }
 
 template<PredicateCategory P>

@@ -96,6 +96,204 @@ struct UniquePDDLHasher<const AtomImpl<P>*>
     size_t operator()(const AtomImpl<P>* e) const;
 };
 
+template<>
+struct UniquePDDLHasher<const AxiomImpl*>
+{
+    size_t operator()(const AxiomImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const DomainImpl*>
+{
+    size_t operator()(const DomainImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const EffectSimpleImpl*>
+{
+    size_t operator()(const EffectSimpleImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const EffectConditionalImpl*>
+{
+    size_t operator()(const EffectConditionalImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const EffectUniversalImpl*>
+{
+    size_t operator()(const EffectUniversalImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionNumberImpl&>
+{
+    size_t operator()(const FunctionExpressionNumberImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionBinaryOperatorImpl&>
+{
+    size_t operator()(const FunctionExpressionBinaryOperatorImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionMultiOperatorImpl&>
+{
+    size_t operator()(const FunctionExpressionMultiOperatorImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionMinusImpl&>
+{
+    size_t operator()(const FunctionExpressionMinusImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionFunctionImpl&>
+{
+    size_t operator()(const FunctionExpressionFunctionImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionExpressionImpl*>
+{
+    size_t operator()(const FunctionExpressionImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionSkeletonImpl*>
+{
+    size_t operator()(const FunctionSkeletonImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const FunctionImpl*>
+{
+    size_t operator()(const FunctionImpl* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const GroundAtomImpl<P>*>
+{
+    size_t operator()(const GroundAtomImpl<P>* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionExpressionNumberImpl&>
+{
+    size_t operator()(const GroundFunctionExpressionNumberImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionExpressionBinaryOperatorImpl&>
+{
+    size_t operator()(const GroundFunctionExpressionBinaryOperatorImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionExpressionMultiOperatorImpl&>
+{
+    size_t operator()(const GroundFunctionExpressionMultiOperatorImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionExpressionMinusImpl&>
+{
+    size_t operator()(const GroundFunctionExpressionMinusImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionExpressionFunctionImpl&>
+{
+    size_t operator()(const GroundFunctionExpressionFunctionImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionExpressionImpl*>
+{
+    size_t operator()(const GroundFunctionExpressionImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const GroundFunctionImpl*>
+{
+    size_t operator()(const GroundFunctionImpl* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const GroundLiteralImpl<P>*>
+{
+    size_t operator()(const GroundLiteralImpl<P>* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const LiteralImpl<P>*>
+{
+    size_t operator()(const LiteralImpl<P>* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const OptimizationMetricImpl*>
+{
+    size_t operator()(const OptimizationMetricImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const NumericFluentImpl*>
+{
+    size_t operator()(const NumericFluentImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const ObjectImpl*>
+{
+    size_t operator()(const ObjectImpl* e) const;
+};
+
+template<PredicateCategory P>
+struct UniquePDDLHasher<const PredicateImpl<P>*>
+{
+    size_t operator()(const PredicateImpl<P>* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const ProblemImpl*>
+{
+    size_t operator()(const ProblemImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const RequirementsImpl*>
+{
+    size_t operator()(const RequirementsImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const TermObjectImpl&>
+{
+    size_t operator()(const TermObjectImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const TermVariableImpl&>
+{
+    size_t operator()(const TermVariableImpl& e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const TermImpl*>
+{
+    size_t operator()(const TermImpl* e) const;
+};
+
+template<>
+struct UniquePDDLHasher<const VariableImpl*>
+{
+    size_t operator()(const VariableImpl* e) const;
+};
+
 }
 
 #endif

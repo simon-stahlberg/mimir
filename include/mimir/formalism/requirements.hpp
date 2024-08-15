@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_REQUIREMENTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -43,18 +41,6 @@ public:
 
     size_t get_index() const;
     const loki::RequirementEnumSet& get_requirements() const;
-};
-
-template<>
-struct UniquePDDLHasher<const RequirementsImpl*>
-{
-    size_t operator()(const RequirementsImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const RequirementsImpl*>
-{
-    bool operator()(const RequirementsImpl* l, const RequirementsImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element);

@@ -68,7 +68,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
+    auto certificates = std::unordered_set<Certificate, mimir::Hash<Certificate, true>, mimir::EqualTo<Certificate, true>> {};
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
@@ -110,7 +110,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     };
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<Certificate, loki::Hash<Certificate>, loki::EqualTo<Certificate>> {};
+    auto certificates = std::unordered_set<Certificate, mimir::Hash<Certificate, true>, mimir::EqualTo<Certificate, true>> {};
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {

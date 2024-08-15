@@ -45,18 +45,6 @@ public:
     const GroundFunctionExpression& get_function_expression() const;
 };
 
-template<>
-struct UniquePDDLHasher<const OptimizationMetricImpl*>
-{
-    size_t operator()(const OptimizationMetricImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const OptimizationMetricImpl*>
-{
-    bool operator()(const OptimizationMetricImpl* l, const OptimizationMetricImpl* r) const;
-};
-
 extern std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element);
 
 }

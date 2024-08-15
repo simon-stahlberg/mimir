@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_literal.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -26,37 +25,6 @@ namespace mimir
 template<PredicateCategory P>
 GroundLiteralImpl<P>::GroundLiteralImpl(size_t index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
-}
-
-template<PredicateCategory P>
-bool GroundLiteralImpl<P>::is_structurally_equivalent_to_impl(const GroundLiteralImpl<P>& other) const
-{
-    if (this != &other)
-    {
-        return (m_is_negated == other.m_is_negated) && (m_atom == other.m_atom);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-size_t GroundLiteralImpl<P>::hash_impl() const
-{
-    return HashCombiner()(m_is_negated, m_atom);
-}
-
-template<PredicateCategory P>
-void GroundLiteralImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    if (m_is_negated)
-    {
-        out << "(not ";
-        m_atom->str(out, options);
-        out << ")";
-    }
-    else
-    {
-        m_atom->str(out, options);
-    }
 }
 
 template<PredicateCategory P>

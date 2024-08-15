@@ -36,7 +36,7 @@ public:
     double compute_heuristic(State state) override;
 
 private:
-    std::unordered_map<State, double, loki::Hash<State>> m_estimates;
+    StateMap<double> m_estimates;
 };
 
 }

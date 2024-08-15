@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_GROUND_GROUND_FUNCTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -41,18 +39,6 @@ public:
     size_t get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionImpl*>
-{
-    size_t operator()(const GroundFunctionImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionImpl*>
-{
-    bool operator()(const GroundFunctionImpl* l, const GroundFunctionImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element);

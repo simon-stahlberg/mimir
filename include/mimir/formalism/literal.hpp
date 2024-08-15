@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_LITERAL_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -49,18 +47,6 @@ public:
     size_t get_index() const;
     bool is_negated() const;
     const Atom<P>& get_atom() const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLHasher<const LiteralImpl<P>*>
-{
-    size_t operator()(const LiteralImpl<P>* e) const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLEqualTo<const LiteralImpl<P>*>
-{
-    bool operator()(const LiteralImpl<P>* l, const LiteralImpl<P>* r) const;
 };
 
 template<PredicateCategory P>

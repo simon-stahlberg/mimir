@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_PREDICATE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -57,18 +55,6 @@ public:
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
     size_t get_arity() const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLHasher<const PredicateImpl<P>*>
-{
-    size_t operator()(const PredicateImpl<P>* e) const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLEqualTo<const PredicateImpl<P>*>
-{
-    bool operator()(const PredicateImpl<P>* l, const PredicateImpl<P>* r) const;
 };
 
 template<PredicateCategory P>

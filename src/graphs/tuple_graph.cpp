@@ -234,7 +234,7 @@ private:
     TupleIndexSet novel_tuple_indices_set;
     TupleIndexList novel_tuple_indices;
     std::unordered_map<TupleIndex, StateSet> novel_tuple_index_to_states;
-    std::unordered_map<State, TupleIndexList, StateHash> state_to_novel_tuple_indices;
+    StateMap<TupleIndexList> state_to_novel_tuple_indices;
 
     void compute_next_novel_tuple_indices();
 

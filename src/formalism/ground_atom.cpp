@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/ground_atom.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -29,33 +28,6 @@ GroundAtomImpl<P>::GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectLi
     m_predicate(std::move(predicate)),
     m_objects(std::move(objects))
 {
-}
-
-template<PredicateCategory P>
-bool GroundAtomImpl<P>::is_structurally_equivalent_to_impl(const GroundAtomImpl<P>& other) const
-{
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate) && (m_objects == other.m_objects);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-size_t GroundAtomImpl<P>::hash_impl() const
-{
-    return HashCombiner()(m_predicate, m_objects);
-}
-
-template<PredicateCategory P>
-void GroundAtomImpl<P>::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
-{
-    out << "(" << m_predicate->get_name();
-    for (size_t i = 0; i < m_objects.size(); ++i)
-    {
-        out << " " << m_objects[i]->get_name();
-    }
-    out << ")";
 }
 
 template<PredicateCategory P>

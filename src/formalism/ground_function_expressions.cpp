@@ -18,7 +18,6 @@
 #include "mimir/formalism/ground_function_expressions.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
 #include <cassert>
@@ -27,19 +26,6 @@ namespace mimir
 {
 /* FunctionExpressionNumber */
 GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(size_t index, double number) : m_index(index), m_number(number) {}
-
-bool GroundFunctionExpressionNumberImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionNumberImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_number == other.m_number;
-    }
-    return true;
-}
-
-size_t GroundFunctionExpressionNumberImpl::hash_impl() const { return std::hash<double>()(m_number); }
-
-void GroundFunctionExpressionNumberImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_number; }
 
 size_t GroundFunctionExpressionNumberImpl::get_index() const { return m_index; }
 
@@ -55,30 +41,6 @@ GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperat
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
 {
-}
-
-bool GroundFunctionExpressionBinaryOperatorImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionBinaryOperatorImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_binary_operator == other.m_binary_operator) && (m_left_function_expression == other.m_left_function_expression)
-               && (m_right_function_expression == other.m_right_function_expression);
-    }
-    return true;
-}
-
-size_t GroundFunctionExpressionBinaryOperatorImpl::hash_impl() const
-{
-    return HashCombiner()(m_binary_operator, m_left_function_expression, m_right_function_expression);
-}
-
-void GroundFunctionExpressionBinaryOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << to_string(m_binary_operator) << " ";
-    std::visit(loki::StringifyVisitor(out, options), *m_left_function_expression);
-    out << " ";
-    std::visit(loki::StringifyVisitor(out, options), *m_right_function_expression);
-    out << ")";
 }
 
 size_t GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
@@ -106,29 +68,6 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
               { return std::visit([](const auto& arg) { return arg.get_index(); }, *l) < std::visit([](const auto& arg) { return arg.get_index(); }, *r); });
 }
 
-bool GroundFunctionExpressionMultiOperatorImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionMultiOperatorImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_multi_operator == other.m_multi_operator) && (m_function_expressions == other.m_function_expressions);
-    }
-    return true;
-}
-
-size_t GroundFunctionExpressionMultiOperatorImpl::hash_impl() const { return HashCombiner()(m_multi_operator, m_function_expressions); }
-
-void GroundFunctionExpressionMultiOperatorImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << to_string(m_multi_operator);
-    assert(!m_function_expressions.empty());
-    for (const auto& function_expression : m_function_expressions)
-    {
-        out << " ";
-        std::visit(loki::StringifyVisitor(out, options), *function_expression);
-    }
-    out << ")";
-}
-
 size_t GroundFunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum GroundFunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
@@ -142,24 +81,6 @@ GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(size_t inde
 {
 }
 
-bool GroundFunctionExpressionMinusImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionMinusImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_function_expression == other.m_function_expression;
-    }
-    return true;
-}
-
-size_t GroundFunctionExpressionMinusImpl::hash_impl() const { return HashCombiner()(m_function_expression); }
-
-void GroundFunctionExpressionMinusImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(- ";
-    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
-    out << ")";
-}
-
 size_t GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
@@ -170,19 +91,6 @@ GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(size_
     m_function(std::move(function))
 {
 }
-
-bool GroundFunctionExpressionFunctionImpl::is_structurally_equivalent_to_impl(const GroundFunctionExpressionFunctionImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_function == other.m_function;
-    }
-    return true;
-}
-
-size_t GroundFunctionExpressionFunctionImpl::hash_impl() const { return HashCombiner()(m_function); }
-
-void GroundFunctionExpressionFunctionImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { m_function->str(out, options); }
 
 size_t GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }
 

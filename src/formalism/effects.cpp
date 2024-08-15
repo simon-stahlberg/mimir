@@ -37,18 +37,6 @@ namespace mimir
 
 EffectSimpleImpl::EffectSimpleImpl(size_t index, Literal<Fluent> effect) : m_index(index), m_effect(std::move(effect)) {}
 
-bool EffectSimpleImpl::is_structurally_equivalent_to_impl(const EffectSimpleImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_effect == other.m_effect;
-    }
-    return true;
-}
-size_t EffectSimpleImpl::hash_impl() const { return HashCombiner()(m_effect); }
-
-void EffectSimpleImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << *m_effect; }
-
 size_t EffectSimpleImpl::get_index() const { return m_index; }
 
 const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
@@ -78,40 +66,7 @@ EffectConditionalImpl::EffectConditionalImpl(size_t index,
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 }
 
-bool EffectConditionalImpl::is_structurally_equivalent_to_impl(const EffectConditionalImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_static_conditions == other.m_static_conditions) && (m_fluent_conditions == other.m_fluent_conditions)
-               && (m_derived_conditions == other.m_derived_conditions) && m_effect == other.m_effect;
-    }
-    return true;
-}
-size_t EffectConditionalImpl::hash_impl() const { return HashCombiner()(m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect); }
-
-void EffectConditionalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(when (and";
-    for (const auto& condition : m_static_conditions)
-    {
-        out << " " << *condition;
-    }
-    for (const auto& condition : m_fluent_conditions)
-    {
-        out << " " << *condition;
-    }
-    for (const auto& condition : m_derived_conditions)
-    {
-        out << " " << *condition;
-    }
-    out << " ) ";  // end and
-
-    out << *m_effect;
-
-    out << ")";  // end when
-}
-
-size_t EffectSimpleImpl::get_index() const { return m_index; }
+size_t EffectConditionalImpl::get_index() const { return m_index; }
 
 template<PredicateCategory P>
 const LiteralList<P>& EffectConditionalImpl::get_conditions() const
@@ -167,61 +122,6 @@ EffectUniversalImpl::EffectUniversalImpl(size_t index,
     std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-}
-
-bool EffectUniversalImpl::is_structurally_equivalent_to_impl(const EffectUniversalImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_quantified_variables == other.m_quantified_variables) && (m_static_conditions == other.m_static_conditions)
-               && (m_fluent_conditions == other.m_fluent_conditions) && (m_derived_conditions == other.m_derived_conditions) && m_effect == other.m_effect;
-    }
-    return true;
-}
-size_t EffectUniversalImpl::hash_impl() const
-{
-    return HashCombiner()(m_quantified_variables, m_static_conditions, m_fluent_conditions, m_derived_conditions, m_effect);
-}
-
-void EffectUniversalImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(forall (";
-    for (size_t i = 0; i < m_quantified_variables.size(); ++i)
-    {
-        if (i != 0)
-        {
-            out << " ";
-        }
-        out << *m_quantified_variables[i];
-    }
-    out << ") ";  // end quantifiers
-
-    if (!(m_static_conditions.empty() && m_fluent_conditions.empty()))
-    {
-        out << "(when (and";
-        for (const auto& condition : m_static_conditions)
-        {
-            out << " " << *condition;
-        }
-        for (const auto& condition : m_fluent_conditions)
-        {
-            out << " " << *condition;
-        }
-        for (const auto& condition : m_derived_conditions)
-        {
-            out << " " << *condition;
-        }
-        out << " ) ";  // end and
-    }
-
-    out << *m_effect;
-
-    if (!(m_static_conditions.empty() && m_fluent_conditions.empty()))
-    {
-        out << ")";  // end when
-    }
-
-    out << ")";  // end forall
 }
 
 size_t EffectUniversalImpl::get_index() const { return m_index; }

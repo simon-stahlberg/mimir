@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_FUNCTION_SKELETON_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -43,18 +41,6 @@ public:
     size_t get_index() const;
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
-};
-
-template<>
-struct UniquePDDLHasher<const FunctionSkeletonImpl*>
-{
-    size_t operator()(const FunctionSkeletonImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionSkeletonImpl*>
-{
-    bool operator()(const FunctionSkeletonImpl* l, const FunctionSkeletonImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element);

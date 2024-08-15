@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/term.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -26,38 +25,12 @@ namespace mimir
 /* TermObjectImpl */
 TermObjectImpl::TermObjectImpl(size_t index, Object object) : m_index(index), m_object(std::move(object)) {}
 
-bool TermObjectImpl::is_structurally_equivalent_to_impl(const TermObjectImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_object == other.m_object;
-    }
-    return true;
-}
-
-size_t TermObjectImpl::hash_impl() const { return HashCombiner()(m_object); }
-
-void TermObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_object->get_name(); }
-
 size_t TermObjectImpl::get_index() const { return m_index; }
 
 const Object& TermObjectImpl::get_object() const { return m_object; }
 
 /* TermVariableImpl */
 TermVariableImpl::TermVariableImpl(size_t index, Variable variable) : m_index(index), m_variable(std::move(variable)) {}
-
-bool TermVariableImpl::is_structurally_equivalent_to_impl(const TermVariableImpl& other) const
-{
-    if (this != &other)
-    {
-        return m_variable == other.m_variable;
-    }
-    return true;
-}
-
-size_t TermVariableImpl::hash_impl() const { return HashCombiner()(m_variable); }
-
-void TermVariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_variable->get_name(); }
 
 size_t TermVariableImpl::get_index() const { return m_index; }
 

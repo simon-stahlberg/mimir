@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_GROUND_LITERAL_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -49,18 +47,6 @@ public:
     size_t get_index() const;
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLHasher<const GroundLiteralImpl<P>*>
-{
-    size_t operator()(const GroundLiteralImpl<P>* e) const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLEqualTo<const GroundLiteralImpl<P>*>
-{
-    bool operator()(const GroundLiteralImpl<P>* l, const GroundLiteralImpl<P>* r) const;
 };
 
 template<PredicateCategory P>

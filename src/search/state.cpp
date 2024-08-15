@@ -25,6 +25,10 @@
 #include <ostream>
 #include <tuple>
 
+size_t std::hash<mimir::State>::operator()(const mimir::State& e) const { return e.get_index(); }
+
+size_t std::equal_to<mimir::State>::operator()(const mimir::State& l, const mimir::State& r) const { return l.get_index() == r.get_index(); }
+
 namespace mimir
 {
 
@@ -153,10 +157,6 @@ FlatBitset<P> State::get_atoms() const
 
 template FlatBitset<Fluent> State::get_atoms<Fluent>() const;
 template FlatBitset<Derived> State::get_atoms<Derived>() const;
-
-/* StateHash */
-
-size_t StateHash::operator()(State view) const { return view.hash(); }
 
 /**
  * Pretty printing

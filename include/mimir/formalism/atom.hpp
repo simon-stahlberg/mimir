@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {

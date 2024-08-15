@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -132,78 +130,6 @@ private:
 public:
     size_t get_index() const;
     const GroundFunction& get_function() const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionExpressionNumberImpl&>
-{
-    size_t operator()(const GroundFunctionExpressionNumberImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionExpressionBinaryOperatorImpl&>
-{
-    size_t operator()(const GroundFunctionExpressionBinaryOperatorImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionExpressionMultiOperatorImpl&>
-{
-    size_t operator()(const GroundFunctionExpressionMultiOperatorImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionExpressionMinusImpl&>
-{
-    size_t operator()(const GroundFunctionExpressionMinusImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionExpressionFunctionImpl&>
-{
-    size_t operator()(const GroundFunctionExpressionFunctionImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const GroundFunctionExpressionImpl*>
-{
-    size_t operator()(const GroundFunctionExpressionImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionExpressionNumberImpl&>
-{
-    bool operator()(const GroundFunctionExpressionNumberImpl& l, const GroundFunctionExpressionNumberImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionExpressionBinaryOperatorImpl&>
-{
-    bool operator()(const GroundFunctionExpressionBinaryOperatorImpl& l, const GroundFunctionExpressionBinaryOperatorImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionExpressionMultiOperatorImpl&>
-{
-    bool operator()(const GroundFunctionExpressionMultiOperatorImpl& l, const GroundFunctionExpressionMultiOperatorImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionExpressionMinusImpl&>
-{
-    bool operator()(const GroundFunctionExpressionMinusImpl& l, const GroundFunctionExpressionMinusImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionExpressionFunctionImpl&>
-{
-    bool operator()(const GroundFunctionExpressionFunctionImpl& l, const GroundFunctionExpressionFunctionImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>
-{
-    bool operator()(const GroundFunctionExpressionImpl* l, const GroundFunctionExpressionImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);

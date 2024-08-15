@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/metric.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 
 #include <cassert>
@@ -31,24 +30,6 @@ OptimizationMetricImpl::OptimizationMetricImpl(size_t index, loki::OptimizationM
     m_optimization_metric(optimization_metric),
     m_function_expression(std::move(function_expression))
 {
-}
-
-bool OptimizationMetricImpl::is_structurally_equivalent_to_impl(const OptimizationMetricImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_optimization_metric == other.m_optimization_metric) && (m_function_expression == other.m_function_expression);
-    }
-    return true;
-}
-
-size_t OptimizationMetricImpl::hash_impl() const { return HashCombiner()(m_optimization_metric, m_function_expression); }
-
-void OptimizationMetricImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << to_string(m_optimization_metric) << " ";
-    std::visit(loki::StringifyVisitor(out, options), *m_function_expression);
-    out << ")";
 }
 
 size_t OptimizationMetricImpl::get_index() const { return m_index; }

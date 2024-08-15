@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_DOMAIN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -74,18 +72,6 @@ public:
 
     template<PredicateCategory P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
-};
-
-template<>
-struct UniquePDDLHasher<const DomainImpl*>
-{
-    size_t operator()(const DomainImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const DomainImpl*>
-{
-    bool operator()(const DomainImpl* l, const DomainImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const DomainImpl& element);

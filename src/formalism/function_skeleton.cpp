@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/function_skeleton.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/variable.hpp"
 
 namespace mimir
@@ -27,28 +26,6 @@ FunctionSkeletonImpl::FunctionSkeletonImpl(size_t index, std::string name, Varia
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {
-}
-
-bool FunctionSkeletonImpl::is_structurally_equivalent_to_impl(const FunctionSkeletonImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_name == other.m_name) && (m_parameters == other.m_parameters);
-    }
-    return true;
-}
-
-size_t FunctionSkeletonImpl::hash_impl() const { return HashCombiner()(m_name, m_parameters); }
-
-void FunctionSkeletonImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(" << m_name;
-    for (size_t i = 0; i < m_parameters.size(); ++i)
-    {
-        out << " ";
-        m_parameters[i]->str(out, options);
-    }
-    out << ")";
 }
 
 size_t FunctionSkeletonImpl::get_index() const { return m_index; }

@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -183,78 +181,6 @@ inline double evaluate_multi(const loki::MultiOperatorEnum& op, const double val
         }
     }
 }
-
-template<>
-struct UniquePDDLHasher<const FunctionExpressionNumberImpl&>
-{
-    size_t operator()(const FunctionExpressionNumberImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const FunctionExpressionBinaryOperatorImpl&>
-{
-    size_t operator()(const FunctionExpressionBinaryOperatorImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const FunctionExpressionMultiOperatorImpl&>
-{
-    size_t operator()(const FunctionExpressionMultiOperatorImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const FunctionExpressionMinusImpl&>
-{
-    size_t operator()(const FunctionExpressionMinusImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const FunctionExpressionFunctionImpl&>
-{
-    size_t operator()(const FunctionExpressionFunctionImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const FunctionExpressionImpl*>
-{
-    size_t operator()(const FunctionExpressionImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionExpressionNumberImpl&>
-{
-    bool operator()(const FunctionExpressionNumberImpl& l, const FunctionExpressionNumberImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionExpressionBinaryOperatorImpl&>
-{
-    bool operator()(const FunctionExpressionBinaryOperatorImpl& l, const FunctionExpressionBinaryOperatorImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionExpressionMultiOperatorImpl&>
-{
-    bool operator()(const FunctionExpressionMultiOperatorImpl& l, const FunctionExpressionMultiOperatorImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionExpressionMinusImpl&>
-{
-    bool operator()(const FunctionExpressionMinusImpl& l, const FunctionExpressionMinusImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionExpressionFunctionImpl&>
-{
-    bool operator()(const FunctionExpressionFunctionImpl& l, const FunctionExpressionFunctionImpl& r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const FunctionExpressionImpl*>
-{
-    bool operator()(const FunctionExpressionImpl* l, const FunctionExpressionImpl* r) const;
-};
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);

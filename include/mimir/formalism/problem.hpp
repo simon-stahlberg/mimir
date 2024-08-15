@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 #include "mimir/search/flat_types.hpp"
 
 namespace mimir
@@ -89,18 +87,6 @@ public:
     const AxiomList& get_axioms() const;
     bool static_goal_holds() const;
     bool static_literal_holds(const GroundLiteral<Static> literal) const;
-};
-
-template<>
-struct UniquePDDLHasher<const ProblemImpl*>
-{
-    size_t operator()(const ProblemImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const ProblemImpl*>
-{
-    bool operator()(const ProblemImpl* l, const ProblemImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

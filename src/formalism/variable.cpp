@@ -25,19 +25,6 @@ VariableImpl::VariableImpl(size_t index, std::string name, size_t parameter_inde
 {
 }
 
-bool VariableImpl::is_structurally_equivalent_to_impl(const VariableImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_name == other.m_name && m_parameter_index == other.m_parameter_index);
-    }
-    return true;
-}
-
-size_t VariableImpl::hash_impl() const { return HashCombiner()(m_name, m_parameter_index); }
-
-void VariableImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const { out << m_name; }
-
 size_t VariableImpl::get_index() const { return m_index; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }

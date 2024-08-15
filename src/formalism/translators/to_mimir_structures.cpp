@@ -95,7 +95,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
                     }
                     else
                     {
-                        std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+                        // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
 
                         throw std::logic_error("Expected literal in conjunctive condition.");
                     }
@@ -126,7 +126,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         }
         else
         {
-            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
+            // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
 
             throw std::logic_error("Expected simple effect.");
         }
@@ -465,7 +465,7 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
             }
             else
             {
-                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+                // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
 
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
@@ -485,7 +485,7 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
         return std::make_tuple(static_literals, fluent_literals, derived_literals);
     }
 
-    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
+    // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
 
     throw std::logic_error("Expected conjunctive condition.");
 }
@@ -560,7 +560,7 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
         }
         else
         {
-            std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
+            // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *tmp_effect) << std::endl;
 
             throw std::logic_error("Expected simple effect.");
         }
@@ -881,7 +881,7 @@ ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
             }
             else
             {
-                std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+                // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
 
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
@@ -901,7 +901,7 @@ ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
         return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals);
     }
 
-    std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
+    // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
 
     throw std::logic_error("Expected conjunctive condition.");
 }

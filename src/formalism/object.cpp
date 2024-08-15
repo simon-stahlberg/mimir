@@ -17,24 +17,9 @@
 
 #include "mimir/formalism/object.hpp"
 
-#include "mimir/common/hash.hpp"
-
 namespace mimir
 {
 ObjectImpl::ObjectImpl(size_t index, std::string name) : m_index(index), m_name(std::move(name)) {}
-
-bool ObjectImpl::is_structurally_equivalent_to_impl(const ObjectImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_name == other.m_name);
-    }
-    return true;
-}
-
-size_t ObjectImpl::hash_impl() const { return HashCombiner()(m_name); }
-
-void ObjectImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const { out << m_name; }
 
 size_t ObjectImpl::get_index() const { return m_index; }
 

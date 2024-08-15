@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_TERM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -66,30 +64,6 @@ private:
 public:
     size_t get_index() const;
     const Variable& get_variable() const;
-};
-
-template<>
-struct UniquePDDLHasher<const TermObjectImpl*>
-{
-    size_t operator()(const TermObjectImpl* e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const TermVariableImpl*>
-{
-    size_t operator()(const TermVariableImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const TermObjectImpl*>
-{
-    bool operator()(const TermObjectImpl* l, const TermObjectImpl* r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const TermVariableImpl*>
-{
-    bool operator()(const TermVariableImpl* l, const TermVariableImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const TermObjectImpl& element);

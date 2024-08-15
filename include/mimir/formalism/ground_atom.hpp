@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_GROUND_ATOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -57,18 +55,6 @@ public:
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLHasher<const GroundAtomImpl<P>*>
-{
-    size_t operator()(const GroundAtomImpl<P>* e) const;
-};
-
-template<PredicateCategory P>
-struct UniquePDDLEqualTo<const GroundAtomImpl<P>*>
-{
-    bool operator()(const GroundAtomImpl<P>* l, const GroundAtomImpl<P>* r) const;
 };
 
 template<PredicateCategory P>

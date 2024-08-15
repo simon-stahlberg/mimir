@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_AXIOM_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -53,18 +51,6 @@ public:
     const LiteralList<P>& get_conditions() const;
 
     size_t get_arity() const;
-};
-
-template<>
-struct UniquePDDLHasher<const AxiomImpl*>
-{
-    size_t operator()(const AxiomImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const AxiomImpl*>
-{
-    bool operator()(const AxiomImpl* l, const AxiomImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const AxiomImpl& element);

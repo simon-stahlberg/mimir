@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -43,18 +41,6 @@ public:
     size_t get_index() const;
     const GroundFunction& get_function() const;
     double get_number() const;
-};
-
-template<>
-struct UniquePDDLHasher<const NumericFluentImpl*>
-{
-    size_t operator()(const NumericFluentImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const NumericFluentImpl*>
-{
-    bool operator()(const NumericFluentImpl* l, const NumericFluentImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element);

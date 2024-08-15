@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_EFFECTS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -112,42 +110,6 @@ public:
     const Literal<Fluent>& get_effect() const;
 
     size_t get_arity() const;
-};
-
-template<>
-struct UniquePDDLHasher<const EffectSimpleImpl*>
-{
-    size_t operator()(const EffectSimpleImpl* e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const EffectConditionalImpl*>
-{
-    size_t operator()(const EffectConditionalImpl* e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const EffectUniversalImpl*>
-{
-    size_t operator()(const EffectUniversalImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const EffectSimpleImpl*>
-{
-    bool operator()(const EffectSimpleImpl* l, const EffectSimpleImpl* r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const EffectConditionalImpl*>
-{
-    bool operator()(const EffectConditionalImpl* l, const EffectConditionalImpl* r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const EffectUniversalImpl*>
-{
-    bool operator()(const EffectUniversalImpl* l, const EffectUniversalImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element);

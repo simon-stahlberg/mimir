@@ -19,8 +19,6 @@
 #define MIMIR_FORMALISM_VARIABLE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {
@@ -51,18 +49,6 @@ public:
     size_t get_index() const;
     const std::string& get_name() const;
     const size_t get_parameter_index() const;
-};
-
-template<>
-struct UniquePDDLHasher<const VariableImpl*>
-{
-    size_t operator()(const VariableImpl* e) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const VariableImpl*>
-{
-    bool operator()(const VariableImpl* l, const VariableImpl* r) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);

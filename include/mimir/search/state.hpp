@@ -116,16 +116,28 @@ public:
 
 static_assert(std::is_trivially_copyable_v<std::optional<State>>);
 
-using StateList = std::vector<State>;
+}
 
-struct StateHash
+template<>
+struct std::hash<mimir::State>
 {
-    size_t operator()(State view) const;
+    size_t operator()(const mimir::State& e) const;
 };
 
+template<>
+struct std::equal_to<mimir::State>
+{
+    size_t operator()(const mimir::State& l, const mimir::State& r) const;
+};
+
+namespace mimir
+{
+
+using StateList = std::vector<State>;
+
 template<typename T>
-using StateMap = std::unordered_map<State, T, StateHash>;
-using StateSet = std::unordered_set<State, StateHash>;
+using StateMap = std::unordered_map<State, T>;
+using StateSet = std::unordered_set<State>;
 
 /**
  * Pretty printing

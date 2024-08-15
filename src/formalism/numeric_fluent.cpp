@@ -17,31 +17,12 @@
 
 #include "mimir/formalism/numeric_fluent.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
 namespace mimir
 {
 NumericFluentImpl::NumericFluentImpl(size_t index, GroundFunction function, double number) : m_index(index), m_function(std::move(function)), m_number(number)
 {
-}
-
-bool NumericFluentImpl::is_structurally_equivalent_to_impl(const NumericFluentImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_function == other.m_function) && (m_number == other.m_number);
-    }
-    return true;
-}
-
-size_t NumericFluentImpl::hash_impl() const { return HashCombiner()(m_function, m_number); }
-
-void NumericFluentImpl::str_impl(std::ostream& out, const loki::FormattingOptions& options) const
-{
-    out << "(= ";
-    m_function->str(out, options);
-    out << " " << m_number << ")";
 }
 
 size_t NumericFluentImpl::get_index() const { return m_index; }

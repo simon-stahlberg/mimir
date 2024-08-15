@@ -25,31 +25,6 @@ namespace mimir
 {
 RequirementsImpl::RequirementsImpl(size_t index, loki::RequirementEnumSet requirements) : m_index(index), m_requirements(std::move(requirements)) {}
 
-bool RequirementsImpl::is_structurally_equivalent_to_impl(const RequirementsImpl& other) const
-{
-    if (this != &other)
-    {
-        return (m_requirements == other.m_requirements);
-    }
-    return true;
-}
-
-size_t RequirementsImpl::hash_impl() const { return HashCombiner()(m_requirements); }
-
-void RequirementsImpl::str_impl(std::ostream& out, const loki::FormattingOptions& /*options*/) const
-{
-    out << "(:requirements ";
-    int i = 0;
-    for (const auto& requirement : m_requirements)
-    {
-        if (i != 0)
-            out << " ";
-        out << to_string(requirement);
-        ++i;
-    }
-    out << ")";
-}
-
 bool RequirementsImpl::test(loki::RequirementEnum requirement) const { return m_requirements.count(requirement); }
 
 size_t RequirementsImpl::get_index() const { return m_index; }
