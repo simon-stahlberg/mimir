@@ -216,6 +216,10 @@ EffectConditional PDDLFactories::get_or_create_conditional_effect(LiteralList<St
                                                                   LiteralList<Derived> derived_conditions,
                                                                   Literal<Fluent> effect)
 {
+    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return m_factories.get<EffectConditionalFactory>().get_or_create<EffectConditionalImpl>(std::move(static_conditions),
                                                                                             std::move(fluent_conditions),
                                                                                             std::move(derived_conditions),
@@ -228,6 +232,10 @@ EffectUniversal PDDLFactories::get_or_create_universal_effect(VariableList param
                                                               LiteralList<Derived> derived_conditions,
                                                               Literal<Fluent> effect)
 {
+    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return m_factories.get<EffectUniversalFactory>().get_or_create<EffectUniversalImpl>(std::move(parameters),
                                                                                         std::move(static_conditions),
                                                                                         std::move(fluent_conditions),
@@ -246,6 +254,33 @@ Action PDDLFactories::get_or_create_action(std::string name,
                                            EffectUniversalList universal_effects,
                                            FunctionExpression function_expression)
 {
+    /* Canonize before uniqueness test */
+    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(simple_effects.begin(), simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    // Sort negative conditional effects to the beginning to process them first, additionally sort then by identifier.
+    std::sort(conditional_effects.begin(),
+              conditional_effects.end(),
+              [](const auto& l, const auto& r)
+              {
+                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+                  {
+                      return l->get_index() < r->get_index();
+                  }
+                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+              });
+    std::sort(universal_effects.begin(),
+              universal_effects.end(),
+              [](const auto& l, const auto& r)
+              {
+                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+                  {
+                      return l->get_index() < r->get_index();
+                  }
+                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+              });
+
     return m_factories.get<ActionFactory>().get_or_create<ActionImpl>(std::move(name),
                                                                       std::move(original_arity),
                                                                       std::move(parameters),
@@ -292,6 +327,15 @@ Domain PDDLFactories::get_or_create_domain(std::optional<fs::path> filepath,
                                            ActionList actions,
                                            AxiomList axioms)
 {
+    /* Canonize before uniqueness test. */
+    std::sort(constants.begin(), constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(static_predicates.begin(), static_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_predicates.begin(), fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_predicates.begin(), derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(functions.begin(), functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(actions.begin(), actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(axioms.begin(), axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return m_factories.get<DomainFactory>().get_or_create<DomainImpl>(std::move(filepath),
                                                                       std::move(name),
                                                                       std::move(requirements),
@@ -319,6 +363,17 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
                                              std::optional<OptimizationMetric> optimization_metric,
                                              AxiomList axioms)
 {
+    /* Canonize before uniqueness test. */
+    std::sort(objects.begin(), objects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_predicates.begin(), derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(static_initial_literals.begin(), static_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_initial_literals.begin(), fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(numeric_fluents.begin(), numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(static_goal_condition.begin(), static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_goal_condition.begin(), fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(derived_goal_condition.begin(), derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(axioms.begin(), axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return m_factories.get<ProblemFactory>().get_or_create<ProblemImpl>(std::move(filepath),
                                                                         std::move(domain),
                                                                         std::move(name),

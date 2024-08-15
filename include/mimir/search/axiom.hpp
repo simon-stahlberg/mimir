@@ -98,22 +98,11 @@ public:
     /// @brief Create a view on a Axiom.
     explicit GroundAxiom(FlatAxiom view);
 
-    /// @brief Return a hash value for the grounded action.
-    ///
-    /// Same argument from operator== applies.
-    size_t hash() const;
+    bool operator==(const GroundAxiom& other) const;
 
     GroundAxiomIndex get_index() const;
     Axiom get_axiom() const;
     FlatObjectList get_objects() const;
-
-    /// Return true iff two grounded axioms are equal.
-    ///
-    /// For grounded axioms in same AE, we know they are already unique.
-    /// Hence, comparison of the buffer pointer suffices.
-    /// For grounded axioms in different AE, buffer pointers are always different.
-    /// Hence, comparison always returns false.
-    bool operator==(const GroundAxiom& other) const;
 
     /* STRIPS part */
     FlatStripsActionPrecondition get_strips_precondition() const;

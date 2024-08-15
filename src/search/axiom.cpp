@@ -84,15 +84,13 @@ FlatDerivedEffect& GroundAxiomBuilder::get_derived_effect() { return m_builder.g
 
 GroundAxiom::GroundAxiom(FlatAxiom view) : m_view(view) {}
 
-size_t GroundAxiom::hash() const { return HashCombiner()(m_view.buffer()); }
+bool GroundAxiom::operator==(const GroundAxiom& other) const { return get_index() == other.get_index(); }
 
 GroundAxiomIndex GroundAxiom::get_index() const { return m_view.get<0>(); }
 
 Axiom GroundAxiom::get_axiom() const { return m_view.get<1>(); }
 
 FlatObjectList GroundAxiom::get_objects() const { return m_view.get<2>(); }
-
-bool GroundAxiom::operator==(const GroundAxiom& other) const { return m_view.buffer() == other.m_view.buffer(); }
 
 FlatStripsActionPrecondition GroundAxiom::get_strips_precondition() const { return m_view.get<3>(); }
 

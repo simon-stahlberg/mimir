@@ -64,33 +64,33 @@ ActionImpl::ActionImpl(size_t index,
     assert(is_all_unique(m_simple_effects));
     assert(is_all_unique(m_conditional_effects));
     assert(is_all_unique(m_universal_effects));
-
-    /* Canonize. */
-    std::sort(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    // Sort negative conditional effects to the beginning to process them first, additionally sort then by identifier.
-    std::sort(m_conditional_effects.begin(),
-              m_conditional_effects.end(),
-              [](const auto& l, const auto& r)
-              {
-                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
-                  {
-                      return l->get_index() < r->get_index();
-                  }
-                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
-              });
-    std::sort(m_universal_effects.begin(),
-              m_universal_effects.end(),
-              [](const auto& l, const auto& r)
-              {
-                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
-                  {
-                      return l->get_index() < r->get_index();
-                  }
-                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
-              });
+    assert(
+        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_conditional_effects.begin(),
+                          m_conditional_effects.end(),
+                          [](const auto& l, const auto& r)
+                          {
+                              if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+                              {
+                                  return l->get_index() < r->get_index();
+                              }
+                              return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+                          }));
+    assert(std::is_sorted(m_universal_effects.begin(),
+                          m_universal_effects.end(),
+                          [](const auto& l, const auto& r)
+                          {
+                              if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+                              {
+                                  return l->get_index() < r->get_index();
+                              }
+                              return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+                          }));
 }
 
 std::string ActionImpl::str() const

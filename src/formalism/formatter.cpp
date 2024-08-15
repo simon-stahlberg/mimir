@@ -103,6 +103,8 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << ")\n";  // end action
+
+    m_indent -= m_add_indent;
 }
 
 template<PredicateCategory P>

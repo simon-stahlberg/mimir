@@ -198,16 +198,18 @@ Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 
 Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
 {
-    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
-                                                       domain.get_name(),
-                                                       this->transform(*domain.get_requirements()),
-                                                       this->transform(domain.get_constants()),
-                                                       this->transform(domain.get_predicates<Static>()),
-                                                       this->transform(domain.get_predicates<Fluent>()),
-                                                       this->transform(domain.get_predicates<Derived>()),
-                                                       this->transform(domain.get_functions()),
-                                                       this->transform(domain.get_actions()),
-                                                       this->transform(domain.get_axioms()));
+    auto transformed_domain = this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
+                                                                          domain.get_name(),
+                                                                          this->transform(*domain.get_requirements()),
+                                                                          this->transform(domain.get_constants()),
+                                                                          this->transform(domain.get_predicates<Static>()),
+                                                                          this->transform(domain.get_predicates<Fluent>()),
+                                                                          this->transform(domain.get_predicates<Derived>()),
+                                                                          this->transform(domain.get_functions()),
+                                                                          this->transform(domain.get_actions()),
+                                                                          this->transform(domain.get_axioms()));
+
+    return transformed_domain;
 }
 
 Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem)

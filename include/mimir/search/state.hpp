@@ -83,18 +83,7 @@ private:
 public:
     explicit State(FlatState view);
 
-    /// @brief Return true iff two states are equal.
-    ///
-    /// For states in same StateRepository, we know they are already unique.
-    /// Hence, comparison of the buffer pointer suffices.
-    /// For states in different StateRepository, buffer pointers are always different.
-    /// Hence, comparison always returns false.
     bool operator==(State other) const;
-
-    /// @brief Return a hash value for the state.
-    ///
-    /// Same argument from operator== applies.
-    size_t hash() const;
 
     StateIndex get_index() const;
 

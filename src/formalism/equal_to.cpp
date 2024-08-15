@@ -344,8 +344,9 @@ bool UniquePDDLEqualTo<const ProblemImpl*>::operator()(const ProblemImpl* l, con
 {
     if (&l != &r)
     {
-        return (l->get_name() == r->get_name()) && (l->get_requirements() == r->get_requirements()) && (l->get_objects() == r->get_objects())
-               && (l->get_derived_predicates() == r->get_derived_predicates()) && (l->get_static_initial_literals() == r->get_static_initial_literals())
+        return (l->get_name() == r->get_name()) && (l->get_requirements() == r->get_requirements()) && (l->get_domain() == r->get_domain())
+               && (l->get_objects() == r->get_objects()) && (l->get_derived_predicates() == r->get_derived_predicates())
+               && (l->get_static_initial_literals() == r->get_static_initial_literals())
                && (l->get_fluent_initial_literals() == r->get_fluent_initial_literals()) && (l->get_numeric_fluents() == r->get_numeric_fluents())
                && (l->get_goal_condition<Static>() == r->get_goal_condition<Static>()) && (l->get_goal_condition<Fluent>() == r->get_goal_condition<Fluent>())
                && (l->get_goal_condition<Derived>() == r->get_goal_condition<Derived>()) && (l->get_optimization_metric() == r->get_optimization_metric())

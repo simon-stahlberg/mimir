@@ -258,6 +258,8 @@ public:
     /// @brief Create a view on a DefaultAction.
     explicit GroundAction(FlatAction view);
 
+    bool operator==(const GroundAction& other) const;
+
     GroundActionIndex get_index() const;
     GroundActionCost get_cost() const;
     Action get_action() const;

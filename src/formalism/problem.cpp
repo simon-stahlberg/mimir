@@ -80,18 +80,26 @@ ProblemImpl::ProblemImpl(size_t index,
     assert(is_all_unique(m_fluent_goal_condition));
     assert(is_all_unique(m_derived_goal_condition));
     assert(is_all_unique(m_axioms));
-
-    /* Canonize. */
-
-    std::sort(m_objects.begin(), m_objects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_static_initial_literals.begin(), m_static_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_fluent_initial_literals.begin(), m_fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_numeric_fluents.begin(), m_numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_static_goal_condition.begin(), m_static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_fluent_goal_condition.begin(), m_fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_derived_goal_condition.begin(), m_derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    assert(std::is_sorted(m_objects.begin(), m_objects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_static_initial_literals.begin(),
+                          m_static_initial_literals.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_initial_literals.begin(),
+                          m_fluent_initial_literals.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_numeric_fluents.begin(), m_numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_static_goal_condition.begin(),
+                          m_static_goal_condition.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_goal_condition.begin(),
+                          m_fluent_goal_condition.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_derived_goal_condition.begin(),
+                          m_derived_goal_condition.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
     /* Additional */
 

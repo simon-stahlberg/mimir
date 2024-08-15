@@ -80,9 +80,7 @@ template FlatBitsetBuilder<Derived>& StateBuilder::get_atoms();
 
 State::State(FlatState view) : m_view(view) {}
 
-bool State::operator==(State other) const { return m_view.buffer() == other.m_view.buffer(); }
-
-size_t State::hash() const { return HashCombiner()(m_view.buffer()); }
+bool State::operator==(State other) const { return get_index() == other.get_index(); }
 
 StateIndex State::get_index() const { return m_view.get<0>(); }
 

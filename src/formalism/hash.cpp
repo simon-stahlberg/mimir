@@ -233,6 +233,7 @@ size_t UniquePDDLHasher<const ProblemImpl*>::operator()(const ProblemImpl* e) co
 {
     return UniquePDDLHashCombiner()(e->get_name(),
                                     e->get_requirements(),
+                                    e->get_domain(),
                                     e->get_objects(),
                                     e->get_derived_predicates(),
                                     e->get_static_initial_literals(),

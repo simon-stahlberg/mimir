@@ -92,13 +92,7 @@ public:
         auto it = m_ground_function_value_costs.find(grounded_function);
         if (it == m_ground_function_value_costs.end())
         {
-            throw std::runtime_error("No numeric fluent available to determine cost for ground function "s +
-                                     [grounded_function]()
-                                     {
-                                         auto out = std::stringstream();
-                                         out << *grounded_function;
-                                         return out.str();
-                                     }());
+            throw std::runtime_error("No numeric fluent available to determine cost for ground function "s + grounded_function->str());
         }
         const auto cost = it->second;
 

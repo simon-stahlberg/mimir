@@ -70,15 +70,16 @@ DomainImpl::DomainImpl(size_t index,
     assert(is_all_unique(m_functions));
     assert(is_all_unique(m_actions));
     assert(is_all_unique(m_axioms));
-
-    /* Canonize. */
-    std::sort(m_constants.begin(), m_constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_static_predicates.begin(), m_static_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_functions.begin(), m_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_actions.begin(), m_actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    assert(std::is_sorted(m_constants.begin(), m_constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_static_predicates.begin(), m_static_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_functions.begin(), m_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_actions.begin(), m_actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
     /* Additional */
     for (const auto& predicate : m_static_predicates)

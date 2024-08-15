@@ -390,6 +390,15 @@ FlatConditionalEffectsBuilder& GroundActionBuilder::get_conditional_effects() { 
 
 GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
+bool GroundAction::operator==(const GroundAction& other) const
+{
+    if (this != &other)
+    {
+        return (get_index() == other.get_index());
+    }
+    return true;
+}
+
 GroundActionIndex GroundAction::get_index() const { return m_view.get<0>(); }
 
 GroundActionCost GroundAction::get_cost() const { return m_view.get<1>(); }
