@@ -219,4 +219,10 @@ extern std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstracti
 
 }
 
+template<>
+struct std::hash<mimir::GlobalFaithfulAbstractState>
+{
+    size_t operator()(const mimir::GlobalFaithfulAbstractState& element) const;
+};
+
 #endif

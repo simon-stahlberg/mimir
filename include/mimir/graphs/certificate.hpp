@@ -45,6 +45,16 @@ public:
     const std::string& get_nauty_certificate() const;
     const ColorList& get_canonical_initial_coloring() const;
 };
+
+struct UniqueCertificateSharedPtrHash
+{
+    size_t operator()(const std::shared_ptr<const Certificate>& element) const;
+};
+
+struct UniqueCertificateSharedPtrEqualTo
+{
+    size_t operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const;
+};
 }
 
 template<>

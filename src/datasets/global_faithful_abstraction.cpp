@@ -26,6 +26,14 @@
 #include <cstdlib>
 #include <deque>
 
+size_t std::hash<mimir::GlobalFaithfulAbstractState>::operator()(const mimir::GlobalFaithfulAbstractState& element) const
+{
+    return mimir::hash_combine(element.get_index(),
+                               element.get_global_index(),
+                               element.get_faithful_abstraction_index(),
+                               element.get_faithful_abstract_state_index());
+}
+
 namespace mimir
 {
 /**
@@ -47,12 +55,11 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
 {
     if (this != &other)
     {
-        return (m_global_index == other.m_global_index);
+        return (m_index == other.m_index) && (m_global_index == other.m_global_index) && (m_faithful_abstraction_index == other.m_faithful_abstraction_index)
+               && (m_faithful_abstract_state_index == other.m_faithful_abstract_state_index);
     }
     return true;
 }
-
-size_t GlobalFaithfulAbstractState::hash() const { return HashCombiner()(m_global_index); }
 
 StateIndex GlobalFaithfulAbstractState::get_index() const { return m_index; }
 
@@ -121,10 +128,8 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
-    auto certificate_to_global_state = std::unordered_map<std::shared_ptr<const Certificate>,
-                                                          GlobalFaithfulAbstractState,
-                                                          Hash<std::shared_ptr<const Certificate>, true>,
-                                                          EqualTo<std::shared_ptr<const Certificate>, true>> {};
+    auto certificate_to_global_state = std::
+        unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, UniqueCertificateSharedPtrHash, UniqueCertificateSharedPtrEqualTo> {};
 
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();

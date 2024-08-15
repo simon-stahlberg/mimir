@@ -48,6 +48,13 @@ const std::string& Certificate::get_nauty_certificate() const { return m_nauty_c
 
 const ColorList& Certificate::get_canonical_initial_coloring() const { return m_canonical_initial_coloring; }
 
+size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Certificate>& element) const { return std::hash<Certificate>()(*element); }
+
+size_t UniqueCertificateSharedPtrEqualTo::operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const
+{
+    return *lhs == *rhs;
+}
+
 }
 
 size_t std::hash<mimir::Certificate>::operator()(const mimir::Certificate& element) const
