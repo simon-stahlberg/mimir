@@ -37,106 +37,94 @@ namespace mimir::dl
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public ConstructorEvaluatorBase<Concept, ConceptPredicateState<P>>
+class ConceptPredicateStateImpl : public ConstructorEvaluatorBase<Concept, ConceptPredicateStateImpl<P>>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateState(size_t id, Predicate<P> predicate);
+    ConceptPredicateStateImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class ConstructorRepository;
-
-    bool is_equal_impl(const Constructor<Concept>& other) const;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
     void evaluate_impl(EvaluationContext& context) const;
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    size_t get_id_impl() const;
-
-    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateState<P>>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateStateImpl<P>>;
 
 public:
     // Users are not supposed to move these directly.
-    ConceptPredicateState(const ConceptPredicateState& other) = delete;
-    ConceptPredicateState& operator=(const ConceptPredicateState& other) = delete;
-    ConceptPredicateState(ConceptPredicateState&& other) = default;
-    ConceptPredicateState& operator=(ConceptPredicateState&& other) = default;
+    ConceptPredicateStateImpl(const ConceptPredicateStateImpl& other) = delete;
+    ConceptPredicateStateImpl& operator=(const ConceptPredicateStateImpl& other) = delete;
+    ConceptPredicateStateImpl(ConceptPredicateStateImpl&& other) = default;
+    ConceptPredicateStateImpl& operator=(ConceptPredicateStateImpl&& other) = default;
 
-    bool operator==(const ConceptPredicateState& other) const;
-
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoal : public ConstructorEvaluatorBase<Concept, ConceptPredicateGoal<P>>
+class ConceptPredicateGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptPredicateGoalImpl<P>>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateGoal(size_t id, Predicate<P> predicate);
+    ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class ConstructorRepository;
-
-    bool is_equal_impl(const Constructor<Concept>& other) const;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
     void evaluate_impl(EvaluationContext& context) const;
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    size_t get_id_impl() const;
-
-    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateGoal<P>>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateGoalImpl<P>>;
 
 public:
     // Users are not supposed to move these directly.
-    ConceptPredicateGoal(const ConceptPredicateGoal& other) = delete;
-    ConceptPredicateGoal& operator=(const ConceptPredicateGoal& other) = delete;
-    ConceptPredicateGoal(ConceptPredicateGoal&& other) = default;
-    ConceptPredicateGoal& operator=(ConceptPredicateGoal&& other) = default;
+    ConceptPredicateGoalImpl(const ConceptPredicateGoalImpl& other) = delete;
+    ConceptPredicateGoalImpl& operator=(const ConceptPredicateGoalImpl& other) = delete;
+    ConceptPredicateGoalImpl(ConceptPredicateGoalImpl&& other) = default;
+    ConceptPredicateGoalImpl& operator=(ConceptPredicateGoalImpl&& other) = default;
 
-    bool operator==(const ConceptPredicateGoal& other) const;
-
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
-class ConceptAnd : public ConstructorEvaluatorBase<Concept, ConceptAnd>
+class ConceptAndImpl : public ConstructorEvaluatorBase<Concept, ConceptAndImpl>
 {
 private:
-    size_t m_id;
-    std::reference_wrapper<const Constructor<Concept>> m_concept_left;
-    std::reference_wrapper<const Constructor<Concept>> m_concept_right;
+    size_t m_index;
+    Constructor<Concept> m_concept_left;
+    Constructor<Concept> m_concept_right;
 
-    ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right);
+    ConceptAndImpl(size_t index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
 
-    template<typename T>
-    friend class ConstructorRepository;
-
-    bool is_equal_impl(const Constructor<Concept>& other) const;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
     void evaluate_impl(EvaluationContext& context) const;
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    size_t get_id_impl() const;
-
-    friend class ConstructorEvaluatorBase<Concept, ConceptAnd>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptAndImpl>;
 
 public:
     // Users are not supposed to move these directly.
-    ConceptAnd(const ConceptAnd& other) = delete;
-    ConceptAnd& operator=(const ConceptAnd& other) = delete;
-    ConceptAnd(ConceptAnd&& other) = default;
-    ConceptAnd& operator=(ConceptAnd&& other) = default;
+    ConceptAndImpl(const ConceptAndImpl& other) = delete;
+    ConceptAndImpl& operator=(const ConceptAndImpl& other) = delete;
+    ConceptAndImpl(ConceptAndImpl&& other) = default;
+    ConceptAndImpl& operator=(ConceptAndImpl&& other) = default;
 
-    bool operator==(const ConceptAnd& other) const;
-
-    const Constructor<Concept>& get_concept_left() const;
-    const Constructor<Concept>& get_concept_right() const;
+    size_t get_index() const;
+    Constructor<Concept> get_concept_left() const;
+    Constructor<Concept> get_concept_right() const;
 };
 
 /**
@@ -144,106 +132,94 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateState : public ConstructorEvaluatorBase<Role, RolePredicateState<P>>
+class RolePredicateStateImpl : public ConstructorEvaluatorBase<Role, RolePredicateStateImpl<P>>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateState(size_t id, Predicate<P> predicate);
+    RolePredicateStateImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class ConstructorRepository;
-
-    bool is_equal_impl(const Constructor<Role>& other) const;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
     void evaluate_impl(EvaluationContext& context) const;
 
     bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
-    size_t get_id_impl() const;
-
-    friend class ConstructorEvaluatorBase<Role, RolePredicateState<P>>;
+    friend class ConstructorEvaluatorBase<Role, RolePredicateStateImpl<P>>;
 
 public:
     // Users are not supposed to move these directly.
-    RolePredicateState(const RolePredicateState& other) = delete;
-    RolePredicateState& operator=(const RolePredicateState& other) = delete;
-    RolePredicateState(RolePredicateState&& other) = default;
-    RolePredicateState& operator=(RolePredicateState&& other) = default;
+    RolePredicateStateImpl(const RolePredicateStateImpl& other) = delete;
+    RolePredicateStateImpl& operator=(const RolePredicateStateImpl& other) = delete;
+    RolePredicateStateImpl(RolePredicateStateImpl&& other) = default;
+    RolePredicateStateImpl& operator=(RolePredicateStateImpl&& other) = default;
 
-    bool operator==(const RolePredicateState& other) const;
-
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class RolePredicateGoal : public ConstructorEvaluatorBase<Role, RolePredicateGoal<P>>
+class RolePredicateGoalImpl : public ConstructorEvaluatorBase<Role, RolePredicateGoalImpl<P>>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateGoal(size_t id, Predicate<P> predicate);
+    RolePredicateGoalImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class ConstructorRepository;
-
-    bool is_equal_impl(const Constructor<Role>& other) const;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
     void evaluate_impl(EvaluationContext& context) const;
 
     bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
-    size_t get_id_impl() const;
-
-    friend class ConstructorEvaluatorBase<Role, RolePredicateGoal<P>>;
+    friend class ConstructorEvaluatorBase<Role, RolePredicateGoalImpl<P>>;
 
 public:
     // Users are not supposed to move these directly.
-    RolePredicateGoal(const RolePredicateGoal& other) = delete;
-    RolePredicateGoal& operator=(const RolePredicateGoal& other) = delete;
-    RolePredicateGoal(RolePredicateGoal&& other) = default;
-    RolePredicateGoal& operator=(RolePredicateGoal&& other) = default;
+    RolePredicateGoalImpl(const RolePredicateGoalImpl& other) = delete;
+    RolePredicateGoalImpl& operator=(const RolePredicateGoalImpl& other) = delete;
+    RolePredicateGoalImpl(RolePredicateGoalImpl&& other) = default;
+    RolePredicateGoalImpl& operator=(RolePredicateGoalImpl&& other) = default;
 
-    bool operator==(const RolePredicateGoal& other) const;
-
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
-class RoleAnd : public ConstructorEvaluatorBase<Role, RoleAnd>
+class RoleAndImpl : public ConstructorEvaluatorBase<Role, RoleAndImpl>
 {
 private:
-    size_t m_id;
-    std::reference_wrapper<const Constructor<Role>> m_role_left;
-    std::reference_wrapper<const Constructor<Role>> m_role_right;
+    size_t m_index;
+    Constructor<Role> m_role_left;
+    Constructor<Role> m_role_right;
 
-    RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right);
+    RoleAndImpl(size_t index, Constructor<Role> role_left, Constructor<Role> role_right);
 
-    template<typename T>
-    friend class ConstructorRepository;
-
-    bool is_equal_impl(const Constructor<Role>& other) const;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
     void evaluate_impl(EvaluationContext& context) const;
 
     bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
-    size_t get_id_impl() const;
-
-    friend class ConstructorEvaluatorBase<Role, RoleAnd>;
+    friend class ConstructorEvaluatorBase<Role, RoleAndImpl>;
 
 public:
     // Users are not supposed to move these directly.
-    RoleAnd(const RoleAnd& other) = delete;
-    RoleAnd& operator=(const RoleAnd& other) = delete;
-    RoleAnd(RoleAnd&& other) = default;
-    RoleAnd& operator=(RoleAnd&& other) = default;
+    RoleAndImpl(const RoleAndImpl& other) = delete;
+    RoleAndImpl& operator=(const RoleAndImpl& other) = delete;
+    RoleAndImpl(RoleAndImpl&& other) = default;
+    RoleAndImpl& operator=(RoleAndImpl&& other) = default;
 
-    bool operator==(const RoleAnd& other) const;
-
-    const Constructor<Role>& get_role_left() const;
-    const Constructor<Role>& get_role_right() const;
+    size_t get_index() const;
+    Constructor<Role> get_role_left() const;
+    Constructor<Role> get_role_right() const;
 };
 
 }

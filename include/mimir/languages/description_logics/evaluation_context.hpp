@@ -39,7 +39,7 @@ private:
     std::reference_wrapper<DenotationRepository<Role>> m_role_denotation_repository;
 
     /* State Information */
-    size_t m_state_id;
+    size_t m_state_index;
     std::reference_wrapper<const GroundAtomList<Static>> m_static_state_atoms;
     std::reference_wrapper<const GroundAtomList<Fluent>> m_fluent_state_atoms;
     std::reference_wrapper<const GroundAtomList<Derived>> m_derived_state_atoms;
@@ -56,7 +56,7 @@ private:
 public:
     EvaluationContext(DenotationRepository<Concept>& concept_denotation_repository,
                       DenotationRepository<Role>& role_denotation_repository,
-                      size_t state_id,
+                      size_t state_index,
                       const GroundAtomList<Static>& static_state_atoms,
                       const GroundAtomList<Fluent>& fluent_state_atoms,
                       const GroundAtomList<Derived>& derived_state_atoms,
@@ -70,7 +70,7 @@ public:
      */
 
     /// @brief Set the state id used to identify the result for caching.
-    void set_state_id(size_t state_id);
+    void set_state_index(size_t state_index);
 
     /// @brief Set the state atoms.
     template<DynamicPredicateCategory P>
@@ -86,7 +86,7 @@ public:
     template<IsConceptOrRole D>
     DenotationRepository<D>& get_denotation_repository();
 
-    size_t get_state_id() const;
+    size_t get_state_index() const;
 
     template<PredicateCategory P>
     const GroundAtomList<P>& get_state_atoms() const;

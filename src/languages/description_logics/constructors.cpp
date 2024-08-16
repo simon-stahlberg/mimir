@@ -27,42 +27,18 @@ namespace mimir::dl
  */
 
 template<PredicateCategory P>
-ConceptPredicateState<P>::ConceptPredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::operator==(const ConceptPredicateState& other) const
+void ConceptPredicateStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-bool ConceptPredicateState<P>::is_equal_impl(const Constructor<Concept>& other) const
-{
-    if (!this->type_equal(other))
-    {
-        return false;
-    }
-    const auto& otherDerived = static_cast<const ConceptPredicateState<P>&>(other);
-    return (*this == otherDerived);
-}
-
-template<PredicateCategory P>
-size_t ConceptPredicateState<P>::hash_impl() const
-{
-    return HashCombiner()(m_predicate);
-}
-
-template<PredicateCategory P>
-void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
-{
+    // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_bitset();
     bitset.unset_all();
+
+    // Compute result
     for (const auto& atom : context.get_state_atoms<P>())
     {
         if (atom->get_predicate() == m_predicate)
@@ -73,9 +49,13 @@ void ConceptPredicateState<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<>
-void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) const
+void ConceptPredicateStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
 {
+    // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_bitset();
+    bitset.unset_all();
+
+    // Compute result
     for (const auto& atom : context.get_state_atoms<Static>())
     {
         if (atom->get_predicate() == m_predicate)
@@ -86,65 +66,38 @@ void ConceptPredicateState<Static>::evaluate_impl(EvaluationContext& context) co
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateState<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
+bool ConceptPredicateStateImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
-    return visitor.visit(*this);
+    return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateState<P>::get_id_impl() const
+size_t ConceptPredicateStateImpl<P>::get_index() const
 {
-    return m_id;
+    return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateState<P>::get_predicate() const
+Predicate<P> ConceptPredicateStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptPredicateState<Static>;
-template class ConceptPredicateState<Fluent>;
-template class ConceptPredicateState<Derived>;
+template class ConceptPredicateStateImpl<Static>;
+template class ConceptPredicateStateImpl<Fluent>;
+template class ConceptPredicateStateImpl<Derived>;
 
 /**
  * ConceptPredicateGoal
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoal<P>::ConceptPredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::operator==(const ConceptPredicateGoal& other) const
-{
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::is_equal_impl(const Constructor<Concept>& other) const
-{
-    if (!this->type_equal(other))
-    {
-        return false;
-    }
-    const auto& otherDerived = static_cast<const ConceptPredicateGoal<P>&>(other);
-    return (*this == otherDerived);
-}
-
-template<PredicateCategory P>
-size_t ConceptPredicateGoal<P>::hash_impl() const
-{
-    return HashCombiner()(m_predicate);
-}
-
-template<PredicateCategory P>
-void ConceptPredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
+void ConceptPredicateGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_bitset();
@@ -161,64 +114,43 @@ void ConceptPredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoal<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
+bool ConceptPredicateGoalImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
-    return visitor.visit(*this);
+    return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateGoal<P>::get_id_impl() const
+size_t ConceptPredicateGoalImpl<P>::get_index() const
 {
-    return m_id;
+    return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateGoal<P>::get_predicate() const
+Predicate<P> ConceptPredicateGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptPredicateGoal<Static>;
-template class ConceptPredicateGoal<Fluent>;
-template class ConceptPredicateGoal<Derived>;
+template class ConceptPredicateGoalImpl<Static>;
+template class ConceptPredicateGoalImpl<Fluent>;
+template class ConceptPredicateGoalImpl<Derived>;
 
 /**
  * ConceptAnd
  */
 
-ConceptAnd::ConceptAnd(size_t id, const Constructor<Concept>& concept_left, const Constructor<Concept>& concept_right) :
-    m_id(id),
+ConceptAndImpl::ConceptAndImpl(size_t index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+    m_index(index),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
 {
 }
 
-bool ConceptAnd::operator==(const ConceptAnd& other) const
-{
-    if (this != &other)
-    {
-        return (&m_concept_left == &other.m_concept_left) && (&m_concept_right == &other.m_concept_right);
-    }
-    return true;
-}
-
-bool ConceptAnd::is_equal_impl(const Constructor<Concept>& other) const
-{
-    if (!this->type_equal(other))
-    {
-        return false;
-    }
-    const auto& otherDerived = static_cast<const ConceptAnd&>(other);
-    return (*this == otherDerived);
-}
-
-size_t ConceptAnd::hash_impl() const { return HashCombiner()(&m_concept_left, &m_concept_right); }
-
-void ConceptAnd::evaluate_impl(EvaluationContext& context) const
+void ConceptAndImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_concept_left.get().evaluate(context);
-    const auto eval_right = m_concept_left.get().evaluate(context);
+    const auto eval_left = m_concept_left->evaluate(context);
+    const auto eval_right = m_concept_left->evaluate(context);
 
     // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_bitset();
@@ -229,55 +161,32 @@ void ConceptAnd::evaluate_impl(EvaluationContext& context) const
     bitset &= eval_right.get_bitset();
 }
 
-bool ConceptAnd::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(*this); }
+bool ConceptAndImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
-size_t ConceptAnd::get_id_impl() const { return m_id; }
+size_t ConceptAndImpl::get_index() const { return m_index; }
 
-const Constructor<Concept>& ConceptAnd::get_concept_left() const { return m_concept_left.get(); }
+Constructor<Concept> ConceptAndImpl::get_concept_left() const { return m_concept_left; }
 
-const Constructor<Concept>& ConceptAnd::get_concept_right() const { return m_concept_right.get(); }
+Constructor<Concept> ConceptAndImpl::get_concept_right() const { return m_concept_right; }
 
 /**
  * RolePredicateState
  */
 
 template<PredicateCategory P>
-RolePredicateState<P>::RolePredicateState(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+RolePredicateStateImpl<P>::RolePredicateStateImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::operator==(const RolePredicateState& other) const
-{
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-bool RolePredicateState<P>::is_equal_impl(const Constructor<Role>& other) const
-{
-    if (!this->type_equal(other))
-    {
-        return false;
-    }
-    const auto& otherDerived = static_cast<const RolePredicateState<P>&>(other);
-    return (*this == otherDerived);
-}
-
-template<PredicateCategory P>
-size_t RolePredicateState<P>::hash_impl() const
-{
-    return HashCombiner()(m_predicate);
-}
-
-template<PredicateCategory P>
-void RolePredicateState<P>::evaluate_impl(EvaluationContext& context) const
+void RolePredicateStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
 
     // Compute result
     for (const auto& atom : context.get_state_atoms<P>())
@@ -292,10 +201,14 @@ void RolePredicateState<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<>
-void RolePredicateState<Static>::evaluate_impl(EvaluationContext& context) const
+void RolePredicateStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_bitsets();
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
 
     // Compute result
     for (const auto& atom : context.get_state_atoms<Static>())
@@ -310,65 +223,38 @@ void RolePredicateState<Static>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateState<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
+bool RolePredicateStateImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
-    return visitor.visit(*this);
+    return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-size_t RolePredicateState<P>::get_id_impl() const
+size_t RolePredicateStateImpl<P>::get_index() const
 {
-    return m_id;
+    return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateState<P>::get_predicate() const
+Predicate<P> RolePredicateStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RolePredicateState<Static>;
-template class RolePredicateState<Fluent>;
-template class RolePredicateState<Derived>;
+template class RolePredicateStateImpl<Static>;
+template class RolePredicateStateImpl<Fluent>;
+template class RolePredicateStateImpl<Derived>;
 
 /**
  * RolePredicateGoal
  */
 
 template<PredicateCategory P>
-RolePredicateGoal<P>::RolePredicateGoal(size_t id, Predicate<P> predicate) : m_id(id), m_predicate(predicate)
+RolePredicateGoalImpl<P>::RolePredicateGoalImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::operator==(const RolePredicateGoal& other) const
-{
-    if (this != &other)
-    {
-        return (m_predicate == other.m_predicate);
-    }
-    return true;
-}
-
-template<PredicateCategory P>
-bool RolePredicateGoal<P>::is_equal_impl(const Constructor<Role>& other) const
-{
-    if (!this->type_equal(other))
-    {
-        return false;
-    }
-    const auto& otherDerived = static_cast<const RolePredicateGoal<P>&>(other);
-    return (*this == otherDerived);
-}
-
-template<PredicateCategory P>
-size_t RolePredicateGoal<P>::hash_impl() const
-{
-    return HashCombiner()(m_predicate);
-}
-
-template<PredicateCategory P>
-void RolePredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
+void RolePredicateGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_bitsets();
@@ -390,64 +276,43 @@ void RolePredicateGoal<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoal<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
+bool RolePredicateGoalImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
-    return visitor.visit(*this);
+    return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-size_t RolePredicateGoal<P>::get_id_impl() const
+size_t RolePredicateGoalImpl<P>::get_index() const
 {
-    return m_id;
+    return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateGoal<P>::get_predicate() const
+Predicate<P> RolePredicateGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RolePredicateGoal<Static>;
-template class RolePredicateGoal<Fluent>;
-template class RolePredicateGoal<Derived>;
+template class RolePredicateGoalImpl<Static>;
+template class RolePredicateGoalImpl<Fluent>;
+template class RolePredicateGoalImpl<Derived>;
 
 /**
  * RoleAnd
  */
 
-RoleAnd::RoleAnd(size_t id, const Constructor<Role>& role_left, const Constructor<Role>& role_right) :
-    m_id(id),
+RoleAndImpl::RoleAndImpl(size_t index, Constructor<Role> role_left, Constructor<Role> role_right) :
+    m_index(index),
     m_role_left(role_left),
     m_role_right(role_right)
 {
 }
 
-bool RoleAnd::operator==(const RoleAnd& other) const
-{
-    if (this != &other)
-    {
-        return (&m_role_left == &other.m_role_left) && (&m_role_right == &other.m_role_right);
-    }
-    return true;
-}
-
-bool RoleAnd::is_equal_impl(const Constructor<Role>& other) const
-{
-    if (!this->type_equal(other))
-    {
-        return false;
-    }
-    const auto& otherDerived = static_cast<const RoleAnd&>(other);
-    return (*this == otherDerived);
-}
-
-size_t RoleAnd::hash_impl() const { return HashCombiner()(&m_role_left, &m_role_right); }
-
-void RoleAnd::evaluate_impl(EvaluationContext& context) const
+void RoleAndImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
-    const auto eval_left = m_role_left.get().evaluate(context);
-    const auto eval_right = m_role_left.get().evaluate(context);
+    const auto eval_left = m_role_left->evaluate(context);
+    const auto eval_right = m_role_left->evaluate(context);
 
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_bitsets();
@@ -465,11 +330,11 @@ void RoleAnd::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-bool RoleAnd::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(*this); }
+bool RoleAndImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
-size_t RoleAnd::get_id_impl() const { return m_id; }
+size_t RoleAndImpl::get_index() const { return m_index; }
 
-const Constructor<Role>& RoleAnd::get_role_left() const { return m_role_left.get(); }
+Constructor<Role> RoleAndImpl::get_role_left() const { return m_role_left; }
 
-const Constructor<Role>& RoleAnd::get_role_right() const { return m_role_right.get(); }
+Constructor<Role> RoleAndImpl::get_role_right() const { return m_role_right; }
 }

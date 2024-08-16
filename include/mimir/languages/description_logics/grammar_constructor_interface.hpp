@@ -31,31 +31,23 @@ namespace mimir::dl::grammar
  */
 
 template<dl::IsConceptOrRole D>
-class Constructor
+class ConstructorImpl
 {
 protected:
-    bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
-
-    Constructor() = default;
+    ConstructorImpl() = default;
     // Move constructor and move assignment operator are protected
     // to restrict their usage to derived classes only.
-    Constructor(Constructor&& other) = default;
-    Constructor& operator=(Constructor&& other) = default;
+    ConstructorImpl(ConstructorImpl&& other) = default;
+    ConstructorImpl& operator=(ConstructorImpl&& other) = default;
 
 public:
     // Uncopieable
-    Constructor(const Constructor& other) = delete;
-    Constructor& operator=(const Constructor& other) = delete;
+    ConstructorImpl(const ConstructorImpl& other) = delete;
+    ConstructorImpl& operator=(const ConstructorImpl& other) = delete;
 
-    virtual ~Constructor() = default;
+    virtual ~ConstructorImpl() = default;
 
-    bool operator==(const Constructor& other) const { return is_equal(other); }
-
-    virtual bool is_equal(const Constructor& other) const = 0;
-
-    virtual bool test_match(const dl::Constructor<D>& constructor) const = 0;
-
-    virtual size_t get_id() const = 0;
+    virtual bool test_match(dl::Constructor<D> constructor) const = 0;
 };
 }
 

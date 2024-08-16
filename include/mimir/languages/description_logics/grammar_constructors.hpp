@@ -39,37 +39,36 @@ namespace mimir::dl::grammar
  */
 
 template<dl::IsConceptOrRole D>
-class NonTerminal
+class NonTerminalImpl
 {
 private:
-    size_t m_id;
+    size_t m_index;
     // Use name for equality and hash since rule is deferred instantiated.
     std::string m_name;
     // Mutable for deferred instantiation.
-    mutable std::optional<std::reference_wrapper<const DerivationRule<D>>> m_rule;
+    mutable std::optional<DerivationRule<D>> m_rule;
 
-    NonTerminal(size_t id, std::string name);
+    NonTerminalImpl(size_t index, std::string name);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    NonTerminal(const NonTerminal& other) = delete;
-    NonTerminal& operator=(const NonTerminal& other) = delete;
-    NonTerminal(NonTerminal&& other) = default;
-    NonTerminal& operator=(NonTerminal&& other) = default;
+    NonTerminalImpl(const NonTerminalImpl& other) = delete;
+    NonTerminalImpl& operator=(const NonTerminalImpl& other) = delete;
+    NonTerminalImpl(NonTerminalImpl&& other) = default;
+    NonTerminalImpl& operator=(NonTerminalImpl&& other) = default;
 
-    bool operator==(const NonTerminal& other) const;
+    bool test_match(dl::Constructor<D> constructor) const;
 
-    bool test_match(const dl::Constructor<D>& constructor) const;
-
-    size_t get_id() const;
+    size_t get_index() const;
     const std::string& get_name() const;
-    const DerivationRule<D>& get_rule() const;
+    DerivationRule<D> get_rule() const;
 
     // Deferred initialization for internal usage. Users should not use it.
-    void set_rule(const DerivationRule<D>& rule) const;
+    void set_rule(DerivationRule<D> rule) const;
 };
 
 /**
@@ -77,29 +76,28 @@ public:
  */
 
 template<dl::IsConceptOrRole D>
-class Choice
+class ChoiceImpl
 {
 private:
-    size_t m_id;
+    size_t m_index;
     ConstructorOrNonTerminalChoice<D> m_choice;
 
-    Choice(size_t id, ConstructorOrNonTerminalChoice<D> choice);
+    ChoiceImpl(size_t index, ConstructorOrNonTerminalChoice<D> choice);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    Choice(const Choice& other) = delete;
-    Choice& operator=(const Choice& other) = delete;
-    Choice(Choice&& other) = default;
-    Choice& operator=(Choice&& other) = default;
+    ChoiceImpl(const ChoiceImpl& other) = delete;
+    ChoiceImpl& operator=(const ChoiceImpl& other) = delete;
+    ChoiceImpl(ChoiceImpl&& other) = default;
+    ChoiceImpl& operator=(ChoiceImpl&& other) = default;
 
-    bool operator==(const Choice& other) const;
+    bool test_match(dl::Constructor<D> constructor) const;
 
-    bool test_match(const dl::Constructor<D>& constructor) const;
-
-    size_t get_id() const;
+    size_t get_index() const;
     const ConstructorOrNonTerminalChoice<D>& get_choice() const;
 };
 
@@ -108,29 +106,28 @@ public:
  */
 
 template<dl::IsConceptOrRole D>
-class DerivationRule
+class DerivationRuleImpl
 {
 protected:
-    size_t m_id;
+    size_t m_index;
     ChoiceList<D> m_choices;
 
-    DerivationRule(size_t id, ChoiceList<D> choices);
+    DerivationRuleImpl(size_t index, ChoiceList<D> choices);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    DerivationRule(const DerivationRule& other) = delete;
-    DerivationRule& operator=(const DerivationRule& other) = delete;
-    DerivationRule(DerivationRule&& other) = default;
-    DerivationRule& operator=(DerivationRule&& other) = default;
+    DerivationRuleImpl(const DerivationRuleImpl& other) = delete;
+    DerivationRuleImpl& operator=(const DerivationRuleImpl& other) = delete;
+    DerivationRuleImpl(DerivationRuleImpl&& other) = default;
+    DerivationRuleImpl& operator=(DerivationRuleImpl&& other) = default;
 
-    bool operator==(const DerivationRule& other) const;
+    bool test_match(dl::Constructor<D> constructor) const;
 
-    bool test_match(const dl::Constructor<D>& constructor) const;
-
-    size_t get_id() const;
+    size_t get_index() const;
     const ChoiceList<D>& get_choices() const;
 };
 
@@ -139,88 +136,82 @@ public:
  */
 
 template<PredicateCategory P>
-class ConceptPredicateState : public Constructor<Concept>
+class ConceptPredicateStateImpl : public ConstructorImpl<Concept>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateState(size_t id, Predicate<P> predicate);
+    ConceptPredicateStateImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    ConceptPredicateState(const ConceptPredicateState& other) = delete;
-    ConceptPredicateState& operator=(const ConceptPredicateState& other) = delete;
-    ConceptPredicateState(ConceptPredicateState&& other) = default;
-    ConceptPredicateState& operator=(ConceptPredicateState&& other) = default;
+    ConceptPredicateStateImpl(const ConceptPredicateStateImpl& other) = delete;
+    ConceptPredicateStateImpl& operator=(const ConceptPredicateStateImpl& other) = delete;
+    ConceptPredicateStateImpl(ConceptPredicateStateImpl&& other) = default;
+    ConceptPredicateStateImpl& operator=(ConceptPredicateStateImpl&& other) = default;
 
-    bool operator==(const ConceptPredicateState& other) const;
-    bool is_equal(const Constructor<Concept>& other) const override;
+    bool test_match(dl::Constructor<Concept> constructor) const override;
 
-    bool test_match(const dl::Constructor<Concept>& constructor) const override;
-
-    size_t get_id() const override;
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoal : public Constructor<Concept>
+class ConceptPredicateGoalImpl : public ConstructorImpl<Concept>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateGoal(size_t id, Predicate<P> predicate);
+    ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    ConceptPredicateGoal(const ConceptPredicateGoal& other) = delete;
-    ConceptPredicateGoal& operator=(const ConceptPredicateGoal& other) = delete;
-    ConceptPredicateGoal(ConceptPredicateGoal&& other) = default;
-    ConceptPredicateGoal& operator=(ConceptPredicateGoal&& other) = default;
+    ConceptPredicateGoalImpl(const ConceptPredicateGoalImpl& other) = delete;
+    ConceptPredicateGoalImpl& operator=(const ConceptPredicateGoalImpl& other) = delete;
+    ConceptPredicateGoalImpl(ConceptPredicateGoalImpl&& other) = default;
+    ConceptPredicateGoalImpl& operator=(ConceptPredicateGoalImpl&& other) = default;
 
-    bool operator==(const ConceptPredicateGoal& other) const;
-    bool is_equal(const Constructor<Concept>& other) const override;
+    bool test_match(dl::Constructor<Concept> constructor) const override;
 
-    bool test_match(const dl::Constructor<Concept>& constructor) const override;
-
-    size_t get_id() const override;
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
-class ConceptAnd : public Constructor<Concept>
+class ConceptAndImpl : public ConstructorImpl<Concept>
 {
 private:
-    size_t m_id;
-    std::reference_wrapper<const Choice<Concept>> m_concept_left;
-    std::reference_wrapper<const Choice<Concept>> m_concept_right;
+    size_t m_index;
+    Choice<Concept> m_concept_left;
+    Choice<Concept> m_concept_right;
 
-    ConceptAnd(size_t id, const Choice<Concept>& concept_left, const Choice<Concept>& concept_right);
+    ConceptAndImpl(size_t index, Choice<Concept> concept_left, Choice<Concept> concept_right);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    ConceptAnd(const ConceptAnd& other) = delete;
-    ConceptAnd& operator=(const ConceptAnd& other) = delete;
-    ConceptAnd(ConceptAnd&& other) = default;
-    ConceptAnd& operator=(ConceptAnd&& other) = default;
+    ConceptAndImpl(const ConceptAndImpl& other) = delete;
+    ConceptAndImpl& operator=(const ConceptAndImpl& other) = delete;
+    ConceptAndImpl(ConceptAndImpl&& other) = default;
+    ConceptAndImpl& operator=(ConceptAndImpl&& other) = default;
 
-    bool operator==(const ConceptAnd& other) const;
-    bool is_equal(const Constructor<Concept>& other) const override;
+    bool test_match(dl::Constructor<Concept> constructor) const override;
 
-    bool test_match(const dl::Constructor<Concept>& constructor) const override;
-
-    size_t get_id() const override;
-    const Choice<Concept>& get_concept_left() const;
-    const Choice<Concept>& get_concept_right() const;
+    size_t get_index() const;
+    Choice<Concept> get_concept_left() const;
+    Choice<Concept> get_concept_right() const;
 };
 
 /**
@@ -228,88 +219,82 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateState : public Constructor<Role>
+class RolePredicateStateImpl : public ConstructorImpl<Role>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateState(size_t id, Predicate<P> predicate);
+    RolePredicateStateImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    RolePredicateState(const RolePredicateState& other) = delete;
-    RolePredicateState& operator=(const RolePredicateState& other) = delete;
-    RolePredicateState(RolePredicateState&& other) = default;
-    RolePredicateState& operator=(RolePredicateState&& other) = default;
+    RolePredicateStateImpl(const RolePredicateStateImpl& other) = delete;
+    RolePredicateStateImpl& operator=(const RolePredicateStateImpl& other) = delete;
+    RolePredicateStateImpl(RolePredicateStateImpl&& other) = default;
+    RolePredicateStateImpl& operator=(RolePredicateStateImpl&& other) = default;
 
-    bool operator==(const RolePredicateState& other) const;
-    bool is_equal(const Constructor<Role>& other) const override;
+    bool test_match(dl::Constructor<Role> constructor) const override;
 
-    bool test_match(const dl::Constructor<Role>& constructor) const override;
-
-    size_t get_id() const override;
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class RolePredicateGoal : public Constructor<Role>
+class RolePredicateGoalImpl : public ConstructorImpl<Role>
 {
 private:
-    size_t m_id;
+    size_t m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateGoal(size_t id, Predicate<P> predicate);
+    RolePredicateGoalImpl(size_t index, Predicate<P> predicate);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    RolePredicateGoal(const RolePredicateGoal& other) = delete;
-    RolePredicateGoal& operator=(const RolePredicateGoal& other) = delete;
-    RolePredicateGoal(RolePredicateGoal&& other) = default;
-    RolePredicateGoal& operator=(RolePredicateGoal&& other) = default;
+    RolePredicateGoalImpl(const RolePredicateGoalImpl& other) = delete;
+    RolePredicateGoalImpl& operator=(const RolePredicateGoalImpl& other) = delete;
+    RolePredicateGoalImpl(RolePredicateGoalImpl&& other) = default;
+    RolePredicateGoalImpl& operator=(RolePredicateGoalImpl&& other) = default;
 
-    bool operator==(const RolePredicateGoal& other) const;
-    bool is_equal(const Constructor<Role>& other) const override;
+    bool test_match(dl::Constructor<Role> constructor) const override;
 
-    bool test_match(const dl::Constructor<Role>& constructor) const override;
-
-    size_t get_id() const override;
+    size_t get_index() const;
     Predicate<P> get_predicate() const;
 };
 
-class RoleAnd : public Constructor<Role>
+class RoleAndImpl : public ConstructorImpl<Role>
 {
 private:
-    size_t m_id;
-    std::reference_wrapper<const Choice<Role>> m_role_left;
-    std::reference_wrapper<const Choice<Role>> m_role_right;
+    size_t m_index;
+    Choice<Role> m_role_left;
+    Choice<Role> m_role_right;
 
-    RoleAnd(size_t id, const Choice<Role>& role_left, const Choice<Role>& role_right);
+    RoleAndImpl(size_t index, Choice<Role> role_left, Choice<Role> role_right);
 
-    template<typename T>
-    friend class dl::ConstructorRepository;
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
 
 public:
     // Users are not supposed to move these directly.
-    RoleAnd(const RoleAnd& other) = delete;
-    RoleAnd& operator=(const RoleAnd& other) = delete;
-    RoleAnd(RoleAnd&& other) = default;
-    RoleAnd& operator=(RoleAnd&& other) = default;
+    RoleAndImpl(const RoleAndImpl& other) = delete;
+    RoleAndImpl& operator=(const RoleAndImpl& other) = delete;
+    RoleAndImpl(RoleAndImpl&& other) = default;
+    RoleAndImpl& operator=(RoleAndImpl&& other) = default;
 
-    bool operator==(const RoleAnd& other) const;
-    bool is_equal(const Constructor<Role>& other) const override;
+    bool test_match(dl::Constructor<Role> constructor) const override;
 
-    bool test_match(const dl::Constructor<Role>& constructor) const override;
-
-    size_t get_id() const override;
-    const Choice<Role>& get_role_left() const;
-    const Choice<Role>& get_role_right() const;
+    size_t get_index() const;
+    Choice<Role> get_role_left() const;
+    Choice<Role> get_role_right() const;
 };
 
 }

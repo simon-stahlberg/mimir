@@ -22,25 +22,49 @@
 namespace mimir::dl::grammar
 {
 
+VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_factory()
+{
+    return VariadicGrammarConstructorFactory(NonTerminalFactory<Concept>(),
+                                             ChoiceFactory<Concept>(),
+                                             DerivationRuleFactory<Concept>(),
+                                             ConceptPredicateStateFactory<Static>(),
+                                             ConceptPredicateStateFactory<Fluent>(),
+                                             ConceptPredicateStateFactory<Derived>(),
+                                             ConceptPredicateGoalFactory<Static>(),
+                                             ConceptPredicateGoalFactory<Fluent>(),
+                                             ConceptPredicateGoalFactory<Derived>(),
+                                             ConceptAndFactory(),
+                                             NonTerminalFactory<Role>(),
+                                             ChoiceFactory<Role>(),
+                                             DerivationRuleFactory<Role>(),
+                                             RolePredicateStateFactory<Static>(),
+                                             RolePredicateStateFactory<Fluent>(),
+                                             RolePredicateStateFactory<Derived>(),
+                                             RolePredicateGoalFactory<Static>(),
+                                             RolePredicateGoalFactory<Fluent>(),
+                                             RolePredicateGoalFactory<Derived>(),
+                                             RoleAndFactory());
+}
+
 /**
  * Grammar
  */
 
-Grammar::Grammar(std::string bnf_description, Domain domain)
+Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos(create_default_variadic_grammar_constructor_factory())
 {
     const auto [concept_rules, role_rules] = parse(bnf_description, domain, m_grammar_constructor_repos);
     m_concept_rules = std::move(concept_rules);
     m_role_rules = std::move(role_rules);
 }
 
-bool Grammar::test_match(const dl::Constructor<Concept>& constructor) const
+bool Grammar::test_match(dl::Constructor<Concept> constructor) const
 {
-    return std::any_of(m_concept_rules.begin(), m_concept_rules.end(), [&constructor](const auto& rule) { return rule.get().test_match(constructor); });
+    return std::any_of(m_concept_rules.begin(), m_concept_rules.end(), [&constructor](const auto& rule) { return rule->test_match(constructor); });
 }
 
-bool Grammar::test_match(const dl::Constructor<Role>& constructor) const
+bool Grammar::test_match(dl::Constructor<Role> constructor) const
 {
-    return std::any_of(m_role_rules.begin(), m_role_rules.end(), [&constructor](const auto& rule) { return rule.get().test_match(constructor); });
+    return std::any_of(m_role_rules.begin(), m_role_rules.end(), [&constructor](const auto& rule) { return rule->test_match(constructor); });
 }
 
 const DerivationRuleList<Concept>& Grammar::get_concept_rules() const { return m_concept_rules; }

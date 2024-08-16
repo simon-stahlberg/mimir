@@ -21,7 +21,7 @@ namespace mimir::dl
 {
 EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_denotation_repository,
                                      DenotationRepository<Role>& role_denotation_repository,
-                                     size_t state_id,
+                                     size_t state_index,
                                      const GroundAtomList<Static>& static_state_atoms,
                                      const GroundAtomList<Fluent>& fluent_state_atoms,
                                      const GroundAtomList<Derived>& derived_state_atoms,
@@ -31,7 +31,7 @@ EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_deno
                                      size_t num_objects) :
     m_concept_denotation_repository(concept_denotation_repository),
     m_role_denotation_repository(role_denotation_repository),
-    m_state_id(state_id),
+    m_state_index(state_index),
     m_static_state_atoms(static_state_atoms),
     m_fluent_state_atoms(fluent_state_atoms),
     m_derived_state_atoms(derived_state_atoms),
@@ -43,7 +43,7 @@ EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_deno
 {
 }
 
-void EvaluationContext::set_state_id(size_t state_id) { m_state_id = state_id; }
+void EvaluationContext::set_state_index(size_t state_index) { m_state_index = state_index; }
 
 template<DynamicPredicateCategory P>
 void EvaluationContext::set_state_atoms(const GroundAtomList<P>& state_atoms)
@@ -105,7 +105,7 @@ DenotationRepository<D>& EvaluationContext::get_denotation_repository()
 template DenotationRepository<Concept>& EvaluationContext::get_denotation_repository<Concept>();
 template DenotationRepository<Role>& EvaluationContext::get_denotation_repository<Role>();
 
-size_t EvaluationContext::get_state_id() const { return m_state_id; }
+size_t EvaluationContext::get_state_index() const { return m_state_index; }
 
 template<PredicateCategory P>
 const GroundAtomList<P>& EvaluationContext::get_state_atoms() const

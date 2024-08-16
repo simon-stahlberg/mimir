@@ -27,7 +27,7 @@
 #include <utility>
 #include <variant>
 
-namespace mimir
+namespace mimir::dl
 {
 
 /// @brief `UniqueDLHasher` is used to compare newly created dl constructors for uniqueness.
@@ -68,7 +68,7 @@ struct UniqueDLHasher<ForwardRange>
         std::size_t aggregated_hash = 0;
         for (const auto& item : range)
         {
-            UniquePDDLHashCombiner()(aggregated_hash, item);
+            UniqueDLHashCombiner()(aggregated_hash, item);
         }
         return aggregated_hash;
     }
@@ -88,130 +88,113 @@ struct UniqueDLHasher<std::variant<Ts...>>
  * DL constructors
  */
 
-template<IsConceptOrRole D>
-struct UniqueDLHasher<const Constructor<D>*>
-{
-    size_t operator()(const Constructor<D>* e) const;
-};
-
 /* Concepts */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const ConceptPredicateState<P>&>
+struct UniqueDLHasher<const ConceptPredicateStateImpl<P>*>
 {
-    size_t operator()(const ConceptPredicateState<P>& e) const;
+    size_t operator()(const ConceptPredicateStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const ConceptPredicateGoal<P>&>
+struct UniqueDLHasher<const ConceptPredicateGoalImpl<P>*>
 {
-    size_t operator()(const ConceptPredicateGoal<P>& e) const;
+    size_t operator()(const ConceptPredicateGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const ConceptPredicateAnd&>
+struct UniqueDLHasher<const ConceptAndImpl*>
 {
-    size_t operator()(const ConceptPredicateAnd& e) const;
+    size_t operator()(const ConceptAndImpl* e) const;
 };
 
 /* Roles */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const RolePredicateState<P>&>
+struct UniqueDLHasher<const RolePredicateStateImpl<P>*>
 {
-    size_t operator()(const RolePredicateState<P>& e) const;
+    size_t operator()(const RolePredicateStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const RolePredicateGoal<P>&>
+struct UniqueDLHasher<const RolePredicateGoalImpl<P>*>
 {
-    size_t operator()(const RolePredicateGoal<P>& e) const;
+    size_t operator()(const RolePredicateGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const RolePredicateAnd&>
+struct UniqueDLHasher<const RoleAndImpl*>
 {
-    size_t operator()(const RolePredicateAnd& e) const;
+    size_t operator()(const RoleAndImpl* e) const;
 };
 
 /**
  * DL grammar constructors
  */
 
-namespace grammar
-{
-
 template<IsConceptOrRole D>
-struct UniqueDLHasher<const Constructor<D>*>
+struct UniqueDLHasher<const grammar::DerivationRuleImpl<D>*>
 {
-    size_t operator()(const Constructor<D>* e) const;
+    size_t operator()(const grammar::DerivationRuleImpl<D>* e) const;
 };
 
 template<IsConceptOrRole D>
-struct UniqueDLHasher<const DerivationRule<D>*>
+struct UniqueDLHasher<const grammar::NonTerminalImpl<D>*>
 {
-    size_t operator()(const DerivationRule<D>* e) const;
+    size_t operator()(const grammar::NonTerminalImpl<D>* e) const;
 };
 
 template<IsConceptOrRole D>
-struct UniqueDLHasher<const NonTerminal<D>*>
+struct UniqueDLHasher<const grammar::ConstructorOrNonTerminalChoice<D>*>
 {
-    size_t operator()(const NonTerminal<D>* e) const;
+    size_t operator()(const grammar::ConstructorOrNonTerminalChoice<D>* e) const;
 };
 
 template<IsConceptOrRole D>
-struct UniqueDLHasher<const ConstructorOrNonTerminalChoice<D>*>
+struct UniqueDLHasher<const grammar::ChoiceImpl<D>*>
 {
-    size_t operator()(const ConstructorOrNonTerminalChoice<D>* e) const;
-};
-
-template<IsConceptOrRole D>
-struct UniqueDLHasher<const Choice<D>*>
-{
-    size_t operator()(const Choice<D>* e) const;
+    size_t operator()(const grammar::ChoiceImpl<D>* e) const;
 };
 
 /* Concepts */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const ConceptPredicateState<P>&>
+struct UniqueDLHasher<const grammar::ConceptPredicateStateImpl<P>*>
 {
-    size_t operator()(const ConceptPredicateState<P>& e) const;
+    size_t operator()(const grammar::ConceptPredicateStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const ConceptPredicateGoal<P>&>
+struct UniqueDLHasher<const grammar::ConceptPredicateGoalImpl<P>*>
 {
-    size_t operator()(const ConceptPredicateGoal<P>& e) const;
+    size_t operator()(const grammar::ConceptPredicateGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const ConceptPredicateAnd&>
+struct UniqueDLHasher<const grammar::ConceptAndImpl*>
 {
-    size_t operator()(const ConceptPredicateAnd& e) const;
+    size_t operator()(const grammar::ConceptAndImpl* e) const;
 };
 
 /* Roles */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const RolePredicateState<P>&>
+struct UniqueDLHasher<const grammar::RolePredicateStateImpl<P>*>
 {
-    size_t operator()(const RolePredicateState<P>& e) const;
+    size_t operator()(const grammar::RolePredicateStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const RolePredicateGoal<P>&>
+struct UniqueDLHasher<const grammar::RolePredicateGoalImpl<P>*>
 {
-    size_t operator()(const RolePredicateGoal<P>& e) const;
+    size_t operator()(const grammar::RolePredicateGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const RolePredicateAnd&>
+struct UniqueDLHasher<const grammar::RoleAndImpl*>
 {
-    size_t operator()(const RolePredicateAnd& e) const;
+    size_t operator()(const grammar::RoleAndImpl* e) const;
 };
-
-}
 
 }
 

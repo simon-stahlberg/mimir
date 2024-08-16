@@ -39,39 +39,49 @@ namespace mimir::dl::grammar
  */
 
 template<IsConceptOrRole D>
-using NonTerminalFactory = loki::UniqueFactory<NonTerminal<D>, UniquePDDLHasher<const NonTerminal<D>*>, UniquePDDLEqualTo<const NonTerminal<D>*>>;
+using NonTerminalFactory = loki::UniqueFactory<NonTerminalImpl<D>, UniqueDLHasher<const NonTerminalImpl<D>*>, UniqueDLEqualTo<const NonTerminalImpl<D>*>>;
 template<IsConceptOrRole D>
-using ChoiceFactory = loki::UniqueFactory<Choice<D>, UniquePDDLHasher<const Choice<D>*>, UniquePDDLEqualTo<const Choice<D>*>>;
+using ChoiceFactory = loki::UniqueFactory<ChoiceImpl<D>, UniqueDLHasher<const ChoiceImpl<D>*>, UniqueDLEqualTo<const ChoiceImpl<D>*>>;
 template<IsConceptOrRole D>
-using DerivationRuleFactory = loki::UniqueFactory<DerivationRule<D>, UniquePDDLHasher<const DerivationRule<D>*>, UniquePDDLEqualTo<const DerivationRule<D>*>>;
+using DerivationRuleFactory =
+    loki::UniqueFactory<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
+template<PredicateCategory P>
+using ConceptPredicateStateFactory = loki::
+    UniqueFactory<ConceptPredicateStateImpl<P>, UniqueDLHasher<const ConceptPredicateStateImpl<P>*>, UniqueDLEqualTo<const ConceptPredicateStateImpl<P>*>>;
+template<PredicateCategory P>
+using ConceptPredicateGoalFactory =
+    loki::UniqueFactory<ConceptPredicateGoalImpl<P>, UniqueDLHasher<const ConceptPredicateGoalImpl<P>*>, UniqueDLEqualTo<const ConceptPredicateGoalImpl<P>*>>;
+using ConceptAndFactory = loki::UniqueFactory<ConceptAndImpl, UniqueDLHasher<const ConceptAndImpl*>, UniqueDLEqualTo<const ConceptAndImpl*>>;
+template<PredicateCategory P>
+using RolePredicateStateFactory =
+    loki::UniqueFactory<RolePredicateStateImpl<P>, UniqueDLHasher<const RolePredicateStateImpl<P>*>, UniqueDLEqualTo<const RolePredicateStateImpl<P>*>>;
+template<PredicateCategory P>
+using RolePredicateGoalFactory =
+    loki::UniqueFactory<RolePredicateGoalImpl<P>, UniqueDLHasher<const RolePredicateGoalImpl<P>*>, UniqueDLEqualTo<const RolePredicateGoalImpl<P>*>>;
+using RoleAndFactory = loki::UniqueFactory<RoleAndImpl, UniqueDLHasher<const RoleAndImpl*>, UniqueDLEqualTo<const RoleAndImpl*>>;
 
 using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFactory<Concept>,  //
                                                                   ChoiceFactory<Concept>,
                                                                   DerivationRuleFactory<Concept>,
+                                                                  ConceptPredicateStateFactory<Static>,
+                                                                  ConceptPredicateStateFactory<Fluent>,
+                                                                  ConceptPredicateStateFactory<Derived>,
+                                                                  ConceptPredicateGoalFactory<Static>,
+                                                                  ConceptPredicateGoalFactory<Fluent>,
+                                                                  ConceptPredicateGoalFactory<Derived>,
+                                                                  ConceptAndFactory,
                                                                   NonTerminalFactory<Role>,
                                                                   ChoiceFactory<Role>,
-                                                                  DerivationRuleFactory<Role>>;
+                                                                  DerivationRuleFactory<Role>,
+                                                                  RolePredicateStateFactory<Static>,
+                                                                  RolePredicateStateFactory<Fluent>,
+                                                                  RolePredicateStateFactory<Derived>,
+                                                                  RolePredicateGoalFactory<Static>,
+                                                                  RolePredicateGoalFactory<Fluent>,
+                                                                  RolePredicateGoalFactory<Derived>,
+                                                                  RoleAndFactory>;
 
-// using GrammarConstructorRepositories = VariadicConstructorRepository<NonTerminal<Concept>,
-//                                                                      Choice<Concept>,
-//                                                                      DerivationRule<Concept>,
-//                                                                      ConceptPredicateState<Static>,
-//                                                                      ConceptPredicateState<Fluent>,
-//                                                                      ConceptPredicateState<Derived>,
-//                                                                      ConceptPredicateGoal<Static>,
-//                                                                      ConceptPredicateGoal<Fluent>,
-//                                                                      ConceptPredicateGoal<Derived>,
-//                                                                      ConceptAnd,
-//                                                                      NonTerminal<Role>,
-//                                                                      Choice<Role>,
-//                                                                      DerivationRule<Role>,
-//                                                                      RolePredicateState<Static>,
-//                                                                      RolePredicateState<Fluent>,
-//                                                                      RolePredicateState<Derived>,
-//                                                                      RolePredicateGoal<Static>,
-//                                                                      RolePredicateGoal<Fluent>,
-//                                                                      RolePredicateGoal<Derived>,
-//                                                                      RoleAnd>;
+extern VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_factory();
 
 class Grammar
 {
@@ -90,12 +100,12 @@ public:
     /// @brief Tests whether a dl concept constructor satisfies the grammar specification.
     /// @param constructor is the dl concept constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(const dl::Constructor<Concept>& constructor) const;
+    bool test_match(dl::Constructor<Concept> constructor) const;
 
     /// @brief Tests whether a dl role constructor satisfies the grammar specfication.
     /// @param constructor is the dl role constructor to test.
     /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(const dl::Constructor<Role>& constructor) const;
+    bool test_match(dl::Constructor<Role> constructor) const;
 
     /**
      * Getters

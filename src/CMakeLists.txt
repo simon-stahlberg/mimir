@@ -1,5 +1,5 @@
 # List of subdirectory names
-set(SUBDIRECTORIES "algorithms" "common" "datasets" "formalism" "graphs" "search")
+set(SUBDIRECTORIES "algorithms" "common" "datasets" "formalism" "graphs" "search" "languages")
 
 # Initialize empty lists for source and header files
 set(MIMIR_SRC_FILES "")

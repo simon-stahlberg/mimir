@@ -31,25 +31,20 @@ namespace mimir::dl
 {
 
 template<IsConceptOrRole D>
-class Constructor
+class ConstructorImpl
 {
 protected:
-    bool type_equal(const Constructor& other) const { return typeid(*this) == typeid(other); }
-
-    Constructor() = default;
+    ConstructorImpl() = default;
     // Move constructor and move assignment operator are protected
     // to restrict their usage to derived classes only.
-    Constructor(Constructor&& other) = default;
-    Constructor& operator=(Constructor&& other) = default;
+    ConstructorImpl(ConstructorImpl&& other) = default;
+    ConstructorImpl& operator=(ConstructorImpl&& other) = default;
 
 public:
     // Uncopieable
-    Constructor(const Constructor& other) = delete;
-    Constructor& operator=(const Constructor& other) = delete;
-    virtual ~Constructor() = default;
-
-    bool operator==(const Constructor& other) const { return is_equal(other); }
-    virtual bool is_equal(const Constructor& other) const = 0;
+    ConstructorImpl(const ConstructorImpl& other) = delete;
+    ConstructorImpl& operator=(const ConstructorImpl& other) = delete;
+    virtual ~ConstructorImpl() = default;
 
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;
@@ -57,8 +52,6 @@ public:
     /// @brief Return true iff the symbols match the data in the dl constructor.
     /// Uses double dispatch.
     virtual bool accept(const grammar::Visitor<D>& visitor) const = 0;
-
-    virtual size_t get_id() const = 0;
 };
 
 }

@@ -37,23 +37,35 @@ class EvaluationContext;
 
 /* Constructor */
 template<IsConceptOrRole D>
-class Constructor;
+class ConstructorImpl;
 template<IsConceptOrRole D>
-using ConstructorList = std::vector<std::reference_wrapper<const Constructor<D>>>;
+using Constructor = const ConstructorImpl<D>*;
+template<IsConceptOrRole D>
+using ConstructorList = std::vector<Constructor<D>>;
 
 /* Concrete concepts */
 template<PredicateCategory P>
-class ConceptPredicateState;
+class ConceptPredicateStateImpl;
 template<PredicateCategory P>
-class ConceptPredicateGoal;
-class ConceptAnd;
+using ConceptPredicateState = const ConceptPredicateStateImpl<P>*;
+template<PredicateCategory P>
+class ConceptPredicateGoalImpl;
+template<PredicateCategory P>
+using ConceptPredicateGoal = const ConceptPredicateGoalImpl<P>*;
+class ConceptAndImpl;
+using ConceptAnd = const ConceptAndImpl*;
 
 /* Concrete roles */
 template<PredicateCategory P>
-class RolePredicateState;
+class RolePredicateStateImpl;
 template<PredicateCategory P>
-class RolePredicateGoal;
-class RoleAnd;
+using RolePredicateState = const RolePredicateStateImpl<P>*;
+template<PredicateCategory P>
+class RolePredicateGoalImpl;
+template<PredicateCategory P>
+using RolePredicateGoal = const RolePredicateGoalImpl<P>*;
+class RoleAndImpl;
+using RoleAnd = const RoleAndImpl*;
 
 namespace grammar
 {
@@ -63,41 +75,59 @@ namespace grammar
 
 /* Constructor */
 template<dl::IsConceptOrRole D>
-class Constructor;
+class ConstructorImpl;
+template<dl::IsConceptOrRole D>
+using Constructor = const ConstructorImpl<D>*;
 
 /* DerivationRule */
 template<dl::IsConceptOrRole D>
-class DerivationRule;
+class DerivationRuleImpl;
+template<dl::IsConceptOrRole D>
+using DerivationRule = const DerivationRuleImpl<D>*;
 template<IsConceptOrRole D>
-using DerivationRuleList = std::vector<std::reference_wrapper<const DerivationRule<D>>>;
+using DerivationRuleList = std::vector<DerivationRule<D>>;
 
 /* NonTerminal */
 template<dl::IsConceptOrRole D>
-class NonTerminal;
+class NonTerminalImpl;
+template<dl::IsConceptOrRole D>
+using NonTerminal = const NonTerminalImpl<D>*;
 
 /* ConstructorOrNonTerminalChoice */
 template<IsConceptOrRole D>
-using ConstructorOrNonTerminalChoice = std::variant<std::reference_wrapper<const Constructor<D>>, std::reference_wrapper<const NonTerminal<D>>>;
+using ConstructorOrNonTerminalChoice = std::variant<Constructor<D>, NonTerminal<D>>;
 
 /* Choice */
 template<dl::IsConceptOrRole D>
-class Choice;
+class ChoiceImpl;
 template<dl::IsConceptOrRole D>
-using ChoiceList = std::vector<std::reference_wrapper<const Choice<D>>>;
+using Choice = const ChoiceImpl<D>*;
+template<dl::IsConceptOrRole D>
+using ChoiceList = std::vector<Choice<D>>;
 
 /* Concrete concepts */
 template<PredicateCategory P>
-class ConceptPredicateState;
+class ConceptPredicateStateImpl;
 template<PredicateCategory P>
-class ConceptPredicateGoal;
-class ConceptAnd;
+using ConceptPredicateState = const ConceptPredicateStateImpl<P>*;
+template<PredicateCategory P>
+class ConceptPredicateGoalImpl;
+template<PredicateCategory P>
+using ConceptPredicateGoal = const ConceptPredicateGoalImpl<P>*;
+class ConceptAndImpl;
+using ConceptAnd = const ConceptAndImpl*;
 
 /* Concrete roles */
 template<PredicateCategory P>
-class RolePredicateState;
+class RolePredicateStateImpl;
 template<PredicateCategory P>
-class RolePredicateGoal;
-class RoleAnd;
+using RolePredicateState = const RolePredicateStateImpl<P>*;
+template<PredicateCategory P>
+class RolePredicateGoalImpl;
+template<PredicateCategory P>
+using RolePredicateGoal = const RolePredicateGoalImpl<P>*;
+class RoleAndImpl;
+using RoleAnd = const RoleAndImpl*;
 
 /**
  * Visitors

@@ -18,31 +18,47 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
 namespace mimir::dl
 {
-using ConstructorRepositories = VariadicConstructorRepository<ConceptPredicateState<Static>,
-                                                              ConceptPredicateState<Fluent>,
-                                                              ConceptPredicateState<Derived>,
-                                                              ConceptPredicateGoal<Static>,
-                                                              ConceptPredicateGoal<Fluent>,
-                                                              ConceptPredicateGoal<Derived>,
-                                                              ConceptAnd,
-                                                              RolePredicateState<Static>,
-                                                              RolePredicateState<Fluent>,
-                                                              RolePredicateState<Derived>,
-                                                              RolePredicateGoal<Static>,
-                                                              RolePredicateGoal<Fluent>,
-                                                              RolePredicateGoal<Derived>,
-                                                              RoleAnd>;
+template<PredicateCategory P>
+using ConceptPredicateStateFactory = loki::
+    UniqueFactory<ConceptPredicateStateImpl<P>, UniqueDLHasher<const ConceptPredicateStateImpl<P>*>, UniqueDLEqualTo<const ConceptPredicateStateImpl<P>*>>;
+template<PredicateCategory P>
+using ConceptPredicateGoalFactory =
+    loki::UniqueFactory<ConceptPredicateGoalImpl<P>, UniqueDLHasher<const ConceptPredicateGoalImpl<P>*>, UniqueDLEqualTo<const ConceptPredicateGoalImpl<P>*>>;
+using ConceptAndFactory = loki::UniqueFactory<ConceptAndImpl, UniqueDLHasher<const ConceptAndImpl*>, UniqueDLEqualTo<const ConceptAndImpl*>>;
+template<PredicateCategory P>
+using RolePredicateStateFactory =
+    loki::UniqueFactory<RolePredicateStateImpl<P>, UniqueDLHasher<const RolePredicateStateImpl<P>*>, UniqueDLEqualTo<const RolePredicateStateImpl<P>*>>;
+template<PredicateCategory P>
+using RolePredicateGoalFactory =
+    loki::UniqueFactory<RolePredicateGoalImpl<P>, UniqueDLHasher<const RolePredicateGoalImpl<P>*>, UniqueDLEqualTo<const RolePredicateGoalImpl<P>*>>;
+using RoleAndFactory = loki::UniqueFactory<RoleAndImpl, UniqueDLHasher<const RoleAndImpl*>, UniqueDLEqualTo<const RoleAndImpl*>>;
+
+using VariadicConstructorFactory = loki::VariadicContainer<ConceptPredicateStateFactory<Static>,
+                                                           ConceptPredicateStateFactory<Fluent>,
+                                                           ConceptPredicateStateFactory<Derived>,
+                                                           ConceptPredicateGoalFactory<Static>,
+                                                           ConceptPredicateGoalFactory<Fluent>,
+                                                           ConceptPredicateGoalFactory<Derived>,
+                                                           ConceptAndFactory,
+                                                           RolePredicateStateFactory<Static>,
+                                                           RolePredicateStateFactory<Fluent>,
+                                                           RolePredicateStateFactory<Derived>,
+                                                           RolePredicateGoalFactory<Static>,
+                                                           RolePredicateGoalFactory<Fluent>,
+                                                           RolePredicateGoalFactory<Derived>,
+                                                           RoleAndFactory>;
+
+extern VariadicConstructorFactory create_default_variadic_constructor_factory();
 
 class Generator
 {
 private:
     /* Memory */
-    ConstructorRepositories m_constructor_repos;
+    VariadicConstructorFactory m_constructor_repos;
 
     /* Grammar specification */
     grammar::Grammar m_grammar;

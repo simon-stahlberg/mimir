@@ -23,7 +23,7 @@
 #include <functional>
 #include <variant>
 
-namespace mimir
+namespace mimir::dl
 {
 
 /// @brief `UniqueDLEqualTo` is used to compare newly created dl constructors for uniqueness.
@@ -66,129 +66,113 @@ struct UniqueDLEqualTo<std::variant<Ts...>>
  * DL constructors
  */
 
-template<IsConceptOrRole D>
-struct UniqueDLEqualTo<const Constructor<D>*>
-{
-    bool operator()(const Constructor<D>* l, const Constructor<D>* r) const;
-};
-
 /* Concepts */
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const ConceptPredicateState<P>&>
+struct UniqueDLEqualTo<const ConceptPredicateStateImpl<P>*>
 {
-    bool operator()(const ConceptPredicateState<P>& l, const ConceptPredicateState<P>& r) const;
+    bool operator()(const ConceptPredicateStateImpl<P>* l, const ConceptPredicateStateImpl<P>* r) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const ConceptPredicateGoal<P>&>
+struct UniqueDLEqualTo<const ConceptPredicateGoalImpl<P>*>
 {
-    bool operator()(const ConceptPredicateGoal<P>& l, const ConceptPredicateGoal<P>& r) const;
+    bool operator()(const ConceptPredicateGoalImpl<P>* l, const ConceptPredicateGoalImpl<P>* r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptPredicateAnd&>
+struct UniqueDLEqualTo<const ConceptAndImpl*>
 {
-    bool operator()(const ConceptPredicateAnd& l, const ConceptPredicateAnd& r) const;
+    bool operator()(const ConceptAndImpl* l, const ConceptAndImpl* r) const;
 };
 
 /* Roles */
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const RolePredicateState<P>&>
+struct UniqueDLEqualTo<const RolePredicateStateImpl<P>*>
 {
-    bool operator()(const RolePredicateState<P>& l, const RolePredicateState<P>& r) const;
+    bool operator()(const RolePredicateStateImpl<P>* l, const RolePredicateStateImpl<P>* r) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const RolePredicateGoal<P>&>
+struct UniqueDLEqualTo<const RolePredicateGoalImpl<P>*>
 {
-    bool operator()(const RolePredicateGoal<P>& l, const RolePredicateGoal<P>& r) const;
+    bool operator()(const RolePredicateGoalImpl<P>* l, const RolePredicateGoalImpl<P>* r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RolePredicateAnd&>
+struct UniqueDLEqualTo<const RoleAndImpl*>
 {
-    bool operator()(const RolePredicateAnd& l, const RolePredicateAnd& r) const;
+    bool operator()(const RoleAndImpl* l, const RoleAndImpl* r) const;
 };
 
 /**
  * DL grammar constructors
  */
 
-namespace grammar
-{
-
 template<IsConceptOrRole D>
-struct UniqueDLEqualTo<const Constructor<D>*>
+struct UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>
 {
-    bool operator()(const Constructor<D>* l, const Constructor<D>* r) const;
+    bool operator()(const grammar::DerivationRuleImpl<D>* l, const grammar::DerivationRuleImpl<D>* r) const;
 };
 
 template<IsConceptOrRole D>
-struct UniqueDLEqualTo<const DerivationRule<D>*>
+struct UniqueDLEqualTo<const grammar::NonTerminalImpl<D>*>
 {
-    bool operator()(const DerivationRule<D>* l, const DerivationRule<D>* r) const;
+    bool operator()(const grammar::NonTerminalImpl<D>* l, const grammar::NonTerminalImpl<D>* r) const;
 };
 
 template<IsConceptOrRole D>
-struct UniqueDLEqualTo<const NonTerminal<D>*>
+struct UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalChoice<D>*>
 {
-    bool operator()(const NonTerminal<D>* l, const NonTerminal<D>* r) const;
+    bool operator()(const grammar::ConstructorOrNonTerminalChoice<D>* l, const grammar::ConstructorOrNonTerminalChoice<D>* r) const;
 };
 
 template<IsConceptOrRole D>
-struct UniqueDLEqualTo<const ConstructorOrNonTerminalChoice<D>*>
+struct UniqueDLEqualTo<const grammar::ChoiceImpl<D>*>
 {
-    bool operator()(const ConstructorOrNonTerminalChoice<D>* l, const ConstructorOrNonTerminalChoice<D>* r) const;
-};
-
-template<IsConceptOrRole D>
-struct UniqueDLEqualTo<const Choice<D>*>
-{
-    bool operator()(const Choice<D>* l, const Choice<D>* r) const;
+    bool operator()(const grammar::ChoiceImpl<D>* l, const grammar::ChoiceImpl<D>* r) const;
 };
 
 /* Concepts */
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const ConceptPredicateState<P>&>
+struct UniqueDLEqualTo<const grammar::ConceptPredicateStateImpl<P>*>
 {
-    bool operator()(const ConceptPredicateState<P>& l, const ConceptPredicateState<P>& r) const;
+    bool operator()(const grammar::ConceptPredicateStateImpl<P>* l, const grammar::ConceptPredicateStateImpl<P>* r) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const ConceptPredicateGoal<P>&>
+struct UniqueDLEqualTo<const grammar::ConceptPredicateGoalImpl<P>*>
 {
-    bool operator()(const ConceptPredicateGoal<P>& l, const ConceptPredicateGoal<P>& r) const;
+    bool operator()(const grammar::ConceptPredicateGoalImpl<P>* l, const grammar::ConceptPredicateGoalImpl<P>* r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptPredicateAnd&>
+struct UniqueDLEqualTo<const grammar::ConceptAndImpl*>
 {
-    bool operator()(const ConceptPredicateAnd& l, const ConceptPredicateAnd& r) const;
+    bool operator()(const grammar::ConceptAndImpl* l, const grammar::ConceptAndImpl* r) const;
 };
 
 /* Roles */
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const RolePredicateState<P>&>
+struct UniqueDLEqualTo<const grammar::RolePredicateStateImpl<P>*>
 {
-    bool operator()(const RolePredicateState<P>& l, const RolePredicateState<P>& r) const;
+    bool operator()(const grammar::RolePredicateStateImpl<P>* l, const grammar::RolePredicateStateImpl<P>* r) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLEqualTo<const RolePredicateGoal<P>&>
+struct UniqueDLEqualTo<const grammar::RolePredicateGoalImpl<P>*>
 {
-    bool operator()(const RolePredicateGoal<P>& l, const RolePredicateGoal<P>& r) const;
+    bool operator()(const grammar::RolePredicateGoalImpl<P>* l, const grammar::RolePredicateGoalImpl<P>* r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RolePredicateAnd&>
+struct UniqueDLEqualTo<const grammar::RoleAndImpl*>
 {
-    bool operator()(const RolePredicateAnd& l, const RolePredicateAnd& r) const;
+    bool operator()(const grammar::RoleAndImpl* l, const grammar::RoleAndImpl* r) const;
 };
-}
 
 }
 

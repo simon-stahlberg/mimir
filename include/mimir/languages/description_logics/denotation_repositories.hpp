@@ -42,8 +42,8 @@ private:
 
     struct Key
     {
-        size_t constructor_identifier;
-        size_t state_identifier;
+        Constructor<D> constructor;
+        size_t state_index;
     };
 
     struct KeyHash
@@ -59,9 +59,9 @@ private:
     std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(size_t constructor_identifier, size_t state_identifier, const DenotationBuilder<D>& denotation);
+    Denotation<D> insert(Constructor<D> constructor, size_t state_index, const DenotationBuilder<D>& denotation);
 
-    std::optional<Denotation<D>> get_if(size_t constructor_identifier, size_t state_identifier) const;
+    std::optional<Denotation<D>> get_if(Constructor<D> constructor, size_t state_index) const;
 };
 
 }

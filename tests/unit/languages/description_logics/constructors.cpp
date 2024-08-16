@@ -76,7 +76,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsConstructorConceptPredicateStateTest)
         VariableList { pddl_factories->get_or_create_variable("arg0", 0), pddl_factories->get_or_create_variable("arg1", 0) });
 
     // TODO: Create a concept predicate state
-    auto constructor_repositories = dl::ConstructorRepositories();
+    auto constructor_repositories = dl::create_default_variadic_constructor_factory();
 
     // TODO: Evaluate it!
 }
