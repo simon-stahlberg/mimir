@@ -22,14 +22,7 @@
 
 namespace mimir
 {
-/*
-   TODO: Flattening VariableImpl using a simple struct with the following fields
-   1) Flat indices
-   - uint64_t m_identifier; (8 byte)
-   - uint64_t m_parameter_index; (8 byte)
-   2) Data views
-   - ConstView<String> m_name; (8 byte)
-*/
+
 class VariableImpl
 {
 private:
@@ -46,6 +39,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    VariableImpl(const VariableImpl& other) = delete;
+    VariableImpl& operator=(const VariableImpl& other) = delete;
+    VariableImpl(VariableImpl&& other) = default;
+    VariableImpl& operator=(VariableImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

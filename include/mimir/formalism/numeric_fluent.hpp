@@ -40,6 +40,12 @@ private:
 public:
     std::string str() const;
 
+    // moveable but not copyable
+    NumericFluentImpl(const NumericFluentImpl& other) = delete;
+    NumericFluentImpl& operator=(const NumericFluentImpl& other) = delete;
+    NumericFluentImpl(NumericFluentImpl&& other) = default;
+    NumericFluentImpl& operator=(NumericFluentImpl&& other) = default;
+
     size_t get_index() const;
     const GroundFunction& get_function() const;
     double get_number() const;

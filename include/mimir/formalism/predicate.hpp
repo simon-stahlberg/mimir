@@ -23,15 +23,6 @@
 namespace mimir
 {
 
-/*
-   TODO: Flattening PredicateImpl using a tuple with the following fields
-   1) Flat indices
-   - uint64_t m_identifier; (8 byte)
-   - Vector<uint64_t> m_variable_ids; (variable sized)
-   2) Data views
-   - ConstView<String> m_name; (8 byte)
-   - ConstView<Vector<Variable>> m_variables (8 byte)
-*/
 template<PredicateCategory P>
 class PredicateImpl
 {
@@ -50,6 +41,12 @@ private:
 
 public:
     using Category = P;
+
+    // moveable but not copyable
+    PredicateImpl(const PredicateImpl& other) = delete;
+    PredicateImpl& operator=(const PredicateImpl& other) = delete;
+    PredicateImpl(PredicateImpl&& other) = default;
+    PredicateImpl& operator=(PredicateImpl&& other) = default;
 
     std::string str() const;
 

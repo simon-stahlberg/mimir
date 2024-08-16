@@ -39,6 +39,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    GroundFunctionExpressionNumberImpl(const GroundFunctionExpressionNumberImpl& other) = delete;
+    GroundFunctionExpressionNumberImpl& operator=(const GroundFunctionExpressionNumberImpl& other) = delete;
+    GroundFunctionExpressionNumberImpl(GroundFunctionExpressionNumberImpl&& other) = default;
+    GroundFunctionExpressionNumberImpl& operator=(GroundFunctionExpressionNumberImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -66,6 +72,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    GroundFunctionExpressionBinaryOperatorImpl(const GroundFunctionExpressionBinaryOperatorImpl& other) = delete;
+    GroundFunctionExpressionBinaryOperatorImpl& operator=(const GroundFunctionExpressionBinaryOperatorImpl& other) = delete;
+    GroundFunctionExpressionBinaryOperatorImpl(GroundFunctionExpressionBinaryOperatorImpl&& other) = default;
+    GroundFunctionExpressionBinaryOperatorImpl& operator=(GroundFunctionExpressionBinaryOperatorImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -91,6 +103,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    GroundFunctionExpressionMultiOperatorImpl(const GroundFunctionExpressionMultiOperatorImpl& other) = delete;
+    GroundFunctionExpressionMultiOperatorImpl& operator=(const GroundFunctionExpressionMultiOperatorImpl& other) = delete;
+    GroundFunctionExpressionMultiOperatorImpl(GroundFunctionExpressionMultiOperatorImpl&& other) = default;
+    GroundFunctionExpressionMultiOperatorImpl& operator=(GroundFunctionExpressionMultiOperatorImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -114,6 +132,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    GroundFunctionExpressionMinusImpl(const GroundFunctionExpressionMinusImpl& other) = delete;
+    GroundFunctionExpressionMinusImpl& operator=(const GroundFunctionExpressionMinusImpl& other) = delete;
+    GroundFunctionExpressionMinusImpl(GroundFunctionExpressionMinusImpl&& other) = default;
+    GroundFunctionExpressionMinusImpl& operator=(GroundFunctionExpressionMinusImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -136,6 +160,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    GroundFunctionExpressionFunctionImpl(const GroundFunctionExpressionFunctionImpl& other) = delete;
+    GroundFunctionExpressionFunctionImpl& operator=(const GroundFunctionExpressionFunctionImpl& other) = delete;
+    GroundFunctionExpressionFunctionImpl(GroundFunctionExpressionFunctionImpl&& other) = default;
+    GroundFunctionExpressionFunctionImpl& operator=(GroundFunctionExpressionFunctionImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

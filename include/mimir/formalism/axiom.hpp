@@ -44,6 +44,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    AxiomImpl(const AxiomImpl& other) = delete;
+    AxiomImpl& operator=(const AxiomImpl& other) = delete;
+    AxiomImpl(AxiomImpl&& other) = default;
+    AxiomImpl& operator=(AxiomImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

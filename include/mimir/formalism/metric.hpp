@@ -42,6 +42,12 @@ private:
 public:
     std::string str() const;
 
+    // moveable but not copyable
+    OptimizationMetricImpl(const OptimizationMetricImpl& other) = delete;
+    OptimizationMetricImpl& operator=(const OptimizationMetricImpl& other) = delete;
+    OptimizationMetricImpl(OptimizationMetricImpl&& other) = default;
+    OptimizationMetricImpl& operator=(OptimizationMetricImpl&& other) = default;
+
     size_t get_index() const;
     loki::OptimizationMetricEnum get_optimization_metric() const;
     const GroundFunctionExpression& get_function_expression() const;

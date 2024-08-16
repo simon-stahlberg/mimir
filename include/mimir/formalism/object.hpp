@@ -22,13 +22,7 @@
 
 namespace mimir
 {
-/*
-   TODO: Flattening ObjectImpl using a simple struct with the following fields
-   1) Flat indices
-   - uint64_t m_identifier; (8 byte)
-   2) Data views
-   - ConstView<String> m_name; (8 byte)
-*/
+
 class ObjectImpl
 {
 private:
@@ -44,6 +38,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    ObjectImpl(const ObjectImpl& other) = delete;
+    ObjectImpl& operator=(const ObjectImpl& other) = delete;
+    ObjectImpl(ObjectImpl&& other) = default;
+    ObjectImpl& operator=(ObjectImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

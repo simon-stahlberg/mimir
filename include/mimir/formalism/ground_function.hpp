@@ -36,6 +36,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    GroundFunctionImpl(const GroundFunctionImpl& other) = delete;
+    GroundFunctionImpl& operator=(const GroundFunctionImpl& other) = delete;
+    GroundFunctionImpl(GroundFunctionImpl&& other) = default;
+    GroundFunctionImpl& operator=(GroundFunctionImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

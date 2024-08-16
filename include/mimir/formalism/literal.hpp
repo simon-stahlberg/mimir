@@ -22,9 +22,7 @@
 
 namespace mimir
 {
-/*
-    TODO: Flattening LiteralImpl is unnecessary. It is already flat.
-*/
+
 template<PredicateCategory P>
 class LiteralImpl
 {
@@ -43,6 +41,12 @@ private:
 
 public:
     using Category = P;
+
+    // moveable but not copyable
+    LiteralImpl(const LiteralImpl& other) = delete;
+    LiteralImpl& operator=(const LiteralImpl& other) = delete;
+    LiteralImpl(LiteralImpl&& other) = default;
+    LiteralImpl& operator=(LiteralImpl&& other) = default;
 
     std::string str() const;
 

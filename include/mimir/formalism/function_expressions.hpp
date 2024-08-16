@@ -39,6 +39,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    FunctionExpressionNumberImpl(const FunctionExpressionNumberImpl& other) = delete;
+    FunctionExpressionNumberImpl& operator=(const FunctionExpressionNumberImpl& other) = delete;
+    FunctionExpressionNumberImpl(FunctionExpressionNumberImpl&& other) = default;
+    FunctionExpressionNumberImpl& operator=(FunctionExpressionNumberImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -66,6 +72,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    FunctionExpressionBinaryOperatorImpl(const FunctionExpressionBinaryOperatorImpl& other) = delete;
+    FunctionExpressionBinaryOperatorImpl& operator=(const FunctionExpressionBinaryOperatorImpl& other) = delete;
+    FunctionExpressionBinaryOperatorImpl(FunctionExpressionBinaryOperatorImpl&& other) = default;
+    FunctionExpressionBinaryOperatorImpl& operator=(FunctionExpressionBinaryOperatorImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -91,6 +103,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    FunctionExpressionMultiOperatorImpl(const FunctionExpressionMultiOperatorImpl& other) = delete;
+    FunctionExpressionMultiOperatorImpl& operator=(const FunctionExpressionMultiOperatorImpl& other) = delete;
+    FunctionExpressionMultiOperatorImpl(FunctionExpressionMultiOperatorImpl&& other) = default;
+    FunctionExpressionMultiOperatorImpl& operator=(FunctionExpressionMultiOperatorImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -114,6 +132,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    FunctionExpressionMinusImpl(const FunctionExpressionMinusImpl& other) = delete;
+    FunctionExpressionMinusImpl& operator=(const FunctionExpressionMinusImpl& other) = delete;
+    FunctionExpressionMinusImpl(FunctionExpressionMinusImpl&& other) = default;
+    FunctionExpressionMinusImpl& operator=(FunctionExpressionMinusImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -136,6 +160,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    FunctionExpressionFunctionImpl(const FunctionExpressionFunctionImpl& other) = delete;
+    FunctionExpressionFunctionImpl& operator=(const FunctionExpressionFunctionImpl& other) = delete;
+    FunctionExpressionFunctionImpl(FunctionExpressionFunctionImpl&& other) = default;
+    FunctionExpressionFunctionImpl& operator=(FunctionExpressionFunctionImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

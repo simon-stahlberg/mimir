@@ -59,6 +59,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    ActionImpl(const ActionImpl& other) = delete;
+    ActionImpl& operator=(const ActionImpl& other) = delete;
+    ActionImpl(ActionImpl&& other) = default;
+    ActionImpl& operator=(ActionImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

@@ -41,6 +41,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    EffectSimpleImpl(const EffectSimpleImpl& other) = delete;
+    EffectSimpleImpl& operator=(const EffectSimpleImpl& other) = delete;
+    EffectSimpleImpl(EffectSimpleImpl&& other) = default;
+    EffectSimpleImpl& operator=(EffectSimpleImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -72,6 +78,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    EffectConditionalImpl(const EffectConditionalImpl& other) = delete;
+    EffectConditionalImpl& operator=(const EffectConditionalImpl& other) = delete;
+    EffectConditionalImpl(EffectConditionalImpl&& other) = default;
+    EffectConditionalImpl& operator=(EffectConditionalImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -107,6 +119,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    EffectUniversalImpl(const EffectUniversalImpl& other) = delete;
+    EffectUniversalImpl& operator=(const EffectUniversalImpl& other) = delete;
+    EffectUniversalImpl(EffectUniversalImpl&& other) = default;
+    EffectUniversalImpl& operator=(EffectUniversalImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

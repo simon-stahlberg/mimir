@@ -59,6 +59,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    DomainImpl(const DomainImpl& other) = delete;
+    DomainImpl& operator=(const DomainImpl& other) = delete;
+    DomainImpl(DomainImpl&& other) = default;
+    DomainImpl& operator=(DomainImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

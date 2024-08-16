@@ -22,9 +22,7 @@
 
 namespace mimir
 {
-/*
-    TODO: Flattening GroundLiteralImpl is unnecessary. It is already flat.
-*/
+
 template<PredicateCategory P>
 class GroundLiteralImpl
 {
@@ -43,6 +41,12 @@ private:
 
 public:
     using Category = P;
+
+    // moveable but not copyable
+    GroundLiteralImpl(const GroundLiteralImpl& other) = delete;
+    GroundLiteralImpl& operator=(const GroundLiteralImpl& other) = delete;
+    GroundLiteralImpl(GroundLiteralImpl&& other) = default;
+    GroundLiteralImpl& operator=(GroundLiteralImpl&& other) = default;
 
     std::string str() const;
 

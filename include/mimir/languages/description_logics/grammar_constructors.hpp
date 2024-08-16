@@ -55,7 +55,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     NonTerminalImpl(const NonTerminalImpl& other) = delete;
     NonTerminalImpl& operator=(const NonTerminalImpl& other) = delete;
     NonTerminalImpl(NonTerminalImpl&& other) = default;
@@ -89,7 +89,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     ChoiceImpl(const ChoiceImpl& other) = delete;
     ChoiceImpl& operator=(const ChoiceImpl& other) = delete;
     ChoiceImpl(ChoiceImpl&& other) = default;
@@ -119,7 +119,7 @@ protected:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     DerivationRuleImpl(const DerivationRuleImpl& other) = delete;
     DerivationRuleImpl& operator=(const DerivationRuleImpl& other) = delete;
     DerivationRuleImpl(DerivationRuleImpl&& other) = default;
@@ -149,7 +149,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     ConceptPredicateStateImpl(const ConceptPredicateStateImpl& other) = delete;
     ConceptPredicateStateImpl& operator=(const ConceptPredicateStateImpl& other) = delete;
     ConceptPredicateStateImpl(ConceptPredicateStateImpl&& other) = default;
@@ -175,7 +175,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     ConceptPredicateGoalImpl(const ConceptPredicateGoalImpl& other) = delete;
     ConceptPredicateGoalImpl& operator=(const ConceptPredicateGoalImpl& other) = delete;
     ConceptPredicateGoalImpl(ConceptPredicateGoalImpl&& other) = default;
@@ -201,7 +201,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     ConceptAndImpl(const ConceptAndImpl& other) = delete;
     ConceptAndImpl& operator=(const ConceptAndImpl& other) = delete;
     ConceptAndImpl(ConceptAndImpl&& other) = default;
@@ -232,7 +232,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     RolePredicateStateImpl(const RolePredicateStateImpl& other) = delete;
     RolePredicateStateImpl& operator=(const RolePredicateStateImpl& other) = delete;
     RolePredicateStateImpl(RolePredicateStateImpl&& other) = default;
@@ -258,7 +258,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     RolePredicateGoalImpl(const RolePredicateGoalImpl& other) = delete;
     RolePredicateGoalImpl& operator=(const RolePredicateGoalImpl& other) = delete;
     RolePredicateGoalImpl(RolePredicateGoalImpl&& other) = default;
@@ -284,7 +284,7 @@ private:
     friend class loki::UniqueFactory;
 
 public:
-    // Users are not supposed to move these directly.
+    // moveable but not copyable
     RoleAndImpl(const RoleAndImpl& other) = delete;
     RoleAndImpl& operator=(const RoleAndImpl& other) = delete;
     RoleAndImpl(RoleAndImpl&& other) = default;

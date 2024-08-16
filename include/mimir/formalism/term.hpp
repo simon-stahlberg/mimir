@@ -23,13 +23,6 @@
 namespace mimir
 {
 
-/*
-   TODO: Flattening TermImpl using a Variant with the following fields
-   1) Flat indices
-   - uint64_t m_identifier; (8 byte)
-   - Variant<Object, Variable> m_element; (variable sized)
-*/
-
 class TermObjectImpl
 {
 private:
@@ -45,6 +38,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    TermObjectImpl(const TermObjectImpl& other) = delete;
+    TermObjectImpl& operator=(const TermObjectImpl& other) = delete;
+    TermObjectImpl(TermObjectImpl&& other) = default;
+    TermObjectImpl& operator=(TermObjectImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;
@@ -64,6 +63,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    TermVariableImpl(const TermVariableImpl& other) = delete;
+    TermVariableImpl& operator=(const TermVariableImpl& other) = delete;
+    TermVariableImpl(TermVariableImpl&& other) = default;
+    TermVariableImpl& operator=(TermVariableImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

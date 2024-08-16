@@ -41,6 +41,12 @@ private:
 public:
     using Category = P;
 
+    // moveable but not copyable
+    AtomImpl(const AtomImpl& other) = delete;
+    AtomImpl& operator=(const AtomImpl& other) = delete;
+    AtomImpl(AtomImpl&& other) = default;
+    AtomImpl& operator=(AtomImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

@@ -38,6 +38,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    FunctionSkeletonImpl(const FunctionSkeletonImpl& other) = delete;
+    FunctionSkeletonImpl& operator=(const FunctionSkeletonImpl& other) = delete;
+    FunctionSkeletonImpl(FunctionSkeletonImpl&& other) = default;
+    FunctionSkeletonImpl& operator=(FunctionSkeletonImpl&& other) = default;
+
     std::string str() const;
 
     size_t get_index() const;

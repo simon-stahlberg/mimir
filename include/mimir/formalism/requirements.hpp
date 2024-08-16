@@ -37,6 +37,12 @@ private:
     friend class loki::UniqueFactory;
 
 public:
+    // moveable but not copyable
+    RequirementsImpl(const RequirementsImpl& other) = delete;
+    RequirementsImpl& operator=(const RequirementsImpl& other) = delete;
+    RequirementsImpl(RequirementsImpl&& other) = default;
+    RequirementsImpl& operator=(RequirementsImpl&& other) = default;
+
     bool test(loki::RequirementEnum requirement) const;
 
     std::string str() const;

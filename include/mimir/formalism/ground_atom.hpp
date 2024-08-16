@@ -22,16 +22,7 @@
 
 namespace mimir
 {
-/*
-   TODO: Flattening GroundAtomImpl using a tuple with the following fields:
-   1) Flat indices
-   - uint64_t m_identifier; (8 byte)
-   - uint64_t m_predicate_id; (8 byte)
-   - Vector<uint64_t> m_object_ids; (variable bytes)
-   2) Data views
-   - ConstView<Predicate> m_predicate; (8 byte)
-   - ConstView<Vector<Object>> m_objects; (8 byte)
-*/
+
 template<PredicateCategory P>
 class GroundAtomImpl
 {
@@ -50,6 +41,12 @@ private:
 
 public:
     using Category = P;
+
+    // moveable but not copyable
+    GroundAtomImpl(const GroundAtomImpl& other) = delete;
+    GroundAtomImpl& operator=(const GroundAtomImpl& other) = delete;
+    GroundAtomImpl(GroundAtomImpl&& other) = default;
+    GroundAtomImpl& operator=(GroundAtomImpl&& other) = default;
 
     std::string str() const;
 
