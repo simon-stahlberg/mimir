@@ -58,7 +58,6 @@ public:
                                 StateIndex faithful_abstract_state_index);
 
     bool operator==(const GlobalFaithfulAbstractState& other) const;
-    size_t hash() const;
 
     StateIndex get_index() const;
     StateIndex get_global_index() const;

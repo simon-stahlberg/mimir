@@ -355,10 +355,10 @@ StaticGraph<V, E>::add_undirected_edge(VertexIndex source, VertexIndex target, E
     auto properties_tuple_copy = properties_tuple;
 
     const auto forward_edge_index =
-        std::apply([this, source, target](auto&&... args) { return add_directed_edge(source, target, std::forward<decltype(args)>(args)...); },
+        std::apply([this, source, target](auto&&... args) { return this->add_directed_edge(source, target, std::forward<decltype(args)>(args)...); },
                    std::move(properties_tuple_copy));
     const auto backward_edge_index =
-        std::apply([this, source, target](auto&&... args) { return add_directed_edge(target, source, std::forward<decltype(args)>(args)...); },
+        std::apply([this, source, target](auto&&... args) { return this->add_directed_edge(target, source, std::forward<decltype(args)>(args)...); },
                    std::move(properties_tuple));
 
     return std::make_pair(forward_edge_index, backward_edge_index);

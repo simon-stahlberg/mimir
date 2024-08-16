@@ -1759,7 +1759,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<GlobalFaithfulAbstractState>(m, "GlobalFaithfulAbstractState")
         .def("__eq__", &GlobalFaithfulAbstractState::operator==)
-        .def("__hash__", &GlobalFaithfulAbstractState::hash)
+        .def("__hash__", [](const GlobalFaithfulAbstractState& self) { return std::hash<GlobalFaithfulAbstractState>()(self); })
         .def("get_index", &GlobalFaithfulAbstractState::get_index)
         .def("get_global_index", &GlobalFaithfulAbstractState::get_global_index)
         .def("get_faithful_abstraction_index", &GlobalFaithfulAbstractState::get_faithful_abstraction_index)
