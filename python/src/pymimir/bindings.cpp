@@ -1343,7 +1343,7 @@ void init_pymimir(py::module_& m)
     // ConcreteState
     py::class_<ConcreteState>(m, "ConcreteState")  //
         .def("__eq__", &ConcreteState::operator==)
-        .def("__hash__", &ConcreteState::hash)
+        .def("__hash__", [](const ConcreteState& self) { return std::hash<ConcreteState>()(self); })
         .def("get_index", &ConcreteState::get_index)
         .def(
             "get_state",
@@ -1353,7 +1353,7 @@ void init_pymimir(py::module_& m)
     // ConcreteTransition
     py::class_<ConcreteTransition>(m, "ConcreteTransition")  //
         .def("__eq__", &ConcreteTransition::operator==)
-        .def("__hash__", &ConcreteTransition::hash)
+        .def("__hash__", [](const ConcreteTransition& self) { return std::hash<ConcreteTransition>()(self); })
         .def("get_index", &ConcreteTransition::get_index)
         .def("get_source", &ConcreteTransition::get_source)
         .def("get_target", &ConcreteTransition::get_target)
@@ -1366,7 +1366,7 @@ void init_pymimir(py::module_& m)
     // AbstractTransition
     py::class_<AbstractTransition>(m, "AbstractTransition")  //
         .def("__eq__", &AbstractTransition::operator==)
-        .def("__hash__", &AbstractTransition::hash)
+        .def("__hash__", [](const AbstractTransition& self) { return std::hash<AbstractTransition>()(self); })
         .def("get_index", &AbstractTransition::get_index)
         .def("get_source", &AbstractTransition::get_source)
         .def("get_target", &AbstractTransition::get_target)
@@ -1554,7 +1554,7 @@ void init_pymimir(py::module_& m)
     py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
         .def(py::init<size_t, size_t, std::string, ColorList>())
         .def("__eq__", &Certificate::operator==)
-        .def("__hash__", &Certificate::hash)
+        .def("__hash__", [](const Certificate& self) { return std::hash<Certificate>()(self); })
         .def("get_num_vertices", &Certificate::get_num_vertices)
         .def("get_num_edges", &Certificate::get_num_edges)
         .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
@@ -2024,13 +2024,13 @@ void init_pymimir(py::module_& m)
     // EmptyVertex (used in StaticDigraph)
     py::class_<EmptyVertex>(m, "EmptyVertex")
         .def("__eq__", &EmptyVertex::operator==)
-        .def("__hash__", &EmptyVertex::hash)
+        .def("__hash__", [](const EmptyVertex& self) { return std::hash<EmptyVertex>()(self); })
         .def("get_index", &EmptyVertex::get_index);
 
     // EmptyEdge (used in StaticDigraph)
     py::class_<EmptyEdge>(m, "EmptyEdge")
         .def("__eq__", &EmptyEdge::operator==)
-        .def("__hash__", &EmptyEdge::hash)
+        .def("__hash__", [](const EmptyEdge& self) { return std::hash<EmptyEdge>()(self); })
         .def("get_index", &EmptyEdge::get_index)
         .def("get_source", &EmptyEdge::get_source)
         .def("get_target", &EmptyEdge::get_target);
@@ -2189,7 +2189,7 @@ void init_pymimir(py::module_& m)
     // ColoredVertex
     py::class_<ColoredVertex>(m, "ColoredVertex")
         .def("__eq__", &ColoredVertex::operator==)
-        .def("__hash__", &ColoredVertex::hash)
+        .def("__hash__", [](const ColoredVertex& self) { return std::hash<ColoredVertex>()(self); })
         .def("get_index", &ColoredVertex::get_index)
         .def("get_color", [](const ColoredVertex& self) { return get_color(self); });
 
