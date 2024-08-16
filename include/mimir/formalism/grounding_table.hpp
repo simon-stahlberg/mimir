@@ -18,7 +18,7 @@ template<typename T>
 class GroundingTable
 {
 private:
-    std::unordered_map<ObjectList, T> m_table;
+    std::unordered_map<ObjectList, T, Hash<ObjectList>> m_table;
 
 public:
     auto find(const ObjectList& binding) const { return m_table.find(binding); }
