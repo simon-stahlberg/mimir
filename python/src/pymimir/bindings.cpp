@@ -1066,30 +1066,15 @@ void init_pymimir(py::module_& m)
     bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "StateIndexGroupedVector");
 
     /* Action */
+    // TODO: add missing functions here
+    py::class_<StripsActionPrecondition>(m, "StripsActionPrecondition");
+    py::class_<StripsActionEffect>(m, "StripsActionEffect");
+    py::class_<ConditionalEffect>(m, "ConditionalEffect");
+    py::class_<FlatSimpleEffect>(m, "FlatSimpleEffect");
+
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", [](const GroundAction& obj) { return std::hash<GroundAction>()(obj); })
         .def("__eq__", [](const GroundAction& a, const GroundAction& b) { return std::equal_to<GroundAction>()(a, b); })
-        .def("get_name", [](GroundAction self) { return self.get_action()->get_name(); })
-        .def(
-            "get_objects",
-            [](GroundAction self)
-            {
-                ObjectList terms;
-                for (const auto& object : self.get_objects())
-                {
-                    terms.emplace_back(object);
-                }
-                return terms;
-            },
-            py::keep_alive<0, 1>())
-        .def("to_string",
-             [](GroundAction self, PDDLFactories& pddl_factories)
-             {
-                 std::stringstream ss;
-                 ss << std::make_tuple(self, std::cref(pddl_factories));
-                 return ss.str();
-             })
-        .def("get_index", &GroundAction::get_index)
         .def("__repr__",
              [](GroundAction self)
              {
@@ -1102,6 +1087,40 @@ void init_pymimir(py::module_& m)
                  }
                  ss << ")";
                  return ss.str();
+             })
+        .def("to_string",
+             [](GroundAction self, PDDLFactories& pddl_factories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(self, std::cref(pddl_factories));
+                 return ss.str();
+             })
+        .def("get_index", &GroundAction::get_index)
+        .def("get_cost", &GroundAction::get_cost)
+        .def("get_action", &GroundAction::get_action, py::return_value_policy::reference_internal)
+        .def(
+            "get_objects",
+            [](GroundAction self)
+            {
+                ObjectList terms;
+                for (const auto& object : self.get_objects())
+                {
+                    terms.emplace_back(object);
+                }
+                return terms;
+            },
+            py::keep_alive<0, 1>())
+        .def("get_strips_precondition", [](const GroundAction& self) { return StripsActionPrecondition(self.get_strips_precondition()); })
+        .def("get_strips_effect", [](const GroundAction& self) { return StripsActionEffect(self.get_strips_effect()); })
+        .def("get_conditional_effects",
+             [](const GroundAction& self)
+             {
+                 auto conditional_effects = std::vector<ConditionalEffect> {};
+                 for (const auto& flat_conditional_effect : self.get_conditional_effects())
+                 {
+                     conditional_effects.push_back(ConditionalEffect(flat_conditional_effect));
+                 }
+                 return conditional_effects;
              });
     static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<GroundActionList>(m, "GroundActionList");
@@ -1218,8 +1237,17 @@ void init_pymimir(py::module_& m)
              });
 
     // AStar
-    py::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics");
-    py::class_<IAStarAlgorithmEventHandler, std::shared_ptr<IAStarAlgorithmEventHandler>>(m, "IAStarAlgorithmEventHandler");
+    py::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics")  //
+        .def("get_num_generated", &AStarAlgorithmStatistics::get_num_generated)
+        .def("get_num_expanded", &AStarAlgorithmStatistics::get_num_expanded)
+        .def("get_num_deadends", &AStarAlgorithmStatistics::get_num_deadends)
+        .def("get_num_pruned", &AStarAlgorithmStatistics::get_num_pruned)
+        .def("get_num_generated_until_f_value", &AStarAlgorithmStatistics::get_num_generated_until_f_value)
+        .def("get_num_expanded_until_f_value", &AStarAlgorithmStatistics::get_num_expanded_until_f_value)
+        .def("get_num_deadends_until_f_value", &AStarAlgorithmStatistics::get_num_deadends_until_f_value)
+        .def("get_num_pruned_until_f_value", &AStarAlgorithmStatistics::get_num_pruned_until_f_value);
+    py::class_<IAStarAlgorithmEventHandler, std::shared_ptr<IAStarAlgorithmEventHandler>>(m, "IAStarAlgorithmEventHandler")  //
+        .def("get_statistics", &IAStarAlgorithmEventHandler::get_statistics);
     py::class_<DefaultAStarAlgorithmEventHandler, IAStarAlgorithmEventHandler, std::shared_ptr<DefaultAStarAlgorithmEventHandler>>(
         m,
         "DefaultAStarAlgorithmEventHandler")  //
@@ -1242,7 +1270,17 @@ void init_pymimir(py::module_& m)
                       std::shared_ptr<IAStarAlgorithmEventHandler>>());
 
     // BrFS
-    py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler");
+    py::class_<BrFSAlgorithmStatistics>(m, "BrFSAlgorithmStatistics")  //
+        .def("get_num_generated", &BrFSAlgorithmStatistics::get_num_generated)
+        .def("get_num_expanded", &BrFSAlgorithmStatistics::get_num_expanded)
+        .def("get_num_deadends", &BrFSAlgorithmStatistics::get_num_deadends)
+        .def("get_num_pruned", &BrFSAlgorithmStatistics::get_num_pruned)
+        .def("get_num_generated_until_g_value", &BrFSAlgorithmStatistics::get_num_generated_until_g_value)
+        .def("get_num_expanded_until_g_value", &BrFSAlgorithmStatistics::get_num_expanded_until_g_value)
+        .def("get_num_deadends_until_g_value", &BrFSAlgorithmStatistics::get_num_deadends_until_g_value)
+        .def("get_num_pruned_until_g_value", &BrFSAlgorithmStatistics::get_num_pruned_until_g_value);
+    py::class_<IBrFSAlgorithmEventHandler, std::shared_ptr<IBrFSAlgorithmEventHandler>>(m, "IBrFSAlgorithmEventHandler")
+        .def("get_statistics", &IBrFSAlgorithmEventHandler::get_statistics);
     py::class_<DefaultBrFSAlgorithmEventHandler, IBrFSAlgorithmEventHandler, std::shared_ptr<DefaultBrFSAlgorithmEventHandler>>(
         m,
         "DefaultBrFSAlgorithmEventHandler")  //
@@ -1311,7 +1349,12 @@ void init_pymimir(py::module_& m)
         .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference_internal)
         .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference_internal)
         .def("get_inverse_remap", &FluentAndDerivedMapper::get_inverse_remap, py::return_value_policy::reference_internal);
-    py::class_<IIWAlgorithmEventHandler, std::shared_ptr<IIWAlgorithmEventHandler>>(m, "IIWAlgorithmEventHandler");
+
+    py::class_<IWAlgorithmStatistics>(m, "IWAlgorithmStatistics")  //
+        .def("get_effective_width", &IWAlgorithmStatistics::get_effective_width)
+        .def("get_brfs_statistics_by_arity", &IWAlgorithmStatistics::get_brfs_statistics_by_arity);
+    py::class_<IIWAlgorithmEventHandler, std::shared_ptr<IIWAlgorithmEventHandler>>(m, "IIWAlgorithmEventHandler")
+        .def("get_statistics", &IIWAlgorithmEventHandler::get_statistics);
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
@@ -1323,7 +1366,12 @@ void init_pymimir(py::module_& m)
                       std::shared_ptr<IIWAlgorithmEventHandler>>());
 
     // SIW
-    py::class_<ISIWAlgorithmEventHandler, std::shared_ptr<ISIWAlgorithmEventHandler>>(m, "ISIWAlgorithmEventHandler");
+    py::class_<SIWAlgorithmStatistics>(m, "SIWAlgorithmStatistics")  //
+        .def("get_maximum_effective_width", &SIWAlgorithmStatistics::get_maximum_effective_width)
+        .def("get_average_effective_width", &SIWAlgorithmStatistics::get_average_effective_width)
+        .def("get_iw_statistics_by_subproblem", &SIWAlgorithmStatistics::get_iw_statistics_by_subproblem);
+    py::class_<ISIWAlgorithmEventHandler, std::shared_ptr<ISIWAlgorithmEventHandler>>(m, "ISIWAlgorithmEventHandler")
+        .def("get_statistics", &ISIWAlgorithmEventHandler::get_statistics);
     py::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler, std::shared_ptr<DefaultSIWAlgorithmEventHandler>>(m,
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());

@@ -165,7 +165,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     m_pddl_factories->ground_and_fill_bitset(action->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
-    auto strips_effect_proxy = StripsActionEffectBuilderProxy(m_action_builder.get_strips_effect());
+    auto strips_effect_proxy = StripsActionEffectBuilder(m_action_builder.get_strips_effect());
     auto& positive_effect = strips_effect_proxy.get_positive_effects();
     auto& negative_effect = strips_effect_proxy.get_negative_effects();
     positive_effect.unset_all();
@@ -189,7 +189,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     {
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
-            auto cond_effect_proxy_i = ConditionalEffectBuilderProxy(conditional_effects[i]);
+            auto cond_effect_proxy_i = ConditionalEffectBuilder(conditional_effects[i]);
             auto& cond_positive_fluent_precondition_i = cond_effect_proxy_i.get_positive_precondition<Fluent>();
             auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_precondition<Fluent>();
             auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_precondition<Static>();
@@ -258,7 +258,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                     binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
                 }
 
-                auto cond_effect_proxy_j = ConditionalEffectBuilderProxy(conditional_effects[j]);
+                auto cond_effect_proxy_j = ConditionalEffectBuilder(conditional_effects[j]);
                 auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_precondition<Fluent>();
                 auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_precondition<Fluent>();
                 auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_precondition<Static>();

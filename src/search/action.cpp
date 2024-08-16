@@ -207,13 +207,13 @@ bool StripsActionPrecondition::is_applicable(const FlatBitsetBuilder<Fluent>& fl
     return is_applicable<Fluent>(fluent_state_atoms) && is_applicable<Static>(static_initial_atoms) && is_applicable<Derived>(derived_state_atoms);
 }
 
-/* StripsActionEffectBuilderProxy */
+/* StripsActionEffectBuilder */
 
-StripsActionEffectBuilderProxy::StripsActionEffectBuilderProxy(FlatStripsActionEffectBuilder& builder) : m_builder(builder) {}
+StripsActionEffectBuilder::StripsActionEffectBuilder(FlatStripsActionEffectBuilder& builder) : m_builder(builder) {}
 
-FlatBitsetBuilder<Fluent>& StripsActionEffectBuilderProxy::get_positive_effects() { return m_builder.get<0>(); }
+FlatBitsetBuilder<Fluent>& StripsActionEffectBuilder::get_positive_effects() { return m_builder.get<0>(); }
 
-FlatBitsetBuilder<Fluent>& StripsActionEffectBuilderProxy::get_negative_effects() { return m_builder.get<1>(); }
+FlatBitsetBuilder<Fluent>& StripsActionEffectBuilder::get_negative_effects() { return m_builder.get<1>(); }
 
 /* StripsActionEffect */
 
@@ -222,12 +222,12 @@ StripsActionEffect::StripsActionEffect(FlatStripsActionEffect view) : m_view(vie
 FlatBitset<Fluent> StripsActionEffect::get_positive_effects() const { return m_view.get<0>(); }
 FlatBitset<Fluent> StripsActionEffect::get_negative_effects() const { return m_view.get<1>(); }
 
-/* ConditionalEffectBuilderProxy */
+/* ConditionalEffectBuilder */
 
-ConditionalEffectBuilderProxy::ConditionalEffectBuilderProxy(FlatConditionalEffectBuilder& builder) : m_builder(builder) {}
+ConditionalEffectBuilder::ConditionalEffectBuilder(FlatConditionalEffectBuilder& builder) : m_builder(builder) {}
 
 template<PredicateCategory P>
-FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_positive_precondition()
+FlatIndexListBuilder& ConditionalEffectBuilder::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -247,12 +247,12 @@ FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_positive_precondition()
     }
 }
 
-template FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_positive_precondition<Static>();
-template FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_positive_precondition<Fluent>();
-template FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_positive_precondition<Derived>();
+template FlatIndexListBuilder& ConditionalEffectBuilder::get_positive_precondition<Static>();
+template FlatIndexListBuilder& ConditionalEffectBuilder::get_positive_precondition<Fluent>();
+template FlatIndexListBuilder& ConditionalEffectBuilder::get_positive_precondition<Derived>();
 
 template<PredicateCategory P>
-FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_negative_precondition()
+FlatIndexListBuilder& ConditionalEffectBuilder::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -272,11 +272,11 @@ FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_negative_precondition()
     }
 }
 
-template FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_negative_precondition<Static>();
-template FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_negative_precondition<Fluent>();
-template FlatIndexListBuilder& ConditionalEffectBuilderProxy::get_negative_precondition<Derived>();
+template FlatIndexListBuilder& ConditionalEffectBuilder::get_negative_precondition<Static>();
+template FlatIndexListBuilder& ConditionalEffectBuilder::get_negative_precondition<Fluent>();
+template FlatIndexListBuilder& ConditionalEffectBuilder::get_negative_precondition<Derived>();
 
-FlatSimpleEffect& ConditionalEffectBuilderProxy::get_simple_effect() { return m_builder.get<6>(); }
+FlatSimpleEffect& ConditionalEffectBuilder::get_simple_effect() { return m_builder.get<6>(); }
 
 /* ConditionalEffect */
 

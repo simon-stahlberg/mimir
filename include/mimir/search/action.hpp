@@ -61,8 +61,7 @@ using FlatConditionalEffectLayout = flatmemory::Tuple<FlatIndexListLayout,  // P
                                                       FlatIndexListLayout,  // Negative fluent atom indices
                                                       FlatIndexListLayout,  // Positive derived atom indices
                                                       FlatIndexListLayout,  // Negative derived atom indices
-                                                      FlatSimpleEffect>;    // simple add or delete
-                                                                            // effect
+                                                      FlatSimpleEffect>;    // simple add or delete effect
 using FlatConditionalEffectBuilder = flatmemory::Builder<FlatConditionalEffectLayout>;
 using FlatConditionalEffect = flatmemory::ConstView<FlatConditionalEffectLayout>;
 
@@ -156,13 +155,13 @@ public:
                        const FlatBitsetBuilder<Static>& static_initial_atoms) const;
 };
 
-class StripsActionEffectBuilderProxy
+class StripsActionEffectBuilder
 {
 private:
     FlatStripsActionEffectBuilder& m_builder;
 
 public:
-    explicit StripsActionEffectBuilderProxy(FlatStripsActionEffectBuilder& builder);
+    explicit StripsActionEffectBuilder(FlatStripsActionEffectBuilder& builder);
 
     FlatBitsetBuilder<Fluent>& get_positive_effects();
     FlatBitsetBuilder<Fluent>& get_negative_effects();
@@ -180,13 +179,13 @@ public:
     FlatBitset<Fluent> get_negative_effects() const;
 };
 
-class ConditionalEffectBuilderProxy
+class ConditionalEffectBuilder
 {
 private:
     FlatConditionalEffectBuilder& m_builder;
 
 public:
-    explicit ConditionalEffectBuilderProxy(FlatConditionalEffectBuilder& builder);
+    explicit ConditionalEffectBuilder(FlatConditionalEffectBuilder& builder);
 
     /* Precondition */
 

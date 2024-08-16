@@ -70,7 +70,6 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     auto iter = m_states.find(FlatState(flatmemory_builder.buffer().data()));
     if (iter != m_states.end())
     {
-        // std::cout << iter->buffer_size() << std::endl;
         return State(*iter);
     }
 
