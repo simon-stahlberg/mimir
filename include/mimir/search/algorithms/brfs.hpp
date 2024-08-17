@@ -19,17 +19,11 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/interface.hpp"
-#include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/search_node.hpp"
 
-#include <deque>
-#include <functional>
+#include <memory>
 #include <optional>
-#include <ostream>
-#include <tuple>
 #include <vector>
 
 namespace mimir
@@ -65,9 +59,6 @@ private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
-
-    std::deque<State> m_queue;
-    FlatSearchNodeVector<uint32_t> m_search_nodes;
 };
 
 }

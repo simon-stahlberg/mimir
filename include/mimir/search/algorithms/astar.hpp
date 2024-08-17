@@ -18,13 +18,12 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/openlists/priority_queue.hpp"
-#include "mimir/search/search_node.hpp"
-#include "mimir/search/state.hpp"
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace mimir
@@ -62,9 +61,6 @@ private:
     std::shared_ptr<StateRepository> m_ssg;
     std::shared_ptr<IHeuristic> m_heuristic;
     std::shared_ptr<IAStarAlgorithmEventHandler> m_event_handler;
-
-    FlatSearchNodeVector<double, double> m_search_nodes;
-    PriorityQueue<State> m_openlist;
 };
 
 }

@@ -21,7 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
-#include "mimir/search/search_node.hpp"
 #include "mimir/search/state.hpp"
 
 #include <chrono>

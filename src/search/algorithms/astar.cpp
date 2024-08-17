@@ -22,6 +22,8 @@
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/interface.hpp"
+#include "mimir/search/openlists/priority_queue.hpp"
+#include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
 
 namespace mimir
@@ -67,14 +69,7 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
     m_aag(std::move(applicable_action_generator)),
     m_ssg(std::move(successor_state_generator)),
     m_heuristic(std::move(heuristic)),
-    m_event_handler(std::move(event_handler)),
-    m_search_nodes(FlatSearchNodeVector<GValue, HValue>(AStarSearchNodeBuilder(SearchNodeStatus::NEW,
-                                                                               std::optional<State>(std::nullopt),
-                                                                               std::optional<GroundAction>(std::nullopt),
-                                                                               std::numeric_limits<double>::infinity(),
-                                                                               double(0))
-                                                            .get_flatmemory_builder())),
-    m_openlist()
+    m_event_handler(std::move(event_handler))
 {
 }
 
@@ -97,9 +92,14 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                                            GroundActionList& out_plan,
                                            std::optional<State>& out_goal_state)
 {
-    // Clear data structures
-    m_search_nodes.clear();
-    m_openlist.clear();
+    auto search_nodes =
+        FlatSearchNodeVector<double, double>(FlatSearchNodeVector<GValue, HValue>(AStarSearchNodeBuilder(SearchNodeStatus::NEW,
+                                                                                                         std::optional<State>(std::nullopt),
+                                                                                                         std::optional<GroundAction>(std::nullopt),
+                                                                                                         std::numeric_limits<double>::infinity(),
+                                                                                                         double(0))
+                                                                                      .get_flatmemory_builder()));
+    auto openlist = PriorityQueue<State>();
 
     const auto problem = m_aag->get_problem();
     const auto& pddl_factories = *m_aag->get_pddl_factories();
@@ -109,7 +109,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     const auto start_h_value = m_heuristic->compute_heuristic(start_state);
     const auto start_f_value = start_g_value + start_h_value;
 
-    const auto flat_start_search_node = this->m_search_nodes[start_state.get_index()];
+    const auto flat_start_search_node = search_nodes[start_state.get_index()];
     auto start_search_node = AStarSearchNode(flat_start_search_node);
     set_status(start_search_node, (start_h_value == std::numeric_limits<HValue>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
     set_g_value(start_search_node, start_g_value);
@@ -142,14 +142,14 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
     auto applicable_actions = GroundActionList {};
     auto f_value = GValue();
-    m_openlist.insert(start_f_value, start_state);
+    openlist.insert(start_f_value, start_state);
 
-    while (!m_openlist.empty())
+    while (!openlist.empty())
     {
-        const auto state = m_openlist.top();
-        m_openlist.pop();
+        const auto state = openlist.top();
+        openlist.pop();
 
-        const auto flat_search_node = this->m_search_nodes[state.get_index()];
+        const auto flat_search_node = search_nodes[state.get_index()];
         auto search_node = AStarSearchNode(flat_search_node);
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
@@ -183,7 +183,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(this->m_search_nodes, ConstAStarSearchNode(flat_search_node), out_plan);
+            set_plan(search_nodes, ConstAStarSearchNode(flat_search_node), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
@@ -199,12 +199,12 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         m_event_handler->on_expand_state(state, problem, pddl_factories);
 
-        this->m_aag->generate_applicable_actions(state, applicable_actions);
+        m_aag->generate_applicable_actions(state, applicable_actions);
 
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-            const auto flat_successors_search_node = this->m_search_nodes[successor_state.get_index()];
+            const auto successor_state = m_ssg->get_or_create_successor_state(state, action);
+            const auto flat_successors_search_node = search_nodes[successor_state.get_index()];
             auto successor_search_node = AStarSearchNode(flat_successors_search_node);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
@@ -245,7 +245,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                 m_event_handler->on_generate_state_relaxed(successor_state, action, problem, pddl_factories);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
-                m_openlist.insert(successor_f_value, successor_state);
+                openlist.insert(successor_f_value, successor_state);
             }
             else
             {

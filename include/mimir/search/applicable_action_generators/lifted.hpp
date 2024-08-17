@@ -28,7 +28,7 @@
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/state.hpp"
 
-#include <flatmemory/details/view_const.hpp>
+#include <flatmemory/flatmemory.hpp>
 #include <unordered_map>
 #include <vector>
 
