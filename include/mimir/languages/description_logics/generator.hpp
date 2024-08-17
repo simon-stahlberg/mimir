@@ -18,7 +18,12 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
 
+#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/equal_to.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
+#include "mimir/languages/description_logics/hash.hpp"
+
+#include <loki/loki.hpp>
 
 namespace mimir::dl
 {

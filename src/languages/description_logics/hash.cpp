@@ -17,6 +17,7 @@
 
 #include "mimir/languages/description_logics/hash.hpp"
 
+#include "mimir/common/hash.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 

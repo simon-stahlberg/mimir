@@ -21,8 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/constructor_base.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
-#include "mimir/languages/description_logics/evaluation_context.hpp"
-#include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
 #include <concepts>
 #include <cstddef>

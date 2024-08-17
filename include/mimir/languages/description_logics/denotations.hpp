@@ -18,9 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 
-#include "mimir/formalism/problem.hpp"
-#include "mimir/languages/description_logics/constructor_ids.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/languages/description_logics/constructor_category.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 #include <unordered_map>

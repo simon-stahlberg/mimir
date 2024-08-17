@@ -15,9 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "parser.hpp"
+#include "mimir/languages/description_logics/grammar.hpp"
 
-#include <mimir/languages/description_logics/grammar.hpp>
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "parser.hpp"
 
 namespace mimir::dl::grammar
 {

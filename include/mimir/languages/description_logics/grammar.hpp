@@ -18,18 +18,12 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructor_interface.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/equal_to.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 #include "mimir/languages/description_logics/hash.hpp"
 
-#include <functional>
 #include <loki/loki.hpp>
-#include <memory>
-#include <unordered_map>
-#include <vector>
 
 namespace mimir::dl::grammar
 {

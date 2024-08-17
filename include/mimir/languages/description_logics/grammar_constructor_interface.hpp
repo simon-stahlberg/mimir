@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_INTERFACE_HPP_
 
-#include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 
 #include <concepts>

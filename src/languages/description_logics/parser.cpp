@@ -17,9 +17,11 @@
 
 #include "parser.hpp"
 
-#include <mimir/languages/description_logics/parser/ast.hpp>
-#include <mimir/languages/description_logics/parser/parser.hpp>
-#include <mimir/languages/description_logics/parser/parser_wrapper.hpp>
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/parser/ast.hpp"
+#include "mimir/languages/description_logics/parser/parser.hpp"
+#include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 
 namespace mimir::dl::grammar
 {

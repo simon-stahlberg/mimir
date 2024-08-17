@@ -19,8 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_VISITORS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
 
 #include <concepts>

@@ -19,8 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructor_ids.hpp"
-#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/constructor_category.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_visitors_interface.hpp"

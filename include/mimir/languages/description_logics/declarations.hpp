@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
 #include "mimir/formalism/predicate_category.hpp"
-#include "mimir/languages/description_logics/constructor_ids.hpp"
+#include "mimir/languages/description_logics/constructor_category.hpp"
 
 #include <variant>
 #include <vector>

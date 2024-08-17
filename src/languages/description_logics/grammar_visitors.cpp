@@ -15,7 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <mimir/languages/description_logics/grammar_visitors.hpp>
+#include "mimir/languages/description_logics/grammar_visitors.hpp"
+
+#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/grammar_constructors.hpp"
 
 namespace mimir::dl::grammar
 {
