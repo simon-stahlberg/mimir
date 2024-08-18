@@ -94,8 +94,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 {
     auto search_nodes =
         FlatSearchNodeVector<double, double>(FlatSearchNodeVector<GValue, HValue>(AStarSearchNodeBuilder(SearchNodeStatus::NEW,
-                                                                                                         std::optional<State>(std::nullopt),
-                                                                                                         std::optional<GroundAction>(std::nullopt),
+                                                                                                         State::get_null_state(),
+                                                                                                         GroundAction::get_null_ground_action(),
                                                                                                          std::numeric_limits<double>::infinity(),
                                                                                                          double(0))
                                                                                       .get_flatmemory_builder()));

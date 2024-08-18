@@ -41,8 +41,8 @@ enum SearchNodeStatus
 
 template<typename... SearchNodeProperties>
 using FlatSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus,  //
-                                               std::optional<State>,
-                                               std::optional<GroundAction>,
+                                               State,
+                                               GroundAction,
                                                SearchNodeProperties...>;
 
 template<typename... SearchNodeProperties>
@@ -67,23 +67,24 @@ template<typename Tag, typename... SearchNodeProperties>
 class SearchNodeBuilder
 {
 public:
-    /// Create a default initialized `SearchNodeBuilder`.
-    SearchNodeBuilder() : m_builder() { finish(); }
-
     /// @brief Create a `SearchNodeBuilder` with given arguments.
     /// @param status
     /// @param parent_state
     /// @param creating_action
     /// @param ...properties
-    SearchNodeBuilder(SearchNodeStatus status,
-                      std::optional<State> parent_state,
-                      std::optional<GroundAction> creating_action,
-                      SearchNodeProperties&&... properties)
+    SearchNodeBuilder(SearchNodeStatus status, State parent_state, GroundAction creating_action, SearchNodeProperties&&... properties) :
+        m_builder(std::forward<SearchNodeStatus>(status),
+                  std::forward<State>(parent_state),
+                  std::forward<GroundAction>(creating_action),
+                  std::forward<SearchNodeProperties>(properties)...)
     {
-        set_status(status);
-        set_parent_state(parent_state);
-        set_creating_action(creating_action);
-        set_properties(std::make_index_sequence<sizeof...(SearchNodeProperties)> {}, std::forward<SearchNodeProperties>(properties)...);
+        finish();
+    }
+
+    /// @brief Default constructor enabled only if all `SearchNodeProperties` are default-constructible
+    SearchNodeBuilder() requires(std::default_initializable<SearchNodeProperties>&&...) :
+        m_builder(SearchNodeStatus::NEW, State::get_null_state(), GroundAction::get_null_ground_action(), SearchNodeProperties()...)
+    {
         finish();
     }
 
@@ -99,8 +100,8 @@ public:
     const FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() const { return m_builder; }
 
     void set_status(SearchNodeStatus status) { m_builder.template get<0>() = status; }
-    void set_parent_state(std::optional<State> parent_state) { m_builder.template get<1>() = parent_state; }
-    void set_creating_action(std::optional<GroundAction> creating_action) { m_builder.template get<2>() = creating_action; }
+    void set_parent_state(State parent_state) { m_builder.template get<1>() = parent_state; }
+    void set_creating_action(GroundAction creating_action) { m_builder.template get<2>() = creating_action; }
 
     /// @brief Return a reference to the I-th `SearchNodeProperties`.
     /// @tparam I the index of the property in the parameter pack.
@@ -154,8 +155,8 @@ public:
      */
 
     SearchNodeStatus& get_status() { return m_view.template get<0>(); }
-    std::optional<State>& get_parent_state() { return m_view.template get<1>(); }
-    std::optional<GroundAction>& get_creating_action() { return m_view.template get<2>(); }
+    State get_parent_state() { return m_view.template get<1>(); }
+    GroundAction get_creating_action() { return m_view.template get<2>(); }
 
     template<size_t I>
     auto& get_property()
@@ -193,13 +194,13 @@ SearchNodeStatus& get_status(SearchNode<Tag, SearchNodeProperties...> search_nod
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-std::optional<State>& get_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node)
+State get_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_parent_state();
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-std::optional<GroundAction>& get_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node)
+GroundAction get_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_creating_action();
 }
@@ -219,8 +220,8 @@ public:
      */
 
     SearchNodeStatus get_status() const { return m_view.template get<0>(); }
-    std::optional<State> get_parent_state() const { return m_view.template get<1>(); }
-    std::optional<GroundAction> get_creating_action() const { return m_view.template get<2>(); }
+    State get_parent_state() const { return m_view.template get<1>(); }
+    GroundAction get_creating_action() const { return m_view.template get<2>(); }
 
     template<size_t I>
     const auto& get_property() const
@@ -237,13 +238,13 @@ SearchNodeStatus get_status(ConstSearchNode<Tag, SearchNodeProperties...> search
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-std::optional<State> get_parent_state(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+State get_parent_state(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_parent_state();
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-std::optional<GroundAction> get_creating_action(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+GroundAction get_creating_action(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_creating_action();
 }
@@ -262,13 +263,13 @@ void set_plan(const FlatSearchNodeVector<SearchNodeProperties...>& search_nodes,
     out_plan.clear();
     auto cur_search_node = search_node;
 
-    while (cur_search_node.get_parent_state().has_value())
+    while (cur_search_node.get_parent_state() != State::get_null_state())
     {
-        assert(cur_search_node.get_creating_action().has_value());
+        assert(cur_search_node.get_creating_action() != GroundAction::get_null_ground_action());
 
-        out_plan.push_back(cur_search_node.get_creating_action().value());
+        out_plan.push_back(cur_search_node.get_creating_action());
 
-        cur_search_node = ConstSearchNode<Tag, SearchNodeProperties...>(search_nodes.at(cur_search_node.get_parent_state().value().get_index()));
+        cur_search_node = ConstSearchNode<Tag, SearchNodeProperties...>(search_nodes.at(cur_search_node.get_parent_state().get_index()));
     }
 
     std::reverse(out_plan.begin(), out_plan.end());

@@ -76,6 +76,18 @@ template FlatBitsetBuilder<Derived>& StateBuilder::get_atoms();
 
 State::State(FlatState view) : m_view(view) {}
 
+State State::get_null_state() { return State(FlatState(s_null_state.get_flatmemory_builder().buffer().data())); }
+
+static StateBuilder create_null_state()
+{
+    auto state_builder = StateBuilder();
+    state_builder.get_index() = std::numeric_limits<StateIndex>::max();
+    state_builder.get_flatmemory_builder().finish();
+    return state_builder;
+}
+
+const StateBuilder State::s_null_state = create_null_state();
+
 bool State::operator==(State other) const { return get_index() == other.get_index(); }
 
 StateIndex State::get_index() const { return m_view.get<0>(); }

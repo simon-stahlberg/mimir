@@ -88,8 +88,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                                           std::optional<State>& out_goal_state)
 {
     auto search_nodes = FlatSearchNodeVector<uint32_t>(FlatSearchNodeVector<GValue>(
-        BrFSSearchNodeBuilder(SearchNodeStatus::NEW, std::optional<State>(std::nullopt), std::optional<GroundAction>(std::nullopt), GValue(0))
-            .get_flatmemory_builder()));
+        BrFSSearchNodeBuilder(SearchNodeStatus::NEW, State::get_null_state(), GroundAction::get_null_ground_action(), GValue(0)).get_flatmemory_builder()));
     auto queue = std::deque<State>();
 
     const auto problem = m_aag->get_problem();

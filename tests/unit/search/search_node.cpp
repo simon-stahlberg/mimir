@@ -32,18 +32,16 @@ TEST(MimirTests, SearchSearchNodeBuilderTest)
     // Build a search node.
     auto search_node_builder = SearchNodeBuilder<SearchNodeTag, double>();
     search_node_builder.set_status(SearchNodeStatus::OPEN);
-    search_node_builder.set_parent_state(std::nullopt);
-    search_node_builder.set_creating_action(std::nullopt);
     search_node_builder.get_property<0>() = 42;
     search_node_builder.finish();
     EXPECT_NE(search_node_builder.get_data(), nullptr);
-    EXPECT_EQ(search_node_builder.get_size(), 48);
+    EXPECT_EQ(search_node_builder.get_size(), 32);
 
     // View the data generated in the builder.
     auto search_node_view = SearchNode<SearchNodeTag, double>(FlatSearchNode<double>(search_node_builder.get_data()));
     EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
-    EXPECT_EQ(search_node_view.get_parent_state(), std::nullopt);
-    EXPECT_EQ(search_node_view.get_creating_action(), std::nullopt);
+    EXPECT_EQ(search_node_view.get_parent_state(), State::get_null_state());
+    EXPECT_EQ(search_node_view.get_creating_action(), GroundAction::get_null_ground_action());
     EXPECT_EQ(search_node_view.get_property<0>(), 42);
 
     // Test mutation of a search node
@@ -61,7 +59,6 @@ TEST(MimirTests, SearchSearchNodeVectorTest)
 
     auto builder = SearchNodeBuilder<SearchNodeTag, double>();
     builder.set_status(SearchNodeStatus::CLOSED);
-    builder.set_parent_state(std::nullopt);
     builder.get_property<0>() = 42;
     builder.get_flatmemory_builder().finish();
 
@@ -70,7 +67,7 @@ TEST(MimirTests, SearchSearchNodeVectorTest)
     // Test default initialization a search node
     auto search_node_0 = SearchNode<SearchNodeTag, double>(vector[0]);
     EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
-    EXPECT_EQ(search_node_0.get_parent_state(), std::nullopt);
+    EXPECT_EQ(search_node_0.get_parent_state(), State::get_null_state());
     EXPECT_EQ(search_node_0.get_property<0>(), 42);
 
     // Test mutation of a search node

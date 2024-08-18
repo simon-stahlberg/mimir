@@ -86,8 +86,12 @@ class State
 private:
     FlatState m_view;
 
+    static const StateBuilder s_null_state;
+
 public:
     explicit State(FlatState view);
+
+    static State get_null_state();
 
     bool operator==(State other) const;
 
@@ -109,7 +113,6 @@ public:
     FlatBitset<P> get_atoms() const;
 };
 
-static_assert(std::is_trivially_copyable_v<std::optional<State>>);
 }
 
 template<>

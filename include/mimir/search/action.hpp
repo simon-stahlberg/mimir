@@ -260,9 +260,13 @@ class GroundAction
 private:
     FlatAction m_view;
 
+    static const GroundActionBuilder s_null_ground_action;
+
 public:
     /// @brief Create a view on a DefaultAction.
     explicit GroundAction(FlatAction view);
+
+    static GroundAction get_null_ground_action();
 
     bool operator==(const GroundAction& other) const;
 
@@ -283,8 +287,6 @@ public:
 
     bool is_applicable(Problem problem, State state) const;
 };
-
-static_assert(std::is_trivially_copyable_v<std::optional<GroundAction>>);
 
 }
 

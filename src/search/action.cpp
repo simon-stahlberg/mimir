@@ -385,6 +385,18 @@ FlatConditionalEffectsBuilder& GroundActionBuilder::get_conditional_effects() { 
 
 GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
+GroundAction GroundAction::get_null_ground_action() { return GroundAction(FlatAction(s_null_ground_action.get_flatmemory_builder().buffer().data())); }
+
+static GroundActionBuilder create_null_ground_action()
+{
+    auto ground_action_builder = GroundActionBuilder();
+    ground_action_builder.get_index() = std::numeric_limits<GroundActionIndex>::max();
+    ground_action_builder.get_flatmemory_builder().finish();
+    return ground_action_builder;
+}
+
+const GroundActionBuilder GroundAction::s_null_ground_action = create_null_ground_action();
+
 bool GroundAction::operator==(const GroundAction& other) const
 {
     if (this != &other)
