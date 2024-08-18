@@ -22,7 +22,11 @@
 
 namespace mimir
 {
-StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> aag) : m_aag(std::move(aag)) {}
+StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> aag) :
+    m_aag(std::move(aag)),
+    m_problem_or_domain_has_axioms(m_aag->get_problem()->get_axioms().empty() || m_aag->get_problem()->get_domain()->get_axioms().empty())
+{
+}
 
 State StateRepository::get_or_create_initial_state()
 {
@@ -71,6 +75,13 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     if (iter != m_states.end())
     {
         return State(*iter);
+    }
+
+    /* Return early, if no axioms must be evaluated. */
+    if (!m_problem_or_domain_has_axioms)
+    {
+        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+        return State(*iter2);
     }
 
     /* Fetch member references for extended construction. */
@@ -147,6 +158,13 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
         return State(*iter);
     }
 
+    /* Return early, if no axioms must be evaluated. */
+    if (!m_problem_or_domain_has_axioms)
+    {
+        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+        return State(*iter2);
+    }
+
     /* Fetch member references for extended construction. */
 
     auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
@@ -159,10 +177,6 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 6. Cache extended state */
 
-    if (derived_state_atoms.count() > 0)
-    {
-        flatmemory_builder.finish();
-    }
     auto [iter2, inserted] = m_states.insert(flatmemory_builder);
 
     /* 7. Return newly generated extended state */
