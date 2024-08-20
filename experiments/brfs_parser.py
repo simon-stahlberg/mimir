@@ -15,14 +15,16 @@ def invalid_plan_reported(content, props):
 class BrfsParser(Parser):
     """
     Successful Run:
-    [BrFS] Search time: 135ms
-    [BrFS] Number of generated states: 18119
-    [BrFS] Number of expanded states: 1756
-    [BrFS] Number of generated states until last f-layer: 17938
-    [BrFS] Number of expanded states until last f-layer: 1741
+    [BrFS] Search time: 50ms
+    [BrFS] Number of generated states: 8147
+    [BrFS] Number of expanded states: 1711
+    [BrFS] Number of pruned states: 5336
+    [BrFS] Number of generated states until last f-layer: 5782
+    [BrFS] Number of expanded states until last f-layer: 1059
+    [BrFS] Number of pruned states until last f-layer: 3750
     [BrFS] Plan found.
-    [BrFS] Plan cost: 15
-    [BrFS] Plan length: 5
+    [BrFS] Plan cost: 6
+    [BrFS] Plan length: 6
 
     Unsolvable Run:
     [BrFS] Exhausted!
@@ -41,8 +43,9 @@ class BrfsParser(Parser):
         self.add_pattern("search_time", r"\[BrFS\] Search time: (\d+)ms", type=int)
         self.add_pattern("num_expanded", r"\[BrFS\] Number of expanded states: (\d+)", type=int)
         self.add_pattern("num_generated", r"\[BrFS\] Number of generated states: (\d+)", type=int)
-        self.add_pattern("num_expanded_until_last_f_layer", r"\[BrFS\] Number of expanded states until last f-layer: (\d+)", type=int)
-        self.add_pattern("num_generated_until_last_f_layer", r"\[BrFS\] Number of generated states until last f-layer: (\d+)", type=int)
+        self.add_pattern("num_expanded_until_last_g_layer", r"\[BrFS\] Number of expanded states until last g-layer: (\d+)", type=int)
+        self.add_pattern("num_generated_until_last_g_layer", r"\[BrFS\] Number of generated states until last g-layer: (\d+)", type=int)
+        self.add_pattern("num_pruned_until_last_g_layer", r"\[BrFS\] Number of pruned states until last g-layer: (\d+)", type=int)
         self.add_pattern("cost", r"\[BrFS\] Plan cost: (.+)", type=float)
         self.add_pattern("length", r"\[BrFS\] Plan length: (.+)", type=float)
         self.add_pattern("exhausted", r"(\[BrFS\] Exhausted!)", type=str)

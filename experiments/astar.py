@@ -11,7 +11,7 @@ from downward.reports.absolute import AbsoluteReport
 from lab.environments import TetralithEnvironment, LocalEnvironment
 from lab.experiment import Experiment
 from lab.reports import Attribute, geometric_mean
-from brfs_parser import BrfsParser
+from astar_parser import AStarParser
 import utils
 
 # Create custom report class with suitable info and error attributes.
@@ -53,9 +53,9 @@ ATTRIBUTES = [
     "search_time",
     "num_generated",
     "num_expanded",
-    "num_expanded_until_last_g_layer",
-    "num_generated_until_last_g_layer",
-    "num_pruned_until_last_g_layer",
+    "num_expanded_until_last_f_layer",
+    "num_generated_until_last_f_layer",
+    "num_pruned_until_last_f_layer",
     "cost",
     "length",
     "invalid_plan_reported",
@@ -66,12 +66,12 @@ MEMORY_LIMIT = 8000
 # Create a new experiment.
 exp = Experiment(environment=ENV)
 # Add custom parser for FF.
-exp.add_parser(BrfsParser())
+exp.add_parser(AStarParser())
 
-PLANNER_DIR = REPO / "build" / "exe" / "planner_brfs"
+PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 
 exp.add_resource("planner_exe", PLANNER_DIR)
-exp.add_resource("run_planner", DIR / "brfs_run_planner.sh")
+exp.add_resource("run_planner", DIR / "astar_run_planner.sh")
 
 for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     ################ Grounded ################
@@ -81,8 +81,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'ff' binary has to be on the PATH.
     # We could also use exp.add_resource().
     run.add_command(
-        "brfs_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "1", "0"],
+        "astar_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "1", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
@@ -90,7 +90,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-brfs-grounded")
+    run.set_property("algorithm", "mimir-astar-grounded")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -98,7 +98,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-brfs-grounded", task.domain, task.problem])
+    run.set_property("id", ["mimir-astar-grounded", task.domain, task.problem])
 
     ################ Lifted ################
     run = exp.add_run()
@@ -107,8 +107,8 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'ff' binary has to be on the PATH.
     # We could also use exp.add_resource().
     run.add_command(
-        "brfs_planner",
-        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "0"],
+        "astar_planner",
+        ["{run_planner}", "{planner_exe}", "{domain}", "{problem}", "plan.out", "0", "0", "0"],
         time_limit=TIME_LIMIT,
         memory_limit=MEMORY_LIMIT,
     )
@@ -116,7 +116,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-brfs-lifted")
+    run.set_property("algorithm", "mimir-astar-lifted")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -124,7 +124,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-brfs-lifted", task.domain, task.problem])
+    run.set_property("id", ["mimir-astar-lifted", task.domain, task.problem])
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

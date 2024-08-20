@@ -103,11 +103,11 @@ inline std::ostream& operator<<(std::ostream& os, const BrFSAlgorithmStatistics&
        << "[BrFS] Number of generated states: " << statistics.get_num_generated() << "\n"
        << "[BrFS] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[BrFS] Number of pruned states: " << statistics.get_num_pruned() << "\n"
-       << "[BrFS] Number of generated states until last f-layer: "
+       << "[BrFS] Number of generated states until last g-layer: "
        << (statistics.get_num_generated_until_g_value().empty() ? 0 : statistics.get_num_generated_until_g_value().back()) << "\n"
-       << "[BrFS] Number of expanded states until last f-layer: "
+       << "[BrFS] Number of expanded states until last g-layer: "
        << (statistics.get_num_expanded_until_g_value().empty() ? 0 : statistics.get_num_expanded_until_g_value().back()) << "\n"
-       << "[BrFS] Number of pruned states until last f-layer: "
+       << "[BrFS] Number of pruned states until last g-layer: "
        << (statistics.get_num_pruned_until_g_value().empty() ? 0 : statistics.get_num_pruned_until_g_value().back());
 
     return os;
