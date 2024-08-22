@@ -15,7 +15,7 @@ endforeach()
 ExternalProject_Add(
     flatmemory
     GIT_REPOSITORY https://github.com/drexlerd/flatmemory.git
-    GIT_TAG v0.0.6
+    GIT_TAG v0.0.7
     PREFIX ${CMAKE_BINARY_DIR}/flatmemory
     CMAKE_ARGS ${CMAKE_ARGS}
 )
