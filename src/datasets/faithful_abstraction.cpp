@@ -159,7 +159,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     /* Initialize search. */
     auto lifo_queue = std::deque<State>();
     lifo_queue.push_back(initial_state);
-    auto transitions = ConcreteTransitionList {};
+    auto transitions = GroundActionEdgeList {};
     auto abstract_goal_states = StateIndexSet {};
     auto applicable_actions = GroundActionList {};
     auto next_abstract_state_index = StateIndex { 1 };
@@ -280,7 +280,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     assert(concrete_states_begin_by_abstract_state.size() == num_abstract_states + 1);
 
     /* Construct abstract states and sort by index. */
-    auto abstract_states = FaithfulAbstractStateList {};
+    auto abstract_states = FaithfulAbstractStateVertexList {};
     abstract_states.reserve(num_abstract_states);
     for (const auto& [certificate, abstract_state_index] : abstract_states_by_certificate)
     {
@@ -312,12 +312,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                    [](const auto& transition) { return get_creating_action(transition); });
 
     /* Group concrete transitions by source and target */
-    auto grouped_transitions = IndexGroupedVector<const ConcreteTransition>::create(
+    auto grouped_transitions = IndexGroupedVector<const GroundActionEdge>::create(
         std::move(transitions),
         [](const auto& l, const auto& r) { return ((l.get_source() != r.get_source()) || (l.get_target() != r.get_target())); });
 
     /* Create abstract transitions from groups. */
-    auto abstract_transitions = AbstractTransitionList {};
+    auto abstract_transitions = GroundActionsEdgeList {};
     abstract_transitions.reserve(grouped_transitions.size());
     auto accumulated_transitions = 0;
     for (const auto& group : grouped_transitions)
@@ -333,7 +333,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     /* Create graph */
-    auto graph = StaticGraph<FaithfulAbstractState, AbstractTransition>();
+    auto graph = StaticGraph<FaithfulAbstractStateVertex, GroundActionsEdge>();
     for (const auto& abstract_state : abstract_states)
     {
         graph.add_vertex(mimir::get_states(abstract_state), mimir::get_certificate(abstract_state));
@@ -537,7 +537,7 @@ const std::shared_ptr<StateRepository>& FaithfulAbstraction::get_ssg() const { r
 const typename FaithfulAbstraction::GraphType& FaithfulAbstraction::get_graph() const { return m_graph; }
 
 /* States */
-const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
+const FaithfulAbstractStateVertexList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexConstIteratorType<Direction>> FaithfulAbstraction::get_adjacent_states(StateIndex state) const
@@ -584,7 +584,7 @@ bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_
 
 /* Transitions */
 
-const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
+const GroundActionsEdgeList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>>

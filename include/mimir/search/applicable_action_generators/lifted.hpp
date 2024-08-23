@@ -36,12 +36,9 @@ namespace mimir
 {
 using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
 
-/**
- * Fully specialized implementation class.
- *
- * Implements successor generation using maximum clique enumeration by stahlberg-ecai2023
- * Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
- */
+/// @brief `LiftedApplicableActionGenerator` implements lifted applicable action generation
+/// using maximum clique enumeration by Stahlberg (ECAI2023).
+/// Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:

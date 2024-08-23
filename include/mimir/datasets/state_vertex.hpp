@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_CONCRETE_STATE_HPP_
-#define MIMIR_DATASETS_CONCRETE_STATE_HPP_
+#ifndef MIMIR_DATASETS_STATE_VERTEX_HPP_
+#define MIMIR_DATASETS_STATE_VERTEX_HPP_
 
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/search/state.hpp"
@@ -24,14 +24,14 @@
 namespace mimir
 {
 
-struct ConcreteStateTag
+struct StateVertexTag
 {
 };
 
-using ConcreteState = Vertex<ConcreteStateTag, State>;
-using ConcreteStateList = std::vector<ConcreteState>;
+using StateVertex = Vertex<StateVertexTag, State>;
+using StateVertexList = std::vector<StateVertex>;
 
-inline State get_state(const ConcreteState& concrete_state) { return concrete_state.get_property<0>(); }
+inline State get_state(const StateVertex& vertex) { return vertex.get_property<0>(); }
 
 }
 

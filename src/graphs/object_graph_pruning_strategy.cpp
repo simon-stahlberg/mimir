@@ -224,7 +224,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     const auto [num_components, component_map] = strong_components(graph);
     const auto scc_digraph = create_scc_digraph(num_components, component_map, state_space.value());
     const auto partitioning =
-        get_partitioning<StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>, ForwardTraversal>(num_components, component_map);
+        get_partitioning<StaticBidirectionalGraph<StaticGraph<StateVertex, GroundActionEdge>>, ForwardTraversal>(num_components, component_map);
     auto pruning_components = std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>();
     pruning_components.reserve(partitioning.size());
 

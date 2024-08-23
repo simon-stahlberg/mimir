@@ -29,9 +29,10 @@
 namespace mimir
 {
 
-/**
- * Fully specialized implementation class.
- */
+/// @brief `GroundedApplicableActionGenerator` implements grounded applicable action generation
+/// using the `LiftedApplicableActionGenerator` and `AxiomEvaluator` to create an overapproximation
+/// of applicable ground actions and ground actions and storing them in a match tree
+/// as described by Helmert
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
@@ -40,7 +41,6 @@ private:
     // Memory
     std::shared_ptr<PDDLFactories> m_pddl_factories;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
-
     LiftedApplicableActionGenerator m_lifted_aag;
 
     MatchTree<GroundAction> m_action_match_tree;

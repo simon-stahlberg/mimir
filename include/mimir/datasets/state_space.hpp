@@ -19,8 +19,8 @@
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/datasets/concrete_state.hpp"
-#include "mimir/datasets/concrete_transition.hpp"
+#include "mimir/datasets/state_vertex.hpp"
+#include "mimir/datasets/ground_action_edge.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/graphs/static_graph.hpp"
@@ -58,7 +58,7 @@ struct StateSpacesOptions
 
 /// @brief `StateSpace` encapsulates the complete dynamics of a PDDL problem.
 ///
-/// The underlying graph type is a `StaticBidirectionalGraph` over `ConcreteState` and `ConcreteTransition`.
+/// The underlying graph type is a `StaticBidirectionalGraph` over `StateVertex` and `GroundActionEdge`.
 /// The `StateSpace` stores additional external properties on vertices such as initial state, goal states, deadend states.
 /// The getters are simple adapters to follow the notion of states and transitions from the literature.
 ///
@@ -66,7 +66,7 @@ struct StateSpacesOptions
 class StateSpace
 {
 public:
-    using GraphType = StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>;
+    using GraphType = StaticBidirectionalGraph<StaticGraph<StateVertex, GroundActionEdge>>;
 
     using VertexIndexConstIteratorType = typename GraphType::VertexIndexConstIteratorType;
     using EdgeIndexConstIteratorType = typename GraphType::EdgeIndexConstIteratorType;
@@ -162,8 +162,8 @@ public:
     const GraphType& get_graph() const;
 
     /* States */
-    const ConcreteStateList& get_states() const;
-    const ConcreteState& get_state(StateIndex state) const;
+    const StateVertexList& get_states() const;
+    const StateVertex& get_state(StateIndex state) const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
@@ -180,7 +180,7 @@ public:
     bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
-    const ConcreteTransitionList& get_transitions() const;
+    const GroundActionEdgeList& get_transitions() const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>

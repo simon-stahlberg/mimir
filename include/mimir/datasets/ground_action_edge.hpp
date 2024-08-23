@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
-#define MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
+#ifndef MIMIR_DATASETS_GROUND_ACTION_EDGE_HPP_
+#define MIMIR_DATASETS_GROUND_ACTION_EDGE_HPP_
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
@@ -33,12 +33,12 @@ struct ConcreteTransitionTag
 {
 };
 
-using ConcreteTransition = Edge<ConcreteTransitionTag, GroundAction>;
-using ConcreteTransitionList = std::vector<ConcreteTransition>;
+using GroundActionEdge = Edge<ConcreteTransitionTag, GroundAction>;
+using GroundActionEdgeList = std::vector<GroundActionEdge>;
 
-inline GroundAction get_creating_action(const ConcreteTransition& concrete_transition) { return concrete_transition.get_property<0>(); }
+inline GroundAction get_creating_action(const GroundActionEdge& edge) { return edge.get_property<0>(); }
 
-inline TransitionCost get_cost(const ConcreteTransition& concrete_transition) { return get_creating_action(concrete_transition).get_cost(); }
+inline EdgeCost get_cost(const GroundActionEdge& edge) { return get_creating_action(edge).get_cost(); }
 
 }
 

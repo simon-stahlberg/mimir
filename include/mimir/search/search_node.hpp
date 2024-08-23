@@ -115,14 +115,6 @@ public:
 
 private:
     FlatSearchNodeBuilder<SearchNodeProperties...> m_builder;
-
-    // Helper function to set properties using an index sequence.
-    template<std::size_t... Is>
-    void set_properties(std::index_sequence<Is...>, SearchNodeProperties&&... properties)
-    {
-        // This uses a fold expression to set each property.
-        ((m_builder.template get<3 + Is>() = std::forward<SearchNodeProperties>(properties)), ...);
-    }
 };
 
 /// @brief `SearchNode` is a mutable wrapper around `FlatSearchNode` to read and write the data.

@@ -20,7 +20,7 @@
 
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/datasets/abstract_transition.hpp"
+#include "mimir/datasets/ground_actions_edge.hpp"
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/state_space.hpp"
@@ -64,28 +64,28 @@ struct FaithfulAbstractionsOptions
     uint32_t num_threads = std::thread::hardware_concurrency();
 };
 
-/// @brief `FaithfulAbstractState` encapsulates data of an abstract state in a `FaithfulAbstraction`.
-struct FaithfulAbstractStateTag
+/// @brief `FaithfulAbstractStateVertex` encapsulates data of an abstract state in a `FaithfulAbstraction`.
+struct FaithfulAbstractStateVertexTag
 {
 };
 
-using FaithfulAbstractState = Vertex<FaithfulAbstractStateTag, std::span<const State>, std::shared_ptr<const Certificate>>;
-using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
+using FaithfulAbstractStateVertex = Vertex<FaithfulAbstractStateVertexTag, std::span<const State>, std::shared_ptr<const Certificate>>;
+using FaithfulAbstractStateVertexList = std::vector<FaithfulAbstractStateVertex>;
 
-inline std::span<const State> get_states(const FaithfulAbstractState& state) { return state.get_property<0>(); }
+inline std::span<const State> get_states(const FaithfulAbstractStateVertex& state) { return state.get_property<0>(); }
 
-inline State get_representative_state(const FaithfulAbstractState& state)
+inline State get_representative_state(const FaithfulAbstractStateVertex& state)
 {
     assert(!state.get_property<0>().empty());
     return state.get_property<0>().front();
 }
 
-inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractState& state) { return state.get_property<1>(); }
+inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractStateVertex& state) { return state.get_property<1>(); }
 
 /// @brief `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
 ///
-/// The underlying graph type is a `StaticBidirectionalGraph` over `FaithfulAbstractState` and `AbstractTransition`.
+/// The underlying graph type is a `StaticBidirectionalGraph` over `FaithfulAbstractStateVertex` and `GroundActionsEdge`.
 /// The `FaithfulAbstraction` stores additional external properties on vertices such as initial state, goal states, deadend states.
 /// The getters are simple adapters to follow the notion of states and transitions from the literature.
 ///
@@ -93,7 +93,7 @@ inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulA
 class FaithfulAbstraction
 {
 public:
-    using GraphType = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>;
+    using GraphType = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractStateVertex, GroundActionsEdge>>;
 
     using VertexIndexConstIteratorType = typename GraphType::VertexIndexConstIteratorType;
     using EdgeIndexConstIteratorType = typename GraphType::EdgeIndexConstIteratorType;
@@ -199,7 +199,7 @@ public:
     const GraphType& get_graph() const;
 
     /* States */
-    const FaithfulAbstractStateList& get_states() const;
+    const FaithfulAbstractStateVertexList& get_states() const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
     template<IsTraversalDirection Direction>
@@ -216,7 +216,7 @@ public:
     bool is_alive_state(StateIndex state) const;
 
     /* Transitions */
-    const AbstractTransitionList& get_transitions() const;
+    const GroundActionsEdgeList& get_transitions() const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>

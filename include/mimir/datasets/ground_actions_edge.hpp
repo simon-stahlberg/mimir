@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_ABSTRACT_TRANSITION_HPP_
-#define MIMIR_DATASETS_ABSTRACT_TRANSITION_HPP_
+#ifndef MIMIR_DATASETS_GROUND_ACTIONS_EDGE_HPP_
+#define MIMIR_DATASETS_GROUND_ACTIONS_EDGE_HPP_
 
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
@@ -33,29 +33,29 @@ namespace mimir
  * Declarations
  */
 
-struct AbstractTransitionTag
+struct GroundActionsEdgeTag
 {
 };
 
-using AbstractTransition = Edge<AbstractTransitionTag, std::span<const GroundAction>>;
-using AbstractTransitionList = std::vector<AbstractTransition>;
+using GroundActionsEdge = Edge<GroundActionsEdgeTag, std::span<const GroundAction>>;
+using GroundActionsEdgeList = std::vector<GroundActionsEdge>;
 
-inline std::span<const GroundAction> get_actions(const AbstractTransition& abstract_transition) { return abstract_transition.get_property<0>(); }
+inline std::span<const GroundAction> get_actions(const GroundActionsEdge& edge) { return edge.get_property<0>(); }
 
-inline TransitionCost get_cost(const AbstractTransition& abstract_transition)
+inline EdgeCost get_cost(const GroundActionsEdge& edge)
 {
-    auto cost = std::numeric_limits<double>::max();
+    auto cost = std::numeric_limits<EdgeCost>::infinity();
 
-    const auto actions = get_actions(abstract_transition);
-    std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, (double) action.get_cost()); });
+    const auto actions = get_actions(edge);
+    std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, action.get_cost()); });
 
     return cost;
 }
 
-inline GroundAction get_representative_action(const AbstractTransition& abstract_transition)
+inline GroundAction get_representative_action(const GroundActionsEdge& edge)
 {
-    assert(!abstract_transition.get_property<0>().empty());
-    return abstract_transition.get_property<0>().front();
+    assert(!edge.get_property<0>().empty());
+    return edge.get_property<0>().front();
 }
 
 }

@@ -141,13 +141,13 @@ from _pymimir import (
 # Dataset
 from _pymimir import (
     Abstraction,
-    AbstractTransition,
-    ConcreteState,
-    ConcreteTransition,
-    FaithfulAbstractState,
+    StateVertex,
+    GroundActionEdge,
+    GroundActionsEdge,
     FaithfulAbstraction,
     FaithfulAbstractionOptions,
     FaithfulAbstractionsOptions,
+    FaithfulAbstractStateVertex,
     GlobalFaithfulAbstractState,
     GlobalFaithfulAbstraction,
     StateSpace,

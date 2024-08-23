@@ -84,13 +84,13 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         return std::nullopt;
     }
 
-    auto graph = StaticGraph<ConcreteState, ConcreteTransition>();
+    auto graph = StaticGraph<StateVertex, GroundActionEdge>();
     const auto initial_state_index = graph.add_vertex(State(initial_state));
     auto goal_states = StateIndexSet {};
     auto state_to_index = StateMap<StateIndex> {};
     state_to_index.emplace(initial_state, initial_state_index);
 
-    auto lifo_queue = std::deque<ConcreteState>();
+    auto lifo_queue = std::deque<StateVertex>();
     lifo_queue.push_back(graph.get_vertices().at(initial_state_index));
 
     auto applicable_actions = GroundActionList {};
@@ -315,9 +315,9 @@ const std::shared_ptr<StateRepository>& StateSpace::get_ssg() const { return m_s
 const typename StateSpace::GraphType& StateSpace::get_graph() const { return m_graph; }
 
 /* States */
-const ConcreteStateList& StateSpace::get_states() const { return m_graph.get_vertices(); }
+const StateVertexList& StateSpace::get_states() const { return m_graph.get_vertices(); }
 
-const ConcreteState& StateSpace::get_state(StateIndex state) const { return m_graph.get_vertices().at(state); }
+const StateVertex& StateSpace::get_state(StateIndex state) const { return m_graph.get_vertices().at(state); }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<Direction>> StateSpace::get_adjacent_states(StateIndex state) const
@@ -362,7 +362,7 @@ bool StateSpace::is_deadend_state(StateIndex state) const { return get_deadend_s
 bool StateSpace::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
-const ConcreteTransitionList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
+const GroundActionEdgeList& StateSpace::get_transitions() const { return m_graph.get_edges(); }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<Direction>> StateSpace::get_adjacent_transitions(StateIndex state) const

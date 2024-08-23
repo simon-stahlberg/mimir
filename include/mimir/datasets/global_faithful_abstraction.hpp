@@ -47,7 +47,7 @@ private:
     StateIndex m_index;
     // The index within a `GlobalFaithfulAbstractionList`.
     StateIndex m_global_index;
-    // The indices to access the corresponding `FaithfulAbstractState`.
+    // The indices to access the corresponding `FaithfulAbstractStateVertex`.
     AbstractionIndex m_faithful_abstraction_index;
     StateIndex m_faithful_abstract_state_index;
 
@@ -174,7 +174,7 @@ public:
     size_t get_num_non_isomorphic_states() const;
 
     /* Transitions */
-    const AbstractTransitionList& get_transitions() const;
+    const GroundActionsEdgeList& get_transitions() const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
     template<IsTraversalDirection Direction>
@@ -208,7 +208,7 @@ private:
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);
-static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>>);
+static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstractStateVertex, GroundActionsEdge>>>);
 
 /**
  * Pretty printing
