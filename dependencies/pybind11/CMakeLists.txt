@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(InstallGoogletest)
+project(InstallPybind11)
 
 include(ExternalProject)
 
