@@ -104,7 +104,9 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     auto state_builder = StateBuilder();
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
     auto& derived_state_atoms = state_builder.get_atoms<Derived>();
-    fluent_state_atoms = delete_free_ssg.get_or_create_initial_state().get_atoms<Fluent>();
+    const auto initial_state = delete_free_ssg.get_or_create_initial_state();
+    fluent_state_atoms = initial_state.get_atoms<Fluent>();
+    derived_state_atoms = initial_state.get_atoms<Derived>();
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
