@@ -134,7 +134,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
         if (cond_effect_proxy.is_applicable(m_aag->get_problem(), state))
         {
-            const auto& simple_effect = cond_effect_proxy.get_simple_effect();
+            const auto simple_effect = cond_effect_proxy.get_simple_effect();
 
             if (simple_effect.is_negated)
             {

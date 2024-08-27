@@ -217,7 +217,7 @@ public:
     FlatIndexList get_negative_precondition() const;
 
     /* Simple effects */
-    const FlatSimpleEffect& get_simple_effect() const;
+    const FlatSimpleEffect get_simple_effect() const;
 
     template<DynamicPredicateCategory P>
     bool is_applicable(State state) const;

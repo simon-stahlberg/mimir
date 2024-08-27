@@ -46,7 +46,7 @@ using ConstBrFsSearchNode = ConstSearchNode<BrFSSearchNodeTag, GValue>;
 
 static void set_g_value(BrFsSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
 
-static GValue& get_g_value(BrFsSearchNode search_node) { return search_node.get_property<0>(); }
+static GValue get_g_value(BrFsSearchNode search_node) { return search_node.get_property<0>(); }
 
 /**
  * BrFS
@@ -88,7 +88,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                                           std::optional<State>& out_goal_state)
 {
     auto search_nodes = FlatSearchNodeVector<uint32_t>(FlatSearchNodeVector<GValue>(
-        BrFSSearchNodeBuilder(SearchNodeStatus::NEW, State::get_null_state(), GroundAction::get_null_ground_action(), GValue(0)).get_flatmemory_builder()));
+        BrFSSearchNodeBuilder(SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0)).get_flatmemory_builder()));
     auto queue = std::deque<State>();
 
     const auto problem = m_aag->get_problem();
@@ -135,7 +135,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(search_nodes, ConstBrFsSearchNode(flat_search_node), out_plan);
+            set_plan(search_nodes, m_aag->get_ground_actions(), ConstBrFsSearchNode(flat_search_node), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
@@ -168,8 +168,8 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             }
 
             set_status(successor_search_node, SearchNodeStatus::OPEN);
-            set_parent_state(successor_search_node, state);
-            set_creating_action(successor_search_node, action);
+            set_parent_state(successor_search_node, state.get_index());
+            set_creating_action(successor_search_node, action.get_index());
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
             queue.emplace_back(successor_state);

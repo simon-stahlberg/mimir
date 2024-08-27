@@ -47,8 +47,8 @@ using ConstAStarSearchNode = ConstSearchNode<AStarSearchNodeTag, GValue, HValue>
 static void set_g_value(AStarSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
 static void set_h_value(AStarSearchNode search_node, GValue g_value) { return search_node.set_property<1>(g_value); }
 
-static GValue& get_g_value(AStarSearchNode search_node) { return search_node.get_property<0>(); }
-static HValue& get_h_value(AStarSearchNode search_node) { return search_node.get_property<1>(); }
+static GValue get_g_value(AStarSearchNode search_node) { return search_node.get_property<0>(); }
+static HValue get_h_value(AStarSearchNode search_node) { return search_node.get_property<1>(); }
 
 /**
  * AStar
@@ -94,8 +94,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 {
     auto search_nodes =
         FlatSearchNodeVector<double, double>(FlatSearchNodeVector<GValue, HValue>(AStarSearchNodeBuilder(SearchNodeStatus::NEW,
-                                                                                                         State::get_null_state(),
-                                                                                                         GroundAction::get_null_ground_action(),
+                                                                                                         std::numeric_limits<StateIndex>::max(),
+                                                                                                         std::numeric_limits<GroundActionIndex>::max(),
                                                                                                          std::numeric_limits<double>::infinity(),
                                                                                                          double(0))
                                                                                       .get_flatmemory_builder()));
@@ -183,7 +183,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(search_nodes, ConstAStarSearchNode(flat_search_node), out_plan);
+            set_plan(search_nodes, m_aag->get_ground_actions(), ConstAStarSearchNode(flat_search_node), out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
@@ -227,8 +227,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                 /* Open/Reopen state with updated f_value. */
 
                 set_status(successor_search_node, SearchNodeStatus::OPEN);
-                set_parent_state(successor_search_node, state);
-                set_creating_action(successor_search_node, action);
+                set_parent_state(successor_search_node, state.get_index());
+                set_creating_action(successor_search_node, action.get_index());
                 set_g_value(successor_search_node, new_successor_g_value);
                 if (is_new_successor_state)
                 {

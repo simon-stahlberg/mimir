@@ -41,8 +41,8 @@ enum SearchNodeStatus
 
 template<typename... SearchNodeProperties>
 using FlatSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus,  //
-                                               State,
-                                               GroundAction,
+                                               StateIndex,
+                                               GroundActionIndex,
                                                SearchNodeProperties...>;
 
 template<typename... SearchNodeProperties>
@@ -72,10 +72,10 @@ public:
     /// @param parent_state
     /// @param creating_action
     /// @param ...properties
-    SearchNodeBuilder(SearchNodeStatus status, State parent_state, GroundAction creating_action, SearchNodeProperties&&... properties) :
+    SearchNodeBuilder(SearchNodeStatus status, StateIndex parent_state, GroundActionIndex creating_action, SearchNodeProperties&&... properties) :
         m_builder(std::forward<SearchNodeStatus>(status),
-                  std::forward<State>(parent_state),
-                  std::forward<GroundAction>(creating_action),
+                  std::forward<StateIndex>(parent_state),
+                  std::forward<GroundActionIndex>(creating_action),
                   std::forward<SearchNodeProperties>(properties)...)
     {
         finish();
@@ -83,7 +83,7 @@ public:
 
     /// @brief Default constructor enabled only if all `SearchNodeProperties` are default-constructible
     SearchNodeBuilder() requires(std::default_initializable<SearchNodeProperties>&&...) :
-        m_builder(SearchNodeStatus::NEW, State::get_null_state(), GroundAction::get_null_ground_action(), SearchNodeProperties()...)
+        m_builder(SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), SearchNodeProperties()...)
     {
         finish();
     }
@@ -100,8 +100,8 @@ public:
     const FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() const { return m_builder; }
 
     void set_status(SearchNodeStatus status) { m_builder.template get<0>() = status; }
-    void set_parent_state(State parent_state) { m_builder.template get<1>() = parent_state; }
-    void set_creating_action(GroundAction creating_action) { m_builder.template get<2>() = creating_action; }
+    void set_parent_state(StateIndex parent_state) { m_builder.template get<1>() = parent_state; }
+    void set_creating_action(GroundActionIndex creating_action) { m_builder.template get<2>() = creating_action; }
 
     /// @brief Return a reference to the I-th `SearchNodeProperties`.
     /// @tparam I the index of the property in the parameter pack.
@@ -131,34 +131,38 @@ public:
      * Setters
      */
 
-    void set_status(SearchNodeStatus status) { m_view.template get<0>() = status; }
-    void set_parent_state(State state) { m_view.template get<1>() = state; }
-    void set_creating_action(GroundAction action) { m_view.template get<2>() = action; }
+    void set_status(SearchNodeStatus status) { m_view.template mutate<0>(status); }
+    void set_parent_state(StateIndex state) { m_view.template mutate<1>(state); }
+    void set_creating_action(GroundActionIndex action) { m_view.template mutate<2>(action); }
 
     template<size_t I>
     void set_property(const typename std::tuple_element<I, std::tuple<SearchNodeProperties...>>::type& property)
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
-        m_view.template get<I + 3>() = property;
+        m_view.template mutate<I + 3>(property);
     }
 
     /**
      * Mutable getters
      */
 
-    SearchNodeStatus& get_status() { return m_view.template get<0>(); }
-    State get_parent_state() { return m_view.template get<1>(); }
-    GroundAction get_creating_action() { return m_view.template get<2>(); }
+    SearchNodeStatus get_status() { return m_view.template get<0>(); }
+    StateIndex get_parent_state() { return m_view.template get<1>(); }
+    GroundActionIndex get_creating_action() { return m_view.template get<2>(); }
 
     template<size_t I>
-    auto& get_property()
+    auto get_property()
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
         return m_view.template get<I + 3>();
     }
 
-    // No immutable getters because they are unsafe anyways since constness of
-    // flatmemory views can be cast away by simply copying the view into a non const object.
+    template<size_t I>
+    auto get_property() const
+    {
+        static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
+        return m_view.template get<I + 3>();
+    }
 };
 
 template<typename Tag, typename... SearchNodeProperties>
@@ -168,31 +172,31 @@ void set_status(SearchNode<Tag, SearchNodeProperties...> search_node, SearchNode
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-void set_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node, State parent_state)
+void set_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node, StateIndex parent_state)
 {
     return search_node.set_parent_state(parent_state);
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-void set_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node, GroundAction creating_action)
+void set_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node, GroundActionIndex creating_action)
 {
     return search_node.set_creating_action(creating_action);
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-SearchNodeStatus& get_status(SearchNode<Tag, SearchNodeProperties...> search_node)
+SearchNodeStatus get_status(SearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_status();
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-State get_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node)
+StateIndex get_parent_state(SearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_parent_state();
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-GroundAction get_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node)
+GroundActionIndex get_creating_action(SearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_creating_action();
 }
@@ -212,11 +216,11 @@ public:
      */
 
     SearchNodeStatus get_status() const { return m_view.template get<0>(); }
-    State get_parent_state() const { return m_view.template get<1>(); }
-    GroundAction get_creating_action() const { return m_view.template get<2>(); }
+    StateIndex get_parent_state() const { return m_view.template get<1>(); }
+    GroundActionIndex get_creating_action() const { return m_view.template get<2>(); }
 
     template<size_t I>
-    const auto& get_property() const
+    auto get_property() const
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
         return m_view.template get<I + 3>();
@@ -230,13 +234,13 @@ SearchNodeStatus get_status(ConstSearchNode<Tag, SearchNodeProperties...> search
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-State get_parent_state(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+StateIndex get_parent_state(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_parent_state();
 }
 
 template<typename Tag, typename... SearchNodeProperties>
-GroundAction get_creating_action(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
+GroundActionIndex get_creating_action(ConstSearchNode<Tag, SearchNodeProperties...> search_node)
 {
     return search_node.get_creating_action();
 }
@@ -249,19 +253,20 @@ GroundAction get_creating_action(ConstSearchNode<Tag, SearchNodeProperties...> s
 ///                      the to the state underlying the search node.
 template<typename Tag, typename... SearchNodeProperties>
 void set_plan(const FlatSearchNodeVector<SearchNodeProperties...>& search_nodes,  //
+              const GroundActionList& ground_actions,
               const ConstSearchNode<Tag, SearchNodeProperties...>& search_node,
               GroundActionList& out_plan)
 {
     out_plan.clear();
     auto cur_search_node = search_node;
 
-    while (cur_search_node.get_parent_state() != State::get_null_state())
+    while (cur_search_node.get_parent_state() != std::numeric_limits<StateIndex>::max())
     {
-        assert(cur_search_node.get_creating_action() != GroundAction::get_null_ground_action());
+        assert(cur_search_node.get_creating_action() != std::numeric_limits<GroundActionIndex>::max());
 
-        out_plan.push_back(cur_search_node.get_creating_action());
+        out_plan.push_back(ground_actions.at(cur_search_node.get_creating_action()));
 
-        cur_search_node = ConstSearchNode<Tag, SearchNodeProperties...>(search_nodes.at(cur_search_node.get_parent_state().get_index()));
+        cur_search_node = search_nodes.at(cur_search_node.get_parent_state());
     }
 
     std::reverse(out_plan.begin(), out_plan.end());

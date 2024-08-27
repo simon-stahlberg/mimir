@@ -332,7 +332,7 @@ template FlatIndexList ConditionalEffect::get_negative_precondition<Static>() co
 template FlatIndexList ConditionalEffect::get_negative_precondition<Fluent>() const;
 template FlatIndexList ConditionalEffect::get_negative_precondition<Derived>() const;
 
-const FlatSimpleEffect& ConditionalEffect::get_simple_effect() const { return m_view.get<6>(); }
+const FlatSimpleEffect ConditionalEffect::get_simple_effect() const { return m_view.get<6>(); }
 
 template<DynamicPredicateCategory P>
 bool ConditionalEffect::is_applicable(State state) const
@@ -524,7 +524,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
     const auto negative_fluent_precondition_bitset = cond_effect_proxy.get_negative_precondition<Fluent>();
     const auto positive_derived_precondition_bitset = cond_effect_proxy.get_positive_precondition<Derived>();
     const auto negative_derived_precondition_bitset = cond_effect_proxy.get_negative_precondition<Derived>();
-    const auto& simple_effect = cond_effect_proxy.get_simple_effect();
+    const auto simple_effect = cond_effect_proxy.get_simple_effect();
 
     auto positive_static_precondition = GroundAtomList<Static> {};
     auto negative_static_precondition = GroundAtomList<Static> {};

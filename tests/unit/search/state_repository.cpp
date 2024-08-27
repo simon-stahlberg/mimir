@@ -28,13 +28,20 @@ namespace mimir::tests
 TEST(MimirTests, SearchStateRepositoryTest)
 {
     // Instantiate lifted version
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
     auto lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_factories());
     auto ssg = StateRepository(lifted_aag);
     auto initial_state = ssg.get_or_create_initial_state();
+    auto applicable_actions = GroundActionList {};
+    lifted_aag->generate_applicable_actions(initial_state, applicable_actions);
+
+    for (const auto& action : applicable_actions) {
+        const auto sucessor_state = ssg.get_or_create_successor_state(initial_state, action);
+        break;
+    }
 }
 
 }
