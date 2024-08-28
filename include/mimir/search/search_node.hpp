@@ -94,8 +94,8 @@ public:
      * Mutable getters
      */
 
-    uint8_t* get_data() { return m_builder.buffer().data(); }
-    size_t get_size() { return m_builder.buffer().size(); }
+    uint8_t* get_data() { return m_builder.get_buffer().data(); }
+    size_t get_size() { return m_builder.get_buffer().size(); }
     FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() { return m_builder; }
     const FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() const { return m_builder; }
 

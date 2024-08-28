@@ -71,7 +71,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     // Test whether there exists an extended state for the given non extended state
     flatmemory_builder.finish();
-    auto iter = m_states.find(FlatState(flatmemory_builder.buffer().data()));
+    auto iter = m_states.find(FlatState(flatmemory_builder.get_buffer().data()));
     if (iter != m_states.end())
     {
         return State(*iter);
@@ -152,7 +152,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     // Test whether there exists an extended state for the given non extended state
     flatmemory_builder.finish();
-    auto iter = m_states.find(FlatState(flatmemory_builder.buffer().data()));
+    auto iter = m_states.find(FlatState(flatmemory_builder.get_buffer().data()));
     if (iter != m_states.end())
     {
         return State(*iter);

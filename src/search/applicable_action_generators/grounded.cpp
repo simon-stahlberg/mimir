@@ -117,7 +117,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         reached_delete_free_explore_fixpoint = true;
 
         state_builder.get_flatmemory_builder().finish();
-        const auto state = State(FlatState(state_builder.get_flatmemory_builder().buffer().data()));
+        const auto state = State(FlatState(state_builder.get_flatmemory_builder().get_buffer().data()));
 
         auto num_atoms_before = fluent_state_atoms.count();
 

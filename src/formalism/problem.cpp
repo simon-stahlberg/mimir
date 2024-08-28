@@ -160,7 +160,7 @@ const FlatBitsetBuilder<Static> ProblemImpl::get_static_initial_positive_atoms()
 
 FlatBitset<Static> ProblemImpl::get_static_initial_positive_atoms_bitset() const
 {
-    return FlatBitset<Static>(m_static_initial_positive_atoms_builder.buffer().data());
+    return FlatBitset<Static>(m_static_initial_positive_atoms_builder.get_buffer().data());
 }
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }

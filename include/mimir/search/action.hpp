@@ -72,7 +72,7 @@ using FlatConditionalEffects = flatmemory::ConstView<FlatConditionalEffectsLayou
 using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
 using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
 using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
-
+static_assert(sizeof(GroundActionIndex) == 4);
 using FlatActionLayout = flatmemory::Tuple<GroundActionIndex,  //
                                            GroundActionCost,
                                            Action,

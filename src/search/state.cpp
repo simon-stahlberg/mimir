@@ -76,7 +76,7 @@ template FlatBitsetBuilder<Derived>& StateBuilder::get_atoms();
 
 State::State(FlatState view) : m_view(view) {}
 
-State State::get_null_state() { return State(FlatState(s_null_state.get_flatmemory_builder().buffer().data())); }
+State State::get_null_state() { return State(FlatState(s_null_state.get_flatmemory_builder().get_buffer().data())); }
 
 static StateBuilder create_null_state()
 {

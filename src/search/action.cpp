@@ -385,7 +385,7 @@ FlatConditionalEffectsBuilder& GroundActionBuilder::get_conditional_effects() { 
 
 GroundAction::GroundAction(FlatAction view) : m_view(view) {}
 
-GroundAction GroundAction::get_null_ground_action() { return GroundAction(FlatAction(s_null_ground_action.get_flatmemory_builder().buffer().data())); }
+GroundAction GroundAction::get_null_ground_action() { return GroundAction(FlatAction(s_null_ground_action.get_flatmemory_builder().get_buffer().data())); }
 
 static GroundActionBuilder create_null_ground_action()
 {
