@@ -58,6 +58,13 @@ GroundActionIndex get_action(const CistaSearchNode<SearchNodeProperties...>& nod
     return cista::get<2>(node);
 }
 
+template<size_t I, typename... SearchNodeProperties>
+auto get_property(const CistaSearchNode<SearchNodeProperties...>& node)
+{
+    static_assert(I < sizeof...(SearchNodeProperties));
+    return cista::get<I + 3>(node);
+}
+
 /**
  * Setters
  */
@@ -78,6 +85,13 @@ template<typename... SearchNodeProperties>
 void set_action(CistaSearchNode<SearchNodeProperties...>& node, GroundActionIndex action)
 {
     cista::get<2>(node) = action;
+}
+
+template<size_t I, typename... SearchNodeProperties>
+void set_property(CistaSearchNode<SearchNodeProperties...>& node, const typename std::tuple_element<I, std::tuple<SearchNodeProperties...>>::type& value)
+{
+    static_assert(I < sizeof...(SearchNodeProperties));
+    cista::get<I + 3>(node) = value;
 }
 
 }
