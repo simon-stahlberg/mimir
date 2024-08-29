@@ -15,19 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <gtest/gtest.h>
-
-#include "cista/containers/vector.h"  // Example Cista++ container
 #include "cista/containers/tuple.h"
+#include "cista/containers/vector.h"  // Example Cista++ container
 #include "cista/serialization.h"      // Serialization functions
+
+#include <gtest/gtest.h>
 
 namespace mimir::tests
 {
 
-void print_buffer(const std::vector<unsigned char>& buf) {
+void print_buffer(const std::vector<unsigned char>& buf)
+{
     std::cout << "Serialized buffer (" << buf.size() << " bytes):" << std::endl;
-    for (size_t i = 0; i < buf.size(); ++i) {
-        if (i % 16 == 0) std::cout << std::endl;  // new line every 16 bytes
+    for (size_t i = 0; i < buf.size(); ++i)
+    {
+        if (i % 16 == 0)
+            std::cout << std::endl;  // new line every 16 bytes
         std::cout << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(buf[i]) << " ";
     }
     std::cout << std::dec << std::endl;  // switch back to decimal output
@@ -39,19 +42,19 @@ TEST(MimirTests, CistaTest)
 
     using CustomTuple = cista::tuple<int, data::string, double>;
     // Define a cista::tuple with different types.
-    auto obj = CustomTuple{42, data::string{"hello"}, 3.14};
+    auto obj = CustomTuple { 42, data::string { "hello" }, 3.14 };
 
     std::vector<unsigned char> buf;
     {  // Serialize.
-    buf = cista::serialize(obj);
+        buf = cista::serialize(obj);
     }
 
     print_buffer(buf);
 
     // Deserialize.
-    auto deserialized = cista::deserialize<CustomTuple>(buf);
+    auto deserialized = cista::deserialize<CustomTuple>(buf.begin().base(), buf.end().base());
     EXPECT_EQ(cista::get<0>(*deserialized), 42);
-    EXPECT_EQ(cista::get<1>(*deserialized), data::string{"hello"});
+    EXPECT_EQ(cista::get<1>(*deserialized), data::string { "hello" });
     EXPECT_EQ(cista::get<2>(*deserialized), 3.14);
 
     cista::get<0>(*deserialized) = 43;

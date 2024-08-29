@@ -20,6 +20,8 @@
 
 #include "mimir/common/byte_buffer_segmented.hpp"
 
+#include <optional>
+
 namespace mimir
 {
 
@@ -27,9 +29,6 @@ template<typename T>
 class ByteBufferVector
 {
 private:
-    // Buffer to obtain default constructed T.
-    std::vector<uint8_t> m_default_buffer;
-
     // Persistent storage
     ByteBufferSegmented m_storage;
 
@@ -40,10 +39,7 @@ private:
 
 public:
     /// @brief Constructor that ensure that a resize yields non trivially initialized objects.
-    ByteBufferVector(const std::vector<uint8_t>& default_buffer = {},
-                     NumBytes initial_num_bytes_per_segment = 1024,
-                     NumBytes maximum_num_bytes_per_segment = 1024 * 1024) :
-        m_default_buffer(default_buffer),
+    ByteBufferVector(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) :
         m_storage(initial_num_bytes_per_segment, maximum_num_bytes_per_segment),
         m_element_begin()
     {
@@ -58,11 +54,33 @@ public:
      * Element access
      */
 
-    std::pair<uint8_t*, uint8_t*> operator[](size_t pos) { return { m_element_begin[pos], m_element_begin[pos + 1] }; }
-    std::pair<const uint8_t*, const uint8_t*> operator[](size_t pos) const { return { m_element_begin[pos], m_element_begin[pos + 1] }; }
+    std::optional<std::pair<uint8_t*, uint8_t*>> operator[](size_t pos)
+    {
+        if (!m_element_begin[pos])
+        {
+            return std::nullopt;
+        }
+        return { m_element_begin[pos], m_element_begin[pos + 1] };
+    }
+    std::optional<std::pair<const uint8_t*, const uint8_t*>> operator[](size_t pos) const
+    {
+        if (!m_element_begin[pos])
+        {
+            return std::nullopt;
+        }
+        return { m_element_begin[pos], m_element_begin[pos + 1] };
+    }
 
-    std::pair<uint8_t*, uint8_t*> at(size_t pos) { return { m_element_begin.at(pos), m_element_begin.at(pos + 1) }; }
-    std::pair<const uint8_t*, const uint8_t*> at(size_t pos) const { return { m_element_begin.at(pos), m_element_begin.at(pos + 1) }; }
+    std::optional<std::pair<uint8_t*, uint8_t*>> at(size_t pos)
+    {
+        range_check(pos);
+        return (this)[pos];
+    }
+    std::optional<std::pair<const uint8_t*, const uint8_t*>> at(size_t pos) const
+    {
+        range_check(pos);
+        return (this)[pos];
+    }
 
     const ByteBufferSegmented& get_storage() const { return m_storage; }
 
@@ -84,8 +102,22 @@ public:
         m_element_begin[size()] = begin;
         m_element_begin[size() + 1] = begin + buffer.size();
     }
-    void resize(size_t count);
-    void clear();
+    void resize(size_t count, const std::vector<uint8_t>& value)
+    {
+        if (count < size())
+        {
+            throw std::runtime_error("ByteBufferVector::resize: shrinking not allowed because partial deletion is not supported.");
+        }
+        while (size() < count)
+        {
+            push_back(value);
+        }
+    }
+    void clear()
+    {
+        m_storage.clear();
+        m_element_begin.clear();
+    }
 };
 
 }
