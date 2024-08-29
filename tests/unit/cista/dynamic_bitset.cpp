@@ -38,7 +38,7 @@ void print_buffer(const std::vector<unsigned char>& buf)
 
 TEST(MimirTests, CistaDynamicBitsetTest)
 {
-    namespace data = cista::offset;
+    namespace data = cista::raw;
 
     using Bitset = data::dynamic_bitset<uint64_t>;
 
