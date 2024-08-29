@@ -18,7 +18,6 @@
 #include "mimir/search/search_node.hpp"
 
 #include "cista/storage/byte_buffer_vector.hpp"
-#include "mimir/search/search_node2.hpp"
 
 #include <flatmemory/flatmemory.hpp>
 #include <gtest/gtest.h>
@@ -30,70 +29,14 @@ struct SearchNodeTag
 {
 };
 
-TEST(MimirTests, SearchSearchNodeBuilderTest)
+TEST(MimirTests, SearchSearchNodeTest)
 {
-    // Build a search node.
-    auto search_node_builder = SearchNodeBuilder<SearchNodeTag, double>();
-    search_node_builder.set_status(SearchNodeStatus::OPEN);
-    search_node_builder.get_property<0>() = 42;
-    search_node_builder.finish();
-    EXPECT_NE(search_node_builder.get_data(), nullptr);
-    EXPECT_EQ(search_node_builder.get_size(), 24);
-
-    // View the data generated in the builder.
-    auto search_node_view = SearchNode<SearchNodeTag, double>(FlatSearchNode<double>(search_node_builder.get_data()));
-    EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::OPEN);
-    EXPECT_EQ(search_node_view.get_parent_state(), std::numeric_limits<StateIndex>::max());
-    EXPECT_EQ(search_node_view.get_creating_action(), std::numeric_limits<GroundActionIndex>::max());
-    EXPECT_EQ(search_node_view.get_property<0>(), 42);
-
-    // Test mutation of a search node
-    search_node_view.set_status(SearchNodeStatus::CLOSED);
-    EXPECT_EQ(search_node_view.get_status(), SearchNodeStatus::CLOSED);
-    search_node_view.set_property<0>(40);
-    EXPECT_EQ(search_node_view.get_property<0>(), 40);
-}
-
-TEST(MimirTests, SearchSearchNodeVectorTest)
-{
-    /* A vector that automatically resizes when accessing elements at index i
-       and creating default constructed objects.
-       There is only 1 heap allocation every few thousand nodes that are being created. */
-
-    auto builder = SearchNodeBuilder<SearchNodeTag, double>();
-    builder.set_status(SearchNodeStatus::CLOSED);
-    builder.get_property<0>() = 42;
-    builder.get_flatmemory_builder().finish();
-
-    auto vector = FlatSearchNodeVector<double>(std::move(builder.get_flatmemory_builder()));
-
-    // Test default initialization a search node
-    auto search_node_0 = SearchNode<SearchNodeTag, double>(vector[0]);
-    EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::CLOSED);
-    EXPECT_EQ(search_node_0.get_parent_state(), std::numeric_limits<StateIndex>::max());
-    EXPECT_EQ(search_node_0.get_creating_action(), std::numeric_limits<GroundActionIndex>::max());
-    EXPECT_EQ(search_node_0.get_property<0>(), 42);
-
-    // Test mutation of a search node
-    search_node_0.set_status(SearchNodeStatus::OPEN);
-    EXPECT_EQ(search_node_0.get_status(), SearchNodeStatus::OPEN);
-    search_node_0.set_property<0>(41);
-    EXPECT_EQ(search_node_0.get_property<0>(), 41);
-
-    // Test default initialization of a second search node
-    auto search_node_1 = SearchNode<SearchNodeTag, double>(vector[1]);
-    EXPECT_EQ(search_node_1.get_status(), SearchNodeStatus::CLOSED);
-    EXPECT_EQ(search_node_1.get_property<0>(), 42);
-}
-
-TEST(MimirTests, SearchSearchNode2Test)
-{
-    using SearchNodeType = CistaSearchNode<double>;
+    using SearchNodeType = SearchNode<double>;
 
     auto node = SearchNodeType();
     set_status(node, SearchNodeStatus::NEW);
-    set_state(node, 2);
-    set_action(node, 3);
+    set_parent_state(node, 2);
+    set_creating_action(node, 3);
     set_property<0>(node, 3.14);
 
     auto buf = cista::buf<std::vector<uint8_t>> {};
@@ -102,35 +45,35 @@ TEST(MimirTests, SearchSearchNode2Test)
 
     auto deserialized_node = cista::deserialize<SearchNodeType>(buf.base(), buf.base() + buf.size());
     EXPECT_EQ(get_status(*deserialized_node), SearchNodeStatus::NEW);
-    EXPECT_EQ(get_state(*deserialized_node), 2);
-    EXPECT_EQ(get_action(*deserialized_node), 3);
+    EXPECT_EQ(get_parent_state(*deserialized_node), 2);
+    EXPECT_EQ(get_creating_action(*deserialized_node), 3);
     EXPECT_EQ(get_property<0>(*deserialized_node), 3.14);
 
     set_status(*deserialized_node, SearchNodeStatus::OPEN);
-    set_state(*deserialized_node, 4);
-    set_action(*deserialized_node, 5);
+    set_parent_state(*deserialized_node, 4);
+    set_creating_action(*deserialized_node, 5);
     set_property<0>(*deserialized_node, 9.99);
 
     EXPECT_EQ(get_status(*deserialized_node), SearchNodeStatus::OPEN);
-    EXPECT_EQ(get_state(*deserialized_node), 4);
-    EXPECT_EQ(get_action(*deserialized_node), 5);
+    EXPECT_EQ(get_parent_state(*deserialized_node), 4);
+    EXPECT_EQ(get_creating_action(*deserialized_node), 5);
     EXPECT_EQ(get_property<0>(*deserialized_node), 9.99);
 }
 
-TEST(MimirTests, SearchSearchNode2VectorTest)
+TEST(MimirTests, SearchSearchNodeVectorTest)
 {
-    using SearchNodeType = CistaSearchNode<double>;
+    using SearchNodeType = SearchNode<double>;
 
     auto node1 = SearchNodeType();
     set_status(node1, SearchNodeStatus::NEW);
-    set_state(node1, 2);
-    set_action(node1, 3);
+    set_parent_state(node1, 2);
+    set_creating_action(node1, 3);
     set_property<0>(node1, 3.14);
 
     auto node2 = SearchNodeType();
     set_status(node2, SearchNodeStatus::OPEN);
-    set_state(node2, 4);
-    set_action(node2, 5);
+    set_parent_state(node2, 4);
+    set_creating_action(node2, 5);
     set_property<0>(node2, 9.99);
 
     auto vec = cista::storage::ByteBufferVector<SearchNodeType>();
@@ -140,14 +83,14 @@ TEST(MimirTests, SearchSearchNode2VectorTest)
     auto deserialized_node1 = vec[0];
     auto deserialized_node2 = vec[1];
 
-    EXPECT_EQ(get_status(*deserialized_node1), SearchNodeStatus::NEW);
-    EXPECT_EQ(get_state(*deserialized_node1), 2);
-    EXPECT_EQ(get_action(*deserialized_node1), 3);
-    EXPECT_EQ(get_property<0>(*deserialized_node1), 3.14);
+    EXPECT_EQ(get_status(deserialized_node1), SearchNodeStatus::NEW);
+    EXPECT_EQ(get_parent_state(deserialized_node1), 2);
+    EXPECT_EQ(get_creating_action(deserialized_node1), 3);
+    EXPECT_EQ(get_property<0>(deserialized_node1), 3.14);
 
-    EXPECT_EQ(get_status(*deserialized_node2), SearchNodeStatus::OPEN);
-    EXPECT_EQ(get_state(*deserialized_node2), 4);
-    EXPECT_EQ(get_action(*deserialized_node2), 5);
-    EXPECT_EQ(get_property<0>(*deserialized_node2), 9.99);
+    EXPECT_EQ(get_status(deserialized_node2), SearchNodeStatus::OPEN);
+    EXPECT_EQ(get_parent_state(deserialized_node2), 4);
+    EXPECT_EQ(get_creating_action(deserialized_node2), 5);
+    EXPECT_EQ(get_property<0>(deserialized_node2), 9.99);
 }
 }

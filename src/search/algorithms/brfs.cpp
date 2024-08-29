@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/brfs.hpp"
 
+#include "cista/storage/byte_buffer_vector.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -40,13 +41,21 @@ struct BrFSSearchNodeTag
 
 using GValue = uint32_t;
 
-using BrFSSearchNodeBuilder = SearchNodeBuilder<BrFSSearchNodeTag, GValue>;
-using BrFsSearchNode = SearchNode<BrFSSearchNodeTag, GValue>;
-using ConstBrFsSearchNode = ConstSearchNode<BrFSSearchNodeTag, GValue>;
+using BrFSSearchNode = SearchNode<GValue>;
 
-static void set_g_value(BrFsSearchNode search_node, GValue g_value) { return search_node.set_property<0>(g_value); }
+static void set_g_value(BrFSSearchNode& node, GValue g_value) { return set_property<0>(node, g_value); }
 
-static GValue get_g_value(BrFsSearchNode search_node) { return search_node.get_property<0>(); }
+static GValue get_g_value(const BrFSSearchNode& node) { return get_property<0>(node); }
+
+static BrFSSearchNode&
+get_or_create_search_node(size_t state_index, const BrFSSearchNode& default_node, cista::storage::ByteBufferVector<BrFSSearchNode>& search_nodes)
+{
+    while (state_index >= search_nodes.size())
+    {
+        search_nodes.push_back(default_node);
+    }
+    return search_nodes[state_index];
+}
 
 /**
  * BrFS
@@ -87,15 +96,16 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                                           GroundActionList& out_plan,
                                           std::optional<State>& out_goal_state)
 {
-    auto search_nodes = FlatSearchNodeVector<uint32_t>(FlatSearchNodeVector<GValue>(
-        BrFSSearchNodeBuilder(SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0)).get_flatmemory_builder()));
+    auto default_search_node =
+        BrFSSearchNode { SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0) };
+    auto search_nodes = cista::storage::ByteBufferVector<BrFSSearchNode>();
     auto queue = std::deque<State>();
 
     const auto problem = m_aag->get_problem();
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
-    auto start_search_node = BrFsSearchNode(search_nodes[start_state.get_index()]);
+    auto& start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
     set_status(start_search_node, SearchNodeStatus::OPEN);
     set_g_value(start_search_node, 0);
 
@@ -123,8 +133,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         queue.pop_front();
 
         // We need this before goal test for correct statistics reporting.
-        const auto flat_search_node = search_nodes[state.get_index()];
-        auto search_node = BrFsSearchNode(flat_search_node);
+        auto& search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
 
         if (get_g_value(search_node) > g_value)
         {
@@ -135,7 +144,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(search_nodes, m_aag->get_ground_actions(), ConstBrFsSearchNode(flat_search_node), out_plan);
+            set_plan(search_nodes, m_aag->get_ground_actions(), search_node, out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
@@ -155,12 +164,11 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         {
             /* Open state. */
             const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-            const auto flat_successor_search_node = search_nodes[successor_state.get_index()];
-            auto successor_search_node = BrFsSearchNode(flat_successor_search_node);
+            auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
 
-            bool is_new_successor_state = (successor_search_node.get_status() == SearchNodeStatus::NEW);
+            bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
                 m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
@@ -176,7 +184,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         }
 
         /* Close state. */
-        search_node.set_status(SearchNodeStatus::CLOSED);
+        set_status(search_node, SearchNodeStatus::CLOSED);
     }
 
     m_event_handler->on_end_search();
