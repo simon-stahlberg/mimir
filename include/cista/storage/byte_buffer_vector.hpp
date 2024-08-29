@@ -15,14 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_BYTE_BUFFER_VECTOR_HPP_
-#define MIMIR_COMMON_BYTE_BUFFER_VECTOR_HPP_
+#ifndef CISTA_STORAGE_BYTE_BUFFER_VECTOR_HPP_
+#define CISTA_STORAGE_BYTE_BUFFER_VECTOR_HPP_
 
-#include "mimir/common/byte_buffer_segmented.hpp"
+#include "cista/serialization.h"
+#include "cista/storage/byte_buffer_segmented.hpp"
 
-#include <optional>
-
-namespace mimir
+namespace cista::storage
 {
 
 template<typename T>
@@ -33,15 +32,19 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed
-    std::vector<uint8_t*> m_element_begin;
+    std::vector<T*> m_elements;
 
-    void range_check(size_t pos) const;
+    // Serialization buffer
+    cista::buf<std::vector<uint8_t>> m_buf;
+
+    void range_check(size_t pos) const {}
 
 public:
     /// @brief Constructor that ensure that a resize yields non trivially initialized objects.
     ByteBufferVector(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) :
         m_storage(initial_num_bytes_per_segment, maximum_num_bytes_per_segment),
-        m_element_begin()
+        m_elements(),
+        m_buf()
     {
     }
     // Move only to avoid invalidating views.
@@ -54,32 +57,18 @@ public:
      * Element access
      */
 
-    std::optional<std::pair<uint8_t*, uint8_t*>> operator[](size_t pos)
-    {
-        if (!m_element_begin[pos])
-        {
-            return std::nullopt;
-        }
-        return { m_element_begin[pos], m_element_begin[pos + 1] };
-    }
-    std::optional<std::pair<const uint8_t*, const uint8_t*>> operator[](size_t pos) const
-    {
-        if (!m_element_begin[pos])
-        {
-            return std::nullopt;
-        }
-        return { m_element_begin[pos], m_element_begin[pos + 1] };
-    }
+    T* operator[](size_t pos) { return m_elements[pos]; }
+    const T* operator[](size_t pos) const { return m_elements[pos]; }
 
-    std::optional<std::pair<uint8_t*, uint8_t*>> at(size_t pos)
+    T* at(size_t pos)
     {
         range_check(pos);
-        return (this)[pos];
+        return (*this)[pos];
     }
-    std::optional<std::pair<const uint8_t*, const uint8_t*>> at(size_t pos) const
+    const T* at(size_t pos) const
     {
         range_check(pos);
-        return (this)[pos];
+        return (*this)[pos];
     }
 
     const ByteBufferSegmented& get_storage() const { return m_storage; }
@@ -88,35 +77,24 @@ public:
      * Capacity
      */
 
-    constexpr size_t empty() const { return m_element_begin.empty(); }
-    constexpr size_t size() const { return m_element_begin.size() - 1; }
+    size_t empty() const { return m_elements.empty(); }
+    size_t size() const { return m_elements.size(); }
 
     /**
      * Modifiers
      */
 
-    void push_back(const std::vector<uint8_t>& buffer)
+    void push_back(const T& element)
     {
-        m_element_begin.resize(size() + 2);
-        auto begin = m_storage.write(buffer.data(), buffer.size());
-        m_element_begin[size()] = begin;
-        m_element_begin[size() + 1] = begin + buffer.size();
-    }
-    void resize(size_t count, const std::vector<uint8_t>& value)
-    {
-        if (count < size())
-        {
-            throw std::runtime_error("ByteBufferVector::resize: shrinking not allowed because partial deletion is not supported.");
-        }
-        while (size() < count)
-        {
-            push_back(value);
-        }
+        m_buf.reset();
+        cista::serialize(m_buf, element);
+        auto begin = m_storage.write(m_buf.base(), m_buf.size());
+        m_elements.push_back(cista::deserialize<T>(begin, begin + m_buf.size()));
     }
     void clear()
     {
         m_storage.clear();
-        m_element_begin.clear();
+        m_elements.clear();
     }
 };
 

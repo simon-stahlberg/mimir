@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_COMMON_BYTE_BUFFER_SEGMENTED_HPP_
-#define MIMIR_COMMON_BYTE_BUFFER_SEGMENTED_HPP_
+#ifndef CISTA_STORAGE_BYTE_BUFFER_SEGMENTED_HPP_
+#define CISTA_STORAGE_BYTE_BUFFER_SEGMENTED_HPP_
 
 #include <cassert>
 #include <cstddef>
@@ -25,7 +25,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace mimir
+namespace cista::storage
 {
 
 using NumBytes = size_t;

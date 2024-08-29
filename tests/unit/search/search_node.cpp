@@ -17,6 +17,9 @@
 
 #include "mimir/search/search_node.hpp"
 
+#include "cista/storage/byte_buffer_vector.hpp"
+#include "mimir/search/search_node2.hpp"
+
 #include <flatmemory/flatmemory.hpp>
 #include <gtest/gtest.h>
 
@@ -83,4 +86,55 @@ TEST(MimirTests, SearchSearchNodeVectorTest)
     EXPECT_EQ(search_node_1.get_property<0>(), 42);
 }
 
+TEST(MimirTests, SearchSearchNode2Test)
+{
+    auto node = CistaSearchNode<>();
+    set_status(node, SearchNodeStatus::NEW);
+    set_state(node, 2);
+    set_action(node, 3);
+
+    auto buf = cista::buf<std::vector<uint8_t>> {};
+    cista::serialize(buf, node);
+
+    auto deserialized_node = cista::deserialize<CistaSearchNode<>>(buf.base(), buf.base() + buf.size());
+    EXPECT_EQ(get_status(*deserialized_node), SearchNodeStatus::NEW);
+    EXPECT_EQ(get_state(*deserialized_node), 2);
+    EXPECT_EQ(get_action(*deserialized_node), 3);
+
+    set_status(*deserialized_node, SearchNodeStatus::OPEN);
+    set_state(*deserialized_node, 4);
+    set_action(*deserialized_node, 5);
+
+    EXPECT_EQ(get_status(*deserialized_node), SearchNodeStatus::OPEN);
+    EXPECT_EQ(get_state(*deserialized_node), 4);
+    EXPECT_EQ(get_action(*deserialized_node), 5);
+}
+
+TEST(MimirTests, SearchSearchNode2VectorTest)
+{
+    auto node1 = CistaSearchNode<>();
+    set_status(node1, SearchNodeStatus::NEW);
+    set_state(node1, 2);
+    set_action(node1, 3);
+
+    auto node2 = CistaSearchNode<>();
+    set_status(node2, SearchNodeStatus::OPEN);
+    set_state(node2, 4);
+    set_action(node2, 5);
+
+    auto vec = cista::storage::ByteBufferVector<CistaSearchNode<>>();
+    vec.push_back(node1);
+    vec.push_back(node2);
+
+    auto deserialized_node1 = vec[0];
+    auto deserialized_node2 = vec[1];
+
+    EXPECT_EQ(get_status(*deserialized_node1), SearchNodeStatus::NEW);
+    EXPECT_EQ(get_state(*deserialized_node1), 2);
+    EXPECT_EQ(get_action(*deserialized_node1), 3);
+
+    EXPECT_EQ(get_status(*deserialized_node2), SearchNodeStatus::OPEN);
+    EXPECT_EQ(get_state(*deserialized_node2), 4);
+    EXPECT_EQ(get_action(*deserialized_node2), 5);
+}
 }

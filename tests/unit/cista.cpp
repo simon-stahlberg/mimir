@@ -44,7 +44,7 @@ TEST(MimirTests, CistaTest)
     // Define a cista::tuple with different types.
     auto obj = CustomTuple { 42, data::string { "hello" }, 3.14 };
 
-    std::vector<unsigned char> buf;
+    std::vector<uint8_t> buf;
     {  // Serialize.
         buf = cista::serialize(obj);
     }

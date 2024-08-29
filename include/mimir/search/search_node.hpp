@@ -18,12 +18,11 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
-#include "cista/containers/tuple.h"
-#include "cista/serialization.h"  // Serialization functions
 #include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
 #include <cassert>
+#include <flatmemory/flatmemory.hpp>
 
 namespace mimir
 {
@@ -41,14 +40,20 @@ enum SearchNodeStatus
  */
 
 template<typename... SearchNodeProperties>
-using FlatSearchNode = cista::tuple<SearchNodeStatus,  //
-                                    StateIndex,
-                                    GroundActionIndex,
-                                    SearchNodeProperties...>;
+using FlatSearchNodeLayout = flatmemory::Tuple<SearchNodeStatus,  //
+                                               StateIndex,
+                                               GroundActionIndex,
+                                               SearchNodeProperties...>;
 
-// TODO(Dominik): We need a container to store search nodes
-// template<typename... SearchNodeProperties>
-// using FlatSearchNodeVector = flatmemory::FixedSizedTypeVector<FlatSearchNodeLayout<SearchNodeProperties...>>;
+template<typename... SearchNodeProperties>
+using FlatSearchNodeBuilder = flatmemory::Builder<FlatSearchNodeLayout<SearchNodeProperties...>>;
+template<typename... SearchNodeProperties>
+using FlatSearchNode = flatmemory::View<FlatSearchNodeLayout<SearchNodeProperties...>>;
+template<typename... SearchNodeProperties>
+using FlatConstSearchNode = flatmemory::ConstView<FlatSearchNodeLayout<SearchNodeProperties...>>;
+
+template<typename... SearchNodeProperties>
+using FlatSearchNodeVector = flatmemory::FixedSizedTypeVector<FlatSearchNodeLayout<SearchNodeProperties...>>;
 
 /**
  * Mimir types
@@ -77,9 +82,8 @@ public:
     }
 
     /// @brief Default constructor enabled only if all `SearchNodeProperties` are default-constructible
-    SearchNodeBuilder()
-        requires(std::default_initializable<SearchNodeProperties> && ...)
-        : m_builder(SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), SearchNodeProperties()...)
+    SearchNodeBuilder() requires(std::default_initializable<SearchNodeProperties>&&...) :
+        m_builder(SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), SearchNodeProperties()...)
     {
         finish();
     }
@@ -90,13 +94,14 @@ public:
      * Mutable getters
      */
 
-    FlatSearchNode<SearchNodeProperties...>& get_data() { return m_data; }
-    const FlatSearchNode<SearchNodeProperties...>& get_data() const { return m_data; }
-    const std::vector<uin8_t>& get_buffer() { return m_buffer; }
+    uint8_t* get_data() { return m_builder.get_buffer().data(); }
+    size_t get_size() { return m_builder.get_buffer().size(); }
+    FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() { return m_builder; }
+    const FlatSearchNodeBuilder<SearchNodeProperties...>& get_flatmemory_builder() const { return m_builder; }
 
-    void set_status(SearchNodeStatus status) { cista::get<0>(m_data) = status; }
-    void set_parent_state(StateIndex parent_state) { cista::get<1>(m_data) = parent_state; }
-    void set_creating_action(GroundActionIndex creating_action) { cista::get<2>(m_data) = creating_action; }
+    void set_status(SearchNodeStatus status) { m_builder.template get<0>() = status; }
+    void set_parent_state(StateIndex parent_state) { m_builder.template get<1>() = parent_state; }
+    void set_creating_action(GroundActionIndex creating_action) { m_builder.template get<2>() = creating_action; }
 
     /// @brief Return a reference to the I-th `SearchNodeProperties`.
     /// @tparam I the index of the property in the parameter pack.
@@ -105,12 +110,11 @@ public:
     auto& get_property()
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
-        return cista::get<I + 3>(m_data);
+        return m_builder.template get<I + 3>();
     }
 
 private:
-    FlatSearchNode<SearchNodeProperties...> m_data;
-    std::vector<uint8_t> m_buffer;
+    FlatSearchNodeBuilder<SearchNodeProperties...> m_builder;
 };
 
 /// @brief `SearchNode` is a mutable wrapper around `FlatSearchNode` to read and write the data.
@@ -118,46 +122,46 @@ template<typename Tag, typename... SearchNodeProperties>
 class SearchNode
 {
 private:
-    FlatSearchNode<SearchNodeProperties...>* m_view;
+    FlatSearchNode<SearchNodeProperties...> m_view;
 
 public:
-    SearchNode(FlatSearchNode<SearchNodeProperties...>* view) : m_view(view) {}
+    SearchNode(FlatSearchNode<SearchNodeProperties...> view) : m_view(view) {}
 
     /**
      * Setters
      */
 
-    void set_status(SearchNodeStatus status) { cista::get<0>(*m_view) = status; }
-    void set_parent_state(StateIndex state) { cist::get<1>(*m_view) = state; }
-    void set_creating_action(GroundActionIndex action) { cista::get<2>(*m_view) = action; }
+    void set_status(SearchNodeStatus status) { m_view.template mutate<0>(status); }
+    void set_parent_state(StateIndex state) { m_view.template mutate<1>(state); }
+    void set_creating_action(GroundActionIndex action) { m_view.template mutate<2>(action); }
 
     template<size_t I>
     void set_property(const typename std::tuple_element<I, std::tuple<SearchNodeProperties...>>::type& property)
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
-        cista::get<I + 3>(*m_view) = property;
+        m_view.template mutate<I + 3>(property);
     }
 
     /**
      * Mutable getters
      */
 
-    SearchNodeStatus get_status() { return cista::get<0>(*m_view); }
-    StateIndex get_parent_state() { return cista::get<1>(*m_view); }
-    GroundActionIndex get_creating_action() { return cista::get<2>(*m_view); }
+    SearchNodeStatus get_status() { return m_view.template get<0>(); }
+    StateIndex get_parent_state() { return m_view.template get<1>(); }
+    GroundActionIndex get_creating_action() { return m_view.template get<2>(); }
 
     template<size_t I>
-    auto& get_property()
+    auto get_property()
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
-        return cista::get<I + 3>(*m_view);
+        return m_view.template get<I + 3>();
     }
 
     template<size_t I>
-    const auto& get_property() const
+    auto get_property() const
     {
         static_assert(I < sizeof...(SearchNodeProperties), "Index out of bounds for SearchNodeProperties");
-        cista::get<I + 3>(*m_view)
+        return m_view.template get<I + 3>();
     }
 };
 
