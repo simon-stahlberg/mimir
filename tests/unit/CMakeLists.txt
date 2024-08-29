@@ -15,6 +15,8 @@ endfunction()
 add_gtest(algorithms_memory_pool_test                      "algorithms/memory_pool.cpp")
 add_gtest(algorithms_nauty_test                            "algorithms/nauty.cpp")
 
+add_gtest(cista_dynamic_bitset_test                        "cista/dynamic_bitset.cpp")
+
 add_gtest(common_grouped_vector_test                       "common/grouped_vector.cpp")
 
 add_gtest(datasets_faithful_abstraction_test               "datasets/faithful_abstraction.cpp")
@@ -47,6 +49,3 @@ add_gtest(search_priority_queue_test                       "search/openlists/pri
 add_gtest(search_single_test                               "search/planners/single.cpp")
 add_gtest(search_search_node_test                          "search/search_node.cpp")
 add_gtest(search_state_repository_test                     "search/state_repository.cpp")
-
-
-add_gtest(cista_test                                       "cista.cpp")

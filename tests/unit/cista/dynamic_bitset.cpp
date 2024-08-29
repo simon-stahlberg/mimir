@@ -15,9 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "cista/containers/tuple.h"
-#include "cista/containers/vector.h"  // Example Cista++ container
-#include "cista/serialization.h"      // Serialization functions
+#include "cista/containers/dynamic_bitset.h"
+
+#include "cista/serialization.h"
 
 #include <gtest/gtest.h>
 
@@ -36,13 +36,17 @@ void print_buffer(const std::vector<unsigned char>& buf)
     std::cout << std::dec << std::endl;  // switch back to decimal output
 }
 
-TEST(MimirTests, CistaTest)
+TEST(MimirTests, CistaDynamicBitsetTest)
 {
     namespace data = cista::offset;
 
-    using CustomTuple = cista::tuple<int, data::string, double>;
-    // Define a cista::tuple with different types.
-    auto obj = CustomTuple { 42, data::string { "hello" }, 3.14 };
+    using Bitset = data::dynamic_bitset<uint64_t>;
+
+    auto obj = Bitset(1000);
+    for (size_t i = 0; i < 1000; ++i)
+    {
+        obj.set(i);
+    }
 
     std::vector<uint8_t> buf;
     {  // Serialize.
@@ -52,13 +56,7 @@ TEST(MimirTests, CistaTest)
     print_buffer(buf);
 
     // Deserialize.
-    auto deserialized = cista::deserialize<CustomTuple>(buf.begin().base(), buf.end().base());
-    EXPECT_EQ(cista::get<0>(*deserialized), 42);
-    EXPECT_EQ(cista::get<1>(*deserialized), data::string { "hello" });
-    EXPECT_EQ(cista::get<2>(*deserialized), 3.14);
-
-    cista::get<0>(*deserialized) = 43;
-    EXPECT_EQ(cista::get<0>(*deserialized), 43);
+    auto deserialized = cista::deserialize<Bitset>(buf.begin().base(), buf.end().base());
 }
 
 }

@@ -35,10 +35,6 @@ enum SearchNodeStatus
     DEAD_END = 3,
 };
 
-/**
- * Flatmemory types
- */
-
 template<typename... SearchNodeProperties>
 using SearchNode = cista::tuple<SearchNodeStatus,  //
                                 StateIndex,
