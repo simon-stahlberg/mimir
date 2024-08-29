@@ -22,6 +22,7 @@ set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
 add_subdirectory(benchmark)
 add_subdirectory(boost)
+add_subdirectory(cista)
 add_subdirectory(flatmemory)
 add_subdirectory(googletest)
 add_subdirectory(loki)
