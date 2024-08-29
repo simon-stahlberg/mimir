@@ -108,14 +108,14 @@ void set_property(SearchNode<SearchNodeProperties...>& node, const typename std:
 /// @param search_node The search node from which to start backtracking.
 /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
 ///                      the to the state underlying the search node.
-template<typename SearchNodeType>
-void set_plan(const cista::storage::ByteBufferVector<SearchNodeType>& search_nodes,  //
+template<typename... SearchNodeProperties>
+void set_plan(const cista::storage::ByteBufferVector<SearchNode<SearchNodeProperties...>>& search_nodes,  //
               const GroundActionList& ground_actions,
-              const SearchNodeType& search_node,
+              const SearchNode<SearchNodeProperties...>& search_node,
               GroundActionList& out_plan)
 {
     out_plan.clear();
-    const SearchNodeType* cur_search_node = &search_node;
+    const SearchNode<SearchNodeProperties...>* cur_search_node = &search_node;
 
     while (get_parent_state(*cur_search_node) != std::numeric_limits<StateIndex>::max())
     {
