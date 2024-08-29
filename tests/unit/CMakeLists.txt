@@ -47,3 +47,6 @@ add_gtest(search_priority_queue_test                       "search/openlists/pri
 add_gtest(search_single_test                               "search/planners/single.cpp")
 add_gtest(search_search_node_test                          "search/search_node.cpp")
 add_gtest(search_state_repository_test                     "search/state_repository.cpp")
+
+
+add_gtest(cista_test                                       "cista.cpp")

@@ -18,10 +18,11 @@ ExternalProject_Add(
     GIT_TAG v0.15
     PREFIX ${CMAKE_BINARY_DIR}/cista
     CMAKE_ARGS ${CMAKE_ARGS}
-    CONFIGURE_COMMAND ""   # Skip the configure step
-    BUILD_COMMAND ""       # Skip the build step since it's header-only
-    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
-                   ${CMAKE_BINARY_DIR}/cista/src/cista/include
-                   ${CMAKE_INSTALL_PREFIX}/include
+    # Build the cista-test-single-header target to generate the single header file
+    BUILD_COMMAND ${CMAKE_COMMAND} --build <BINARY_DIR> --target cista-test-single-header
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX}/include
+                   COMMAND ${CMAKE_COMMAND} -E copy
+                   <BINARY_DIR>/cista.h
+                   ${CMAKE_INSTALL_PREFIX}/include/cista.h
     UPDATE_COMMAND ""      # Skip the update step
 )

@@ -8,7 +8,7 @@ project(mimir VERSION 0.1.1)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 
 ##############################################################
@@ -112,6 +112,7 @@ if(Nauty_FOUND)
   include_directories(${Nauty_INCLUDE_DIR})
   message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
 endif()
+
 
 ##############################################################
 # Add library and executable targets
