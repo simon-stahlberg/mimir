@@ -5,7 +5,7 @@ find_package(GTest)
 find_package(pybind11)
 
 add_executable(pymimir_tests
-        main.cpp
+        main_tests.cpp
         test_bindings.cpp
         )
 
