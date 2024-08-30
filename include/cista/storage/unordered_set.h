@@ -21,18 +21,28 @@
 #include "cista/serialization.h"
 #include "cista/storage/byte_buffer_segmented.h"
 
-#include <experimental/memory>
 #include <unordered_set>
 #include <utility>
 
 namespace cista::storage
 {
+template<typename T>
+struct DerefStdHasher
+{
+    size_t operator()(const T* ptr) const { return std::hash<T>()(*ptr); }
+};
+
+template<typename T>
+struct DerefStdEqualTo
+{
+    size_t operator()(const T* lhs, const T* rhs) const { return std::equal_to<T>()(*lhs, *rhs); }
+};
+
 /// @brief `UnorderedSet` is a container that uniquely stores buffers of a cista container of type T.
-/// We wrap non owning raw pointers into an observer_ptr to avoid accidental usage of pointer identity.
-/// @tparam T
-/// @tparam Hash
-/// @tparam Equal
-template<typename T, typename Hash = std::hash<std::experimental::observer_ptr<T>>, typename Equal = std::equal_to<std::experimental::observer_ptr<T>>>
+/// @tparam T is the underlying container type.
+/// @tparam Hash is a hash function that computes a hash value for a dereferenced pointer of type T.
+/// @tparam Equal is a comparison function that compares two dereferenced pointers of type T.
+template<typename T, typename Hash = DerefStdHasher<T>, typename Equal = DerefStdEqualTo<T>>
 class UnorderedSet
 {
 private:
@@ -40,13 +50,13 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed
-    std::unordered_set<std::experimental::observer_ptr<T>, Hash, Equal> m_elements;
+    std::unordered_set<T*, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
 
-    using iterator = typename std::unordered_set<std::experimental::observer_ptr<T>, Hash, Equal>::iterator;
-    using const_iterator = typename std::unordered_set<std::experimental::observer_ptr<T>, Hash, Equal>::const_iterator;
+    using iterator = typename std::unordered_set<T*, Hash, Equal>::iterator;
+    using const_iterator = typename std::unordered_set<T*, Hash, Equal>::const_iterator;
 
 public:
     explicit UnorderedSet(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) {}

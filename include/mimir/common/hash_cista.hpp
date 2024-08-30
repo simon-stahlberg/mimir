@@ -23,8 +23,6 @@
 #include "cista/containers/vector.h"
 #include "mimir/common/hash.hpp"
 
-#include <experimental/memory>
-
 /* DynamicBitset */
 
 template<typename Block, template<typename> typename Ptr>
@@ -52,15 +50,6 @@ struct std::hash<cista::basic_dynamic_bitset<Block, Ptr>>
     }
 };
 
-template<typename Block, template<typename> typename Ptr>
-struct std::hash<std::experimental::observer_ptr<cista::basic_dynamic_bitset<Block, Ptr>>>
-{
-    using Type = cista::basic_dynamic_bitset<Block, Ptr>;
-    using ObserverPtrType = std::experimental::observer_ptr<cista::basic_dynamic_bitset<Block, Ptr>>;
-
-    size_t operator()(const ObserverPtrType& bitset) const { return std::hash<cista::basic_dynamic_bitset<Block, Ptr>>()(bitset.get()); }
-};
-
 /* Tuple */
 
 template<typename... Ts>
@@ -79,15 +68,6 @@ struct std::hash<cista::tuple<Ts...>>
     }
 };
 
-template<typename... Ts>
-struct std::hash<std::experimental::observer_ptr<cista::tuple<Ts...>>>
-{
-    using Type = cista::tuple<Ts...>;
-    using ObserverPtrType = std::experimental::observer_ptr<cista::tuple<Ts...>>;
-
-    size_t operator()(const ObserverPtrType& tuple) const { return std::hash<Type>()(tuple.get()); }
-};
-
 /* Vector */
 
 template<typename T, template<typename> typename Ptr, bool IndexPointers, typename TemplateSizeType, class Allocator>
@@ -104,15 +84,6 @@ struct std::hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Al
         }
         return seed;
     }
-};
-
-template<typename T, template<typename> typename Ptr, bool IndexPointers, typename TemplateSizeType, class Allocator>
-struct std::hash<std::experimental::observer_ptr<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>>>
-{
-    using Type = cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>;
-    using ObserverPtrType = std::experimental::observer_ptr<Type>;
-
-    size_t operator()(const ObserverPtrType& vector) const { return std::hash<Type>()(vector.get()); }
 };
 
 #endif
