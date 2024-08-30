@@ -41,7 +41,7 @@ bool DenotationRepository<D>::KeyEqual::operator()(const Key& left, const Key& r
 template<IsConceptOrRole D>
 Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, size_t state_index, const DenotationBuilder<D>& denotation)
 {
-    const auto [it, inserted] = m_storage.insert(denotation.get_flatmemory_builder());
+    const auto [it, inserted] = m_storage.insert(denotation.get_data());
     if (inserted)
     {
         m_cached_dynamic_denotations.emplace(Key { constructor, state_index }, Denotation<D>(*it));

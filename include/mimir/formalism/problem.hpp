@@ -18,8 +18,8 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/flat_types.hpp"
 
 namespace mimir
 {

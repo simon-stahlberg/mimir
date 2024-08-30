@@ -55,9 +55,7 @@ public:
         self().evaluate_impl(context);
 
         // Store and return result;
-        auto& builder = context.get_denotation_builder<D>();
-        builder.get_flatmemory_builder().finish();
-        return context.get_denotation_repository<D>().insert(this, context.get_state_index(), builder);
+        return context.get_denotation_repository<D>().insert(this, context.get_state_index(), context.get_denotation_builder<D>());
     };
 
     bool accept(const grammar::Visitor<D>& visitor) const override { return self().accept_impl(visitor); }

@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
+#include "cista/storage/unordered_set.h"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 
@@ -33,12 +34,10 @@ template<IsConceptOrRole D>
 class DenotationRepository
 {
 private:
-    using FlatDenotationBuilderType = typename Denotation<D>::FlatDenotationBuilderType;
     using FlatDenotationType = typename Denotation<D>::FlatDenotationType;
-    using FlatDenotationSetType = typename Denotation<D>::FlatDenotationSetType;
 
     // Store denotations uniquely.
-    FlatDenotationSetType m_storage;
+    cista::storage::UnorderedSet<FlatDenotationType> m_storage;
 
     struct Key
     {

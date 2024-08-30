@@ -22,9 +22,9 @@
 #include "cista/containers/tuple.h"
 #include "cista/serialization.h"
 #include "cista/storage/unordered_set.h"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/flat_types.hpp"
 
 #include <ostream>
 #include <tuple>

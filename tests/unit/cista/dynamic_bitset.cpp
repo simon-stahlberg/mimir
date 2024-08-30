@@ -19,6 +19,7 @@
 
 #include "cista/serialization.h"
 #include "mimir/common/hash_cista.hpp"
+#include "mimir/search/action.hpp"
 
 #include <gtest/gtest.h>
 
@@ -35,6 +36,19 @@ void print_buffer(const std::vector<unsigned char>& buf)
         std::cout << std::setw(2) << std::setfill('0') << std::hex << static_cast<int>(buf[i]) << " ";
     }
     std::cout << std::dec << std::endl;  // switch back to decimal output
+}
+
+TEST(CistaTests, CistaActionTest)
+{
+    auto flat_conditional_effect = FlatConditionalEffect();
+    auto conditional_effect = ConditionalEffectBuilder(&flat_conditional_effect);
+
+    conditional_effect.get_negative_precondition<Fluent>().push_back(1);
+
+    std::vector<uint8_t> buf;
+    {  // Serialize.
+        buf = cista::serialize(flat_conditional_effect);
+    }
 }
 
 TEST(CistaTests, CistaDynamicBitsetTest)

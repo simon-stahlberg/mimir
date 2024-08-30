@@ -318,27 +318,10 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
 
     auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state.get_atoms<Fluent>());
-    // std::cout << "fluent_atom_ids: [" << std::endl;
-    // for (const auto& x : state.get_atoms<Fluent>())
-    //{
-    //     std::cout << x << ",";
-    // }
-    // std::cout << "]" << std::endl;
-    // std::cout << "fluent_atom: [" << std::endl;
-    // for (const auto& x : fluent_atoms)
-    //{
-    //     std::cout << *x << ",";
-    // }
-    // std::cout << "]" << std::endl;
+
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
-    // std::cout << "derived_atom_ids: [" << std::endl;
-    // for (const auto& x : state.get_atoms<Derived>())
-    //{
-    //     std::cout << x << ",";
-    // }
-    // std::cout << "]" << std::endl;
 
     auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state.get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
@@ -352,15 +335,11 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     {
         condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings);
 
-        std::cout << "Num bindings: " << bindings.size() << std::endl;
-
         for (auto& binding : bindings)
         {
             out_applicable_actions.emplace_back(ground_action(action, std::move(binding)));
         }
     }
-
-    std::cout << "Num applicable actions: " << out_applicable_actions.size() << std::endl;
 
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_factories);
 }

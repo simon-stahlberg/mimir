@@ -18,9 +18,9 @@
 #ifndef MIMIR_SEARCH_AXIOM_HPP_
 #define MIMIR_SEARCH_AXIOM_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/flat_types.hpp"
 
 #include <cstdint>
 #include <ostream>

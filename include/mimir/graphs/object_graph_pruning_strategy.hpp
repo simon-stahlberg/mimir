@@ -18,10 +18,10 @@
 #ifndef MIMIR_GRAPHS_OBJECT_GRAPH_PRUNING_STRATEGY_HPP_
 #define MIMIR_GRAPHS_OBJECT_GRAPH_PRUNING_STRATEGY_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
-#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>

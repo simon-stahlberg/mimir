@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_FLAT_TYPES_HPP_
-#define MIMIR_SEARCH_FLAT_TYPES_HPP_
+#ifndef MIMIR_COMMON_TYPES_CISTA_HPP_
+#define MIMIR_COMMON_TYPES_CISTA_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/containers/vector.h"

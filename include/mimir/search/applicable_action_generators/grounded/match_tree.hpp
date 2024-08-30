@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_MATCH_TREE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_MATCH_TREE_HPP_
 
-#include "mimir/search/flat_types.hpp"
+#include "mimir/common/types_cista.hpp"
 
 #include <cstdint>
 #include <vector>

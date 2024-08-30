@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_AXIOM_EVALUATOR_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -28,7 +29,6 @@
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/condition_grounders.hpp"
-#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
 #include <stdexcept>

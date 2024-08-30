@@ -19,6 +19,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/graphs/object_graph.hpp"
@@ -26,7 +27,6 @@
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
-#include "mimir/search/flat_types.hpp"
 
 #include <optional>
 #include <stack>

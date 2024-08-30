@@ -21,8 +21,8 @@
 #include "cista/containers/tuple.h"
 #include "cista/storage/unordered_set.h"
 #include "cista/storage/vector.h"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -39,7 +39,7 @@ class PDDLFactories;
 struct FlatSimpleEffect
 {
     bool is_negated;
-    size_t atom_id;
+    uint32_t atom_id;
 
     bool operator==(const FlatSimpleEffect& other) const;
 };

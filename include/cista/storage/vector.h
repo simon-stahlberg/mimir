@@ -89,9 +89,20 @@ public:
 
     void push_back(const T& element)
     {
+        /* Serialize the element. */
         m_buf.reset();
         cista::serialize(m_buf, element);
+
+        /* Add padding to ensure that subsequent elements are aligned correctly. */
+        size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
+        m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
+        assert(m_buf.size() % alignof(T) == 0);
+
+        /* Write the data to the storage. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
+        assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0);
+
+        /* Add the deserialized element to the vector. */
         m_elements.push_back(cista::deserialize<T>(begin, begin + m_buf.size()));
     }
     void clear()

@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state_repository.hpp"
 
 namespace mimir
