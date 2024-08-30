@@ -34,7 +34,7 @@ private:
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
-    FlatBitsetBuilder<Static> m_static_initial_positive_atoms_builder;
+    FlatBitset m_static_initial_positive_atoms;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
     GroundLiteralList<Static> m_static_goal_condition;
@@ -85,8 +85,7 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
-    const FlatBitsetBuilder<Static> get_static_initial_positive_atoms() const;
-    FlatBitset<Static> get_static_initial_positive_atoms_bitset() const;
+    const FlatBitset& get_static_initial_positive_atoms() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     template<PredicateCategory P>

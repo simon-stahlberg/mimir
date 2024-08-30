@@ -50,13 +50,13 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed
-    std::unordered_set<T*, Hash, Equal> m_elements;
+    std::unordered_set<const T*, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
 
-    using iterator = typename std::unordered_set<T*, Hash, Equal>::iterator;
-    using const_iterator = typename std::unordered_set<T*, Hash, Equal>::const_iterator;
+    using iterator = typename std::unordered_set<const T*, Hash, Equal>::iterator;
+    using const_iterator = typename std::unordered_set<const T*, Hash, Equal>::const_iterator;
 
 public:
     explicit UnorderedSet(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) {}
@@ -97,16 +97,16 @@ public:
         m_buf.reset();
         cista::serialize(m_buf, element);
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
-        return m_elements.insert(cista::deserialize<T>(begin, begin + m_buf.size()));
+        return m_elements.insert(cista::deserialize<const T>(begin, begin + m_buf.size()));
     }
 
     /**
      * Lookup
      */
 
-    size_t count(const T& key) const { return m_element.count(key); }
-    iterator find(const T& key) { return m_elements.find(key); }
-    const_iterator find(const T& key) const { return m_elements.find(&key); }
+    size_t count(const T& key) const { return m_elements.count(&key); }
+    auto find(const T& key) { return m_elements.find(&key); }
+    auto find(const T& key) const { return m_elements.find(&key); }
     bool contains(const T& key) const { return m_elements.contains(&key); }
 
     const ByteBufferSegmented& get_storage() const { return m_storage; }

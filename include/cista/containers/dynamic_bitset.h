@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cinttypes>
 #include <iosfwd>
+#include <iostream>
 #include <limits>
 #include <numeric>
 #include <string>
@@ -148,6 +149,10 @@ struct basic_dynamic_bitset
                 {
                     // The first bit is not set, so we need to find it
                     next_set_bit();
+                }
+                else if (num_blocks == 0)
+                {
+                    m_pos = m_end_pos;
                 }
                 else
                 {

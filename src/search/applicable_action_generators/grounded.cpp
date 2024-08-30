@@ -102,6 +102,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     auto delete_free_ssg = StateRepository(delete_free_lifted_aag);
 
     auto state_builder = StateBuilder();
+    auto state_builder_tmp = StateBuilder();
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
     auto& derived_state_atoms = state_builder.get_atoms<Derived>();
     const auto initial_state = delete_free_ssg.get_or_create_initial_state();
@@ -111,13 +112,16 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
 
+    // Serialization buffer
+    cista::buf<std::vector<uint8_t>> state_buf;
+
     auto actions = GroundActionList {};
     do
     {
         reached_delete_free_explore_fixpoint = true;
 
-        state_builder.get_flatmemory_builder().finish();
-        const auto state = State(FlatState(state_builder.get_flatmemory_builder().get_buffer().data()));
+        state_builder_tmp = state_builder;
+        const auto state = State(&state_builder_tmp.get_data());
 
         auto num_atoms_before = fluent_state_atoms.count();
 
@@ -163,11 +167,11 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     for (const auto& action : delete_free_lifted_aag->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(action.get_action()))
+        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_factories->get_action(action.get_action())))
         {
-            auto action_arguments = ObjectList(action.get_objects().begin(), action.get_objects().end());
+            auto action_arguments = m_pddl_factories->get_objects_from_indices(action.get_objects());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
+            if (grounded_action.is_statically_applicable(problem->get_static_initial_positive_atoms()))
             {
                 ground_actions.push_back(grounded_action);
             }
@@ -186,11 +190,11 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     for (const auto& axiom : delete_free_lifted_aag->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(axiom.get_axiom()))
+        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_factories->get_axiom(axiom.get_axiom())))
         {
-            auto axiom_arguments = ObjectList(axiom.get_objects().begin(), axiom.get_objects().end());
+            auto axiom_arguments = m_pddl_factories->get_objects_from_indices(axiom.get_objects());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
+            if (grounded_axiom.is_statically_applicable(problem->get_static_initial_positive_atoms()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
@@ -212,8 +216,7 @@ void GroundedApplicableActionGenerator::generate_applicable_actions(State state,
     m_action_match_tree.get_applicable_elements(state.get_atoms<Fluent>(), state.get_atoms<Derived>(), out_applicable_actions);
 }
 
-void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                                                                  FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
+void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
 {
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {
@@ -235,8 +238,7 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBits
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(grounded_axiom.get_axiom());
-                if (!lifted_partition.get_axioms().count(grounded_axiom.get_axiom()))
+                if (!lifted_partition.get_axioms().count(m_pddl_factories->get_axiom(grounded_axiom.get_axiom())))
                 {
                     // axiom not part of same partition
                     continue;

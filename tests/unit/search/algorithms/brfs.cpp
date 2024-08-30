@@ -57,7 +57,7 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list));
+        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_factories()));
     }
 
     const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }
@@ -92,7 +92,7 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list));
+        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_factories()));
     }
 
     const BrFSAlgorithmStatistics& get_algorithm_statistics() const { return m_brfs_event_handler->get_statistics(); }

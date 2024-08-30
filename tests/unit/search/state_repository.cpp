@@ -27,8 +27,6 @@ namespace mimir::tests
 
 TEST(MimirTests, SearchStateRepositoryTest)
 {
-    flatmemory::Layout<FlatActionLayout>().print();
-
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
@@ -40,10 +38,17 @@ TEST(MimirTests, SearchStateRepositoryTest)
     auto applicable_actions = GroundActionList {};
     lifted_aag->generate_applicable_actions(initial_state, applicable_actions);
 
-    //for (const auto& action : applicable_actions) {
-    //    const auto sucessor_state = ssg.get_or_create_successor_state(initial_state, action);
-    //    break;
-    //}
+    for (const auto& action : applicable_actions)
+    {
+        const auto successor_state = ssg.get_or_create_successor_state(initial_state, action);
+
+        auto applicable_actions2 = GroundActionList {};
+        lifted_aag->generate_applicable_actions(successor_state, applicable_actions2);
+        for (const auto& action2 : applicable_actions2)
+        {
+            const auto successor_state2 = ssg.get_or_create_successor_state(successor_state, action2);
+        }
+    }
 }
 
 }

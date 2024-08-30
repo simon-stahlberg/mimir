@@ -18,26 +18,20 @@
 #ifndef MIMIR_SEARCH_FLAT_TYPES_HPP_
 #define MIMIR_SEARCH_FLAT_TYPES_HPP_
 
+#include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/vector.h"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 
-#include <flatmemory/flatmemory.hpp>
 #include <ostream>
 
 namespace mimir
 {
 /* Bitset */
 
-// General purpose bitset
-template<typename Tag = void>
-using FlatBitsetLayout = flatmemory::Bitset<uint64_t, Tag>;
-template<typename Tag = void>
-using FlatBitsetBuilder = flatmemory::Builder<FlatBitsetLayout<Tag>>;
-template<typename Tag = void>
-using FlatBitset = flatmemory::ConstView<FlatBitsetLayout<Tag>>;
+using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
 
-template<typename Tag>
-inline std::ostream& operator<<(std::ostream& os, const FlatBitset<Tag>& set)
+inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 {
     os << "[";
     size_t i = 0;
@@ -52,20 +46,11 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset<Tag>& set)
     return os;
 }
 
-/* ObjectList */
-
-using FlatObjectListLayout = flatmemory::Vector<Object>;
-using FlatObjectListBuilder = flatmemory::Builder<FlatObjectListLayout>;
-using FlatObjectList = flatmemory::ConstView<FlatObjectListLayout>;
-
 /* IndexList */
 
-using FlatIndexListLayout = flatmemory::Vector<uint32_t>;
-using FlatIndexListBuilder = flatmemory::Builder<FlatIndexListLayout>;
-using FlatIndexList = flatmemory::ConstView<FlatIndexListLayout>;
+using FlatIndexList = cista::offset::vector<uint32_t>;
 
-template<flatmemory::IsBitset Bitset>
-bool are_disjoint(const Bitset& bitset, FlatIndexList list)
+inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
 {
     for (const auto index : list)
     {
@@ -77,8 +62,7 @@ bool are_disjoint(const Bitset& bitset, FlatIndexList list)
     return true;
 }
 
-template<flatmemory::IsBitset Bitset>
-bool is_superseteq(const Bitset& bitset, FlatIndexList list)
+inline bool is_superseteq(const FlatBitset& bitset, const FlatIndexList& list)
 {
     for (const auto index : list)
     {

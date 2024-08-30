@@ -123,18 +123,16 @@ private:
                              const std::vector<size_t>& fluent_ground_atoms_order,
                              const std::vector<size_t>& derived_ground_atoms_order);
 
-    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
     void get_applicable_elements_recursively(size_t node_id,
-                                             const Bitset1& fluent_ground_atoms,
-                                             const Bitset2& derived_ground_atoms,
+                                             const FlatBitset& fluent_ground_atoms,
+                                             const FlatBitset& derived_ground_atoms,
                                              std::vector<T>& out_applicable_elements);
 
 public:
     MatchTree();
     MatchTree(const std::vector<T>& elements, const std::vector<size_t>& fluent_ground_atoms_order, const std::vector<size_t>& derived_ground_atoms_order);
 
-    template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
-    void get_applicable_elements(const Bitset1& fluent_ground_atoms, const Bitset2& derived_ground_atoms, std::vector<T>& out_applicable_elements);
+    void get_applicable_elements(const FlatBitset& fluent_ground_atoms, const FlatBitset& derived_ground_atoms, std::vector<T>& out_applicable_elements);
 
     size_t get_num_nodes() const;
 
@@ -174,11 +172,11 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
     for (const auto& element : elements)
     {
         const bool positive_condition = (is_fluent) ?
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_positive_precondition<Fluent>().get(atom_id) :
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_positive_precondition<Derived>().get(atom_id);
+                                            StripsActionPrecondition(&element.get_strips_precondition()).get_positive_precondition<Fluent>().get(atom_id) :
+                                            StripsActionPrecondition(&element.get_strips_precondition()).get_positive_precondition<Derived>().get(atom_id);
         const bool negative_condition = (is_fluent) ?
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_negative_precondition<Fluent>().get(atom_id) :
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_negative_precondition<Derived>().get(atom_id);
+                                            StripsActionPrecondition(&element.get_strips_precondition()).get_negative_precondition<Fluent>().get(atom_id) :
+                                            StripsActionPrecondition(&element.get_strips_precondition()).get_negative_precondition<Derived>().get(atom_id);
 
         if (positive_condition && negative_condition)
         {
@@ -274,10 +272,9 @@ MatchTree<T>::MatchTree(const std::vector<T>& elements,
 }
 
 template<typename T>
-template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
 void MatchTree<T>::get_applicable_elements_recursively(size_t node_id,
-                                                       const Bitset1& fluent_ground_atoms,
-                                                       const Bitset2& derived_ground_atoms,
+                                                       const FlatBitset& fluent_ground_atoms,
+                                                       const FlatBitset& derived_ground_atoms,
                                                        std::vector<T>& out_applicable_elements)
 {
     auto& node = m_nodes[node_id];
@@ -314,8 +311,9 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_id,
 }
 
 template<typename T>
-template<flatmemory::IsBitset Bitset1, flatmemory::IsBitset Bitset2>
-void MatchTree<T>::get_applicable_elements(const Bitset1& fluent_ground_atoms, const Bitset2& derived_ground_atoms, std::vector<T>& out_applicable_elements)
+void MatchTree<T>::get_applicable_elements(const FlatBitset& fluent_ground_atoms,
+                                           const FlatBitset& derived_ground_atoms,
+                                           std::vector<T>& out_applicable_elements)
 {
     out_applicable_elements.clear();
 

@@ -432,7 +432,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         out << "label=\"";
         for (const auto& action : get_actions(transition))
         {
-            out << action << "\n";
+            out << std::make_tuple(std::cref(*abstraction.get_pddl_factories()), action) << "\n";
         }
         out << "\"";  // end label
 

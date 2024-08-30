@@ -35,9 +35,9 @@ void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorith
 
 void DefaultIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan) const
+void DefaultIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) const
 {
-    auto plan = to_plan(ground_action_plan);
+    auto plan = to_plan(ground_action_plan, pddl_factories);
     std::cout << "[IW] Plan found.\n"
               << "[IW] Plan cost: " << plan.get_cost() << "\n"
               << "[IW] Plan length: " << plan.get_actions().size() << std::endl;

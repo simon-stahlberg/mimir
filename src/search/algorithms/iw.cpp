@@ -1020,7 +1020,7 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
             {
                 m_aag->on_end_search();
             }
-            m_iw_event_handler->on_solved(out_plan);
+            m_iw_event_handler->on_solved(out_plan, *m_aag->get_pddl_factories());
             return SearchStatus::SOLVED;
         }
         else if (search_status == SearchStatus::UNSOLVABLE)
@@ -1033,4 +1033,6 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     }
     return SearchStatus::FAILED;
 }
+
+const std::shared_ptr<PDDLFactories>& IterativeWidthAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
 }

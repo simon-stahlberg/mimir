@@ -194,7 +194,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             {
                 m_aag->on_end_search();
             }
-            m_event_handler->on_solved(out_plan);
+            m_event_handler->on_solved(out_plan, pddl_factories);
 
             return SearchStatus::SOLVED;
         }
@@ -267,5 +267,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
     return SearchStatus::EXHAUSTED;
 }
+
+const std::shared_ptr<PDDLFactories>& AStarAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
 
 }

@@ -22,6 +22,7 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
@@ -39,8 +40,8 @@ private:
     FlatStateSet m_states;
     StateBuilder m_state_builder;
 
-    FlatBitsetBuilder<Fluent> m_reached_fluent_atoms;
-    FlatBitsetBuilder<Derived> m_reached_derived_atoms;
+    FlatBitset m_reached_fluent_atoms;
+    FlatBitset m_reached_derived_atoms;
 
 public:
     explicit StateRepository(std::shared_ptr<IApplicableActionGenerator> aag);
@@ -58,9 +59,9 @@ public:
 
     size_t get_state_count() const;
 
-    const FlatBitsetBuilder<Fluent>& get_reached_fluent_ground_atoms() const;
+    const FlatBitset& get_reached_fluent_ground_atoms() const;
 
-    const FlatBitsetBuilder<Derived>& get_reached_derived_ground_atoms() const;
+    const FlatBitset& get_reached_derived_ground_atoms() const;
 
     std::shared_ptr<IApplicableActionGenerator> get_aag() const;
 };

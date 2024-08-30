@@ -29,7 +29,7 @@
 namespace mimir
 {
 
-void AxiomEvaluator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
+void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
 {
     /* 1. Initialize assignment set */
 
@@ -213,16 +213,16 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     /* Header */
 
     m_axiom_builder.get_index() = m_flat_axioms.size();
-    m_axiom_builder.get_axiom() = axiom;
+    m_axiom_builder.get_axiom() = axiom->get_index();
     auto& objects = m_axiom_builder.get_objects();
     objects.clear();
     for (const auto& obj : binding)
     {
-        objects.push_back(obj);
+        objects.push_back(obj->get_index());
     }
 
     /* Precondition */
-    auto strips_precondition_proxy = StripsActionPreconditionBuilderProxy(m_axiom_builder.get_strips_precondition());
+    auto strips_precondition_proxy = StripsActionPreconditionBuilder(&m_axiom_builder.get_strips_precondition());
     auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
     auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
     auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
@@ -254,19 +254,13 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     m_axiom_builder.get_derived_effect().is_negated = false;
     m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_index();
 
-    auto& flatmemory_builder = m_axiom_builder.get_flatmemory_builder();
-    flatmemory_builder.finish();
-
-    const auto [iter, inserted] = m_flat_axioms.insert(flatmemory_builder);
+    const auto [iter, inserted] = m_flat_axioms.insert(m_axiom_builder.get_data());
     const auto grounded_axiom = GroundAxiom(*iter);
 
     if (inserted)
     {
         m_axioms_by_index.push_back(grounded_axiom);
     }
-
-    // Ensure that buffer is interpretable back to same data as builder
-    assert(flatmemory_builder == *iter);
 
     /* 3. Insert to groundings table */
 

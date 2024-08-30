@@ -75,15 +75,15 @@ public:
 
     struct SccPruningComponent
     {
-        FlatBitsetBuilder<> m_pruned_objects;
-        FlatBitsetBuilder<Static> m_pruned_static_goal_literal;
-        FlatBitsetBuilder<Fluent> m_pruned_fluent_goal_literal;
-        FlatBitsetBuilder<Derived> m_pruned_derived_goal_literal;
+        FlatBitset m_pruned_objects;
+        FlatBitset m_pruned_static_goal_literal;
+        FlatBitset m_pruned_fluent_goal_literal;
+        FlatBitset m_pruned_derived_goal_literal;
 
         SccPruningComponent& operator&=(const SccPruningComponent& other);
 
         template<PredicateCategory P>
-        const FlatBitsetBuilder<P>& get_pruned_goal_literals() const;
+        const FlatBitset& get_pruned_goal_literals() const;
     };
 
     static std::optional<ObjectGraphStaticSccPruningStrategy> create(Problem problem,

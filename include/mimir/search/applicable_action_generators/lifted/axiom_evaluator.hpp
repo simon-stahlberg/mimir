@@ -41,11 +41,11 @@ namespace mimir
 class PartiallyExtendedState
 {
 private:
-    const FlatBitsetBuilder<Fluent>& m_fluent_state_atoms;
-    FlatBitsetBuilder<Derived>& m_ref_derived_state_atoms;
+    const FlatBitset& m_fluent_state_atoms;
+    FlatBitset& m_ref_derived_state_atoms;
 
 public:
-    PartiallyExtendedState(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) :
+    PartiallyExtendedState(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms) :
         m_fluent_state_atoms(fluent_state_atoms),
         m_ref_derived_state_atoms(ref_derived_state_atoms)
     {
@@ -90,7 +90,7 @@ public:
     AxiomEvaluator& operator=(AxiomEvaluator&& other) = delete;
 
     /// @brief Generate and apply all applicable axioms.
-    void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms);
+    void generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms);
 
     /// @brief Return the axiom partitioning.
     const std::vector<AxiomPartition>& get_axiom_partitioning() const;

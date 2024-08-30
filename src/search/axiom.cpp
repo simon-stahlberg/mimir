@@ -28,19 +28,19 @@ size_t std::hash<mimir::GroundAxiom>::operator()(mimir::GroundAxiom element) con
 
 size_t std::equal_to<mimir::GroundAxiom>::operator()(mimir::GroundAxiom lhs, mimir::GroundAxiom rhs) const { return lhs.get_index() == rhs.get_index(); }
 
-size_t std::hash<mimir::FlatAxiom>::operator()(mimir::FlatAxiom element) const
+size_t cista::storage::DerefStdHasher<mimir::FlatAxiom>::operator()(const mimir::FlatAxiom* ptr) const
 {
-    const auto axiom = element.get<1>();
-    const auto objects = element.get<2>();
+    const auto axiom = cista::get<1>(*ptr);
+    const auto& objects = cista::get<2>(*ptr);
     return mimir::hash_combine(axiom, objects);
 }
 
-bool std::equal_to<mimir::FlatAxiom>::operator()(mimir::FlatAxiom lhs, mimir::FlatAxiom rhs) const
+bool cista::storage::DerefStdEqualTo<mimir::FlatAxiom>::operator()(const mimir::FlatAxiom* lhs, const mimir::FlatAxiom* rhs) const
 {
-    const auto axiom_left = lhs.get<1>();
-    const auto objects_left = lhs.get<2>();
-    const auto axiom_right = rhs.get<1>();
-    const auto objects_right = rhs.get<2>();
+    const auto axiom_left = cista::get<1>(*lhs);
+    const auto& objects_left = cista::get<2>(*lhs);
+    const auto axiom_right = cista::get<1>(*rhs);
+    const auto& objects_right = cista::get<2>(*rhs);
     return (axiom_left == axiom_right) && (objects_left == objects_right);
 }
 
@@ -60,51 +60,49 @@ bool FlatDerivedEffect::operator==(const FlatDerivedEffect& other) const
 
 /* GroundAxiomBuilder */
 
-FlatAxiomBuilder& GroundAxiomBuilder::get_flatmemory_builder() { return m_builder; }
+FlatAxiom& GroundAxiomBuilder::get_data() { return m_builder; }
 
-const FlatAxiomBuilder& GroundAxiomBuilder::get_flatmemory_builder() const { return m_builder; }
+const FlatAxiom& GroundAxiomBuilder::get_data() const { return m_builder; }
 
-GroundAxiomIndex& GroundAxiomBuilder::get_index() { return m_builder.get<0>(); }
+GroundAxiomIndex& GroundAxiomBuilder::get_index() { return cista::get<0>(m_builder); }
 
-Axiom& GroundAxiomBuilder::get_axiom() { return m_builder.get<1>(); }
+uint32_t& GroundAxiomBuilder::get_axiom() { return cista::get<1>(m_builder); }
 
-FlatObjectListBuilder& GroundAxiomBuilder::get_objects() { return m_builder.get<2>(); }
+FlatIndexList& GroundAxiomBuilder::get_objects() { return cista::get<2>(m_builder); }
 
-FlatStripsActionPreconditionBuilder& GroundAxiomBuilder::get_strips_precondition() { return m_builder.get<3>(); }
+FlatStripsActionPrecondition& GroundAxiomBuilder::get_strips_precondition() { return cista::get<3>(m_builder); }
 
-FlatStripsActionEffectBuilder& GroundAxiomBuilder::get_strips_effect() { return m_builder.get<4>(); }
+FlatStripsActionEffect& GroundAxiomBuilder::get_strips_effect() { return cista::get<4>(m_builder); }
 
-FlatDerivedEffect& GroundAxiomBuilder::get_derived_effect() { return m_builder.get<5>(); }
+FlatDerivedEffect& GroundAxiomBuilder::get_derived_effect() { return cista::get<5>(m_builder); }
 
 /* GroundAxiom */
 
-GroundAxiom::GroundAxiom(FlatAxiom view) : m_view(view) {}
+GroundAxiom::GroundAxiom(const FlatAxiom* view) : m_view(view) {}
 
-bool GroundAxiom::operator==(const GroundAxiom& other) const { return get_index() == other.get_index(); }
+GroundAxiomIndex GroundAxiom::get_index() const { return cista::get<0>(*m_view); }
 
-GroundAxiomIndex GroundAxiom::get_index() const { return m_view.get<0>(); }
+uint32_t GroundAxiom::get_axiom() const { return cista::get<1>(*m_view); }
 
-Axiom GroundAxiom::get_axiom() const { return m_view.get<1>(); }
+const FlatIndexList& GroundAxiom::get_objects() const { return cista::get<2>(*m_view); }
 
-FlatObjectList GroundAxiom::get_objects() const { return m_view.get<2>(); }
+const FlatStripsActionPrecondition& GroundAxiom::get_strips_precondition() const { return cista::get<3>(*m_view); }
 
-FlatStripsActionPrecondition GroundAxiom::get_strips_precondition() const { return m_view.get<3>(); }
+const FlatStripsActionEffect& GroundAxiom::get_strips_effect() const { return cista::get<4>(*m_view); }
 
-FlatStripsActionEffect GroundAxiom::get_strips_effect() const { return m_view.get<4>(); }
+const FlatDerivedEffect& GroundAxiom::get_derived_effect() const { return cista::get<5>(*m_view); }
 
-FlatDerivedEffect GroundAxiom::get_derived_effect() const { return m_view.get<5>(); }
-
-bool GroundAxiom::is_applicable(const FlatBitsetBuilder<Fluent>& state_fluent_atoms,
-                                const FlatBitsetBuilder<Derived>& state_derived_atoms,
-                                const FlatBitsetBuilder<Static>& static_positive_atoms) const
+bool GroundAxiom::is_applicable(const FlatBitset& state_fluent_atoms, const FlatBitset& state_derived_atoms, const FlatBitset& static_positive_atoms) const
 {  //
-    return StripsActionPrecondition(get_strips_precondition()).is_applicable(state_fluent_atoms, state_derived_atoms, static_positive_atoms);
+    return StripsActionPrecondition(&get_strips_precondition()).is_applicable(state_fluent_atoms, state_derived_atoms, static_positive_atoms);
 }
 
-bool GroundAxiom::is_statically_applicable(const FlatBitset<Static> static_positive_bitset) const
+bool GroundAxiom::is_statically_applicable(const FlatBitset& static_positive_bitset) const
 {  //
-    return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
+    return StripsActionPrecondition(&get_strips_precondition()).is_statically_applicable(static_positive_bitset);
 }
+
+bool operator==(GroundAxiom lhs, GroundAxiom rhs) { return lhs.get_index() == rhs.get_index(); }
 
 /**
  * Pretty printing
@@ -136,18 +134,18 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const P
     const auto [axiom, pddl_factories] = data;
 
     auto binding = ObjectList {};
-    for (const auto object : axiom.get_objects())
+    for (const auto object_index : axiom.get_objects())
     {
-        binding.push_back(object);
+        binding.push_back(pddl_factories.get_object(object_index));
     }
 
-    auto strips_precondition = StripsActionPrecondition(axiom.get_strips_precondition());
+    auto strips_precondition = StripsActionPrecondition(&axiom.get_strips_precondition());
 
-    os << "Axiom("                                                                                      //
-       << "index=" << axiom.get_index() << ", "                                                         //
-       << "name=" << axiom.get_axiom()->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                                 //
-       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                       //
+    os << "Axiom("                                                                                                                //
+       << "index=" << axiom.get_index() << ", "                                                                                   //
+       << "name=" << pddl_factories.get_axiom(axiom.get_axiom())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                                                           //
+       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                                                 //
        << "effect=" << std::make_tuple(axiom.get_derived_effect(), std::cref(pddl_factories)) << ")";
 
     return os;

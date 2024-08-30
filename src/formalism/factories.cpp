@@ -428,7 +428,14 @@ template GroundAtom<Static> PDDLFactories::get_ground_atom<Static>(size_t atom_i
 template GroundAtom<Fluent> PDDLFactories::get_ground_atom<Fluent>(size_t atom_id) const;
 template GroundAtom<Derived> PDDLFactories::get_ground_atom<Derived>(size_t atom_id) const;
 
+// Object
 Object PDDLFactories::get_object(size_t object_id) const { return get_factory<ObjectFactory>().at(object_id); }
+
+// Action
+Action PDDLFactories::get_action(size_t action_index) const { return get_factory<ActionFactory>().at(action_index); }
+
+// Axiom
+Axiom PDDLFactories::get_axiom(size_t axiom_index) const { return get_factory<AxiomFactory>().at(axiom_index); }
 
 /* Grounding */
 
@@ -496,8 +503,8 @@ GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const O
 
 template<PredicateCategory P>
 void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
-                                           FlatBitsetBuilder<P>& ref_positive_bitset,
-                                           FlatBitsetBuilder<P>& ref_negative_bitset,
+                                           FlatBitset& ref_positive_bitset,
+                                           FlatBitset& ref_negative_bitset,
                                            const ObjectList& binding)
 {
     for (const auto& literal : literals)
@@ -516,22 +523,22 @@ void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<P>>& litera
 }
 
 template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<Static>>& literals,
-                                                    FlatBitsetBuilder<Static>& ref_positive_bitset,
-                                                    FlatBitsetBuilder<Static>& ref_negative_bitset,
+                                                    FlatBitset& ref_positive_bitset,
+                                                    FlatBitset& ref_negative_bitset,
                                                     const ObjectList& binding);
 template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<Fluent>>& literals,
-                                                    FlatBitsetBuilder<Fluent>& ref_positive_bitset,
-                                                    FlatBitsetBuilder<Fluent>& ref_negative_bitset,
+                                                    FlatBitset& ref_positive_bitset,
+                                                    FlatBitset& ref_negative_bitset,
                                                     const ObjectList& binding);
 template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<Derived>>& literals,
-                                                    FlatBitsetBuilder<Derived>& ref_positive_bitset,
-                                                    FlatBitsetBuilder<Derived>& ref_negative_bitset,
+                                                    FlatBitset& ref_positive_bitset,
+                                                    FlatBitset& ref_negative_bitset,
                                                     const ObjectList& binding);
 
 template<PredicateCategory P>
 void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& literals,
-                                           FlatIndexListBuilder& ref_positive_indices,
-                                           FlatIndexListBuilder& ref_negative_indices,
+                                           FlatIndexList& ref_positive_indices,
+                                           FlatIndexList& ref_negative_indices,
                                            const ObjectList& binding)
 {
     for (const auto& literal : literals)
@@ -552,15 +559,15 @@ void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& litera
 }
 
 template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Static>>& literals,
-                                                    FlatIndexListBuilder& ref_positive_indices,
-                                                    FlatIndexListBuilder& ref_negative_indices,
+                                                    FlatIndexList& ref_positive_indices,
+                                                    FlatIndexList& ref_negative_indices,
                                                     const ObjectList& binding);
 template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Fluent>>& literals,
-                                                    FlatIndexListBuilder& ref_positive_indices,
-                                                    FlatIndexListBuilder& ref_negative_indices,
+                                                    FlatIndexList& ref_positive_indices,
+                                                    FlatIndexList& ref_negative_indices,
                                                     const ObjectList& binding);
 template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Derived>>& literals,
-                                                    FlatIndexListBuilder& ref_positive_indices,
-                                                    FlatIndexListBuilder& ref_negative_indices,
+                                                    FlatIndexList& ref_positive_indices,
+                                                    FlatIndexList& ref_negative_indices,
                                                     const ObjectList& binding);
 }

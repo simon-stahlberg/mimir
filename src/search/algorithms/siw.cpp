@@ -151,8 +151,10 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_aag->on_end_search();
     }
-    m_siw_event_handler->on_solved(out_plan);
+    m_siw_event_handler->on_solved(out_plan, *m_aag->get_pddl_factories());
     return SearchStatus::SOLVED;
 }
+
+const std::shared_ptr<PDDLFactories>& SerializedIterativeWidthAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
 
 }

@@ -138,16 +138,16 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     m_action_builder.get_index() = m_flat_actions.size();
     m_action_builder.get_cost() =
         std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_factories), *action->get_function_expression());
-    m_action_builder.get_action() = action;
+    m_action_builder.get_action() = action->get_index();
     auto& objects = m_action_builder.get_objects();
     objects.clear();
     for (const auto& obj : binding)
     {
-        objects.push_back(obj);
+        objects.push_back(obj->get_index());
     }
 
     /* Precondition */
-    auto strips_precondition_proxy = StripsActionPreconditionBuilderProxy(m_action_builder.get_strips_precondition());
+    auto strips_precondition_proxy = StripsActionPreconditionBuilder(&m_action_builder.get_strips_precondition());
     auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
     auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
     auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
@@ -165,7 +165,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     m_pddl_factories->ground_and_fill_bitset(action->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
-    auto strips_effect_proxy = StripsActionEffectBuilder(m_action_builder.get_strips_effect());
+    auto strips_effect_proxy = StripsActionEffectBuilder(&m_action_builder.get_strips_effect());
     auto& positive_effect = strips_effect_proxy.get_positive_effects();
     auto& negative_effect = strips_effect_proxy.get_negative_effects();
     positive_effect.unset_all();
@@ -189,7 +189,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     {
         for (size_t i = 0; i < num_conditional_effects; ++i)
         {
-            auto cond_effect_proxy_i = ConditionalEffectBuilder(conditional_effects[i]);
+            auto cond_effect_proxy_i = ConditionalEffectBuilder(&conditional_effects[i]);
             auto& cond_positive_fluent_precondition_i = cond_effect_proxy_i.get_positive_precondition<Fluent>();
             auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_precondition<Fluent>();
             auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_precondition<Static>();
@@ -258,7 +258,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                     binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
                 }
 
-                auto cond_effect_proxy_j = ConditionalEffectBuilder(conditional_effects[j]);
+                auto cond_effect_proxy_j = ConditionalEffectBuilder(&conditional_effects[j]);
                 auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_precondition<Fluent>();
                 auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_precondition<Fluent>();
                 auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_precondition<Static>();
@@ -292,18 +292,12 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
         }
     }
 
-    auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
-    flatmemory_builder.finish();
-
-    const auto [iter, inserted] = m_flat_actions.insert(flatmemory_builder);
+    const auto [iter, inserted] = m_flat_actions.insert(m_action_builder.get_data());
     const auto grounded_action = GroundAction(*iter);
     if (inserted)
     {
         m_actions_by_index.push_back(grounded_action);
     }
-
-    // Ensure that buffer is interpretable back to same data as builder
-    assert(flatmemory_builder == *iter);
 
     /* 3. Insert to groundings table */
 
@@ -324,9 +318,28 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
 
     auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state.get_atoms<Fluent>());
+    // std::cout << "fluent_atom_ids: [" << std::endl;
+    // for (const auto& x : state.get_atoms<Fluent>())
+    //{
+    //     std::cout << x << ",";
+    // }
+    // std::cout << "]" << std::endl;
+    // std::cout << "fluent_atom: [" << std::endl;
+    // for (const auto& x : fluent_atoms)
+    //{
+    //     std::cout << *x << ",";
+    // }
+    // std::cout << "]" << std::endl;
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
+    // std::cout << "derived_atom_ids: [" << std::endl;
+    // for (const auto& x : state.get_atoms<Derived>())
+    //{
+    //     std::cout << x << ",";
+    // }
+    // std::cout << "]" << std::endl;
+
     auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state.get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
 
@@ -339,17 +352,20 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     {
         condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings);
 
+        std::cout << "Num bindings: " << bindings.size() << std::endl;
+
         for (auto& binding : bindings)
         {
             out_applicable_actions.emplace_back(ground_action(action, std::move(binding)));
         }
     }
 
+    std::cout << "Num applicable actions: " << out_applicable_actions.size() << std::endl;
+
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_factories);
 }
 
-void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                                                                FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
+void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
 {
     // In the lifted case, we use the axiom evaluator.
     m_axiom_evaluator.generate_and_apply_axioms(fluent_state_atoms, ref_derived_state_atoms);

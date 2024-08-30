@@ -18,82 +18,43 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
+#include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/tuple.h"
+#include "cista/serialization.h"
+#include "cista/storage/unordered_set.h"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/flat_types.hpp"
 
-#include <flatmemory/flatmemory.hpp>
 #include <ostream>
 #include <tuple>
 #include <unordered_map>
 
 namespace mimir
 {
+using FlatState = cista::tuple<StateIndex, FlatBitset, FlatBitset>;
 
-/**
- * Flatmemory types
- */
-
-using FlatStateLayout = flatmemory::Tuple<StateIndex, FlatBitsetLayout<Fluent>, FlatBitsetLayout<Derived>>;
-using FlatStateBuilder = flatmemory::Builder<FlatStateLayout>;
-using FlatState = flatmemory::ConstView<FlatStateLayout>;
-}
-
-// Only hash/compare the non-extended portion of a state, and the problem.
-// The extended portion is always equal for the same non-extended portion.
-template<>
-struct std::hash<mimir::FlatState>
-{
-    size_t operator()(mimir::FlatState element) const;
-};
-
-template<>
-struct std::equal_to<mimir::FlatState>
-{
-    bool operator()(mimir::FlatState lhs, mimir::FlatState rhs) const;
-};
-
-namespace mimir
-{
-
-using FlatStateSet = flatmemory::UnorderedSet<FlatStateLayout>;
-using FlatStateVector = flatmemory::FixedSizedTypeVector<FlatStateLayout>;
-
-/**
- * Mimir types
- */
-
-/// @brief `StateBuilder` is a wrapper around `FlatState` to create byte sequences
-/// that can be zero-cost deserialized with a `State`.
 class StateBuilder
 {
-private:
-    FlatStateBuilder m_builder;
-
 public:
-    FlatStateBuilder& get_flatmemory_builder();
-    const FlatStateBuilder& get_flatmemory_builder() const;
+    explicit StateBuilder();
 
     StateIndex& get_index();
 
     template<DynamicPredicateCategory P>
-    FlatBitsetBuilder<P>& get_atoms();
+    FlatBitset& get_atoms();
+
+    FlatState& get_data();
+    const FlatState& get_data() const;
+
+private:
+    FlatState m_data;
 };
 
-/// @brief `State` is a immutable wrapper around `FlatState` to read the data.
 class State
 {
-private:
-    FlatState m_view;
-
-    static const StateBuilder s_null_state;
-
 public:
-    explicit State(FlatState view);
-
-    static State get_null_state();
-
-    bool operator==(State other) const;
+    explicit State(const FlatState* data);
 
     StateIndex get_index() const;
 
@@ -110,25 +71,42 @@ public:
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
     template<DynamicPredicateCategory P>
-    FlatBitset<P> get_atoms() const;
+    const FlatBitset& get_atoms() const;
+
+private:
+    const FlatState* m_data;
 };
+
+extern bool operator==(State lhs, State rhs);
+extern bool operator!=(State lhs, State rhs);
 
 }
 
+// Only hash/compare the non-extended portion of a state, and the problem.
+// The extended portion is always equal for the same non-extended portion.
+template<>
+struct cista::storage::DerefStdHasher<mimir::FlatState>
+{
+    size_t operator()(const mimir::FlatState* ptr) const;
+};
+
+template<>
+struct cista::storage::DerefStdEqualTo<mimir::FlatState>
+{
+    bool operator()(const mimir::FlatState* lhs, const mimir::FlatState* rhs) const;
+};
+
+// Only hash/compare the state index, since states returned by the `StateRepository` are already unique by their index.
 template<>
 struct std::hash<mimir::State>
 {
     size_t operator()(mimir::State element) const;
 };
 
-template<>
-struct std::equal_to<mimir::State>
-{
-    bool operator()(mimir::State lhs, mimir::State rhs) const;
-};
-
 namespace mimir
 {
+
+using FlatStateSet = cista::storage::UnorderedSet<FlatState>;
 
 using StateList = std::vector<State>;
 

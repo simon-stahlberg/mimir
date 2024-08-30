@@ -469,7 +469,7 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
             << "s" << transition.get_target() << " [";
 
         // label
-        out << "label=\"" << get_creating_action(transition) << "\"";
+        out << "label=\"" << std::make_tuple(std::cref(*state_space.get_pddl_factories()), get_creating_action(transition)) << "\"";
 
         out << "]\n";
     }

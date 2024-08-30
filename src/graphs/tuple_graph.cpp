@@ -65,8 +65,8 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const G
 {
     // Find all states that satisfy the given set of atoms, then call more general function.
     auto states = StateList {};
-    auto fluent_atom_bitset = FlatBitsetBuilder<Fluent>();
-    auto derived_atom_bitset = FlatBitsetBuilder<Derived>();
+    auto fluent_atom_bitset = FlatBitset();
+    auto derived_atom_bitset = FlatBitset();
     for (const auto& atom : fluent_atoms)
     {
         fluent_atom_bitset.set(atom->get_index());

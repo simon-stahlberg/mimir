@@ -17,7 +17,6 @@
 
 #include "mimir/search/search_node.hpp"
 
-#include <flatmemory/flatmemory.hpp>
 #include <gtest/gtest.h>
 
 namespace mimir::tests
