@@ -40,14 +40,16 @@ struct BrFSSearchNodeTag
 
 using GValue = uint32_t;
 
-using BrFSSearchNode = SearchNode<GValue>;
+using BrFSSearchNodeImpl = SearchNodeImpl<GValue>;
+using BrFSSearchNode = BrFSSearchNodeImpl*;
+using ConstBrFSSearchNode = const BrFSSearchNodeImpl*;
 
-static void set_g_value(BrFSSearchNode& node, GValue g_value) { return set_property<0>(node, g_value); }
+static void set_g_value(BrFSSearchNode node, GValue g_value) { return set_property<0>(node, g_value); }
 
-static GValue get_g_value(const BrFSSearchNode& node) { return get_property<0>(node); }
+static GValue get_g_value(ConstBrFSSearchNode node) { return get_property<0>(node); }
 
-static BrFSSearchNode&
-get_or_create_search_node(size_t state_index, const BrFSSearchNode& default_node, cista::storage::ByteBufferVector<BrFSSearchNode>& search_nodes)
+static BrFSSearchNode
+get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, cista::storage::ByteBufferVector<BrFSSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {
@@ -96,15 +98,15 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                                           std::optional<State>& out_goal_state)
 {
     auto default_search_node =
-        BrFSSearchNode { SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0) };
-    auto search_nodes = cista::storage::ByteBufferVector<BrFSSearchNode>();
+        BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0) };
+    auto search_nodes = cista::storage::ByteBufferVector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
     const auto problem = m_aag->get_problem();
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
-    auto& start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
+    auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
     set_status(start_search_node, SearchNodeStatus::OPEN);
     set_g_value(start_search_node, 0);
 
@@ -132,7 +134,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         queue.pop_front();
 
         // We need this before goal test for correct statistics reporting.
-        auto& search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
+        auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
 
         if (get_g_value(search_node) > g_value)
         {
@@ -163,7 +165,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         {
             /* Open state. */
             const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-            auto& successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
+            auto successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
 

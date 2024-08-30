@@ -60,15 +60,15 @@ public:
      * Element access
      */
 
-    T& operator[](size_t pos) { return *m_elements[pos]; }
-    const T& operator[](size_t pos) const { return *m_elements[pos]; }
+    T* operator[](size_t pos) { return m_elements[pos]; }
+    const T* operator[](size_t pos) const { return m_elements[pos]; }
 
-    T& at(size_t pos)
+    T* at(size_t pos)
     {
         range_check(pos);
         return (*this)[pos];
     }
-    const T& at(size_t pos) const
+    const T* at(size_t pos) const
     {
         range_check(pos);
         return (*this)[pos];
