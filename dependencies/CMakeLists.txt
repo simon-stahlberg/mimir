@@ -15,6 +15,10 @@ endif()
 # Pass the build type to subdirectories
 set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
 
+if(COMPILER_ID MATCHES "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
+endif ()
+
 
 ##############################################################
 # Add subprojects
