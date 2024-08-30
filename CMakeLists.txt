@@ -49,6 +49,9 @@ else()
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
     endif()
     # TODO: Add -Wextra and fix all warnings
+    if(COMPILER_ID MATCHES "GNU")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
+    endif ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
     set(CMAKE_CXX_FLAGS_PROFILING "-O3 -Wall -pg")
@@ -111,6 +114,12 @@ find_package(Nauty REQUIRED)
 if(Nauty_FOUND)
   include_directories(${Nauty_INCLUDE_DIR})
   message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
+endif()
+
+find_package(fmt REQUIRED)
+if(fmt_FOUND)
+  include_directories(${fmt_INCLUDE_DIRS})
+  message(STATUS "Found fmt: ${fmt_DIR} (found version ${fmt_VERSION})")
 endif()
 
 ##############################################################
