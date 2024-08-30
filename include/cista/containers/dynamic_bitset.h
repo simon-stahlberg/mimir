@@ -2,6 +2,7 @@
 
 #include "cista/bit_counting.h"
 #include "cista/containers/vector.h"
+#include "cista/hash.h"
 
 #include <bit>
 #include <cassert>
@@ -13,6 +14,7 @@
 #include <string_view>
 #include <tuple>
 #include <type_traits>
+#include <utility>
 
 namespace cista
 {
@@ -200,7 +202,7 @@ struct basic_dynamic_bitset
             }
         }
 
-        blocks_.resize(last_non_default_block_index);
+        blocks_.resize(last_non_default_block_index + 1);
     }
 
     constexpr void resize_to_fit(const basic_dynamic_bitset& other)
@@ -503,6 +505,35 @@ struct basic_dynamic_bitset
     bool default_bit_value_;
     cista::basic_vector<Block, Ptr> blocks_ {};
 };
+
+template<typename Block, template<typename> typename Ptr>
+constexpr bool operator==(const basic_dynamic_bitset<Block, Ptr>& lhs, const basic_dynamic_bitset<Block, Ptr>& rhs)
+{
+    using Type = basic_dynamic_bitset<Block, Ptr>;
+    if (&lhs != &rhs)
+    {
+        std::size_t common_size = std::min(lhs.blocks_.size(), rhs.blocks_.size());
+        if (std::memcmp(lhs.blocks_.data(), rhs.blocks_.data(), common_size * sizeof(Block)) != 0)
+            return false;
+
+        std::size_t max_size = std::max(lhs.blocks_.size(), rhs.blocks_.size());
+
+        for (std::size_t index = common_size; index < max_size; ++index)
+        {
+            auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : (lhs.default_bit_value_ ? Type::block_ones : Type::block_zeroes);
+            auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : (rhs.default_bit_value_ ? Type::block_ones : Type::block_zeroes);
+
+            if (this_value != other_value)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    return true;
+}
 
 namespace raw
 {

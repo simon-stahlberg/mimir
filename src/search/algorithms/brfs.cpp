@@ -17,7 +17,6 @@
 
 #include "mimir/search/algorithms/brfs.hpp"
 
-#include "cista/storage/byte_buffer_vector.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"

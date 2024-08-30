@@ -15,15 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CISTA_STORAGE_BYTE_BUFFER_VECTOR_HPP_
-#define CISTA_STORAGE_BYTE_BUFFER_VECTOR_HPP_
+#ifndef CISTA_STORAGE_VECTOR_HPP_
+#define CISTA_STORAGE_VECTOR_HPP_
 
 #include "cista/serialization.h"
-#include "cista/storage/byte_buffer_segmented.hpp"
+#include "cista/storage/byte_buffer_segmented.h"
 
 namespace cista::storage
 {
 
+/// @brief `ByteBufferVector` is a container that stores buffers of a cista container of type T.
+/// It provides random access to the elements and ensures that the serialize and deserialize functions are compatible.
+/// @tparam T
 template<typename T>
 class ByteBufferVector
 {

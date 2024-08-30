@@ -17,8 +17,6 @@
 
 #include "mimir/search/search_node.hpp"
 
-#include "cista/storage/byte_buffer_vector.hpp"
-
 #include <flatmemory/flatmemory.hpp>
 #include <gtest/gtest.h>
 
