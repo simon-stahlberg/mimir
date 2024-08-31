@@ -28,7 +28,7 @@ namespace mimir::dl::grammar
  */
 
 template<dl::IsConceptOrRole D>
-NonTerminalImpl<D>::NonTerminalImpl(size_t index, std::string name) : m_index(index), m_name(std::move(name)), m_rule(std::nullopt)
+NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)), m_rule(std::nullopt)
 {
 }
 
@@ -40,7 +40,7 @@ bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor) const
 }
 
 template<dl::IsConceptOrRole D>
-size_t NonTerminalImpl<D>::get_index() const
+Index NonTerminalImpl<D>::get_index() const
 {
     return m_index;
 }
@@ -72,7 +72,7 @@ template class NonTerminalImpl<Role>;
  */
 
 template<dl::IsConceptOrRole D>
-ChoiceImpl<D>::ChoiceImpl(size_t index, ConstructorOrNonTerminalChoice<D> choice) : m_index(index), m_choice(std::move(choice))
+ChoiceImpl<D>::ChoiceImpl(Index index, ConstructorOrNonTerminalChoice<D> choice) : m_index(index), m_choice(std::move(choice))
 {
 }
 
@@ -83,7 +83,7 @@ bool ChoiceImpl<D>::test_match(dl::Constructor<D> constructor) const
 }
 
 template<dl::IsConceptOrRole D>
-size_t ChoiceImpl<D>::get_index() const
+Index ChoiceImpl<D>::get_index() const
 {
     return m_index;
 }
@@ -102,7 +102,7 @@ template class ChoiceImpl<Role>;
  */
 
 template<dl::IsConceptOrRole D>
-DerivationRuleImpl<D>::DerivationRuleImpl(size_t index, ChoiceList<D> choices) : m_index(index), m_choices(std::move(choices))
+DerivationRuleImpl<D>::DerivationRuleImpl(Index index, ChoiceList<D> choices) : m_index(index), m_choices(std::move(choices))
 {
     /* Canonize */
     std::sort(m_choices.begin(), m_choices.end(), [](const auto& lhs, const auto& rhs) { return lhs->get_index() < rhs->get_index(); });
@@ -115,7 +115,7 @@ bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor) const
 }
 
 template<dl::IsConceptOrRole D>
-size_t DerivationRuleImpl<D>::get_index() const
+Index DerivationRuleImpl<D>::get_index() const
 {
     return m_index;
 }
@@ -134,7 +134,7 @@ template class DerivationRuleImpl<Role>;
  */
 
 template<PredicateCategory P>
-ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -145,7 +145,7 @@ bool ConceptPredicateStateImpl<P>::test_match(dl::Constructor<Concept> construct
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateStateImpl<P>::get_index() const
+Index ConceptPredicateStateImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -165,7 +165,7 @@ template class ConceptPredicateStateImpl<Derived>;
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -176,7 +176,7 @@ bool ConceptPredicateGoalImpl<P>::test_match(dl::Constructor<Concept> constructo
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateGoalImpl<P>::get_index() const
+Index ConceptPredicateGoalImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -194,7 +194,7 @@ template class ConceptPredicateGoalImpl<Derived>;
 /**
  * ConceptAnd
  */
-ConceptAndImpl::ConceptAndImpl(size_t index, Choice<Concept> concept_left, Choice<Concept> concept_right) :
+ConceptAndImpl::ConceptAndImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right) :
     m_index(index),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
@@ -203,7 +203,7 @@ ConceptAndImpl::ConceptAndImpl(size_t index, Choice<Concept> concept_left, Choic
 
 bool ConceptAndImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptAndVisitor(this)); }
 
-size_t ConceptAndImpl::get_index() const { return m_index; }
+Index ConceptAndImpl::get_index() const { return m_index; }
 
 Choice<Concept> ConceptAndImpl::get_concept_left() const { return m_concept_left; }
 
@@ -214,7 +214,7 @@ Choice<Concept> ConceptAndImpl::get_concept_right() const { return m_concept_rig
  */
 
 template<PredicateCategory P>
-RolePredicateStateImpl<P>::RolePredicateStateImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RolePredicateStateImpl<P>::RolePredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -225,7 +225,7 @@ bool RolePredicateStateImpl<P>::test_match(dl::Constructor<Role> constructor) co
 }
 
 template<PredicateCategory P>
-size_t RolePredicateStateImpl<P>::get_index() const
+Index RolePredicateStateImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -245,7 +245,7 @@ template class RolePredicateStateImpl<Derived>;
  */
 
 template<PredicateCategory P>
-RolePredicateGoalImpl<P>::RolePredicateGoalImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RolePredicateGoalImpl<P>::RolePredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -256,7 +256,7 @@ bool RolePredicateGoalImpl<P>::test_match(dl::Constructor<Role> constructor) con
 }
 
 template<PredicateCategory P>
-size_t RolePredicateGoalImpl<P>::get_index() const
+Index RolePredicateGoalImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -274,11 +274,11 @@ template class RolePredicateGoalImpl<Derived>;
 /**
  * RoleAnd
  */
-RoleAndImpl::RoleAndImpl(size_t index, Choice<Role> role_left, Choice<Role> role_right) : m_index(index), m_role_left(role_left), m_role_right(role_right) {}
+RoleAndImpl::RoleAndImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) : m_index(index), m_role_left(role_left), m_role_right(role_right) {}
 
 bool RoleAndImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleAndVisitor(this)); }
 
-size_t RoleAndImpl::get_index() const { return m_index; }
+Index RoleAndImpl::get_index() const { return m_index; }
 
 Choice<Role> RoleAndImpl::get_role_left() const { return m_role_left; }
 

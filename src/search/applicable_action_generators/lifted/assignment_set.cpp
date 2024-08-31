@@ -28,9 +28,9 @@ namespace mimir
  * Assignment
  */
 
-Assignment::Assignment(size_t index, size_t object) : first_index(index), first_object(object), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
+Assignment::Assignment(Index index, Index object) : first_index(index), first_object(object), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
 
-Assignment::Assignment(size_t first_index, size_t first_object, size_t second_index, size_t second_object) :
+Assignment::Assignment(Index first_index, Index first_object, Index second_index, Index second_object) :
     first_index(first_index),
     first_object(first_object),
     second_index(second_index),
@@ -44,7 +44,7 @@ size_t Assignment::size() const { return (first_object != MAX_VALUE ? 1 : 0) + (
  * VertexAssignmentIterator
  */
 
-size_t VertexAssignmentIterator::get_object_if_overlap(const Term& term)
+Index VertexAssignmentIterator::get_object_if_overlap(const Term& term)
 {
     if (const auto term_object = std::get_if<TermObjectImpl>(term))
     {
@@ -115,7 +115,7 @@ Assignment VertexAssignmentIterator::next()
  * EdgeAssignmentIterator
  */
 
-size_t EdgeAssignmentIterator::get_object_if_overlap(const Term& term)
+Index EdgeAssignmentIterator::get_object_if_overlap(const Term& term)
 {
     if (const auto term_object = std::get_if<TermObjectImpl>(term))
     {

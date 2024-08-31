@@ -41,13 +41,13 @@ template<dl::IsConceptOrRole D>
 class NonTerminalImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     // Use name for equality and hash since rule is deferred instantiated.
     std::string m_name;
     // Mutable for deferred instantiation.
     mutable std::optional<DerivationRule<D>> m_rule;
 
-    NonTerminalImpl(size_t index, std::string name);
+    NonTerminalImpl(Index index, std::string name);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -62,7 +62,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor) const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const std::string& get_name() const;
     DerivationRule<D> get_rule() const;
 
@@ -78,10 +78,10 @@ template<dl::IsConceptOrRole D>
 class ChoiceImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     ConstructorOrNonTerminalChoice<D> m_choice;
 
-    ChoiceImpl(size_t index, ConstructorOrNonTerminalChoice<D> choice);
+    ChoiceImpl(Index index, ConstructorOrNonTerminalChoice<D> choice);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -96,7 +96,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor) const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const ConstructorOrNonTerminalChoice<D>& get_choice() const;
 };
 
@@ -108,10 +108,10 @@ template<dl::IsConceptOrRole D>
 class DerivationRuleImpl
 {
 protected:
-    size_t m_index;
+    Index m_index;
     ChoiceList<D> m_choices;
 
-    DerivationRuleImpl(size_t index, ChoiceList<D> choices);
+    DerivationRuleImpl(Index index, ChoiceList<D> choices);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -126,7 +126,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor) const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const ChoiceList<D>& get_choices() const;
 };
 
@@ -138,10 +138,10 @@ template<PredicateCategory P>
 class ConceptPredicateStateImpl : public ConstructorImpl<Concept>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateStateImpl(size_t index, Predicate<P> predicate);
+    ConceptPredicateStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -156,7 +156,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
@@ -164,10 +164,10 @@ template<PredicateCategory P>
 class ConceptPredicateGoalImpl : public ConstructorImpl<Concept>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate);
+    ConceptPredicateGoalImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -182,18 +182,18 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 class ConceptAndImpl : public ConstructorImpl<Concept>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Choice<Concept> m_concept_left;
     Choice<Concept> m_concept_right;
 
-    ConceptAndImpl(size_t index, Choice<Concept> concept_left, Choice<Concept> concept_right);
+    ConceptAndImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -208,7 +208,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
-    size_t get_index() const;
+    Index get_index() const;
     Choice<Concept> get_concept_left() const;
     Choice<Concept> get_concept_right() const;
 };
@@ -221,10 +221,10 @@ template<PredicateCategory P>
 class RolePredicateStateImpl : public ConstructorImpl<Role>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateStateImpl(size_t index, Predicate<P> predicate);
+    RolePredicateStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -239,7 +239,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
@@ -247,10 +247,10 @@ template<PredicateCategory P>
 class RolePredicateGoalImpl : public ConstructorImpl<Role>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateGoalImpl(size_t index, Predicate<P> predicate);
+    RolePredicateGoalImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -265,18 +265,18 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 class RoleAndImpl : public ConstructorImpl<Role>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Choice<Role> m_role_left;
     Choice<Role> m_role_right;
 
-    RoleAndImpl(size_t index, Choice<Role> role_left, Choice<Role> role_right);
+    RoleAndImpl(Index index, Choice<Role> role_left, Choice<Role> role_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -291,7 +291,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
-    size_t get_index() const;
+    Index get_index() const;
     Choice<Role> get_role_left() const;
     Choice<Role> get_role_right() const;
 };

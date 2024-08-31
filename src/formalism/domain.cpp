@@ -37,7 +37,7 @@ using namespace std;
 
 namespace mimir
 {
-DomainImpl::DomainImpl(size_t index,
+DomainImpl::DomainImpl(Index index,
                        std::optional<fs::path> filepath,
                        std::string name,
                        Requirements requirements,
@@ -103,7 +103,7 @@ std::string DomainImpl::str() const
     return out.str();
 }
 
-size_t DomainImpl::get_index() const { return m_index; }
+Index DomainImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }
 

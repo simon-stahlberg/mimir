@@ -38,10 +38,10 @@ template<PredicateCategory P>
 class ConceptPredicateStateImpl : public ConstructorEvaluatorBase<Concept, ConceptPredicateStateImpl<P>>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateStateImpl(size_t index, Predicate<P> predicate);
+    ConceptPredicateStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -60,7 +60,7 @@ public:
     ConceptPredicateStateImpl(ConceptPredicateStateImpl&& other) = default;
     ConceptPredicateStateImpl& operator=(ConceptPredicateStateImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
@@ -68,10 +68,10 @@ template<PredicateCategory P>
 class ConceptPredicateGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptPredicateGoalImpl<P>>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate);
+    ConceptPredicateGoalImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -90,18 +90,18 @@ public:
     ConceptPredicateGoalImpl(ConceptPredicateGoalImpl&& other) = default;
     ConceptPredicateGoalImpl& operator=(ConceptPredicateGoalImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 class ConceptAndImpl : public ConstructorEvaluatorBase<Concept, ConceptAndImpl>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Constructor<Concept> m_concept_left;
     Constructor<Concept> m_concept_right;
 
-    ConceptAndImpl(size_t index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
+    ConceptAndImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -120,7 +120,7 @@ public:
     ConceptAndImpl(ConceptAndImpl&& other) = default;
     ConceptAndImpl& operator=(ConceptAndImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     Constructor<Concept> get_concept_left() const;
     Constructor<Concept> get_concept_right() const;
 };
@@ -133,10 +133,10 @@ template<PredicateCategory P>
 class RolePredicateStateImpl : public ConstructorEvaluatorBase<Role, RolePredicateStateImpl<P>>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateStateImpl(size_t index, Predicate<P> predicate);
+    RolePredicateStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -155,7 +155,7 @@ public:
     RolePredicateStateImpl(RolePredicateStateImpl&& other) = default;
     RolePredicateStateImpl& operator=(RolePredicateStateImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
@@ -163,10 +163,10 @@ template<PredicateCategory P>
 class RolePredicateGoalImpl : public ConstructorEvaluatorBase<Role, RolePredicateGoalImpl<P>>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateGoalImpl(size_t index, Predicate<P> predicate);
+    RolePredicateGoalImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -185,18 +185,18 @@ public:
     RolePredicateGoalImpl(RolePredicateGoalImpl&& other) = default;
     RolePredicateGoalImpl& operator=(RolePredicateGoalImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 class RoleAndImpl : public ConstructorEvaluatorBase<Role, RoleAndImpl>
 {
 private:
-    size_t m_index;
+    Index m_index;
     Constructor<Role> m_role_left;
     Constructor<Role> m_role_right;
 
-    RoleAndImpl(size_t index, Constructor<Role> role_left, Constructor<Role> role_right);
+    RoleAndImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -215,7 +215,7 @@ public:
     RoleAndImpl(RoleAndImpl&& other) = default;
     RoleAndImpl& operator=(RoleAndImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
 };

@@ -96,14 +96,14 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const S
         return std::nullopt;
     }
 
-    auto optimal_distance = DISTANCE_INFINITY;
+    auto optimal_distance = std::numeric_limits<ContinuousCost>::infinity();
     const auto distances = m_state_space->compute_shortest_distances_from_states<ForwardTraversal>(IndexList { m_state_space->get_initial_state() });
     for (const auto& state : states)
     {
         const auto state_index = m_state_space->get_state_index(state);
         const auto state_distance = distances.at(state_index);
         // Unreachable states have distance DISTANCE_INFINITY
-        if (state_distance != DISTANCE_INFINITY)
+        if (state_distance != std::numeric_limits<ContinuousCost>::infinity())
         {
             optimal_distance = std::min(optimal_distance, state_distance);
         }

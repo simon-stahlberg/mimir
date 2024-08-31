@@ -125,7 +125,7 @@ private:
                         IndexSet goal_states,
                         IndexSet deadend_states,
                         std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
-                        DistanceList goal_distances);
+                        ContinuousCostList goal_distances);
 
 public:
     static std::optional<FaithfulAbstraction>
@@ -173,13 +173,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    DistanceList compute_shortest_distances_from_states(const IndexList& states) const;
+    ContinuousCostList compute_shortest_distances_from_states(const IndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    DistanceMatrix compute_pairwise_shortest_state_distances() const;
+    ContinuousCostMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      * Getters.
@@ -225,11 +225,11 @@ public:
     size_t get_num_transitions() const;
 
     /* Distances */
-    const DistanceList& get_goal_distances() const;
-    Distance get_goal_distance(Index state) const;
+    const ContinuousCostList& get_goal_distances() const;
+    ContinuousCost get_goal_distance(Index state) const;
 
     /* Additional */
-    const std::map<Distance, IndexList>& get_states_by_goal_distance() const;
+    const std::map<ContinuousCost, IndexList>& get_states_by_goal_distance() const;
 
 private:
     /* Meta data */
@@ -256,10 +256,10 @@ private:
     std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
 
     /* Distances */
-    DistanceList m_goal_distances;
+    ContinuousCostList m_goal_distances;
 
     /* Additional */
-    std::map<Distance, IndexList> m_states_by_goal_distance;
+    std::map<ContinuousCost, IndexList> m_states_by_goal_distance;
 };
 
 static_assert(IsAbstraction<FaithfulAbstraction>);

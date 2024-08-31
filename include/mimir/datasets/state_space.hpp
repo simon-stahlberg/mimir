@@ -95,7 +95,7 @@ private:
                Index initial_state,
                IndexSet goal_states,
                IndexSet deadend_states,
-               DistanceList goal_distances);
+               ContinuousCostList goal_distances);
 
 public:
     /// @brief Try to create a `StateSpace` from the given input files with the given options.
@@ -137,13 +137,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    DistanceList compute_shortest_distances_from_states(const IndexList& states) const;
+    ContinuousCostList compute_shortest_distances_from_states(const IndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    DistanceMatrix compute_pairwise_shortest_state_distances() const;
+    ContinuousCostMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      *  Getters
@@ -189,13 +189,13 @@ public:
     size_t get_num_transitions() const;
 
     /* Distances */
-    const DistanceList& get_goal_distances() const;
-    Distance get_goal_distance(Index state) const;
-    Distance get_max_goal_distance() const;
+    const ContinuousCostList& get_goal_distances() const;
+    ContinuousCost get_goal_distance(Index state) const;
+    ContinuousCost get_max_goal_distance() const;
 
     /* Additional */
-    const std::map<Distance, IndexList>& get_states_by_goal_distance() const;
-    Index sample_state_with_goal_distance(Distance goal_distance) const;
+    const std::map<ContinuousCost, IndexList>& get_states_by_goal_distance() const;
+    Index sample_state_with_goal_distance(ContinuousCost goal_distance) const;
 
 private:
     /* Meta data */
@@ -215,10 +215,10 @@ private:
     IndexSet m_deadend_states;
 
     /* Distances */
-    DistanceList m_goal_distances;
+    ContinuousCostList m_goal_distances;
 
     /* Additional */
-    std::map<Distance, IndexList> m_states_by_goal_distance;
+    std::map<ContinuousCost, IndexList> m_states_by_goal_distance;
 };
 
 using StateSpaceList = std::vector<StateSpace>;

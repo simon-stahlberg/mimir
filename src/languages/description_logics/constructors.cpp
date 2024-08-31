@@ -50,7 +50,7 @@ namespace mimir::dl
  */
 
 template<PredicateCategory P>
-ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -95,7 +95,7 @@ bool ConceptPredicateStateImpl<P>::accept_impl(const grammar::Visitor<Concept>& 
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateStateImpl<P>::get_index() const
+Index ConceptPredicateStateImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -115,7 +115,7 @@ template class ConceptPredicateStateImpl<Derived>;
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -143,7 +143,7 @@ bool ConceptPredicateGoalImpl<P>::accept_impl(const grammar::Visitor<Concept>& v
 }
 
 template<PredicateCategory P>
-size_t ConceptPredicateGoalImpl<P>::get_index() const
+Index ConceptPredicateGoalImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -162,7 +162,7 @@ template class ConceptPredicateGoalImpl<Derived>;
  * ConceptAnd
  */
 
-ConceptAndImpl::ConceptAndImpl(size_t index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+ConceptAndImpl::ConceptAndImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
     m_index(index),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
@@ -186,7 +186,7 @@ void ConceptAndImpl::evaluate_impl(EvaluationContext& context) const
 
 bool ConceptAndImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
-size_t ConceptAndImpl::get_index() const { return m_index; }
+Index ConceptAndImpl::get_index() const { return m_index; }
 
 Constructor<Concept> ConceptAndImpl::get_concept_left() const { return m_concept_left; }
 
@@ -197,7 +197,7 @@ Constructor<Concept> ConceptAndImpl::get_concept_right() const { return m_concep
  */
 
 template<PredicateCategory P>
-RolePredicateStateImpl<P>::RolePredicateStateImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RolePredicateStateImpl<P>::RolePredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -252,7 +252,7 @@ bool RolePredicateStateImpl<P>::accept_impl(const grammar::Visitor<Role>& visito
 }
 
 template<PredicateCategory P>
-size_t RolePredicateStateImpl<P>::get_index() const
+Index RolePredicateStateImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -272,7 +272,7 @@ template class RolePredicateStateImpl<Derived>;
  */
 
 template<PredicateCategory P>
-RolePredicateGoalImpl<P>::RolePredicateGoalImpl(size_t index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RolePredicateGoalImpl<P>::RolePredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
@@ -305,7 +305,7 @@ bool RolePredicateGoalImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor
 }
 
 template<PredicateCategory P>
-size_t RolePredicateGoalImpl<P>::get_index() const
+Index RolePredicateGoalImpl<P>::get_index() const
 {
     return m_index;
 }
@@ -324,7 +324,7 @@ template class RolePredicateGoalImpl<Derived>;
  * RoleAnd
  */
 
-RoleAndImpl::RoleAndImpl(size_t index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleAndImpl::RoleAndImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
     m_index(index),
     m_role_left(role_left),
     m_role_right(role_right)
@@ -355,7 +355,7 @@ void RoleAndImpl::evaluate_impl(EvaluationContext& context) const
 
 bool RoleAndImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
-size_t RoleAndImpl::get_index() const { return m_index; }
+Index RoleAndImpl::get_index() const { return m_index; }
 
 Constructor<Role> RoleAndImpl::get_role_left() const { return m_role_left; }
 

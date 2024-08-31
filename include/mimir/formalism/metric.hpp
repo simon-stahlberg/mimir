@@ -27,13 +27,13 @@ namespace mimir
 class OptimizationMetricImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     loki::OptimizationMetricEnum m_optimization_metric;
     GroundFunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    OptimizationMetricImpl(size_t index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
+    OptimizationMetricImpl(Index index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -48,7 +48,7 @@ public:
     OptimizationMetricImpl(OptimizationMetricImpl&& other) = default;
     OptimizationMetricImpl& operator=(OptimizationMetricImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     loki::OptimizationMetricEnum get_optimization_metric() const;
     const GroundFunctionExpression& get_function_expression() const;
 };

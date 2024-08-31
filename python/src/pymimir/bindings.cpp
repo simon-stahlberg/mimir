@@ -323,9 +323,9 @@ public:
      * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
      */
     void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
-    void on_solved_impl(const GroundActionList& ground_action_plan) override
+    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan);
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan, pddl_factories);
     }
     void on_unsolvable_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_unsolvable_impl, ); }
     void on_exhausted_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_exhausted_impl, ); }
@@ -1017,7 +1017,7 @@ void init_pymimir(py::module_& m)
     /* State */
     py::class_<State>(m, "State")  //
         .def("__hash__", [](const State& self) { return std::hash<State>()(self); })
-        .def("__eq__", &State::operator==)
+        .def("__eq__", [](const State& lhs, const State& rhs) { return lhs == rhs; })
         .def("__repr__",
              [](State self)
              {
@@ -1075,19 +1075,6 @@ void init_pymimir(py::module_& m)
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", [](const GroundAction& obj) { return std::hash<GroundAction>()(obj); })
         .def("__eq__", [](const GroundAction& a, const GroundAction& b) { return std::equal_to<GroundAction>()(a, b); })
-        .def("__repr__",
-             [](GroundAction self)
-             {
-                 std::stringstream ss;
-                 ss << "(";
-                 ss << self.get_action()->get_name();
-                 for (const auto& object : self.get_objects())
-                 {
-                     ss << " " << object->get_name();
-                 }
-                 ss << ")";
-                 return ss.str();
-             })
         .def("to_string",
              [](GroundAction self, PDDLFactories& pddl_factories)
              {
@@ -1095,21 +1082,17 @@ void init_pymimir(py::module_& m)
                  ss << std::make_tuple(self, std::cref(pddl_factories));
                  return ss.str();
              })
+        .def("to_string_for_plan",
+             [](GroundAction self, PDDLFactories& pddl_factories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(std::cref(pddl_factories), self);
+                 return ss.str();
+             })
         .def("get_index", &GroundAction::get_index)
         .def("get_cost", &GroundAction::get_cost)
-        .def("get_action", &GroundAction::get_action, py::return_value_policy::reference_internal)
-        .def(
-            "get_objects",
-            [](GroundAction self)
-            {
-                ObjectList terms;
-                for (const auto& object : self.get_objects())
-                {
-                    terms.emplace_back(object);
-                }
-                return terms;
-            },
-            py::keep_alive<0, 1>())
+        .def("get_action_index", &GroundAction::get_action_index, py::return_value_policy::reference_internal)
+        .def("get_object_indices", &GroundAction::get_object_indices, py::return_value_policy::copy)
         .def("get_strips_precondition", [](const GroundAction& self) { return StripsActionPrecondition(self.get_strips_precondition()); })
         .def("get_strips_effect", [](const GroundAction& self) { return StripsActionEffect(self.get_strips_effect()); })
         .def("get_conditional_effects",

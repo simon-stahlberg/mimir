@@ -40,7 +40,7 @@ StateSpace::StateSpace(Problem problem,
                        Index initial_state,
                        IndexSet goal_states,
                        IndexSet deadend_states,
-                       DistanceList goal_distances) :
+                       ContinuousCostList goal_distances) :
     m_problem(problem),
     m_use_unit_cost_one(use_unit_cost_one),
     m_pddl_factories(std::move(pddl_factories)),
@@ -146,7 +146,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
 
     auto bidirectional_graph = typename StateSpace::GraphType(std::move(graph));
 
-    auto goal_distances = DistanceList {};
+    auto goal_distances = ContinuousCostList {};
     if (options.use_unit_cost_one
         || std::all_of(bidirectional_graph.get_edges().begin(),
                        bidirectional_graph.get_edges().end(),
@@ -174,7 +174,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
     auto deadend_states = IndexSet {};
     for (Index state_index = 0; state_index < bidirectional_graph.get_num_vertices(); ++state_index)
     {
-        if (goal_distances.at(state_index) == DISTANCE_INFINITY)
+        if (goal_distances.at(state_index) == std::numeric_limits<ContinuousCost>::infinity())
         {
             deadend_states.insert(state_index);
         }
@@ -245,9 +245,9 @@ std::vector<StateSpace> StateSpace::create(
  */
 
 template<IsTraversalDirection Direction>
-DistanceList StateSpace::compute_shortest_distances_from_states(const IndexList& states) const
+ContinuousCostList StateSpace::compute_shortest_distances_from_states(const IndexList& states) const
 {
-    auto distances = DistanceList {};
+    auto distances = ContinuousCostList {};
     if (m_use_unit_cost_one
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
     {
@@ -270,11 +270,11 @@ DistanceList StateSpace::compute_shortest_distances_from_states(const IndexList&
     return distances;
 }
 
-template DistanceList StateSpace::compute_shortest_distances_from_states<ForwardTraversal>(const IndexList& states) const;
-template DistanceList StateSpace::compute_shortest_distances_from_states<BackwardTraversal>(const IndexList& states) const;
+template ContinuousCostList StateSpace::compute_shortest_distances_from_states<ForwardTraversal>(const IndexList& states) const;
+template ContinuousCostList StateSpace::compute_shortest_distances_from_states<BackwardTraversal>(const IndexList& states) const;
 
 template<IsTraversalDirection Direction>
-DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances() const
+ContinuousCostMatrix StateSpace::compute_pairwise_shortest_state_distances() const
 {
     auto transition_costs = ContinuousCostList {};
     if (m_use_unit_cost_one)
@@ -293,8 +293,8 @@ DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances() const
     return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
 
-template DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template DistanceMatrix StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template ContinuousCostMatrix StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template ContinuousCostMatrix StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  *  Getters
@@ -391,16 +391,16 @@ ContinuousCost StateSpace::get_transition_cost(Index transition) const { return 
 size_t StateSpace::get_num_transitions() const { return m_graph.get_num_edges(); }
 
 /* Distances */
-const DistanceList& StateSpace::get_goal_distances() const { return m_goal_distances; }
+const ContinuousCostList& StateSpace::get_goal_distances() const { return m_goal_distances; }
 
-Distance StateSpace::get_goal_distance(Index state) const { return m_goal_distances.at(state); }
+ContinuousCost StateSpace::get_goal_distance(Index state) const { return m_goal_distances.at(state); }
 
-Distance StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
+ContinuousCost StateSpace::get_max_goal_distance() const { return *std::max_element(m_goal_distances.begin(), m_goal_distances.end()); }
 
 /* Additional */
-const std::map<Distance, IndexList>& StateSpace::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
+const std::map<ContinuousCost, IndexList>& StateSpace::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
 
-Index StateSpace::sample_state_with_goal_distance(Distance goal_distance) const
+Index StateSpace::sample_state_with_goal_distance(ContinuousCost goal_distance) const
 {
     const auto& states = m_states_by_goal_distance.at(goal_distance);
     const auto index = std::rand() % static_cast<int>(states.size());

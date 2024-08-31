@@ -99,8 +99,8 @@ private:
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
-        virtual const DistanceList& get_goal_distances() const = 0;
-        virtual Distance get_goal_distance(Index state) const = 0;
+        virtual const ContinuousCostList& get_goal_distances() const = 0;
+        virtual ContinuousCost get_goal_distance(Index state) const = 0;
 
         // The Prototype Design Pattern
         virtual std::unique_ptr<AbstractionConcept> clone() const = 0;
@@ -172,8 +172,8 @@ private:
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
         /* Distances */
-        const DistanceList& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
-        Distance get_goal_distance(Index state) const override { return m_abstraction.get_goal_distance(state); };
+        const ContinuousCostList& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
+        ContinuousCost get_goal_distance(Index state) const override { return m_abstraction.get_goal_distance(state); };
 
         // The Prototype Design Pattern
         std::unique_ptr<AbstractionConcept> clone() const override { return std::make_unique<AbstractionModel<A>>(*this); }
@@ -279,8 +279,8 @@ public:
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */
-    const DistanceList& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
-    Distance get_goal_distance(Index state) const { return m_pimpl->get_goal_distance(state); };
+    const ContinuousCostList& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
+    ContinuousCost get_goal_distance(Index state) const { return m_pimpl->get_goal_distance(state); };
 };
 
 static_assert(IsAbstraction<Abstraction>);

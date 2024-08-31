@@ -30,8 +30,10 @@ using IndexSet = std::unordered_set<Index>;
 
 using ContinuousCost = double;
 using ContinuousCostList = std::vector<ContinuousCost>;
+using ContinuousCostMatrix = std::vector<ContinuousCostList>;
 using DiscreteCost = int32_t;
 using DiscreteCostList = std::vector<DiscreteCost>;
+using DiscreteCostMatrix = std::vector<ContinuousCostList>;
 }
 
 #endif

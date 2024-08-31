@@ -26,7 +26,7 @@ namespace mimir
 {
 
 template<PredicateCategory P>
-PredicateImpl<P>::PredicateImpl(size_t index, std::string name, VariableList parameters) :
+PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
@@ -43,7 +43,7 @@ std::string PredicateImpl<P>::str() const
 }
 
 template<PredicateCategory P>
-size_t PredicateImpl<P>::get_index() const
+Index PredicateImpl<P>::get_index() const
 {
     return m_index;
 }

@@ -64,7 +64,7 @@ const FlatAxiom& GroundAxiomBuilder::get_data() const { return m_builder; }
 
 Index& GroundAxiomBuilder::get_index() { return cista::get<0>(m_builder); }
 
-uint32_t& GroundAxiomBuilder::get_axiom() { return cista::get<1>(m_builder); }
+Index& GroundAxiomBuilder::get_axiom() { return cista::get<1>(m_builder); }
 
 FlatIndexList& GroundAxiomBuilder::get_objects() { return cista::get<2>(m_builder); }
 
@@ -80,7 +80,7 @@ GroundAxiom::GroundAxiom(const FlatAxiom& view) : m_view(view) {}
 
 Index GroundAxiom::get_index() const { return cista::get<0>(m_view.get()); }
 
-uint32_t GroundAxiom::get_axiom() const { return cista::get<1>(m_view.get()); }
+Index GroundAxiom::get_axiom_index() const { return cista::get<1>(m_view.get()); }
 
 const FlatIndexList& GroundAxiom::get_objects() const { return cista::get<2>(m_view.get()); }
 
@@ -139,11 +139,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const P
 
     auto strips_precondition = StripsActionPrecondition(axiom.get_strips_precondition());
 
-    os << "Axiom("                                                                                                                //
-       << "index=" << axiom.get_index() << ", "                                                                                   //
-       << "name=" << pddl_factories.get_axiom(axiom.get_axiom())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                                                           //
-       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                                                 //
+    os << "Axiom("                                                                                                                      //
+       << "index=" << axiom.get_index() << ", "                                                                                         //
+       << "name=" << pddl_factories.get_axiom(axiom.get_axiom_index())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                                                                 //
+       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "                                                       //
        << "effect=" << std::make_tuple(axiom.get_derived_effect(), std::cref(pddl_factories)) << ")";
 
     return os;

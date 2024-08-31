@@ -25,12 +25,12 @@ namespace mimir
 class RequirementsImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     loki::RequirementEnumSet m_requirements;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    RequirementsImpl(size_t index, loki::RequirementEnumSet requirements);
+    RequirementsImpl(Index index, loki::RequirementEnumSet requirements);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -47,7 +47,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const loki::RequirementEnumSet& get_requirements() const;
 };
 

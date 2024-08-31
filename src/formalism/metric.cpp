@@ -26,7 +26,7 @@ using namespace std;
 
 namespace mimir
 {
-OptimizationMetricImpl::OptimizationMetricImpl(size_t index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression) :
+OptimizationMetricImpl::OptimizationMetricImpl(Index index, loki::OptimizationMetricEnum optimization_metric, GroundFunctionExpression function_expression) :
     m_index(index),
     m_optimization_metric(optimization_metric),
     m_function_expression(std::move(function_expression))
@@ -40,7 +40,7 @@ std::string OptimizationMetricImpl::str() const
     return out.str();
 }
 
-size_t OptimizationMetricImpl::get_index() const { return m_index; }
+Index OptimizationMetricImpl::get_index() const { return m_index; }
 
 loki::OptimizationMetricEnum OptimizationMetricImpl::get_optimization_metric() const { return m_optimization_metric; }
 

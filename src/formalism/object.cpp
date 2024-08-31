@@ -21,7 +21,7 @@
 
 namespace mimir
 {
-ObjectImpl::ObjectImpl(size_t index, std::string name) : m_index(index), m_name(std::move(name)) {}
+ObjectImpl::ObjectImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)) {}
 
 std::string ObjectImpl::str() const
 {
@@ -30,7 +30,7 @@ std::string ObjectImpl::str() const
     return out.str();
 }
 
-size_t ObjectImpl::get_index() const { return m_index; }
+Index ObjectImpl::get_index() const { return m_index; }
 
 const std::string& ObjectImpl::get_name() const { return m_name; }
 

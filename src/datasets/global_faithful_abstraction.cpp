@@ -212,22 +212,22 @@ Index GlobalFaithfulAbstraction::get_abstract_state_index(Index global_state_ind
  */
 
 template<IsTraversalDirection Direction>
-DistanceList GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const IndexList& abstract_states) const
+ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const IndexList& abstract_states) const
 {
     return m_abstractions->at(m_index).compute_shortest_distances_from_states<Direction>(abstract_states);
 }
 
-template DistanceList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const IndexList& abstract_states) const;
-template DistanceList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const IndexList& abstract_states) const;
+template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const IndexList& abstract_states) const;
+template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const IndexList& abstract_states) const;
 
 template<IsTraversalDirection Direction>
-DistanceMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances() const
+ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances() const
 {
     return m_abstractions->at(m_index).compute_pairwise_shortest_state_distances<Direction>();
 }
 
-template DistanceMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template DistanceMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  * Getters
@@ -345,12 +345,12 @@ ContinuousCost GlobalFaithfulAbstraction::get_transition_cost(Index transition) 
 size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstractions->at(m_index).get_num_transitions(); }
 
 /* Distances */
-const DistanceList& GlobalFaithfulAbstraction::get_goal_distances() const { return m_abstractions->at(m_index).get_goal_distances(); }
+const ContinuousCostList& GlobalFaithfulAbstraction::get_goal_distances() const { return m_abstractions->at(m_index).get_goal_distances(); }
 
-Distance GlobalFaithfulAbstraction::get_goal_distance(Index state) const { return m_abstractions->at(m_index).get_goal_distance(state); }
+ContinuousCost GlobalFaithfulAbstraction::get_goal_distance(Index state) const { return m_abstractions->at(m_index).get_goal_distance(state); }
 
 /* Additional */
-const std::map<Distance, IndexList>& GlobalFaithfulAbstraction::get_states_by_goal_distance() const
+const std::map<ContinuousCost, IndexList>& GlobalFaithfulAbstraction::get_states_by_goal_distance() const
 {
     return m_abstractions->at(m_index).get_states_by_goal_distance();
 }

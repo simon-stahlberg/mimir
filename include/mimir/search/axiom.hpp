@@ -102,7 +102,7 @@ public:
     explicit GroundAxiom(const FlatAxiom& view);
 
     Index get_index() const;
-    Index get_axiom() const;
+    Index get_axiom_index() const;
     const FlatIndexList& get_objects() const;
 
     /* STRIPS part */

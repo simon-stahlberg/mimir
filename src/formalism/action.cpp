@@ -33,7 +33,7 @@
 
 namespace mimir
 {
-ActionImpl::ActionImpl(size_t index,
+ActionImpl::ActionImpl(Index index,
                        std::string name,
                        size_t original_arity,
                        VariableList parameters,
@@ -100,7 +100,7 @@ std::string ActionImpl::str() const
     return out.str();
 }
 
-size_t ActionImpl::get_index() const { return m_index; }
+Index ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
 

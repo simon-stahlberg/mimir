@@ -25,7 +25,7 @@
 namespace mimir
 {
 template<PredicateCategory P>
-AtomImpl<P>::AtomImpl(size_t index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))
+AtomImpl<P>::AtomImpl(Index index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))
 {
 }
 
@@ -38,7 +38,7 @@ std::string AtomImpl<P>::str() const
 }
 
 template<PredicateCategory P>
-size_t AtomImpl<P>::get_index() const
+Index AtomImpl<P>::get_index() const
 {
     return m_index;
 }

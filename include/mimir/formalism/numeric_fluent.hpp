@@ -25,13 +25,13 @@ namespace mimir
 class NumericFluentImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     GroundFunction m_function;
     double m_number;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    NumericFluentImpl(size_t index, GroundFunction function, double number);
+    NumericFluentImpl(Index index, GroundFunction function, double number);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -46,7 +46,7 @@ public:
     NumericFluentImpl(NumericFluentImpl&& other) = default;
     NumericFluentImpl& operator=(NumericFluentImpl&& other) = default;
 
-    size_t get_index() const;
+    Index get_index() const;
     const GroundFunction& get_function() const;
     double get_number() const;
 };

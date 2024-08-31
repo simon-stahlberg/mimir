@@ -38,7 +38,7 @@ using namespace std;
 
 namespace mimir
 {
-ProblemImpl::ProblemImpl(size_t index,
+ProblemImpl::ProblemImpl(Index index,
                          std::optional<fs::path> filepath,
                          Domain domain,
                          std::string name,
@@ -135,7 +135,7 @@ std::string ProblemImpl::str() const
     return out.str();
 }
 
-size_t ProblemImpl::get_index() const { return m_index; }
+Index ProblemImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 

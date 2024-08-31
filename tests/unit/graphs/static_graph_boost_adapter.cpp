@@ -130,7 +130,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
         // There are zero deadend state.
-        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<double>::max()), 0);
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 0);
     }
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
@@ -144,7 +144,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
 
         EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 4);
         // There is one deadend state.
-        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<double>::max()), 1);
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 1);
     }
 }
 
@@ -165,7 +165,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
         // There are zero deadend state.
-        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<double>::max()), 0);
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 0);
     }
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
@@ -177,7 +177,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
 
         EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 4);
         // There is one deadend state.
-        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<double>::max()), 1);
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 1);
     }
 }
 
@@ -192,23 +192,23 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
 
-        auto min_goal_distance = DISTANCE_INFINITY;
+        auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
         for (const auto& goal_state : state_space.get_goal_states())
         {
             min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_state()]);
         }
         EXPECT_GT(min_goal_distance, 0);
-        EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
-        auto max_pairwise_distance = Distance();
-        for (auto v1 = Index(); v1 < graph.get().get_num_vertices(); ++v1)
+        EXPECT_NE(min_goal_distance, std::numeric_limits<ContinuousCost>::infinity());
+        auto max_pairwise_distance = ContinuousCost();
+        for (auto v1 = Index(0); v1 < graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = Index(); v2 < graph.get().get_num_vertices(); ++v2)
+            for (auto v2 = Index(0); v2 < graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }
         }
         // All states are pairwise reachable
-        EXPECT_NE(max_pairwise_distance, DISTANCE_INFINITY);
+        EXPECT_NE(max_pairwise_distance, std::numeric_limits<ContinuousCost>::infinity());
     }
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
@@ -216,26 +216,27 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
-        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        const auto edge_costs = ContinuousCostList(state_space.get_num_transitions(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
 
-        auto min_goal_distance = DISTANCE_INFINITY;
+        auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
         for (const auto& goal_state : state_space.get_goal_states())
         {
             min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_state()]);
         }
         EXPECT_GT(min_goal_distance, 0);
-        EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
-        auto max_pairwise_distance = Distance();
-        for (auto v1 = Index(); v1 < graph.get().get_num_vertices(); ++v1)
+        EXPECT_NE(min_goal_distance, std::numeric_limits<ContinuousCost>::infinity());
+        auto max_pairwise_distance = ContinuousCost();
+        for (auto v1 = Index(0); v1 < graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = Index(); v2 < graph.get().get_num_vertices(); ++v2)
+            for (auto v2 = Index(0); v2 < graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }
         }
         // There exist deadend states
-        EXPECT_EQ(max_pairwise_distance, DISTANCE_INFINITY);
+        // Boost seems to initialize the distances with max instead of infinity
+        EXPECT_EQ(max_pairwise_distance, std::numeric_limits<ContinuousCost>::max());
     }
 }
 

@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/iw.hpp"
 
+#include "mimir/common/printers.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
@@ -149,8 +150,14 @@ const int FluentAndDerivedMapper::UNDEFINED = -1;
 
 void FluentAndDerivedMapper::remap_atoms(const State state)
 {
+    // std::cout << "FluentAndDerivedMapper::remap_atoms" << std::endl;
+    // std::cout << m_fluent_remap << std::endl;
+    // std::cout << m_derived_remap << std::endl;
+    // std::cout << m_inverse_remap << std::endl;
+    // std::cout << "Num atoms: " << m_num_atoms << std::endl;
     for (const auto& atom_id : state.get_atoms<Fluent>())
     {
+        // std::cout << "Fluent atom id: " << atom_id << std::endl;
         if (atom_id >= m_fluent_remap.size())
         {
             m_fluent_remap.resize(atom_id + 1, UNDEFINED);
@@ -170,6 +177,7 @@ void FluentAndDerivedMapper::remap_atoms(const State state)
 
     for (const auto& atom_id : state.get_atoms<Derived>())
     {
+        // std::cout << "Derived atom id: " << atom_id << std::endl;
         if (atom_id >= m_derived_remap.size())
         {
             m_derived_remap.resize(atom_id + 1, UNDEFINED);
@@ -914,7 +922,16 @@ ArityZeroNoveltyPruning::ArityZeroNoveltyPruning(State initial_state) : m_initia
 
 bool ArityZeroNoveltyPruning::test_prune_initial_state(const State state) { return false; }
 
-bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) { return state != m_initial_state; }
+bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
+{
+    if (!is_new_succ)
+    {
+        // React on self loops
+        return true;
+    }
+
+    return state != m_initial_state;
+}
 
 ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper) :
     m_novelty_table(std::move(atom_index_mapper), std::make_shared<TupleIndexMapper>(arity, num_atoms))
@@ -935,6 +952,12 @@ bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 
 bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const State succ_state, bool is_new_succ)
 {
+    if (!is_new_succ)
+    {
+        // React on self loops
+        return true;
+    }
+
     if (m_generated_states.count(succ_state.get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state, succ_state));
@@ -1002,6 +1025,8 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_factories, cur_arity);
 
+        std::cout << "Start" << std::endl;
+
         auto search_status =
             (cur_arity > 0) ?
                 m_brfs.find_solution(start_state,
@@ -1010,6 +1035,8 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
                                      out_plan,
                                      out_goal_state) :
                 m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan, out_goal_state);
+
+        std::cout << search_status << std::endl;
 
         m_iw_event_handler->on_end_arity_search(m_brfs_event_handler->get_statistics());
 

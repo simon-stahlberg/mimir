@@ -190,7 +190,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     for (const auto& axiom : delete_free_lifted_aag->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_factories->get_axiom(axiom.get_axiom())))
+        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_factories->get_axiom(axiom.get_axiom_index())))
         {
             auto axiom_arguments = m_pddl_factories->get_objects_from_indices(axiom.get_objects());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
@@ -238,7 +238,7 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBits
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                if (!lifted_partition.get_axioms().count(m_pddl_factories->get_axiom(grounded_axiom.get_axiom())))
+                if (!lifted_partition.get_axioms().count(m_pddl_factories->get_axiom(grounded_axiom.get_axiom_index())))
                 {
                     // axiom not part of same partition
                     continue;

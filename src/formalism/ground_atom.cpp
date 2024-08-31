@@ -24,7 +24,7 @@
 namespace mimir
 {
 template<PredicateCategory P>
-GroundAtomImpl<P>::GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectList objects) :
+GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects) :
     m_index(index),
     m_predicate(std::move(predicate)),
     m_objects(std::move(objects))
@@ -40,7 +40,7 @@ std::string GroundAtomImpl<P>::str() const
 }
 
 template<PredicateCategory P>
-size_t GroundAtomImpl<P>::get_index() const
+Index GroundAtomImpl<P>::get_index() const
 {
     return m_index;
 }
