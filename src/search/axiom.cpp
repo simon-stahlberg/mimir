@@ -51,7 +51,7 @@ bool FlatDerivedEffect::operator==(const FlatDerivedEffect& other) const
 {
     if (this != &other)
     {
-        return is_negated == other.is_negated && atom_id == other.atom_id;
+        return is_negated == other.is_negated && atom_index == other.atom_index;
     }
     return true;
 }
@@ -110,7 +110,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, c
 {
     const auto [derived_effect, pddl_factories] = data;
 
-    const auto& ground_atom = pddl_factories.get_ground_atom<Derived>(derived_effect.atom_id);
+    const auto& ground_atom = pddl_factories.get_ground_atom<Derived>(derived_effect.atom_index);
 
     if (derived_effect.is_negated)
     {

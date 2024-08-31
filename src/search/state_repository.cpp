@@ -15,11 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/state_repository.hpp"
+
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/state_repository.hpp"
 
 namespace mimir
 {
@@ -54,14 +55,14 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 {
     /* Fetch member references for non extended construction. */
 
-    auto& state_id = m_state_builder.get_index();
+    auto& state_index = m_state_builder.get_index();
     auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
     fluent_state_atoms.unset_all();
 
     /* 1. Set state id */
 
-    int next_state_id = m_states.size();
-    state_id = next_state_id;
+    int next_state_index = m_states.size();
+    state_index = next_state_index;
 
     /* 2. Construct non-extended state */
 
@@ -110,7 +111,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 {
     /* Fetch member references for non extended construction. */
 
-    auto& state_id = m_state_builder.get_index();
+    auto& state_index = m_state_builder.get_index();
     auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
     fluent_state_atoms.unset_all();
 
@@ -119,15 +120,15 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 2. Set state id */
 
-    int next_state_id = m_states.size();
-    state_id = next_state_id;
+    int next_state_index = m_states.size();
+    state_index = next_state_index;
 
     /* 3. Construct non-extended state */
 
     /* STRIPS effects*/
-    auto strips_part_proxy = StripsActionEffect(action.get_strips_effect());
-    fluent_state_atoms -= strips_part_proxy.get_negative_effects();
-    fluent_state_atoms |= strips_part_proxy.get_positive_effects();
+    auto strips_action_effect = StripsActionEffect(action.get_strips_effect());
+    fluent_state_atoms -= strips_action_effect.get_negative_effects();
+    fluent_state_atoms |= strips_action_effect.get_positive_effects();
     /* Conditional effects */
     for (const auto& flat_conditional_effect : action.get_conditional_effects())
     {
@@ -139,11 +140,11 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
             if (simple_effect.is_negated)
             {
-                fluent_state_atoms.unset(simple_effect.atom_id);
+                fluent_state_atoms.unset(simple_effect.atom_index);
             }
             else
             {
-                fluent_state_atoms.set(simple_effect.atom_id);
+                fluent_state_atoms.set(simple_effect.atom_index);
             }
         }
     }

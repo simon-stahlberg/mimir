@@ -24,11 +24,11 @@
 namespace cista::storage
 {
 
-/// @brief `ByteBufferVector` is a container that stores buffers of a cista container of type T.
-/// It provides random access to the elements and ensures that the serialize and deserialize functions are compatible.
+/// @brief `Vector` is a container that stores buffers of a cista container of type T.
+/// It provides random access to the elements.
 /// @tparam T
 template<typename T>
-class ByteBufferVector
+class Vector
 {
 private:
     // Persistent storage
@@ -40,21 +40,26 @@ private:
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
 
-    void range_check(size_t pos) const {}
+    void range_check(size_t pos) const
+    {
+        if (pos >= size())
+        {
+            throw std::out_of_range("cista::storage::Vector::range_check: pos (which is " + std::to_string(pos) + ") >= this->size() (which is "
+                                    + std::to_string(size()) + ")");
+        }
+    }
 
 public:
-    /// @brief Constructor that ensure that a resize yields non trivially initialized objects.
-    ByteBufferVector(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) :
+    Vector(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) :
         m_storage(initial_num_bytes_per_segment, maximum_num_bytes_per_segment),
         m_elements(),
         m_buf()
     {
     }
-    // Move only to avoid invalidating views.
-    ByteBufferVector(const ByteBufferVector& other) = default;
-    ByteBufferVector& operator=(const ByteBufferVector& other) = default;
-    ByteBufferVector(ByteBufferVector&& other) = default;
-    ByteBufferVector& operator=(ByteBufferVector&& other) = default;
+    Vector(const Vector& other) = default;
+    Vector& operator=(const Vector& other) = default;
+    Vector(Vector&& other) = default;
+    Vector& operator=(Vector&& other) = default;
 
     /**
      * Element access
@@ -87,23 +92,30 @@ public:
      * Modifiers
      */
 
+    template<cista::mode Mode = cista::mode::NONE>
     void push_back(const T& element)
     {
         /* Serialize the element. */
         m_buf.reset();
-        cista::serialize(m_buf, element);
+        cista::serialize<Mode>(m_buf, element);
 
         /* Add padding to ensure that subsequent elements are aligned correctly. */
         size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
-        assert(m_buf.size() % alignof(T) == 0);
+        if (m_buf.size() % alignof(T) != 0)
+        {
+            throw std::logic_error("cista::storage::Vector::insert: serialized buffer before write does not satisfy alignment requirements.");
+        }
 
         /* Write the data to the storage. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
-        assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0);
+        if (reinterpret_cast<uintptr_t>(begin) % alignof(T) != 0)
+        {
+            throw std::logic_error("cista::storage::Vector::insert: serialized buffer after write does not satisfy alignment requirements.");
+        }
 
         /* Add the deserialized element to the vector. */
-        m_elements.push_back(cista::deserialize<T>(begin, begin + m_buf.size()));
+        m_elements.push_back(cista::deserialize<T, Mode>(begin, begin + m_buf.size()));
     }
     void clear()
     {

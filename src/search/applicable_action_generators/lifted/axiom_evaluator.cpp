@@ -92,7 +92,7 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_at
 
                 assert(grounded_axiom.is_applicable(fluent_state_atoms, ref_derived_state_atoms, m_problem->get_static_initial_positive_atoms()));
 
-                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
+                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_index;
 
                 if (!ref_derived_state_atoms.get(grounded_atom_id))
                 {
@@ -252,7 +252,7 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
             m_pddl_factories->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_derived_effect().is_negated = false;
-    m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_index();
+    m_axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
 
     const auto [iter, inserted] = m_flat_axioms.insert(m_axiom_builder.get_data());
     const auto grounded_axiom = GroundAxiom(**iter);

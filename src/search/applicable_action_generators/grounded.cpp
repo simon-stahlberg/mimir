@@ -246,7 +246,7 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBits
 
                 assert(!grounded_axiom.get_derived_effect().is_negated);
 
-                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_id;
+                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_index;
 
                 if (!ref_derived_state_atoms.get(grounded_atom_id))
                 {

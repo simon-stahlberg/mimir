@@ -28,22 +28,19 @@
 namespace cista::storage
 {
 
-using NumBytes = size_t;
-
 class ByteBufferSegmented
 {
 private:
-    NumBytes m_num_bytes_per_segment;
-    NumBytes m_maximum_num_bytes_per_segment;
+    size_t m_num_bytes_per_segment;
+    size_t m_maximum_num_bytes_per_segment;
+
     std::vector<std::vector<uint8_t>> m_segments;
 
-    size_t m_cur_segment_id;
-    size_t m_cur_segment_pos;
+    size_t m_current_segment_index;
+    size_t m_current_segment_position;
 
     size_t m_size;
     size_t m_capacity;
-
-    size_t m_last_written;
 
     void increase_capacity(size_t required_bytes)
     {
@@ -60,58 +57,59 @@ private:
         m_num_bytes_per_segment = std::min(2 * m_num_bytes_per_segment, m_maximum_num_bytes_per_segment);
 
         m_segments.push_back(std::vector<uint8_t>(m_num_bytes_per_segment));
+
         m_capacity += m_num_bytes_per_segment;
-        m_cur_segment_pos = 0;
-        ++m_cur_segment_id;
+        m_current_segment_position = 0;
+        ++m_current_segment_index;
     }
 
 public:
-    explicit ByteBufferSegmented(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) :
+    explicit ByteBufferSegmented(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) :
         m_num_bytes_per_segment(initial_num_bytes_per_segment),
         m_maximum_num_bytes_per_segment(maximum_num_bytes_per_segment),
         m_segments(),
-        m_cur_segment_id(-1),
-        m_cur_segment_pos(0),
+        m_current_segment_index(-1),
+        m_current_segment_position(0),
         m_size(0),
-        m_capacity(0),
-        m_last_written(0)
+        m_capacity(0)
     {
+        // Reserve the initial segment.
+        increase_capacity(initial_num_bytes_per_segment);
     }
 
-    /// @brief Write the data starting from the m_cur_segment_pos
-    ///        in the segment with m_cur_segment_id, if it fits,
+    /// @brief Write the data starting from the m_current_segment_position
+    ///        in the segment with m_current_segment_index, if it fits,
     ///        and otherwise, push_back a new segment first.
     uint8_t* write(const uint8_t* data, size_t amount)
     {
-        assert(data);
-        if ((m_segments.size() == 0) || (amount > (m_num_bytes_per_segment - m_cur_segment_pos)))
+        if (data == nullptr)
+        {
+            throw std::invalid_argument("cista::storage::ByteBufferSegmented::write(): data cannot be null");
+        }
+
+        if (amount > (m_num_bytes_per_segment - m_current_segment_position))
         {
             increase_capacity(amount);
         }
-        uint8_t* result_data = &m_segments[m_cur_segment_id][m_cur_segment_pos];
-        memcpy(result_data, data, amount);
-        m_cur_segment_pos += amount;
-        m_size += amount;
-        m_last_written = amount;
-        return result_data;
-    }
 
-    /// @brief Undo the last write operation.
-    void undo_last_write()
-    {
-        m_cur_segment_pos -= m_last_written;
-        m_last_written = 0;
+        uint8_t* result_data = &m_segments[m_current_segment_index][m_current_segment_position];
+
+        memcpy(result_data, data, amount);
+
+        m_current_segment_position += amount;
+        m_size += amount;
+
+        return result_data;
     }
 
     /// @brief Set the write head to the beginning.
     void clear()
     {
         m_segments.clear();
-        m_cur_segment_id = -1;
-        m_cur_segment_pos = 0;
+        m_current_segment_index = -1;
+        m_current_segment_position = 0;
         m_size = 0;
         m_capacity = 0;
-        m_last_written = 0;
     }
 
     size_t num_segments() const { return m_segments.size(); }

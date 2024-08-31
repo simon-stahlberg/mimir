@@ -49,7 +49,7 @@ static void set_g_value(BrFSSearchNode node, GValue g_value) { return set_proper
 static GValue get_g_value(ConstBrFSSearchNode node) { return get_property<0>(node); }
 
 static BrFSSearchNode
-get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, cista::storage::ByteBufferVector<BrFSSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, cista::storage::Vector<BrFSSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {
@@ -99,7 +99,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 {
     auto default_search_node =
         BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0) };
-    auto search_nodes = cista::storage::ByteBufferVector<BrFSSearchNodeImpl>();
+    auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
     const auto problem = m_aag->get_problem();

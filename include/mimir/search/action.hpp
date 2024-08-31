@@ -39,7 +39,7 @@ class PDDLFactories;
 struct FlatSimpleEffect
 {
     bool is_negated;
-    uint32_t atom_id;
+    uint32_t atom_index;
 
     bool operator==(const FlatSimpleEffect& other) const;
 };
@@ -74,7 +74,7 @@ using FlatAction = cista::tuple<GroundActionIndex,  //
                                 FlatStripsActionEffect,
                                 FlatConditionalEffects>;
 
-using FlatActionVector = cista::storage::ByteBufferVector<FlatAction>;
+using FlatActionVector = cista::storage::Vector<FlatAction>;
 
 }
 

@@ -52,7 +52,7 @@ bool FlatSimpleEffect::operator==(const FlatSimpleEffect& other) const
 {
     if (this != &other)
     {
-        return is_negated == other.is_negated && atom_id == other.atom_id;
+        return is_negated == other.is_negated && atom_index == other.atom_index;
     }
     return true;
 }
@@ -166,7 +166,7 @@ template const FlatBitset& StripsActionPrecondition::get_negative_precondition<D
 template<DynamicPredicateCategory P>
 bool StripsActionPrecondition::is_applicable(State state) const
 {
-    const auto state_atoms = state.get_atoms<P>();
+    const auto& state_atoms = state.get_atoms<P>();
 
     return state_atoms.is_superseteq(get_positive_precondition<P>())  //
            && state_atoms.are_disjoint(get_negative_precondition<P>());
@@ -351,7 +351,7 @@ bool ConditionalEffect::is_dynamically_applicable(State state) const
 
 bool ConditionalEffect::is_statically_applicable(Problem problem) const
 {
-    const auto static_initial_atoms = problem->get_static_initial_positive_atoms();
+    const auto& static_initial_atoms = problem->get_static_initial_positive_atoms();
 
     return is_superseteq(static_initial_atoms, get_positive_precondition<Static>())  //
            && are_disjoint(static_initial_atoms, get_negative_precondition<Static>());
@@ -432,7 +432,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, co
 {
     const auto [simple_effect, pddl_factories] = data;
 
-    const auto& ground_atom = pddl_factories.get_ground_atom<Fluent>(simple_effect.atom_id);
+    const auto& ground_atom = pddl_factories.get_ground_atom<Fluent>(simple_effect.atom_index);
 
     if (simple_effect.is_negated)
     {
@@ -453,12 +453,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
 {
     const auto [strips_precondition_proxy, pddl_factories] = data;
 
-    const auto positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
-    const auto negative_static_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Static>();
-    const auto positive_fluent_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Fluent>();
-    const auto negative_fluent_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Fluent>();
-    const auto positive_derived_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Derived>();
-    const auto negative_derived_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Derived>();
+    const auto& positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
+    const auto& negative_static_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Static>();
+    const auto& positive_fluent_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Fluent>();
+    const auto& negative_fluent_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Fluent>();
+    const auto& positive_derived_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Derived>();
+    const auto& negative_derived_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Derived>();
 
     auto positive_static_precondition = GroundAtomList<Static> {};
     auto negative_static_precondition = GroundAtomList<Static> {};
@@ -488,8 +488,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
 {
     const auto [strips_effect_proxy, pddl_factories] = data;
 
-    const auto positive_effect_bitset = strips_effect_proxy.get_positive_effects();
-    const auto negative_effect_bitset = strips_effect_proxy.get_negative_effects();
+    const auto& positive_effect_bitset = strips_effect_proxy.get_positive_effects();
+    const auto& negative_effect_bitset = strips_effect_proxy.get_negative_effects();
 
     auto positive_simple_effects = GroundAtomList<Fluent> {};
     auto negative_simple_effects = GroundAtomList<Fluent> {};
@@ -550,9 +550,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
         binding.push_back(pddl_factories.get_object(object_index));
     }
 
-    auto strips_precondition = StripsActionPrecondition(action.get_strips_precondition());
-    auto strips_effect = StripsActionEffect(action.get_strips_effect());
-    auto cond_effects = action.get_conditional_effects();
+    const auto strips_precondition = StripsActionPrecondition(action.get_strips_precondition());
+    const auto strips_effect = StripsActionEffect(action.get_strips_effect());
+    const auto& cond_effects = action.get_conditional_effects();
 
     os << "Action("                                                                      //
        << "index=" << action.get_index() << ", "                                         //

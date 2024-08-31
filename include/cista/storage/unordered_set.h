@@ -26,12 +26,18 @@
 
 namespace cista::storage
 {
+/// @brief `DerefStdHasher` is a hash function tailored towards `UnorderedSet`
+/// which should always accept const pointer types and computes a hash for the object pointed to.
+/// @tparam T
 template<typename T>
 struct DerefStdHasher
 {
     size_t operator()(const T* ptr) const { return std::hash<T>()(*ptr); }
 };
 
+/// @brief `DerefStdEqualTo` is a comparison function tailored towards `UnorderedSet`
+/// which should always accept const pointer types and compares the objects pointed to.
+/// @tparam T
 template<typename T>
 struct DerefStdEqualTo
 {
@@ -59,8 +65,7 @@ private:
     using const_iterator = typename std::unordered_set<const T*, Hash, Equal>::const_iterator;
 
 public:
-    explicit UnorderedSet(NumBytes initial_num_bytes_per_segment = 1024, NumBytes maximum_num_bytes_per_segment = 1024 * 1024) {}
-    // Move only to avoid invalidating views.
+    explicit UnorderedSet(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) {}
     UnorderedSet(const UnorderedSet& other) = delete;
     UnorderedSet& operator=(const UnorderedSet& other) = delete;
     UnorderedSet(UnorderedSet&& other) = default;
@@ -92,23 +97,37 @@ public:
         m_elements.clear();
     }
 
+    template<cista::mode Mode = cista::mode::NONE>
     std::pair<const_iterator, bool> insert(const T& element)
     {
+        /* Check whether element exists already. */
+        auto it = m_elements.find(&element);
+        if (it != m_elements.end())
+        {
+            return std::make_pair(it, false);
+        }
+
         /* Serialize the element. */
         m_buf.reset();
-        cista::serialize(m_buf, element);
+        cista::serialize<Mode>(m_buf, element);
 
         /* Add padding to ensure that subsequent elements are aligned correctly. */
         size_t num_padding = (alignof(T) - (m_buf.size() % alignof(T))) % alignof(T);
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
-        assert(m_buf.size() % alignof(T) == 0);
+        if (m_buf.size() % alignof(T) != 0)
+        {
+            throw std::logic_error("cista::storage::UnorderedSet::insert: serialized buffer before write does not satisfy alignment requirements.");
+        }
 
         /* Write the data to the storage and return it. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
-        assert(reinterpret_cast<uintptr_t>(begin) % alignof(T) == 0);
+        if (reinterpret_cast<uintptr_t>(begin) % alignof(T) != 0)
+        {
+            throw std::logic_error("cista::storage::UnorderedSet::insert: serialized buffer after write does not satisfy alignment requirements.");
+        }
 
         /* Add the deserialized element to the unordered_set and return it. */
-        return m_elements.insert(cista::deserialize<const T>(begin, begin + m_buf.size()));
+        return m_elements.insert(cista::deserialize<const T, Mode>(begin, begin + m_buf.size()));
     }
 
     /**

@@ -36,7 +36,7 @@ namespace mimir
 struct FlatDerivedEffect
 {
     bool is_negated;
-    size_t atom_id;
+    size_t atom_index;
 
     bool operator==(const FlatDerivedEffect& other) const;
 };

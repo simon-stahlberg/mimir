@@ -47,7 +47,7 @@ static GValue get_g_value(ConstAStarSearchNode node) { return get_property<0>(no
 static HValue get_h_value(ConstAStarSearchNode node) { return get_property<1>(node); }
 
 static AStarSearchNode
-get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, cista::storage::ByteBufferVector<AStarSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, cista::storage::Vector<AStarSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {
@@ -103,7 +103,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                                                      std::numeric_limits<GroundActionIndex>::max(),
                                                      std::numeric_limits<GValue>::infinity(),
                                                      HValue(0) };
-    auto search_nodes = cista::storage::ByteBufferVector<AStarSearchNodeImpl>();
+    auto search_nodes = cista::storage::Vector<AStarSearchNodeImpl>();
 
     auto openlist = PriorityQueue<State>();
 

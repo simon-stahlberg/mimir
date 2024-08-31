@@ -116,7 +116,7 @@ void set_property(SearchNode<SearchNodeProperties...> node, const typename std::
 /// @param[out] out_plan The sequence of ground actions that leads from the initial state to
 ///                      the to the state underlying the search node.
 template<typename... SearchNodeProperties>
-void set_plan(const cista::storage::ByteBufferVector<SearchNodeImpl<SearchNodeProperties...>>& search_nodes,  //
+void set_plan(const cista::storage::Vector<SearchNodeImpl<SearchNodeProperties...>>& search_nodes,  //
               const GroundActionList& ground_actions,
               ConstSearchNode<SearchNodeProperties...> search_node,
               GroundActionList& out_plan)

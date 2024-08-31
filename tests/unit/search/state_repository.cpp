@@ -46,7 +46,7 @@ TEST(MimirTests, SearchStateRepositoryTest)
         lifted_aag->generate_applicable_actions(successor_state, applicable_actions2);
         for (const auto& action2 : applicable_actions2)
         {
-            const auto successor_state2 = ssg.get_or_create_successor_state(successor_state, action2);
+            [[maybe_unused]] const auto successor_state2 = ssg.get_or_create_successor_state(successor_state, action2);
         }
     }
 }
