@@ -132,8 +132,6 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         const auto state = queue.front();
         queue.pop_front();
 
-        // std::cout << state.get_index() << std::endl;
-
         // We need this before goal test for correct statistics reporting.
         auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
 
@@ -176,9 +174,6 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                 m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
                 continue;
             }
-
-            std::cout << std::make_tuple(action, std::cref(pddl_factories)) << std::endl;
-            std::cout << "Not pruned: " << state.get_index() << " " << successor_state.get_index() << std::endl;
 
             set_status(successor_search_node, SearchNodeStatus::OPEN);
             set_parent_state(successor_search_node, state.get_index());
