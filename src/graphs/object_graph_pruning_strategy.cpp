@@ -300,7 +300,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         {
             for (const auto& transition : state_space->get_graph().template get_adjacent_edges<ForwardTraversal>(state_index))
             {
-                const auto precondition = StripsActionPrecondition(&get_creating_action(transition).get_strips_precondition());
+                const auto precondition = StripsActionPrecondition(get_creating_action(transition).get_strips_precondition());
                 mark_objects_as_not_prunable(
                     state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(precondition.get_negative_precondition<Static>()),
                     pruned_objects);
@@ -322,7 +322,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
                 for (const auto& flat_conditional_effect : get_creating_action(transition).get_conditional_effects())
                 {
-                    const auto conditional_effect = ConditionalEffect(&flat_conditional_effect);
+                    const auto conditional_effect = ConditionalEffect(flat_conditional_effect);
                     mark_objects_as_not_prunable(
                         state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(conditional_effect.get_negative_precondition<Static>()),
                         pruned_objects);

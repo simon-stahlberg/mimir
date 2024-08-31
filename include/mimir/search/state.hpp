@@ -34,6 +34,7 @@ namespace mimir
 {
 using FlatState = cista::tuple<StateIndex, FlatBitset, FlatBitset>;
 
+/// @brief `StateBuilder` encapsulates mutable data of a state.
 class StateBuilder
 {
 public:
@@ -51,10 +52,11 @@ private:
     FlatState m_data;
 };
 
+/// @brief `State` is an immutable view on the data of a state.
 class State
 {
 public:
-    explicit State(const FlatState* data);
+    explicit State(const FlatState& data);
 
     StateIndex get_index() const;
 
@@ -74,9 +76,10 @@ public:
     const FlatBitset& get_atoms() const;
 
 private:
-    const FlatState* m_data;
+    std::reference_wrapper<const FlatState> m_data;
 };
 
+// Compare the state index, since states returned by the `StateRepository` are already unique by their index.
 extern bool operator==(State lhs, State rhs);
 extern bool operator!=(State lhs, State rhs);
 
@@ -84,19 +87,19 @@ extern bool operator!=(State lhs, State rhs);
 
 // Only hash/compare the non-extended portion of a state, and the problem.
 // The extended portion is always equal for the same non-extended portion.
+// We use it for the unique state construction in the `StateRepository`.
 template<>
 struct cista::storage::DerefStdHasher<mimir::FlatState>
 {
     size_t operator()(const mimir::FlatState* ptr) const;
 };
-
 template<>
 struct cista::storage::DerefStdEqualTo<mimir::FlatState>
 {
     bool operator()(const mimir::FlatState* lhs, const mimir::FlatState* rhs) const;
 };
 
-// Only hash/compare the state index, since states returned by the `StateRepository` are already unique by their index.
+// Hash the state index, since states returned by the `StateRepository` are already unique by their index.
 template<>
 struct std::hash<mimir::State>
 {

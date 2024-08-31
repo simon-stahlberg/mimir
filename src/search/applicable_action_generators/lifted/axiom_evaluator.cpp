@@ -222,7 +222,7 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     }
 
     /* Precondition */
-    auto strips_precondition_proxy = StripsActionPreconditionBuilder(&m_axiom_builder.get_strips_precondition());
+    auto strips_precondition_proxy = StripsActionPreconditionBuilder(m_axiom_builder.get_strips_precondition());
     auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
     auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
     auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
@@ -255,7 +255,7 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     m_axiom_builder.get_derived_effect().atom_id = grounded_literal->get_atom()->get_index();
 
     const auto [iter, inserted] = m_flat_axioms.insert(m_axiom_builder.get_data());
-    const auto grounded_axiom = GroundAxiom(*iter);
+    const auto grounded_axiom = GroundAxiom(**iter);
 
     if (inserted)
     {

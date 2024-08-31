@@ -95,11 +95,11 @@ public:
 class GroundAxiom
 {
 private:
-    const FlatAxiom* m_view;
+    std::reference_wrapper<const FlatAxiom> m_view;
 
 public:
     /// @brief Create a view on a Axiom.
-    explicit GroundAxiom(const FlatAxiom* view);
+    explicit GroundAxiom(const FlatAxiom& view);
 
     GroundAxiomIndex get_index() const;
     uint32_t get_axiom() const;
@@ -124,12 +124,6 @@ template<>
 struct std::hash<mimir::GroundAxiom>
 {
     size_t operator()(mimir::GroundAxiom element) const;
-};
-
-template<>
-struct std::equal_to<mimir::GroundAxiom>
-{
-    size_t operator()(mimir::GroundAxiom lhs, mimir::GroundAxiom rhs) const;
 };
 
 namespace mimir

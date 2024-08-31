@@ -67,9 +67,9 @@ FlatState& StateBuilder::get_data() { return m_data; }
 const FlatState& StateBuilder::get_data() const { return m_data; }
 
 /* State */
-State::State(const FlatState* data) : m_data(data) {}
+State::State(const FlatState& data) : m_data(data) {}
 
-StateIndex State::get_index() const { return cista::get<0>(*m_data); }
+StateIndex State::get_index() const { return cista::get<0>(m_data.get()); }
 
 template<DynamicPredicateCategory P>
 bool State::contains(GroundAtom<P> atom) const
@@ -128,11 +128,11 @@ const FlatBitset& State::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<1>(*m_data);
+        return cista::get<1>(m_data.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<2>(*m_data);
+        return cista::get<2>(m_data.get());
     }
     else
     {

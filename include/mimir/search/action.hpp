@@ -102,10 +102,10 @@ using FlatActionSet = cista::storage::UnorderedSet<FlatAction>;
 class StripsActionPreconditionBuilder
 {
 private:
-    FlatStripsActionPrecondition* m_builder;
+    std::reference_wrapper<FlatStripsActionPrecondition> m_builder;
 
 public:
-    explicit StripsActionPreconditionBuilder(FlatStripsActionPrecondition* builder);
+    explicit StripsActionPreconditionBuilder(FlatStripsActionPrecondition& builder);
 
     /* Precondition */
 
@@ -119,10 +119,10 @@ public:
 class StripsActionPrecondition
 {
 private:
-    const FlatStripsActionPrecondition* m_view;
+    std::reference_wrapper<const FlatStripsActionPrecondition> m_view;
 
 public:
-    explicit StripsActionPrecondition(const FlatStripsActionPrecondition* view);
+    explicit StripsActionPrecondition(const FlatStripsActionPrecondition& view);
 
     template<PredicateCategory P>
     const FlatBitset& get_positive_precondition() const;
@@ -148,10 +148,10 @@ public:
 class StripsActionEffectBuilder
 {
 private:
-    FlatStripsActionEffect* m_builder;
+    std::reference_wrapper<FlatStripsActionEffect> m_builder;
 
 public:
-    explicit StripsActionEffectBuilder(FlatStripsActionEffect* builder);
+    explicit StripsActionEffectBuilder(FlatStripsActionEffect& builder);
 
     FlatBitset& get_positive_effects();
     FlatBitset& get_negative_effects();
@@ -160,10 +160,10 @@ public:
 class StripsActionEffect
 {
 private:
-    const FlatStripsActionEffect* m_view;
+    std::reference_wrapper<const FlatStripsActionEffect> m_view;
 
 public:
-    explicit StripsActionEffect(const FlatStripsActionEffect* view);
+    explicit StripsActionEffect(const FlatStripsActionEffect& view);
 
     const FlatBitset& get_positive_effects() const;
     const FlatBitset& get_negative_effects() const;
@@ -172,10 +172,10 @@ public:
 class ConditionalEffectBuilder
 {
 private:
-    FlatConditionalEffect* m_builder;
+    std::reference_wrapper<FlatConditionalEffect> m_builder;
 
 public:
-    explicit ConditionalEffectBuilder(FlatConditionalEffect* builder);
+    explicit ConditionalEffectBuilder(FlatConditionalEffect& builder);
 
     /* Precondition */
 
@@ -193,10 +193,10 @@ public:
 class ConditionalEffect
 {
 private:
-    const FlatConditionalEffect* m_view;
+    std::reference_wrapper<const FlatConditionalEffect> m_view;
 
 public:
-    explicit ConditionalEffect(const FlatConditionalEffect* view);
+    explicit ConditionalEffect(const FlatConditionalEffect& view);
 
     /* Precondition */
 
@@ -248,13 +248,13 @@ public:
 class GroundAction
 {
 private:
-    const FlatAction* m_view;
+    std::reference_wrapper<const FlatAction> m_view;
 
     static const GroundActionBuilder s_null_ground_action;
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit GroundAction(const FlatAction* view);
+    explicit GroundAction(const FlatAction& view);
 
     static GroundAction get_null_ground_action();
 
@@ -284,12 +284,6 @@ template<>
 struct std::hash<mimir::GroundAction>
 {
     size_t operator()(mimir::GroundAction element) const;
-};
-
-template<>
-struct std::equal_to<mimir::GroundAction>
-{
-    size_t operator()(mimir::GroundAction lhs, mimir::GroundAction rhs) const;
 };
 
 namespace mimir

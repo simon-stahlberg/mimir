@@ -27,8 +27,6 @@
 
 size_t std::hash<mimir::GroundAction>::operator()(mimir::GroundAction element) const { return element.get_index(); }
 
-size_t std::equal_to<mimir::GroundAction>::operator()(mimir::GroundAction lhs, mimir::GroundAction rhs) const { return lhs.get_index() == rhs.get_index(); }
-
 size_t cista::storage::DerefStdHasher<mimir::FlatAction>::operator()(const mimir::FlatAction* ptr) const
 {
     const auto action = cista::get<2>(*ptr);
@@ -60,22 +58,22 @@ bool FlatSimpleEffect::operator==(const FlatSimpleEffect& other) const
 }
 
 /* StripsActionPreconditionBuilder */
-StripsActionPreconditionBuilder::StripsActionPreconditionBuilder(FlatStripsActionPrecondition* builder) : m_builder(builder) {}
+StripsActionPreconditionBuilder::StripsActionPreconditionBuilder(FlatStripsActionPrecondition& builder) : m_builder(builder) {}
 
 template<PredicateCategory P>
 FlatBitset& StripsActionPreconditionBuilder::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<0>(*m_builder);
+        return cista::get<0>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<2>(*m_builder);
+        return cista::get<2>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<4>(*m_builder);
+        return cista::get<4>(m_builder.get());
     }
     else
     {
@@ -92,15 +90,15 @@ FlatBitset& StripsActionPreconditionBuilder::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<1>(*m_builder);
+        return cista::get<1>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<3>(*m_builder);
+        return cista::get<3>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<5>(*m_builder);
+        return cista::get<5>(m_builder.get());
     }
     else
     {
@@ -113,22 +111,22 @@ template FlatBitset& StripsActionPreconditionBuilder::get_negative_precondition<
 template FlatBitset& StripsActionPreconditionBuilder::get_negative_precondition<Derived>();
 
 /* StripsActionPrecondition */
-StripsActionPrecondition::StripsActionPrecondition(const FlatStripsActionPrecondition* view) : m_view(view) {}
+StripsActionPrecondition::StripsActionPrecondition(const FlatStripsActionPrecondition& view) : m_view(view) {}
 
 template<PredicateCategory P>
 const FlatBitset& StripsActionPrecondition::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<0>(*m_view);
+        return cista::get<0>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<2>(*m_view);
+        return cista::get<2>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<4>(*m_view);
+        return cista::get<4>(m_view.get());
     }
     else
     {
@@ -145,15 +143,15 @@ const FlatBitset& StripsActionPrecondition::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<1>(*m_view);
+        return cista::get<1>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<3>(*m_view);
+        return cista::get<3>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<5>(*m_view);
+        return cista::get<5>(m_view.get());
     }
     else
     {
@@ -209,37 +207,37 @@ bool StripsActionPrecondition::is_applicable(const FlatBitset& fluent_state_atom
 
 /* StripsActionEffectBuilder */
 
-StripsActionEffectBuilder::StripsActionEffectBuilder(FlatStripsActionEffect* builder) : m_builder(builder) {}
+StripsActionEffectBuilder::StripsActionEffectBuilder(FlatStripsActionEffect& builder) : m_builder(builder) {}
 
-FlatBitset& StripsActionEffectBuilder::get_positive_effects() { return cista::get<0>(*m_builder); }
+FlatBitset& StripsActionEffectBuilder::get_positive_effects() { return cista::get<0>(m_builder.get()); }
 
-FlatBitset& StripsActionEffectBuilder::get_negative_effects() { return cista::get<1>(*m_builder); }
+FlatBitset& StripsActionEffectBuilder::get_negative_effects() { return cista::get<1>(m_builder.get()); }
 
 /* StripsActionEffect */
 
-StripsActionEffect::StripsActionEffect(const FlatStripsActionEffect* view) : m_view(view) {}
+StripsActionEffect::StripsActionEffect(const FlatStripsActionEffect& view) : m_view(view) {}
 
-const FlatBitset& StripsActionEffect::get_positive_effects() const { return cista::get<0>(*m_view); }
-const FlatBitset& StripsActionEffect::get_negative_effects() const { return cista::get<1>(*m_view); }
+const FlatBitset& StripsActionEffect::get_positive_effects() const { return cista::get<0>(m_view.get()); }
+const FlatBitset& StripsActionEffect::get_negative_effects() const { return cista::get<1>(m_view.get()); }
 
 /* ConditionalEffectBuilder */
 
-ConditionalEffectBuilder::ConditionalEffectBuilder(FlatConditionalEffect* builder) : m_builder(builder) {}
+ConditionalEffectBuilder::ConditionalEffectBuilder(FlatConditionalEffect& builder) : m_builder(builder) {}
 
 template<PredicateCategory P>
 FlatIndexList& ConditionalEffectBuilder::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<0>(*m_builder);
+        return cista::get<0>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<2>(*m_builder);
+        return cista::get<2>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<4>(*m_builder);
+        return cista::get<4>(m_builder.get());
     }
     else
     {
@@ -256,15 +254,15 @@ FlatIndexList& ConditionalEffectBuilder::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<1>(*m_builder);
+        return cista::get<1>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<3>(*m_builder);
+        return cista::get<3>(m_builder.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<5>(*m_builder);
+        return cista::get<5>(m_builder.get());
     }
     else
     {
@@ -276,26 +274,26 @@ template FlatIndexList& ConditionalEffectBuilder::get_negative_precondition<Stat
 template FlatIndexList& ConditionalEffectBuilder::get_negative_precondition<Fluent>();
 template FlatIndexList& ConditionalEffectBuilder::get_negative_precondition<Derived>();
 
-FlatSimpleEffect& ConditionalEffectBuilder::get_simple_effect() { return cista::get<6>(*m_builder); }
+FlatSimpleEffect& ConditionalEffectBuilder::get_simple_effect() { return cista::get<6>(m_builder.get()); }
 
 /* ConditionalEffect */
 
-ConditionalEffect::ConditionalEffect(const FlatConditionalEffect* view) : m_view(view) {}
+ConditionalEffect::ConditionalEffect(const FlatConditionalEffect& view) : m_view(view) {}
 
 template<PredicateCategory P>
 const FlatIndexList& ConditionalEffect::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<0>(*m_view);
+        return cista::get<0>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<2>(*m_view);
+        return cista::get<2>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<4>(*m_view);
+        return cista::get<4>(m_view.get());
     }
     else
     {
@@ -312,15 +310,15 @@ const FlatIndexList& ConditionalEffect::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        return cista::get<1>(*m_view);
+        return cista::get<1>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<3>(*m_view);
+        return cista::get<3>(m_view.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<5>(*m_view);
+        return cista::get<5>(m_view.get());
     }
     else
     {
@@ -332,7 +330,7 @@ template const FlatIndexList& ConditionalEffect::get_negative_precondition<Stati
 template const FlatIndexList& ConditionalEffect::get_negative_precondition<Fluent>() const;
 template const FlatIndexList& ConditionalEffect::get_negative_precondition<Derived>() const;
 
-const FlatSimpleEffect& ConditionalEffect::get_simple_effect() const { return cista::get<6>(*m_view); }
+const FlatSimpleEffect& ConditionalEffect::get_simple_effect() const { return cista::get<6>(m_view.get()); }
 
 template<DynamicPredicateCategory P>
 bool ConditionalEffect::is_applicable(State state) const
@@ -383,9 +381,9 @@ FlatConditionalEffects& GroundActionBuilder::get_conditional_effects() { return 
 
 /* GroundAction */
 
-GroundAction::GroundAction(const FlatAction* view) : m_view(view) {}
+GroundAction::GroundAction(const FlatAction& view) : m_view(view) {}
 
-GroundAction GroundAction::get_null_ground_action() { return GroundAction(&s_null_ground_action.get_data()); }
+GroundAction GroundAction::get_null_ground_action() { return GroundAction(s_null_ground_action.get_data()); }
 
 static GroundActionBuilder create_null_ground_action()
 {
@@ -396,28 +394,28 @@ static GroundActionBuilder create_null_ground_action()
 
 const GroundActionBuilder GroundAction::s_null_ground_action = create_null_ground_action();
 
-GroundActionIndex GroundAction::get_index() const { return cista::get<0>(*m_view); }
+GroundActionIndex GroundAction::get_index() const { return cista::get<0>(m_view.get()); }
 
-GroundActionCost GroundAction::get_cost() const { return cista::get<1>(*m_view); }
+GroundActionCost GroundAction::get_cost() const { return cista::get<1>(m_view.get()); }
 
-uint32_t GroundAction::get_action() const { return cista::get<2>(*m_view); }
+uint32_t GroundAction::get_action() const { return cista::get<2>(m_view.get()); }
 
-const FlatIndexList& GroundAction::get_objects() const { return cista::get<3>(*m_view); }
+const FlatIndexList& GroundAction::get_objects() const { return cista::get<3>(m_view.get()); }
 
-const FlatStripsActionPrecondition& GroundAction::get_strips_precondition() const { return cista::get<4>(*m_view); }
+const FlatStripsActionPrecondition& GroundAction::get_strips_precondition() const { return cista::get<4>(m_view.get()); }
 
-const FlatStripsActionEffect& GroundAction::get_strips_effect() const { return cista::get<5>(*m_view); }
+const FlatStripsActionEffect& GroundAction::get_strips_effect() const { return cista::get<5>(m_view.get()); }
 
-const FlatConditionalEffects& GroundAction::get_conditional_effects() const { return cista::get<6>(*m_view); }
+const FlatConditionalEffects& GroundAction::get_conditional_effects() const { return cista::get<6>(m_view.get()); }
 
 bool GroundAction::is_dynamically_applicable(State state) const
 {  //
-    return StripsActionPrecondition(&get_strips_precondition()).is_dynamically_applicable(state);
+    return StripsActionPrecondition(get_strips_precondition()).is_dynamically_applicable(state);
 }
 
 bool GroundAction::is_statically_applicable(const FlatBitset& static_positive_atoms) const
 {  //
-    return StripsActionPrecondition(&get_strips_precondition()).is_statically_applicable(static_positive_atoms);
+    return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_atoms);
 }
 
 bool GroundAction::is_applicable(Problem problem, State state) const
@@ -552,8 +550,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
         binding.push_back(pddl_factories.get_object(object_index));
     }
 
-    auto strips_precondition = StripsActionPrecondition(&action.get_strips_precondition());
-    auto strips_effect = StripsActionEffect(&action.get_strips_effect());
+    auto strips_precondition = StripsActionPrecondition(action.get_strips_precondition());
+    auto strips_effect = StripsActionEffect(action.get_strips_effect());
     auto cond_effects = action.get_conditional_effects();
 
     os << "Action("                                                                      //
@@ -566,7 +564,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
        << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
     {
-        os << "[" << std::make_tuple(ConditionalEffect(&cond_effect), std::cref(pddl_factories)) << "], ";
+        os << "[" << std::make_tuple(ConditionalEffect(cond_effect), std::cref(pddl_factories)) << "], ";
     }
     os << "])";
 

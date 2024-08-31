@@ -77,14 +77,14 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     auto iter = m_states.find(m_state_builder.get_data());
     if (iter != m_states.end())
     {
-        return State(*iter);
+        return State(**iter);
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
         auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
-        return State(*iter2);
+        return State(**iter2);
     }
 
     /* Fetch member references for extended construction. */
@@ -103,7 +103,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     /* 6. Return newly generated extended state */
 
-    return State(*iter2);
+    return State(**iter2);
 }
 
 State StateRepository::get_or_create_successor_state(State state, GroundAction action)
@@ -125,13 +125,13 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     /* 3. Construct non-extended state */
 
     /* STRIPS effects*/
-    auto strips_part_proxy = StripsActionEffect(&action.get_strips_effect());
+    auto strips_part_proxy = StripsActionEffect(action.get_strips_effect());
     fluent_state_atoms -= strips_part_proxy.get_negative_effects();
     fluent_state_atoms |= strips_part_proxy.get_positive_effects();
     /* Conditional effects */
     for (const auto& flat_conditional_effect : action.get_conditional_effects())
     {
-        auto cond_effect_proxy = ConditionalEffect(&flat_conditional_effect);
+        auto cond_effect_proxy = ConditionalEffect(flat_conditional_effect);
 
         if (cond_effect_proxy.is_applicable(m_aag->get_problem(), state))
         {
@@ -155,14 +155,14 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     auto iter = m_states.find(m_state_builder.get_data());
     if (iter != m_states.end())
     {
-        return State(*iter);
+        return State(**iter);
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
         auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
-        return State(*iter2);
+        return State(**iter2);
     }
 
     /* Fetch member references for extended construction. */
@@ -181,7 +181,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 7. Return newly generated extended state */
 
-    return State(*iter2);
+    return State(**iter2);
 }
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }
