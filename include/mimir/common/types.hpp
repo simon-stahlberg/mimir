@@ -15,28 +15,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_DECLARATIONS_HPP_
-#define MIMIR_DATASETS_DECLARATIONS_HPP_
-
-// Do not include headers with transitive dependencies.
-#include "mimir/common/types.hpp"
-#include "mimir/graphs/declarations.hpp"
+#ifndef MIMIR_COMMON_TYPES_HPP_
+#define MIMIR_COMMON_TYPES_HPP_
 
 #include <cstdint>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
 {
+using Index = uint32_t;
+using IndexList = std::vector<Index>;
+using IndexSet = std::unordered_set<Index>;
 
-struct StateSpaceOptions;
-struct StateSpacesOptions;
-class StateSpace;
-
-struct FaithfulAbstractionOptions;
-struct FaithfulAbstractionsOptions;
-class FaithfulAbstraction;
-class GlobalFaithfulAbstraction;
-
+using ContinuousCost = double;
+using ContinuousCostList = std::vector<ContinuousCost>;
+using DiscreteCost = int32_t;
+using DiscreteCostList = std::vector<DiscreteCost>;
 }
 
 #endif

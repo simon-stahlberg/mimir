@@ -167,9 +167,9 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     for (const auto& action : delete_free_lifted_aag->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_factories->get_action(action.get_action())))
+        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_factories->get_action(action.get_action_index())))
         {
-            auto action_arguments = m_pddl_factories->get_objects_from_indices(action.get_objects());
+            auto action_arguments = m_pddl_factories->get_objects_from_indices(action.get_object_indices());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
             if (grounded_action.is_statically_applicable(problem->get_static_initial_positive_atoms()))
             {

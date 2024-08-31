@@ -62,14 +62,14 @@ using FlatConditionalEffect = cista::tuple<FlatIndexList,      // Positive stati
                                            FlatIndexList,      // Negative derived atom indices
                                            FlatSimpleEffect>;  // simple add or delete effect
 
-using FlatConditionalEffects = cista::offset::vector<FlatConditionalEffect>;  // simple add or delete effect
+using FlatConditionalEffects = cista::offset::vector<FlatConditionalEffect>;
 
 using FlatSimpleEffectVector = cista::offset::vector<FlatSimpleEffect>;
 
-using FlatAction = cista::tuple<GroundActionIndex,  //
-                                GroundActionCost,
-                                uint32_t,       // ActionIndex
-                                FlatIndexList,  // ObjectIndices
+using FlatAction = cista::tuple<Index,           // GroundActionIndex
+                                ContinuousCost,  // GroundActionCost
+                                Index,           // ActionIndex
+                                FlatIndexList,   // ObjectIndices
                                 FlatStripsActionPrecondition,
                                 FlatStripsActionEffect,
                                 FlatConditionalEffects>;
@@ -228,9 +228,9 @@ public:
     FlatAction& get_data();
     const FlatAction& get_data() const;
 
-    GroundActionIndex& get_index();
-    GroundActionCost& get_cost();
-    uint32_t& get_action();
+    Index& get_index();
+    ContinuousCost& get_cost();
+    Index& get_action();
     FlatIndexList& get_objects();
 
     /* STRIPS part */
@@ -258,10 +258,10 @@ public:
 
     static GroundAction get_null_ground_action();
 
-    GroundActionIndex get_index() const;
-    GroundActionCost get_cost() const;
-    uint32_t get_action() const;
-    const FlatIndexList& get_objects() const;
+    Index get_index() const;
+    ContinuousCost get_cost() const;
+    Index get_action_index() const;
+    const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
     const FlatStripsActionPrecondition& get_strips_precondition() const;

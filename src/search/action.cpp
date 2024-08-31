@@ -365,11 +365,11 @@ FlatAction& GroundActionBuilder::get_data() { return m_builder; }
 
 const FlatAction& GroundActionBuilder::get_data() const { return m_builder; }
 
-GroundActionIndex& GroundActionBuilder::get_index() { return cista::get<0>(m_builder); }
+Index& GroundActionBuilder::get_index() { return cista::get<0>(m_builder); }
 
-GroundActionCost& GroundActionBuilder::get_cost() { return cista::get<1>(m_builder); }
+ContinuousCost& GroundActionBuilder::get_cost() { return cista::get<1>(m_builder); }
 
-uint32_t& GroundActionBuilder::get_action() { return cista::get<2>(m_builder); }
+Index& GroundActionBuilder::get_action() { return cista::get<2>(m_builder); }
 
 FlatIndexList& GroundActionBuilder::get_objects() { return cista::get<3>(m_builder); }
 
@@ -388,19 +388,19 @@ GroundAction GroundAction::get_null_ground_action() { return GroundAction(s_null
 static GroundActionBuilder create_null_ground_action()
 {
     auto ground_action_builder = GroundActionBuilder();
-    ground_action_builder.get_index() = std::numeric_limits<GroundActionIndex>::max();
+    ground_action_builder.get_index() = std::numeric_limits<Index>::max();
     return ground_action_builder;
 }
 
 const GroundActionBuilder GroundAction::s_null_ground_action = create_null_ground_action();
 
-GroundActionIndex GroundAction::get_index() const { return cista::get<0>(m_view.get()); }
+Index GroundAction::get_index() const { return cista::get<0>(m_view.get()); }
 
-GroundActionCost GroundAction::get_cost() const { return cista::get<1>(m_view.get()); }
+ContinuousCost GroundAction::get_cost() const { return cista::get<1>(m_view.get()); }
 
-uint32_t GroundAction::get_action() const { return cista::get<2>(m_view.get()); }
+Index GroundAction::get_action_index() const { return cista::get<2>(m_view.get()); }
 
-const FlatIndexList& GroundAction::get_objects() const { return cista::get<3>(m_view.get()); }
+const FlatIndexList& GroundAction::get_object_indices() const { return cista::get<3>(m_view.get()); }
 
 const FlatStripsActionPrecondition& GroundAction::get_strips_precondition() const { return cista::get<4>(m_view.get()); }
 
@@ -545,7 +545,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
     const auto [action, pddl_factories] = data;
 
     auto binding = ObjectList {};
-    for (const auto object_index : action.get_objects())
+    for (const auto object_index : action.get_object_indices())
     {
         binding.push_back(pddl_factories.get_object(object_index));
     }
@@ -554,12 +554,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
     const auto strips_effect = StripsActionEffect(action.get_strips_effect());
     const auto& cond_effects = action.get_conditional_effects();
 
-    os << "Action("                                                                      //
-       << "index=" << action.get_index() << ", "                                         //
-       << "name=" << pddl_factories.get_action(action.get_action())->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                  //
-       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "        //
-       << std::make_tuple(strips_effect, std::cref(pddl_factories))                      //
+    os << "Action("                                                                            //
+       << "index=" << action.get_index() << ", "                                               //
+       << "name=" << pddl_factories.get_action(action.get_action_index())->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                        //
+       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "              //
+       << std::make_tuple(strips_effect, std::cref(pddl_factories))                            //
        << ", "
        << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
@@ -575,12 +575,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&
 {
     const auto [pddl_factories, ground_action] = data;
 
-    const auto action = pddl_factories.get_action(ground_action.get_action());
+    const auto action = pddl_factories.get_action(ground_action.get_action_index());
     os << "(" << action->get_name();
     // Only take objects w.r.t. to the original action parameters
     for (size_t i = 0; i < action->get_original_arity(); ++i)
     {
-        os << " " << *pddl_factories.get_object(ground_action.get_objects()[i]);
+        os << " " << *pddl_factories.get_object(ground_action.get_object_indices()[i]);
     }
     os << ")";
     return os;

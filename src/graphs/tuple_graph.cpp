@@ -97,7 +97,7 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const S
     }
 
     auto optimal_distance = DISTANCE_INFINITY;
-    const auto distances = m_state_space->compute_shortest_distances_from_states<ForwardTraversal>(StateIndexList { m_state_space->get_initial_state() });
+    const auto distances = m_state_space->compute_shortest_distances_from_states<ForwardTraversal>(IndexList { m_state_space->get_initial_state() });
     for (const auto& state : states)
     {
         const auto state_index = m_state_space->get_state_index(state);

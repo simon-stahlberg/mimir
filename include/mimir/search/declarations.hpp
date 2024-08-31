@@ -18,6 +18,9 @@
 #ifndef MIMIR_SEARCH_DECLARATIONS_HPP_
 #define MIMIR_SEARCH_DECLARATIONS_HPP_
 
+// Do not include headers with transitive dependencies.
+#include "mimir/common/types.hpp"
+
 #include <memory>
 #include <unordered_set>
 #include <vector>
@@ -30,18 +33,12 @@ class StateRepository;
 
 // GroundACtion
 class GroundAction;
-using GroundActionIndex = uint32_t;
-using GroundActionCost = double;
 
 // Axiom
 class GroundAxiom;
-using GroundAxiomIndex = uint32_t;
 
 // State
 class State;
-using StateIndex = uint32_t;
-using StateIndexList = std::vector<StateIndex>;
-using StateIndexSet = std::unordered_set<StateIndex>;
 
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;

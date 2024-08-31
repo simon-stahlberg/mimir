@@ -33,18 +33,15 @@ namespace mimir
  * AStar search node
  */
 
-using GValue = double;
-using HValue = double;
-
-using AStarSearchNodeImpl = SearchNodeImpl<GValue, HValue>;
+using AStarSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost>;
 using AStarSearchNode = AStarSearchNodeImpl*;
 using ConstAStarSearchNode = const AStarSearchNodeImpl*;
 
-static void set_g_value(AStarSearchNode node, GValue g_value) { return set_property<0>(node, g_value); }
-static void set_h_value(AStarSearchNode node, HValue h_value) { return set_property<1>(node, h_value); }
+static void set_g_value(AStarSearchNode node, ContinuousCost g_value) { return set_property<0>(node, g_value); }
+static void set_h_value(AStarSearchNode node, ContinuousCost h_value) { return set_property<1>(node, h_value); }
 
-static GValue get_g_value(ConstAStarSearchNode node) { return get_property<0>(node); }
-static HValue get_h_value(ConstAStarSearchNode node) { return get_property<1>(node); }
+static ContinuousCost get_g_value(ConstAStarSearchNode node) { return get_property<0>(node); }
+static ContinuousCost get_h_value(ConstAStarSearchNode node) { return get_property<1>(node); }
 
 static AStarSearchNode
 get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, cista::storage::Vector<AStarSearchNodeImpl>& search_nodes)
@@ -99,10 +96,10 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                                            std::optional<State>& out_goal_state)
 {
     auto default_search_node = AStarSearchNodeImpl { SearchNodeStatus::NEW,
-                                                     std::numeric_limits<StateIndex>::max(),
-                                                     std::numeric_limits<GroundActionIndex>::max(),
-                                                     std::numeric_limits<GValue>::infinity(),
-                                                     HValue(0) };
+                                                     std::numeric_limits<Index>::max(),
+                                                     std::numeric_limits<Index>::max(),
+                                                     std::numeric_limits<ContinuousCost>::infinity(),
+                                                     ContinuousCost(0) };
     auto search_nodes = cista::storage::Vector<AStarSearchNodeImpl>();
 
     auto openlist = PriorityQueue<State>();
@@ -111,12 +108,12 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
-    const auto start_g_value = GValue();
+    const auto start_g_value = ContinuousCost(0);
     const auto start_h_value = m_heuristic->compute_heuristic(start_state);
     const auto start_f_value = start_g_value + start_h_value;
 
     auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
-    set_status(start_search_node, (start_h_value == std::numeric_limits<HValue>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
+    set_status(start_search_node, (start_h_value == std::numeric_limits<ContinuousCost>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
 
@@ -146,7 +143,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     }
 
     auto applicable_actions = GroundActionList {};
-    auto f_value = GValue();
+    auto f_value = ContinuousCost(0);
     openlist.insert(start_f_value, start_state);
 
     while (!openlist.empty())
@@ -239,7 +236,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                     const auto successor_h_value = m_heuristic->compute_heuristic(successor_state);
                     set_h_value(successor_search_node, successor_h_value);
 
-                    if (successor_h_value == std::numeric_limits<HValue>::infinity())
+                    if (successor_h_value == std::numeric_limits<ContinuousCost>::infinity())
                     {
                         set_status(successor_search_node, SearchNodeStatus::DEAD_END);
                         continue;

@@ -89,7 +89,7 @@ private:
 /// @brief A property map that returns its key as value.
 ///
 /// boost requires a vertex_index that translates vertex->index, where the index is an index into the vertex list.
-/// In our case, the vertex is described with a StateIndex and so vertex and index are the same.
+/// In our case, the vertex is described with a Index and so vertex and index are the same.
 /// To avoid storing a map of the size of the graph, we use TrivialReadPropertyMap that just returns the key.
 template<typename Key, typename Value>
 struct TrivialReadPropertyMap

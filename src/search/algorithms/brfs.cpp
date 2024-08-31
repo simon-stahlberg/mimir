@@ -38,15 +38,13 @@ struct BrFSSearchNodeTag
 {
 };
 
-using GValue = uint32_t;
-
-using BrFSSearchNodeImpl = SearchNodeImpl<GValue>;
+using BrFSSearchNodeImpl = SearchNodeImpl<DiscreteCost>;
 using BrFSSearchNode = BrFSSearchNodeImpl*;
 using ConstBrFSSearchNode = const BrFSSearchNodeImpl*;
 
-static void set_g_value(BrFSSearchNode node, GValue g_value) { return set_property<0>(node, g_value); }
+static void set_g_value(BrFSSearchNode node, DiscreteCost g_value) { return set_property<0>(node, g_value); }
 
-static GValue get_g_value(ConstBrFSSearchNode node) { return get_property<0>(node); }
+static DiscreteCost get_g_value(ConstBrFSSearchNode node) { return get_property<0>(node); }
 
 static BrFSSearchNode
 get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, cista::storage::Vector<BrFSSearchNodeImpl>& search_nodes)
@@ -98,7 +96,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
                                           std::optional<State>& out_goal_state)
 {
     auto default_search_node =
-        BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<StateIndex>::max(), std::numeric_limits<GroundActionIndex>::max(), GValue(0) };
+        BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), std::numeric_limits<Index>::max(), DiscreteCost(0) };
     auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
@@ -126,7 +124,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
     queue.emplace_back(start_state);
 
-    auto g_value = uint32_t(0);
+    auto g_value = DiscreteCost(0);
 
     while (!queue.empty())
     {

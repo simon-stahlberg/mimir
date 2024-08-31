@@ -36,9 +36,9 @@ enum SearchNodeStatus
 };
 
 template<typename... SearchNodeProperties>
-using SearchNodeImpl = cista::tuple<SearchNodeStatus,  //
-                                    StateIndex,
-                                    GroundActionIndex,
+using SearchNodeImpl = cista::tuple<SearchNodeStatus,
+                                    Index,  // Parent state index
+                                    Index,  // Creating ground action index
                                     SearchNodeProperties...>;
 
 // We never work with nullptr SearchNodes so we hide the pointer detail.
@@ -58,13 +58,13 @@ SearchNodeStatus get_status(ConstSearchNode<SearchNodeProperties...> node)
 }
 
 template<typename... SearchNodeProperties>
-StateIndex get_parent_state(ConstSearchNode<SearchNodeProperties...> node)
+Index get_parent_state(ConstSearchNode<SearchNodeProperties...> node)
 {
     return cista::get<1>(*node);
 }
 
 template<typename... SearchNodeProperties>
-GroundActionIndex get_creating_action(ConstSearchNode<SearchNodeProperties...> node)
+Index get_creating_action(ConstSearchNode<SearchNodeProperties...> node)
 {
     return cista::get<2>(*node);
 }
@@ -87,13 +87,13 @@ void set_status(SearchNode<SearchNodeProperties...> node, SearchNodeStatus statu
 }
 
 template<typename... SearchNodeProperties>
-void set_parent_state(SearchNode<SearchNodeProperties...> node, StateIndex state)
+void set_parent_state(SearchNode<SearchNodeProperties...> node, Index state)
 {
     cista::get<1>(*node) = state;
 }
 
 template<typename... SearchNodeProperties>
-void set_creating_action(SearchNode<SearchNodeProperties...> node, GroundActionIndex action)
+void set_creating_action(SearchNode<SearchNodeProperties...> node, Index action)
 {
     cista::get<2>(*node) = action;
 }
@@ -124,9 +124,9 @@ void set_plan(const cista::storage::Vector<SearchNodeImpl<SearchNodeProperties..
     out_plan.clear();
     auto cur_search_node = search_node;
 
-    while (get_parent_state(cur_search_node) != std::numeric_limits<StateIndex>::max())
+    while (get_parent_state(cur_search_node) != std::numeric_limits<Index>::max())
     {
-        assert(get_creating_action(cur_search_node) != std::numeric_limits<GroundActionIndex>::max());
+        assert(get_creating_action(cur_search_node) != std::numeric_limits<Index>::max());
 
         out_plan.push_back(ground_actions.at(get_creating_action(cur_search_node)));
 

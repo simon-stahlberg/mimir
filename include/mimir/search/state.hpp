@@ -32,7 +32,7 @@
 
 namespace mimir
 {
-using FlatState = cista::tuple<StateIndex, FlatBitset, FlatBitset>;
+using FlatState = cista::tuple<Index, FlatBitset, FlatBitset>;
 
 /// @brief `StateBuilder` encapsulates mutable data of a state.
 class StateBuilder
@@ -40,7 +40,7 @@ class StateBuilder
 public:
     explicit StateBuilder();
 
-    StateIndex& get_index();
+    Index& get_index();
 
     template<DynamicPredicateCategory P>
     FlatBitset& get_atoms();
@@ -58,7 +58,7 @@ class State
 public:
     explicit State(const FlatState& data);
 
-    StateIndex get_index() const;
+    Index get_index() const;
 
     template<DynamicPredicateCategory P>
     bool contains(GroundAtom<P> atom) const;

@@ -121,7 +121,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
         const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
-        auto states = StateIndexList { state_space.get_initial_state() };
+        auto states = IndexList { state_space.get_initial_state() };
         const auto [predecessor_map, distance_map] = dijkstra_shortest_paths(graph, edge_costs, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 0);
@@ -156,7 +156,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
-        auto states = StateIndexList { state_space.get_initial_state() };
+        auto states = IndexList { state_space.get_initial_state() };
         const auto [predecessor_map, distance_map] = breadth_first_search(graph, states.begin(), states.end());
 
         EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 0);
@@ -200,9 +200,9 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
         auto max_pairwise_distance = Distance();
-        for (auto v1 = StateIndex(); v1 < graph.get().get_num_vertices(); ++v1)
+        for (auto v1 = Index(); v1 < graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = StateIndex(); v2 < graph.get().get_num_vertices(); ++v2)
+            for (auto v2 = Index(); v2 < graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }
@@ -227,9 +227,9 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, DISTANCE_INFINITY);
         auto max_pairwise_distance = Distance();
-        for (auto v1 = StateIndex(); v1 < graph.get().get_num_vertices(); ++v1)
+        for (auto v1 = Index(); v1 < graph.get().get_num_vertices(); ++v1)
         {
-            for (auto v2 = StateIndex(); v2 < graph.get().get_num_vertices(); ++v2)
+            for (auto v2 = Index(); v2 < graph.get().get_num_vertices(); ++v2)
             {
                 max_pairwise_distance = std::max(max_pairwise_distance, distance_matrix[v1][v2]);
             }

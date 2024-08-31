@@ -28,7 +28,7 @@ namespace mimir
 
 static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(const ProblemColorFunction& color_function,
                                                                             Problem problem,
-                                                                            StateIndex state_index,
+                                                                            Index state_index,
                                                                             const ObjectGraphPruningStrategy& pruning_strategy,
                                                                             StaticVertexColoredDigraph& out_digraph)
 {
@@ -69,7 +69,7 @@ static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_
                                               const PDDLFactories& pddl_factories,
                                               Problem problem,
                                               State state,
-                                              StateIndex state_index,
+                                              Index state_index,
                                               const ObjectGraphPruningStrategy& pruning_strategy,
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                               StaticVertexColoredDigraph& out_digraph)
@@ -122,7 +122,7 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
                                                       bool mark_true_goal_literals,
                                                       Problem problem,
                                                       State state,
-                                                      StateIndex state_index,
+                                                      Index state_index,
                                                       const ObjectGraphPruningStrategy& pruning_strategy,
                                                       const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                       StaticVertexColoredDigraph& out_digraph)
@@ -154,7 +154,7 @@ StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color
                                                const PDDLFactories& pddl_factories,
                                                Problem problem,
                                                State state,
-                                               StateIndex state_index,
+                                               Index state_index,
                                                bool mark_true_goal_literals,
                                                const ObjectGraphPruningStrategy& pruning_strategy)
 {

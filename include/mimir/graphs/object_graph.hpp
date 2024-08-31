@@ -45,7 +45,7 @@ extern StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction
                                                       const PDDLFactories& pddl_factories,
                                                       Problem problem,
                                                       State state,
-                                                      StateIndex state_index = 0,
+                                                      Index state_index = 0,
                                                       bool mark_true_goal_literals = false,
                                                       const ObjectGraphPruningStrategy& pruning_strategy = ObjectGraphPruningStrategy());
 

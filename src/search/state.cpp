@@ -41,7 +41,7 @@ namespace mimir
 
 StateBuilder::StateBuilder() : m_data() {}
 
-StateIndex& StateBuilder::get_index() { return cista::get<0>(m_data); }
+Index& StateBuilder::get_index() { return cista::get<0>(m_data); }
 
 template<DynamicPredicateCategory P>
 FlatBitset& StateBuilder::get_atoms()
@@ -69,7 +69,7 @@ const FlatState& StateBuilder::get_data() const { return m_data; }
 /* State */
 State::State(const FlatState& data) : m_data(data) {}
 
-StateIndex State::get_index() const { return cista::get<0>(m_data.get()); }
+Index State::get_index() const { return cista::get<0>(m_data.get()); }
 
 template<DynamicPredicateCategory P>
 bool State::contains(GroundAtom<P> atom) const

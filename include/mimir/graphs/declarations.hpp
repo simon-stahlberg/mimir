@@ -18,6 +18,9 @@
 #ifndef MIMIR_GRAPHS_DECLARATIONS_HPP_
 #define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
+// Do not include headers with transitive dependencies.
+#include "mimir/common/types.hpp"
+
 #include <cstdint>
 #include <limits>
 #include <unordered_map>

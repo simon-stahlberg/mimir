@@ -41,9 +41,9 @@ struct FlatDerivedEffect
     bool operator==(const FlatDerivedEffect& other) const;
 };
 
-using FlatAxiom = cista::tuple<GroundAxiomIndex,  //
-                               uint32_t,          // AxiomIndex
-                               FlatIndexList,     // ObjectIndices
+using FlatAxiom = cista::tuple<Index,          // GroundAxiomIndex
+                               Index,          // AxiomIndex
+                               FlatIndexList,  // ObjectIndices
                                FlatStripsActionPrecondition,
                                FlatStripsActionEffect,
                                FlatDerivedEffect>;
@@ -79,8 +79,8 @@ public:
     FlatAxiom& get_data();
     const FlatAxiom& get_data() const;
 
-    GroundAxiomIndex& get_index();
-    uint32_t& get_axiom();
+    Index& get_index();
+    Index& get_axiom();
     FlatIndexList& get_objects();
     /* STRIPS part */
     FlatStripsActionPrecondition& get_strips_precondition();
@@ -101,8 +101,8 @@ public:
     /// @brief Create a view on a Axiom.
     explicit GroundAxiom(const FlatAxiom& view);
 
-    GroundAxiomIndex get_index() const;
-    uint32_t get_axiom() const;
+    Index get_index() const;
+    Index get_axiom() const;
     const FlatIndexList& get_objects() const;
 
     /* STRIPS part */

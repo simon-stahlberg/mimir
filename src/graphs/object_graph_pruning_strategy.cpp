@@ -45,7 +45,7 @@ ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(size_t 
 {
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, Object object) const
 {
     const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
     return pruned_objects.get(object->get_index());
@@ -54,7 +54,7 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object)
 template<PredicateCategory P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
                   const std::vector<size_t>& component_map,
-                  StateIndex state,
+                  Index state,
                   GroundAtom<P> atom)
 {
     // Prune atom if at least one object was pruned.
@@ -69,17 +69,17 @@ static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPrun
     return false;
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Static> atom) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Static> atom) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Fluent> atom) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Fluent> atom) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Derived> atom) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Derived> atom) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
@@ -87,23 +87,23 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Der
 template<PredicateCategory P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
                   const std::vector<size_t>& component_map,
-                  StateIndex state,
+                  Index state,
                   GroundLiteral<P> literal)
 {
     return pruning_components.at(component_map.at(state)).get_pruned_goal_literals<P>().get(literal->get_index());
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Static> literal) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundLiteral<Static> literal) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Fluent> literal) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundLiteral<Fluent> literal) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Derived> literal) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundLiteral<Derived> literal) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }

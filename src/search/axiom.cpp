@@ -62,7 +62,7 @@ FlatAxiom& GroundAxiomBuilder::get_data() { return m_builder; }
 
 const FlatAxiom& GroundAxiomBuilder::get_data() const { return m_builder; }
 
-GroundAxiomIndex& GroundAxiomBuilder::get_index() { return cista::get<0>(m_builder); }
+Index& GroundAxiomBuilder::get_index() { return cista::get<0>(m_builder); }
 
 uint32_t& GroundAxiomBuilder::get_axiom() { return cista::get<1>(m_builder); }
 
@@ -78,7 +78,7 @@ FlatDerivedEffect& GroundAxiomBuilder::get_derived_effect() { return cista::get<
 
 GroundAxiom::GroundAxiom(const FlatAxiom& view) : m_view(view) {}
 
-GroundAxiomIndex GroundAxiom::get_index() const { return cista::get<0>(m_view.get()); }
+Index GroundAxiom::get_index() const { return cista::get<0>(m_view.get()); }
 
 uint32_t GroundAxiom::get_axiom() const { return cista::get<1>(m_view.get()); }
 

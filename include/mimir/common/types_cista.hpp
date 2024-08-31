@@ -20,6 +20,7 @@
 
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/containers/vector.h"
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 
@@ -48,7 +49,7 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 
 /* IndexList */
 
-using FlatIndexList = cista::offset::vector<uint32_t>;
+using FlatIndexList = cista::offset::vector<Index>;
 
 inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
 {
