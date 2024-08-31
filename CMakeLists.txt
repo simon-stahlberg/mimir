@@ -150,7 +150,7 @@ endif()
 ###########
 
 # Install header files
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir"
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir" "${PROJECT_SOURCE_DIR}/include/cista"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Install cmake scripts
