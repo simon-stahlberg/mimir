@@ -2,7 +2,7 @@
 
 Mimir is a C++20 planning library with Python bindings for grounded and lifted classical planning.
 
-* Focus on the intersection of learning planning - parallel data processing, knowledge representation languages, and search algorithms. *
+*Focus on the intersection of planning and learning - search algorithms, parallel data processing, and knowledge representation languages.*
 
   - Supports a rich fragment of PDDL in the grounded and lifted planning setup.
   - Provides Python bindings that even allow you to write heuristics for AStar search directly in Python.
