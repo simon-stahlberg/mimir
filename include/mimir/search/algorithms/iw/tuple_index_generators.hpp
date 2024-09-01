@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_TUPLE_INDEX_GENERATORS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_TUPLE_INDEX_GENERATORS_HPP_
 
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/state.hpp"
 
@@ -36,7 +36,6 @@ namespace mimir
 class StateTupleIndexGenerator
 {
 private:
-    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
 
     // Preallocated memory for reuse
@@ -45,7 +44,7 @@ private:
     friend class const_iterator;
 
 public:
-    StateTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+    explicit StateTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
 
     class const_iterator
     {
@@ -70,11 +69,11 @@ public:
 
         const_iterator();
         const_iterator(StateTupleIndexGenerator* data, bool begin);
-        [[nodiscard]] value_type operator*() const;
+        value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
     const_iterator begin(const State state);
@@ -92,7 +91,6 @@ public:
 class StatePairTupleIndexGenerator
 {
 private:
-    std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
 
     // Preallocated memory for reuse
@@ -102,7 +100,7 @@ private:
     friend class const_iterator;
 
 public:
-    StatePairTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+    explicit StatePairTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
 
     class const_iterator
     {
@@ -142,11 +140,11 @@ public:
 
         const_iterator();
         const_iterator(StatePairTupleIndexGenerator* sptig, bool begin);
-        [[nodiscard]] value_type operator*() const;
+        value_type operator*() const;
         const_iterator& operator++();
         const_iterator operator++(int);
-        [[nodiscard]] bool operator==(const const_iterator& other) const;
-        [[nodiscard]] bool operator!=(const const_iterator& other) const;
+        bool operator==(const const_iterator& other) const;
+        bool operator!=(const const_iterator& other) const;
     };
 
     const_iterator begin(const State state, const State succ_state);

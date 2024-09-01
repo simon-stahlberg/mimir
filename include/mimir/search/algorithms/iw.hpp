@@ -56,8 +56,6 @@ private:
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
 
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
-
     State m_initial_state;
     BrFSAlgorithm m_brfs;
 };

@@ -21,8 +21,8 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
@@ -111,9 +111,8 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth0Test)
     const int arity = 0;
     const int num_atoms = 3;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
@@ -130,9 +129,8 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 3;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -153,9 +151,8 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
     const int arity = 2;
     const int num_atoms = 3;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -177,9 +174,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 4;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -203,9 +199,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     const int arity = 2;
     const int num_atoms = 4;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -234,9 +229,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
     const int arity = 3;
     const int num_atoms = 64;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -270,9 +264,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test3)
     const int arity = 2;
     const int num_atoms = 64;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         1,

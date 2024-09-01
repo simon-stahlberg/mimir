@@ -18,8 +18,8 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_DYNAMIC_NOVELTY_TABLE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_DYNAMIC_NOVELTY_TABLE_HPP_
 
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/state.hpp"
 
@@ -31,7 +31,6 @@ namespace mimir
 class DynamicNoveltyTable
 {
 private:
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
 
     std::vector<bool> m_table;
@@ -43,7 +42,7 @@ private:
     StatePairTupleIndexGenerator m_state_pair_tuple_index_generator;
 
 public:
-    DynamicNoveltyTable(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+    explicit DynamicNoveltyTable(std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
 
     void compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices);
 

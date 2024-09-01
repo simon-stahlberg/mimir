@@ -22,8 +22,8 @@
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -67,7 +67,6 @@ class TupleGraph
 {
 private:
     std::shared_ptr<StateSpace> m_state_space;
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
 
@@ -76,7 +75,6 @@ private:
     IndexGroupedVector<const State> m_states_grouped_by_distance;
 
     TupleGraph(std::shared_ptr<StateSpace> state_space,
-               std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper,
                std::shared_ptr<TupleIndexMapper> tuple_index_mapper,
                bool prune_dominated_tuples,
                StaticDigraph digraph,
@@ -100,7 +98,6 @@ public:
      */
 
     const std::shared_ptr<StateSpace>& get_state_space() const;
-    const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
     State get_root_state() const;
     const StaticDigraph& get_digraph() const;
@@ -114,7 +111,6 @@ class TupleGraphFactory
 {
 private:
     std::shared_ptr<StateSpace> m_state_space;
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
     std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
     bool m_prune_dominated_tuples;
 
@@ -136,7 +132,6 @@ public:
      */
 
     const std::shared_ptr<StateSpace>& get_state_space() const;
-    const std::shared_ptr<FluentAndDerivedMapper>& get_atom_index_mapper() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
 };
 

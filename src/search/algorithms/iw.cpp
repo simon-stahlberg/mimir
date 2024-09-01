@@ -23,9 +23,9 @@
 #include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -116,192 +116,10 @@ int TupleIndexMapper::get_max_tuple_index() const
 TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tuple_index; }
 
 /**
- * FluentAndDerivedMapper
- */
-
-FluentAndDerivedMapper::FluentAndDerivedMapper() : m_fluent_remap(), m_derived_remap(), m_is_remapped_fluent(), m_inverse_remap(), m_num_atoms(0) {}
-
-FluentAndDerivedMapper::FluentAndDerivedMapper(const GroundAtomFactory<Fluent>& fluent_atoms, const GroundAtomFactory<Derived>& derived_atoms) :
-    m_fluent_remap(fluent_atoms.size(), -1),
-    m_derived_remap(derived_atoms.size(), -1),
-    m_is_remapped_fluent(fluent_atoms.size() + derived_atoms.size(), false),
-    m_inverse_remap(fluent_atoms.size() + derived_atoms.size(), UNDEFINED),
-    m_num_atoms(0)
-{
-    for (const auto& atom : fluent_atoms)
-    {
-        const auto atom_id = atom->get_index();
-        const auto remapped_atom_id = m_num_atoms++;
-        m_fluent_remap.at(atom_id) = remapped_atom_id;
-        m_is_remapped_fluent.at(atom_id) = true;
-        m_inverse_remap.at(remapped_atom_id) = atom_id;
-    }
-    for (const auto& atom : derived_atoms)
-    {
-        const auto atom_id = atom->get_index();
-        const auto remapped_atom_id = m_num_atoms++;
-        m_derived_remap.at(atom_id) = remapped_atom_id;
-        m_inverse_remap.at(remapped_atom_id) = atom_id;
-    }
-    assert(m_num_atoms == static_cast<int>(fluent_atoms.size()) + static_cast<int>(derived_atoms.size()));
-}
-
-const int FluentAndDerivedMapper::UNDEFINED = -1;
-
-void FluentAndDerivedMapper::remap_atoms(const State state)
-{
-    for (const auto& atom_id : state.get_atoms<Fluent>())
-    {
-        if (atom_id >= m_fluent_remap.size())
-        {
-            m_fluent_remap.resize(atom_id + 1, UNDEFINED);
-        }
-        else if (m_fluent_remap.at(atom_id) != UNDEFINED)
-        {
-            continue;
-        }
-
-        const auto remapped_atom_id = m_num_atoms++;
-        m_fluent_remap.at(atom_id) = remapped_atom_id;
-
-        if (remapped_atom_id >= static_cast<int>(m_inverse_remap.size()))
-        {
-            m_inverse_remap.resize(remapped_atom_id + 1, UNDEFINED);
-            m_is_remapped_fluent.resize(remapped_atom_id + 1, false);
-        }
-        m_inverse_remap.at(remapped_atom_id) = atom_id;
-        m_is_remapped_fluent.at(remapped_atom_id) = true;
-    }
-
-    for (const auto& atom_id : state.get_atoms<Derived>())
-    {
-        if (atom_id >= m_derived_remap.size())
-        {
-            m_derived_remap.resize(atom_id + 1, UNDEFINED);
-        }
-        else if (m_derived_remap.at(atom_id) != UNDEFINED)
-        {
-            continue;
-        }
-
-        const auto remapped_atom_id = m_num_atoms++;
-        m_derived_remap.at(atom_id) = remapped_atom_id;
-
-        if (remapped_atom_id >= static_cast<int>(m_inverse_remap.size()))
-        {
-            m_inverse_remap.resize(remapped_atom_id + 1, UNDEFINED);
-            m_is_remapped_fluent.resize(remapped_atom_id + 1, false);
-        }
-        m_inverse_remap.at(remapped_atom_id) = atom_id;
-    }
-}
-
-void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, AtomIndexList& out_atoms)
-{
-    // Remap
-    remap_atoms(state);
-
-    // Combine and sort
-    combine_and_sort(state, out_atoms);
-}
-
-void FluentAndDerivedMapper::remap_and_combine_and_sort(const State state, const State succ_state, AtomIndexList& out_atoms, AtomIndexList& out_add_atoms)
-{
-    // Remap
-    remap_atoms(state);
-    remap_atoms(succ_state);
-
-    // Combine and sort
-    combine_and_sort(state, succ_state, out_atoms, out_add_atoms);
-}
-
-void FluentAndDerivedMapper::combine_and_sort(const State state, AtomIndexList& out_atoms)
-{
-    // Combine
-    out_atoms.clear();
-    for (const auto& atom_id : state.get_atoms<Fluent>())
-    {
-        assert(m_fluent_remap.at(atom_id) != UNDEFINED);
-
-        out_atoms.push_back(m_fluent_remap.at(atom_id));
-    }
-
-    for (const auto& atom_id : state.get_atoms<Derived>())
-    {
-        assert(m_derived_remap.at(atom_id) != UNDEFINED);
-
-        out_atoms.push_back(m_derived_remap.at(atom_id));
-    }
-
-    // Sort
-    std::sort(out_atoms.begin(), out_atoms.end());
-
-    assert(out_atoms.size() == state.get_atoms<Fluent>().count() + state.get_atoms<Derived>().count());
-}
-
-void FluentAndDerivedMapper::combine_and_sort(const State state, const State succ_state, AtomIndexList& out_atoms, AtomIndexList& out_add_atoms)
-{
-    // Combine
-    out_atoms.clear();
-    out_add_atoms.clear();
-    for (const auto& atom_id : succ_state.get_atoms<Fluent>())
-    {
-        assert(m_fluent_remap.at(atom_id) != UNDEFINED);
-
-        state.get_atoms<Fluent>().get(atom_id) ? out_atoms.push_back(m_fluent_remap.at(atom_id)) : out_add_atoms.push_back(m_fluent_remap.at(atom_id));
-    }
-
-    for (const auto& atom_id : succ_state.get_atoms<Derived>())
-    {
-        assert(m_derived_remap.at(atom_id) != UNDEFINED);
-
-        state.get_atoms<Derived>().get(atom_id) ? out_atoms.push_back(m_derived_remap.at(atom_id)) : out_add_atoms.push_back(m_derived_remap.at(atom_id));
-    }
-
-    // Sort
-    std::sort(out_atoms.begin(), out_atoms.end());
-    std::sort(out_add_atoms.begin(), out_add_atoms.end());
-
-    assert(out_atoms.size() + out_add_atoms.size() == succ_state.get_atoms<Fluent>().count() + succ_state.get_atoms<Derived>().count());
-}
-
-const std::vector<int>& FluentAndDerivedMapper::get_fluent_remap() const { return m_fluent_remap; }
-
-const std::vector<int>& FluentAndDerivedMapper::get_derived_remap() const { return m_derived_remap; }
-
-void FluentAndDerivedMapper::inverse_remap_and_separate(const AtomIndexList& combined_atoms, AtomIndexList& out_fluent_atoms, AtomIndexList& out_derived_atoms)
-{
-    out_fluent_atoms.clear();
-    out_derived_atoms.clear();
-
-    for (const auto atom_id : combined_atoms)
-    {
-        // Ensure that we are not computing the inverse of an index
-        // that has never been mapped in the forward direction before.
-        assert(m_inverse_remap.at(atom_id) != UNDEFINED);
-
-        if (m_is_remapped_fluent.at(atom_id))
-        {
-            out_fluent_atoms.push_back(m_inverse_remap.at(atom_id));
-        }
-        else
-        {
-            out_derived_atoms.push_back(m_inverse_remap.at(atom_id));
-        }
-    }
-}
-
-const std::vector<bool>& FluentAndDerivedMapper::get_is_remapped_fluent() const { return m_is_remapped_fluent; }
-
-const std::vector<int>& FluentAndDerivedMapper::get_inverse_remap() const { return m_inverse_remap; }
-
-/**
  * StateTupleIndexGenerator
  */
 
-StateTupleIndexGenerator::StateTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper_,
-                                                   std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    atom_index_mapper(std::move(atom_index_mapper_)),
+StateTupleIndexGenerator::StateTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
     tuple_index_mapper(std::move(tuple_index_mapper_)),
     atom_indices()
 {
@@ -424,12 +242,12 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const A
 
 StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const State state)
 {
-    atom_index_mapper->remap_and_combine_and_sort(state, atom_indices);
-    // Add place holder to generate tuples if size < arity
+    atom_indices.clear();
+
+    const auto& fluent_atoms = state.get_atoms<Fluent>();
+    atom_indices.insert(atom_indices.end(), fluent_atoms.begin(), fluent_atoms.end());
+    // Add place holder to generate tuples of size < arity
     atom_indices.push_back(tuple_index_mapper->get_num_atoms());
-
-    // std::cout << "atom_indices: " << atom_indices << std::endl;
-
     assert(std::is_sorted(atom_indices.begin(), atom_indices.end()));
 
     return const_iterator(this, true);
@@ -441,9 +259,7 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::end() const {
  * StatePairTupleIndexGenerator
  */
 
-StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper_,
-                                                           std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    atom_index_mapper(std::move(atom_index_mapper_)),
+StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
     tuple_index_mapper(std::move(tuple_index_mapper_))
 {
 }
@@ -767,7 +583,14 @@ bool StatePairTupleIndexGenerator::const_iterator::operator!=(const const_iterat
 
 StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin(const State state, const State succ_state)
 {
-    atom_index_mapper->remap_and_combine_and_sort(state, succ_state, a_atom_indices[0], a_atom_indices[1]);
+    a_atom_indices[0].clear();
+    a_atom_indices[1].clear();
+    const auto& state_fluent_atoms = state.get_atoms<Fluent>();
+    const auto& succ_state_fluent_atoms = succ_state.get_atoms<Fluent>();
+    for (const auto& fluent_atom : succ_state_fluent_atoms)
+    {
+        state_fluent_atoms.get(fluent_atom) ? a_atom_indices[0].push_back(fluent_atom) : a_atom_indices[1].push_back(fluent_atom);
+    }
     // Add place holder to generate tuples of size < arity
     a_atom_indices[0].push_back(tuple_index_mapper->get_num_atoms());
 
@@ -795,12 +618,11 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end()
  * DynamicNoveltyTable
  */
 
-DynamicNoveltyTable::DynamicNoveltyTable(std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper, std::shared_ptr<TupleIndexMapper> tuple_index_mapper) :
-    m_atom_index_mapper(std::move(atom_index_mapper)),
+DynamicNoveltyTable::DynamicNoveltyTable(std::shared_ptr<TupleIndexMapper> tuple_index_mapper) :
     m_tuple_index_mapper(std::move(tuple_index_mapper)),
     m_table(std::vector<bool>(m_tuple_index_mapper->get_max_tuple_index() + 1, false)),
-    m_state_tuple_index_generator(m_atom_index_mapper, m_tuple_index_mapper),
-    m_state_pair_tuple_index_generator(m_atom_index_mapper, m_tuple_index_mapper)
+    m_state_tuple_index_generator(m_tuple_index_mapper),
+    m_state_pair_tuple_index_generator(m_tuple_index_mapper)
 {
 }
 
@@ -927,10 +749,7 @@ bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, cons
     return state != m_initial_state || state == succ_state;
 }
 
-ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper) :
-    m_novelty_table(std::move(atom_index_mapper), std::make_shared<TupleIndexMapper>(arity, num_atoms))
-{
-}
+ArityKNoveltyPruning::ArityKNoveltyPruning(int arity, int num_atoms) : m_novelty_table(std::make_shared<TupleIndexMapper>(arity, num_atoms)) {}
 
 bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 {
@@ -981,7 +800,6 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
     m_ssg(successor_state_generator),
     m_brfs_event_handler(brfs_event_handler),
     m_iw_event_handler(iw_event_handler),
-    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
     m_initial_state(m_ssg->get_or_create_initial_state()),
     m_brfs(applicable_action_generator, successor_state_generator, brfs_event_handler)
 {
@@ -1022,7 +840,7 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
             (cur_arity > 0) ?
                 m_brfs.find_solution(start_state,
                                      std::move(goal_strategy),
-                                     std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS, m_atom_index_mapper),
+                                     std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS),
                                      out_plan,
                                      out_goal_state) :
                 m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan, out_goal_state);

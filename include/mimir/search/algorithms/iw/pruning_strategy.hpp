@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_IW_PRUNING_STRATEGY_HPP_
 
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 
@@ -48,7 +48,7 @@ private:
     std::unordered_set<int> m_generated_states;
 
 public:
-    explicit ArityKNoveltyPruning(int arity, int num_atoms, std::shared_ptr<FluentAndDerivedMapper> atom_index_mapper);
+    ArityKNoveltyPruning(int arity, int num_atoms);
 
     bool test_prune_initial_state(const State state) override;
     bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;

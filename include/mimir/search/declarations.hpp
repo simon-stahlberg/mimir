@@ -62,7 +62,6 @@ class IBrFSAlgorithmEventHandler;
 
 // Iterative width search
 class IIWAlgorithmEventHandler;
-class FluentAndDerivedMapper;
 
 // Serialized iterative width search
 class ISIWAlgorithmEventHandler;
