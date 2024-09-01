@@ -181,3 +181,6 @@ from _pymimir import (
     compute_sorted_vertex_colors,
     create_object_graph
 )
+
+from .hints import *
+
