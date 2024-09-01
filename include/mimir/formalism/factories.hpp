@@ -300,7 +300,7 @@ public:
     void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
 
     template<PredicateCategory P>
-    GroundAtomList<P> get_ground_atoms() const;
+    auto get_ground_atoms() const;
 
     // Object
     Object get_object(size_t object_id) const;
@@ -365,11 +365,10 @@ void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 }
 
 template<PredicateCategory P>
-GroundAtomList<P> PDDLFactories::get_ground_atoms() const
+auto PDDLFactories::get_ground_atoms() const
 {
-    auto result = GroundAtomList<P> {};
-    get_ground_atoms(result);
-    return result;
+    const auto& factory = get_factory<GroundAtomFactory<P>>();
+    return std::ranges::subrange(factory.begin(), factory.end());
 }
 
 template<std::ranges::forward_range Iterable>

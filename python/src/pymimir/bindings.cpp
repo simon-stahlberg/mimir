@@ -883,7 +883,9 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
     def_opaque_vector_repr<ProblemList>(list_class, "ProblemList");
 
-    py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
+    py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>> pddl_factories(m, "PDDLFactories");  //
+
+    pddl_factories
         .def("get_ground_atoms",
              [](py::object py_factory)  // we need an object handle to keep the factory alive for each atom in the list
              {
@@ -925,10 +927,26 @@ void init_pymimir(py::module_& m)
         .def("get_derived_ground_atoms_from_indices",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
-        .def("get_static_ground_atoms", py::overload_cast<>(&PDDLFactories::get_ground_atoms<Static>, py::const_), py::keep_alive<0, 1>())
-        .def("get_fluent_ground_atoms", py::overload_cast<>(&PDDLFactories::get_ground_atoms<Fluent>, py::const_), py::keep_alive<0, 1>())
-        .def("get_derived_ground_atoms", py::overload_cast<>(&PDDLFactories::get_ground_atoms<Derived>, py::const_), py::keep_alive<0, 1>())
         .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal);
+
+    auto bind_ground_atoms_range = [&]<typename Tag>(std::string_view func_name, Tag)
+    {
+        pddl_factories.def(
+            func_name.data(),
+            [=](const PDDLFactories& factory)
+            {
+                GroundAtomList<Tag> atoms;
+                for (const auto& elem : factory.get_factory<GroundAtomFactory<Tag>>())
+                {
+                    atoms.emplace_back(elem);
+                }
+                return atoms;
+            },
+            py::keep_alive<0, 1>());
+    };
+    bind_ground_atoms_range("get_static_ground_atoms", Static {});
+    bind_ground_atoms_range("get_fluent_ground_atoms", Fluent {});
+    bind_ground_atoms_range("get_derived_ground_atoms", Derived {});
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>())
