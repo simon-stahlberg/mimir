@@ -168,7 +168,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
 
-            bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
+            const bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
                 m_event_handler->on_prune_state(successor_state, problem, pddl_factories);

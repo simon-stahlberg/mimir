@@ -1303,9 +1303,9 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      int,
+                      size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>>());
@@ -1321,9 +1321,9 @@ void init_pymimir(py::module_& m)
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      int,
+                      size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,

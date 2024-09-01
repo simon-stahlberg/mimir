@@ -126,7 +126,7 @@ public:
         int find_new_index(int i);
         // O(K*2^K)
         bool advance_outter();
-        // Outter iteration O(K*2^K), inner iteration amortized O(1) for O(N^K) iterations
+        // O(1) amortized for O(N^K) iterations + O(K*2^K) for advance_outter.
         void advance_inner();
 
     public:

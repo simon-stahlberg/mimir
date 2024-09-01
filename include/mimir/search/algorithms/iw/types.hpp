@@ -25,7 +25,7 @@ namespace mimir
 {
 /**
  * Large k for IW(k) is generally infeasible.
- * Hence, we use a small constant values within feasible range
+ * Hence, we use a small constant value within feasible range
  * allowing us to use stack allocated arrays.
  */
 

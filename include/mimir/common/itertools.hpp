@@ -18,6 +18,7 @@
 #ifndef MIMIR_COMMON_ITERTOOLS_HPP_
 #define MIMIR_COMMON_ITERTOOLS_HPP_
 
+#include <iostream>
 #include <unordered_set>
 #include <vector>
 
@@ -69,7 +70,7 @@ public:
             }
         }
 
-        [[nodiscard]] reference operator*() const { return m_current; }
+        reference operator*() const { return m_current; }
 
         const_iterator& operator++()
         {
@@ -97,7 +98,7 @@ public:
             return tmp;
         }
 
-        [[nodiscard]] bool operator==(const const_iterator& other) const
+        bool operator==(const const_iterator& other) const
         {
             if (m_is_end && other.m_is_end)
                 return true;
@@ -106,14 +107,14 @@ public:
             return m_current == other.m_current;
         }
 
-        [[nodiscard]] bool operator!=(const const_iterator& other) const { return !(*this == other); }
+        bool operator!=(const const_iterator& other) const { return !(*this == other); }
     };
 
-    [[nodiscard]] const_iterator begin() const { return const_iterator(m_vectors, true); }
+    const_iterator begin() const { return const_iterator(m_vectors, true); }
 
-    [[nodiscard]] const_iterator end() const { return const_iterator(m_vectors, false); }
+    const_iterator end() const { return const_iterator(m_vectors, false); }
 
-    [[nodiscard]] size_t num_combinations() const
+    size_t num_combinations() const
     {
         auto result = size_t { 1 };
         for (const auto& vec : m_vectors)

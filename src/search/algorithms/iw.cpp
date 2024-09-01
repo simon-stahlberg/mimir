@@ -773,7 +773,7 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 }
 
 /* IterativeWidthAlgorithm */
-IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity) :
+IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, size_t max_arity) :
     IterativeWidthAlgorithm(applicable_action_generator,
                             max_arity,
                             std::make_shared<StateRepository>(applicable_action_generator),
@@ -783,7 +783,7 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
 }
 
 IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                 int max_arity,
+                                                 size_t max_arity,
                                                  std::shared_ptr<StateRepository> successor_state_generator,
                                                  std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                  std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
@@ -795,9 +795,10 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
     m_initial_state(m_ssg->get_or_create_initial_state()),
     m_brfs(applicable_action_generator, successor_state_generator, brfs_event_handler)
 {
-    if (max_arity < 0)
+    if (max_arity >= MAX_ARITY)
     {
-        throw std::runtime_error("Arity must be greater of equal than 0.");
+        throw std::runtime_error("IterativeWidthAlgorithm::IterativeWidthAlgorithm(...): max_arity (" + std::to_string(max_arity)
+                                 + ") cannot be greater than or equal to MAX_ARITY (" + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
 }
 
@@ -823,12 +824,12 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_iw_event_handler->on_start_search(problem, start_state, pddl_factories);
 
-    int cur_arity = 0;
+    size_t cur_arity = 0;
     while (cur_arity <= m_max_arity)
     {
         m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_factories, cur_arity);
 
-        auto search_status =
+        const auto search_status =
             (cur_arity > 0) ?
                 m_brfs.find_solution(start_state,
                                      std::move(goal_strategy),
