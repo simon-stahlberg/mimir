@@ -32,15 +32,15 @@ namespace mimir
 class TupleIndexMapper
 {
 private:
-    int m_arity;
-    int m_num_atoms;
+    size_t m_arity;
+    size_t m_num_atoms;
 
-    std::array<int, MAX_ARITY> m_factors;
+    std::array<size_t, MAX_ARITY> m_factors;
 
-    int m_empty_tuple_index;
+    TupleIndex m_empty_tuple_index;
 
 public:
-    TupleIndexMapper(int arity, int num_atoms);
+    TupleIndexMapper(size_t arity, size_t num_atoms);
 
     TupleIndex to_tuple_index(const AtomIndexList& atom_indices) const;
 
@@ -51,10 +51,10 @@ public:
     /**
      * Getters
      */
-    int get_num_atoms() const;
-    int get_arity() const;
-    const std::array<int, MAX_ARITY>& get_factors() const;
-    int get_max_tuple_index() const;
+    size_t get_num_atoms() const;
+    size_t get_arity() const;
+    const std::array<size_t, MAX_ARITY>& get_factors() const;
+    TupleIndex get_max_tuple_index() const;
     TupleIndex get_empty_tuple_index() const;
 };
 

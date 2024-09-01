@@ -45,10 +45,10 @@ class ArityKNoveltyPruning : public IPruningStrategy
 private:
     DynamicNoveltyTable m_novelty_table;
 
-    std::unordered_set<int> m_generated_states;
+    std::unordered_set<Index> m_generated_states;
 
 public:
-    ArityKNoveltyPruning(int arity, int num_atoms);
+    ArityKNoveltyPruning(size_t arity, size_t num_atoms);
 
     bool test_prune_initial_state(const State state) override;
     bool test_prune_successor_state(const State state, const State succ_state, bool is_new_succ) override;

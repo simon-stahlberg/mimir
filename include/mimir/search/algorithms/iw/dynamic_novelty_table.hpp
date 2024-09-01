@@ -35,7 +35,7 @@ private:
 
     std::vector<bool> m_table;
 
-    void resize_to_fit(int atom_index);
+    void resize_to_fit(AtomIndex atom_index);
 
     // Preallocated memory that will be modified.
     StateTupleIndexGenerator m_state_tuple_index_generator;

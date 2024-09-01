@@ -1294,44 +1294,6 @@ void init_pymimir(py::module_& m)
         .def("get_factors", &TupleIndexMapper::get_factors, py::return_value_policy::reference_internal)
         .def("get_max_tuple_index", &TupleIndexMapper::get_max_tuple_index)
         .def("get_empty_tuple_index", &TupleIndexMapper::get_empty_tuple_index);
-    py::class_<FluentAndDerivedMapper, std::shared_ptr<FluentAndDerivedMapper>>(m, "FluentAndDerivedMapper")  //
-        .def(
-            "combine_and_sort",
-
-            [](FluentAndDerivedMapper& self, const State state)
-            {
-                auto atom_indices = AtomIndexList {};
-                self.combine_and_sort(state, atom_indices);
-                return atom_indices;
-            },
-            py::arg("state"))
-        .def(
-            "combine_and_sort",
-
-            [](FluentAndDerivedMapper& self, const State state, const State succ_state)
-            {
-                auto atom_indices = AtomIndexList {};
-                auto add_atom_indices = AtomIndexList {};
-                self.combine_and_sort(state, succ_state, atom_indices, add_atom_indices);
-                return std::make_tuple(atom_indices, add_atom_indices);
-            },
-            py::arg("state"),
-            py::arg("successor_state"))
-        .def(
-            "inverse_remap_and_separate",
-
-            [](FluentAndDerivedMapper& self, const AtomIndexList& fluent_and_derived_atom_indices)
-            {
-                auto fluent_atom_indices = AtomIndexList {};
-                auto derived_atom_indices = AtomIndexList {};
-                self.inverse_remap_and_separate(fluent_and_derived_atom_indices, fluent_atom_indices, derived_atom_indices);
-                return std::make_tuple(fluent_atom_indices, derived_atom_indices);
-            },
-            py::arg("fluent_and_derived_atom_indices"))
-        .def("get_fluent_remap", &FluentAndDerivedMapper::get_fluent_remap, py::return_value_policy::reference_internal)
-        .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference_internal)
-        .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference_internal)
-        .def("get_inverse_remap", &FluentAndDerivedMapper::get_inverse_remap, py::return_value_policy::reference_internal);
 
     py::class_<IWAlgorithmStatistics>(m, "IWAlgorithmStatistics")  //
         .def("get_effective_width", &IWAlgorithmStatistics::get_effective_width)

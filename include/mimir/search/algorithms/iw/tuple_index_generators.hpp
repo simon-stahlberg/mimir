@@ -54,14 +54,14 @@ public:
         const AtomIndexList* m_atom_indices;
 
         /* Internal data */
-        std::array<int, MAX_ARITY> m_indices;
+        std::array<size_t, MAX_ARITY> m_indices;
         bool m_end;
         int m_cur;
 
         void advance();
 
     public:
-        using difference_type = int;
+        using difference_type = std::ptrdiff_t;
         using value_type = TupleIndex;
         using pointer = value_type*;
         using reference = value_type&;
@@ -94,7 +94,7 @@ private:
     std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
 
     // Preallocated memory for reuse
-    std::array<std::vector<int>, 2> a_index_jumper;
+    std::array<std::vector<size_t>, 2> a_index_jumper;
     std::array<AtomIndexList, 2> a_atom_indices;
 
     friend class const_iterator;
@@ -108,17 +108,15 @@ public:
         /* External data */
         const TupleIndexMapper* m_tuple_index_mapper;
         const std::array<AtomIndexList, 2>* m_a_atom_indices;
-        std::array<std::vector<int>, 2>* m_a_index_jumper;
+        std::array<std::vector<size_t>, 2>* m_a_index_jumper;
 
         /* Internal data */
-        std::array<int, MAX_ARITY> m_indices;
+        std::array<size_t, MAX_ARITY> m_indices;
         std::array<bool, MAX_ARITY> m_a;
         int m_cur_outter;
         int m_cur_inner;
         bool m_end_outter;
         bool m_end_inner;
-
-        static const int UNDEFINED;
 
         // O(N)
         void initialize_index_jumper();
@@ -132,7 +130,7 @@ public:
         void advance_inner();
 
     public:
-        using difference_type = int;
+        using difference_type = std::ptrdiff_t;
         using value_type = TupleIndex;
         using pointer = value_type*;
         using reference = value_type&;

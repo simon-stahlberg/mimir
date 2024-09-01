@@ -29,22 +29,22 @@ namespace mimir
  * allowing us to use stack allocated arrays.
  */
 
-const int MAX_ARITY = 6;
+const size_t MAX_ARITY = 6;
 
 /**
  * Number of initial atoms in the DynamicNoveltyTable
  */
 
-const int INITIAL_TABLE_ATOMS = 64;
+const size_t INITIAL_TABLE_ATOMS = 64;
 
 /**
  * Type aliases for readability
  */
 
-using AtomIndex = int;
+using AtomIndex = Index;
 using AtomIndexList = std::vector<AtomIndex>;
 
-using TupleIndex = int;
+using TupleIndex = Index;
 using TupleIndexList = std::vector<TupleIndex>;
 using TupleIndexSet = std::unordered_set<TupleIndex>;
 
