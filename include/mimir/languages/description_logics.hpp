@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"

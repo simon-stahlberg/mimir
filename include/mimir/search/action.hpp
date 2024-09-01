@@ -67,8 +67,8 @@ using FlatConditionalEffects = cista::offset::vector<FlatConditionalEffect>;
 using FlatSimpleEffectVector = cista::offset::vector<FlatSimpleEffect>;
 
 using FlatAction = cista::tuple<Index,           // GroundActionIndex
-                                ContinuousCost,  // GroundActionCost
                                 Index,           // ActionIndex
+                                ContinuousCost,  // GroundActionCost
                                 FlatIndexList,   // ObjectIndices
                                 FlatStripsActionPrecondition,
                                 FlatStripsActionEffect,
@@ -229,8 +229,8 @@ public:
     const FlatAction& get_data() const;
 
     Index& get_index();
+    Index& get_action_index();
     ContinuousCost& get_cost();
-    Index& get_action();
     FlatIndexList& get_objects();
 
     /* STRIPS part */
@@ -259,8 +259,8 @@ public:
     static GroundAction get_null_ground_action();
 
     Index get_index() const;
-    ContinuousCost get_cost() const;
     Index get_action_index() const;
+    ContinuousCost get_cost() const;
     const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
