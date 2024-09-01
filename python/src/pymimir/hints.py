@@ -2,7 +2,7 @@
 from typing import Union
 
 # import the necessary classes:
-from pyimir import (
+from pymimir import (
     StaticAtom,
     FluentAtom,
     DerivedAtom,
