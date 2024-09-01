@@ -342,4 +342,61 @@ TEST(MimirTests, SearchAlgorithmsIWLiftedDeliveryTest)
     EXPECT_EQ(iw_statistics.get_effective_width(), 2);
 }
 
+/**
+ * Miconic-fulladl
+ */
+
+TEST(MimirTests, SearchAlgorithmsIWGroundedMiconicFullAdlTest)
+{
+    auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+                                fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
+                                3);
+    const auto [search_status, plan] = iw.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+
+    const auto& aag_statistics = iw.get_aag_statistics();
+
+    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 7);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 20);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_actions(), 10);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 12);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 16);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 12);
+
+    const auto& iw_statistics = iw.get_iw_statistics();
+
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 69);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 27);
+    EXPECT_EQ(iw_statistics.get_effective_width(), 2);
+}
+
+TEST(MimirTests, SearchAlgorithmsIWLiftedMiconicFullAdlTest)
+{
+    auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+                              fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
+                              3);
+    const auto [search_status, plan] = iw.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+
+    const auto& aag_statistics = iw.get_aag_statistics();
+
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 89);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 345);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
+
+    const auto& iw_statistics = iw.get_iw_statistics();
+
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 69);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 27);
+    EXPECT_EQ(iw_statistics.get_effective_width(), 2);
+}
+
 }
