@@ -24,7 +24,7 @@
 namespace mimir
 {
 /* TermObjectImpl */
-TermObjectImpl::TermObjectImpl(size_t index, Object object) : m_index(index), m_object(std::move(object)) {}
+TermObjectImpl::TermObjectImpl(Index index, Object object) : m_index(index), m_object(std::move(object)) {}
 
 std::string TermObjectImpl::str() const
 {
@@ -33,12 +33,12 @@ std::string TermObjectImpl::str() const
     return out.str();
 }
 
-size_t TermObjectImpl::get_index() const { return m_index; }
+Index TermObjectImpl::get_index() const { return m_index; }
 
 const Object& TermObjectImpl::get_object() const { return m_object; }
 
 /* TermVariableImpl */
-TermVariableImpl::TermVariableImpl(size_t index, Variable variable) : m_index(index), m_variable(std::move(variable)) {}
+TermVariableImpl::TermVariableImpl(Index index, Variable variable) : m_index(index), m_variable(std::move(variable)) {}
 
 std::string TermVariableImpl::str() const
 {
@@ -47,7 +47,7 @@ std::string TermVariableImpl::str() const
     return out.str();
 }
 
-size_t TermVariableImpl::get_index() const { return m_index; }
+Index TermVariableImpl::get_index() const { return m_index; }
 
 const Variable& TermVariableImpl::get_variable() const { return m_variable; }
 

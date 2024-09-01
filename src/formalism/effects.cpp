@@ -36,7 +36,7 @@ namespace mimir
  * Type 1 effect
  */
 
-EffectSimpleImpl::EffectSimpleImpl(size_t index, Literal<Fluent> effect) : m_index(index), m_effect(std::move(effect)) {}
+EffectSimpleImpl::EffectSimpleImpl(Index index, Literal<Fluent> effect) : m_index(index), m_effect(std::move(effect)) {}
 
 std::string EffectSimpleImpl::str() const
 {
@@ -45,7 +45,7 @@ std::string EffectSimpleImpl::str() const
     return out.str();
 }
 
-size_t EffectSimpleImpl::get_index() const { return m_index; }
+Index EffectSimpleImpl::get_index() const { return m_index; }
 
 const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
 
@@ -53,7 +53,7 @@ const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
  * Type 2 effect
  */
 
-EffectConditionalImpl::EffectConditionalImpl(size_t index,
+EffectConditionalImpl::EffectConditionalImpl(Index index,
                                              LiteralList<Static> static_conditions,
                                              LiteralList<Fluent> fluent_conditions,
                                              LiteralList<Derived> derived_conditions,
@@ -82,7 +82,7 @@ std::string EffectConditionalImpl::str() const
     return out.str();
 }
 
-size_t EffectConditionalImpl::get_index() const { return m_index; }
+Index EffectConditionalImpl::get_index() const { return m_index; }
 
 template<PredicateCategory P>
 const LiteralList<P>& EffectConditionalImpl::get_conditions() const
@@ -115,7 +115,7 @@ const Literal<Fluent>& EffectConditionalImpl::get_effect() const { return m_effe
  * Type 3 effect
  */
 
-EffectUniversalImpl::EffectUniversalImpl(size_t index,
+EffectUniversalImpl::EffectUniversalImpl(Index index,
                                          VariableList quantified_variables,
                                          LiteralList<Static> static_conditions,
                                          LiteralList<Fluent> fluent_conditions,
@@ -148,7 +148,7 @@ std::string EffectUniversalImpl::str() const
     return out.str();
 }
 
-size_t EffectUniversalImpl::get_index() const { return m_index; }
+Index EffectUniversalImpl::get_index() const { return m_index; }
 
 const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
 

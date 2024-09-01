@@ -19,7 +19,7 @@
 
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -81,7 +81,6 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
     m_brfs_event_handler(brfs_event_handler),
     m_iw_event_handler(iw_event_handler),
     m_siw_event_handler(siw_event_handler),
-    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
     m_initial_state(m_ssg->get_or_create_initial_state()),
     m_iw(applicable_action_generator, max_arity, successor_state_generator, brfs_event_handler, iw_event_handler)
 {
@@ -151,8 +150,10 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_aag->on_end_search();
     }
-    m_siw_event_handler->on_solved(out_plan);
+    m_siw_event_handler->on_solved(out_plan, *m_aag->get_pddl_factories());
     return SearchStatus::SOLVED;
 }
+
+const std::shared_ptr<PDDLFactories>& SerializedIterativeWidthAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
 
 }

@@ -19,6 +19,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/graphs/object_graph.hpp"
@@ -26,7 +27,6 @@
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
-#include "mimir/search/flat_types.hpp"
 
 #include <optional>
 #include <stack>
@@ -45,7 +45,7 @@ ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(size_t 
 {
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, Object object) const
 {
     const auto& pruned_objects = m_pruning_components.at(m_component_map.at(state)).m_pruned_objects;
     return pruned_objects.get(object->get_index());
@@ -54,7 +54,7 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, Object object)
 template<PredicateCategory P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
                   const std::vector<size_t>& component_map,
-                  StateIndex state,
+                  Index state,
                   GroundAtom<P> atom)
 {
     // Prune atom if at least one object was pruned.
@@ -69,17 +69,17 @@ static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPrun
     return false;
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Static> atom) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Static> atom) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Fluent> atom) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Fluent> atom) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Derived> atom) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Derived> atom) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
@@ -87,23 +87,23 @@ bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundAtom<Der
 template<PredicateCategory P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
                   const std::vector<size_t>& component_map,
-                  StateIndex state,
+                  Index state,
                   GroundLiteral<P> literal)
 {
     return pruning_components.at(component_map.at(state)).get_pruned_goal_literals<P>().get(literal->get_index());
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Static> literal) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundLiteral<Static> literal) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Fluent> literal) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundLiteral<Fluent> literal) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
 
-bool ObjectGraphStaticSccPruningStrategy::prune(StateIndex state, GroundLiteral<Derived> literal) const
+bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundLiteral<Derived> literal) const
 {
     return mimir::prune(m_pruning_components, m_component_map, state, literal);
 }
@@ -119,7 +119,7 @@ ObjectGraphStaticSccPruningStrategy::SccPruningComponent::operator&=(const Objec
 }
 
 template<PredicateCategory P>
-const FlatBitsetBuilder<P>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals() const
+const FlatBitset& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -139,9 +139,9 @@ const FlatBitsetBuilder<P>& ObjectGraphStaticSccPruningStrategy::SccPruningCompo
     }
 }
 
-template const FlatBitsetBuilder<Static>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Static>() const;
-template const FlatBitsetBuilder<Fluent>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Fluent>() const;
-template const FlatBitsetBuilder<Derived>& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Derived>() const;
+template const FlatBitset& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Static>() const;
+template const FlatBitset& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Fluent>() const;
+template const FlatBitset& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals<Derived>() const;
 
 static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_components, const std::vector<size_t>& component_map, const StateSpace& state_space)
 {
@@ -166,10 +166,10 @@ static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_component
 
 template<PredicateCategory P>
 void mark_objects_as_not_prunable(const GroundLiteralList<P>& goal_condition,
-                                  const FlatBitsetBuilder<P>& always_true_state_atoms,
-                                  const FlatBitsetBuilder<P>& always_false_state_atoms,
-                                  FlatBitsetBuilder<P>& ref_pruned_goal_literals,
-                                  FlatBitsetBuilder<>& ref_pruned_objects)
+                                  const FlatBitset& always_true_state_atoms,
+                                  const FlatBitset& always_false_state_atoms,
+                                  FlatBitset& ref_pruned_goal_literals,
+                                  FlatBitset& ref_pruned_objects)
 {
     for (const auto& literal : goal_condition)
     {
@@ -191,7 +191,7 @@ void mark_objects_as_not_prunable(const GroundLiteralList<P>& goal_condition,
 }
 
 template<PredicateCategory P>
-void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitsetBuilder<>& ref_pruned_objects)
+void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitset& ref_pruned_objects)
 {
     for (const auto& atom : atoms)
     {
@@ -231,17 +231,17 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     /* 1. Compute atoms that are always true or false in the SCC
        Use default bit value 1 for always false part.
     */
-    auto always_true_static_atoms = FlatBitsetBuilder<Static>(state_space->get_problem()->get_static_initial_positive_atoms_bitset());
-    auto always_true_fluent_atoms = FlatBitsetBuilder<Fluent>();
-    auto always_true_derived_atoms = FlatBitsetBuilder<Derived>();
-    auto always_false_static_atoms = FlatBitsetBuilder<Static>(0, 1);
-    auto always_false_fluent_atoms = FlatBitsetBuilder<Fluent>(0, 1);
-    auto always_false_derived_atoms = FlatBitsetBuilder<Derived>(0, 1);
+    auto always_true_static_atoms = FlatBitset(state_space->get_problem()->get_static_initial_positive_atoms());
+    auto always_true_fluent_atoms = FlatBitset();
+    auto always_true_derived_atoms = FlatBitset();
+    auto always_false_static_atoms = FlatBitset(0, 1);
+    auto always_false_fluent_atoms = FlatBitset(0, 1);
+    auto always_false_derived_atoms = FlatBitset(0, 1);
     always_false_static_atoms -= always_true_static_atoms;
 
-    auto pruned_static_goal_literals = FlatBitsetBuilder<Static>();
-    auto pruned_fluent_goal_literals = FlatBitsetBuilder<Fluent>();
-    auto pruned_derived_goal_literals = FlatBitsetBuilder<Derived>();
+    auto pruned_static_goal_literals = FlatBitset();
+    auto pruned_fluent_goal_literals = FlatBitset();
+    auto pruned_derived_goal_literals = FlatBitset();
 
     for (size_t group_index = 0; group_index < partitioning.size(); ++group_index)
     {
@@ -268,7 +268,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
         /* 2. Initialize prunable objects to all objects.
          */
-        auto pruned_objects = FlatBitsetBuilder<>();
+        auto pruned_objects = FlatBitset();
         for (const auto& object : state_space->get_problem()->get_objects())
         {
             pruned_objects.set(object->get_index());
@@ -300,7 +300,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         {
             for (const auto& transition : state_space->get_graph().template get_adjacent_edges<ForwardTraversal>(state_index))
             {
-                const auto& precondition = StripsActionPrecondition(get_creating_action(transition).get_strips_precondition());
+                const auto precondition = StripsActionPrecondition(get_creating_action(transition).get_strips_precondition());
                 mark_objects_as_not_prunable(
                     state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(precondition.get_negative_precondition<Static>()),
                     pruned_objects);

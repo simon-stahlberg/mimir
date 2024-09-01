@@ -42,9 +42,9 @@ using GroundActionsEdgeList = std::vector<GroundActionsEdge>;
 
 inline std::span<const GroundAction> get_actions(const GroundActionsEdge& edge) { return edge.get_property<0>(); }
 
-inline EdgeCost get_cost(const GroundActionsEdge& edge)
+inline ContinuousCost get_cost(const GroundActionsEdge& edge)
 {
-    auto cost = std::numeric_limits<EdgeCost>::infinity();
+    auto cost = std::numeric_limits<ContinuousCost>::infinity();
 
     const auto actions = get_actions(edge);
     std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, action.get_cost()); });

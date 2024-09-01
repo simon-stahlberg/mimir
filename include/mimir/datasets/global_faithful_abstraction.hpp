@@ -44,25 +44,22 @@ class GlobalFaithfulAbstractState
 {
 private:
     // The index within a `GlobalFaithfulAbstraction`.
-    StateIndex m_index;
+    Index m_index;
     // The index within a `GlobalFaithfulAbstractionList`.
-    StateIndex m_global_index;
+    Index m_global_index;
     // The indices to access the corresponding `FaithfulAbstractStateVertex`.
-    AbstractionIndex m_faithful_abstraction_index;
-    StateIndex m_faithful_abstract_state_index;
+    Index m_faithful_abstraction_index;
+    Index m_faithful_abstract_state_index;
 
 public:
-    GlobalFaithfulAbstractState(StateIndex index,
-                                StateIndex global_index,
-                                AbstractionIndex faithful_abstraction_index,
-                                StateIndex faithful_abstract_state_index);
+    GlobalFaithfulAbstractState(Index index, Index global_index, Index faithful_abstraction_index, Index faithful_abstract_state_index);
 
     bool operator==(const GlobalFaithfulAbstractState& other) const;
 
-    StateIndex get_index() const;
-    StateIndex get_global_index() const;
-    AbstractionIndex get_faithful_abstraction_index() const;
-    StateIndex get_faithful_abstract_state_index() const;
+    Index get_index() const;
+    Index get_global_index() const;
+    Index get_faithful_abstraction_index() const;
+    Index get_faithful_abstract_state_index() const;
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
@@ -89,7 +86,7 @@ public:
 private:
     GlobalFaithfulAbstraction(bool mark_true_goal_literals,
                               bool use_unit_cost_one,
-                              AbstractionIndex index,
+                              Index index,
                               std::shared_ptr<const FaithfulAbstractionList> abstractions,
                               GlobalFaithfulAbstractStateList states,
                               size_t num_isomorphic_states,
@@ -114,8 +111,8 @@ public:
      * Abstraction functionality
      */
 
-    StateIndex get_abstract_state_index(State concrete_state) const;
-    StateIndex get_abstract_state_index(StateIndex global_state_index) const;
+    Index get_abstract_state_index(State concrete_state) const;
+    Index get_abstract_state_index(Index global_state_index) const;
 
     /**
      * Extended functionality
@@ -126,13 +123,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    DistanceList compute_shortest_distances_from_states(const StateIndexList& states) const;
+    ContinuousCostList compute_shortest_distances_from_states(const IndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    DistanceMatrix compute_pairwise_shortest_state_distances() const;
+    ContinuousCostMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      * Getters
@@ -142,7 +139,7 @@ public:
     Problem get_problem() const;
     bool get_mark_true_goal_literals() const;
     bool get_use_unit_cost_one() const;
-    AbstractionIndex get_index() const;
+    Index get_index() const;
 
     /* Memory */
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
@@ -156,44 +153,44 @@ public:
     /* States */
     const GlobalFaithfulAbstractStateList& get_states() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(StateIndex state) const;
-    const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
-    const std::unordered_map<StateIndex, StateIndex>& get_global_state_index_to_state_index() const;
-    StateIndex get_initial_state() const;
-    const StateIndexSet& get_goal_states() const;
-    const StateIndexSet& get_deadend_states() const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(Index state) const;
+    const StateMap<Index>& get_concrete_to_abstract_state() const;
+    const std::unordered_map<Index, Index>& get_global_state_index_to_state_index() const;
+    Index get_initial_state() const;
+    const IndexSet& get_goal_states() const;
+    const IndexSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
-    bool is_goal_state(StateIndex state) const;
-    bool is_deadend_state(StateIndex state) const;
-    bool is_alive_state(StateIndex state) const;
+    bool is_goal_state(Index state) const;
+    bool is_deadend_state(Index state) const;
+    bool is_alive_state(Index state) const;
     size_t get_num_isomorphic_states() const;
     size_t get_num_non_isomorphic_states() const;
 
     /* Transitions */
     const GroundActionsEdgeList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(StateIndex state) const;
-    TransitionCost get_transition_cost(TransitionIndex transition) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(Index state) const;
+    ContinuousCost get_transition_cost(Index transition) const;
     size_t get_num_transitions() const;
 
     /* Distances */
-    const DistanceList& get_goal_distances() const;
-    Distance get_goal_distance(StateIndex state) const;
+    const ContinuousCostList& get_goal_distances() const;
+    ContinuousCost get_goal_distance(Index state) const;
 
     /* Additional */
-    const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
+    const std::map<ContinuousCost, IndexList>& get_states_by_goal_distance() const;
 
 private:
     /* Meta data */
     bool m_mark_true_goal_literals;
     bool m_use_unit_cost_one;
-    AbstractionIndex m_index;
+    Index m_index;
 
     /* Memory */
     std::shared_ptr<const FaithfulAbstractionList> m_abstractions;
@@ -204,7 +201,7 @@ private:
     size_t m_num_non_isomorphic_states;
 
     /* Additional */
-    std::unordered_map<StateIndex, StateIndex> m_global_state_index_to_state_index;
+    std::unordered_map<Index, Index> m_global_state_index_to_state_index;
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);

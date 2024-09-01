@@ -26,7 +26,6 @@ endif ()
 
 add_subdirectory(benchmark)
 add_subdirectory(boost)
-add_subdirectory(flatmemory)
 add_subdirectory(fmt)
 add_subdirectory(googletest)
 add_subdirectory(loki)

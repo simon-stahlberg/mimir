@@ -26,7 +26,7 @@
 namespace mimir
 {
 /* FunctionExpressionNumber */
-GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(size_t index, double number) : m_index(index), m_number(number) {}
+GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(Index index, double number) : m_index(index), m_number(number) {}
 
 std::string GroundFunctionExpressionNumberImpl::str() const
 {
@@ -35,12 +35,12 @@ std::string GroundFunctionExpressionNumberImpl::str() const
     return out.str();
 }
 
-size_t GroundFunctionExpressionNumberImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionNumberImpl::get_index() const { return m_index; }
 
 double GroundFunctionExpressionNumberImpl::get_number() const { return m_number; }
 
 /* FunctionExpressionBinaryOperator */
-GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperatorImpl(size_t index,
+GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperatorImpl(Index index,
                                                                                        loki::BinaryOperatorEnum binary_operator,
                                                                                        GroundFunctionExpression left_function_expression,
                                                                                        GroundFunctionExpression right_function_expression) :
@@ -58,7 +58,7 @@ std::string GroundFunctionExpressionBinaryOperatorImpl::str() const
     return out.str();
 }
 
-size_t GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
 
 loki::BinaryOperatorEnum GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
@@ -67,7 +67,7 @@ const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_
 const GroundFunctionExpression& GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
-GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperatorImpl(size_t index,
+GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperatorImpl(Index index,
                                                                                      loki::MultiOperatorEnum multi_operator,
                                                                                      GroundFunctionExpressionList function_expressions) :
     m_index(index),
@@ -90,14 +90,14 @@ std::string GroundFunctionExpressionMultiOperatorImpl::str() const
     return out.str();
 }
 
-size_t GroundFunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum GroundFunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
 
 const GroundFunctionExpressionList& GroundFunctionExpressionMultiOperatorImpl::get_function_expressions() const { return m_function_expressions; }
 
 /* FunctionExpressionMinus */
-GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(size_t index, GroundFunctionExpression function_expression) :
+GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(Index index, GroundFunctionExpression function_expression) :
     m_index(index),
     m_function_expression(std::move(function_expression))
 {
@@ -110,12 +110,12 @@ std::string GroundFunctionExpressionMinusImpl::str() const
     return out.str();
 }
 
-size_t GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(size_t index, GroundFunction function) :
+GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function) :
     m_index(index),
     m_function(std::move(function))
 {
@@ -128,7 +128,7 @@ std::string GroundFunctionExpressionFunctionImpl::str() const
     return out.str();
 }
 
-size_t GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }
+Index GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }
 
 const GroundFunction& GroundFunctionExpressionFunctionImpl::get_function() const { return m_function; }
 

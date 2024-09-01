@@ -27,12 +27,12 @@ namespace mimir
 class FunctionExpressionNumberImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     double m_number;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionNumberImpl(size_t index, double number);
+    FunctionExpressionNumberImpl(Index index, double number);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -47,7 +47,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     double get_number() const;
 };
 
@@ -55,14 +55,14 @@ public:
 class FunctionExpressionBinaryOperatorImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     loki::BinaryOperatorEnum m_binary_operator;
     FunctionExpression m_left_function_expression;
     FunctionExpression m_right_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionBinaryOperatorImpl(size_t index,
+    FunctionExpressionBinaryOperatorImpl(Index index,
                                          loki::BinaryOperatorEnum binary_operator,
                                          FunctionExpression left_function_expression,
                                          FunctionExpression right_function_expression);
@@ -80,7 +80,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
     const FunctionExpression& get_left_function_expression() const;
     const FunctionExpression& get_right_function_expression() const;
@@ -90,13 +90,13 @@ public:
 class FunctionExpressionMultiOperatorImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     loki::MultiOperatorEnum m_multi_operator;
     FunctionExpressionList m_function_expressions;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionMultiOperatorImpl(size_t index, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
+    FunctionExpressionMultiOperatorImpl(Index index, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -111,7 +111,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const FunctionExpressionList& get_function_expressions() const;
 };
@@ -120,12 +120,12 @@ public:
 class FunctionExpressionMinusImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionMinusImpl(size_t index, FunctionExpression function_expression);
+    FunctionExpressionMinusImpl(Index index, FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -140,7 +140,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const FunctionExpression& get_function_expression() const;
 };
 
@@ -148,12 +148,12 @@ public:
 class FunctionExpressionFunctionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     Function m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionFunctionImpl(size_t index, Function function);
+    FunctionExpressionFunctionImpl(Index index, Function function);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -168,7 +168,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const Function& get_function() const;
 };
 

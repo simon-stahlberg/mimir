@@ -18,6 +18,9 @@
 #ifndef MIMIR_GRAPHS_DECLARATIONS_HPP_
 #define MIMIR_GRAPHS_DECLARATIONS_HPP_
 
+// Do not include headers with transitive dependencies.
+#include "mimir/common/types.hpp"
+
 #include <cstdint>
 #include <limits>
 #include <unordered_map>
@@ -27,21 +30,13 @@
 namespace mimir
 {
 
-using VertexIndex = uint32_t;
+using VertexIndex = Index;
 using VertexIndexList = std::vector<VertexIndex>;
 using VertexIndexSet = std::unordered_set<VertexIndex>;
 
-using EdgeIndex = uint32_t;
+using EdgeIndex = Index;
 using EdgeIndexList = std::vector<EdgeIndex>;
 using EdgeIndexSet = std::unordered_set<EdgeIndex>;
-using EdgeCost = double;
-
-using Distance = double;
-using DistanceList = std::vector<Distance>;
-using DistanceMap = std::unordered_map<VertexIndex, Distance>;
-using DistanceMatrix = std::vector<DistanceList>;
-using DistanceMatrixMap = std::unordered_map<VertexIndex, DistanceMap>;
-inline const Distance DISTANCE_INFINITY = std::numeric_limits<Distance>::max();
 
 using Degree = uint32_t;
 using DegreeList = std::vector<Degree>;

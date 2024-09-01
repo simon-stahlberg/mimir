@@ -18,8 +18,11 @@
 #ifndef MIMIR_SEARCH_ACTION_HPP_
 #define MIMIR_SEARCH_ACTION_HPP_
 
+#include "cista/containers/tuple.h"
+#include "cista/storage/unordered_set.h"
+#include "cista/storage/vector.h"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -36,164 +39,151 @@ class PDDLFactories;
 struct FlatSimpleEffect
 {
     bool is_negated;
-    size_t atom_id;
+    uint32_t atom_index;
 
     bool operator==(const FlatSimpleEffect& other) const;
 };
 
-using FlatStripsActionPreconditionLayout = flatmemory::Tuple<FlatBitsetLayout<Static>,  //
-                                                             FlatBitsetLayout<Static>,
-                                                             FlatBitsetLayout<Fluent>,
-                                                             FlatBitsetLayout<Fluent>,
-                                                             FlatBitsetLayout<Derived>,
-                                                             FlatBitsetLayout<Derived>>;
-using FlatStripsActionPreconditionBuilder = flatmemory::Builder<FlatStripsActionPreconditionLayout>;
-using FlatStripsActionPrecondition = flatmemory::ConstView<FlatStripsActionPreconditionLayout>;
+using FlatStripsActionPrecondition = cista::tuple<FlatBitset,   // positive static atoms
+                                                  FlatBitset,   // negative static atoms
+                                                  FlatBitset,   // positive fluent atoms
+                                                  FlatBitset,   // negative fluent atoms
+                                                  FlatBitset,   // positive derived atoms
+                                                  FlatBitset>;  // negative derived atoms
 
-using FlatStripsActionEffectLayout = flatmemory::Tuple<FlatBitsetLayout<Fluent>,   // add effects
-                                                       FlatBitsetLayout<Fluent>>;  // delete effects
-using FlatStripsActionEffectBuilder = flatmemory::Builder<FlatStripsActionEffectLayout>;
-using FlatStripsActionEffect = flatmemory::ConstView<FlatStripsActionEffectLayout>;
+using FlatStripsActionEffect = cista::tuple<FlatBitset,   // add fluent effects
+                                            FlatBitset>;  // delete fluent effects
 
-using FlatConditionalEffectLayout = flatmemory::Tuple<FlatIndexListLayout,  // Positive static atom indices
-                                                      FlatIndexListLayout,  // Negative static atom indices
-                                                      FlatIndexListLayout,  // Positive fluent atom indices
-                                                      FlatIndexListLayout,  // Negative fluent atom indices
-                                                      FlatIndexListLayout,  // Positive derived atom indices
-                                                      FlatIndexListLayout,  // Negative derived atom indices
-                                                      FlatSimpleEffect>;    // simple add or delete effect
-using FlatConditionalEffectBuilder = flatmemory::Builder<FlatConditionalEffectLayout>;
-using FlatConditionalEffect = flatmemory::ConstView<FlatConditionalEffectLayout>;
+using FlatConditionalEffect = cista::tuple<FlatIndexList,      // Positive static atom indices
+                                           FlatIndexList,      // Negative static atom indices
+                                           FlatIndexList,      // Positive fluent atom indices
+                                           FlatIndexList,      // Negative fluent atom indices
+                                           FlatIndexList,      // Positive derived atom indices
+                                           FlatIndexList,      // Negative derived atom indices
+                                           FlatSimpleEffect>;  // simple add or delete effect
 
-using FlatConditionalEffectsLayout = flatmemory::Vector<FlatConditionalEffectLayout>;  // simple add or delete effect
-using FlatConditionalEffectsBuilder = flatmemory::Builder<FlatConditionalEffectsLayout>;
-using FlatConditionalEffects = flatmemory::ConstView<FlatConditionalEffectsLayout>;
+using FlatConditionalEffects = cista::offset::vector<FlatConditionalEffect>;
 
-using FlatSimpleEffectVectorLayout = flatmemory::Vector<FlatSimpleEffect>;
-using FlatSimpleEffectVectorBuilder = flatmemory::Builder<FlatSimpleEffectVectorLayout>;
-using FlatSimpleEffectVector = flatmemory::ConstView<FlatSimpleEffectVectorLayout>;
+using FlatSimpleEffectVector = cista::offset::vector<FlatSimpleEffect>;
 
-using FlatActionLayout = flatmemory::Tuple<GroundActionIndex,  //
-                                           GroundActionCost,
-                                           Action,
-                                           FlatObjectListLayout,
-                                           FlatStripsActionPreconditionLayout,
-                                           FlatStripsActionEffectLayout,
-                                           FlatConditionalEffectsLayout>;
-using FlatActionBuilder = flatmemory::Builder<FlatActionLayout>;
-using FlatAction = flatmemory::ConstView<FlatActionLayout>;
-using FlatActionVector = flatmemory::VariableSizedTypeVector<FlatActionLayout>;
+using FlatAction = cista::tuple<Index,           // GroundActionIndex
+                                ContinuousCost,  // GroundActionCost
+                                Index,           // ActionIndex
+                                FlatIndexList,   // ObjectIndices
+                                FlatStripsActionPrecondition,
+                                FlatStripsActionEffect,
+                                FlatConditionalEffects>;
+
+using FlatActionVector = cista::storage::Vector<FlatAction>;
 
 }
 
 template<>
-struct std::hash<mimir::FlatAction>
+struct cista::storage::DerefStdHasher<mimir::FlatAction>
 {
-    size_t operator()(mimir::FlatAction element) const;
+    size_t operator()(const mimir::FlatAction* ptr) const;
 };
 
 template<>
-struct std::equal_to<mimir::FlatAction>
+struct cista::storage::DerefStdEqualTo<mimir::FlatAction>
 {
-    bool operator()(mimir::FlatAction lhs, mimir::FlatAction rhs) const;
+    bool operator()(const mimir::FlatAction* lhs, const mimir::FlatAction* rhs) const;
 };
 
 namespace mimir
 {
 
-using FlatActionSet = flatmemory::UnorderedSet<FlatActionLayout>;
+using FlatActionSet = cista::storage::UnorderedSet<FlatAction>;
 
 /**
  * Implementation class
  */
 
-class StripsActionPreconditionBuilderProxy
+class StripsActionPreconditionBuilder
 {
 private:
-    FlatStripsActionPreconditionBuilder& m_builder;
+    std::reference_wrapper<FlatStripsActionPrecondition> m_builder;
 
 public:
-    explicit StripsActionPreconditionBuilderProxy(FlatStripsActionPreconditionBuilder& builder);
+    explicit StripsActionPreconditionBuilder(FlatStripsActionPrecondition& builder);
 
     /* Precondition */
 
     template<PredicateCategory P>
-    FlatBitsetBuilder<P>& get_positive_precondition();
+    FlatBitset& get_positive_precondition();
 
     template<PredicateCategory P>
-    FlatBitsetBuilder<P>& get_negative_precondition();
+    FlatBitset& get_negative_precondition();
 };
 
 class StripsActionPrecondition
 {
 private:
-    FlatStripsActionPrecondition m_view;
+    std::reference_wrapper<const FlatStripsActionPrecondition> m_view;
 
 public:
-    explicit StripsActionPrecondition(FlatStripsActionPrecondition view);
+    explicit StripsActionPrecondition(const FlatStripsActionPrecondition& view);
 
     template<PredicateCategory P>
-    FlatBitset<P> get_positive_precondition() const;
+    const FlatBitset& get_positive_precondition() const;
 
     template<PredicateCategory P>
-    FlatBitset<P> get_negative_precondition() const;
+    const FlatBitset& get_negative_precondition() const;
 
     template<DynamicPredicateCategory P>
     bool is_applicable(State state) const;
 
     bool is_dynamically_applicable(State state) const;
 
-    bool is_statically_applicable(FlatBitset<Static> static_positive_atoms) const;
+    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
     bool is_applicable(Problem problem, State state) const;
 
     template<PredicateCategory P>
-    bool is_applicable(const FlatBitsetBuilder<P>& atoms) const;
+    bool is_applicable(const FlatBitset& atoms) const;
 
-    bool is_applicable(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                       const FlatBitsetBuilder<Derived>& derived_state_atoms,
-                       const FlatBitsetBuilder<Static>& static_initial_atoms) const;
+    bool is_applicable(const FlatBitset& fluent_state_atoms, const FlatBitset& derived_state_atoms, const FlatBitset& static_initial_atoms) const;
 };
 
 class StripsActionEffectBuilder
 {
 private:
-    FlatStripsActionEffectBuilder& m_builder;
+    std::reference_wrapper<FlatStripsActionEffect> m_builder;
 
 public:
-    explicit StripsActionEffectBuilder(FlatStripsActionEffectBuilder& builder);
+    explicit StripsActionEffectBuilder(FlatStripsActionEffect& builder);
 
-    FlatBitsetBuilder<Fluent>& get_positive_effects();
-    FlatBitsetBuilder<Fluent>& get_negative_effects();
+    FlatBitset& get_positive_effects();
+    FlatBitset& get_negative_effects();
 };
 
 class StripsActionEffect
 {
 private:
-    FlatStripsActionEffect m_view;
+    std::reference_wrapper<const FlatStripsActionEffect> m_view;
 
 public:
-    explicit StripsActionEffect(FlatStripsActionEffect view);
+    explicit StripsActionEffect(const FlatStripsActionEffect& view);
 
-    FlatBitset<Fluent> get_positive_effects() const;
-    FlatBitset<Fluent> get_negative_effects() const;
+    const FlatBitset& get_positive_effects() const;
+    const FlatBitset& get_negative_effects() const;
 };
 
 class ConditionalEffectBuilder
 {
 private:
-    FlatConditionalEffectBuilder& m_builder;
+    std::reference_wrapper<FlatConditionalEffect> m_builder;
 
 public:
-    explicit ConditionalEffectBuilder(FlatConditionalEffectBuilder& builder);
+    explicit ConditionalEffectBuilder(FlatConditionalEffect& builder);
 
     /* Precondition */
 
     template<PredicateCategory P>
-    FlatIndexListBuilder& get_positive_precondition();
+    FlatIndexList& get_positive_precondition();
 
     template<PredicateCategory P>
-    FlatIndexListBuilder& get_negative_precondition();
+    FlatIndexList& get_negative_precondition();
 
     /* Simple effects */
 
@@ -203,18 +193,18 @@ public:
 class ConditionalEffect
 {
 private:
-    FlatConditionalEffect m_view;
+    std::reference_wrapper<const FlatConditionalEffect> m_view;
 
 public:
-    explicit ConditionalEffect(FlatConditionalEffect view);
+    explicit ConditionalEffect(const FlatConditionalEffect& view);
 
     /* Precondition */
 
     template<PredicateCategory P>
-    FlatIndexList get_positive_precondition() const;
+    const FlatIndexList& get_positive_precondition() const;
 
     template<PredicateCategory P>
-    FlatIndexList get_negative_precondition() const;
+    const FlatIndexList& get_negative_precondition() const;
 
     /* Simple effects */
     const FlatSimpleEffect& get_simple_effect() const;
@@ -232,22 +222,22 @@ public:
 class GroundActionBuilder
 {
 private:
-    FlatActionBuilder m_builder;
+    FlatAction m_builder;
 
 public:
-    FlatActionBuilder& get_flatmemory_builder();
-    const FlatActionBuilder& get_flatmemory_builder() const;
+    FlatAction& get_data();
+    const FlatAction& get_data() const;
 
-    GroundActionIndex& get_index();
-    GroundActionCost& get_cost();
-    Action& get_action();
-    FlatObjectListBuilder& get_objects();
+    Index& get_index();
+    ContinuousCost& get_cost();
+    Index& get_action();
+    FlatIndexList& get_objects();
 
     /* STRIPS part */
-    FlatStripsActionPreconditionBuilder& get_strips_precondition();
-    FlatStripsActionEffectBuilder& get_strips_effect();
+    FlatStripsActionPrecondition& get_strips_precondition();
+    FlatStripsActionEffect& get_strips_effect();
     /* Conditional effects */
-    FlatConditionalEffectsBuilder& get_conditional_effects();
+    FlatConditionalEffects& get_conditional_effects();
 };
 
 /**
@@ -258,35 +248,35 @@ public:
 class GroundAction
 {
 private:
-    FlatAction m_view;
+    std::reference_wrapper<const FlatAction> m_view;
 
     static const GroundActionBuilder s_null_ground_action;
 
 public:
     /// @brief Create a view on a DefaultAction.
-    explicit GroundAction(FlatAction view);
+    explicit GroundAction(const FlatAction& view);
 
     static GroundAction get_null_ground_action();
 
-    bool operator==(const GroundAction& other) const;
-
-    GroundActionIndex get_index() const;
-    GroundActionCost get_cost() const;
-    Action get_action() const;
-    FlatObjectList get_objects() const;
+    Index get_index() const;
+    ContinuousCost get_cost() const;
+    Index get_action_index() const;
+    const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
-    FlatStripsActionPrecondition get_strips_precondition() const;
-    FlatStripsActionEffect get_strips_effect() const;
+    const FlatStripsActionPrecondition& get_strips_precondition() const;
+    const FlatStripsActionEffect& get_strips_effect() const;
     /* Conditional effects */
-    FlatConditionalEffects get_conditional_effects() const;
+    const FlatConditionalEffects& get_conditional_effects() const;
 
     bool is_dynamically_applicable(State state) const;
 
-    bool is_statically_applicable(FlatBitset<Static> static_positive_atoms) const;
+    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
     bool is_applicable(Problem problem, State state) const;
 };
+
+extern bool operator==(GroundAction lhs, GroundAction rhs);
 
 }
 
@@ -294,12 +284,6 @@ template<>
 struct std::hash<mimir::GroundAction>
 {
     size_t operator()(mimir::GroundAction element) const;
-};
-
-template<>
-struct std::equal_to<mimir::GroundAction>
-{
-    size_t operator()(mimir::GroundAction lhs, mimir::GroundAction rhs) const;
 };
 
 namespace mimir
@@ -326,7 +310,7 @@ extern std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEf
 
 extern std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, GroundAction action);
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&, GroundAction>& data);
 
 }
 

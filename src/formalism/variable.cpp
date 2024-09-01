@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-VariableImpl::VariableImpl(size_t index, std::string name, size_t parameter_index) : m_index(index), m_name(std::move(name)), m_parameter_index(parameter_index)
+VariableImpl::VariableImpl(Index index, std::string name, size_t parameter_index) : m_index(index), m_name(std::move(name)), m_parameter_index(parameter_index)
 {
 }
 
@@ -33,7 +33,7 @@ std::string VariableImpl::str() const
     return out.str();
 }
 
-size_t VariableImpl::get_index() const { return m_index; }
+Index VariableImpl::get_index() const { return m_index; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }
 

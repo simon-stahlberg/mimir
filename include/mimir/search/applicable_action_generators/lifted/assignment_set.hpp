@@ -35,16 +35,16 @@ namespace mimir
 struct Assignment
 {
     // We use this as special value and when adding 1 we obtain 0.
-    static const size_t MAX_VALUE = std::numeric_limits<size_t>::max();
+    static const Index MAX_VALUE = std::numeric_limits<Index>::max();
 
-    size_t first_index;
-    size_t first_object;
-    size_t second_index;
-    size_t second_object;
+    Index first_index;
+    Index first_object;
+    Index second_index;
+    Index second_object;
 
-    Assignment(size_t index, size_t object);
+    Assignment(Index index, Index object);
 
-    Assignment(size_t first_index, size_t first_object, size_t second_index, size_t second_object);
+    Assignment(Index first_index, Index first_object, Index second_index, Index second_object);
 
     size_t size() const;
 };
@@ -53,15 +53,15 @@ class VertexAssignmentIterator
 {
 private:
     // We use this as special value and when adding 1 we obtain 0.
-    static const size_t UNDEFINED = std::numeric_limits<size_t>::max();
+    static const Index UNDEFINED = std::numeric_limits<Index>::max();
 
     const TermList& m_terms;
     const consistency_graph::Vertex& m_vertex;
 
-    size_t m_index;
-    size_t m_object;
+    Index m_index;
+    Index m_object;
 
-    size_t get_object_if_overlap(const Term& term);
+    Index get_object_if_overlap(const Term& term);
 
     void find_next_binding();
 
@@ -77,17 +77,17 @@ class EdgeAssignmentIterator
 {
 private:
     // We use this as special value and when adding 1 we obtain 0.
-    static const size_t UNDEFINED = std::numeric_limits<size_t>::max();
+    static const Index UNDEFINED = std::numeric_limits<Index>::max();
 
     const TermList& m_terms;
     const consistency_graph::Edge& m_edge;
 
-    size_t m_first_index;
-    size_t m_second_index;
-    size_t m_first_object;
-    size_t m_second_object;
+    Index m_first_index;
+    Index m_second_index;
+    Index m_first_object;
+    Index m_second_object;
 
-    size_t get_object_if_overlap(const Term& term);
+    Index get_object_if_overlap(const Term& term);
 
     void find_next_binding();
 
@@ -172,7 +172,7 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
 {
     const auto num_objects = problem->get_objects().size();
 
-    auto max_predicate_index = (size_t) 0;
+    auto max_predicate_index = Index(0);
     for (const auto& predicate : predicates)
     {
         max_predicate_index = std::max(max_predicate_index, predicate->get_index());

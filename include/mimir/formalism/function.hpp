@@ -25,13 +25,13 @@ namespace mimir
 class FunctionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     FunctionSkeleton m_function_skeleton;
     TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionImpl(size_t index, FunctionSkeleton function_skeleton, TermList terms);
+    FunctionImpl(Index index, FunctionSkeleton function_skeleton, TermList terms);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -46,7 +46,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const TermList& get_terms() const;
 };

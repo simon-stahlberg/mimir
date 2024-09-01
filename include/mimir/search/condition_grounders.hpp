@@ -89,7 +89,7 @@ private:
         {
             auto ground_literal = m_pddl_factories->ground_literal(literal, binding);
 
-            if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
+            if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms().get(ground_literal->get_atom()->get_index()))
             {
                 return false;
             }

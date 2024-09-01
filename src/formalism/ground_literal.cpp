@@ -24,7 +24,7 @@
 namespace mimir
 {
 template<PredicateCategory P>
-GroundLiteralImpl<P>::GroundLiteralImpl(size_t index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
+GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
 }
 
@@ -37,7 +37,7 @@ std::string GroundLiteralImpl<P>::str() const
 }
 
 template<PredicateCategory P>
-size_t GroundLiteralImpl<P>::get_index() const
+Index GroundLiteralImpl<P>::get_index() const
 {
     return m_index;
 }

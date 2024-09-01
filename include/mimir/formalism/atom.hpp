@@ -26,13 +26,13 @@ template<PredicateCategory P>
 class AtomImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
     TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AtomImpl(size_t index, Predicate<P> predicate, TermList terms);
+    AtomImpl(Index index, Predicate<P> predicate, TermList terms);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -49,7 +49,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;
     size_t get_arity() const;

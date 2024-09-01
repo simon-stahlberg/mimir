@@ -21,8 +21,8 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
@@ -63,7 +63,7 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list));
+        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_factories()));
     }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
@@ -99,7 +99,7 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list));
+        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_factories()));
     }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
@@ -111,9 +111,8 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth0Test)
     const int arity = 0;
     const int num_atoms = 3;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         num_atoms,  // placeholder to generate tuples of size less than arity
     });
@@ -130,9 +129,8 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 3;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -153,9 +151,8 @@ TEST(MimirTests, SearchAlgorithmsIWSingleStateTupleIndexGeneratorWidth2Test)
     const int arity = 2;
     const int num_atoms = 3;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StateTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StateTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -177,9 +174,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
     const int arity = 1;
     const int num_atoms = 4;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -203,9 +199,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test1)
     const int arity = 2;
     const int num_atoms = 4;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -234,9 +229,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test2)
     const int arity = 3;
     const int num_atoms = 64;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         2,
@@ -270,9 +264,8 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test3)
     const int arity = 2;
     const int num_atoms = 64;
 
-    const auto atom_index_mapper = std::make_shared<FluentAndDerivedMapper>();
     const auto tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, num_atoms);
-    auto generator = StatePairTupleIndexGenerator(atom_index_mapper, tuple_index_mapper);
+    auto generator = StatePairTupleIndexGenerator(tuple_index_mapper);
     const auto atom_indices = AtomIndexList({
         0,
         1,
@@ -346,6 +339,63 @@ TEST(MimirTests, SearchAlgorithmsIWLiftedDeliveryTest)
 
     EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 18);
     EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 7);
+    EXPECT_EQ(iw_statistics.get_effective_width(), 2);
+}
+
+/**
+ * Miconic-fulladl
+ */
+
+TEST(MimirTests, SearchAlgorithmsIWGroundedMiconicFullAdlTest)
+{
+    auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+                                fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
+                                3);
+    const auto [search_status, plan] = iw.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+
+    const auto& aag_statistics = iw.get_aag_statistics();
+
+    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 7);
+    EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 20);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_actions(), 10);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 12);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 16);
+    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 12);
+
+    const auto& iw_statistics = iw.get_iw_statistics();
+
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 69);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 27);
+    EXPECT_EQ(iw_statistics.get_effective_width(), 2);
+}
+
+TEST(MimirTests, SearchAlgorithmsIWLiftedMiconicFullAdlTest)
+{
+    auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
+                              fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
+                              3);
+    const auto [search_status, plan] = iw.find_solution();
+    EXPECT_EQ(search_status, SearchStatus::SOLVED);
+    EXPECT_EQ(plan.get_actions().size(), 7);
+
+    const auto& aag_statistics = iw.get_aag_statistics();
+
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 89);
+    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
+
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 345);
+    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
+
+    const auto& iw_statistics = iw.get_iw_statistics();
+
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 69);
+    EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_expanded_until_g_value().back(), 27);
     EXPECT_EQ(iw_statistics.get_effective_width(), 2);
 }
 

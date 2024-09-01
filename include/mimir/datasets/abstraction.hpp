@@ -40,7 +40,7 @@ concept IsAbstraction = requires(T a, State concrete_state)
 {
     {
         a.get_abstract_state_index(concrete_state)
-        } -> std::same_as<StateIndex>;
+        } -> std::same_as<Index>;
 };
 
 /**
@@ -60,7 +60,7 @@ private:
         virtual ~AbstractionConcept() {}
 
         /* Abstraction */
-        virtual StateIndex get_abstract_state_index(State concrete_state) const = 0;
+        virtual Index get_abstract_state_index(State concrete_state) const = 0;
 
         /* Meta data */
         virtual Problem get_problem() const = 0;
@@ -71,36 +71,36 @@ private:
         virtual const std::shared_ptr<StateRepository>& get_ssg() const = 0;
 
         /* States */
-        virtual StateIndex get_initial_state() const = 0;
-        virtual const StateIndexSet& get_goal_states() const = 0;
-        virtual const StateIndexSet& get_deadend_states() const = 0;
+        virtual Index get_initial_state() const = 0;
+        virtual const IndexSet& get_goal_states() const = 0;
+        virtual const IndexSet& get_deadend_states() const = 0;
         virtual size_t get_num_states() const = 0;
         virtual size_t get_num_goal_states() const = 0;
         virtual size_t get_num_deadend_states() const = 0;
         virtual std::ranges::subrange<StaticAdjacentVertexIndexConstIterator<GroundActionsEdge, ForwardTraversal>>
-        get_forward_adjacent_state_indices(StateIndex state) const = 0;
+        get_forward_adjacent_state_indices(Index state) const = 0;
         virtual std::ranges::subrange<StaticAdjacentVertexIndexConstIterator<GroundActionsEdge, BackwardTraversal>>
-        get_backward_adjacent_state_indices(StateIndex state) const = 0;
-        virtual bool is_goal_state(StateIndex state) const = 0;
-        virtual bool is_deadend_state(StateIndex state) const = 0;
-        virtual bool is_alive_state(StateIndex state) const = 0;
+        get_backward_adjacent_state_indices(Index state) const = 0;
+        virtual bool is_goal_state(Index state) const = 0;
+        virtual bool is_deadend_state(Index state) const = 0;
+        virtual bool is_alive_state(Index state) const = 0;
 
         /* Transitions */
         virtual const GroundActionsEdgeList& get_transitions() const = 0;
-        virtual TransitionCost get_transition_cost(TransitionIndex transition) const = 0;
+        virtual ContinuousCost get_transition_cost(Index transition) const = 0;
         virtual std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, ForwardTraversal>>
-        get_forward_adjacent_transitions(StateIndex state) const = 0;
+        get_forward_adjacent_transitions(Index state) const = 0;
         virtual std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, BackwardTraversal>>
-        get_backward_adjacent_transitions(StateIndex state) const = 0;
+        get_backward_adjacent_transitions(Index state) const = 0;
         virtual std::ranges::subrange<StaticAdjacentEdgeIndexConstIterator<GroundActionsEdge, ForwardTraversal>>
-        get_forward_adjacent_transition_indices(StateIndex state) const = 0;
+        get_forward_adjacent_transition_indices(Index state) const = 0;
         virtual std::ranges::subrange<StaticAdjacentEdgeIndexConstIterator<GroundActionsEdge, BackwardTraversal>>
-        get_backward_adjacent_transition_indices(StateIndex state) const = 0;
+        get_backward_adjacent_transition_indices(Index state) const = 0;
         virtual size_t get_num_transitions() const = 0;
 
         /* Distances */
-        virtual const DistanceList& get_goal_distances() const = 0;
-        virtual Distance get_goal_distance(StateIndex state) const = 0;
+        virtual const ContinuousCostList& get_goal_distances() const = 0;
+        virtual ContinuousCost get_goal_distance(Index state) const = 0;
 
         // The Prototype Design Pattern
         virtual std::unique_ptr<AbstractionConcept> clone() const = 0;
@@ -116,7 +116,7 @@ private:
         explicit AbstractionModel(A abstraction) : m_abstraction(std::move(abstraction)) {}
 
         /* Abstraction */
-        StateIndex get_abstract_state_index(State concrete_state) const override { return m_abstraction.get_abstract_state_index(concrete_state); }
+        Index get_abstract_state_index(State concrete_state) const override { return m_abstraction.get_abstract_state_index(concrete_state); }
 
         /* Meta data */
         Problem get_problem() const override { return m_abstraction.get_problem(); }
@@ -127,54 +127,53 @@ private:
         const std::shared_ptr<StateRepository>& get_ssg() const override { return m_abstraction.get_ssg(); }
 
         /* States */
-        StateIndex get_initial_state() const override { return m_abstraction.get_initial_state(); }
-        const StateIndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
-        const StateIndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
+        Index get_initial_state() const override { return m_abstraction.get_initial_state(); }
+        const IndexSet& get_goal_states() const override { return m_abstraction.get_goal_states(); }
+        const IndexSet& get_deadend_states() const override { return m_abstraction.get_deadend_states(); }
         std::ranges::subrange<StaticAdjacentVertexIndexConstIterator<GroundActionsEdge, ForwardTraversal>>
-        get_forward_adjacent_state_indices(StateIndex state) const override
+        get_forward_adjacent_state_indices(Index state) const override
         {
             return m_abstraction.template get_adjacent_state_indices<ForwardTraversal>(state);
         }
         std::ranges::subrange<StaticAdjacentVertexIndexConstIterator<GroundActionsEdge, BackwardTraversal>>
-        get_backward_adjacent_state_indices(StateIndex state) const override
+        get_backward_adjacent_state_indices(Index state) const override
         {
             return m_abstraction.template get_adjacent_state_indices<BackwardTraversal>(state);
         }
         size_t get_num_states() const override { return m_abstraction.get_num_states(); }
         size_t get_num_goal_states() const override { return m_abstraction.get_num_goal_states(); }
         size_t get_num_deadend_states() const override { return m_abstraction.get_num_deadend_states(); }
-        bool is_goal_state(StateIndex state) const override { return m_abstraction.is_goal_state(state); }
-        bool is_deadend_state(StateIndex state) const override { return m_abstraction.is_deadend_state(state); }
-        bool is_alive_state(StateIndex state) const override { return m_abstraction.is_alive_state(state); }
+        bool is_goal_state(Index state) const override { return m_abstraction.is_goal_state(state); }
+        bool is_deadend_state(Index state) const override { return m_abstraction.is_deadend_state(state); }
+        bool is_alive_state(Index state) const override { return m_abstraction.is_alive_state(state); }
 
         /* Transitions */
         const GroundActionsEdgeList& get_transitions() const override { return m_abstraction.get_transitions(); }
-        TransitionCost get_transition_cost(TransitionIndex transition) const override { return m_abstraction.get_transition_cost(transition); }
-        std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, ForwardTraversal>>
-        get_forward_adjacent_transitions(StateIndex state) const override
+        ContinuousCost get_transition_cost(Index transition) const override { return m_abstraction.get_transition_cost(transition); }
+        std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, ForwardTraversal>> get_forward_adjacent_transitions(Index state) const override
         {
             return m_abstraction.template get_adjacent_transitions<ForwardTraversal>(state);
         }
         std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, BackwardTraversal>>
-        get_backward_adjacent_transitions(StateIndex state) const override
+        get_backward_adjacent_transitions(Index state) const override
         {
             return m_abstraction.template get_adjacent_transitions<BackwardTraversal>(state);
         }
         std::ranges::subrange<StaticAdjacentEdgeIndexConstIterator<GroundActionsEdge, ForwardTraversal>>
-        get_forward_adjacent_transition_indices(StateIndex state) const override
+        get_forward_adjacent_transition_indices(Index state) const override
         {
             return m_abstraction.template get_adjacent_transition_indices<ForwardTraversal>(state);
         }
         std::ranges::subrange<StaticAdjacentEdgeIndexConstIterator<GroundActionsEdge, BackwardTraversal>>
-        get_backward_adjacent_transition_indices(StateIndex state) const override
+        get_backward_adjacent_transition_indices(Index state) const override
         {
             return m_abstraction.template get_adjacent_transition_indices<BackwardTraversal>(state);
         }
         size_t get_num_transitions() const override { return m_abstraction.get_num_transitions(); }
 
         /* Distances */
-        const DistanceList& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
-        Distance get_goal_distance(StateIndex state) const override { return m_abstraction.get_goal_distance(state); };
+        const ContinuousCostList& get_goal_distances() const override { return m_abstraction.get_goal_distances(); }
+        ContinuousCost get_goal_distance(Index state) const override { return m_abstraction.get_goal_distance(state); };
 
         // The Prototype Design Pattern
         std::unique_ptr<AbstractionConcept> clone() const override { return std::make_unique<AbstractionModel<A>>(*this); }
@@ -203,7 +202,7 @@ public:
     Abstraction& operator=(Abstraction&& other) noexcept = default;
 
     /* Abstraction */
-    StateIndex get_abstract_state_index(State concrete_state) const { return m_pimpl->get_abstract_state_index(concrete_state); }
+    Index get_abstract_state_index(State concrete_state) const { return m_pimpl->get_abstract_state_index(concrete_state); }
 
     /* Meta data */
     Problem get_problem() const { return m_pimpl->get_problem(); }
@@ -214,11 +213,11 @@ public:
     const std::shared_ptr<StateRepository>& get_ssg() const { return m_pimpl->get_ssg(); }
 
     /* States */
-    StateIndex get_initial_state() const { return m_pimpl->get_initial_state(); }
-    const StateIndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
-    const StateIndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
+    Index get_initial_state() const { return m_pimpl->get_initial_state(); }
+    const IndexSet& get_goal_states() const { return m_pimpl->get_goal_states(); }
+    const IndexSet& get_deadend_states() const { return m_pimpl->get_deadend_states(); }
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<StaticAdjacentVertexIndexConstIterator<GroundActionsEdge, Direction>> get_adjacent_state_indices(StateIndex state) const
+    std::ranges::subrange<StaticAdjacentVertexIndexConstIterator<GroundActionsEdge, Direction>> get_adjacent_state_indices(Index state) const
     {
         if constexpr (std::is_same_v<Direction, ForwardTraversal>)
         {
@@ -236,16 +235,16 @@ public:
     size_t get_num_states() const { return m_pimpl->get_num_states(); }
     size_t get_num_goal_states() const { return m_pimpl->get_num_goal_states(); }
     size_t get_num_deadend_states() const { return m_pimpl->get_num_deadend_states(); }
-    bool is_goal_state(StateIndex state) const { return m_pimpl->is_goal_state(state); }
-    bool is_deadend_state(StateIndex state) const { return m_pimpl->is_deadend_state(state); }
-    bool is_alive_state(StateIndex state) const { return m_pimpl->is_alive_state(state); }
+    bool is_goal_state(Index state) const { return m_pimpl->is_goal_state(state); }
+    bool is_deadend_state(Index state) const { return m_pimpl->is_deadend_state(state); }
+    bool is_alive_state(Index state) const { return m_pimpl->is_alive_state(state); }
 
     /* Transitions */
     // Write an adaptor if you need to return different kinds of transitions
     const GroundActionsEdgeList& get_transitions() const { return m_pimpl->get_transitions(); }
-    TransitionCost get_transition_cost(TransitionIndex transition) const { return m_pimpl->get_transition_cost(transition); }
+    ContinuousCost get_transition_cost(Index transition) const { return m_pimpl->get_transition_cost(transition); }
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, Direction>> get_adjacent_transitions(StateIndex state) const
+    std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, Direction>> get_adjacent_transitions(Index state) const
     {
         if constexpr (std::is_same_v<Direction, ForwardTraversal>)
         {
@@ -261,7 +260,7 @@ public:
         }
     }
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<StaticAdjacentEdgeIndexConstIterator<GroundActionsEdge, Direction>> get_adjacent_transition_indices(StateIndex state) const
+    std::ranges::subrange<StaticAdjacentEdgeIndexConstIterator<GroundActionsEdge, Direction>> get_adjacent_transition_indices(Index state) const
     {
         if constexpr (std::is_same_v<Direction, ForwardTraversal>)
         {
@@ -280,8 +279,8 @@ public:
     size_t get_num_transitions() const { return m_pimpl->get_num_transitions(); }
 
     /* Distances */
-    const DistanceList& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
-    Distance get_goal_distance(StateIndex state) const { return m_pimpl->get_goal_distance(state); };
+    const ContinuousCostList& get_goal_distances() const { return m_pimpl->get_goal_distances(); }
+    ContinuousCost get_goal_distance(Index state) const { return m_pimpl->get_goal_distance(state); };
 };
 
 static_assert(IsAbstraction<Abstraction>);

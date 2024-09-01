@@ -18,6 +18,8 @@
 #ifndef MIMIR_DATASETS_DECLARATIONS_HPP_
 #define MIMIR_DATASETS_DECLARATIONS_HPP_
 
+// Do not include headers with transitive dependencies.
+#include "mimir/common/types.hpp"
 #include "mimir/graphs/declarations.hpp"
 
 #include <cstdint>
@@ -25,12 +27,6 @@
 
 namespace mimir
 {
-
-using AbstractionIndex = uint32_t;
-
-using TransitionIndex = EdgeIndex;
-using TransitionCost = EdgeCost;
-using TransitionCostList = std::vector<TransitionCost>;
 
 struct StateSpaceOptions;
 struct StateSpacesOptions;

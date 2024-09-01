@@ -29,12 +29,12 @@ namespace mimir
 class EffectSimpleImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     Literal<Fluent> m_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectSimpleImpl(size_t index, Literal<Fluent> effect);
+    EffectSimpleImpl(Index index, Literal<Fluent> effect);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -49,7 +49,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const Literal<Fluent>& get_effect() const;
 };
 
@@ -59,7 +59,7 @@ public:
 class EffectConditionalImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
@@ -67,7 +67,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(size_t index,
+    EffectConditionalImpl(Index index,
                           LiteralList<Static> static_conditions,
                           LiteralList<Fluent> fluent_conditions,
                           LiteralList<Derived> derived_conditions,
@@ -86,7 +86,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     template<PredicateCategory P>
     const LiteralList<P>& get_conditions() const;
     const Literal<Fluent>& get_effect() const;
@@ -98,7 +98,7 @@ public:
 class EffectUniversalImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     VariableList m_quantified_variables;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
@@ -107,7 +107,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectUniversalImpl(size_t index,
+    EffectUniversalImpl(Index index,
                         VariableList quantified_variables,
                         LiteralList<Static> static_conditions,
                         LiteralList<Fluent> fluent_conditions,
@@ -127,7 +127,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const VariableList& get_parameters() const;
     template<PredicateCategory P>
     const LiteralList<P>& get_conditions() const;

@@ -25,43 +25,34 @@
 #include <ostream>
 #include <tuple>
 
+size_t cista::storage::DerefStdHasher<mimir::FlatState>::operator()(const mimir::FlatState* ptr) const { return mimir::hash_combine(cista::get<1>(*ptr)); }
+
+bool cista::storage::DerefStdEqualTo<mimir::FlatState>::operator()(const mimir::FlatState* lhs, const mimir::FlatState* rhs) const
+{
+    return cista::get<1>(*lhs) == cista::get<1>(*rhs);
+}
+
 size_t std::hash<mimir::State>::operator()(mimir::State element) const { return element.get_index(); }
-
-bool std::equal_to<mimir::State>::operator()(mimir::State lhs, mimir::State rhs) const { return lhs.get_index() == rhs.get_index(); }
-
-size_t std::hash<mimir::FlatState>::operator()(mimir::FlatState element) const
-{
-    const auto fluent_atoms = element.get<1>();
-    return mimir::hash_combine(fluent_atoms);
-}
-
-bool std::equal_to<mimir::FlatState>::operator()(mimir::FlatState lhs, mimir::FlatState rhs) const
-{
-    const auto fluent_atoms_left = lhs.get<1>();
-    const auto fluent_atoms_right = rhs.get<1>();
-    return (fluent_atoms_left == fluent_atoms_right);
-}
 
 namespace mimir
 {
 
 /* StateBuilder */
 
-FlatStateBuilder& StateBuilder::get_flatmemory_builder() { return m_builder; }
-const FlatStateBuilder& StateBuilder::get_flatmemory_builder() const { return m_builder; }
+StateBuilder::StateBuilder() : m_data() {}
 
-StateIndex& StateBuilder::get_index() { return m_builder.get<0>(); }
+Index& StateBuilder::get_index() { return cista::get<0>(m_data); }
 
 template<DynamicPredicateCategory P>
-FlatBitsetBuilder<P>& StateBuilder::get_atoms()
+FlatBitset& StateBuilder::get_atoms()
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
-        return m_builder.get<1>();
+        return cista::get<1>(m_data);
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return m_builder.get<2>();
+        return cista::get<2>(m_data);
     }
     else
     {
@@ -69,28 +60,16 @@ FlatBitsetBuilder<P>& StateBuilder::get_atoms()
     }
 }
 
-template FlatBitsetBuilder<Fluent>& StateBuilder::get_atoms();
-template FlatBitsetBuilder<Derived>& StateBuilder::get_atoms();
+template FlatBitset& StateBuilder::get_atoms<Fluent>();
+template FlatBitset& StateBuilder::get_atoms<Derived>();
+
+FlatState& StateBuilder::get_data() { return m_data; }
+const FlatState& StateBuilder::get_data() const { return m_data; }
 
 /* State */
+State::State(const FlatState& data) : m_data(data) {}
 
-State::State(FlatState view) : m_view(view) {}
-
-State State::get_null_state() { return State(FlatState(s_null_state.get_flatmemory_builder().buffer().data())); }
-
-static StateBuilder create_null_state()
-{
-    auto state_builder = StateBuilder();
-    state_builder.get_index() = std::numeric_limits<StateIndex>::max();
-    state_builder.get_flatmemory_builder().finish();
-    return state_builder;
-}
-
-const StateBuilder State::s_null_state = create_null_state();
-
-bool State::operator==(State other) const { return get_index() == other.get_index(); }
-
-StateIndex State::get_index() const { return m_view.get<0>(); }
+Index State::get_index() const { return cista::get<0>(m_data.get()); }
 
 template<DynamicPredicateCategory P>
 bool State::contains(GroundAtom<P> atom) const
@@ -145,24 +124,27 @@ template bool State::literals_hold(const GroundLiteralList<Fluent>& literals) co
 template bool State::literals_hold(const GroundLiteralList<Derived>& literals) const;
 
 template<DynamicPredicateCategory P>
-FlatBitset<P> State::get_atoms() const
+const FlatBitset& State::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
-        return m_view.get<1>();
+        return cista::get<1>(m_data.get());
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return m_view.get<2>();
+        return cista::get<2>(m_data.get());
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for DynamicPredicateCategory.");
     }
 }
 
-template FlatBitset<Fluent> State::get_atoms<Fluent>() const;
-template FlatBitset<Derived> State::get_atoms<Derived>() const;
+template const FlatBitset& State::get_atoms<Fluent>() const;
+template const FlatBitset& State::get_atoms<Derived>() const;
+
+bool operator==(State lhs, State rhs) { return lhs.get_index() == rhs.get_index(); }
+bool operator!=(State lhs, State rhs) { return !(lhs == rhs); }
 
 /**
  * Pretty printing
@@ -177,7 +159,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
 
     pddl_factories.get_ground_atoms_from_indices(state.get_atoms<Fluent>(), out_fluent_ground_atoms);
-    pddl_factories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
+    pddl_factories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms(), out_static_ground_atoms);
     pddl_factories.get_ground_atoms_from_indices(state.get_atoms<Derived>(), out_derived_ground_atoms);
 
     os << "State("
@@ -188,5 +170,4 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
 
     return os;
 }
-
 }

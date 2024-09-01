@@ -18,9 +18,9 @@
 #ifndef MIMIR_SEARCH_AXIOM_HPP_
 #define MIMIR_SEARCH_AXIOM_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/flat_types.hpp"
 
 #include <cstdint>
 #include <ostream>
@@ -36,37 +36,36 @@ namespace mimir
 struct FlatDerivedEffect
 {
     bool is_negated;
-    size_t atom_id;
+    size_t atom_index;
 
     bool operator==(const FlatDerivedEffect& other) const;
 };
 
-using FlatAxiomLayout = flatmemory::Tuple<GroundAxiomIndex,  //
-                                          Axiom,
-                                          FlatObjectListLayout,
-                                          FlatStripsActionPreconditionLayout,
-                                          FlatStripsActionEffectLayout,
-                                          FlatDerivedEffect>;
-using FlatAxiomBuilder = flatmemory::Builder<FlatAxiomLayout>;
-using FlatAxiom = flatmemory::ConstView<FlatAxiomLayout>;
-using FlatAxiomVector = flatmemory::VariableSizedTypeVector<FlatAxiomLayout>;
+using FlatAxiom = cista::tuple<Index,          // GroundAxiomIndex
+                               Index,          // AxiomIndex
+                               FlatIndexList,  // ObjectIndices
+                               FlatStripsActionPrecondition,
+                               FlatStripsActionEffect,
+                               FlatDerivedEffect>;
+
+using FlatAxiomVector = cista::offset::vector<FlatAxiom>;
 }
 
 template<>
-struct std::hash<mimir::FlatAxiom>
+struct cista::storage::DerefStdHasher<mimir::FlatAxiom>
 {
-    size_t operator()(mimir::FlatAxiom element) const;
+    size_t operator()(const mimir::FlatAxiom* ptr) const;
 };
 
 template<>
-struct std::equal_to<mimir::FlatAxiom>
+struct cista::storage::DerefStdEqualTo<mimir::FlatAxiom>
 {
-    bool operator()(mimir::FlatAxiom lhs, mimir::FlatAxiom rhs) const;
+    bool operator()(const mimir::FlatAxiom* lhs, const mimir::FlatAxiom* rhs) const;
 };
 
 namespace mimir
 {
-using FlatAxiomSet = flatmemory::UnorderedSet<FlatAxiomLayout>;
+using FlatAxiomSet = cista::storage::UnorderedSet<FlatAxiom>;
 
 /**
  * GroundAxiomBuilder
@@ -74,18 +73,18 @@ using FlatAxiomSet = flatmemory::UnorderedSet<FlatAxiomLayout>;
 class GroundAxiomBuilder
 {
 private:
-    FlatAxiomBuilder m_builder;
+    FlatAxiom m_builder;
 
 public:
-    FlatAxiomBuilder& get_flatmemory_builder();
-    const FlatAxiomBuilder& get_flatmemory_builder() const;
+    FlatAxiom& get_data();
+    const FlatAxiom& get_data() const;
 
-    GroundAxiomIndex& get_index();
-    Axiom& get_axiom();
-    FlatObjectListBuilder& get_objects();
+    Index& get_index();
+    Index& get_axiom();
+    FlatIndexList& get_objects();
     /* STRIPS part */
-    FlatStripsActionPreconditionBuilder& get_strips_precondition();
-    FlatStripsActionEffectBuilder& get_strips_effect();
+    FlatStripsActionPrecondition& get_strips_precondition();
+    FlatStripsActionEffect& get_strips_effect();
     /* Simple effect */
     FlatDerivedEffect& get_derived_effect();
 };
@@ -96,30 +95,28 @@ public:
 class GroundAxiom
 {
 private:
-    FlatAxiom m_view;
+    std::reference_wrapper<const FlatAxiom> m_view;
 
 public:
     /// @brief Create a view on a Axiom.
-    explicit GroundAxiom(FlatAxiom view);
+    explicit GroundAxiom(const FlatAxiom& view);
 
-    bool operator==(const GroundAxiom& other) const;
-
-    GroundAxiomIndex get_index() const;
-    Axiom get_axiom() const;
-    FlatObjectList get_objects() const;
+    Index get_index() const;
+    Index get_axiom_index() const;
+    const FlatIndexList& get_objects() const;
 
     /* STRIPS part */
-    FlatStripsActionPrecondition get_strips_precondition() const;
-    FlatStripsActionEffect get_strips_effect() const;
+    const FlatStripsActionPrecondition& get_strips_precondition() const;
+    const FlatStripsActionEffect& get_strips_effect() const;
     /* Effect*/
-    FlatDerivedEffect get_derived_effect() const;
+    const FlatDerivedEffect& get_derived_effect() const;
 
-    bool is_applicable(const FlatBitsetBuilder<Fluent>& state_fluent_atoms,
-                       const FlatBitsetBuilder<Derived>& state_derived_atoms,
-                       const FlatBitsetBuilder<Static>& static_positive_atoms) const;
+    bool is_applicable(const FlatBitset& state_fluent_atoms, const FlatBitset& state_derived_atoms, const FlatBitset& static_positive_atoms) const;
 
-    bool is_statically_applicable(const FlatBitset<Static> static_positive_bitset) const;
+    bool is_statically_applicable(const FlatBitset& static_positive_bitset) const;
 };
+
+extern bool operator==(GroundAxiom lhs, GroundAxiom rhs);
 
 }
 
@@ -127,12 +124,6 @@ template<>
 struct std::hash<mimir::GroundAxiom>
 {
     size_t operator()(mimir::GroundAxiom element) const;
-};
-
-template<>
-struct std::equal_to<mimir::GroundAxiom>
-{
-    size_t operator()(mimir::GroundAxiom lhs, mimir::GroundAxiom rhs) const;
 };
 
 namespace mimir

@@ -44,6 +44,8 @@ public:
 
     SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override;
 
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     int m_max_arity;
@@ -52,8 +54,6 @@ private:
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
-
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
     State m_initial_state;
     IWAlgorithm m_iw;

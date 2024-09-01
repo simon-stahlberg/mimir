@@ -132,7 +132,7 @@ from _pymimir import (
     StateList,
     StateRepository,
     StateSpan,
-    StateIndexGroupedVector,
+    IndexGroupedVector,
     StripsActionEffect,
     StripsActionPrecondition,
     TupleIndexMapper

@@ -26,12 +26,12 @@ namespace mimir
 class ObjectImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     std::string m_name;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ObjectImpl(size_t index, std::string name);
+    ObjectImpl(Index index, std::string name);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -46,7 +46,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const std::string& get_name() const;
 };
 

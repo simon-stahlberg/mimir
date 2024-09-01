@@ -57,9 +57,9 @@ void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, 
 
 void DefaultAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan) const
+void DefaultAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) const
 {
-    auto plan = to_plan(ground_action_plan);
+    auto plan = to_plan(ground_action_plan, pddl_factories);
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;

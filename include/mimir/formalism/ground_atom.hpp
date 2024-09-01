@@ -27,13 +27,13 @@ template<PredicateCategory P>
 class GroundAtomImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     Predicate<P> m_predicate;
     ObjectList m_objects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundAtomImpl(size_t index, Predicate<P> predicate, ObjectList objects);
+    GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -50,7 +50,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
