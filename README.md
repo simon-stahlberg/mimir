@@ -4,41 +4,15 @@ Mimir is a C++20 planning library with Python bindings for grounded and lifted c
 
 *Focus on the intersection of planning and learning - search algorithms, parallel data processing, and knowledge representation languages.*
 
-  - Supports a rich fragment of PDDL in the grounded and lifted planning setup.
-  - Provides Python bindings that even allow you to write heuristics for AStar search directly in Python.
-  - Provides a generic graph library that supports forward and backward traversal of edges.
-  - Uses zero-copy serialization libraries for efficient parallel data generation.
-
-
-## 1. Supported PDDL Requirements
-
-Mimir supports the following PDDL requirements in the grounded and lifting setting.
-
-- [x] :strips
-- [x] :typing
-- [x] :negative-preconditions
-- [x] :disjunctive-preconditions
-- [x] :equality
-- [x] :existential-preconditions
-- [x] :universal-preconditions
-- [x] :quantified-preconditions
-- [x] :conditional-effects
-- [x] :adl
-- [x] :derived-predicates
-- [x] :action-costs
+- Supports a rich fragment of PDDL in both the grounded and lifted planning setup -
+strips, typing, negative-preconditions, disjunctive-preconditions, equality,
+existential-preconditions, universal-preconditions, conditional-effects, derived-predicates, action-costs.
+- Fully written in C++ - no intermediate files.
+- Provides Python bindings that even allow you to write heuristics for AStar search directly in Python.
+- Provides a generic graph library that supports forward and backward traversal of edges with adapters to use the powerful Boost BGL library.
+- Uses the zero-copy serialization library Cista for efficient parallel data generation.
 
 ## 2. Getting Started (Python)
-
-### 2.1. Example Python API
-
-```python
-parser = PDDLParser("domain.pddl", "problem.pddl")
-aag = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_factories())
-brfs = BrFSAlgorithm(aag)
-status, plan = brfs.find_solution()
-```
-
-### 2.2. Installing the Python Bindings Pymimir
 
 Mimir is available on [pypi](https://pypi.org/project/pymimir/).
 
@@ -46,16 +20,18 @@ Mimir is available on [pypi](https://pypi.org/project/pymimir/).
 pip install pymimir
 ```
 
-## 3. Getting Started (C++)
+### 2.1. Example Python API
 
-### 3.1. Example C++ API
+```python
+import pymimir as mm
 
-```cpp
-const auto parser = PDDLParser("domain.pddl", "problem.pddl")
-const auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories())
-const auto brfs = BrFSAlgorithm(aag)
-const auto [status, plan] = brfs.find_solution()
+parser = mm.PDDLParser("domain.pddl", "problem.pddl")
+aag = mm.LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_factories())
+brfs = mm.BrFSAlgorithm(aag)
+status, plan = brfs.find_solution()
 ```
+
+## 3. Getting Started (C++)
 
 ### 3.2. Installing the Dependencies
 
@@ -70,29 +46,42 @@ Mimir depends on the following set of libraries:
 
 Run the following sequence of commands to download, configure, build, and install all dependencies:
 
+1. Configure the dependencies CMake project with the desired installation path:
 ```console
-# Configure dependencies
 cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs
-# Build and install dependencies
-cmake --build dependencies/build -j16
+```
+2. Download, build, and install all dependencies:
+```console
+cmake --build dependencies/build -j$(nproc)
 ```
 
 ### 3.3. Building Mimir
 
 Run the following sequence of commands to configure, build, and install Mimir:
 
+1. Configure Mimir in the build directory `build/` with the `CMakePrefixPath` pointing to the installation directory of the dependencies:
 ```console
-# Configure with installation prefixes of all dependencies
 cmake -S . -B build -DCMAKE_PREFIX_PATH=${PWD}/dependencies/installs
-# Build
-cmake --build build -j16
-# Install (optional)
+```
+2. Build Mimir in the build directory:
+```console
+cmake --build build -j$(nproc)
+```
+3. (Optional) Install Mimir from the build directory to the desired installation `prefix` directory:
+```console
 cmake --install build --prefix=<path/to/installation-directory>
 ```
 
-### 3.4. Creating your own Planner based on Mimir
+### 3.1. Example C++ API
 
-We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/mimir/tree/dynamic/tests/integration) that downloads, builds, and installs Mimir and all its dependencies. We recommend using it as a dependency project for your project, similar to how we handle Mimir's dependencies. Furthermore, to ensure that your dependencies keep working even after changes to the dependencies repos, we recommend explicitly setting the `GIT_TAG` of each dependency to the commit hash that you started developing on.
+```cpp
+#include  <mimir/mimir.hpp>
+
+const auto parser = PDDLParser("domain.pddl", "problem.pddl")
+const auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories())
+const auto brfs = BrFSAlgorithm(aag)
+const auto [status, plan] = brfs.find_solution()
+```
 
 ## 4.For Developers
 
@@ -100,7 +89,7 @@ We provide a CMake Superbuild project [here](https://github.com/simon-stahlberg/
 
 We developed Mimir in Visual Studio Code. We recommend installing the `C/C++` and `CMake Tools` extensions by Microsoft. To get maximum IDE support, you should set the following `Cmake: Configure Args` in the `CMake Tools` extension settings under `Workspace`:
 
-- `-DCMAKE_PREFIX_PATH=${workspaceFolder}/dependencies/installs`
+-  `-DCMAKE_PREFIX_PATH=${workspaceFolder}/dependencies/installs`
 
 After running `CMake: Configure` in Visual Studio Code (ctrl + shift + p), you should see all include paths being correctly resolved.
 
@@ -108,32 +97,7 @@ Alternatively, you can create the file `.vscode/settings.json` with the content:
 
 ```json
 {
-    "cmake.configureArgs": [ "-DCMAKE_PREFIX_PATH=${workspaceFolder}/dependencies/installs" ]
+"cmake.configureArgs": [ "-DCMAKE_PREFIX_PATH=${workspaceFolder}/dependencies/installs" ]
 }
 ```
 
-### 4.2. Argument passing
-
-- Use prefix `ref_` for initialized output parameters and `out_` for non-initialized output parameters. Try to keep the number of output parameters as small as possible. Never use stack-allocated types as output parameters.
-
-### 4.3. Concepts
-
-- Every template parameter must be constrained using a suitable concept.
-
-### 4.4. Memory allocations
-
-- Reuse preallocated memory where possible, leave copying up to the user by returning const references to internal memory. For example, the `ObjectGraphFactory` returns a const reference to an `ObjectGraph`. The user can decide to copy it for persistent storage, or perform temporary operations such as computing a graph certificate.
-
-### 4.5. Constructors
-
-- Arguments passed to the constructor should be passed by value to avoid having to write duplicate constructors. Users have the responsibility to move arguments into the constructors. Exceptions to the rules are types that cannot be copied, e.g., `std::unique_ptr<T>`
-
-### 4.6. Keyword "auto"
-
-- Use the keyword `auto` as much as possible to avoid automatic conversations and flexibility.
-- Use left-to-right notation for readability, e.g., `auto vec = std::vector<int>{};`
-
-### 4.7. Interfaces
-
-- Use pure virtual interfaces if a type is only used through a pointer to the interface.
-- Use more expressive external inheritance hierarchies through type erasure if a type is used either through its concrete type or its abstract type.
