@@ -107,7 +107,6 @@ from _pymimir import (
     DefaultLiftedApplicableActionGeneratorEventHandler,
     DefaultSIWAlgorithmEventHandler,
     FlatSimpleEffect,
-    FluentAndDerivedMapper,
     GroundAction,
     GroundActionList,
     GroundActionSpan,
