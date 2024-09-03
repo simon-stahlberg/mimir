@@ -25,7 +25,7 @@ namespace mimir
 class DomainImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     std::optional<fs::path> m_filepath;
     std::string m_name;
     Requirements m_requirements;
@@ -42,7 +42,7 @@ private:
     ToPredicateMap<std::string, Fluent> m_name_to_fluent_predicate;
     ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
 
-    DomainImpl(size_t index,
+    DomainImpl(Index index,
                std::optional<fs::path> filepath,
                std::string name,
                Requirements requirements,
@@ -67,7 +67,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;
     const Requirements& get_requirements() const;

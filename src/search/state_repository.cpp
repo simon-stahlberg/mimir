@@ -15,16 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include "mimir/search/state_repository.hpp"
+
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/state_repository.hpp"
 
 namespace mimir
 {
 StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> aag) :
     m_aag(std::move(aag)),
-    m_problem_or_domain_has_axioms(!m_aag->get_problem()->get_axioms().empty() || !m_aag->get_problem()->get_domain()->get_axioms().empty())
+    m_problem_or_domain_has_axioms(!m_aag->get_problem()->get_axioms().empty() || !m_aag->get_problem()->get_domain()->get_axioms().empty()),
+    m_states(),
+    m_state_builder(),
+    m_reached_fluent_atoms(),
+    m_reached_derived_atoms()
 {
 }
 
@@ -49,15 +55,14 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 {
     /* Fetch member references for non extended construction. */
 
-    auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-    auto& state_id = m_state_builder.get_index();
+    auto& state_index = m_state_builder.get_index();
     auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
     fluent_state_atoms.unset_all();
 
     /* 1. Set state id */
 
-    int next_state_id = m_states.size();
-    state_id = next_state_id;
+    int next_state_index = m_states.size();
+    state_index = next_state_index;
 
     /* 2. Construct non-extended state */
 
@@ -70,18 +75,17 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     /* 3. Retrieve cached extended state */
 
     // Test whether there exists an extended state for the given non extended state
-    flatmemory_builder.finish();
-    auto iter = m_states.find(FlatState(flatmemory_builder.buffer().data()));
+    auto iter = m_states.find(m_state_builder.get_data());
     if (iter != m_states.end())
     {
-        return State(*iter);
+        return State(**iter);
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
-        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
-        return State(*iter2);
+        auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
+        return State(**iter2);
     }
 
     /* Fetch member references for extended construction. */
@@ -96,20 +100,18 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     /* 5. Cache extended state */
 
-    flatmemory_builder.finish();
-    auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+    auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
 
     /* 6. Return newly generated extended state */
 
-    return State(*iter2);
+    return State(**iter2);
 }
 
 State StateRepository::get_or_create_successor_state(State state, GroundAction action)
 {
     /* Fetch member references for non extended construction. */
 
-    auto& flatmemory_builder = m_state_builder.get_flatmemory_builder();
-    auto& state_id = m_state_builder.get_index();
+    auto& state_index = m_state_builder.get_index();
     auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
     fluent_state_atoms.unset_all();
 
@@ -118,31 +120,31 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 2. Set state id */
 
-    int next_state_id = m_states.size();
-    state_id = next_state_id;
+    int next_state_index = m_states.size();
+    state_index = next_state_index;
 
     /* 3. Construct non-extended state */
 
     /* STRIPS effects*/
-    auto strips_part_proxy = StripsActionEffect(action.get_strips_effect());
-    fluent_state_atoms -= strips_part_proxy.get_negative_effects();
-    fluent_state_atoms |= strips_part_proxy.get_positive_effects();
+    auto strips_action_effect = StripsActionEffect(action.get_strips_effect());
+    fluent_state_atoms -= strips_action_effect.get_negative_effects();
+    fluent_state_atoms |= strips_action_effect.get_positive_effects();
     /* Conditional effects */
-    for (const auto flat_conditional_effect : action.get_conditional_effects())
+    for (const auto& flat_conditional_effect : action.get_conditional_effects())
     {
         auto cond_effect_proxy = ConditionalEffect(flat_conditional_effect);
 
         if (cond_effect_proxy.is_applicable(m_aag->get_problem(), state))
         {
-            const auto& simple_effect = cond_effect_proxy.get_simple_effect();
+            const auto simple_effect = cond_effect_proxy.get_simple_effect();
 
             if (simple_effect.is_negated)
             {
-                fluent_state_atoms.unset(simple_effect.atom_id);
+                fluent_state_atoms.unset(simple_effect.atom_index);
             }
             else
             {
-                fluent_state_atoms.set(simple_effect.atom_id);
+                fluent_state_atoms.set(simple_effect.atom_index);
             }
         }
     }
@@ -151,18 +153,17 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     /* 4. Retrieve cached extended state */
 
     // Test whether there exists an extended state for the given non extended state
-    flatmemory_builder.finish();
-    auto iter = m_states.find(FlatState(flatmemory_builder.buffer().data()));
+    auto iter = m_states.find(m_state_builder.get_data());
     if (iter != m_states.end())
     {
-        return State(*iter);
+        return State(**iter);
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
-        auto [iter2, inserted] = m_states.insert(flatmemory_builder);
-        return State(*iter2);
+        auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
+        return State(**iter2);
     }
 
     /* Fetch member references for extended construction. */
@@ -177,19 +178,18 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 6. Cache extended state */
 
-    flatmemory_builder.finish();
-    auto [iter2, inserted] = m_states.insert(flatmemory_builder);
+    auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
 
     /* 7. Return newly generated extended state */
 
-    return State(*iter2);
+    return State(**iter2);
 }
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }
 
-const FlatBitsetBuilder<Fluent>& StateRepository::get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
+const FlatBitset& StateRepository::get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
 
-const FlatBitsetBuilder<Derived>& StateRepository::get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
+const FlatBitset& StateRepository::get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
 
 std::shared_ptr<IApplicableActionGenerator> StateRepository::get_aag() const { return m_aag; }
 }

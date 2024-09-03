@@ -27,12 +27,12 @@ namespace mimir
 class GroundFunctionExpressionNumberImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     double m_number;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionNumberImpl(size_t index, double number);
+    GroundFunctionExpressionNumberImpl(Index index, double number);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -47,7 +47,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     double get_number() const;
 };
 
@@ -55,14 +55,14 @@ public:
 class GroundFunctionExpressionBinaryOperatorImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     loki::BinaryOperatorEnum m_binary_operator;
     GroundFunctionExpression m_left_function_expression;
     GroundFunctionExpression m_right_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionBinaryOperatorImpl(size_t index,
+    GroundFunctionExpressionBinaryOperatorImpl(Index index,
                                                loki::BinaryOperatorEnum binary_operator,
                                                GroundFunctionExpression left_function_expression,
                                                GroundFunctionExpression right_function_expression);
@@ -80,7 +80,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
     const GroundFunctionExpression& get_left_function_expression() const;
     const GroundFunctionExpression& get_right_function_expression() const;
@@ -90,13 +90,13 @@ public:
 class GroundFunctionExpressionMultiOperatorImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     loki::MultiOperatorEnum m_multi_operator;
     GroundFunctionExpressionList m_function_expressions;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionMultiOperatorImpl(size_t index, loki::MultiOperatorEnum multi_operator, GroundFunctionExpressionList function_expressions);
+    GroundFunctionExpressionMultiOperatorImpl(Index index, loki::MultiOperatorEnum multi_operator, GroundFunctionExpressionList function_expressions);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -111,7 +111,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const GroundFunctionExpressionList& get_function_expressions() const;
 };
@@ -120,12 +120,12 @@ public:
 class GroundFunctionExpressionMinusImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     GroundFunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionMinusImpl(size_t index, GroundFunctionExpression function_expression);
+    GroundFunctionExpressionMinusImpl(Index index, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -140,7 +140,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const GroundFunctionExpression& get_function_expression() const;
 };
 
@@ -148,12 +148,12 @@ public:
 class GroundFunctionExpressionFunctionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     GroundFunction m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionFunctionImpl(size_t index, GroundFunction function);
+    GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -168,7 +168,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const GroundFunction& get_function() const;
 };
 

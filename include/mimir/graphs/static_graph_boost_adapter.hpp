@@ -297,22 +297,22 @@ namespace mimir
 {
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DistanceList>
-dijkstra_shortest_paths(const TraversalDirectionTaggedType<Graph, Direction>& g, const std::vector<EdgeCost>& w, SourceInputIter s_begin, SourceInputIter s_end)
+std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, ContinuousCostList>
+dijkstra_shortest_paths(const TraversalDirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
     auto p = std::vector<vertex_descriptor_type>(g.get().get_num_vertices());
     auto predecessor_map = VectorReadWritePropertyMap<vertex_descriptor_type, vertex_descriptor_type>(p);
-    auto d = DistanceList(g.get().get_num_vertices());
-    auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, Distance>(d);
-    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
+    auto d = ContinuousCostList(g.get().get_num_vertices());
+    auto distance_map = VectorReadWritePropertyMap<vertex_descriptor_type, ContinuousCost>(d);
+    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
     auto vertex_index_map = TrivialReadPropertyMap<vertex_descriptor_type, vertex_descriptor_type>();
-    auto compare = std::less<Distance>();
-    auto combine = std::plus<Distance>();
-    auto inf = DISTANCE_INFINITY;
-    auto zero = Distance();
+    auto compare = std::less<ContinuousCost>();
+    auto combine = std::plus<ContinuousCost>();
+    auto inf = std::numeric_limits<ContinuousCost>::infinity();
+    auto zero = ContinuousCost();
 
     // multiple source shortest path version.
     boost::dijkstra_shortest_paths(g,  //
@@ -339,9 +339,9 @@ template<typename VertexDescriptor>
 struct CustomBFSVisitor : public boost::bfs_visitor<>
 {
     std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
-    std::reference_wrapper<DistanceList> distances;
+    std::reference_wrapper<ContinuousCostList> distances;
 
-    CustomBFSVisitor(std::vector<VertexDescriptor>& p, DistanceList& d) : predecessors(p), distances(d) {}
+    CustomBFSVisitor(std::vector<VertexDescriptor>& p, ContinuousCostList& d) : predecessors(p), distances(d) {}
 
     template<typename Edge, typename Graph>
     void tree_edge(Edge e, const Graph& g) const
@@ -354,7 +354,7 @@ struct CustomBFSVisitor : public boost::bfs_visitor<>
 };
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DistanceList>
+std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, ContinuousCostList>
 breadth_first_search(const TraversalDirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
@@ -366,8 +366,8 @@ breadth_first_search(const TraversalDirectionTaggedType<Graph, Direction>& g, So
     {
         p.at(v) = v;
     }
-    auto inf = DISTANCE_INFINITY;
-    auto d = DistanceList(g.get().get_num_vertices(), inf);
+    auto inf = std::numeric_limits<ContinuousCost>::infinity();
+    auto d = ContinuousCostList(g.get().get_num_vertices(), inf);
     for (auto it = s_begin; it != s_end; ++it)
     {
         d.at(*it) = 0;
@@ -385,14 +385,14 @@ breadth_first_search(const TraversalDirectionTaggedType<Graph, Direction>& g, So
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction>
-VectorBasicMatrix<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor, Distance>
-floyd_warshall_all_pairs_shortest_paths(const TraversalDirectionTaggedType<Graph, Direction>& g, const std::vector<EdgeCost>& w)
+VectorBasicMatrix<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor, ContinuousCost>
+floyd_warshall_all_pairs_shortest_paths(const TraversalDirectionTaggedType<Graph, Direction>& g, const ContinuousCostList& w)
 {
     using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
     using edge_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::edge_descriptor;
 
-    auto d = VectorBasicMatrix<vertex_descriptor_type, Distance>(g.get().get_num_vertices());
-    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, EdgeCost>(w);
+    auto d = VectorBasicMatrix<vertex_descriptor_type, ContinuousCost>(g.get().get_num_vertices());
+    auto weight_map = VectorReadPropertyMap<edge_descriptor_type, ContinuousCost>(w);
 
     boost::floyd_warshall_all_pairs_shortest_paths(g, d, boost::weight_map(weight_map));
 

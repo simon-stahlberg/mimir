@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-GroundFunctionImpl::GroundFunctionImpl(size_t index, FunctionSkeleton function_skeleton, ObjectList objects) :
+GroundFunctionImpl::GroundFunctionImpl(Index index, FunctionSkeleton function_skeleton, ObjectList objects) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
     m_objects(std::move(objects))
@@ -37,7 +37,7 @@ std::string GroundFunctionImpl::str() const
     return out.str();
 }
 
-size_t GroundFunctionImpl::get_index() const { return m_index; }
+Index GroundFunctionImpl::get_index() const { return m_index; }
 
 const FunctionSkeleton& GroundFunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
 

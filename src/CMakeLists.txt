@@ -14,7 +14,10 @@ foreach(subdir ${SUBDIRECTORIES})
     file(GLOB_RECURSE TMP_PRIVATE_HEADER_FILES "${subdir}/*.hpp" "${subdir}/**/*.hpp")
     list(APPEND MIMIR_PRIVATE_HEADER_FILES ${TMP_PRIVATE_HEADER_FILES})
 
-    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/${subdir}/*.hpp" "../include/${subdir}/**/*.hpp")
+    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/mimir/${subdir}/*.hpp" "../include/mimir/${subdir}/**/*.hpp")
+    list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
+
+    file(GLOB_RECURSE TMP_PUBLIC_HEADER_FILES "../include/cista/*.h" "../include/cista/**/*.h")
     list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 endforeach()
 
@@ -30,7 +33,6 @@ add_library(mimir::core ALIAS core)
 #endif()
 
 target_link_libraries(core loki::parsers)
-target_link_libraries(core flatmemory::flatmemory)
 target_link_libraries(core Nauty::Nauty)
 target_link_libraries(core Boost::iostreams ZLIB::ZLIB)
 

@@ -20,9 +20,9 @@
 
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/datasets/abstract_transition.hpp"
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/declarations.hpp"
+#include "mimir/datasets/ground_actions_edge.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
@@ -64,28 +64,28 @@ struct FaithfulAbstractionsOptions
     uint32_t num_threads = std::thread::hardware_concurrency();
 };
 
-/// @brief `FaithfulAbstractState` encapsulates data of an abstract state in a `FaithfulAbstraction`.
-struct FaithfulAbstractStateTag
+/// @brief `FaithfulAbstractStateVertex` encapsulates data of an abstract state in a `FaithfulAbstraction`.
+struct FaithfulAbstractStateVertexTag
 {
 };
 
-using FaithfulAbstractState = Vertex<FaithfulAbstractStateTag, std::span<const State>, std::shared_ptr<const Certificate>>;
-using FaithfulAbstractStateList = std::vector<FaithfulAbstractState>;
+using FaithfulAbstractStateVertex = Vertex<FaithfulAbstractStateVertexTag, std::span<const State>, std::shared_ptr<const Certificate>>;
+using FaithfulAbstractStateVertexList = std::vector<FaithfulAbstractStateVertex>;
 
-inline std::span<const State> get_states(const FaithfulAbstractState& state) { return state.get_property<0>(); }
+inline std::span<const State> get_states(const FaithfulAbstractStateVertex& state) { return state.get_property<0>(); }
 
-inline State get_representative_state(const FaithfulAbstractState& state)
+inline State get_representative_state(const FaithfulAbstractStateVertex& state)
 {
     assert(!state.get_property<0>().empty());
     return state.get_property<0>().front();
 }
 
-inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractState& state) { return state.get_property<1>(); }
+inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractStateVertex& state) { return state.get_property<1>(); }
 
 /// @brief `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
 ///
-/// The underlying graph type is a `StaticBidirectionalGraph` over `FaithfulAbstractState` and `AbstractTransition`.
+/// The underlying graph type is a `StaticBidirectionalGraph` over `FaithfulAbstractStateVertex` and `GroundActionsEdge`.
 /// The `FaithfulAbstraction` stores additional external properties on vertices such as initial state, goal states, deadend states.
 /// The getters are simple adapters to follow the notion of states and transitions from the literature.
 ///
@@ -93,7 +93,7 @@ inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulA
 class FaithfulAbstraction
 {
 public:
-    using GraphType = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractState, AbstractTransition>>;
+    using GraphType = StaticBidirectionalGraph<StaticGraph<FaithfulAbstractStateVertex, GroundActionsEdge>>;
 
     using VertexIndexConstIteratorType = typename GraphType::VertexIndexConstIteratorType;
     using EdgeIndexConstIteratorType = typename GraphType::EdgeIndexConstIteratorType;
@@ -120,12 +120,12 @@ private:
                         std::shared_ptr<StateRepository> ssg,
                         GraphType graph,
                         std::shared_ptr<const StateList> concrete_states_by_abstract_state,
-                        StateMap<StateIndex> concrete_to_abstract_state,
-                        StateIndex initial_state,
-                        StateIndexSet goal_states,
-                        StateIndexSet deadend_states,
+                        StateMap<Index> concrete_to_abstract_state,
+                        Index initial_state,
+                        IndexSet goal_states,
+                        IndexSet deadend_states,
                         std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
-                        DistanceList goal_distances);
+                        ContinuousCostList goal_distances);
 
 public:
     static std::optional<FaithfulAbstraction>
@@ -162,7 +162,7 @@ public:
      * Abstraction functionality
      */
 
-    StateIndex get_abstract_state_index(State concrete_state) const;
+    Index get_abstract_state_index(State concrete_state) const;
 
     /**
      * Extended functionality
@@ -173,13 +173,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    DistanceList compute_shortest_distances_from_states(const StateIndexList& states) const;
+    ContinuousCostList compute_shortest_distances_from_states(const IndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    DistanceMatrix compute_pairwise_shortest_state_distances() const;
+    ContinuousCostMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      * Getters.
@@ -199,37 +199,37 @@ public:
     const GraphType& get_graph() const;
 
     /* States */
-    const FaithfulAbstractStateList& get_states() const;
+    const FaithfulAbstractStateVertexList& get_states() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(StateIndex state) const;
-    const StateMap<StateIndex>& get_concrete_to_abstract_state() const;
-    StateIndex get_initial_state() const;
-    const StateIndexSet& get_goal_states() const;
-    const StateIndexSet& get_deadend_states() const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(Index state) const;
+    const StateMap<Index>& get_concrete_to_abstract_state() const;
+    Index get_initial_state() const;
+    const IndexSet& get_goal_states() const;
+    const IndexSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
-    bool is_goal_state(StateIndex state) const;
-    bool is_deadend_state(StateIndex state) const;
-    bool is_alive_state(StateIndex state) const;
+    bool is_goal_state(Index state) const;
+    bool is_deadend_state(Index state) const;
+    bool is_alive_state(Index state) const;
 
     /* Transitions */
-    const AbstractTransitionList& get_transitions() const;
+    const GroundActionsEdgeList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(StateIndex state) const;
-    TransitionCost get_transition_cost(TransitionIndex transition) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(Index state) const;
+    ContinuousCost get_transition_cost(Index transition) const;
     size_t get_num_transitions() const;
 
     /* Distances */
-    const DistanceList& get_goal_distances() const;
-    Distance get_goal_distance(StateIndex state) const;
+    const ContinuousCostList& get_goal_distances() const;
+    ContinuousCost get_goal_distance(Index state) const;
 
     /* Additional */
-    const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
+    const std::map<ContinuousCost, IndexList>& get_states_by_goal_distance() const;
 
 private:
     /* Meta data */
@@ -246,20 +246,20 @@ private:
     GraphType m_graph;
     // Persistent and sorted to store slices in the abstract states.
     std::shared_ptr<const StateList> m_concrete_states_by_abstract_state;
-    StateMap<StateIndex> m_concrete_to_abstract_state;
-    StateIndex m_initial_state;
-    StateIndexSet m_goal_states;
-    StateIndexSet m_deadend_states;
+    StateMap<Index> m_concrete_to_abstract_state;
+    Index m_initial_state;
+    IndexSet m_goal_states;
+    IndexSet m_deadend_states;
 
     /* Transitions */
     // Persistent and sorted to store slices in the abstract transitions.
     std::shared_ptr<const GroundActionList> m_ground_actions_by_source_and_target;
 
     /* Distances */
-    DistanceList m_goal_distances;
+    ContinuousCostList m_goal_distances;
 
     /* Additional */
-    std::map<Distance, StateIndexList> m_states_by_goal_distance;
+    std::map<ContinuousCost, IndexList> m_states_by_goal_distance;
 };
 
 static_assert(IsAbstraction<FaithfulAbstraction>);

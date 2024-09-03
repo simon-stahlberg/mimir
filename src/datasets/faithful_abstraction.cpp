@@ -44,12 +44,12 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          std::shared_ptr<StateRepository> ssg,
                                          typename FaithfulAbstraction::GraphType graph,
                                          std::shared_ptr<const StateList> concrete_states_by_abstract_state,
-                                         StateMap<StateIndex> concrete_to_abstract_state,
-                                         StateIndex initial_state,
-                                         StateIndexSet goal_states,
-                                         StateIndexSet deadend_states,
+                                         StateMap<Index> concrete_to_abstract_state,
+                                         Index initial_state,
+                                         IndexSet goal_states,
+                                         IndexSet deadend_states,
                                          std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
-                                         DistanceList goal_distances) :
+                                         ContinuousCostList goal_distances) :
     m_problem(problem),
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
@@ -69,15 +69,15 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
     /* Ensure correctness. */
 
     // Check correct state ordering
-    for (size_t i = 0; i < get_num_states(); ++i)
+    for (Index i = 0; i < get_num_states(); ++i)
     {
-        assert(get_states().at(i).get_index() == static_cast<StateIndex>(i) && "State index does not match its position in the list");
+        assert(get_states().at(i).get_index() == i && "State index does not match its position in the list");
     }
 
     // Check correct transition ordering
-    for (size_t i = 0; i < get_num_transitions(); ++i)
+    for (Index i = 0; i < get_num_transitions(); ++i)
     {
-        assert(get_transitions().at(i).get_index() == static_cast<TransitionIndex>(i) && "Transition index does not match its position in the list");
+        assert(get_transitions().at(i).get_index() == i && "Transition index does not match its position in the list");
     }
 
     /* Additional */
@@ -113,9 +113,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         return std::nullopt;
     }
 
-    auto concrete_to_abstract_state = StateMap<StateIndex> {};
+    auto concrete_to_abstract_state = StateMap<Index> {};
     auto abstract_states_by_certificate =
-        std::unordered_map<std::shared_ptr<const Certificate>, StateIndex, UniqueCertificateSharedPtrHash, UniqueCertificateSharedPtrEqualTo> {};
+        std::unordered_map<std::shared_ptr<const Certificate>, Index, UniqueCertificateSharedPtrHash, UniqueCertificateSharedPtrEqualTo> {};
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
@@ -159,10 +159,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     /* Initialize search. */
     auto lifo_queue = std::deque<State>();
     lifo_queue.push_back(initial_state);
-    auto transitions = ConcreteTransitionList {};
-    auto abstract_goal_states = StateIndexSet {};
+    auto transitions = GroundActionEdgeList {};
+    auto abstract_goal_states = IndexSet {};
     auto applicable_actions = GroundActionList {};
-    auto next_abstract_state_index = StateIndex { 1 };
+    auto next_abstract_state_index = Index { 1 };
     stop_watch.start();
 
     while (!lifo_queue.empty() && !stop_watch.has_finished())
@@ -264,8 +264,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     /* Sort concrete states by abstract state */
     auto concrete_states_by_abstract_state = std::make_shared<StateList>();
     concrete_states_by_abstract_state->reserve(num_abstract_states);
-    auto concrete_states_begin_by_abstract_state = std::vector<StateIndex> {};
-    for (StateIndex cur_abstract_state_index = 0; cur_abstract_state_index < num_abstract_states; ++cur_abstract_state_index)
+    auto concrete_states_begin_by_abstract_state = std::vector<Index> {};
+    for (Index cur_abstract_state_index = 0; cur_abstract_state_index < num_abstract_states; ++cur_abstract_state_index)
     {
         concrete_states_begin_by_abstract_state.push_back(concrete_states_by_abstract_state->size());
         for (const auto& [concrete_state, abstract_state_index] : concrete_to_abstract_state)
@@ -280,7 +280,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     assert(concrete_states_begin_by_abstract_state.size() == num_abstract_states + 1);
 
     /* Construct abstract states and sort by index. */
-    auto abstract_states = FaithfulAbstractStateList {};
+    auto abstract_states = FaithfulAbstractStateVertexList {};
     abstract_states.reserve(num_abstract_states);
     for (const auto& [certificate, abstract_state_index] : abstract_states_by_certificate)
     {
@@ -312,12 +312,12 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                    [](const auto& transition) { return get_creating_action(transition); });
 
     /* Group concrete transitions by source and target */
-    auto grouped_transitions = IndexGroupedVector<const ConcreteTransition>::create(
+    auto grouped_transitions = IndexGroupedVector<const GroundActionEdge>::create(
         std::move(transitions),
         [](const auto& l, const auto& r) { return ((l.get_source() != r.get_source()) || (l.get_target() != r.get_target())); });
 
     /* Create abstract transitions from groups. */
-    auto abstract_transitions = AbstractTransitionList {};
+    auto abstract_transitions = GroundActionsEdgeList {};
     abstract_transitions.reserve(grouped_transitions.size());
     auto accumulated_transitions = 0;
     for (const auto& group : grouped_transitions)
@@ -333,7 +333,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     /* Create graph */
-    auto graph = StaticGraph<FaithfulAbstractState, AbstractTransition>();
+    auto graph = StaticGraph<FaithfulAbstractStateVertex, GroundActionsEdge>();
     for (const auto& abstract_state : abstract_states)
     {
         graph.add_vertex(mimir::get_states(abstract_state), mimir::get_certificate(abstract_state));
@@ -346,7 +346,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
     /* Compute abstract goal distances */
 
-    auto abstract_goal_distances = DistanceList {};
+    auto abstract_goal_distances = ContinuousCostList {};
     if (options.use_unit_cost_one
         || std::all_of(bidirectional_graph.get_edges().begin(),
                        bidirectional_graph.get_edges().end(),
@@ -359,7 +359,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
     else
     {
-        auto transition_costs = TransitionCostList {};
+        auto transition_costs = ContinuousCostList {};
         transition_costs.reserve(bidirectional_graph.get_num_edges());
         for (const auto& transition : bidirectional_graph.get_edges())
         {
@@ -373,10 +373,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     /* Compute deadend states. */
-    auto abstract_deadend_states = StateIndexSet {};
-    for (StateIndex abstract_state_index = 0; abstract_state_index < num_abstract_states; ++abstract_state_index)
+    auto abstract_deadend_states = IndexSet {};
+    for (Index abstract_state_index = 0; abstract_state_index < num_abstract_states; ++abstract_state_index)
     {
-        if (abstract_goal_distances.at(abstract_state_index) == DISTANCE_INFINITY)
+        if (abstract_goal_distances.at(abstract_state_index) == std::numeric_limits<ContinuousCost>::infinity())
         {
             abstract_deadend_states.insert(abstract_state_index);
         }
@@ -450,7 +450,7 @@ std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
  * Abstraction functionality
  */
 
-StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state) const
+Index FaithfulAbstraction::get_abstract_state_index(State concrete_state) const
 {
     if (m_concrete_to_abstract_state.count(concrete_state))
     {
@@ -464,9 +464,9 @@ StateIndex FaithfulAbstraction::get_abstract_state_index(State concrete_state) c
  */
 
 template<IsTraversalDirection Direction>
-DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const StateIndexList& states) const
+ContinuousCostList FaithfulAbstraction::compute_shortest_distances_from_states(const IndexList& states) const
 {
-    auto distances = DistanceList {};
+    auto distances = ContinuousCostList {};
     if (m_use_unit_cost_one
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
     {
@@ -475,7 +475,7 @@ DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const S
     }
     else
     {
-        auto transition_costs = TransitionCostList {};
+        auto transition_costs = ContinuousCostList {};
         transition_costs.reserve(m_graph.get_num_edges());
         for (const auto& transition : m_graph.get_edges())
         {
@@ -489,16 +489,16 @@ DistanceList FaithfulAbstraction::compute_shortest_distances_from_states(const S
     return distances;
 }
 
-template DistanceList FaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const StateIndexList& states) const;
-template DistanceList FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const StateIndexList& states) const;
+template ContinuousCostList FaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const IndexList& states) const;
+template ContinuousCostList FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const IndexList& states) const;
 
 template<IsTraversalDirection Direction>
-DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances() const
+ContinuousCostMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances() const
 {
-    auto transition_costs = TransitionCostList {};
+    auto transition_costs = ContinuousCostList {};
     if (m_use_unit_cost_one)
     {
-        transition_costs = TransitionCostList(m_graph.get_num_edges(), 1);
+        transition_costs = ContinuousCostList(m_graph.get_num_edges(), 1);
     }
     else
     {
@@ -512,8 +512,8 @@ DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances() 
     return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
 
-template DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template DistanceMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template ContinuousCostMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
+template ContinuousCostMatrix FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
 
 /**
  * Getters
@@ -537,38 +537,38 @@ const std::shared_ptr<StateRepository>& FaithfulAbstraction::get_ssg() const { r
 const typename FaithfulAbstraction::GraphType& FaithfulAbstraction::get_graph() const { return m_graph; }
 
 /* States */
-const FaithfulAbstractStateList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
+const FaithfulAbstractStateVertexList& FaithfulAbstraction::get_states() const { return m_graph.get_vertices(); }
 
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexConstIteratorType<Direction>> FaithfulAbstraction::get_adjacent_states(StateIndex state) const
+std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexConstIteratorType<Direction>> FaithfulAbstraction::get_adjacent_states(Index state) const
 {
     return m_graph.get_adjacent_vertices<Direction>(state);
 }
 
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexConstIteratorType<ForwardTraversal>>
-FaithfulAbstraction::get_adjacent_states<ForwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_states<ForwardTraversal>(Index state) const;
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexConstIteratorType<BackwardTraversal>>
-FaithfulAbstraction::get_adjacent_states<BackwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_states<BackwardTraversal>(Index state) const;
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexIndexConstIteratorType<Direction>>
-FaithfulAbstraction::get_adjacent_state_indices(StateIndex state) const
+FaithfulAbstraction::get_adjacent_state_indices(Index state) const
 {
     return m_graph.get_adjacent_vertex_indices<Direction>(state);
 }
 
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexIndexConstIteratorType<ForwardTraversal>>
-FaithfulAbstraction::get_adjacent_state_indices<ForwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_state_indices<ForwardTraversal>(Index state) const;
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentVertexIndexConstIteratorType<BackwardTraversal>>
-FaithfulAbstraction::get_adjacent_state_indices<BackwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_state_indices<BackwardTraversal>(Index state) const;
 
-const StateMap<StateIndex>& FaithfulAbstraction::get_concrete_to_abstract_state() const { return m_concrete_to_abstract_state; }
+const StateMap<Index>& FaithfulAbstraction::get_concrete_to_abstract_state() const { return m_concrete_to_abstract_state; }
 
-StateIndex FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
+Index FaithfulAbstraction::get_initial_state() const { return m_initial_state; }
 
-const StateIndexSet& FaithfulAbstraction::get_goal_states() const { return m_goal_states; }
+const IndexSet& FaithfulAbstraction::get_goal_states() const { return m_goal_states; }
 
-const StateIndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
+const IndexSet& FaithfulAbstraction::get_deadend_states() const { return m_deadend_states; }
 
 size_t FaithfulAbstraction::get_num_states() const { return m_graph.get_num_vertices(); }
 
@@ -576,41 +576,40 @@ size_t FaithfulAbstraction::get_num_goal_states() const { return get_goal_states
 
 size_t FaithfulAbstraction::get_num_deadend_states() const { return get_deadend_states().size(); }
 
-bool FaithfulAbstraction::is_goal_state(StateIndex state) const { return get_goal_states().count(state); }
+bool FaithfulAbstraction::is_goal_state(Index state) const { return get_goal_states().count(state); }
 
-bool FaithfulAbstraction::is_deadend_state(StateIndex state) const { return get_deadend_states().count(state); }
+bool FaithfulAbstraction::is_deadend_state(Index state) const { return get_deadend_states().count(state); }
 
-bool FaithfulAbstraction::is_alive_state(StateIndex state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
+bool FaithfulAbstraction::is_alive_state(Index state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
 
 /* Transitions */
 
-const AbstractTransitionList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
+const GroundActionsEdgeList& FaithfulAbstraction::get_transitions() const { return m_graph.get_edges(); }
 
 template<IsTraversalDirection Direction>
-std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>>
-FaithfulAbstraction::get_adjacent_transitions(StateIndex state) const
+std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>> FaithfulAbstraction::get_adjacent_transitions(Index state) const
 {
     return m_graph.get_adjacent_edges<Direction>(state);
 }
 
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<ForwardTraversal>>
-FaithfulAbstraction::get_adjacent_transitions<ForwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_transitions<ForwardTraversal>(Index state) const;
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<BackwardTraversal>>
-FaithfulAbstraction::get_adjacent_transitions<BackwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_transitions<BackwardTraversal>(Index state) const;
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<Direction>>
-FaithfulAbstraction::get_adjacent_transition_indices(StateIndex state) const
+FaithfulAbstraction::get_adjacent_transition_indices(Index state) const
 {
     return m_graph.get_adjacent_edge_indices<Direction>(state);
 }
 
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>>
-FaithfulAbstraction::get_adjacent_transition_indices<ForwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_transition_indices<ForwardTraversal>(Index state) const;
 template std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
-FaithfulAbstraction::get_adjacent_transition_indices<BackwardTraversal>(StateIndex state) const;
+FaithfulAbstraction::get_adjacent_transition_indices<BackwardTraversal>(Index state) const;
 
-TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transition) const
+ContinuousCost FaithfulAbstraction::get_transition_cost(Index transition) const
 {
     return (m_use_unit_cost_one) ? 1 : get_cost(m_graph.get_edges().at(transition));
 }
@@ -618,12 +617,12 @@ TransitionCost FaithfulAbstraction::get_transition_cost(TransitionIndex transiti
 size_t FaithfulAbstraction::get_num_transitions() const { return m_graph.get_num_edges(); }
 
 /* Distances */
-const DistanceList& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
+const ContinuousCostList& FaithfulAbstraction::get_goal_distances() const { return m_goal_distances; }
 
-Distance FaithfulAbstraction::get_goal_distance(StateIndex state) const { return m_goal_distances.at(state); }
+ContinuousCost FaithfulAbstraction::get_goal_distance(Index state) const { return m_goal_distances.at(state); }
 
 /* Additional */
-const std::map<Distance, StateIndexList>& FaithfulAbstraction::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
+const std::map<ContinuousCost, IndexList>& FaithfulAbstraction::get_states_by_goal_distance() const { return m_states_by_goal_distance; }
 
 /**
  * Pretty printing
@@ -691,7 +690,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         out << "label=\"";
         for (const auto& action : get_actions(transition))
         {
-            out << action << "\n";
+            out << std::make_tuple(std::cref(*abstraction.get_pddl_factories()), action) << "\n";
         }
         out << "\"";  // end label
 

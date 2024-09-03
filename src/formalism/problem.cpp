@@ -38,7 +38,7 @@ using namespace std;
 
 namespace mimir
 {
-ProblemImpl::ProblemImpl(size_t index,
+ProblemImpl::ProblemImpl(Index index,
                          std::optional<fs::path> filepath,
                          Domain domain,
                          std::string name,
@@ -61,6 +61,7 @@ ProblemImpl::ProblemImpl(size_t index,
     m_objects(std::move(objects)),
     m_derived_predicates(std::move(derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
+    m_static_initial_positive_atoms(),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_numeric_fluents(std::move(numeric_fluents)),
     m_static_goal_condition(std::move(static_goal_condition)),
@@ -113,18 +114,14 @@ ProblemImpl::ProblemImpl(size_t index,
     {
         if (!literal->is_negated())
         {
-            m_static_initial_positive_atoms_builder.set(literal->get_atom()->get_index());
+            m_static_initial_positive_atoms.set(literal->get_atom()->get_index());
         }
     }
-    m_static_initial_positive_atoms_builder.finish();
-    // Ensure that buffer is correctly written
-    assert(m_static_initial_positive_atoms_builder == get_static_initial_positive_atoms_bitset());
-
     // Determine whether the static goal holds
     m_static_goal_holds = true;
     for (const auto& literal : m_static_goal_condition)
     {
-        if (literal->is_negated() == m_static_initial_positive_atoms_builder.get(literal->get_atom()->get_index()))
+        if (literal->is_negated() == m_static_initial_positive_atoms.get(literal->get_atom()->get_index()))
         {
             m_static_goal_holds = false;
         }
@@ -138,7 +135,7 @@ std::string ProblemImpl::str() const
     return out.str();
 }
 
-size_t ProblemImpl::get_index() const { return m_index; }
+Index ProblemImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }
 
@@ -156,12 +153,7 @@ const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predic
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
-const FlatBitsetBuilder<Static> ProblemImpl::get_static_initial_positive_atoms() const { return m_static_initial_positive_atoms_builder; }
-
-FlatBitset<Static> ProblemImpl::get_static_initial_positive_atoms_bitset() const
-{
-    return FlatBitset<Static>(m_static_initial_positive_atoms_builder.buffer().data());
-}
+const FlatBitset& ProblemImpl::get_static_initial_positive_atoms() const { return m_static_initial_positive_atoms; }
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
@@ -200,7 +192,7 @@ bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 
 bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
 {
-    return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
+    return (literal->is_negated() != get_static_initial_positive_atoms().get(literal->get_atom()->get_index()));
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)

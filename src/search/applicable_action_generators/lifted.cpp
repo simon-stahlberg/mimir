@@ -130,7 +130,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     {
         const auto grounded_literal = m_pddl_factories->ground_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();
-        ref_effect.atom_id = grounded_literal->get_atom()->get_index();
+        ref_effect.atom_index = grounded_literal->get_atom()->get_index();
     };
 
     /* Header */
@@ -138,16 +138,16 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     m_action_builder.get_index() = m_flat_actions.size();
     m_action_builder.get_cost() =
         std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_factories), *action->get_function_expression());
-    m_action_builder.get_action() = action;
+    m_action_builder.get_action_index() = action->get_index();
     auto& objects = m_action_builder.get_objects();
     objects.clear();
     for (const auto& obj : binding)
     {
-        objects.push_back(obj);
+        objects.push_back(obj->get_index());
     }
 
     /* Precondition */
-    auto strips_precondition_proxy = StripsActionPreconditionBuilderProxy(m_action_builder.get_strips_precondition());
+    auto strips_precondition_proxy = StripsActionPreconditionBuilder(m_action_builder.get_strips_precondition());
     auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
     auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
     auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
@@ -292,18 +292,12 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
         }
     }
 
-    auto& flatmemory_builder = m_action_builder.get_flatmemory_builder();
-    flatmemory_builder.finish();
-
-    const auto [iter, inserted] = m_flat_actions.insert(flatmemory_builder);
-    const auto grounded_action = GroundAction(*iter);
+    const auto [iter, inserted] = m_flat_actions.insert(m_action_builder.get_data());
+    const auto grounded_action = GroundAction(**iter);
     if (inserted)
     {
         m_actions_by_index.push_back(grounded_action);
     }
-
-    // Ensure that buffer is interpretable back to same data as builder
-    assert(flatmemory_builder == *iter);
 
     /* 3. Insert to groundings table */
 
@@ -324,9 +318,11 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
 
     auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state.get_atoms<Fluent>());
+
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
+
     auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state.get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
 
@@ -348,8 +344,7 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_factories);
 }
 
-void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms,
-                                                                FlatBitsetBuilder<Derived>& ref_derived_state_atoms)
+void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
 {
     // In the lifted case, we use the axiom evaluator.
     m_axiom_evaluator.generate_and_apply_axioms(fluent_state_atoms, ref_derived_state_atoms);

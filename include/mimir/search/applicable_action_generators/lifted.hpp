@@ -28,7 +28,6 @@
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/state.hpp"
 
-#include <flatmemory/flatmemory.hpp>
 #include <unordered_map>
 #include <vector>
 
@@ -36,12 +35,9 @@ namespace mimir
 {
 using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
 
-/**
- * Fully specialized implementation class.
- *
- * Implements successor generation using maximum clique enumeration by stahlberg-ecai2023
- * Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
- */
+/// @brief `LiftedApplicableActionGenerator` implements lifted applicable action generation
+/// using maximum clique enumeration by Stahlberg (ECAI2023).
+/// Source: https://mrlab.ai/papers/stahlberg-ecai2023.pdf
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
@@ -84,7 +80,7 @@ public:
 
     void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
 
-    void generate_and_apply_axioms(const FlatBitsetBuilder<Fluent>& fluent_state_atoms, FlatBitsetBuilder<Derived>& ref_derived_state_atoms) override;
+    void generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms) override;
 
     void on_finish_search_layer() const override;
 

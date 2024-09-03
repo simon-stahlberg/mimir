@@ -25,14 +25,14 @@ namespace mimir
 class AxiomImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     VariableList m_parameters;
     Literal<Derived> m_literal;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
 
-    AxiomImpl(size_t index,
+    AxiomImpl(Index index,
               VariableList parameters,
               Literal<Derived> literal,
               LiteralList<Static> static_conditions,
@@ -52,7 +52,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const VariableList& get_parameters() const;
     const Literal<Derived>& get_literal() const;
     template<PredicateCategory P>

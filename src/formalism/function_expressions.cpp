@@ -26,7 +26,7 @@
 namespace mimir
 {
 /* FunctionExpressionNumber */
-FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(size_t index, double number) : m_index(index), m_number(number) {}
+FunctionExpressionNumberImpl::FunctionExpressionNumberImpl(Index index, double number) : m_index(index), m_number(number) {}
 
 std::string FunctionExpressionNumberImpl::str() const
 {
@@ -35,12 +35,12 @@ std::string FunctionExpressionNumberImpl::str() const
     return out.str();
 }
 
-size_t FunctionExpressionNumberImpl::get_index() const { return m_index; }
+Index FunctionExpressionNumberImpl::get_index() const { return m_index; }
 
 double FunctionExpressionNumberImpl::get_number() const { return m_number; }
 
 /* FunctionExpressionBinaryOperator */
-FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(size_t index,
+FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(Index index,
                                                                            loki::BinaryOperatorEnum binary_operator,
                                                                            FunctionExpression left_function_expression,
                                                                            FunctionExpression right_function_expression) :
@@ -58,7 +58,7 @@ std::string FunctionExpressionBinaryOperatorImpl::str() const
     return out.str();
 }
 
-size_t FunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
+Index FunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
 
 loki::BinaryOperatorEnum FunctionExpressionBinaryOperatorImpl::get_binary_operator() const { return m_binary_operator; }
 
@@ -67,7 +67,7 @@ const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_left_functio
 const FunctionExpression& FunctionExpressionBinaryOperatorImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 /* FunctionExpressionMultiOperator */
-FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(size_t index,
+FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(Index index,
                                                                          loki::MultiOperatorEnum multi_operator,
                                                                          FunctionExpressionList function_expressions) :
     m_index(index),
@@ -90,14 +90,14 @@ std::string FunctionExpressionMultiOperatorImpl::str() const
     return out.str();
 }
 
-size_t FunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
+Index FunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum FunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
 
 const FunctionExpressionList& FunctionExpressionMultiOperatorImpl::get_function_expressions() const { return m_function_expressions; }
 
 /* FunctionExpressionMinus */
-FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(size_t index, FunctionExpression function_expression) :
+FunctionExpressionMinusImpl::FunctionExpressionMinusImpl(Index index, FunctionExpression function_expression) :
     m_index(index),
     m_function_expression(std::move(function_expression))
 {
@@ -110,12 +110,12 @@ std::string FunctionExpressionMinusImpl::str() const
     return out.str();
 }
 
-size_t FunctionExpressionMinusImpl::get_index() const { return m_index; }
+Index FunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(size_t index, Function function) : m_index(index), m_function(std::move(function)) {}
+FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(Index index, Function function) : m_index(index), m_function(std::move(function)) {}
 
 std::string FunctionExpressionFunctionImpl::str() const
 {
@@ -124,7 +124,7 @@ std::string FunctionExpressionFunctionImpl::str() const
     return out.str();
 }
 
-size_t FunctionExpressionFunctionImpl::get_index() const { return m_index; }
+Index FunctionExpressionFunctionImpl::get_index() const { return m_index; }
 
 const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
 

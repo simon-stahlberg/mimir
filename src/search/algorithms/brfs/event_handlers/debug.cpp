@@ -66,9 +66,9 @@ void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Pro
 
 void DebugBrFSAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl; }
 
-void DebugBrFSAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan) const
+void DebugBrFSAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) const
 {
-    auto plan = to_plan(ground_action_plan);
+    auto plan = to_plan(ground_action_plan, pddl_factories);
     std::cout << "[BrFS] Plan found.\n"
               << "[BrFS] Plan cost: " << plan.get_cost() << "\n"
               << "[BrFS] Plan length: " << plan.get_actions().size() << std::endl;

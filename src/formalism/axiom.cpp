@@ -29,7 +29,7 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(size_t index,
+AxiomImpl::AxiomImpl(Index index,
                      VariableList parameters,
                      Literal<Derived> literal,
                      LiteralList<Static> static_conditions,
@@ -62,7 +62,7 @@ std::string AxiomImpl::str() const
     return out.str();
 }
 
-size_t AxiomImpl::get_index() const { return m_index; }
+Index AxiomImpl::get_index() const { return m_index; }
 
 const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 

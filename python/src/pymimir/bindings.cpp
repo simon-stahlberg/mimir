@@ -323,9 +323,9 @@ public:
      * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
      */
     void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
-    void on_solved_impl(const GroundActionList& ground_action_plan) override
+    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan);
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan, pddl_factories);
     }
     void on_unsolvable_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_unsolvable_impl, ); }
     void on_exhausted_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_exhausted_impl, ); }
@@ -1017,7 +1017,7 @@ void init_pymimir(py::module_& m)
     /* State */
     py::class_<State>(m, "State")  //
         .def("__hash__", [](const State& self) { return std::hash<State>()(self); })
-        .def("__eq__", &State::operator==)
+        .def("__eq__", [](const State& lhs, const State& rhs) { return lhs == rhs; })
         .def("__repr__",
              [](State self)
              {
@@ -1063,7 +1063,7 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<StateList>(m, "StateList");
     bind_const_span<std::span<const State>>(m, "StateSpan");
-    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "StateIndexGroupedVector");
+    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "IndexGroupedVector");
 
     /* Action */
     // TODO: add missing functions here
@@ -1075,19 +1075,6 @@ void init_pymimir(py::module_& m)
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", [](const GroundAction& obj) { return std::hash<GroundAction>()(obj); })
         .def("__eq__", [](const GroundAction& a, const GroundAction& b) { return std::equal_to<GroundAction>()(a, b); })
-        .def("__repr__",
-             [](GroundAction self)
-             {
-                 std::stringstream ss;
-                 ss << "(";
-                 ss << self.get_action()->get_name();
-                 for (const auto& object : self.get_objects())
-                 {
-                     ss << " " << object->get_name();
-                 }
-                 ss << ")";
-                 return ss.str();
-             })
         .def("to_string",
              [](GroundAction self, PDDLFactories& pddl_factories)
              {
@@ -1095,21 +1082,17 @@ void init_pymimir(py::module_& m)
                  ss << std::make_tuple(self, std::cref(pddl_factories));
                  return ss.str();
              })
+        .def("to_string_for_plan",
+             [](GroundAction self, PDDLFactories& pddl_factories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(std::cref(pddl_factories), self);
+                 return ss.str();
+             })
         .def("get_index", &GroundAction::get_index)
         .def("get_cost", &GroundAction::get_cost)
-        .def("get_action", &GroundAction::get_action, py::return_value_policy::reference_internal)
-        .def(
-            "get_objects",
-            [](GroundAction self)
-            {
-                ObjectList terms;
-                for (const auto& object : self.get_objects())
-                {
-                    terms.emplace_back(object);
-                }
-                return terms;
-            },
-            py::keep_alive<0, 1>())
+        .def("get_action_index", &GroundAction::get_action_index, py::return_value_policy::reference_internal)
+        .def("get_object_indices", &GroundAction::get_object_indices, py::return_value_policy::copy)
         .def("get_strips_precondition", [](const GroundAction& self) { return StripsActionPrecondition(self.get_strips_precondition()); })
         .def("get_strips_effect", [](const GroundAction& self) { return StripsActionEffect(self.get_strips_effect()); })
         .def("get_conditional_effects",
@@ -1311,44 +1294,6 @@ void init_pymimir(py::module_& m)
         .def("get_factors", &TupleIndexMapper::get_factors, py::return_value_policy::reference_internal)
         .def("get_max_tuple_index", &TupleIndexMapper::get_max_tuple_index)
         .def("get_empty_tuple_index", &TupleIndexMapper::get_empty_tuple_index);
-    py::class_<FluentAndDerivedMapper, std::shared_ptr<FluentAndDerivedMapper>>(m, "FluentAndDerivedMapper")  //
-        .def(
-            "combine_and_sort",
-
-            [](FluentAndDerivedMapper& self, const State state)
-            {
-                auto atom_indices = AtomIndexList {};
-                self.combine_and_sort(state, atom_indices);
-                return atom_indices;
-            },
-            py::arg("state"))
-        .def(
-            "combine_and_sort",
-
-            [](FluentAndDerivedMapper& self, const State state, const State succ_state)
-            {
-                auto atom_indices = AtomIndexList {};
-                auto add_atom_indices = AtomIndexList {};
-                self.combine_and_sort(state, succ_state, atom_indices, add_atom_indices);
-                return std::make_tuple(atom_indices, add_atom_indices);
-            },
-            py::arg("state"),
-            py::arg("successor_state"))
-        .def(
-            "inverse_remap_and_separate",
-
-            [](FluentAndDerivedMapper& self, const AtomIndexList& fluent_and_derived_atom_indices)
-            {
-                auto fluent_atom_indices = AtomIndexList {};
-                auto derived_atom_indices = AtomIndexList {};
-                self.inverse_remap_and_separate(fluent_and_derived_atom_indices, fluent_atom_indices, derived_atom_indices);
-                return std::make_tuple(fluent_atom_indices, derived_atom_indices);
-            },
-            py::arg("fluent_and_derived_atom_indices"))
-        .def("get_fluent_remap", &FluentAndDerivedMapper::get_fluent_remap, py::return_value_policy::reference_internal)
-        .def("get_derived_remap", &FluentAndDerivedMapper::get_derived_remap, py::return_value_policy::reference_internal)
-        .def("get_is_remapped_fluent", &FluentAndDerivedMapper::get_is_remapped_fluent, py::return_value_policy::reference_internal)
-        .def("get_inverse_remap", &FluentAndDerivedMapper::get_inverse_remap, py::return_value_policy::reference_internal);
 
     py::class_<IWAlgorithmStatistics>(m, "IWAlgorithmStatistics")  //
         .def("get_effective_width", &IWAlgorithmStatistics::get_effective_width)
@@ -1358,9 +1303,9 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      int,
+                      size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>>());
@@ -1376,9 +1321,9 @@ void init_pymimir(py::module_& m)
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      int,
+                      size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,
@@ -1388,44 +1333,44 @@ void init_pymimir(py::module_& m)
     // DataSets
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    // ConcreteState
-    py::class_<ConcreteState>(m, "ConcreteState")  //
-        .def("__eq__", &ConcreteState::operator==)
-        .def("__hash__", [](const ConcreteState& self) { return std::hash<ConcreteState>()(self); })
-        .def("get_index", &ConcreteState::get_index)
+    // StateVertex
+    py::class_<StateVertex>(m, "StateVertex")  //
+        .def("__eq__", &StateVertex::operator==)
+        .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
+        .def("get_index", &StateVertex::get_index)
         .def(
             "get_state",
-            [](const ConcreteState& self) { return get_state(self); },
+            [](const StateVertex& self) { return get_state(self); },
             py::keep_alive<0, 1>());
 
-    // ConcreteTransition
-    py::class_<ConcreteTransition>(m, "ConcreteTransition")  //
-        .def("__eq__", &ConcreteTransition::operator==)
-        .def("__hash__", [](const ConcreteTransition& self) { return std::hash<ConcreteTransition>()(self); })
-        .def("get_index", &ConcreteTransition::get_index)
-        .def("get_source", &ConcreteTransition::get_source)
-        .def("get_target", &ConcreteTransition::get_target)
-        .def("get_cost", [](const ConcreteTransition& self) { return get_cost(self); })
+    // GroundActionEdge
+    py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
+        .def("__eq__", &GroundActionEdge::operator==)
+        .def("__hash__", [](const GroundActionEdge& self) { return std::hash<GroundActionEdge>()(self); })
+        .def("get_index", &GroundActionEdge::get_index)
+        .def("get_source", &GroundActionEdge::get_source)
+        .def("get_target", &GroundActionEdge::get_target)
+        .def("get_cost", [](const GroundActionEdge& self) { return get_cost(self); })
         .def(
             "get_creating_action",
-            [](const ConcreteTransition& self) { return get_creating_action(self); },
+            [](const GroundActionEdge& self) { return get_creating_action(self); },
             py::keep_alive<0, 1>());
 
-    // AbstractTransition
-    py::class_<AbstractTransition>(m, "AbstractTransition")  //
-        .def("__eq__", &AbstractTransition::operator==)
-        .def("__hash__", [](const AbstractTransition& self) { return std::hash<AbstractTransition>()(self); })
-        .def("get_index", &AbstractTransition::get_index)
-        .def("get_source", &AbstractTransition::get_source)
-        .def("get_target", &AbstractTransition::get_target)
-        .def("get_cost", [](const AbstractTransition& self) { return get_cost(self); })
+    // GroundActionsEdge
+    py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
+        .def("__eq__", &GroundActionsEdge::operator==)
+        .def("__hash__", [](const GroundActionsEdge& self) { return std::hash<GroundActionsEdge>()(self); })
+        .def("get_index", &GroundActionsEdge::get_index)
+        .def("get_source", &GroundActionsEdge::get_source)
+        .def("get_target", &GroundActionsEdge::get_target)
+        .def("get_cost", [](const GroundActionsEdge& self) { return get_cost(self); })
         .def(
             "get_actions",
-            [](const AbstractTransition& self) { return GroundActionList(get_actions(self).begin(), get_actions(self).end()); },
+            [](const GroundActionsEdge& self) { return GroundActionList(get_actions(self).begin(), get_actions(self).end()); },
             py::keep_alive<0, 1>())
         .def(
             "get_representative_action",
-            [](const AbstractTransition& self) { return get_representative_action(self); },
+            [](const GroundActionsEdge& self) { return get_representative_action(self); },
             py::keep_alive<0, 1>());
 
     // StateSpace
@@ -1512,7 +1457,7 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_forward_adjacent_states",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1521,7 +1466,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_states",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1530,7 +1475,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_state_indices",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1539,7 +1484,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_state_indices",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1556,7 +1501,7 @@ void init_pymimir(py::module_& m)
         .def("get_transition_cost", &StateSpace::get_transition_cost, py::arg("transition_index"))
         .def(
             "get_forward_adjacent_transitions",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1565,7 +1510,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transitions",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1574,7 +1519,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_transition_indices",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1583,7 +1528,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transition_indices",
-            [](const StateSpace& self, StateIndex state)
+            [](const StateSpace& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1642,19 +1587,19 @@ void init_pymimir(py::module_& m)
         .def_readwrite("sort_ascending_by_num_states", &FaithfulAbstractionsOptions::sort_ascending_by_num_states)
         .def_readwrite("num_threads", &FaithfulAbstractionsOptions::num_threads);
 
-    py::class_<FaithfulAbstractState>(m, "FaithfulAbstractState")
-        .def("get_index", &FaithfulAbstractState::get_index)
+    py::class_<FaithfulAbstractStateVertex>(m, "FaithfulAbstractStateVertex")
+        .def("get_index", &FaithfulAbstractStateVertex::get_index)
         .def(
             "get_states",
-            [](const FaithfulAbstractState& self) { return std::vector<State>(get_states(self).begin(), get_states(self).end()); },
+            [](const FaithfulAbstractStateVertex& self) { return std::vector<State>(get_states(self).begin(), get_states(self).end()); },
             py::keep_alive<0, 1>())
         .def(
             "get_representative_state",
-            [](const FaithfulAbstractState& self) { return get_representative_state(self); },
+            [](const FaithfulAbstractStateVertex& self) { return get_representative_state(self); },
             py::keep_alive<0, 1>())
         .def(
             "get_certificate",
-            [](const FaithfulAbstractState& self) { return get_certificate(self); },
+            [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); },
             py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
@@ -1722,7 +1667,7 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_forward_adjacent_states",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1731,7 +1676,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_states",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1740,7 +1685,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_state_indices",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1749,7 +1694,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_state_indices",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1766,7 +1711,7 @@ void init_pymimir(py::module_& m)
         .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost, py::arg("transition_index"))
         .def(
             "get_forward_adjacent_transitions",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1775,7 +1720,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transitions",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1784,7 +1729,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_transition_indices",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1793,7 +1738,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transition_indices",
-            [](const FaithfulAbstraction& self, StateIndex state)
+            [](const FaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1854,9 +1799,7 @@ void init_pymimir(py::module_& m)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
         .def("get_abstract_state_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state"))
-        .def("get_abstract_state_index",
-             py::overload_cast<StateIndex>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_),
-             py::arg("state_index"))
+        .def("get_abstract_state_index", py::overload_cast<Index>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state_index"))
         .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_concrete_to_abstract_state", &GlobalFaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
         .def("get_global_state_index_to_state_index",
@@ -1867,7 +1810,7 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_forward_adjacent_states",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1876,7 +1819,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_states",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1885,7 +1828,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_state_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1894,7 +1837,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_state_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1913,7 +1856,7 @@ void init_pymimir(py::module_& m)
         .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
         .def(
             "get_forward_adjacent_transitions",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1922,7 +1865,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transitions",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1931,7 +1874,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1940,7 +1883,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, StateIndex state)
+            [](const GlobalFaithfulAbstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1964,7 +1907,7 @@ void init_pymimir(py::module_& m)
         .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_forward_adjacent_state_indices",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1973,7 +1916,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_state_indices",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1989,7 +1932,7 @@ void init_pymimir(py::module_& m)
         .def("get_transition_cost", &Abstraction::get_transition_cost, py::arg("transition_index"))
         .def(
             "get_forward_adjacent_transitions",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -1998,7 +1941,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transitions",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -2007,7 +1950,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_forward_adjacent_transition_indices",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -2016,7 +1959,7 @@ void init_pymimir(py::module_& m)
             py::arg("state_index"))
         .def(
             "get_backward_adjacent_transition_indices",
-            [](const Abstraction& self, StateIndex state)
+            [](const Abstraction& self, Index state)
             {
                 auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
@@ -2055,7 +1998,6 @@ void init_pymimir(py::module_& m)
         .def("compute_admissible_chain", py::overload_cast<const StateList&>(&TupleGraph::compute_admissible_chain))
         .def("get_state_space", &TupleGraph::get_state_space)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
-        .def("get_atom_index_mapper", &TupleGraph::get_atom_index_mapper)
         .def("get_root_state", &TupleGraph::get_root_state, py::keep_alive<0, 1>())
         .def("get_vertices_grouped_by_distance", &TupleGraph::get_vertices_grouped_by_distance, py::return_value_policy::reference_internal)
         .def("get_digraph", &TupleGraph::get_digraph, py::return_value_policy::reference_internal)
@@ -2066,7 +2008,6 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::shared_ptr<StateSpace>, int, bool>(), py::arg("state_space"), py::arg("arity"), py::arg("prune_dominated_tuples") = false)
         .def("create", &TupleGraphFactory::create)
         .def("get_state_space", &TupleGraphFactory::get_state_space)
-        .def("get_atom_index_mapper", &TupleGraphFactory::get_atom_index_mapper)
         .def("get_tuple_index_mapper", &TupleGraphFactory::get_tuple_index_mapper);
 
     // EmptyVertex (used in StaticDigraph)

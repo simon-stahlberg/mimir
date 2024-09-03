@@ -18,15 +18,15 @@
 #ifndef MIMIR_FORMALISM_PROBLEM_HPP_
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/flat_types.hpp"
 
 namespace mimir
 {
 class ProblemImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     std::optional<fs::path> m_filepath;
     Domain m_domain;
     std::string m_name;
@@ -34,7 +34,7 @@ private:
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
-    FlatBitsetBuilder<Static> m_static_initial_positive_atoms_builder;
+    FlatBitset m_static_initial_positive_atoms;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
     GroundLiteralList<Static> m_static_goal_condition;
@@ -47,7 +47,7 @@ private:
     bool m_static_goal_holds;
     PredicateList<Derived> m_problem_and_domain_derived_predicates;
 
-    ProblemImpl(size_t index,
+    ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
                 Domain domain,
                 std::string name,
@@ -76,7 +76,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const std::optional<fs::path>& get_filepath() const;
     const Domain& get_domain() const;
     const std::string& get_name() const;
@@ -85,8 +85,7 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
-    const FlatBitsetBuilder<Static> get_static_initial_positive_atoms() const;
-    FlatBitset<Static> get_static_initial_positive_atoms_bitset() const;
+    const FlatBitset& get_static_initial_positive_atoms() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     template<PredicateCategory P>

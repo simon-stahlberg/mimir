@@ -19,7 +19,7 @@
 
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
-#include "mimir/search/algorithms/iw/index_mappers.hpp"
+#include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -59,7 +59,8 @@ bool ProblemGoalCounter::test_dynamic_goal(const State state) { return count_uns
 
 /* SIW */
 
-SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity) :
+SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                                                     size_t max_arity) :
     SerializedIterativeWidthAlgorithm(applicable_action_generator,
                                       max_arity,
                                       std::make_shared<StateRepository>(applicable_action_generator),
@@ -70,7 +71,7 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
 }
 
 SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                                     int max_arity,
+                                                                     size_t max_arity,
                                                                      std::shared_ptr<StateRepository> successor_state_generator,
                                                                      std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                                      std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
@@ -81,13 +82,13 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
     m_brfs_event_handler(brfs_event_handler),
     m_iw_event_handler(iw_event_handler),
     m_siw_event_handler(siw_event_handler),
-    m_atom_index_mapper(std::make_shared<FluentAndDerivedMapper>()),
     m_initial_state(m_ssg->get_or_create_initial_state()),
     m_iw(applicable_action_generator, max_arity, successor_state_generator, brfs_event_handler, iw_event_handler)
 {
-    if (max_arity < 0)
+    if (max_arity >= MAX_ARITY)
     {
-        throw std::runtime_error("Arity must be greater of equal than 0.");
+        throw std::runtime_error("SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(...): max_arity (" + std::to_string(max_arity)
+                                 + ") cannot be greater than or equal to MAX_ARITY (" + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
 }
 
@@ -122,7 +123,7 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
 
         auto partial_plan = GroundActionList {};
 
-        auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state), partial_plan, goal_state);
+        const auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state), partial_plan, goal_state);
 
         if (search_status == SearchStatus::UNSOLVABLE)
         {
@@ -151,8 +152,10 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_aag->on_end_search();
     }
-    m_siw_event_handler->on_solved(out_plan);
+    m_siw_event_handler->on_solved(out_plan, *m_aag->get_pddl_factories());
     return SearchStatus::SOLVED;
 }
+
+const std::shared_ptr<PDDLFactories>& SerializedIterativeWidthAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
 
 }

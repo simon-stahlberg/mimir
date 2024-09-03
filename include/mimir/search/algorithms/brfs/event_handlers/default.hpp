@@ -50,7 +50,7 @@ private:
 
     void on_end_search_impl() const;
 
-    void on_solved_impl(const GroundActionList& ground_action_plan) const;
+    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) const;
 
     void on_unsolvable_impl() const;
 

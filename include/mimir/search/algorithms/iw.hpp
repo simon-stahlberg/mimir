@@ -28,11 +28,11 @@ class IterativeWidthAlgorithm : public IAlgorithm
 {
 public:
     /// @brief Simplest construction
-    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity);
+    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, size_t max_arity);
 
     /// @brief Complete construction
     IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                            int max_arity,
+                            size_t max_arity,
                             std::shared_ptr<StateRepository> successor_state_generator,
                             std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                             std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler);
@@ -46,15 +46,15 @@ public:
     SearchStatus
     find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, GroundActionList& out_plan, std::optional<State>& out_goal_state);
 
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
-    int m_max_arity;
+    size_t m_max_arity;
 
     std::shared_ptr<StateRepository> m_ssg;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-
-    std::shared_ptr<FluentAndDerivedMapper> m_atom_index_mapper;
 
     State m_initial_state;
     BrFSAlgorithm m_brfs;

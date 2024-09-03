@@ -27,13 +27,13 @@ template<PredicateCategory P>
 class LiteralImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     bool m_is_negated;
     Atom<P> m_atom;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    LiteralImpl(size_t index, bool is_negated, Atom<P> atom);
+    LiteralImpl(Index index, bool is_negated, Atom<P> atom);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -50,7 +50,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     bool is_negated() const;
     const Atom<P>& get_atom() const;
 };

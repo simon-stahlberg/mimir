@@ -18,10 +18,10 @@
 #ifndef MIMIR_GRAPHS_OBJECT_GRAPH_PRUNING_STRATEGY_HPP_
 #define MIMIR_GRAPHS_OBJECT_GRAPH_PRUNING_STRATEGY_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
-#include "mimir/search/flat_types.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -46,13 +46,13 @@ class ObjectGraphPruningStrategy
 public:
     virtual ~ObjectGraphPruningStrategy() = default;
 
-    virtual bool prune(StateIndex, Object) const { return false; };
-    virtual bool prune(StateIndex, GroundAtom<Static>) const { return false; };
-    virtual bool prune(StateIndex, GroundAtom<Fluent>) const { return false; };
-    virtual bool prune(StateIndex, GroundAtom<Derived>) const { return false; };
-    virtual bool prune(StateIndex, GroundLiteral<Static>) const { return false; }
-    virtual bool prune(StateIndex, GroundLiteral<Fluent>) const { return false; }
-    virtual bool prune(StateIndex, GroundLiteral<Derived>) const { return false; }
+    virtual bool prune(Index, Object) const { return false; };
+    virtual bool prune(Index, GroundAtom<Static>) const { return false; };
+    virtual bool prune(Index, GroundAtom<Fluent>) const { return false; };
+    virtual bool prune(Index, GroundAtom<Derived>) const { return false; };
+    virtual bool prune(Index, GroundLiteral<Static>) const { return false; }
+    virtual bool prune(Index, GroundLiteral<Fluent>) const { return false; }
+    virtual bool prune(Index, GroundLiteral<Derived>) const { return false; }
 };
 
 /// @brief `ObjectGraphStaticPruningStrategy` is a strategy for pruning
@@ -65,25 +65,25 @@ public:
     struct SccPruningComponent;
     ObjectGraphStaticSccPruningStrategy(size_t num_components, std::vector<SccPruningComponent> pruning_components, std::vector<size_t> component_map);
 
-    bool prune(StateIndex, Object object) const override;
-    bool prune(StateIndex, GroundAtom<Static> atom) const override;
-    bool prune(StateIndex, GroundAtom<Fluent> atom) const override;
-    bool prune(StateIndex, GroundAtom<Derived> atom) const override;
-    bool prune(StateIndex, GroundLiteral<Static> literal) const override;
-    bool prune(StateIndex, GroundLiteral<Fluent> literal) const override;
-    bool prune(StateIndex, GroundLiteral<Derived> literal) const override;
+    bool prune(Index, Object object) const override;
+    bool prune(Index, GroundAtom<Static> atom) const override;
+    bool prune(Index, GroundAtom<Fluent> atom) const override;
+    bool prune(Index, GroundAtom<Derived> atom) const override;
+    bool prune(Index, GroundLiteral<Static> literal) const override;
+    bool prune(Index, GroundLiteral<Fluent> literal) const override;
+    bool prune(Index, GroundLiteral<Derived> literal) const override;
 
     struct SccPruningComponent
     {
-        FlatBitsetBuilder<> m_pruned_objects;
-        FlatBitsetBuilder<Static> m_pruned_static_goal_literal;
-        FlatBitsetBuilder<Fluent> m_pruned_fluent_goal_literal;
-        FlatBitsetBuilder<Derived> m_pruned_derived_goal_literal;
+        FlatBitset m_pruned_objects;
+        FlatBitset m_pruned_static_goal_literal;
+        FlatBitset m_pruned_fluent_goal_literal;
+        FlatBitset m_pruned_derived_goal_literal;
 
         SccPruningComponent& operator&=(const SccPruningComponent& other);
 
         template<PredicateCategory P>
-        const FlatBitsetBuilder<P>& get_pruned_goal_literals() const;
+        const FlatBitset& get_pruned_goal_literals() const;
     };
 
     static std::optional<ObjectGraphStaticSccPruningStrategy> create(Problem problem,

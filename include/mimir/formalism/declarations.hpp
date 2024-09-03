@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_DECLARATIONS_HPP_
 
 // Do not include headers with transitive dependencies.
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/predicate_category.hpp"
 
 #include <loki/loki.hpp>

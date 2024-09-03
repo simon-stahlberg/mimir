@@ -19,8 +19,8 @@
 #define MIMIR_DATASETS_STATE_SPACE_HPP_
 
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/datasets/concrete_state.hpp"
-#include "mimir/datasets/concrete_transition.hpp"
+#include "mimir/datasets/ground_action_edge.hpp"
+#include "mimir/datasets/state_vertex.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/graphs/static_graph.hpp"
@@ -58,7 +58,7 @@ struct StateSpacesOptions
 
 /// @brief `StateSpace` encapsulates the complete dynamics of a PDDL problem.
 ///
-/// The underlying graph type is a `StaticBidirectionalGraph` over `ConcreteState` and `ConcreteTransition`.
+/// The underlying graph type is a `StaticBidirectionalGraph` over `StateVertex` and `GroundActionEdge`.
 /// The `StateSpace` stores additional external properties on vertices such as initial state, goal states, deadend states.
 /// The getters are simple adapters to follow the notion of states and transitions from the literature.
 ///
@@ -66,7 +66,7 @@ struct StateSpacesOptions
 class StateSpace
 {
 public:
-    using GraphType = StaticBidirectionalGraph<StaticGraph<ConcreteState, ConcreteTransition>>;
+    using GraphType = StaticBidirectionalGraph<StaticGraph<StateVertex, GroundActionEdge>>;
 
     using VertexIndexConstIteratorType = typename GraphType::VertexIndexConstIteratorType;
     using EdgeIndexConstIteratorType = typename GraphType::EdgeIndexConstIteratorType;
@@ -91,11 +91,11 @@ private:
                std::shared_ptr<IApplicableActionGenerator> aag,
                std::shared_ptr<StateRepository> ssg,
                GraphType graph,
-               StateMap<StateIndex> state_to_index,
-               StateIndex initial_state,
-               StateIndexSet goal_states,
-               StateIndexSet deadend_states,
-               DistanceList goal_distances);
+               StateMap<Index> state_to_index,
+               Index initial_state,
+               IndexSet goal_states,
+               IndexSet deadend_states,
+               ContinuousCostList goal_distances);
 
 public:
     /// @brief Try to create a `StateSpace` from the given input files with the given options.
@@ -137,13 +137,13 @@ public:
     /// @param states the list of states from which shortest distances are computed.
     /// @return the shortest distances from the given states to all other states.
     template<IsTraversalDirection Direction>
-    DistanceList compute_shortest_distances_from_states(const StateIndexList& states) const;
+    ContinuousCostList compute_shortest_distances_from_states(const IndexList& states) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    DistanceMatrix compute_pairwise_shortest_state_distances() const;
+    ContinuousCostMatrix compute_pairwise_shortest_state_distances() const;
 
     /**
      *  Getters
@@ -162,40 +162,40 @@ public:
     const GraphType& get_graph() const;
 
     /* States */
-    const ConcreteStateList& get_states() const;
-    const ConcreteState& get_state(StateIndex state) const;
+    const StateVertexList& get_states() const;
+    const StateVertex& get_state(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(StateIndex state) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(StateIndex state) const;
-    StateIndex get_state_index(State state) const;
-    StateIndex get_initial_state() const;
-    const StateIndexSet& get_goal_states() const;
-    const StateIndexSet& get_deadend_states() const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(Index state) const;
+    Index get_state_index(State state) const;
+    Index get_initial_state() const;
+    const IndexSet& get_goal_states() const;
+    const IndexSet& get_deadend_states() const;
     size_t get_num_states() const;
     size_t get_num_goal_states() const;
     size_t get_num_deadend_states() const;
-    bool is_goal_state(StateIndex state) const;
-    bool is_deadend_state(StateIndex state) const;
-    bool is_alive_state(StateIndex state) const;
+    bool is_goal_state(Index state) const;
+    bool is_deadend_state(Index state) const;
+    bool is_alive_state(Index state) const;
 
     /* Transitions */
-    const ConcreteTransitionList& get_transitions() const;
+    const GroundActionEdgeList& get_transitions() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(StateIndex state) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(Index state) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(StateIndex state) const;
-    TransitionCost get_transition_cost(TransitionIndex transition) const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(Index state) const;
+    ContinuousCost get_transition_cost(Index transition) const;
     size_t get_num_transitions() const;
 
     /* Distances */
-    const DistanceList& get_goal_distances() const;
-    Distance get_goal_distance(StateIndex state) const;
-    Distance get_max_goal_distance() const;
+    const ContinuousCostList& get_goal_distances() const;
+    ContinuousCost get_goal_distance(Index state) const;
+    ContinuousCost get_max_goal_distance() const;
 
     /* Additional */
-    const std::map<Distance, StateIndexList>& get_states_by_goal_distance() const;
-    StateIndex sample_state_with_goal_distance(Distance goal_distance) const;
+    const std::map<ContinuousCost, IndexList>& get_states_by_goal_distance() const;
+    Index sample_state_with_goal_distance(ContinuousCost goal_distance) const;
 
 private:
     /* Meta data */
@@ -209,16 +209,16 @@ private:
 
     /* States */
     GraphType m_graph;
-    StateMap<StateIndex> m_state_to_index;
-    StateIndex m_initial_state;
-    StateIndexSet m_goal_states;
-    StateIndexSet m_deadend_states;
+    StateMap<Index> m_state_to_index;
+    Index m_initial_state;
+    IndexSet m_goal_states;
+    IndexSet m_deadend_states;
 
     /* Distances */
-    DistanceList m_goal_distances;
+    ContinuousCostList m_goal_distances;
 
     /* Additional */
-    std::map<Distance, StateIndexList> m_states_by_goal_distance;
+    std::map<ContinuousCost, IndexList> m_states_by_goal_distance;
 };
 
 using StateSpaceList = std::vector<StateSpace>;

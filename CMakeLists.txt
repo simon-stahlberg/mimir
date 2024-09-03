@@ -101,17 +101,12 @@ find_package(ZLIB REQUIRED)
 configure_loki()
 find_package(loki ${LOKI_MIN_VERSION} COMPONENTS parsers REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 
-find_package(flatmemory REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
-if(flatmemory_FOUND)
-  include_directories(${flatmemory_INCLUDE_DIRS})
-  message(STATUS "Found flatmemory: ${flatmemory_DIR} (found version ${flatmemory_VERSION})")
-endif()
-
 find_package(Nauty REQUIRED)
 if(Nauty_FOUND)
   include_directories(${Nauty_INCLUDE_DIR})
   message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
 endif()
+
 
 ##############################################################
 # Add library and executable targets
@@ -155,7 +150,7 @@ endif()
 ###########
 
 # Install header files
-install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir"
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/mimir" "${PROJECT_SOURCE_DIR}/include/cista"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
 # Install cmake scripts

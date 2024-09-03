@@ -15,23 +15,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_CONCRETE_STATE_HPP_
-#define MIMIR_DATASETS_CONCRETE_STATE_HPP_
+#ifndef MIMIR_DATASETS_GROUND_ACTION_EDGE_HPP_
+#define MIMIR_DATASETS_GROUND_ACTION_EDGE_HPP_
 
-#include "mimir/graphs/graph_vertices.hpp"
+#include "mimir/datasets/declarations.hpp"
+#include "mimir/graphs/graph_edges.hpp"
+#include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
+
+#include <span>
+#include <vector>
 
 namespace mimir
 {
 
-struct ConcreteStateTag
+struct ConcreteTransitionTag
 {
 };
 
-using ConcreteState = Vertex<ConcreteStateTag, State>;
-using ConcreteStateList = std::vector<ConcreteState>;
+using GroundActionEdge = Edge<ConcreteTransitionTag, GroundAction>;
+using GroundActionEdgeList = std::vector<GroundActionEdge>;
 
-inline State get_state(const ConcreteState& concrete_state) { return concrete_state.get_property<0>(); }
+inline GroundAction get_creating_action(const GroundActionEdge& edge) { return edge.get_property<0>(); }
+
+inline ContinuousCost get_cost(const GroundActionEdge& edge) { return get_creating_action(edge).get_cost(); }
 
 }
 

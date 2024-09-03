@@ -20,14 +20,14 @@
 namespace mimir
 {
 
-Plan to_plan(const GroundActionList& action_view_list)
+Plan to_plan(const GroundActionList& action_view_list, const PDDLFactories& factories)
 {
     std::vector<std::string> actions;
     auto cost = 0;
     for (const auto action : action_view_list)
     {
         std::stringstream ss;
-        ss << action;
+        ss << std::make_tuple(std::cref(factories), action);
         actions.push_back(ss.str());
         cost += action.get_cost();
     }

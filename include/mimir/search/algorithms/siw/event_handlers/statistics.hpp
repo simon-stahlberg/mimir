@@ -98,7 +98,7 @@ public:
                                [](int sum, const auto& item) { return sum + item.get_brfs_statistics_by_arity().back().get_num_pruned(); });
     }
 
-    int get_num_generated_until_last_f_layer() const
+    int get_num_generated_until_last_g_layer() const
     {
         return std::accumulate(m_iw_algorithm_statistics_by_subproblem.begin(),
                                m_iw_algorithm_statistics_by_subproblem.end(),
@@ -112,7 +112,7 @@ public:
                                });
     }
 
-    int get_num_expanded_until_last_f_layer() const
+    int get_num_expanded_until_last_g_layer() const
     {
         return std::accumulate(m_iw_algorithm_statistics_by_subproblem.begin(),
                                m_iw_algorithm_statistics_by_subproblem.end(),
@@ -126,7 +126,7 @@ public:
                                });
     }
 
-    int get_num_pruned_until_last_f_layer() const
+    int get_num_pruned_until_last_g_layer() const
     {
         return std::accumulate(m_iw_algorithm_statistics_by_subproblem.begin(),
                                m_iw_algorithm_statistics_by_subproblem.end(),
@@ -161,9 +161,9 @@ inline std::ostream& operator<<(std::ostream& os, const SIWAlgorithmStatistics& 
        << "[SIW] Number of generated states: " << statistics.get_num_generated() << "\n"
        << "[SIW] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[SIW] Number of pruned states: " << statistics.get_num_pruned() << "\n"
-       << "[SIW] Number of generated states until last f-layer: " << statistics.get_num_generated_until_last_f_layer() << "\n"
-       << "[SIW] Number of expanded states until last f-layer: " << statistics.get_num_expanded_until_last_f_layer() << "\n"
-       << "[SIW] Number of pruned states until last f-layer: " << statistics.get_num_pruned_until_last_f_layer();
+       << "[SIW] Number of generated states until last f-layer: " << statistics.get_num_generated_until_last_g_layer() << "\n"
+       << "[SIW] Number of expanded states until last f-layer: " << statistics.get_num_expanded_until_last_g_layer() << "\n"
+       << "[SIW] Number of pruned states until last f-layer: " << statistics.get_num_pruned_until_last_g_layer();
 
     return os;
 }

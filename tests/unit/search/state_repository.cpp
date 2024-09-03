@@ -35,6 +35,20 @@ TEST(MimirTests, SearchStateRepositoryTest)
     auto lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_factories());
     auto ssg = StateRepository(lifted_aag);
     auto initial_state = ssg.get_or_create_initial_state();
+    auto applicable_actions = GroundActionList {};
+    lifted_aag->generate_applicable_actions(initial_state, applicable_actions);
+
+    for (const auto& action : applicable_actions)
+    {
+        const auto successor_state = ssg.get_or_create_successor_state(initial_state, action);
+
+        auto applicable_actions2 = GroundActionList {};
+        lifted_aag->generate_applicable_actions(successor_state, applicable_actions2);
+        for (const auto& action2 : applicable_actions2)
+        {
+            [[maybe_unused]] const auto successor_state2 = ssg.get_or_create_successor_state(successor_state, action2);
+        }
+    }
 }
 
 }

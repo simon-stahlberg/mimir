@@ -69,7 +69,7 @@ class CustomAStarAlgorithmEventHandler(AStarAlgorithmEventHandlerBase):
     def on_end_search_impl(self):
         pass
 
-    def on_solved_impl(self, ground_action_plan: List[GroundAction]):
+    def on_solved_impl(self, ground_action_plan: List[GroundAction], pddl_factories: PDDLFactories):
         pass
 
     def on_unsolvable_impl(self):

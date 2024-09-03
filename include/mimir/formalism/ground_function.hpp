@@ -25,11 +25,11 @@ namespace mimir
 class GroundFunctionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     FunctionSkeleton m_function_skeleton;
     ObjectList m_objects;
 
-    GroundFunctionImpl(size_t index, FunctionSkeleton function_skeleton, ObjectList objects);
+    GroundFunctionImpl(Index index, FunctionSkeleton function_skeleton, ObjectList objects);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -44,7 +44,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;
 };

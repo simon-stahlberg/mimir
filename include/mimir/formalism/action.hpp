@@ -25,7 +25,7 @@ namespace mimir
 class ActionImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     std::string m_name;
     size_t m_original_arity;
     VariableList m_parameters;
@@ -42,7 +42,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ActionImpl(size_t index,
+    ActionImpl(Index index,
                std::string name,
                size_t original_arity,
                VariableList parameters,
@@ -67,7 +67,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;

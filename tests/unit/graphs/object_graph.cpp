@@ -100,13 +100,13 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     class PruneAllObjects : public ObjectGraphPruningStrategy
     {
     public:
-        bool prune(StateIndex, Object) const override { return true; };
-        bool prune(StateIndex, GroundAtom<Static>) const override { return true; };
-        bool prune(StateIndex, GroundAtom<Fluent>) const override { return true; };
-        bool prune(StateIndex, GroundAtom<Derived>) const override { return true; };
-        bool prune(StateIndex, GroundLiteral<Static>) const override { return true; }
-        bool prune(StateIndex, GroundLiteral<Fluent>) const override { return true; }
-        bool prune(StateIndex, GroundLiteral<Derived>) const override { return true; }
+        bool prune(Index, Object) const override { return true; };
+        bool prune(Index, GroundAtom<Static>) const override { return true; };
+        bool prune(Index, GroundAtom<Fluent>) const override { return true; };
+        bool prune(Index, GroundAtom<Derived>) const override { return true; };
+        bool prune(Index, GroundLiteral<Static>) const override { return true; }
+        bool prune(Index, GroundLiteral<Fluent>) const override { return true; }
+        bool prune(Index, GroundLiteral<Derived>) const override { return true; }
     };
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());

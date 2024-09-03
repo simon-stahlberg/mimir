@@ -107,7 +107,6 @@ from _pymimir import (
     DefaultLiftedApplicableActionGeneratorEventHandler,
     DefaultSIWAlgorithmEventHandler,
     FlatSimpleEffect,
-    FluentAndDerivedMapper,
     GroundAction,
     GroundActionList,
     GroundActionSpan,
@@ -132,7 +131,7 @@ from _pymimir import (
     StateList,
     StateRepository,
     StateSpan,
-    StateIndexGroupedVector,
+    IndexGroupedVector,
     StripsActionEffect,
     StripsActionPrecondition,
     TupleIndexMapper
@@ -141,13 +140,13 @@ from _pymimir import (
 # Dataset
 from _pymimir import (
     Abstraction,
-    AbstractTransition,
-    ConcreteState,
-    ConcreteTransition,
-    FaithfulAbstractState,
+    StateVertex,
+    GroundActionEdge,
+    GroundActionsEdge,
     FaithfulAbstraction,
     FaithfulAbstractionOptions,
     FaithfulAbstractionsOptions,
+    FaithfulAbstractStateVertex,
     GlobalFaithfulAbstractState,
     GlobalFaithfulAbstraction,
     StateSpace,
@@ -182,3 +181,6 @@ from _pymimir import (
     compute_sorted_vertex_colors,
     create_object_graph
 )
+
+from .hints import *
+

@@ -15,31 +15,25 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
-#define MIMIR_DATASETS_CONCRETE_TRANSITION_HPP_
+#ifndef MIMIR_COMMON_TYPES_HPP_
+#define MIMIR_COMMON_TYPES_HPP_
 
-#include "mimir/datasets/declarations.hpp"
-#include "mimir/graphs/graph_edges.hpp"
-#include "mimir/search/action.hpp"
-#include "mimir/search/state.hpp"
-
-#include <span>
+#include <cstdint>
+#include <unordered_set>
 #include <vector>
 
 namespace mimir
 {
+using Index = uint32_t;
+using IndexList = std::vector<Index>;
+using IndexSet = std::unordered_set<Index>;
 
-struct ConcreteTransitionTag
-{
-};
-
-using ConcreteTransition = Edge<ConcreteTransitionTag, GroundAction>;
-using ConcreteTransitionList = std::vector<ConcreteTransition>;
-
-inline GroundAction get_creating_action(const ConcreteTransition& concrete_transition) { return concrete_transition.get_property<0>(); }
-
-inline TransitionCost get_cost(const ConcreteTransition& concrete_transition) { return get_creating_action(concrete_transition).get_cost(); }
-
+using ContinuousCost = double;
+using ContinuousCostList = std::vector<ContinuousCost>;
+using ContinuousCostMatrix = std::vector<ContinuousCostList>;
+using DiscreteCost = int32_t;
+using DiscreteCostList = std::vector<DiscreteCost>;
+using DiscreteCostMatrix = std::vector<ContinuousCostList>;
 }
 
 #endif

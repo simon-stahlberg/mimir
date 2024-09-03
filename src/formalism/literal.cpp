@@ -24,7 +24,7 @@ namespace mimir
 {
 
 template<PredicateCategory P>
-LiteralImpl<P>::LiteralImpl(size_t index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
+LiteralImpl<P>::LiteralImpl(Index index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
 }
 
@@ -37,7 +37,7 @@ std::string LiteralImpl<P>::str() const
 }
 
 template<PredicateCategory P>
-size_t LiteralImpl<P>::get_index() const
+Index LiteralImpl<P>::get_index() const
 {
     return m_index;
 }

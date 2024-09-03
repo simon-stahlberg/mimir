@@ -305,6 +305,12 @@ public:
     template<std::ranges::forward_range Iterable>
     ObjectList get_objects_from_indices(const Iterable& object_ids) const;
 
+    // Action
+    Action get_action(size_t action_index) const;
+
+    // Axiom
+    Axiom get_axiom(size_t axiom_index) const;
+
     /* Grounding */
 
     void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms);
@@ -314,14 +320,14 @@ public:
 
     template<PredicateCategory P>
     void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
-                                FlatBitsetBuilder<P>& ref_positive_bitset,
-                                FlatBitsetBuilder<P>& ref_negative_bitset,
+                                FlatBitset& ref_positive_bitset,
+                                FlatBitset& ref_negative_bitset,
                                 const ObjectList& binding);
 
     template<PredicateCategory P>
     void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
-                                FlatIndexListBuilder& ref_positive_indices,
-                                FlatIndexListBuilder& ref_negative_indices,
+                                FlatIndexList& ref_positive_indices,
+                                FlatIndexList& ref_negative_indices,
                                 const ObjectList& binding);
 };
 

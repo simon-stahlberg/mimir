@@ -26,12 +26,12 @@ namespace mimir
 class TermObjectImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     Object m_object;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    TermObjectImpl(size_t index, Object object);
+    TermObjectImpl(Index index, Object object);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -46,17 +46,17 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const Object& get_object() const;
 };
 
 class TermVariableImpl
 {
 private:
-    size_t m_index;
+    Index m_index;
     Variable m_variable;
 
-    TermVariableImpl(size_t index, Variable variable);
+    TermVariableImpl(Index index, Variable variable);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -71,7 +71,7 @@ public:
 
     std::string str() const;
 
-    size_t get_index() const;
+    Index get_index() const;
     const Variable& get_variable() const;
 };
 
