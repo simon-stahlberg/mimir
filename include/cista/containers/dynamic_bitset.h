@@ -317,7 +317,7 @@ struct basic_dynamic_bitset
         return result;
     }
 
-    constexpr basic_dynamic_bitset operator|=(const basic_dynamic_bitset& other)
+    constexpr basic_dynamic_bitset& operator|=(const basic_dynamic_bitset& other)
     {
         // Update default bit value
         default_bit_value_ |= other.default_bit_value_;
@@ -348,7 +348,7 @@ struct basic_dynamic_bitset
         return result;
     }
 
-    constexpr basic_dynamic_bitset operator&=(const basic_dynamic_bitset& other)
+    constexpr basic_dynamic_bitset& operator&=(const basic_dynamic_bitset& other)
     {
         // Update default bit value
         default_bit_value_ &= other.default_bit_value_;
