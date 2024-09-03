@@ -18,6 +18,7 @@ Mimir supports the following PDDL requirements in the grounded and lifting setti
 - [x] :adl
 - [x] :derived-predicates
 - [x] :action-costs
+- [x] :non-deterministic
 
 ## 2. Getting Started (Python)
 

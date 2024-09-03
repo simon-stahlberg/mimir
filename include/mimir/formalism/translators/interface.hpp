@@ -74,6 +74,7 @@ public:
     void prepare(const loki::EffectNumericImpl& effect) { self().prepare_base(effect); }
     void prepare(const loki::EffectConditionalForallImpl& effect) { self().prepare_base(effect); }
     void prepare(const loki::EffectConditionalWhenImpl& effect) { self().prepare_base(effect); }
+    void prepare(const loki::EffectOneofImpl& effect) { self().prepare_base(effect); }
     void prepare(const loki::EffectImpl& effect) { self().prepare_base(effect); }
     void prepare(const loki::FunctionExpressionNumberImpl& function_expression) { self().prepare_base(function_expression); }
     void prepare(const loki::FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_base(function_expression); }
@@ -123,6 +124,7 @@ public:
     loki::Effect translate(const loki::EffectNumericImpl& effect) { return self().translate_base(effect); }
     loki::Effect translate(const loki::EffectConditionalForallImpl& effect) { return self().translate_base(effect); }
     loki::Effect translate(const loki::EffectConditionalWhenImpl& effect) { return self().translate_base(effect); }
+    loki::Effect translate(const loki::EffectOneofImpl& effect) { return self().translate_base(effect); }
     loki::Effect translate(const loki::EffectImpl& effect) { return self().translate_base(effect); }
     loki::FunctionExpression translate(const loki::FunctionExpressionNumberImpl& function_expression) { return self().translate_base(function_expression); }
     loki::FunctionExpression translate(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
