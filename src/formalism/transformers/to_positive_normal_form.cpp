@@ -62,16 +62,7 @@ void ToPositiveNormalFormTransformer::prepare_impl(const LiteralImpl<Derived>& l
     BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>::prepare_impl(literal);
 }
 
-void ToPositiveNormalFormTransformer::prepare_impl(const EffectConditionalImpl& effect)
-{
-    collect_negative_conditions(effect.get_conditions<Static>(), m_negative_static_conditions);
-    collect_negative_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_conditions);
-    collect_negative_conditions(effect.get_conditions<Derived>(), m_negative_derived_conditions);
-
-    BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>::prepare_impl(effect);
-}
-
-void ToPositiveNormalFormTransformer::prepare_impl(const EffectUniversalImpl& effect)
+void ToPositiveNormalFormTransformer::prepare_impl(const EffectComplexImpl& effect)
 {
     collect_negative_conditions(effect.get_conditions<Static>(), m_negative_static_conditions);
     collect_negative_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_conditions);
@@ -93,7 +84,7 @@ void ToPositiveNormalFormTransformer::prepare_impl(const ActionImpl& action)
  * Transform step
  */
 
-EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectConditionalImpl& effect)
+EffectComplex ToPositiveNormalFormTransformer::transform_impl(const EffectComplexImpl& effect)
 {
     auto transformed_static_conditions = LiteralList<Static>();
     auto transformed_fluent_conditions = LiteralList<Fluent>();
@@ -106,30 +97,11 @@ EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectCo
                          transformed_derived_conditions,
                          transformed_derived_conditions);
 
-    return this->m_pddl_factories.get_or_create_conditional_effect(transformed_static_conditions,
-                                                                   transformed_fluent_conditions,
-                                                                   transformed_derived_conditions,
-                                                                   this->transform(*effect.get_effect()));
-}
-
-EffectUniversal ToPositiveNormalFormTransformer::transform_impl(const EffectUniversalImpl& effect)
-{
-    auto transformed_static_conditions = LiteralList<Static>();
-    auto transformed_fluent_conditions = LiteralList<Fluent>();
-    auto transformed_derived_conditions = LiteralList<Derived>();
-
-    transform_conditions(effect.get_conditions<Static>(), m_negative_static_transformed_duals, transformed_static_conditions, transformed_derived_conditions);
-    transform_conditions(effect.get_conditions<Fluent>(), m_negative_fluent_transformed_duals, transformed_fluent_conditions, transformed_derived_conditions);
-    transform_conditions(effect.get_conditions<Derived>(),
-                         m_negative_derived_transformed_duals,
-                         transformed_derived_conditions,
-                         transformed_derived_conditions);
-
-    return this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
-                                                                 transformed_static_conditions,
-                                                                 transformed_fluent_conditions,
-                                                                 transformed_derived_conditions,
-                                                                 this->transform(*effect.get_effect()));
+    return this->m_pddl_factories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
+                                                               transformed_static_conditions,
+                                                               transformed_fluent_conditions,
+                                                               transformed_derived_conditions,
+                                                               this->transform(*effect.get_effect()));
 }
 
 Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
@@ -152,8 +124,7 @@ Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
                                                        transformed_fluent_conditions,
                                                        transformed_derived_conditions,
                                                        this->transform(action.get_simple_effects()),
-                                                       this->transform(action.get_conditional_effects()),
-                                                       this->transform(action.get_universal_effects()),
+                                                       this->transform(action.get_complex_effects()),
                                                        this->transform(*action.get_function_expression()));
 }
 

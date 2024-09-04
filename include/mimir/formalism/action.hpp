@@ -33,8 +33,7 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     EffectSimpleList m_simple_effects;
-    EffectConditionalList m_conditional_effects;
-    EffectUniversalList m_universal_effects;
+    EffectComplexList m_complex_effects;
     // More expressive than the definition of action costs:
     // We allow arithmetic functions of ground functions
     // and not just a single ground function (<numeric-term>).
@@ -50,8 +49,7 @@ private:
                LiteralList<Fluent> fluent_conditions,
                LiteralList<Derived> derived_conditions,
                EffectSimpleList simple_effects,
-               EffectConditionalList conditional_effects,
-               EffectUniversalList universal_effects,
+               EffectComplexList complex_effects,
                FunctionExpression function_expression);
 
     // Give access to the constructor.
@@ -74,8 +72,7 @@ public:
     template<PredicateCategory P>
     const LiteralList<P>& get_conditions() const;
     const EffectSimpleList& get_simple_effects() const;
-    const EffectConditionalList& get_conditional_effects() const;
-    const EffectUniversalList& get_universal_effects() const;
+    const EffectComplexList& get_complex_effects() const;
     const FunctionExpression& get_function_expression() const;
 
     size_t get_arity() const;

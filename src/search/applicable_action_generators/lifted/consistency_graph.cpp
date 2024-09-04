@@ -90,20 +90,20 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 Graphs::Graphs(Problem problem, Action action, const AssignmentSet<Static>& static_assignment_set) :
     m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_conditions<Static>(), static_assignment_set))
 {
-    m_universal_effects.reserve(action->get_universal_effects().size());
-    for (const auto& universal_effect : action->get_universal_effects())
+    m_complex_effects.reserve(action->get_complex_effects().size());
+    for (const auto& complex_effect : action->get_complex_effects())
     {
-        m_universal_effects.push_back(StaticConsistencyGraph(problem,
-                                                             action->get_arity(),
-                                                             action->get_arity() + universal_effect->get_arity(),
-                                                             universal_effect->get_conditions<Static>(),
-                                                             static_assignment_set));
+        m_complex_effects.push_back(StaticConsistencyGraph(problem,
+                                                           action->get_arity(),
+                                                           action->get_arity() + complex_effect->get_arity(),
+                                                           complex_effect->get_conditions<Static>(),
+                                                           static_assignment_set));
     }
 }
 
 const StaticConsistencyGraph& Graphs::get_precondition_graph() const { return m_precondition; }
 
-const std::vector<StaticConsistencyGraph>& Graphs::get_universal_effect_graphs() const { return m_universal_effects; }
+const std::vector<StaticConsistencyGraph>& Graphs::get_complex_effect_graphs() const { return m_complex_effects; }
 
 std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGraph&, const PDDLFactories&> data)
 {

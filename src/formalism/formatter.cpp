@@ -70,7 +70,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << std::string(m_indent, ' ') << ":effects ";
-    if (element.get_simple_effects().empty() && element.get_conditional_effects().empty() && element.get_universal_effects().empty())
+    if (element.get_simple_effects().empty() && element.get_complex_effects().empty())
     {
         out << "()\n";
     }
@@ -82,12 +82,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
             out << " ";
             write(*effect, out);
         }
-        for (const auto& effect : element.get_conditional_effects())
-        {
-            out << " ";
-            write(*effect, out);
-        }
-        for (const auto& effect : element.get_universal_effects())
+        for (const auto& effect : element.get_complex_effects())
         {
             out << " ";
             write(*effect, out);
@@ -228,43 +223,21 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
 
 void PDDLFormatter::write(const EffectSimpleImpl& element, std::ostream& out) { write(*element.get_effect(), out); }
 
-void PDDLFormatter::write(const EffectConditionalImpl& element, std::ostream& out)
+void PDDLFormatter::write(const EffectComplexImpl& element, std::ostream& out)
 {
-    out << "(when (and";
-    for (const auto& condition : element.get_conditions<Static>())
+    if (!element.get_parameters().empty())
     {
-        out << " ";
-        write(*condition, out);
-    }
-    for (const auto& condition : element.get_conditions<Fluent>())
-    {
-        out << " ";
-        write(*condition, out);
-    }
-    for (const auto& condition : element.get_conditions<Derived>())
-    {
-        out << " ";
-        write(*condition, out);
-    }
-    out << " ) ";  // end and
-
-    write(*element.get_effect(), out);
-
-    out << ")";  // end when
-}
-
-void PDDLFormatter::write(const EffectUniversalImpl& element, std::ostream& out)
-{
-    out << "(forall (";
-    for (size_t i = 0; i < element.get_parameters().size(); ++i)
-    {
-        if (i != 0)
+        out << "(forall (";
+        for (size_t i = 0; i < element.get_parameters().size(); ++i)
         {
-            out << " ";
+            if (i != 0)
+            {
+                out << " ";
+            }
+            write(*element.get_parameters()[i], out);
         }
-        write(*element.get_parameters()[i], out);
+        out << ") ";  // end quantifiers
     }
-    out << ") ";  // end quantifiers
 
     if (!(element.get_conditions<Static>().empty() && element.get_conditions<Fluent>().empty() && element.get_conditions<Derived>().empty()))
     {
@@ -295,7 +268,10 @@ void PDDLFormatter::write(const EffectUniversalImpl& element, std::ostream& out)
         out << ")";  // end when
     }
 
-    out << ")";  // end forall
+    if (!element.get_parameters().empty())
+    {
+        out << ")";  // end forall
+    }
 }
 
 void PDDLFormatter::write(const FunctionExpressionNumberImpl& element, std::ostream& out) { out << element.get_number(); }

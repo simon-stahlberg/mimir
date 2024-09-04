@@ -49,8 +49,7 @@ size_t UniquePDDLHasher<const ActionImpl*>::operator()(const ActionImpl* e) cons
                                     e->get_conditions<Fluent>(),
                                     e->get_conditions<Derived>(),
                                     e->get_simple_effects(),
-                                    e->get_conditional_effects(),
-                                    e->get_universal_effects(),
+                                    e->get_complex_effects(),
                                     e->get_function_expression());
 }
 
@@ -88,12 +87,7 @@ size_t UniquePDDLHasher<const DomainImpl*>::operator()(const DomainImpl* e) cons
 
 size_t UniquePDDLHasher<const EffectSimpleImpl*>::operator()(const EffectSimpleImpl* e) const { return UniquePDDLHashCombiner()(e->get_effect()); }
 
-size_t UniquePDDLHasher<const EffectConditionalImpl*>::operator()(const EffectConditionalImpl* e) const
-{
-    return UniquePDDLHashCombiner()(e->get_effect(), e->get_conditions<Static>(), e->get_conditions<Fluent>(), e->get_conditions<Derived>());
-}
-
-size_t UniquePDDLHasher<const EffectUniversalImpl*>::operator()(const EffectUniversalImpl* e) const
+size_t UniquePDDLHasher<const EffectComplexImpl*>::operator()(const EffectComplexImpl* e) const
 {
     return UniquePDDLHashCombiner()(e->get_effect(),
                                     e->get_parameters(),
