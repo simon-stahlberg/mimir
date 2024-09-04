@@ -661,7 +661,7 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<FunctionExpressionVariantList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<FunctionExpressionVariantList>(m, "FunctionExpressionVariantList");
 
-    py::class_<EffectComplexImpl>(m, "EffectUniversal")  //
+    py::class_<EffectComplexImpl>(m, "EffectComplex")  //
         .def("__str__", &EffectComplexImpl::str)
         .def("__repr__", &EffectComplexImpl::str)
         .def("get_index", &EffectComplexImpl::get_index)
