@@ -52,7 +52,7 @@ See [examples](docs/EXAMPLES_PYTHON.md) on how to use the Python library.
 
 ## Getting Started (C++)
 
-See [build](docs/BUILD.md) for how to compile Mimir, and [examples](docs/EXAMPLES_PYTHON.md) for how to use the C++ library.
+See [build](docs/BUILD.md) for how to compile Mimir, and [examples](docs/EXAMPLES_CPP.md) for how to use the C++ library.
 
 ## Getting Involved
 
