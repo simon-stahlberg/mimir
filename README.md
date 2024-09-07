@@ -50,6 +50,11 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   The library implements a lifted successor generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516).
   This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
 
+- **Grounded Successor Generator:**
+  Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
+  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR, 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states.
+  While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
+
 - **State Representation:**
   States are represented using a bitset that encodes the truth values of ground atoms.
   While modern grounded planners often use Finite Domain Representation (FDR/SAS+), this approach is challenging to adopt in a lifted setting.
