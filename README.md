@@ -40,6 +40,21 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   Mimir can also be included as a library in C++ projects, which is recommended for optimal performance.
   While this library is optimized, it is designed with readability and ease of use in mind, some planners may outperform it in terms of raw state expansion speed and memory usage.
 
+## Technical Overview
+
+- **PDDL Parser:**
+  Mimir uses the [Loki](https://github.com/drexlerd/Loki) parser for handling PDDL files.
+  Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input.
+
+- **Lifted Successor Generator:**
+  The library implements a lifted successor generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516).
+  This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
+
+- **State Representation:**
+  States are represented using a bitset that encodes the truth values of ground atoms.
+  While modern grounded planners often use Finite Domain Representation (FDR/SAS+), this approach is challenging to adopt in a lifted setting.
+  Given that both grounded and lifted settings are supported by the library, the bitset representation ensures consistency across both approaches.
+
 ## Getting Started (Python)
 
 Mimir is available on [pypi](https://pypi.org/project/pymimir/).
@@ -53,21 +68,6 @@ See [examples](docs/EXAMPLES_PYTHON.md) on how to use the Python library.
 ## Getting Started (C++)
 
 See [build](docs/BUILD.md) for how to compile Mimir, and [examples](docs/EXAMPLES_CPP.md) for how to use the C++ library.
-
-## Technical Overview
-
-- **PDDL Parser:**
-  Mimir uses the [Loki](https://github.com/drexlerd/Loki) parser for handling PDDL files.
-  Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input.
-
-- **Lifted Successor Generator:**
-  The library implements a lifted successor generator based on the method presented in the paper *"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023).
-  This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
-
-- **State Representation:**
-  States are represented using a bitset that encodes the truth values of ground atoms.
-  While modern grounded planners often use Finite Domain Representation (FDR/SAS+), this approach is challenging to adopt in a lifted setting.
-  Given that both grounded and lifted settings are supported by the library, the bitset representation ensures consistency across both approaches.
 
 ## Getting Involved
 
