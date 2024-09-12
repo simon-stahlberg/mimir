@@ -58,26 +58,20 @@ TupleGraph::TupleGraph(std::shared_ptr<StateSpace> state_space,
 {
 }
 
-std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms,
-                                                                         const GroundAtomList<Derived>& derived_atoms)
+std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms)
 {
     // Find all states that satisfy the given set of atoms, then call more general function.
     auto states = StateList {};
     auto fluent_atom_bitset = FlatBitset();
-    auto derived_atom_bitset = FlatBitset();
     for (const auto& atom : fluent_atoms)
     {
         fluent_atom_bitset.set(atom->get_index());
-    }
-    for (const auto& atom : derived_atoms)
-    {
-        derived_atom_bitset.set(atom->get_index());
     }
     for (const auto group : m_states_grouped_by_distance)
     {
         for (const auto& state : group)
         {
-            if (state.get_atoms<Fluent>().is_superseteq(fluent_atom_bitset) && state.get_atoms<Derived>().is_superseteq(derived_atom_bitset))
+            if (state.get_atoms<Fluent>().is_superseteq(fluent_atom_bitset))
             {
                 states.push_back(state);
             }

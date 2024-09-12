@@ -146,10 +146,10 @@ TEST(MimirTests, GraphsTupleGraphAdmissibleChainTest)
     auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<Fluent>());
     // We skip constructing derived goal atoms because there are none in visitall.
 
-    EXPECT_EQ(tuple_graph_0.compute_admissible_chain(fluent_goal_atoms, {}), std::nullopt);
-    EXPECT_EQ(tuple_graph_1.compute_admissible_chain(fluent_goal_atoms, {}), std::nullopt);
-    EXPECT_EQ(tuple_graph_2.compute_admissible_chain(fluent_goal_atoms, {}), std::nullopt);
-    EXPECT_NE(tuple_graph_3.compute_admissible_chain(fluent_goal_atoms, {}), std::nullopt);
+    EXPECT_EQ(tuple_graph_0.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
+    EXPECT_EQ(tuple_graph_1.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
+    EXPECT_EQ(tuple_graph_2.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
+    EXPECT_NE(tuple_graph_3.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
 }
 
 }

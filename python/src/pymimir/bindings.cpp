@@ -1968,8 +1968,7 @@ void init_pymimir(py::module_& m)
                  ss << self;
                  return ss.str();
              })
-        .def("compute_admissible_chain",
-             py::overload_cast<const GroundAtomList<Fluent>&, const GroundAtomList<Derived>&>(&TupleGraph::compute_admissible_chain))
+        .def("compute_admissible_chain", py::overload_cast<const GroundAtomList<Fluent>&>(&TupleGraph::compute_admissible_chain))
         .def("compute_admissible_chain", py::overload_cast<const StateList&>(&TupleGraph::compute_admissible_chain))
         .def("get_state_space", &TupleGraph::get_state_space)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)
