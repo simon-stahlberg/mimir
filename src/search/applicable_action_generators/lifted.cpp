@@ -138,7 +138,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     m_action_builder.get_index() = m_flat_actions.size();
     m_action_builder.get_cost() =
         std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_factories), *action->get_function_expression());
-    m_action_builder.get_action() = action->get_index();
+    m_action_builder.get_action_index() = action->get_index();
     auto& objects = m_action_builder.get_objects();
     objects.clear();
     for (const auto& obj : binding)
@@ -180,114 +180,114 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     /* Conditional effects */
     // Fetch data
     auto& conditional_effects = m_action_builder.get_conditional_effects();
+    // TODO: Unfortunately, this unnecessary causes deallocations. We need to write a custom cista vector that avoids this.
+    conditional_effects.clear();
 
     // Resize builders.
-    // Note: flatmemory tracks "actual" size to avoid deallocation of nested types
-    const auto num_conditional_effects = action->get_conditional_effects().size();
-    conditional_effects.resize(num_conditional_effects);
-    if (num_conditional_effects > 0)
-    {
-        for (size_t i = 0; i < num_conditional_effects; ++i)
-        {
-            auto cond_effect_proxy_i = ConditionalEffectBuilder(conditional_effects[i]);
-            auto& cond_positive_fluent_precondition_i = cond_effect_proxy_i.get_positive_precondition<Fluent>();
-            auto& cond_negative_fluent_precondition_i = cond_effect_proxy_i.get_negative_precondition<Fluent>();
-            auto& cond_positive_static_precondition_i = cond_effect_proxy_i.get_positive_precondition<Static>();
-            auto& cond_negative_static_precondition_i = cond_effect_proxy_i.get_negative_precondition<Static>();
-            auto& cond_positive_derived_precondition_i = cond_effect_proxy_i.get_positive_precondition<Derived>();
-            auto& cond_negative_derived_precondition_i = cond_effect_proxy_i.get_negative_precondition<Derived>();
-            auto& cond_simple_effect_i = cond_effect_proxy_i.get_simple_effect();
-            cond_positive_fluent_precondition_i.clear();
-            cond_negative_fluent_precondition_i.clear();
-            cond_positive_static_precondition_i.clear();
-            cond_negative_static_precondition_i.clear();
-            cond_positive_derived_precondition_i.clear();
-            cond_negative_derived_precondition_i.clear();
-            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_conditions<Fluent>(),
-                                                     cond_positive_fluent_precondition_i,
-                                                     cond_negative_fluent_precondition_i,
-                                                     binding);
-            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_conditions<Static>(),
-                                                     cond_positive_static_precondition_i,
-                                                     cond_negative_static_precondition_i,
-                                                     binding);
-            m_pddl_factories->ground_and_fill_vector(action->get_conditional_effects().at(i)->get_conditions<Derived>(),
-                                                     cond_positive_derived_precondition_i,
-                                                     cond_negative_derived_precondition_i,
-                                                     binding);
-
-            fill_effect(action->get_conditional_effects().at(i)->get_effect(), cond_simple_effect_i, binding);
-        }
-    }
-
     /* Universal effects */
 
     // We have copy the binding to extend it with objects for quantified effect variables
     // and at the same time we need to use the original binding as cache key.
     auto binding_ext = binding;
 
-    const auto num_universal_effects = action->get_universal_effects().size();
-    if (num_universal_effects > 0)
+    const auto num_complex_effects = action->get_complex_effects().size();
+    if (num_complex_effects > 0)
     {
-        const auto& universal_effect_consistency_graphs = m_action_universal_effects.at(action);
+        const auto& complex_effect_consistency_graphs = m_action_complex_effects.at(action);
         const auto binding_ext_size = binding_ext.size();
-        for (size_t i = 0; i < num_universal_effects; ++i)
+        for (size_t i = 0; i < num_complex_effects; ++i)
         {
             // Fetch data
-            const auto& universal_effect = action->get_universal_effects().at(i);
-            const auto& consistency_graph = universal_effect_consistency_graphs.at(i);
-            const auto& objects_by_parameter_index = consistency_graph.get_objects_by_parameter_index();
+            const auto& complex_effect = action->get_complex_effects().at(i);
 
             // Resize builders.
-            const auto num_conditional_effects = CartesianProduct(objects_by_parameter_index).num_combinations();
-            const auto old_size = conditional_effects.size();
-            conditional_effects.resize(old_size + num_conditional_effects);
-
-            // Create binding and ground conditions and effect
-            binding_ext.resize(binding_ext_size + universal_effect->get_arity());
-
-            // The position to place the conditional precondition + effect
-            auto j = old_size;
-            assert(!objects_by_parameter_index.empty());
-            for (const auto& combination : CartesianProduct(objects_by_parameter_index))
+            if (complex_effect->get_arity() > 0)
             {
-                // Create binding
-                for (size_t pos = 0; pos < universal_effect->get_arity(); ++pos)
+                const auto& consistency_graph = complex_effect_consistency_graphs.at(i);
+                const auto& objects_by_parameter_index = consistency_graph.get_objects_by_parameter_index();
+
+                const auto num_conditional_effects = CartesianProduct(objects_by_parameter_index).num_combinations();
+                const auto old_size = conditional_effects.size();
+                conditional_effects.resize(old_size + num_conditional_effects);
+
+                // Create binding and ground conditions and effect
+                binding_ext.resize(binding_ext_size + complex_effect->get_arity());
+
+                // The position to place the conditional precondition + effect
+                auto j = old_size;
+                assert(!objects_by_parameter_index.empty());
+                for (const auto& combination : CartesianProduct(objects_by_parameter_index))
                 {
-                    const auto object_id = *combination[pos];
-                    binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
+                    // Create binding
+                    for (size_t pos = 0; pos < complex_effect->get_arity(); ++pos)
+                    {
+                        const auto object_id = *combination[pos];
+                        binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
+                    }
+
+                    auto cond_effect_proxy_j = ConditionalEffectBuilder(conditional_effects[j]);
+                    auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_precondition<Fluent>();
+                    auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_precondition<Fluent>();
+                    auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_precondition<Static>();
+                    auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_precondition<Static>();
+                    auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_precondition<Derived>();
+                    auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_precondition<Derived>();
+                    auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
+                    cond_positive_fluent_precondition_j.clear();
+                    cond_negative_fluent_precondition_j.clear();
+                    cond_positive_static_precondition_j.clear();
+                    cond_negative_static_precondition_j.clear();
+                    cond_positive_derived_precondition_j.clear();
+                    cond_negative_derived_precondition_j.clear();
+                    m_pddl_factories->ground_and_fill_vector(complex_effect->get_conditions<Fluent>(),
+                                                             cond_positive_fluent_precondition_j,
+                                                             cond_negative_fluent_precondition_j,
+                                                             binding_ext);
+                    m_pddl_factories->ground_and_fill_vector(complex_effect->get_conditions<Static>(),
+                                                             cond_positive_static_precondition_j,
+                                                             cond_negative_static_precondition_j,
+                                                             binding_ext);
+                    m_pddl_factories->ground_and_fill_vector(complex_effect->get_conditions<Derived>(),
+                                                             cond_positive_derived_precondition_j,
+                                                             cond_negative_derived_precondition_j,
+                                                             binding_ext);
+
+                    fill_effect(complex_effect->get_effect(), cond_simple_effect_j, binding_ext);
+
+                    ++j;
                 }
+            }
+            else
+            {
+                conditional_effects.resize(conditional_effects.size() + 1);
+                auto cond_effect_proxy = ConditionalEffectBuilder(conditional_effects.back());
+                auto& cond_positive_fluent_precondition = cond_effect_proxy.get_positive_precondition<Fluent>();
+                auto& cond_negative_fluent_precondition = cond_effect_proxy.get_negative_precondition<Fluent>();
+                auto& cond_positive_static_precondition = cond_effect_proxy.get_positive_precondition<Static>();
+                auto& cond_negative_static_precondition = cond_effect_proxy.get_negative_precondition<Static>();
+                auto& cond_positive_derived_precondition = cond_effect_proxy.get_positive_precondition<Derived>();
+                auto& cond_negative_derived_precondition = cond_effect_proxy.get_negative_precondition<Derived>();
+                auto& cond_simple_effect = cond_effect_proxy.get_simple_effect();
+                cond_positive_fluent_precondition.clear();
+                cond_negative_fluent_precondition.clear();
+                cond_positive_static_precondition.clear();
+                cond_negative_static_precondition.clear();
+                cond_positive_derived_precondition.clear();
+                cond_negative_derived_precondition.clear();
+                m_pddl_factories->ground_and_fill_vector(complex_effect->get_conditions<Fluent>(),
+                                                         cond_positive_fluent_precondition,
+                                                         cond_negative_fluent_precondition,
+                                                         binding);
+                m_pddl_factories->ground_and_fill_vector(complex_effect->get_conditions<Static>(),
+                                                         cond_positive_static_precondition,
+                                                         cond_negative_static_precondition,
+                                                         binding);
+                m_pddl_factories->ground_and_fill_vector(complex_effect->get_conditions<Derived>(),
+                                                         cond_positive_derived_precondition,
+                                                         cond_negative_derived_precondition,
+                                                         binding);
 
-                auto cond_effect_proxy_j = ConditionalEffectBuilder(conditional_effects[j]);
-                auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_precondition<Fluent>();
-                auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_precondition<Fluent>();
-                auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_precondition<Static>();
-                auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_precondition<Static>();
-                auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_precondition<Derived>();
-                auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_precondition<Derived>();
-                auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
-                cond_positive_fluent_precondition_j.clear();
-                cond_negative_fluent_precondition_j.clear();
-                cond_positive_static_precondition_j.clear();
-                cond_negative_static_precondition_j.clear();
-                cond_positive_derived_precondition_j.clear();
-                cond_negative_derived_precondition_j.clear();
-                m_pddl_factories->ground_and_fill_vector(universal_effect->get_conditions<Fluent>(),
-                                                         cond_positive_fluent_precondition_j,
-                                                         cond_negative_fluent_precondition_j,
-                                                         binding_ext);
-                m_pddl_factories->ground_and_fill_vector(universal_effect->get_conditions<Static>(),
-                                                         cond_positive_static_precondition_j,
-                                                         cond_negative_static_precondition_j,
-                                                         binding_ext);
-                m_pddl_factories->ground_and_fill_vector(universal_effect->get_conditions<Derived>(),
-                                                         cond_positive_derived_precondition_j,
-                                                         cond_negative_derived_precondition_j,
-                                                         binding_ext);
-
-                fill_effect(universal_effect->get_effect(), cond_simple_effect_j, binding_ext);
-
-                ++j;
+                fill_effect(complex_effect->get_effect(), cond_simple_effect, binding);
             }
         }
     }
@@ -367,7 +367,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     m_event_handler(std::move(event_handler)),
     m_axiom_evaluator(problem, m_pddl_factories, m_event_handler),
     m_action_precondition_grounders(),
-    m_action_universal_effects(),
+    m_action_complex_effects(),
     m_ground_function_value_costs()
 {
     /* 1. Initialize ground function costs. */
@@ -392,19 +392,19 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
                                                                          action->get_conditions<Derived>(),
                                                                          static_assignment_set,
                                                                          m_pddl_factories));
-        auto universal_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
-        universal_effects.reserve(action->get_universal_effects().size());
+        auto complex_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
+        complex_effects.reserve(action->get_complex_effects().size());
 
-        for (const auto& universal_effect : action->get_universal_effects())
+        for (const auto& complex_effect : action->get_complex_effects())
         {
-            universal_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
-                                                                                  action->get_arity(),
-                                                                                  action->get_arity() + universal_effect->get_arity(),
-                                                                                  universal_effect->get_conditions<Static>(),
-                                                                                  static_assignment_set));
+            complex_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
+                                                                                action->get_arity(),
+                                                                                action->get_arity() + complex_effect->get_arity(),
+                                                                                complex_effect->get_conditions<Static>(),
+                                                                                static_assignment_set));
         }
 
-        m_action_universal_effects.emplace(action, std::move(universal_effects));
+        m_action_complex_effects.emplace(action, std::move(complex_effects));
     }
 }
 

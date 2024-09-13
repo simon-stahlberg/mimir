@@ -20,12 +20,10 @@ from _pymimir import (
     DerivedPredicateList,
     Domain,
     DomainList,
-    EffectConditional,
-    EffectConditionalList,
     EffectSimple,
     EffectSimpleList,
-    EffectUniversal,
-    EffectUniversalList,
+    EffectComplex,
+    EffectComplexList,
     FluentAtom,
     FluentAtomList,
     FluentGroundAtom,
@@ -107,7 +105,6 @@ from _pymimir import (
     DefaultLiftedApplicableActionGeneratorEventHandler,
     DefaultSIWAlgorithmEventHandler,
     FlatSimpleEffect,
-    FluentAndDerivedMapper,
     GroundAction,
     GroundActionList,
     GroundActionSpan,
@@ -182,3 +179,6 @@ from _pymimir import (
     compute_sorted_vertex_colors,
     create_object_graph
 )
+
+from .hints import *
+

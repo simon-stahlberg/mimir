@@ -126,11 +126,11 @@ StateTupleIndexGenerator::StateTupleIndexGenerator(std::shared_ptr<TupleIndexMap
     assert(tuple_index_mapper);
 }
 
-StateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_atom_indices(nullptr) {}
+StateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_atoms(nullptr) {}
 
 StateTupleIndexGenerator::const_iterator::const_iterator(StateTupleIndexGenerator* stig, bool begin) :
     m_tuple_index_mapper(begin ? stig->tuple_index_mapper.get() : nullptr),
-    m_atom_indices(begin ? &stig->atom_indices : nullptr),
+    m_atoms(begin ? &stig->atom_indices : nullptr),
     m_end(!begin),
     m_cur(begin ? 0 : -1)
 {
@@ -140,14 +140,14 @@ StateTupleIndexGenerator::const_iterator::const_iterator(StateTupleIndexGenerato
         const auto arity = m_tuple_index_mapper->get_arity();
         const auto& factors = m_tuple_index_mapper->get_factors();
 
-        assert(!m_atom_indices->empty());
-        assert(std::is_sorted(m_atom_indices->begin(), m_atom_indices->end()));
+        assert(!m_atoms->empty());
+        assert(std::is_sorted(m_atoms->begin(), m_atoms->end()));
 
         // Find the indices and set begin tuple index
         for (size_t i = 0; i < arity; ++i)
         {
             m_indices[i] = i;
-            m_cur += (*m_atom_indices)[i] * factors[i];
+            m_cur += (*m_atoms)[i] * factors[i];
         }
     }
     else
@@ -156,34 +156,40 @@ StateTupleIndexGenerator::const_iterator::const_iterator(StateTupleIndexGenerato
     }
 }
 
-void StateTupleIndexGenerator::const_iterator::advance()
+std::optional<size_t> StateTupleIndexGenerator::const_iterator::find_rightmost_incrementable_index()
 {
-    // Increment indices from right to left until obtaining an
-    // array of form {num_atoms,...,num_atoms} indicating the end
-    // Update the tuple index on the fly.
+    const auto arity = get_tuple_index_mapper().get_arity();
 
-    // Fetch data
-    const auto arity = m_tuple_index_mapper->get_arity();
-    const auto& factors = m_tuple_index_mapper->get_factors();
-    const auto num_atoms = m_atom_indices->size();
-
-    // Find the rightmost index to increment, i.e., non place-holder.
     int i = static_cast<int>(arity) - 1;
-    while (i >= 0 && (m_indices[i] == num_atoms - 1))
+    while (i >= 0 && (m_indices[i] == get_atoms().size() - 1))
     {
         --i;
     }
-    if (i < 0)
+    return (i < 0) ? std::nullopt : std::optional<size_t>(i);
+}
+
+void StateTupleIndexGenerator::const_iterator::advance()
+{
+    /* Fetch data */
+    const auto arity = get_tuple_index_mapper().get_arity();
+    const auto& factors = get_tuple_index_mapper().get_factors();
+    const auto num_atoms = get_atoms().size();
+
+    /* Find the rightmost index to increment, i.e., non place-holder. */
+    const auto rightmost_incrementable_index = find_rightmost_incrementable_index();
+    if (!rightmost_incrementable_index)
     {
         // Exit when all indices have reached their maximum values
         m_end = true;
         ++m_cur;
         return;
     }
+    const auto i = rightmost_incrementable_index.value();
 
-    // Advance and update cur based on the change
+    /* Advance and update cur based on the change. */
     const auto index = ++m_indices[i];
-    m_cur += factors[i] * ((*m_atom_indices)[index] - (*m_atom_indices)[index - 1]);
+    const auto diff_i = get_atoms()[index] - get_atoms()[index - 1];
+    m_cur += diff_i * factors[i];
 
     // Update indices right of the incremented rightmost index i.
     for (size_t j = i + 1; j < arity; ++j)
@@ -195,13 +201,26 @@ void StateTupleIndexGenerator::const_iterator::advance()
         size_t new_index = m_indices[j] = std::min(num_atoms - 1, m_indices[j - 1] + 1);
 
         // Update and update cur based on the change
-        m_cur += factors[j] * ((*m_atom_indices)[new_index] - (*m_atom_indices)[old_index]);
+        const auto diff_j = get_atoms()[new_index] - get_atoms()[old_index];
+        m_cur += diff_j * factors[j];
     }
+}
+
+const TupleIndexMapper& StateTupleIndexGenerator::const_iterator::get_tuple_index_mapper() const
+{
+    assert(m_tuple_index_mapper);
+    return *m_tuple_index_mapper;
+}
+
+const AtomIndexList& StateTupleIndexGenerator::const_iterator::get_atoms() const
+{
+    assert(m_atoms);
+    return *m_atoms;
 }
 
 StateTupleIndexGenerator::const_iterator::value_type StateTupleIndexGenerator::const_iterator::operator*() const
 {
-    assert(m_tuple_index_mapper && m_atom_indices);
+    assert(m_tuple_index_mapper && m_atoms);
     assert(m_cur >= 0);
     return m_cur;
 }
@@ -267,8 +286,8 @@ StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<Tuple
 
 StatePairTupleIndexGenerator::const_iterator::const_iterator() :
     m_tuple_index_mapper(nullptr),
-    m_a_atom_indices(nullptr),
-    m_a_index_jumper(nullptr),
+    m_a_atoms(nullptr),
+    m_a_jumpers(nullptr),
     m_indices(),
     m_a(),
     m_cur_outter(-1),
@@ -280,8 +299,8 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator() :
 
 StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndexGenerator* sptig, bool begin) :
     m_tuple_index_mapper(begin ? sptig->tuple_index_mapper.get() : nullptr),
-    m_a_atom_indices(begin ? &sptig->a_atom_indices : nullptr),
-    m_a_index_jumper(begin ? &sptig->a_index_jumper : nullptr),
+    m_a_atoms(begin ? &sptig->a_atom_indices : nullptr),
+    m_a_jumpers(begin ? &sptig->a_index_jumper : nullptr),
     m_indices(),
     m_a(),
     m_cur_outter(begin ? 0 : -1),
@@ -292,15 +311,15 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndex
     if (begin)
     {
         // Ensure that atom_indices is nonempty due to adding the place holder.
-        assert(!(*m_a_atom_indices)[0].empty());
+        assert(!get_atoms()[0].empty());
         // Ensure that add_atom_indices is nonempty due to correct generation of tuples in previous states.
-        assert(!(*m_a_atom_indices)[1].empty());
+        assert(!get_atoms()[1].empty());
         // Ensure that atom indices are sorted
-        assert(std::is_sorted((*m_a_atom_indices)[0].begin(), (*m_a_atom_indices)[0].end()));
-        assert(std::is_sorted((*m_a_atom_indices)[1].begin(), (*m_a_atom_indices)[1].end()));
+        assert(std::is_sorted(get_atoms()[0].begin(), get_atoms()[0].end()));
+        assert(std::is_sorted(get_atoms()[1].begin(), get_atoms()[1].end()));
 
-        // Initialize m_a_index_jumper to know the next large element in the opposite atom indices vector when iterating
-        initialize_index_jumper();
+        // Initialize m_a_jumpers to know the next large element in the opposite atom indices vector when iterating
+        initialize_jumpers();
 
         // Initialize m_cur_outter and m_cur_inner
         advance_outter();
@@ -311,31 +330,31 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndex
     }
 }
 
-void StatePairTupleIndexGenerator::const_iterator::initialize_index_jumper()
+void StatePairTupleIndexGenerator::const_iterator::initialize_jumpers()
 {
-    (*m_a_index_jumper)[0].clear();
-    (*m_a_index_jumper)[1].clear();
-    (*m_a_index_jumper)[0].resize((*m_a_atom_indices)[0].size(), -1);
-    (*m_a_index_jumper)[1].resize((*m_a_atom_indices)[1].size(), -1);
+    get_jumpers()[0].clear();
+    get_jumpers()[1].clear();
+    get_jumpers()[0].resize(get_atoms()[0].size(), std::numeric_limits<size_t>::max());
+    get_jumpers()[1].resize(get_atoms()[1].size(), std::numeric_limits<size_t>::max());
 
     size_t j = 0;
     size_t i = 0;
-    while (j < (*m_a_atom_indices)[0].size() && i < (*m_a_atom_indices)[1].size())
+    while (j < get_atoms()[0].size() && i < get_atoms()[1].size())
     {
-        if ((*m_a_atom_indices)[0][j] < (*m_a_atom_indices)[1][i])
+        if (get_atoms()[0][j] < get_atoms()[1][i])
         {
-            (*m_a_index_jumper)[0][j] = i;
+            get_jumpers()[0][j] = i;
             ++j;
         }
-        else if ((*m_a_atom_indices)[0][j] > (*m_a_atom_indices)[1][i])
+        else if (get_atoms()[0][j] > get_atoms()[1][i])
         {
-            (*m_a_index_jumper)[1][i] = j;
+            get_jumpers()[1][i] = j;
             ++i;
         }
         else
         {
-            (*m_a_index_jumper)[1][i] = j;
-            (*m_a_index_jumper)[0][j] = i;
+            get_jumpers()[1][i] = j;
+            get_jumpers()[0][j] = i;
             ++j;
             ++i;
         }
@@ -350,78 +369,77 @@ static void compute_binary_representation(size_t value, size_t arity, std::array
     }
 }
 
-int StatePairTupleIndexGenerator::const_iterator::find_rightmost_incrementable_index()
+std::optional<size_t> StatePairTupleIndexGenerator::const_iterator::find_rightmost_incrementable_index()
 {
-    const int arity = m_tuple_index_mapper->get_arity();
+    const int arity = get_tuple_index_mapper().get_arity();
     int i = arity - 1;
 
     // Rightmost check: new index must be within bounds
-    if (m_indices[i] < (*m_a_atom_indices)[m_a[i]].size() - 1)
+    if (m_indices[i] < get_atoms()[m_a[i]].size() - 1)
     {
         return i;
     }
     --i;
 
     // Inner check: new index must be within bounds and its increased value must be smaller than the value right to it.
-    while (i >= 0
-           && ((m_indices[i] == (*m_a_atom_indices)[m_a[i]].size() - 1)
-               || ((*m_a_atom_indices)[m_a[i]][m_indices[i] + 1] >= (*m_a_atom_indices)[m_a[i + 1]][m_indices[i + 1]])))
+    while (i >= 0 && ((m_indices[i] == get_atoms()[m_a[i]].size() - 1) || (get_atoms()[m_a[i]][m_indices[i] + 1] >= get_atoms()[m_a[i + 1]][m_indices[i + 1]])))
     {
         --i;
     }
-    return i;
+    return (i < 0) ? std::nullopt : std::optional<size_t>(i);
 }
 
-int StatePairTupleIndexGenerator::const_iterator::find_new_index(int i)
+std::optional<size_t> StatePairTupleIndexGenerator::const_iterator::find_next_index(size_t i)
 {
-    if (m_a[i - 1] == m_a[i])
+    if (m_a[i - 1] == m_a[i])  // Jump between same set of atoms, i.e., atom_indices or add_atom_indices
     {
-        if (m_a[i] == 0)
+        if (!m_a[i])
         {
-            // Cap at placeholder index
-            return std::min((*m_a_atom_indices)[m_a[i]].size() - 1, m_indices[i - 1] + 1);
+            // Same update as in the else case but simply capped at placeholder.
+            return std::min(get_atoms()[m_a[i]].size() - 1, m_indices[i - 1] + 1);
         }
         else
         {
-            if (m_indices[i - 1] == (*m_a_atom_indices)[m_a[i]].size() - 1)
+            if (m_indices[i - 1] == get_atoms()[m_a[i]].size() - 1)
             {
                 // Cannot increment index
-                return -1;
+                return std::nullopt;
             }
             else
             {
+                // Pick next larger atom from same set.
                 return m_indices[i - 1] + 1;
             }
         }
     }
-    else
+    else  // Jump across different set of atoms, i.e., atom_indices to add_atom_indices or vice versa.
     {
-        if (m_a[i] == 0)
+        if (!m_a[i])
         {
-            // Cap at placeholder index
-            return std::min((*m_a_atom_indices)[m_a[i]].size() - 1, (*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]]);
+            // Same update as in the else case but simply capped at placeholder.
+            return std::min(get_atoms()[m_a[i]].size() - 1, get_jumpers()[m_a[i - 1]][m_indices[i - 1]]);
         }
         else
         {
-            if ((*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]] == size_t(-1))
+            if (get_jumpers()[m_a[i - 1]][m_indices[i - 1]] == std::numeric_limits<size_t>::max())
             {
                 // Cannot increment index
-                return -1;
+                return std::nullopt;
             }
             else
             {
-                return (*m_a_index_jumper)[m_a[i - 1]][m_indices[i - 1]];
+                // Jump over to next set of atoms.
+                return get_jumpers()[m_a[i - 1]][m_indices[i - 1]];
             }
         }
     }
-    return -1;
+    return std::nullopt;
 }
 
 bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
 {
     // Fetch data
-    const auto arity = m_tuple_index_mapper->get_arity();
-    const auto& factors = m_tuple_index_mapper->get_factors();
+    const auto arity = get_tuple_index_mapper().get_arity();
 
     /* Advance outter iteration */
 
@@ -431,41 +449,18 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
     // 1 << arity == 2^arity
     for (; m_cur_outter < (1 << arity); ++m_cur_outter)
     {
-        // Create a binary representation, e,g., arity = 4 and m_cur_outter = 3 => [1,0,1,0] meaning that
-        // the first and third indices should be chosen from add_atom_indices, and
-        // the second and fourth indices should be chosen from atom_indices
+        // Create a binary representation, e,g., arity = 4 and m_cur_outter = 3 => [1,1,0,0] meaning that
+        // the first and second indices should be chosen from add_atom_indices, and
+        // the third and fourth indices should be chosen from atom_indices
         compute_binary_representation(m_cur_outter, arity, m_a);
 
         /* Initialize inner iteration */
 
         // Create the begin set of indices and its corresponding tuple_index
         // If no such tuple_index exists, continue with next m_cur_outter.
-        m_indices[0] = 0;
-        m_cur_inner = (*m_a_atom_indices)[m_a[0]][0] * factors[0];
-
-        bool failed = false;
-        for (size_t j = 1; j < arity; ++j)
-        {
-            int new_index = find_new_index(j);
-
-            // std::cout << "j: " << j << " new_index: " << new_index << std::endl;
-
-            if (new_index == -1)
-            {
-                failed = true;
-                break;
-            }
-            else
-            {
-                m_indices[j] = new_index;
-                // Initial update
-                m_cur_inner += factors[j] * (*m_a_atom_indices)[m_a[j]][new_index];
-            }
-        }
-        if (!failed)
+        if (try_create_first_inner_tuple())
         {
             m_end_inner = false;
-            m_end_outter = false;
             return true;
         }
     }
@@ -473,16 +468,11 @@ bool StatePairTupleIndexGenerator::const_iterator::advance_outter()
     // No valid tuple was found => set to end
     m_end_inner = true;
     m_end_outter = true;
-
     return false;
 }
 
 void StatePairTupleIndexGenerator::const_iterator::advance_inner()
 {
-    // Fetch data
-    const auto arity = m_tuple_index_mapper->get_arity();
-    const auto& factors = m_tuple_index_mapper->get_factors();
-
     while (true)
     {
         /* 1. Advance outter iteration */
@@ -490,61 +480,114 @@ void StatePairTupleIndexGenerator::const_iterator::advance_inner()
         if (m_end_inner)
         {
             advance_outter();
-            // Either points to next tuple index or m_outter_end and m_inner_end
-            return;
+            return;  // Exit because iterator either points to next tuple index or m_outter_end and m_inner_end
         }
 
         /* 2. Advance inner iteration */
 
         // 2.1. Find the rightmost index and increment it
-        int i = find_rightmost_incrementable_index();
-        // std::cout << "i: " << i << std::endl;
-        if (i < 0)
+        const auto right_most_incrementable_index = find_rightmost_incrementable_index();
+
+        if (!right_most_incrementable_index)
         {
-            // Continue to next outter loop when all indices have reached their maximum values
             m_end_inner = true;
-            continue;
+            continue;  // Continue to next outter loop when all indices have reached their maximum values
         }
-        const auto index = ++m_indices[i];
+        const auto i = right_most_incrementable_index.value();
 
-        // 2.2. Difference update
-        m_cur_inner += factors[i] * ((*m_a_atom_indices)[m_a[i]][index] - (*m_a_atom_indices)[m_a[i]][index - 1]);
-
-        // 2.3. Update indices right of the incremented rightmost index i.
-        bool failed = false;
-        for (size_t j = i + 1; j < arity; ++j)
+        if (!try_create_next_inner_tuple(i))
         {
-            // Backup old_index for difference update
-            const auto old_index = m_indices[j];
-
-            const auto new_index = find_new_index(j);
-            if (new_index == -1)
-            {
-                failed = true;
-                break;
-            }
-            else
-            {
-                m_indices[j] = new_index;
-                // Difference update
-                m_cur_inner += factors[j] * ((*m_a_atom_indices)[m_a[j]][new_index] - (*m_a_atom_indices)[m_a[j]][old_index]);
-            }
-        }
-        if (failed)
-        {
-            // Continue to next outter loop when no tuple index can be constructed anymore
             m_end_inner = true;
-            continue;
+            continue;  // Continue to next outter loop when no tuple index can be constructed anymore
         }
 
-        // Exit because construction of next tuple index was successful
-        return;
+        return;  // Exit because construction of next tuple index was successful
     }
+}
+
+bool StatePairTupleIndexGenerator::const_iterator::try_create_first_inner_tuple()
+{
+    // Fetch data
+    const auto arity = get_tuple_index_mapper().get_arity();
+    const auto& factors = get_tuple_index_mapper().get_factors();
+
+    m_indices[0] = 0;
+    const auto atom_0 = get_atoms()[m_a[0]][0];
+    m_cur_inner = atom_0 * factors[0];
+
+    for (size_t j = 1; j < arity; ++j)
+    {
+        const auto next_index = find_next_index(j);
+
+        if (!next_index)
+        {
+            return false;  // Exit because construction of tuple index failed.
+        }
+        const auto new_index = next_index.value();
+
+        m_indices[j] = new_index;
+        const auto atom_j = get_atoms()[m_a[j]][new_index];
+        m_cur_inner += atom_j * factors[j];
+    }
+
+    return true;
+}
+
+bool StatePairTupleIndexGenerator::const_iterator::try_create_next_inner_tuple(size_t i)
+{
+    // Fetch data
+    const auto arity = get_tuple_index_mapper().get_arity();
+    const auto& factors = get_tuple_index_mapper().get_factors();
+
+    const auto index = ++m_indices[i];
+
+    // 2.2. Difference update
+    const auto diff_i = (get_atoms()[m_a[i]][index] - get_atoms()[m_a[i]][index - 1]);
+    m_cur_inner += diff_i * factors[i];
+
+    // 2.3. Update indices j right of the incremented rightmost index i.
+    for (size_t j = i + 1; j < arity; ++j)
+    {
+        // Backup old_index for difference update
+        const auto old_index = m_indices[j];
+
+        const auto next_index = find_next_index(j);
+        if (!next_index)
+        {
+            return false;  // Exit because construction of tuple index failed.
+        }
+        const auto new_index = next_index.value();
+
+        m_indices[j] = new_index;
+        // Difference update
+        const auto diff_j = (get_atoms()[m_a[j]][new_index] - get_atoms()[m_a[j]][old_index]);
+        m_cur_inner += diff_j * factors[j];
+    }
+
+    return true;
+}
+
+const TupleIndexMapper& StatePairTupleIndexGenerator::const_iterator::get_tuple_index_mapper() const
+{
+    assert(m_tuple_index_mapper);
+    return *m_tuple_index_mapper;
+}
+
+const std::array<AtomIndexList, 2>& StatePairTupleIndexGenerator::const_iterator::get_atoms() const
+{
+    assert(m_a_atoms);
+    return *m_a_atoms;
+}
+
+std::array<std::vector<size_t>, 2>& StatePairTupleIndexGenerator::const_iterator::get_jumpers() const
+{
+    assert(m_a_jumpers);
+    return *m_a_jumpers;
 }
 
 StatePairTupleIndexGenerator::const_iterator::value_type StatePairTupleIndexGenerator::const_iterator::operator*() const
 {
-    assert(m_tuple_index_mapper && m_a_atom_indices && m_a_index_jumper);
+    assert(m_tuple_index_mapper && m_a_atoms && m_a_jumpers);
     assert(m_cur_inner >= 0);
     return m_cur_inner;
 }
@@ -773,7 +816,7 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 }
 
 /* IterativeWidthAlgorithm */
-IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, int max_arity) :
+IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, size_t max_arity) :
     IterativeWidthAlgorithm(applicable_action_generator,
                             max_arity,
                             std::make_shared<StateRepository>(applicable_action_generator),
@@ -783,7 +826,7 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
 }
 
 IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                 int max_arity,
+                                                 size_t max_arity,
                                                  std::shared_ptr<StateRepository> successor_state_generator,
                                                  std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                  std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
@@ -795,9 +838,10 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
     m_initial_state(m_ssg->get_or_create_initial_state()),
     m_brfs(applicable_action_generator, successor_state_generator, brfs_event_handler)
 {
-    if (max_arity < 0)
+    if (max_arity >= MAX_ARITY)
     {
-        throw std::runtime_error("Arity must be greater of equal than 0.");
+        throw std::runtime_error("IterativeWidthAlgorithm::IterativeWidthAlgorithm(...): max_arity (" + std::to_string(max_arity)
+                                 + ") cannot be greater than or equal to MAX_ARITY (" + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
 }
 
@@ -823,12 +867,12 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_iw_event_handler->on_start_search(problem, start_state, pddl_factories);
 
-    int cur_arity = 0;
+    size_t cur_arity = 0;
     while (cur_arity <= m_max_arity)
     {
         m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_factories, cur_arity);
 
-        auto search_status =
+        const auto search_status =
             (cur_arity > 0) ?
                 m_brfs.find_solution(start_state,
                                      std::move(goal_strategy),

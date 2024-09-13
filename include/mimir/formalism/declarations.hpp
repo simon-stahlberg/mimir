@@ -65,13 +65,9 @@ class EffectSimpleImpl;
 using EffectSimple = const EffectSimpleImpl*;
 using EffectSimpleList = std::vector<EffectSimple>;
 
-class EffectConditionalImpl;
-using EffectConditional = const EffectConditionalImpl*;
-using EffectConditionalList = std::vector<EffectConditional>;
-
-class EffectUniversalImpl;
-using EffectUniversal = const EffectUniversalImpl*;
-using EffectUniversalList = std::vector<EffectUniversal>;
+class EffectComplexImpl;
+using EffectComplex = const EffectComplexImpl*;
+using EffectComplexList = std::vector<EffectComplex>;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;

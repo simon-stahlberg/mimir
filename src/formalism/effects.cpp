@@ -50,77 +50,15 @@ Index EffectSimpleImpl::get_index() const { return m_index; }
 const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
 
 /**
- * Type 2 effect
- */
-
-EffectConditionalImpl::EffectConditionalImpl(Index index,
-                                             LiteralList<Static> static_conditions,
-                                             LiteralList<Fluent> fluent_conditions,
-                                             LiteralList<Derived> derived_conditions,
-                                             Literal<Fluent> effect) :
-    m_index(index),
-    m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions)),
-    m_derived_conditions(std::move(derived_conditions)),
-    m_effect(std::move(effect))
-{
-    assert(is_all_unique(m_static_conditions));
-    assert(is_all_unique(m_fluent_conditions));
-    assert(is_all_unique(m_derived_conditions));
-    assert(
-        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-}
-
-std::string EffectConditionalImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
-Index EffectConditionalImpl::get_index() const { return m_index; }
-
-template<PredicateCategory P>
-const LiteralList<P>& EffectConditionalImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
-
-template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static>() const;
-template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
-
-const Literal<Fluent>& EffectConditionalImpl::get_effect() const { return m_effect; }
-
-/**
  * Type 3 effect
  */
 
-EffectUniversalImpl::EffectUniversalImpl(Index index,
-                                         VariableList quantified_variables,
-                                         LiteralList<Static> static_conditions,
-                                         LiteralList<Fluent> fluent_conditions,
-                                         LiteralList<Derived> derived_conditions,
-                                         Literal<Fluent> effect) :
+EffectComplexImpl::EffectComplexImpl(Index index,
+                                     VariableList quantified_variables,
+                                     LiteralList<Static> static_conditions,
+                                     LiteralList<Fluent> fluent_conditions,
+                                     LiteralList<Derived> derived_conditions,
+                                     Literal<Fluent> effect) :
     m_index(index),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
@@ -128,7 +66,6 @@ EffectUniversalImpl::EffectUniversalImpl(Index index,
     m_derived_conditions(std::move(derived_conditions)),
     m_effect(std::move(effect))
 {
-    assert(!m_quantified_variables.empty());
     assert(is_all_unique(m_quantified_variables));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
@@ -141,19 +78,19 @@ EffectUniversalImpl::EffectUniversalImpl(Index index,
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-std::string EffectUniversalImpl::str() const
+std::string EffectComplexImpl::str() const
 {
     auto out = std::stringstream();
     out << *this;
     return out.str();
 }
 
-Index EffectUniversalImpl::get_index() const { return m_index; }
+Index EffectComplexImpl::get_index() const { return m_index; }
 
-const VariableList& EffectUniversalImpl::get_parameters() const { return m_quantified_variables; }
+const VariableList& EffectComplexImpl::get_parameters() const { return m_quantified_variables; }
 
 template<PredicateCategory P>
-const LiteralList<P>& EffectUniversalImpl::get_conditions() const
+const LiteralList<P>& EffectComplexImpl::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -173,13 +110,13 @@ const LiteralList<P>& EffectUniversalImpl::get_conditions() const
     }
 }
 
-template const LiteralList<Static>& EffectUniversalImpl::get_conditions<Static>() const;
-template const LiteralList<Fluent>& EffectUniversalImpl::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& EffectUniversalImpl::get_conditions<Derived>() const;
+template const LiteralList<Static>& EffectComplexImpl::get_conditions<Static>() const;
+template const LiteralList<Fluent>& EffectComplexImpl::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& EffectComplexImpl::get_conditions<Derived>() const;
 
-const Literal<Fluent>& EffectUniversalImpl::get_effect() const { return m_effect; }
+const Literal<Fluent>& EffectComplexImpl::get_effect() const { return m_effect; }
 
-size_t EffectUniversalImpl::get_arity() const { return m_quantified_variables.size(); }
+size_t EffectComplexImpl::get_arity() const { return m_quantified_variables.size(); }
 
 std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element)
 {
@@ -188,14 +125,7 @@ std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element)
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element)
-{
-    auto formatter = PDDLFormatter();
-    formatter.write(element, out);
-    return out;
-}
-
-std::ostream& operator<<(std::ostream& out, const EffectUniversalImpl& element)
+std::ostream& operator<<(std::ostream& out, const EffectComplexImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);

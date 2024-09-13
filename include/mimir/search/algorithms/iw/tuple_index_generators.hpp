@@ -51,14 +51,23 @@ public:
     private:
         /* External data */
         const TupleIndexMapper* m_tuple_index_mapper;
-        const AtomIndexList* m_atom_indices;
+        const AtomIndexList* m_atoms;
 
         /* Internal data */
         std::array<size_t, MAX_ARITY> m_indices;
         bool m_end;
         int m_cur;
 
+        std::optional<size_t> find_rightmost_incrementable_index();
+
         void advance();
+
+        /**
+         * Getters for less verbose access.
+         */
+
+        const TupleIndexMapper& get_tuple_index_mapper() const;
+        const AtomIndexList& get_atoms() const;
 
     public:
         using difference_type = std::ptrdiff_t;
@@ -107,8 +116,8 @@ public:
     private:
         /* External data */
         const TupleIndexMapper* m_tuple_index_mapper;
-        const std::array<AtomIndexList, 2>* m_a_atom_indices;
-        std::array<std::vector<size_t>, 2>* m_a_index_jumper;
+        const std::array<AtomIndexList, 2>* m_a_atoms;
+        std::array<std::vector<size_t>, 2>* m_a_jumpers;
 
         /* Internal data */
         std::array<size_t, MAX_ARITY> m_indices;
@@ -119,15 +128,26 @@ public:
         bool m_end_inner;
 
         // O(N)
-        void initialize_index_jumper();
+        void initialize_jumpers();
         // O(K)
-        int find_rightmost_incrementable_index();
+        std::optional<size_t> find_rightmost_incrementable_index();
         // O(1)
-        int find_new_index(int i);
+        std::optional<size_t> find_next_index(size_t i);
         // O(K*2^K)
         bool advance_outter();
-        // Outter iteration O(K*2^K), inner iteration amortized O(1) for O(N^K) iterations
+        // O(1) amortized for O(N^K) iterations + O(K*2^K) for advance_outter.
         void advance_inner();
+
+        bool try_create_first_inner_tuple();
+        bool try_create_next_inner_tuple(size_t i);
+
+        /**
+         * Getters for less verbose access.
+         */
+
+        const TupleIndexMapper& get_tuple_index_mapper() const;
+        const std::array<AtomIndexList, 2>& get_atoms() const;
+        std::array<std::vector<size_t>, 2>& get_jumpers() const;
 
     public:
         using difference_type = std::ptrdiff_t;

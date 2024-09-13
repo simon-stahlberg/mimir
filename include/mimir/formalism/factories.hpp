@@ -74,10 +74,7 @@ using GroundFunctionFactory =
 using FunctionSkeletonFactory =
     loki::UniqueFactory<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
 using EffectSimpleFactory = loki::UniqueFactory<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
-using EffectConditionalFactory =
-    loki::UniqueFactory<EffectConditionalImpl, UniquePDDLHasher<const EffectConditionalImpl*>, UniquePDDLEqualTo<const EffectConditionalImpl*>>;
-using EffectUniversalFactory =
-    loki::UniqueFactory<EffectUniversalImpl, UniquePDDLHasher<const EffectUniversalImpl*>, UniquePDDLEqualTo<const EffectUniversalImpl*>>;
+using EffectUniversalFactory = loki::UniqueFactory<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
 using ActionFactory = loki::UniqueFactory<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
 using AxiomFactory = loki::UniqueFactory<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
 using OptimizationMetricFactory =
@@ -111,7 +108,6 @@ using VariadicPDDLConstructorFactory = loki::VariadicContainer<RequirementsFacto
                                                                GroundFunctionFactory,
                                                                FunctionSkeletonFactory,
                                                                EffectSimpleFactory,
-                                                               EffectConditionalFactory,
                                                                EffectUniversalFactory,
                                                                ActionFactory,
                                                                AxiomFactory,
@@ -214,18 +210,12 @@ public:
     /// @brief Get or create a simple effect for the given parameters.
     EffectSimple get_or_create_simple_effect(Literal<Fluent> effect);
 
-    /// @brief Get or create a conditional simple effect for the given parameters.
-    EffectConditional get_or_create_conditional_effect(LiteralList<Static> static_conditions,
-                                                       LiteralList<Fluent> fluent_conditions,
-                                                       LiteralList<Derived> derived_conditions,
-                                                       Literal<Fluent> effect);
-
     /// @brief Get or create a universal conditional simple effect for the given parameters.
-    EffectUniversal get_or_create_universal_effect(VariableList parameters,
-                                                   LiteralList<Static> static_conditions,
-                                                   LiteralList<Fluent> fluent_conditions,
-                                                   LiteralList<Derived> derived_conditions,
-                                                   Literal<Fluent> effect);
+    EffectComplex get_or_create_complex_effect(VariableList parameters,
+                                               LiteralList<Static> static_conditions,
+                                               LiteralList<Fluent> fluent_conditions,
+                                               LiteralList<Derived> derived_conditions,
+                                               Literal<Fluent> effect);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
@@ -235,8 +225,7 @@ public:
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
                                 EffectSimpleList simple_effects,
-                                EffectConditionalList conditional_effects,
-                                EffectUniversalList universal_effects,
+                                EffectComplexList complex_effects,
                                 FunctionExpression function_expression);
 
     /// @brief Get or create a derived predicate for the given parameters.

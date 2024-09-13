@@ -87,7 +87,7 @@ private:
 public:
     /// @brief Compute and return an admissible chain for a given tuple of ground atoms.
     /// Return std::nullopt if no such admissible chain exists.
-    std::optional<TupleVertexIndexList> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms, const GroundAtomList<Derived>& derived_atoms);
+    std::optional<TupleVertexIndexList> compute_admissible_chain(const GroundAtomList<Fluent>& fluent_atoms);
 
     /// @brief Compute and return an admissible chain for a given set of states.
     /// Return std::nullopt if no such admissible chain exists.

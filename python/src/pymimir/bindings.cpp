@@ -94,8 +94,7 @@ PYBIND11_MAKE_OPAQUE(AtomList<Derived>);
 PYBIND11_MAKE_OPAQUE(AxiomList);
 PYBIND11_MAKE_OPAQUE(DomainList);
 PYBIND11_MAKE_OPAQUE(EffectSimpleList);
-PYBIND11_MAKE_OPAQUE(EffectConditionalList);
-PYBIND11_MAKE_OPAQUE(EffectUniversalList);
+PYBIND11_MAKE_OPAQUE(EffectComplexList);
 PYBIND11_MAKE_OPAQUE(FunctionExpressionVariantList);
 PYBIND11_MAKE_OPAQUE(FunctionSkeletonList);
 PYBIND11_MAKE_OPAQUE(FunctionList);
@@ -558,27 +557,6 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<EffectSimpleList>(m, "EffectSimpleList");
     def_opaque_vector_repr<EffectSimpleList>(list_class, "EffectSimpleList");
 
-    py::class_<EffectConditionalImpl>(m, "EffectConditional")  //
-        .def("__str__", &EffectConditionalImpl::str)
-        .def("__repr__", &EffectConditionalImpl::str)
-        .def("get_index", &EffectConditionalImpl::get_index)
-        .def(
-            "get_static_conditions",
-            [](const EffectUniversalImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_fluent_conditions",
-            [](const EffectUniversalImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_derived_conditions",
-            [](const EffectUniversalImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
-            py::keep_alive<0, 1>())
-        .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference_internal);
-    static_assert(!py::detail::vector_needs_copy<EffectConditionalList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<EffectConditionalList>(m, "EffectConditionalList");
-    def_opaque_vector_repr<EffectConditionalList>(list_class, "EffectConditionalList");
-
     py::class_<FunctionExpressionVariant>(m, "FunctionExpression")  //
         .def(
             "get",
@@ -589,30 +567,30 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<FunctionExpressionVariantList>(m, "FunctionExpressionVariantList");
     def_opaque_vector_repr<FunctionExpressionVariantList>(list_class, "FunctionExpressionVariantList");
 
-    py::class_<EffectUniversalImpl>(m, "EffectUniversal")  //
-        .def("__str__", &EffectUniversalImpl::str)
-        .def("__repr__", &EffectUniversalImpl::str)
-        .def("get_index", &EffectUniversalImpl::get_index)
+    py::class_<EffectComplexImpl>(m, "EffectComplex")  //
+        .def("__str__", &EffectComplexImpl::str)
+        .def("__repr__", &EffectComplexImpl::str)
+        .def("get_index", &EffectComplexImpl::get_index)
         .def(
             "get_parameters",
-            [](const EffectUniversalImpl& self) { return VariableList(self.get_parameters()); },
+            [](const EffectComplexImpl& self) { return VariableList(self.get_parameters()); },
             py::keep_alive<0, 1>())
         .def(
             "get_static_conditions",
-            [](const EffectUniversalImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
+            [](const EffectComplexImpl& self) { return LiteralList<Static>(self.get_conditions<Static>()); },
             py::keep_alive<0, 1>())
         .def(
             "get_fluent_conditions",
-            [](const EffectUniversalImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
+            [](const EffectComplexImpl& self) { return LiteralList<Fluent>(self.get_conditions<Fluent>()); },
             py::keep_alive<0, 1>())
         .def(
             "get_derived_conditions",
-            [](const EffectUniversalImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
+            [](const EffectComplexImpl& self) { return LiteralList<Derived>(self.get_conditions<Derived>()); },
             py::keep_alive<0, 1>())
-        .def("get_effect", &EffectUniversalImpl::get_effect, py::return_value_policy::reference_internal);
-    static_assert(!py::detail::vector_needs_copy<EffectUniversalList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<EffectUniversalList>(m, "EffectUniversalList");
-    def_opaque_vector_repr<EffectUniversalList>(list_class, "EffectUniversalList");
+        .def("get_effect", &EffectComplexImpl::get_effect, py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<EffectComplexList>::value);  // Ensure return by reference + keep alive
+    py::bind_vector<EffectComplexList>(m, "EffectComplexList");
+    def_opaque_vector_repr<EffectComplexList>(list_class, "EffectComplexList");
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
         .def("__str__", &FunctionExpressionNumberImpl::str)
@@ -754,12 +732,8 @@ void init_pymimir(py::module_& m)
             [](const ActionImpl& self) { return EffectSimpleList(self.get_simple_effects()); },
             py::keep_alive<0, 1>())
         .def(
-            "get_conditional_effects",
-            [](const ActionImpl& self) { return EffectConditionalList(self.get_conditional_effects()); },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_universal_effects",
-            [](const ActionImpl& self) { return EffectUniversalList(self.get_universal_effects()); },
+            "get_complex_effects",
+            [](const ActionImpl& self) { return EffectComplexList(self.get_complex_effects()); },
             py::keep_alive<0, 1>())
         .def("get_arity", &ActionImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<ActionList>::value);  // Ensure return by reference + keep alive
@@ -1273,9 +1247,9 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      int,
+                      size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>>());
@@ -1291,9 +1265,9 @@ void init_pymimir(py::module_& m)
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, int>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      int,
+                      size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,
@@ -1948,8 +1922,7 @@ void init_pymimir(py::module_& m)
                  ss << self;
                  return ss.str();
              })
-        .def("compute_admissible_chain",
-             py::overload_cast<const GroundAtomList<Fluent>&, const GroundAtomList<Derived>&>(&TupleGraph::compute_admissible_chain))
+        .def("compute_admissible_chain", py::overload_cast<const GroundAtomList<Fluent>&>(&TupleGraph::compute_admissible_chain))
         .def("compute_admissible_chain", py::overload_cast<const StateList&>(&TupleGraph::compute_admissible_chain))
         .def("get_state_space", &TupleGraph::get_state_space)
         .def("get_tuple_index_mapper", &TupleGraph::get_tuple_index_mapper)

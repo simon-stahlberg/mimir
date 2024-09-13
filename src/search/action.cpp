@@ -29,16 +29,16 @@ size_t std::hash<mimir::GroundAction>::operator()(mimir::GroundAction element) c
 
 size_t cista::storage::DerefStdHasher<mimir::FlatAction>::operator()(const mimir::FlatAction* ptr) const
 {
-    const auto action = cista::get<2>(*ptr);
+    const auto action = cista::get<1>(*ptr);
     const auto& objects = cista::get<3>(*ptr);
     return mimir::hash_combine(action, objects);
 }
 
 bool cista::storage::DerefStdEqualTo<mimir::FlatAction>::operator()(const mimir::FlatAction* lhs, const mimir::FlatAction* rhs) const
 {
-    const auto action_left = cista::get<2>(*lhs);
+    const auto action_left = cista::get<1>(*lhs);
     const auto& objects_left = cista::get<3>(*lhs);
-    const auto action_right = cista::get<2>(*rhs);
+    const auto action_right = cista::get<1>(*rhs);
     const auto& objects_right = cista::get<3>(*rhs);
     return (action_left == action_right) && (objects_left == objects_right);
 }
@@ -367,9 +367,9 @@ const FlatAction& GroundActionBuilder::get_data() const { return m_builder; }
 
 Index& GroundActionBuilder::get_index() { return cista::get<0>(m_builder); }
 
-ContinuousCost& GroundActionBuilder::get_cost() { return cista::get<1>(m_builder); }
+Index& GroundActionBuilder::get_action_index() { return cista::get<1>(m_builder); }
 
-Index& GroundActionBuilder::get_action() { return cista::get<2>(m_builder); }
+ContinuousCost& GroundActionBuilder::get_cost() { return cista::get<2>(m_builder); }
 
 FlatIndexList& GroundActionBuilder::get_objects() { return cista::get<3>(m_builder); }
 
@@ -396,9 +396,9 @@ const GroundActionBuilder GroundAction::s_null_ground_action = create_null_groun
 
 Index GroundAction::get_index() const { return cista::get<0>(m_view.get()); }
 
-ContinuousCost GroundAction::get_cost() const { return cista::get<1>(m_view.get()); }
+Index GroundAction::get_action_index() const { return cista::get<1>(m_view.get()); }
 
-Index GroundAction::get_action_index() const { return cista::get<2>(m_view.get()); }
+ContinuousCost GroundAction::get_cost() const { return cista::get<2>(m_view.get()); }
 
 const FlatIndexList& GroundAction::get_object_indices() const { return cista::get<3>(m_view.get()); }
 

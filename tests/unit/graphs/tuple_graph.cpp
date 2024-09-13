@@ -17,6 +17,8 @@
 
 #include "mimir/graphs/tuple_graph.hpp"
 
+#include "mimir/formalism/utils.hpp"
+
 #include <gtest/gtest.h>
 
 namespace mimir::tests
@@ -121,18 +123,33 @@ TEST(MimirTests, GraphsTupleGraphTest)
     EXPECT_EQ(tuple_graphs_2_pruned.at(7).get_digraph().get_num_edges(), 8);
     EXPECT_EQ(tuple_graphs_2_pruned.at(7).get_vertices_grouped_by_distance().size(), 4);
     EXPECT_EQ(tuple_graphs_2_pruned.at(7).get_states_grouped_by_distance().size(), 4);
+}
 
-    /* Test computation of admissible chain */
-    const auto& fluent_goal_conditions = state_space->get_problem()->get_goal_condition<Fluent>();
-    EXPECT_EQ(fluent_goal_conditions.size(), 1);
+TEST(MimirTests, GraphsTupleGraphAdmissibleChainTest)
+{
+    const auto domain_file = fs::path(std::string(DATA_DIR) + "visitall/domain.pddl");
+    const auto problem_file = fs::path(std::string(DATA_DIR) + "visitall/test_problem2.pddl");
+    PDDLParser parser(domain_file, problem_file);
 
-    // const auto goal_atom = fluent_goal_conditions.at(0)->get_atom();
+    const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(domain_file, problem_file).value()));
 
-    // TODO need brfs implementation
+    auto tuple_graph_factory_0 = TupleGraphFactory(state_space, 0, false);
+    auto tuple_graph_factory_1 = TupleGraphFactory(state_space, 1, false);
+    auto tuple_graph_factory_2 = TupleGraphFactory(state_space, 2, false);
+    auto tuple_graph_factory_3 = TupleGraphFactory(state_space, 3, false);
 
-    // EXPECT_EQ(tuple_graphs_0.at(0).compute_admissible_chain({ goal_atom }, {}), std::nullopt);
-    // EXPECT_EQ(tuple_graphs_1.at(0).compute_admissible_chain({ goal_atom }, {}), std::nullopt);
-    // EXPECT_NE(tuple_graphs_2.at(0).compute_admissible_chain({ goal_atom }, {}), std::nullopt);
+    auto tuple_graph_0 = tuple_graph_factory_0.create(state_space->get_ssg()->get_or_create_initial_state());
+    auto tuple_graph_1 = tuple_graph_factory_1.create(state_space->get_ssg()->get_or_create_initial_state());
+    auto tuple_graph_2 = tuple_graph_factory_2.create(state_space->get_ssg()->get_or_create_initial_state());
+    auto tuple_graph_3 = tuple_graph_factory_3.create(state_space->get_ssg()->get_or_create_initial_state());
+
+    auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<Fluent>());
+    // We skip constructing derived goal atoms because there are none in visitall.
+
+    EXPECT_EQ(tuple_graph_0.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
+    EXPECT_EQ(tuple_graph_1.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
+    EXPECT_EQ(tuple_graph_2.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
+    EXPECT_NE(tuple_graph_3.compute_admissible_chain(fluent_goal_atoms), std::nullopt);
 }
 
 }

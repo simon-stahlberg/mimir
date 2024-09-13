@@ -190,7 +190,6 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth1Test)
 
     EXPECT_EQ("(1,)", tuple_index_mapper->tuple_index_to_string(*iter));
     EXPECT_EQ("(3,)", tuple_index_mapper->tuple_index_to_string(*(++iter)));
-
     EXPECT_EQ(++iter, generator.end());
 }
 

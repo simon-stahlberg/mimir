@@ -78,7 +78,7 @@ FunctionSkeleton EncodeParameterIndexInVariables::transform_impl(const FunctionS
     return translated_function_skeleton;
 }
 
-EffectUniversal EncodeParameterIndexInVariables::transform_impl(const EffectUniversalImpl& effect)
+EffectComplex EncodeParameterIndexInVariables::transform_impl(const EffectComplexImpl& effect)
 {
     // Determine variable parameter indices
     const auto start_index = m_variable_to_parameter_index.size();
@@ -87,11 +87,11 @@ EffectUniversal EncodeParameterIndexInVariables::transform_impl(const EffectUniv
         m_variable_to_parameter_index[effect.get_parameters()[i]] = start_index + i;
     }
 
-    const auto translated_universal_effect = this->m_pddl_factories.get_or_create_universal_effect(this->transform(effect.get_parameters()),
-                                                                                                   this->transform(effect.get_conditions<Static>()),
-                                                                                                   this->transform(effect.get_conditions<Fluent>()),
-                                                                                                   this->transform(effect.get_conditions<Derived>()),
-                                                                                                   this->transform(*effect.get_effect()));
+    const auto translated_complex_effect = this->m_pddl_factories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
+                                                                                               this->transform(effect.get_conditions<Static>()),
+                                                                                               this->transform(effect.get_conditions<Fluent>()),
+                                                                                               this->transform(effect.get_conditions<Derived>()),
+                                                                                               this->transform(*effect.get_effect()));
 
     // Erase for next universal effect
     for (size_t i = 0; i < effect.get_arity(); ++i)
@@ -99,7 +99,7 @@ EffectUniversal EncodeParameterIndexInVariables::transform_impl(const EffectUniv
         m_variable_to_parameter_index.erase(effect.get_parameters()[i]);
     }
 
-    return translated_universal_effect;
+    return translated_complex_effect;
 }
 
 Axiom EncodeParameterIndexInVariables::transform_impl(const AxiomImpl& axiom)
@@ -138,7 +138,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
 
     const auto translated_parameters = this->transform(action.get_parameters());
 
-    const auto translated_universal_effects = this->transform(action.get_universal_effects());
+    const auto translated_complex_effects = this->transform(action.get_complex_effects());
 
     const auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
                                                                                action.get_original_arity(),
@@ -147,8 +147,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
                                                                                this->transform(action.get_conditions<Fluent>()),
                                                                                this->transform(action.get_conditions<Derived>()),
                                                                                this->transform(action.get_simple_effects()),
-                                                                               this->transform(action.get_conditional_effects()),
-                                                                               translated_universal_effects,
+                                                                               translated_complex_effects,
                                                                                this->transform(*action.get_function_expression()));
 
     // Ensure that other translations definitely not use parameter indices

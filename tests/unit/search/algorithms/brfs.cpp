@@ -882,6 +882,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleAdlTest)
 {
     auto brfs = GroundedBrFSPlanner(fs::path(std::string(DATA_DIR) + "miconic-simpleadl/domain.pddl"),
                                     fs::path(std::string(DATA_DIR) + "miconic-simpleadl/test_problem.pddl"));
+
     const auto [search_status, plan] = brfs.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 4);

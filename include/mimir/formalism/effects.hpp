@@ -56,46 +56,7 @@ public:
 /**
  * Type 2 effects
  */
-class EffectConditionalImpl
-{
-private:
-    Index m_index;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
-    Literal<Fluent> m_effect;
-
-    // Below: add additional members if needed and initialize them in the constructor
-
-    EffectConditionalImpl(Index index,
-                          LiteralList<Static> static_conditions,
-                          LiteralList<Fluent> fluent_conditions,
-                          LiteralList<Derived> derived_conditions,
-                          Literal<Fluent> effect);
-
-    // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
-
-public:
-    // moveable but not copyable
-    EffectConditionalImpl(const EffectConditionalImpl& other) = delete;
-    EffectConditionalImpl& operator=(const EffectConditionalImpl& other) = delete;
-    EffectConditionalImpl(EffectConditionalImpl&& other) = default;
-    EffectConditionalImpl& operator=(EffectConditionalImpl&& other) = default;
-
-    std::string str() const;
-
-    Index get_index() const;
-    template<PredicateCategory P>
-    const LiteralList<P>& get_conditions() const;
-    const Literal<Fluent>& get_effect() const;
-};
-
-/**
- * Type 3 effects
- */
-class EffectUniversalImpl
+class EffectComplexImpl
 {
 private:
     Index m_index;
@@ -107,12 +68,12 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectUniversalImpl(Index index,
-                        VariableList quantified_variables,
-                        LiteralList<Static> static_conditions,
-                        LiteralList<Fluent> fluent_conditions,
-                        LiteralList<Derived> derived_conditions,
-                        Literal<Fluent> effect);
+    EffectComplexImpl(Index index,
+                      VariableList quantified_variables,
+                      LiteralList<Static> static_conditions,
+                      LiteralList<Fluent> fluent_conditions,
+                      LiteralList<Derived> derived_conditions,
+                      Literal<Fluent> effect);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -120,10 +81,10 @@ private:
 
 public:
     // moveable but not copyable
-    EffectUniversalImpl(const EffectUniversalImpl& other) = delete;
-    EffectUniversalImpl& operator=(const EffectUniversalImpl& other) = delete;
-    EffectUniversalImpl(EffectUniversalImpl&& other) = default;
-    EffectUniversalImpl& operator=(EffectUniversalImpl&& other) = default;
+    EffectComplexImpl(const EffectComplexImpl& other) = delete;
+    EffectComplexImpl& operator=(const EffectComplexImpl& other) = delete;
+    EffectComplexImpl(EffectComplexImpl&& other) = default;
+    EffectComplexImpl& operator=(EffectComplexImpl&& other) = default;
 
     std::string str() const;
 
@@ -137,8 +98,7 @@ public:
 };
 
 extern std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const EffectUniversalImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const EffectComplexImpl& element);
 
 }
 
