@@ -285,6 +285,12 @@ public:
     template<PredicateCategory P, std::ranges::forward_range Iterable>
     GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_ids) const;
 
+    template<PredicateCategory P>
+    void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
+
+    template<PredicateCategory P>
+    auto get_ground_atoms() const;
+
     // Object
     Object get_object(size_t object_id) const;
 
@@ -341,6 +347,23 @@ GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& a
     auto result = GroundAtomList<P> {};
     get_ground_atoms_from_indices(atom_ids, result);
     return result;
+}
+
+template<PredicateCategory P>
+void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
+{
+    out_ground_atoms.clear();
+    for (const auto& atom : get_factory<GroundAtomFactory<P>>())
+    {
+        out_ground_atoms.push_back(atom);
+    }
+}
+
+template<PredicateCategory P>
+auto PDDLFactories::get_ground_atoms() const
+{
+    const auto& factory = get_factory<GroundAtomFactory<P>>();
+    return std::ranges::subrange(factory.begin(), factory.end());
 }
 
 template<std::ranges::forward_range Iterable>
