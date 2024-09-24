@@ -20,6 +20,8 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/search/plan.hpp"
 
+#include <chrono>
+
 namespace mimir
 {
 
@@ -43,15 +45,17 @@ void DefaultBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl
 
 void DefaultBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
+    auto now_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::cout << "[BrFS] Finished state expansion until g-layer " << g_value << " with num expanded states " << num_expanded_states
-              << " and num generated states " << num_generated_states << std::endl;
+              << " and num generated states " << num_generated_states << " (" << now_time_ms - m_start_time_ms << " ms)" << std::endl;
 }
 
 void DefaultBrFSAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
 
 void DefaultBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) const
-{  //
+{
     std::cout << "[BrFS] Search started." << std::endl;
+    m_start_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void DefaultBrFSAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl; }

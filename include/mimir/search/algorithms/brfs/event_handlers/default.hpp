@@ -20,8 +20,6 @@
 
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 
-#include <iostream>
-
 namespace mimir
 {
 
@@ -31,6 +29,9 @@ namespace mimir
 class DefaultBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>
 {
 private:
+    /* Members */
+    mutable long m_start_time_ms;
+
     /* Implement BrFSAlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<DefaultBrFSAlgorithmEventHandler>;
 

@@ -52,7 +52,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
 
 - **Grounded Successor Generator:**
   Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
-  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR, 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states.
+  This set is then used to initialize the data structure outlined in the article [*"The Fast Downward Planning System"* by Malte Helmert (JAIR 2006)](https://jair.org/index.php/jair/article/view/10457) to efficiently identify all applicable actions in given states.
   While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State Representation:**
