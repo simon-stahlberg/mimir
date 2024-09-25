@@ -29,9 +29,6 @@ namespace mimir
 class DefaultAStarAlgorithmEventHandler : public StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>
 {
 private:
-    /* Members */
-    mutable long m_start_time_ms;
-
     /* Implement StaticAStarAlgorithmEventHandlerBase interface */
     friend class StaticAStarAlgorithmEventHandlerBase<DefaultAStarAlgorithmEventHandler>;
 

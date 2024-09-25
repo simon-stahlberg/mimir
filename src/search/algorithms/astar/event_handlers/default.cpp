@@ -46,9 +46,8 @@ void DefaultAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem
 
 void DefaultAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
-    auto now_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
     std::cout << "[AStar] Finished state expansion until f-layer " << f_value << " with num expanded states " << num_expanded_states
-              << " and num generated states " << num_generated_states << " (" << now_time_ms - m_start_time_ms << " ms)"  << std::endl;
+              << " and num generated states " << num_generated_states << " (" << get_statistics().get_current_search_time_ms().count() << " ms)" << std::endl;
 }
 
 void DefaultAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) const {}
@@ -56,7 +55,6 @@ void DefaultAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem
 void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) const
 {
     std::cout << "[AStar] Search started." << std::endl;
-    m_start_time_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
 void DefaultAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }
