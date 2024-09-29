@@ -18,6 +18,7 @@
 #include "mimir/formalism/ground_literal.hpp"
 
 #include "formatter.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/predicate.hpp"
 
@@ -54,9 +55,44 @@ const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
     return m_atom;
 }
 
+template<PredicateCategory P>
+Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLFactories& pddl_factories) const
+{
+    return pddl_factories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_factories));
+}
+
 template class GroundLiteralImpl<Static>;
 template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
+
+template<PredicateCategory P>
+LiteralList<P> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories)
+{
+    LiteralList<P> literals;
+    std::map<Object, size_t> parameter_indices;
+    for (const auto& ground_literal : ground_literals)
+    {
+        TermList terms;
+        for (const auto& object : ground_literal->get_atom()->get_objects())
+        {
+            if (!parameter_indices.contains(object))
+            {
+                parameter_indices.emplace(object, parameter_indices.size());
+            }
+            const auto parameter_index = parameter_indices.at(object);
+            const auto variable_name = "x" + std::to_string(parameter_index);
+            const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+            const auto term = pddl_factories.get_or_create_term_variable(variable);
+            terms.emplace_back(term);
+        }
+        literals.emplace_back(ground_literal->lift(terms, pddl_factories));
+    }
+    return literals;
+}
+
+template LiteralList<Static> lift(const GroundLiteralList<Static>&, PDDLFactories&);
+template LiteralList<Fluent> lift(const GroundLiteralList<Fluent>&, PDDLFactories&);
+template LiteralList<Derived> lift(const GroundLiteralList<Derived>&, PDDLFactories&);
 
 template<PredicateCategory P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)

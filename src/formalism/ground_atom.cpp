@@ -18,8 +18,10 @@
 #include "mimir/formalism/ground_atom.hpp"
 
 #include "formatter.hpp"
+#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include <map>
 
 namespace mimir
 {
@@ -63,9 +65,44 @@ size_t GroundAtomImpl<P>::get_arity() const
     return m_objects.size();
 }
 
+template<PredicateCategory P>
+Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLFactories& pddl_factories) const
+{
+    return pddl_factories.get_or_create_atom(m_predicate, terms);
+}
+
 template class GroundAtomImpl<Static>;
 template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
+
+template<PredicateCategory P>
+AtomList<P> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories)
+{
+    AtomList<P> atoms;
+    std::map<Object, size_t> parameter_indices;
+    for (const auto& ground_atom : ground_atoms)
+    {
+        TermList terms;
+        for (const auto& object : ground_atom->get_objects())
+        {
+            if (!parameter_indices.contains(object))
+            {
+                parameter_indices.emplace(object, parameter_indices.size());
+            }
+            const auto parameter_index = parameter_indices.at(object);
+            const auto variable_name = "x" + std::to_string(parameter_index);
+            const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+            const auto term = pddl_factories.get_or_create_term_variable(variable);
+            terms.emplace_back(term);
+        }
+        atoms.emplace_back(ground_atom->lift(terms, pddl_factories));
+    }
+    return atoms;
+}
+
+template AtomList<Static> lift(const GroundAtomList<Static>&, PDDLFactories&);
+template AtomList<Fluent> lift(const GroundAtomList<Fluent>&, PDDLFactories&);
+template AtomList<Derived> lift(const GroundAtomList<Derived>&, PDDLFactories&);
 
 template<PredicateCategory P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)

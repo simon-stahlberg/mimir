@@ -1,4 +1,5 @@
 #include "init_declarations.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 
 using namespace mimir;
 
@@ -497,7 +498,8 @@ void init_pymimir(py::module_& m)
             .def("get_objects", [](const GroundAtomImpl<Tag>& self) { return ObjectList(self.get_objects()); }, py::keep_alive<0, 1>());
 
         static_assert(!py::detail::vector_needs_copy<GroundAtomList<Tag>>::value);
-        list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List");
+        list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
+            .def("lift", [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); }, py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundAtomList<Tag>>(list_class, class_name + "List");
     };
     bind_ground_atom("StaticGroundAtom", Static {});
@@ -514,7 +516,8 @@ void init_pymimir(py::module_& m)
             .def("is_negated", &GroundLiteralImpl<Tag>::is_negated);
 
         static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Tag>>::value);
-        auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List");
+        auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
+            .def("lift", [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); }, py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundLiteralList<Tag>>(list, class_name + "List");
     };
     bind_ground_literal("StaticGroundLiteral", Static {});

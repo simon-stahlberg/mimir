@@ -54,7 +54,11 @@ public:
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
+    Atom<P> lift(const TermList& terms, PDDLFactories& pddl_factories) const;
 };
+
+template<PredicateCategory P>
+extern AtomList<P> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories);
 
 template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);

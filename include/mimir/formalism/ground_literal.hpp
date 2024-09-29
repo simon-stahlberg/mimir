@@ -53,7 +53,11 @@ public:
     Index get_index() const;
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;
+    Literal<P> lift(const TermList& terms, PDDLFactories& pddl_factories) const;
 };
+
+template<PredicateCategory P>
+extern LiteralList<P> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories);
 
 template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);
