@@ -46,7 +46,6 @@ PDDLFactories::PDDLFactories() :
                 GroundFunctionFactory(),
                 FunctionSkeletonFactory(),
                 EffectSimpleFactory(),
-                EffectConditionalFactory(),
                 EffectUniversalFactory(),
                 ActionFactory(),
                 AxiomFactory(),
@@ -222,36 +221,21 @@ EffectSimple PDDLFactories::get_or_create_simple_effect(Literal<Fluent> effect)
     return m_factories.get<EffectSimpleFactory>().get_or_create<EffectSimpleImpl>(std::move(effect));
 }
 
-EffectConditional PDDLFactories::get_or_create_conditional_effect(LiteralList<Static> static_conditions,
-                                                                  LiteralList<Fluent> fluent_conditions,
-                                                                  LiteralList<Derived> derived_conditions,
-                                                                  Literal<Fluent> effect)
+EffectComplex PDDLFactories::get_or_create_complex_effect(VariableList parameters,
+                                                          LiteralList<Static> static_conditions,
+                                                          LiteralList<Fluent> fluent_conditions,
+                                                          LiteralList<Derived> derived_conditions,
+                                                          Literal<Fluent> effect)
 {
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return m_factories.get<EffectConditionalFactory>().get_or_create<EffectConditionalImpl>(std::move(static_conditions),
-                                                                                            std::move(fluent_conditions),
-                                                                                            std::move(derived_conditions),
-                                                                                            std::move(effect));
-}
-
-EffectUniversal PDDLFactories::get_or_create_universal_effect(VariableList parameters,
-                                                              LiteralList<Static> static_conditions,
-                                                              LiteralList<Fluent> fluent_conditions,
-                                                              LiteralList<Derived> derived_conditions,
-                                                              Literal<Fluent> effect)
-{
-    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-
-    return m_factories.get<EffectUniversalFactory>().get_or_create<EffectUniversalImpl>(std::move(parameters),
-                                                                                        std::move(static_conditions),
-                                                                                        std::move(fluent_conditions),
-                                                                                        std::move(derived_conditions),
-                                                                                        std::move(effect));
+    return m_factories.get<EffectUniversalFactory>().get_or_create<EffectComplexImpl>(std::move(parameters),
+                                                                                      std::move(static_conditions),
+                                                                                      std::move(fluent_conditions),
+                                                                                      std::move(derived_conditions),
+                                                                                      std::move(effect));
 }
 
 Action PDDLFactories::get_or_create_action(std::string name,
@@ -261,8 +245,7 @@ Action PDDLFactories::get_or_create_action(std::string name,
                                            LiteralList<Fluent> fluent_conditions,
                                            LiteralList<Derived> derived_conditions,
                                            EffectSimpleList simple_effects,
-                                           EffectConditionalList conditional_effects,
-                                           EffectUniversalList universal_effects,
+                                           EffectComplexList complex_effects,
                                            FunctionExpression function_expression)
 {
     /* Canonize before uniqueness test */
@@ -271,18 +254,8 @@ Action PDDLFactories::get_or_create_action(std::string name,
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(simple_effects.begin(), simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     // Sort negative conditional effects to the beginning to process them first, additionally sort then by identifier.
-    std::sort(conditional_effects.begin(),
-              conditional_effects.end(),
-              [](const auto& l, const auto& r)
-              {
-                  if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
-                  {
-                      return l->get_index() < r->get_index();
-                  }
-                  return l->get_effect()->is_negated() > r->get_effect()->is_negated();
-              });
-    std::sort(universal_effects.begin(),
-              universal_effects.end(),
+    std::sort(complex_effects.begin(),
+              complex_effects.end(),
               [](const auto& l, const auto& r)
               {
                   if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
@@ -299,8 +272,7 @@ Action PDDLFactories::get_or_create_action(std::string name,
                                                                       std::move(fluent_conditions),
                                                                       std::move(derived_conditions),
                                                                       std::move(simple_effects),
-                                                                      std::move(conditional_effects),
-                                                                      std::move(universal_effects),
+                                                                      std::move(complex_effects),
                                                                       std::move(function_expression));
 }
 

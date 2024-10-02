@@ -41,8 +41,7 @@ ActionImpl::ActionImpl(Index index,
                        LiteralList<Fluent> fluent_conditions,
                        LiteralList<Derived> derived_conditions,
                        EffectSimpleList simple_effects,
-                       EffectConditionalList conditional_effects,
-                       EffectUniversalList universal_effects,
+                       EffectComplexList complex_effects,
                        FunctionExpression function_expression) :
     m_index(index),
     m_name(std::move(name)),
@@ -52,8 +51,7 @@ ActionImpl::ActionImpl(Index index,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_simple_effects(std::move(simple_effects)),
-    m_conditional_effects(std::move(conditional_effects)),
-    m_universal_effects(std::move(universal_effects)),
+    m_complex_effects(std::move(complex_effects)),
     m_function_expression(std::move(function_expression))
 {
     assert(m_original_arity <= m_parameters.size());
@@ -62,8 +60,7 @@ ActionImpl::ActionImpl(Index index,
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
     assert(is_all_unique(m_simple_effects));
-    assert(is_all_unique(m_conditional_effects));
-    assert(is_all_unique(m_universal_effects));
+    assert(is_all_unique(m_complex_effects));
     assert(
         std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
@@ -71,18 +68,8 @@ ActionImpl::ActionImpl(Index index,
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_conditional_effects.begin(),
-                          m_conditional_effects.end(),
-                          [](const auto& l, const auto& r)
-                          {
-                              if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
-                              {
-                                  return l->get_index() < r->get_index();
-                              }
-                              return l->get_effect()->is_negated() > r->get_effect()->is_negated();
-                          }));
-    assert(std::is_sorted(m_universal_effects.begin(),
-                          m_universal_effects.end(),
+    assert(std::is_sorted(m_complex_effects.begin(),
+                          m_complex_effects.end(),
                           [](const auto& l, const auto& r)
                           {
                               if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
@@ -135,9 +122,7 @@ template const LiteralList<Derived>& ActionImpl::get_conditions<Derived>() const
 
 const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
 
-const EffectConditionalList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
-
-const EffectUniversalList& ActionImpl::get_universal_effects() const { return m_universal_effects; }
+const EffectComplexList& ActionImpl::get_complex_effects() const { return m_complex_effects; }
 
 const FunctionExpression& ActionImpl::get_function_expression() const { return m_function_expression; }
 

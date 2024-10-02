@@ -1,4 +1,4 @@
-
+import glob
 import os
 import sys
 import subprocess
@@ -41,6 +41,11 @@ class CMakeBuild(build_ext):
         os.makedirs(temp_directory, exist_ok=True)
 
         # 1. Build and install dependencies and delete the build directory
+        if os.path.exists(f"{ext.sourcedir}/dependencies/installs"):
+            shutil.copytree(f"{ext.sourcedir}/dependencies/installs", temp_directory / "dependencies/installs", dirs_exist_ok=True)
+            for file in glob.glob(f"{temp_directory}/**/CMakeCache.txt", recursive=True):
+                print(f"Removing CMakeCache.txt: ", file)
+                os.remove(file)
 
         subprocess.run(
             ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
@@ -55,6 +60,7 @@ class CMakeBuild(build_ext):
         # 2. Build mimir
 
         cmake_args = [
+            "-G", "Ninja",
             "-DBUILD_PYMIMIR=On",
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
@@ -71,7 +77,6 @@ class CMakeBuild(build_ext):
         subprocess.run(
             ["cmake", "--build", f"{str(temp_directory)}/build", f"-j{multiprocessing.cpu_count()}"] + build_args, cwd=str(temp_directory), check=True
         )
-
 
         # 3. Generate pyi stub files
 

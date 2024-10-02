@@ -140,7 +140,7 @@ private:
     FunctionSkeleton translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton);
     Function translate_lifted(const loki::FunctionImpl& function);
     std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> translate_lifted(const loki::ConditionImpl& condition);
-    std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, FunctionExpression> translate_lifted(const loki::EffectImpl& effect);
+    std::tuple<EffectSimpleList, EffectComplexList, FunctionExpression> translate_lifted(const loki::EffectImpl& effect);
     Action translate_lifted(const loki::ActionImpl& action);
     Axiom translate_lifted(const loki::AxiomImpl& axiom);
     Domain translate_lifted(const loki::DomainImpl& domain);

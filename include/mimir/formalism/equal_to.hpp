@@ -93,15 +93,9 @@ struct UniquePDDLEqualTo<const EffectSimpleImpl*>
 };
 
 template<>
-struct UniquePDDLEqualTo<const EffectConditionalImpl*>
+struct UniquePDDLEqualTo<const EffectComplexImpl*>
 {
-    bool operator()(const EffectConditionalImpl* l, const EffectConditionalImpl* r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<const EffectUniversalImpl*>
-{
-    bool operator()(const EffectUniversalImpl* l, const EffectUniversalImpl* r) const;
+    bool operator()(const EffectComplexImpl* l, const EffectComplexImpl* r) const;
 };
 
 template<>

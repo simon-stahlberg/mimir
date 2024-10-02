@@ -82,6 +82,10 @@ public:
     {
         return std::chrono::duration_cast<std::chrono::milliseconds>(m_search_end_time_point - m_search_start_time_point);
     }
+    std::chrono::milliseconds get_current_search_time_ms() const
+    {
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_search_start_time_point);
+    }
 
     const std::vector<uint64_t>& get_num_generated_until_f_value() const { return m_num_generated_until_f_value; }
     const std::vector<uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }

@@ -130,13 +130,13 @@ class Graphs
 private:
     StaticConsistencyGraph m_precondition;
     // TODO: For universal effects, we do not need edges, lets keep it for simplicity now.
-    std::vector<StaticConsistencyGraph> m_universal_effects;
+    std::vector<StaticConsistencyGraph> m_complex_effects;
 
 public:
     Graphs(Problem problem, Action action, const AssignmentSet<Static>& static_assignment_set);
 
     const StaticConsistencyGraph& get_precondition_graph() const;
-    const std::vector<StaticConsistencyGraph>& get_universal_effect_graphs() const;
+    const std::vector<StaticConsistencyGraph>& get_complex_effect_graphs() const;
 };
 
 /**

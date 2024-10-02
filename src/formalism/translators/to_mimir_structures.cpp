@@ -490,12 +490,11 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, FunctionExpression> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
+std::tuple<EffectSimpleList, EffectComplexList, FunctionExpression> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
     const auto translate_effect_func = [&](const loki::Effect& effect,
                                            EffectSimpleList& ref_simple_effects,
-                                           EffectConditionalList& ref_conditional_effects,
-                                           EffectUniversalList& ref_universal_effects,
+                                           EffectComplexList& ref_complex_effects,
                                            FunctionExpressionList& ref_result_function_expressions)
     {
         auto tmp_effect = effect;
@@ -536,15 +535,10 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
 
             const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
 
-            if (!parameters.empty())
+            if (!(parameters.empty() && static_literals.empty() && fluent_literals.empty() && derived_literals.empty()))
             {
-                ref_universal_effects.push_back(
-                    m_pddl_factories.get_or_create_universal_effect(parameters, static_literals, fluent_literals, derived_literals, fluent_effect));
-            }
-            else if (!(static_literals.empty() && fluent_literals.empty() && derived_literals.empty()))
-            {
-                ref_conditional_effects.push_back(
-                    m_pddl_factories.get_or_create_conditional_effect(static_literals, fluent_literals, derived_literals, fluent_effect));
+                ref_complex_effects.push_back(
+                    m_pddl_factories.get_or_create_complex_effect(parameters, static_literals, fluent_literals, derived_literals, fluent_effect));
             }
             else
             {
@@ -569,8 +563,7 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
     auto effect_ptr = &effect;
 
     auto simple_effects = EffectSimpleList {};
-    auto conditional_effects = EffectConditionalList {};
-    auto universal_effects = EffectUniversalList {};
+    auto complex_effects = EffectComplexList {};
     auto result_function_expressions = FunctionExpressionList {};
 
     // Parse conjunctive part
@@ -578,13 +571,13 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
     {
         for (const auto& nested_effect : effect_and->get_effects())
         {
-            translate_effect_func(nested_effect, simple_effects, conditional_effects, universal_effects, result_function_expressions);
+            translate_effect_func(nested_effect, simple_effects, complex_effects, result_function_expressions);
         }
     }
     else
     {
         // Parse non conjunctive
-        translate_effect_func(effect_ptr, simple_effects, conditional_effects, universal_effects, result_function_expressions);
+        translate_effect_func(effect_ptr, simple_effects, complex_effects, result_function_expressions);
     }
 
     // If more than one action cost effects are given then we take their sum,
@@ -597,7 +590,7 @@ std::tuple<EffectSimpleList, EffectConditionalList, EffectUniversalList, Functio
             this->m_pddl_factories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, result_function_expressions) :
             result_function_expressions.front();
 
-    return std::make_tuple(simple_effects, conditional_effects, universal_effects, cost_function_expression);
+    return std::make_tuple(simple_effects, complex_effects, cost_function_expression);
 }
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
@@ -616,15 +609,13 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 
     // 2. Translate effects
     auto simple_effects = EffectSimpleList {};
-    auto conditional_effects = EffectConditionalList {};
-    auto universal_effects = EffectUniversalList {};
+    auto complex_effects = EffectComplexList {};
     auto function_expression = m_pddl_factories.get_or_create_function_expression_number(1);
     if (action.get_effect().has_value())
     {
-        const auto [simple_effects_, conditional_effects_, universal_effects_, function_expression_] = translate_lifted(*action.get_effect().value());
+        const auto [simple_effects_, complex_effects_, function_expression_] = translate_lifted(*action.get_effect().value());
         simple_effects = simple_effects_;
-        conditional_effects = conditional_effects_;
-        universal_effects = universal_effects_;
+        complex_effects = complex_effects_;
         function_expression = function_expression_;
     }
 
@@ -635,8 +626,7 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
                                                  fluent_literals,
                                                  derived_literals,
                                                  simple_effects,
-                                                 conditional_effects,
-                                                 universal_effects,
+                                                 complex_effects,
                                                  function_expression);
 }
 

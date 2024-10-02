@@ -74,10 +74,7 @@ using GroundFunctionFactory =
 using FunctionSkeletonFactory =
     loki::UniqueFactory<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
 using EffectSimpleFactory = loki::UniqueFactory<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
-using EffectConditionalFactory =
-    loki::UniqueFactory<EffectConditionalImpl, UniquePDDLHasher<const EffectConditionalImpl*>, UniquePDDLEqualTo<const EffectConditionalImpl*>>;
-using EffectUniversalFactory =
-    loki::UniqueFactory<EffectUniversalImpl, UniquePDDLHasher<const EffectUniversalImpl*>, UniquePDDLEqualTo<const EffectUniversalImpl*>>;
+using EffectUniversalFactory = loki::UniqueFactory<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
 using ActionFactory = loki::UniqueFactory<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
 using AxiomFactory = loki::UniqueFactory<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
 using OptimizationMetricFactory =
@@ -111,7 +108,6 @@ using VariadicPDDLConstructorFactory = loki::VariadicContainer<RequirementsFacto
                                                                GroundFunctionFactory,
                                                                FunctionSkeletonFactory,
                                                                EffectSimpleFactory,
-                                                               EffectConditionalFactory,
                                                                EffectUniversalFactory,
                                                                ActionFactory,
                                                                AxiomFactory,
@@ -214,18 +210,12 @@ public:
     /// @brief Get or create a simple effect for the given parameters.
     EffectSimple get_or_create_simple_effect(Literal<Fluent> effect);
 
-    /// @brief Get or create a conditional simple effect for the given parameters.
-    EffectConditional get_or_create_conditional_effect(LiteralList<Static> static_conditions,
-                                                       LiteralList<Fluent> fluent_conditions,
-                                                       LiteralList<Derived> derived_conditions,
-                                                       Literal<Fluent> effect);
-
     /// @brief Get or create a universal conditional simple effect for the given parameters.
-    EffectUniversal get_or_create_universal_effect(VariableList parameters,
-                                                   LiteralList<Static> static_conditions,
-                                                   LiteralList<Fluent> fluent_conditions,
-                                                   LiteralList<Derived> derived_conditions,
-                                                   Literal<Fluent> effect);
+    EffectComplex get_or_create_complex_effect(VariableList parameters,
+                                               LiteralList<Static> static_conditions,
+                                               LiteralList<Fluent> fluent_conditions,
+                                               LiteralList<Derived> derived_conditions,
+                                               Literal<Fluent> effect);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
@@ -235,8 +225,7 @@ public:
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
                                 EffectSimpleList simple_effects,
-                                EffectConditionalList conditional_effects,
-                                EffectUniversalList universal_effects,
+                                EffectComplexList complex_effects,
                                 FunctionExpression function_expression);
 
     /// @brief Get or create a derived predicate for the given parameters.
@@ -296,6 +285,12 @@ public:
     template<PredicateCategory P, std::ranges::forward_range Iterable>
     GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_ids) const;
 
+    template<PredicateCategory P>
+    void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
+
+    template<PredicateCategory P>
+    auto get_ground_atoms() const;
+
     // Object
     Object get_object(size_t object_id) const;
 
@@ -352,6 +347,23 @@ GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& a
     auto result = GroundAtomList<P> {};
     get_ground_atoms_from_indices(atom_ids, result);
     return result;
+}
+
+template<PredicateCategory P>
+void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
+{
+    out_ground_atoms.clear();
+    for (const auto& atom : get_factory<GroundAtomFactory<P>>())
+    {
+        out_ground_atoms.push_back(atom);
+    }
+}
+
+template<PredicateCategory P>
+auto PDDLFactories::get_ground_atoms() const
+{
+    const auto& factory = get_factory<GroundAtomFactory<P>>();
+    return std::ranges::subrange(factory.begin(), factory.end());
 }
 
 template<std::ranges::forward_range Iterable>

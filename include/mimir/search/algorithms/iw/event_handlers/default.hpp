@@ -20,8 +20,6 @@
 
 #include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
 
-#include <iostream>
-
 namespace mimir
 {
 

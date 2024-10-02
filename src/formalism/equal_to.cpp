@@ -47,8 +47,8 @@ bool UniquePDDLEqualTo<const ActionImpl*>::operator()(const ActionImpl* l, const
     {
         return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters()) && (l->get_conditions<Static>() == r->get_conditions<Static>())
                && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>()) && (l->get_conditions<Derived>() == r->get_conditions<Derived>())
-               && (l->get_simple_effects() == r->get_simple_effects()) && (l->get_conditional_effects() == r->get_conditional_effects())
-               && (l->get_universal_effects() == r->get_universal_effects()) && (l->get_function_expression() == r->get_function_expression());
+               && (l->get_simple_effects() == r->get_simple_effects()) && (l->get_complex_effects() == r->get_complex_effects())
+               && (l->get_function_expression() == r->get_function_expression());
     }
     return true;
 }
@@ -99,17 +99,7 @@ bool UniquePDDLEqualTo<const EffectSimpleImpl*>::operator()(const EffectSimpleIm
     return true;
 }
 
-bool UniquePDDLEqualTo<const EffectConditionalImpl*>::operator()(const EffectConditionalImpl* l, const EffectConditionalImpl* r) const
-{
-    if (&l != &r)
-    {
-        return (l->get_effect() == r->get_effect()) && (l->get_conditions<Static>() == r->get_conditions<Static>())
-               && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>()) && (l->get_conditions<Derived>() == r->get_conditions<Derived>());
-    }
-    return true;
-}
-
-bool UniquePDDLEqualTo<const EffectUniversalImpl*>::operator()(const EffectUniversalImpl* l, const EffectUniversalImpl* r) const
+bool UniquePDDLEqualTo<const EffectComplexImpl*>::operator()(const EffectComplexImpl* l, const EffectComplexImpl* r) const
 {
     if (&l != &r)
     {

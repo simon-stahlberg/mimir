@@ -3,6 +3,9 @@
 .vscode/settings.json
 .vscode/tasks.json
 
+.idea
+cmake-build-*
+
 # Python build artefacts
 __pycache__
 MANIFEST.in

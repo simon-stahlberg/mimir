@@ -50,7 +50,7 @@ private:
     AxiomEvaluator m_axiom_evaluator;
 
     std::unordered_map<Action, ConditionGrounder<State>> m_action_precondition_grounders;
-    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_universal_effects;
+    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_complex_effects;
 
     FlatActionSet m_flat_actions;
     GroundActionList m_actions_by_index;

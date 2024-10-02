@@ -115,15 +115,9 @@ struct UniquePDDLHasher<const EffectSimpleImpl*>
 };
 
 template<>
-struct UniquePDDLHasher<const EffectConditionalImpl*>
+struct UniquePDDLHasher<const EffectComplexImpl*>
 {
-    size_t operator()(const EffectConditionalImpl* e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const EffectUniversalImpl*>
-{
-    size_t operator()(const EffectUniversalImpl* e) const;
+    size_t operator()(const EffectComplexImpl* e) const;
 };
 
 template<>

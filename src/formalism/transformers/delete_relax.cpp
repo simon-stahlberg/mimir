@@ -51,32 +51,18 @@ EffectSimpleList DeleteRelaxTransformer::transform_impl(const EffectSimpleList& 
     return positive_simple_effects;
 }
 
-EffectConditionalList DeleteRelaxTransformer::transform_impl(const EffectConditionalList& effects)
+EffectComplexList DeleteRelaxTransformer::transform_impl(const EffectComplexList& effects)
 {
-    auto positive_conditional_effects = EffectConditionalList {};
-    for (const auto& conditional_effect : effects)
+    auto positive_complex_effects = EffectComplexList {};
+    for (const auto& complex_effect : effects)
     {
-        const auto positive_conditional_effect = this->transform(*conditional_effect);
-        if (positive_conditional_effect)
+        const auto positive_complex_effect = this->transform(*complex_effect);
+        if (positive_complex_effect)
         {
-            positive_conditional_effects.push_back(positive_conditional_effect);
+            positive_complex_effects.push_back(positive_complex_effect);
         }
     }
-    return uniquify_elements(positive_conditional_effects);
-}
-
-EffectUniversalList DeleteRelaxTransformer::transform_impl(const EffectUniversalList& effects)
-{
-    auto positive_universal_effects = EffectUniversalList {};
-    for (const auto& universal_effect : effects)
-    {
-        const auto positive_universal_effect = this->transform(*universal_effect);
-        if (positive_universal_effect)
-        {
-            positive_universal_effects.push_back(positive_universal_effect);
-        }
-    }
-    return uniquify_elements(positive_universal_effects);
+    return uniquify_elements(positive_complex_effects);
 }
 
 ActionList DeleteRelaxTransformer::transform_impl(const ActionList& actions)
@@ -118,22 +104,7 @@ EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effe
     return this->m_pddl_factories.get_or_create_simple_effect(literal);
 }
 
-EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
-{
-    auto simple_effect = this->transform(*effect.get_effect());
-    if (!simple_effect)
-    {
-        return nullptr;
-    }
-
-    auto static_conditions = filter_positive_literals(this->transform(effect.get_conditions<Static>()));
-    auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
-    auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
-
-    return this->m_pddl_factories.get_or_create_conditional_effect(static_conditions, fluent_conditions, derived_conditions, simple_effect);
-}
-
-EffectUniversal DeleteRelaxTransformer::transform_impl(const EffectUniversalImpl& effect)
+EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
 {
     auto simple_effect = this->transform(*effect.get_effect());
     if (!simple_effect)
@@ -146,15 +117,14 @@ EffectUniversal DeleteRelaxTransformer::transform_impl(const EffectUniversalImpl
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
 
-    return this->m_pddl_factories.get_or_create_universal_effect(parameters, static_conditions, fluent_conditions, derived_conditions, simple_effect);
+    return this->m_pddl_factories.get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, simple_effect);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
     auto simple_effects = this->transform(action.get_simple_effects());
-    auto conditional_effects = this->transform(action.get_conditional_effects());
-    auto universal_effects = this->transform(action.get_universal_effects());
-    if (m_remove_useless_actions_and_axioms && simple_effects.empty() && conditional_effects.empty() && universal_effects.empty())
+    auto complex_effects = this->transform(action.get_complex_effects());
+    if (m_remove_useless_actions_and_axioms && simple_effects.empty() && complex_effects.empty())
     {
         return nullptr;
     }
@@ -172,8 +142,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                              fluent_conditions,
                                                                              derived_conditions,
                                                                              simple_effects,
-                                                                             conditional_effects,
-                                                                             universal_effects,
+                                                                             complex_effects,
                                                                              cost_expression);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
