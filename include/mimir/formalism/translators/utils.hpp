@@ -69,14 +69,14 @@ extern loki::Condition flatten(const loki::ConditionForallImpl& condition, loki:
  *
  * A > (B > e)    =>  (A and B) > e
  */
-extern loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki::PDDLFactories& pddl_factories);
+extern loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
  * Flatten conditional forall
  *
  * forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
  */
-extern loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDLFactories& pddl_factories);
+extern loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLFactories& pddl_factories);
 
 /**
  * Axioms

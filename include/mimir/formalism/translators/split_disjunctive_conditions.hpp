@@ -45,7 +45,7 @@ private:
      *
      * 1. (phi or psi) > e  => (phi > e) and (psi > e)
      */
-    loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect);
+    loki::Effect translate_impl(const loki::EffectCompositeWhenImpl& effect);
     /**
      * Split actions and actions at conditions
      *
