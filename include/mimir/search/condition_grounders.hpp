@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
 
 #include "mimir/algorithms/kpkc.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
@@ -308,6 +309,8 @@ public:
             }
         }
     }
+
+    Problem get_problem() const { return m_problem; }
 
     friend std::ostream& operator<<(std::ostream& out, const ConditionGrounder<State>& condition_grounder)
     {

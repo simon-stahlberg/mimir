@@ -66,33 +66,36 @@ template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
 
 template<PredicateCategory P>
-LiteralList<P> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories)
+std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories)
 {
+    VariableList variables;
     LiteralList<P> literals;
-    std::map<Object, size_t> parameter_indices;
+    std::map<Object, Variable> to_variable;
     for (const auto& ground_literal : ground_literals)
     {
         TermList terms;
         for (const auto& object : ground_literal->get_atom()->get_objects())
         {
-            if (!parameter_indices.contains(object))
+            if (!to_variable.contains(object))
             {
-                parameter_indices.emplace(object, parameter_indices.size());
+                const auto parameter_index = to_variable.size();
+                const auto variable_name = "x" + std::to_string(parameter_index);
+                const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+                variables.emplace_back(variable);
+                to_variable.emplace(object, variable);
             }
-            const auto parameter_index = parameter_indices.at(object);
-            const auto variable_name = "x" + std::to_string(parameter_index);
-            const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+            const auto variable = to_variable.at(object);
             const auto term = pddl_factories.get_or_create_term_variable(variable);
             terms.emplace_back(term);
         }
         literals.emplace_back(ground_literal->lift(terms, pddl_factories));
     }
-    return literals;
+    return std::make_pair(variables, literals);
 }
 
-template LiteralList<Static> lift(const GroundLiteralList<Static>&, PDDLFactories&);
-template LiteralList<Fluent> lift(const GroundLiteralList<Fluent>&, PDDLFactories&);
-template LiteralList<Derived> lift(const GroundLiteralList<Derived>&, PDDLFactories&);
+template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralList<Static>&, PDDLFactories&);
+template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, PDDLFactories&);
+template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, PDDLFactories&);
 
 template<PredicateCategory P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)

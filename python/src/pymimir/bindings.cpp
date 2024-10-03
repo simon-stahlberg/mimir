@@ -1,5 +1,6 @@
 #include "init_declarations.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/search/condition_grounders/conjunction_grounder.hpp"
 
 using namespace mimir;
 
@@ -1048,6 +1049,20 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
     def_opaque_vector_repr<GroundActionList>(list_class, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
+
+
+    /* ConjunctionGrounder */
+
+    py::class_<LiftedConjunctionGrounder, std::shared_ptr<LiftedConjunctionGrounder>>(m,
+                                                                                      "LiftedConjunctionGrounder")  //
+        .def(py::init<Problem, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, std::shared_ptr<PDDLFactories>>(),
+             py::arg("problem"),
+             py::arg("variables"),
+             py::arg("static_literals"),
+             py::arg("fluent_literals"),
+             py::arg("derived_literals"),
+             py::arg("pddl_factories"))
+        .def("ground", &LiftedConjunctionGrounder::ground, py::arg("state"));
 
     /* ApplicableActionGenerators */
 

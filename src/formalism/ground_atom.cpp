@@ -76,33 +76,36 @@ template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
 
 template<PredicateCategory P>
-AtomList<P> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories)
+std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories)
 {
+    VariableList variables;
     AtomList<P> atoms;
-    std::map<Object, size_t> parameter_indices;
+    std::map<Object, Variable> to_variable;
     for (const auto& ground_atom : ground_atoms)
     {
         TermList terms;
         for (const auto& object : ground_atom->get_objects())
         {
-            if (!parameter_indices.contains(object))
+            if (!to_variable.contains(object))
             {
-                parameter_indices.emplace(object, parameter_indices.size());
+                const auto parameter_index = to_variable.size();
+                const auto variable_name = "x" + std::to_string(parameter_index);
+                const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+                variables.emplace_back(variable);
+                to_variable.emplace(object, variable);
             }
-            const auto parameter_index = parameter_indices.at(object);
-            const auto variable_name = "x" + std::to_string(parameter_index);
-            const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+            const auto variable = to_variable.at(object);
             const auto term = pddl_factories.get_or_create_term_variable(variable);
             terms.emplace_back(term);
         }
         atoms.emplace_back(ground_atom->lift(terms, pddl_factories));
     }
-    return atoms;
+    return std::make_pair(variables, atoms);
 }
 
-template AtomList<Static> lift(const GroundAtomList<Static>&, PDDLFactories&);
-template AtomList<Fluent> lift(const GroundAtomList<Fluent>&, PDDLFactories&);
-template AtomList<Derived> lift(const GroundAtomList<Derived>&, PDDLFactories&);
+template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Static>&, PDDLFactories&);
+template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLFactories&);
+template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLFactories&);
 
 template<PredicateCategory P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)

@@ -57,7 +57,7 @@ public:
 };
 
 template<PredicateCategory P>
-extern LiteralList<P> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories);
+extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories);
 
 template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);

@@ -121,6 +121,7 @@ from _pymimir import (
     IWAlgorithm,
     IWAlgorithmStatistics,
     LiftedApplicableActionGenerator,
+    LiftedConjunctionGrounder,
     SearchNodeStatus,
     SearchStatus,
     SIWAlgorithm,
@@ -181,4 +182,3 @@ from _pymimir import (
 )
 
 from .hints import *
-
