@@ -927,7 +927,7 @@ void init_pymimir(py::module_& m)
     bind_ground_atoms_range("get_derived_ground_atoms", Derived {});
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
-        .def(py::init<std::string, std::string>())
+        .def(py::init<std::string, std::string>(), py::arg("domain_path"), py::arg("problem_path"))
         .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference_internal)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &PDDLParser::get_pddl_factories);
@@ -1116,8 +1116,8 @@ void init_pymimir(py::module_& m)
     py::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<LiftedApplicableActionGenerator>>(
         m,
         "LiftedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>());
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
 
     // Grounded
     py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
@@ -1136,12 +1136,12 @@ void init_pymimir(py::module_& m)
     py::class_<GroundedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<GroundedApplicableActionGenerator>>(
         m,
         "GroundedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>())
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>());
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>(), py::arg("applicable_action_generator"))
         .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::keep_alive<0, 1>())  // keep_alive because value type
         .def("get_or_create_state",
              &StateRepository::get_or_create_state,
@@ -1208,11 +1208,15 @@ void init_pymimir(py::module_& m)
                                                                        "AStarAlgorithmEventHandlerBase")  //
         .def(py::init<bool>(), py::arg("quiet") = true);
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<IHeuristic>>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<IHeuristic>>(), py::arg("applicable_action_generator"), py::arg("heuristic"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IHeuristic>,
-                      std::shared_ptr<IAStarAlgorithmEventHandler>>());
+                      std::shared_ptr<IAStarAlgorithmEventHandler>>(),
+             py::arg("applicable_action_generator"),
+             py::arg("state_repository"),
+             py::arg("heuristic"),
+             py::arg("event_handler"));
 
     // BrFS
     py::class_<BrFSAlgorithmStatistics>(m, "BrFSAlgorithmStatistics")  //
@@ -1235,8 +1239,11 @@ void init_pymimir(py::module_& m)
         "DebugBrFSAlgorithmEventHandler")  //
         .def(py::init<>());
     py::class_<BrFSAlgorithm, IAlgorithm, std::shared_ptr<BrFSAlgorithm>>(m, "BrFSAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>())
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IBrFSAlgorithmEventHandler>>());
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>(), py::arg("applicable_action_generator"))
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IBrFSAlgorithmEventHandler>>(),
+             py::arg("applicable_action_generator"),
+             py::arg("state_repository"),
+             py::arg("event_handler"));
 
     // IW
     py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
@@ -1265,12 +1272,17 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>(), py::arg("applicable_action_generator"), py::arg("max_arity"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
                       size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
-                      std::shared_ptr<IIWAlgorithmEventHandler>>());
+                      std::shared_ptr<IIWAlgorithmEventHandler>>(),
+             py::arg("applicable_action_generator"),
+             py::arg("max_arity"),
+             py::arg("state_repository"),
+             py::arg("brfs_event_handler"),
+             py::arg("iw_event_handler"));
 
     // SIW
     py::class_<SIWAlgorithmStatistics>(m, "SIWAlgorithmStatistics")  //
@@ -1283,13 +1295,19 @@ void init_pymimir(py::module_& m)
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>())
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>(), py::arg("applicable_action_generator"), py::arg("max_arity"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
                       size_t,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,
-                      std::shared_ptr<ISIWAlgorithmEventHandler>>());
+                      std::shared_ptr<ISIWAlgorithmEventHandler>>(),
+             py::arg("applicable_action_generator"),
+             py::arg("max_arity"),
+             py::arg("state_repository"),
+             py::arg("brfs_event_handler"),
+             py::arg("iw_event_handler"),
+             py::arg("siw_event_handler"));
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets
@@ -1498,7 +1516,11 @@ void init_pymimir(py::module_& m)
 
     // Certificate
     py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
-        .def(py::init<size_t, size_t, std::string, ColorList>())
+        .def(py::init<size_t, size_t, std::string, ColorList>(),
+             py::arg("num_vertices"),
+             py::arg("num_edges"),
+             py::arg("nauty_certificate"),
+             py::arg("canonical_initial_coloring"))
         .def("__eq__", &Certificate::operator==)
         .def("__hash__", [](const Certificate& self) { return std::hash<Certificate>()(self); })
         .def("get_num_vertices", &Certificate::get_num_vertices)
@@ -1845,8 +1867,8 @@ void init_pymimir(py::module_& m)
 
     // Abstraction
     py::class_<Abstraction, std::shared_ptr<Abstraction>>(m, "Abstraction")  //
-        .def(py::init<FaithfulAbstraction>())
-        .def(py::init<GlobalFaithfulAbstraction>())
+        .def(py::init<FaithfulAbstraction>(), py::arg("faithful_abstraction"))
+        .def(py::init<GlobalFaithfulAbstraction>(), py::arg("global_faithful_abstraction"))
         .def("get_problem", &Abstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &Abstraction::get_pddl_factories)
         .def("get_aag", &Abstraction::get_aag)
@@ -2237,8 +2259,8 @@ void init_pymimir(py::module_& m)
     // DenseNautyGraph
     py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
         .def(py::init<>())
-        .def(py::init<int>())
-        .def(py::init<StaticVertexColoredDigraph>())
+        .def(py::init<int>(), py::arg("num_vertices"))
+        .def(py::init<StaticVertexColoredDigraph>(), py::arg("digraph"))
         .def("add_edge", &nauty_wrapper::DenseGraph::add_edge, py::arg("source"), py::arg("target"))
         .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
         .def("clear", &nauty_wrapper::DenseGraph::clear, py::arg("num_vertices"));
@@ -2246,8 +2268,8 @@ void init_pymimir(py::module_& m)
     // SparseNautyGraph
     py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
         .def(py::init<>())
-        .def(py::init<int>())
-        .def(py::init<StaticVertexColoredDigraph>())
+        .def(py::init<int>(), py::arg("num_vertices"))
+        .def(py::init<StaticVertexColoredDigraph>(), py::arg("digraph"))
         .def("add_edge", &nauty_wrapper::SparseGraph::add_edge, py::arg("source"), py::arg("target"))
         .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
         .def("clear", &nauty_wrapper::SparseGraph::clear, py::arg("num_vertices"));
