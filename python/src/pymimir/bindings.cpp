@@ -1114,13 +1114,13 @@ void init_pymimir(py::module_& m)
                  ss << ")";
                  return ss.str();
              })
-        .def("get_fluent_atoms",
+        .def("get_fluent_atom_indices",
              [](State self)
              {
                  auto atoms = self.get_atoms<Fluent>();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("get_derived_atoms",
+        .def("get_derived_atom_indices",
              [](State self)
              {
                  auto atoms = self.get_atoms<Derived>();
