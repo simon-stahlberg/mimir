@@ -55,6 +55,34 @@ TEST_F(PymimirFixture, get_goal_condition)
 }
 
 
+TEST_F(PymimirFixture, state_space_state_iter)
+{
+    py::iterator state_space_iter;
+    // we create a scope to ensure that the state_space_iter actually keeps the c++ object alive during its own lifetime
+    auto [states_view, num_states] = [&]
+    {
+        auto state_space =
+            pymimir()
+                .attr("StateSpace")
+                .attr("create")(std::string(project_dir) + "data/blocks_4/domain.pddl", std::string(project_dir) + "data/blocks_4/test_problem.pddl");
+        const auto& state_space_cpp = py::cast<const mimir::StateSpace&>(state_space);
+        state_space_iter = state_space.attr("get_states_iter")();
+        return std::pair{state_space_cpp.get_states_view(), state_space_cpp.get_num_states()};
+    }();
+    auto state_view_iter = states_view.begin();
+    auto state_view_end = states_view.end();
+    size_t count = 0;
+    for (; count < num_states; ++count)
+    {
+        auto py_state = py::cast<mimir::State>(*state_space_iter);
+        auto cpp_state = *state_view_iter;
+        EXPECT_EQ(py_state, cpp_state);
+        std::ranges::advance(state_space_iter, 1, state_space_iter.end());
+        std::ranges::advance(state_view_iter, 1, state_view_end);
+    }
+    EXPECT_EQ(count, num_states);
+}
+
 TEST_F(PymimirFixture, parser_factory_atom_lifetime)
 {
     auto parser =
