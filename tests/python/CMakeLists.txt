@@ -4,6 +4,9 @@ find_package(GTest)
 
 find_package(pybind11)
 
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
+
 add_executable(pymimir_tests
         main_tests.cpp
         test_bindings.cpp
