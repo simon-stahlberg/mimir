@@ -1371,7 +1371,7 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &StateVertex::operator==)
         .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::keep_alive<0, 1>());
+        .def("get_state_vertex", [](const StateVertex& self) { return get_state(self); }, py::keep_alive<0, 1>());
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
@@ -1473,8 +1473,15 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
-        .def("get_state", &StateSpace::get_state, py::arg("state_index"))
-        .def("get_states", &StateSpace::get_states, py::return_value_policy::reference_internal)
+        .def("get_state", &StateSpace::get_state, py::arg("state_index"), py::return_value_policy::reference_internal)
+        .def("get_states_iter",
+             [](const StateSpace& self)
+             {
+                 auto view = self.get_states_view();
+                 return py::make_iterator(view.begin(), view.end(), py::keep_alive<0, 1>());
+             })
+        .def("get_state_vertex", &StateSpace::get_state_vertex, py::arg("state_index"), py::return_value_policy::reference_internal)
+        .def("get_state_vertices", &StateSpace::get_state_vertices, py::return_value_policy::reference_internal)
         .def("get_state_index", &StateSpace::get_state_index, py::arg("state"))
         .def("get_initial_state", &StateSpace::get_initial_state)
         .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
@@ -1618,7 +1625,7 @@ void init_pymimir(py::module_& m)
     py::class_<FaithfulAbstractStateVertex>(m, "FaithfulAbstractStateVertex")
         .def("get_index", &FaithfulAbstractStateVertex::get_index)
         .def(
-            "get_states",
+            "get_state_vertices",
             [](const FaithfulAbstractStateVertex& self) { return std::vector<State>(get_states(self).begin(), get_states(self).end()); },
             py::keep_alive<0, 1>())
         .def(
@@ -1685,7 +1692,7 @@ void init_pymimir(py::module_& m)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index, py::arg("state"))
-        .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
+        .def("get_state_vertices", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_concrete_to_abstract_state", &FaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
@@ -1825,7 +1832,7 @@ void init_pymimir(py::module_& m)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
         .def("get_abstract_state_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state"))
         .def("get_abstract_state_index", py::overload_cast<Index>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state_index"))
-        .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
+        .def("get_state_vertices", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_concrete_to_abstract_state", &GlobalFaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
         .def("get_global_state_index_to_state_index",
              &GlobalFaithfulAbstraction::get_global_state_index_to_state_index,
@@ -2002,7 +2009,7 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
+        .def("get_state_vertices", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
