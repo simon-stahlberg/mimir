@@ -162,8 +162,10 @@ public:
     const GraphType& get_graph() const;
 
     /* States */
-    const StateVertexList& get_states() const;
+    State get_state(Index state) const;
     const StateVertex& get_state(Index state) const;
+    const StateVertexList& get_state_vertices() const;
+    const StateVertex& get_state_vertex(Index state) const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(Index state) const;
     template<IsTraversalDirection Direction>
