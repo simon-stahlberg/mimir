@@ -24,6 +24,37 @@ TEST_F(PymimirFixture, get_ground_atoms)
     EXPECT_GE(py::len(atoms), py::len(fluent_atoms) + py::len(derived_atoms) + py::len(static_atoms));
 }
 
+TEST_F(PymimirFixture, get_predicates)
+{
+    auto parser =
+        pymimir().attr("PDDLParser")(std::string(project_dir) + "data/delivery/domain.pddl", std::string(project_dir) + "data/delivery/test_problem.pddl");
+    auto domain = parser.attr("get_domain")();
+    auto static_predicates = domain.attr("get_static_predicates")();
+    EXPECT_EQ(py::len(static_predicates), 5);
+    auto derived_predicates = domain.attr("get_derived_predicates")();
+    EXPECT_EQ(py::len(derived_predicates), 0);
+    auto fluent_predicates = domain.attr("get_fluent_predicates")();
+    EXPECT_EQ(py::len(fluent_predicates), 3);
+    auto predicates = domain.attr("get_predicates")();
+    EXPECT_GE(py::len(predicates), py::len(fluent_predicates) + py::len(derived_predicates) + py::len(static_predicates));
+}
+
+TEST_F(PymimirFixture, get_goal_condition)
+{
+    auto parser =
+        pymimir().attr("PDDLParser")(std::string(project_dir) + "data/delivery/domain.pddl", std::string(project_dir) + "data/delivery/test_problem.pddl");
+    auto problem = parser.attr("get_problem")();
+    auto static_goals = problem.attr("get_static_goal_condition")();
+    EXPECT_EQ(py::len(static_goals), 0);
+    auto derived_goals = problem.attr("get_derived_goal_condition")();
+    EXPECT_EQ(py::len(derived_goals), 0);
+    auto fluent_goals = problem.attr("get_fluent_goal_condition")();
+    EXPECT_EQ(py::len(fluent_goals), 1);
+    auto goals = problem.attr("get_goal_condition")();
+    EXPECT_GE(py::len(goals), py::len(fluent_goals) + py::len(derived_goals) + py::len(static_goals));
+}
+
+
 TEST_F(PymimirFixture, parser_factory_atom_lifetime)
 {
     auto parser =

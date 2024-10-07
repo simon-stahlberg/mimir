@@ -791,6 +791,32 @@ void init_pymimir(py::module_& m)
             "get_derived_predicates",
             [](const DomainImpl& self) { return PredicateList<Derived>(self.get_predicates<Derived>()); },
             py::keep_alive<0, 1>())
+        .def("get_predicates",
+             [](const py::object& py_domain)
+             {
+                 const auto& self = py::cast<const DomainImpl&>(py_domain);
+                 size_t n_preds = self.get_predicates<Static>().size() + self.get_predicates<Fluent>().size() + self.get_predicates<Derived>().size();
+                 py::list all_predicates(n_preds);
+                 int i = 0;
+                 auto append = [&](const auto& preds)
+                 {
+                     for (const auto& pred : preds)
+                     {
+                         auto py_pred = py::cast(pred);
+                         if (!py_pred)
+                         {
+                             throw py::error_already_set();
+                         }
+                         py::detail::keep_alive_impl(py_pred, py_domain);
+                         all_predicates[i] = py_pred;
+                         ++i;
+                     }
+                 };
+                 append(self.get_predicates<Static>());
+                 append(self.get_predicates<Fluent>());
+                 append(self.get_predicates<Derived>());
+                 return all_predicates;
+             })
         .def(
             "get_functions",
             [](const DomainImpl& self) { return FunctionSkeletonList(self.get_functions()); },
@@ -856,7 +882,34 @@ void init_pymimir(py::module_& m)
         .def(
             "get_derived_goal_condition",
             [](const ProblemImpl& self) { return GroundLiteralList<Derived>(self.get_goal_condition<Derived>()); },
-            py::keep_alive<0, 1>());
+            py::keep_alive<0, 1>())
+        .def("get_goal_condition",
+             [](const py::object& py_problem)
+             {
+                 const auto& self = py::cast<const ProblemImpl&>(py_problem);
+                 size_t n_goals =
+                     self.get_goal_condition<Static>().size() + self.get_goal_condition<Fluent>().size() + self.get_goal_condition<Derived>().size();
+                 py::list all_goal_literals(n_goals);
+                 int i = 0;
+                 auto append = [&](const auto& goals)
+                 {
+                     for (const auto& goal : goals)
+                     {
+                         auto py_goal = py::cast(goal);
+                         if (!py_goal)
+                         {
+                             throw py::error_already_set();
+                         }
+                         py::detail::keep_alive_impl(py_goal, py_problem);
+                         all_goal_literals[i] = py_goal;
+                         ++i;
+                     }
+                 };
+                 append(self.get_goal_condition<Static>());
+                 append(self.get_goal_condition<Fluent>());
+                 append(self.get_goal_condition<Derived>());
+                 return all_goal_literals;
+             });
     static_assert(!py::detail::vector_needs_copy<ProblemList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
     def_opaque_vector_repr<ProblemList>(list_class, "ProblemList");
