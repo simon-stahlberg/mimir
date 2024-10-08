@@ -1020,20 +1020,7 @@ void init_pymimir(py::module_& m)
 
                  py::list all_atoms(static_atom_factory.size() + fluent_atom_factory.size() + derived_atom_factory.size());
                  size_t i = 0;
-                 auto append = [&](const auto& atoms)
-                 {
-                     for (const auto& atom : atoms)
-                     {
-                         py::object py_atom = py::cast(atom);
-                         if (!py_atom)
-                         {
-                             throw py::error_already_set();
-                         }
-                         py::detail::keep_alive_impl(py_atom, py_factory);
-                         all_atoms[i] = py::object { py_atom };
-                         i++;
-                     }
-                 };
+                 auto append = [&](const auto& atoms) { insert_into_list(py_factory, all_atoms, atoms, i); };
                  append(static_atom_factory);
                  append(fluent_atom_factory);
                  append(derived_atom_factory);
@@ -1077,6 +1064,20 @@ void init_pymimir(py::module_& m)
         .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference_internal)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &PDDLParser::get_pddl_factories);
+
+    m.def(
+        "parse_pddl",
+        [](const std::string& domain_path, const std::string& problem_path)
+        {
+            auto parser = PDDLParser(domain_path, problem_path);
+            auto pyparser = py::cast(parser);
+            auto pyobj_tuple = std::apply([&](const auto&... objs) { return std::tuple { cast_safe(objs)... }; },
+                                          std::make_tuple(parser.get_domain(), parser.get_problem(), parser.get_pddl_factories()));
+            std::apply([&](const auto&... pyobjs) { (static_cast<void>(py::detail::keep_alive_impl(pyparser, pyobjs)), ...); }, pyobj_tuple);
+            return pyobj_tuple;
+        },
+        py::arg("domain_path"),
+        py::arg("problem_path"));
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Search
@@ -1575,7 +1576,7 @@ void init_pymimir(py::module_& m)
                std::shared_ptr<PDDLFactories> factories,
                std::shared_ptr<IApplicableActionGenerator> aag,
                std::shared_ptr<StateRepository> ssg,
-               const StateSpaceOptions& options) { return StateSpace::create(problem, factories, aag, ssg, options); },
+               const StateSpaceOptions& options) { return StateSpace::create(problem, std::move(factories), std::move(aag), std::move(ssg), options); },
             py::arg("problem"),
             py::arg("factories"),
             py::arg("aag"),
@@ -1626,40 +1627,25 @@ void init_pymimir(py::module_& m)
             py::return_value_policy::reference_internal)
         .def("get_goal_state_indices", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_goal_states",
-             [](py::object self)
+             [](const py::object& self)
              {
                  const auto& space = py::cast<const StateSpace&>(self);
-                 py::list goal_states;
-                 for (auto goal_state :
-                      space.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }))
-                 {
-                     auto py_state = py::cast(goal_state);
-                     if (!py_state)
-                     {
-                         throw py::error_already_set();
-                     }
-                     py::detail::keep_alive_impl(self, py_state);
-                     goal_states.append(py_state);
-                 }
+                 py::list goal_states(space.get_goal_states().size());
+                 insert_into_list(self,
+                                  goal_states,
+                                  space.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }));
                  return goal_states;
              })
         .def("get_deadend_state_indices", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states",
-             [](py::object self)
+             [](const py::object& self)
              {
                  const auto& space = py::cast<const StateSpace&>(self);
-                 py::list deadend_states;
-                 for (auto deadend_state :
-                      space.get_deadend_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }))
-                 {
-                     auto py_state = py::cast(deadend_state);
-                     if (!py_state)
-                     {
-                         throw py::error_already_set();
-                     }
-                     py::detail::keep_alive_impl(self, py_state);
-                     deadend_states.append(py_state);
-                 }
+                 py::list deadend_states(space.get_deadend_states().size());
+                 insert_into_list(self,
+                                  deadend_states,
+                                  space.get_deadend_states()
+                                      | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }));
                  return deadend_states;
              })
         .def(
