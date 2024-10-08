@@ -500,7 +500,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundAtomList<Tag>>::value);
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); }, py::arg("pddl_factories"));
+                         .def(
+                             "lift",
+                             [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
+                             py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundAtomList<Tag>>(list_class, class_name + "List");
     };
     bind_ground_atom("StaticGroundAtom", Static {});
@@ -518,7 +521,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Tag>>::value);
         auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); }, py::arg("pddl_factories"));
+                        .def(
+                            "lift",
+                            [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); },
+                            py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundLiteralList<Tag>>(list, class_name + "List");
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
@@ -1103,7 +1109,6 @@ void init_pymimir(py::module_& m)
     def_opaque_vector_repr<GroundActionList>(list_class, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
 
-
     /* ConjunctionGrounder */
 
     py::class_<LiftedConjunctionGrounder, std::shared_ptr<LiftedConjunctionGrounder>>(m,
@@ -1170,7 +1175,10 @@ void init_pymimir(py::module_& m)
         m,
         "LiftedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     // Grounded
     py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
@@ -1190,7 +1198,10 @@ void init_pymimir(py::module_& m)
         m,
         "GroundedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
@@ -1484,8 +1495,48 @@ void init_pymimir(py::module_& m)
         .def("get_state_vertices", &StateSpace::get_state_vertices, py::return_value_policy::reference_internal)
         .def("get_state_index", &StateSpace::get_state_index, py::arg("state"))
         .def("get_initial_state_index", &StateSpace::get_initial_state)
+        .def(
+            "get_initial_state",
+            [](const StateSpace& self) { return get_state(self.get_state_vertex(self.get_initial_state())); },
+            py::return_value_policy::reference_internal)
         .def("get_goal_state_indices", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_goal_states",
+             [](py::object self)
+             {
+                 const auto& space = py::cast<const StateSpace&>(self);
+                 py::list goal_states;
+                 for (auto goal_state :
+                      space.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }))
+                 {
+                     auto py_state = py::cast(goal_state);
+                     if (!py_state)
+                     {
+                         throw py::error_already_set();
+                     }
+                     py::detail::keep_alive_impl(self, py_state);
+                     goal_states.append(py_state);
+                 }
+                 return goal_states;
+             })
         .def("get_deadend_state_indices", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states",
+             [](py::object self)
+             {
+                 const auto& space = py::cast<const StateSpace&>(self);
+                 py::list deadend_states;
+                 for (auto deadend_state :
+                      space.get_deadend_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }))
+                 {
+                     auto py_state = py::cast(deadend_state);
+                     if (!py_state)
+                     {
+                         throw py::error_already_set();
+                     }
+                     py::detail::keep_alive_impl(self, py_state);
+                     deadend_states.append(py_state);
+                 }
+                 return deadend_states;
+             })
         .def(
             "get_forward_adjacent_states",
             [](const StateSpace& self, Index state)
