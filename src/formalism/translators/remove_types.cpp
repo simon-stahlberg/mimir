@@ -152,7 +152,7 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionForal
     return this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_condition);
 }
 
-loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectConditionalForallImpl& effect)
+loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectCompositeForallImpl& effect)
 {
     // Translate parameters
     auto translated_parameters = this->translate(effect.get_parameters());
@@ -169,9 +169,9 @@ loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectConditional
     // Translate effect
     auto translated_effect = this->translate(*effect.get_effect());
 
-    return this->m_pddl_factories.get_or_create_effect_conditional_forall(
+    return this->m_pddl_factories.get_or_create_effect_composite_forall(
         translated_parameters,
-        this->m_pddl_factories.get_or_create_effect_conditional_when(translated_condition, translated_effect));
+        this->m_pddl_factories.get_or_create_effect_composite_when(translated_condition, translated_effect));
 }
 
 loki::Axiom RemoveTypesTranslator::translate_impl(const loki::AxiomImpl& axiom)

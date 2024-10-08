@@ -76,7 +76,7 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
     return uniquify_elements(split_axioms);
 }
 
-loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::EffectConditionalWhenImpl& effect)
+loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::EffectCompositeWhenImpl& effect)
 {
     const auto& condition = effect.get_condition();
     if (condition && std::holds_alternative<loki::ConditionOrImpl>(*condition))
@@ -85,13 +85,13 @@ loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::Ef
         for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
         {
             split_effects.push_back(
-                this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*part), this->translate(*effect.get_effect())));
+                this->m_pddl_factories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect())));
         }
         return this->m_pddl_factories.get_or_create_effect_and(split_effects);
     }
     else
     {
-        return this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
     }
 }
 

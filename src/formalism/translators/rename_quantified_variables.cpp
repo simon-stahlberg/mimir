@@ -146,7 +146,7 @@ void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::ConditionFora
     m_scopes.close_scope();
 }
 
-void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::EffectConditionalForallImpl& effect)
+void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::EffectCompositeForallImpl& effect)
 {
     m_scopes.open_scope(effect.get_parameters());
 
@@ -284,14 +284,14 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     return translated_condition;
 }
 
-loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::EffectConditionalForallImpl& effect)
+loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::EffectCompositeForallImpl& effect)
 {
     increment_num_quantifications(effect.get_parameters());
 
     const auto translated_parameters = this->translate(effect.get_parameters());
     const auto translated_nested_effect = this->translate(*effect.get_effect());
 
-    auto translated_effect = this->m_pddl_factories.get_or_create_effect_conditional_forall(translated_parameters, translated_nested_effect);
+    auto translated_effect = this->m_pddl_factories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect);
 
     decrement_num_quantifications(effect.get_parameters());
 

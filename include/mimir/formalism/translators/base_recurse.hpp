@@ -75,8 +75,9 @@ protected:
     void prepare_base(const loki::EffectLiteralImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const loki::EffectAndImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const loki::EffectNumericImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectConditionalForallImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectConditionalWhenImpl& effect) { self().prepare_impl(effect); }
+    void prepare_base(const loki::EffectCompositeForallImpl& effect) { self().prepare_impl(effect); }
+    void prepare_base(const loki::EffectCompositeWhenImpl& effect) { self().prepare_impl(effect); }
+    void prepare_base(const loki::EffectCompositeOneofImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const loki::EffectImpl& effect) { self().prepare_impl(effect); }
     void prepare_base(const loki::FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
     void prepare_base(const loki::FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
@@ -141,15 +142,19 @@ protected:
         this->prepare(*effect.get_function());
         this->prepare(*effect.get_function_expression());
     }
-    void prepare_impl(const loki::EffectConditionalForallImpl& effect)
+    void prepare_impl(const loki::EffectCompositeForallImpl& effect)
     {
         this->prepare(effect.get_parameters());
         this->prepare(*effect.get_effect());
     }
-    void prepare_impl(const loki::EffectConditionalWhenImpl& effect)
+    void prepare_impl(const loki::EffectCompositeWhenImpl& effect)
     {
         this->prepare(*effect.get_condition());
         this->prepare(*effect.get_effect());
+    }
+    void prepare_impl(const loki::EffectCompositeOneofImpl& effect)
+    {
+        this->prepare(effect.get_effects());
     }
     void prepare_impl(const loki::EffectImpl& effect)
     {
@@ -250,8 +255,9 @@ protected:
     loki::Effect translate_base(const loki::EffectLiteralImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectAndImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectNumericImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectConditionalForallImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectConditionalWhenImpl& effect) { return self().translate_impl(effect); }
+    loki::Effect translate_base(const loki::EffectCompositeForallImpl& effect) { return self().translate_impl(effect); }
+    loki::Effect translate_base(const loki::EffectCompositeWhenImpl& effect) { return self().translate_impl(effect); }
+    loki::Effect translate_base(const loki::EffectCompositeOneofImpl& effect) { return self().translate_impl(effect); }
     loki::Effect translate_base(const loki::EffectImpl& effect) { return this->self().translate_impl(effect); }
     loki::FunctionExpression translate_base(const loki::FunctionExpressionNumberImpl& function_expression)
     {
@@ -374,13 +380,17 @@ protected:
                                                                    this->translate(*effect.get_function()),
                                                                    this->translate(*effect.get_function_expression()));
     }
-    loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect)
+    loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_effect_conditional_forall(this->translate(effect.get_parameters()), this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.get_or_create_effect_composite_forall(this->translate(effect.get_parameters()), this->translate(*effect.get_effect()));
     }
-    loki::Effect translate_impl(const loki::EffectConditionalWhenImpl& effect)
+    loki::Effect translate_impl(const loki::EffectCompositeWhenImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_effect_conditional_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+        return this->m_pddl_factories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+    }
+    loki::Effect translate_impl(const loki::EffectCompositeOneofImpl& effect)
+    {
+        return this->m_pddl_factories.get_or_create_effect_composite_oneof(this->translate(effect.get_effects()));
     }
     loki::Effect translate_impl(const loki::EffectImpl& effect)
     {
