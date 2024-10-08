@@ -1501,7 +1501,7 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &StateVertex::operator==)
         .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def("get_state_vertex", [](const StateVertex& self) { return get_state(self); }, py::keep_alive<0, 1>());
+        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::keep_alive<0, 1>());
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
