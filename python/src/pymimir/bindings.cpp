@@ -130,6 +130,49 @@ PYBIND11_MAKE_OPAQUE(GroundActionList);
  * Common
  */
 
+inline py::object cast_safe(const auto& obj)
+{
+    auto pyobj = py::cast(obj);
+    if (!pyobj)
+    {
+        throw py::error_already_set();
+    }
+    return pyobj;
+}
+
+inline void insert_into_list(const py::object& self, py::list& lst, const std::ranges::range auto& rng, size_t& counter)
+{
+    for (const auto& elem : rng)
+    {
+        auto pyelem = cast_safe(elem);
+        py::detail::keep_alive_impl(pyelem, self);
+        lst[counter] = std::move(pyelem);
+        ++counter;
+    }
+}
+
+inline void insert_into_list(py::list& lst, const std::ranges::range auto& rng, size_t& counter)
+{
+    for (const auto& elem : rng)
+    {
+        auto pyelem = cast_safe(elem);
+        lst[counter] = std::move(pyelem);
+        ++counter;
+    }
+}
+
+inline void insert_into_list(const py::object& self, py::list& lst, const std::ranges::range auto& rng)
+{
+    size_t counter = 0;
+    insert_into_list(self, lst, rng, counter);
+}
+
+inline void insert_into_list(py::list& lst, const std::ranges::range auto& rng)
+{
+    size_t counter = 0;
+    insert_into_list(lst, rng, counter);
+}
+
 /// @brief Binds a std::span<T> as an unmodifiable python object.
 /// Modifiable std::span are more complicated.
 /// Hence, we use std::span exclusively for unmodifiable data,
@@ -500,7 +543,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundAtomList<Tag>>::value);
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); }, py::arg("pddl_factories"));
+                         .def(
+                             "lift",
+                             [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
+                             py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundAtomList<Tag>>(list_class, class_name + "List");
     };
     bind_ground_atom("StaticGroundAtom", Static {});
@@ -518,7 +564,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Tag>>::value);
         auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); }, py::arg("pddl_factories"));
+                        .def(
+                            "lift",
+                            [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); },
+                            py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundLiteralList<Tag>>(list, class_name + "List");
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
@@ -927,20 +976,7 @@ void init_pymimir(py::module_& m)
 
                  py::list all_atoms(static_atom_factory.size() + fluent_atom_factory.size() + derived_atom_factory.size());
                  size_t i = 0;
-                 auto append = [&](const auto& atoms)
-                 {
-                     for (const auto& atom : atoms)
-                     {
-                         py::object py_atom = py::cast(atom);
-                         if (!py_atom)
-                         {
-                             throw py::error_already_set();
-                         }
-                         py::detail::keep_alive_impl(py_atom, py_factory);
-                         all_atoms[i] = py::object { py_atom };
-                         i++;
-                     }
-                 };
+                 auto append = [&](const auto& atoms) { insert_into_list(py_factory, all_atoms, atoms, i); };
                  append(static_atom_factory);
                  append(fluent_atom_factory);
                  append(derived_atom_factory);
@@ -985,6 +1021,20 @@ void init_pymimir(py::module_& m)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &PDDLParser::get_pddl_factories);
 
+    m.def(
+        "parse_pddl",
+        [](const std::string& domain_path, const std::string& problem_path)
+        {
+            auto parser = PDDLParser(domain_path, problem_path);
+            auto pyparser = py::cast(parser);
+            auto pyobj_tuple = std::apply([&](const auto&... objs) { return std::tuple { cast_safe(objs)... }; },
+                                          std::make_tuple(parser.get_domain(), parser.get_problem(), parser.get_pddl_factories()));
+            std::apply([&](const auto&... pyobjs) { (static_cast<void>(py::detail::keep_alive_impl(pyparser, pyobjs)), ...); }, pyobj_tuple);
+            return pyobj_tuple;
+        },
+        py::arg("domain_path"),
+        py::arg("problem_path"));
+
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Search
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1021,13 +1071,13 @@ void init_pymimir(py::module_& m)
                  ss << ")";
                  return ss.str();
              })
-        .def("get_fluent_atoms",
+        .def("get_fluent_atom_indices",
              [](State self)
              {
                  auto atoms = self.get_atoms<Fluent>();
                  return std::vector<size_t>(atoms.begin(), atoms.end());
              })
-        .def("get_derived_atoms",
+        .def("get_derived_atom_indices",
              [](State self)
              {
                  auto atoms = self.get_atoms<Derived>();
@@ -1103,7 +1153,6 @@ void init_pymimir(py::module_& m)
     def_opaque_vector_repr<GroundActionList>(list_class, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
 
-
     /* ConjunctionGrounder */
 
     py::class_<LiftedConjunctionGrounder, std::shared_ptr<LiftedConjunctionGrounder>>(m,
@@ -1170,7 +1219,10 @@ void init_pymimir(py::module_& m)
         m,
         "LiftedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     // Grounded
     py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
@@ -1190,7 +1242,10 @@ void init_pymimir(py::module_& m)
         m,
         "GroundedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
@@ -1439,7 +1494,7 @@ void init_pymimir(py::module_& m)
                std::shared_ptr<PDDLFactories> factories,
                std::shared_ptr<IApplicableActionGenerator> aag,
                std::shared_ptr<StateRepository> ssg,
-               const StateSpaceOptions& options) { return StateSpace::create(problem, factories, aag, ssg, options); },
+               const StateSpaceOptions& options) { return StateSpace::create(problem, std::move(factories), std::move(aag), std::move(ssg), options); },
             py::arg("problem"),
             py::arg("factories"),
             py::arg("aag"),
@@ -1473,12 +1528,44 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
-        .def("get_state", &StateSpace::get_state, py::arg("state_index"))
-        .def("get_states", &StateSpace::get_states, py::return_value_policy::reference_internal)
+        .def("get_state", &StateSpace::get_state, py::arg("state_index"), py::return_value_policy::reference_internal)
+        .def("get_states_iter",
+             [](const StateSpace& self)
+             {
+                 auto view = self.get_states_view();
+                 return py::make_iterator(view.begin(), view.end(), py::keep_alive<0, 1>());
+             })
+        .def("get_state_vertex", &StateSpace::get_state_vertex, py::arg("state_index"), py::return_value_policy::reference_internal)
+        .def("get_state_vertices", &StateSpace::get_state_vertices, py::return_value_policy::reference_internal)
         .def("get_state_index", &StateSpace::get_state_index, py::arg("state"))
-        .def("get_initial_state", &StateSpace::get_initial_state)
-        .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
-        .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_initial_state_index", &StateSpace::get_initial_state)
+        .def(
+            "get_initial_state",
+            [](const StateSpace& self) { return get_state(self.get_state_vertex(self.get_initial_state())); },
+            py::return_value_policy::reference_internal)
+        .def("get_goal_state_indices", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_goal_states",
+             [](const py::object& self)
+             {
+                 const auto& space = py::cast<const StateSpace&>(self);
+                 py::list goal_states(space.get_goal_states().size());
+                 insert_into_list(self,
+                                  goal_states,
+                                  space.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }));
+                 return goal_states;
+             })
+        .def("get_deadend_state_indices", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states",
+             [](const py::object& self)
+             {
+                 const auto& space = py::cast<const StateSpace&>(self);
+                 py::list deadend_states(space.get_deadend_states().size());
+                 insert_into_list(self,
+                                  deadend_states,
+                                  space.get_deadend_states()
+                                      | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }));
+                 return deadend_states;
+             })
         .def(
             "get_forward_adjacent_states",
             [](const StateSpace& self, Index state)
@@ -1618,7 +1705,7 @@ void init_pymimir(py::module_& m)
     py::class_<FaithfulAbstractStateVertex>(m, "FaithfulAbstractStateVertex")
         .def("get_index", &FaithfulAbstractStateVertex::get_index)
         .def(
-            "get_states",
+            "get_state_vertices",
             [](const FaithfulAbstractStateVertex& self) { return std::vector<State>(get_states(self).begin(), get_states(self).end()); },
             py::keep_alive<0, 1>())
         .def(
@@ -1685,7 +1772,7 @@ void init_pymimir(py::module_& m)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index, py::arg("state"))
-        .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
+        .def("get_state_vertices", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_concrete_to_abstract_state", &FaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
         .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
         .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
@@ -1825,7 +1912,7 @@ void init_pymimir(py::module_& m)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
         .def("get_abstract_state_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state"))
         .def("get_abstract_state_index", py::overload_cast<Index>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state_index"))
-        .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
+        .def("get_state_vertices", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
         .def("get_concrete_to_abstract_state", &GlobalFaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
         .def("get_global_state_index_to_state_index",
              &GlobalFaithfulAbstraction::get_global_state_index_to_state_index,
@@ -2002,7 +2089,7 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
+        .def("get_state_vertices", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 

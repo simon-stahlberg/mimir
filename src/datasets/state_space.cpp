@@ -315,9 +315,9 @@ const std::shared_ptr<StateRepository>& StateSpace::get_ssg() const { return m_s
 const typename StateSpace::GraphType& StateSpace::get_graph() const { return m_graph; }
 
 /* States */
-const StateVertexList& StateSpace::get_states() const { return m_graph.get_vertices(); }
+const StateVertexList& StateSpace::get_state_vertices() const { return m_graph.get_vertices(); }
 
-const StateVertex& StateSpace::get_state(Index state) const { return m_graph.get_vertices().at(state); }
+const StateVertex& StateSpace::get_state_vertex(Index state) const { return m_graph.get_vertices().at(state); }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<StateSpace::AdjacentVertexConstIteratorType<Direction>> StateSpace::get_adjacent_states(Index state) const
@@ -406,6 +406,11 @@ Index StateSpace::sample_state_with_goal_distance(ContinuousCost goal_distance) 
     const auto index = std::rand() % static_cast<int>(states.size());
     return states.at(index);
 }
+
+State StateSpace::get_state(Index state) const {
+    return mimir::get_state(m_graph.get_vertices().at(state));
+}
+
 
 /**
  * Pretty printing
