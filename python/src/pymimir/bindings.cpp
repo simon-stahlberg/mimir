@@ -1619,9 +1619,9 @@ void init_pymimir(py::module_& m)
         .def("get_state_vertex", &StateSpace::get_state_vertex, py::arg("state_index"), py::return_value_policy::reference_internal)
         .def("get_state_vertices", &StateSpace::get_state_vertices, py::return_value_policy::reference_internal)
         .def("get_state_index", &StateSpace::get_state_index, py::arg("state"))
-        .def("get_initial_state", &StateSpace::get_initial_state)
-        .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
-        .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_initial_state_index", &StateSpace::get_initial_state)
+        .def("get_goal_state_indices", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_state_indices", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def(
             "get_forward_adjacent_states",
             [](const StateSpace& self, Index state)
