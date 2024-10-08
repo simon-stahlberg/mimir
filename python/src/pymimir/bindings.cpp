@@ -1620,8 +1620,48 @@ void init_pymimir(py::module_& m)
         .def("get_state_vertices", &StateSpace::get_state_vertices, py::return_value_policy::reference_internal)
         .def("get_state_index", &StateSpace::get_state_index, py::arg("state"))
         .def("get_initial_state_index", &StateSpace::get_initial_state)
+        .def(
+            "get_initial_state",
+            [](const StateSpace& self) { return get_state(self.get_state_vertex(self.get_initial_state())); },
+            py::return_value_policy::reference_internal)
         .def("get_goal_state_indices", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
+        .def("get_goal_states",
+             [](py::object self)
+             {
+                 const auto& space = py::cast<const StateSpace&>(self);
+                 py::list goal_states;
+                 for (auto goal_state :
+                      space.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }))
+                 {
+                     auto py_state = py::cast(goal_state);
+                     if (!py_state)
+                     {
+                         throw py::error_already_set();
+                     }
+                     py::detail::keep_alive_impl(self, py_state);
+                     goal_states.append(py_state);
+                 }
+                 return goal_states;
+             })
         .def("get_deadend_state_indices", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_deadend_states",
+             [](py::object self)
+             {
+                 const auto& space = py::cast<const StateSpace&>(self);
+                 py::list deadend_states;
+                 for (auto deadend_state :
+                      space.get_deadend_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }))
+                 {
+                     auto py_state = py::cast(deadend_state);
+                     if (!py_state)
+                     {
+                         throw py::error_already_set();
+                     }
+                     py::detail::keep_alive_impl(self, py_state);
+                     deadend_states.append(py_state);
+                 }
+                 return deadend_states;
+             })
         .def(
             "get_forward_adjacent_states",
             [](const StateSpace& self, Index state)
