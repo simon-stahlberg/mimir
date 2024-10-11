@@ -1627,26 +1627,17 @@ void init_pymimir(py::module_& m)
             py::return_value_policy::reference_internal)
         .def("get_goal_state_indices", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
         .def("get_goal_states",
-             [](const py::object& self)
+             [](const StateSpace& self)
              {
-                 const auto& space = py::cast<const StateSpace&>(self);
-                 py::list goal_states(space.get_goal_states().size());
-                 insert_into_list(self,
-                                  goal_states,
-                                  space.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }));
-                 return goal_states;
+                 auto view = self.get_goal_states() | std::views::transform([&](const auto& index) { return get_state(self.get_state_vertex(index)); });
+                 return StateList(view.begin(), view.end());
              })
         .def("get_deadend_state_indices", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
         .def("get_deadend_states",
-             [](const py::object& self)
+             [](const StateSpace& self)
              {
-                 const auto& space = py::cast<const StateSpace&>(self);
-                 py::list deadend_states(space.get_deadend_states().size());
-                 insert_into_list(self,
-                                  deadend_states,
-                                  space.get_deadend_states()
-                                      | std::views::transform([&](const auto& index) { return get_state(space.get_state_vertex(index)); }));
-                 return deadend_states;
+                 auto view = self.get_deadend_states() | std::views::transform([&](const auto& index) { return get_state(self.get_state_vertex(index)); });
+                 return StateList(view.begin(), view.end());
              })
         .def(
             "get_forward_adjacent_states",
