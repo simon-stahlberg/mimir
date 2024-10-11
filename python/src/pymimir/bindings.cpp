@@ -130,6 +130,49 @@ PYBIND11_MAKE_OPAQUE(GroundActionList);
  * Common
  */
 
+inline py::object cast_safe(const auto& obj)
+{
+    auto pyobj = py::cast(obj);
+    if (!pyobj)
+    {
+        throw py::error_already_set();
+    }
+    return pyobj;
+}
+
+inline void insert_into_list(const py::object& self, py::list& lst, const std::ranges::range auto& rng, size_t& counter)
+{
+    for (const auto& elem : rng)
+    {
+        auto pyelem = cast_safe(elem);
+        py::detail::keep_alive_impl(pyelem, self);
+        lst[counter] = std::move(pyelem);
+        ++counter;
+    }
+}
+
+inline void insert_into_list(py::list& lst, const std::ranges::range auto& rng, size_t& counter)
+{
+    for (const auto& elem : rng)
+    {
+        auto pyelem = cast_safe(elem);
+        lst[counter] = std::move(pyelem);
+        ++counter;
+    }
+}
+
+inline void insert_into_list(const py::object& self, py::list& lst, const std::ranges::range auto& rng)
+{
+    size_t counter = 0;
+    insert_into_list(self, lst, rng, counter);
+}
+
+inline void insert_into_list(py::list& lst, const std::ranges::range auto& rng)
+{
+    size_t counter = 0;
+    insert_into_list(lst, rng, counter);
+}
+
 /// @brief Binds a std::span<T> as an unmodifiable python object.
 /// Modifiable std::span are more complicated.
 /// Hence, we use std::span exclusively for unmodifiable data,
@@ -526,7 +569,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundAtomList<Tag>>::value);
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); }, py::arg("pddl_factories"));
+                         .def(
+                             "lift",
+                             [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
+                             py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundAtomList<Tag>>(list_class, class_name + "List");
     };
     bind_ground_atom("StaticGroundAtom", Static {});
@@ -544,7 +590,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Tag>>::value);
         auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); }, py::arg("pddl_factories"));
+                        .def(
+                            "lift",
+                            [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); },
+                            py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundLiteralList<Tag>>(list, class_name + "List");
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
@@ -1160,7 +1209,6 @@ void init_pymimir(py::module_& m)
     def_opaque_vector_repr<GroundActionList>(list_class, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
 
-
     /* ConjunctionGrounder */
 
     py::class_<LiftedConjunctionGrounder, std::shared_ptr<LiftedConjunctionGrounder>>(m,
@@ -1227,7 +1275,10 @@ void init_pymimir(py::module_& m)
         m,
         "LiftedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     // Grounded
     py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
@@ -1247,7 +1298,10 @@ void init_pymimir(py::module_& m)
         m,
         "GroundedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
