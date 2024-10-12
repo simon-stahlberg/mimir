@@ -92,7 +92,7 @@ private:
     // Open scopes for each of the parameter list to begin tracking for conflicts
     void prepare_impl(const loki::ConditionExistsImpl& condition);
     void prepare_impl(const loki::ConditionForallImpl& condition);
-    void prepare_impl(const loki::EffectConditionalForallImpl& effect);
+    void prepare_impl(const loki::EffectCompositeForallImpl& effect);
     void prepare_impl(const loki::ActionImpl& action);
     void prepare_impl(const loki::AxiomImpl& axiom);
 
@@ -118,7 +118,7 @@ private:
      */
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
     loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
-    loki::Effect translate_impl(const loki::EffectConditionalForallImpl& effect);
+    loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect);
     loki::Action translate_impl(const loki::ActionImpl& action);
     loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
 

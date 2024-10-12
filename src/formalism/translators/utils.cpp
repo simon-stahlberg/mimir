@@ -121,32 +121,32 @@ loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFa
     return pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition());
 }
 
-loki::Effect flatten(const loki::EffectConditionalWhenImpl& effect, loki::PDDLFactories& pddl_factories)
+loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLFactories& pddl_factories)
 {
-    if (const auto effect_when = std::get_if<loki::EffectConditionalWhenImpl>(effect.get_effect()))
+    if (const auto effect_when = std::get_if<loki::EffectCompositeWhenImpl>(effect.get_effect()))
     {
-        const auto& nested_effect = std::get<loki::EffectConditionalWhenImpl>(*flatten(*effect_when, pddl_factories));
+        const auto& nested_effect = std::get<loki::EffectCompositeWhenImpl>(*flatten(*effect_when, pddl_factories));
 
-        return pddl_factories.get_or_create_effect_conditional_when(
+        return pddl_factories.get_or_create_effect_composite_when(
             flatten(*std::get_if<loki::ConditionAndImpl>(pddl_factories.get_or_create_condition_and(
                         uniquify_elements(loki::ConditionList { effect.get_condition(), nested_effect.get_condition() }))),
                     pddl_factories),
             nested_effect.get_effect());
     }
-    return pddl_factories.get_or_create_effect_conditional_when(effect.get_condition(), effect.get_effect());
+    return pddl_factories.get_or_create_effect_composite_when(effect.get_condition(), effect.get_effect());
 }
 
-loki::Effect flatten(const loki::EffectConditionalForallImpl& effect, loki::PDDLFactories& pddl_factories)
+loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLFactories& pddl_factories)
 {
-    if (const auto effect_forall = std::get_if<loki::EffectConditionalForallImpl>(effect.get_effect()))
+    if (const auto effect_forall = std::get_if<loki::EffectCompositeForallImpl>(effect.get_effect()))
     {
-        const auto& nested_effect = std::get<loki::EffectConditionalForallImpl>(*flatten(*effect_forall, pddl_factories));
+        const auto& nested_effect = std::get<loki::EffectCompositeForallImpl>(*flatten(*effect_forall, pddl_factories));
         auto parameters = effect.get_parameters();
         const auto additional_parameters = nested_effect.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_factories.get_or_create_effect_conditional_forall(parameters, nested_effect.get_effect());
+        return pddl_factories.get_or_create_effect_composite_forall(parameters, nested_effect.get_effect());
     }
-    return pddl_factories.get_or_create_effect_conditional_forall(effect.get_parameters(), effect.get_effect());
+    return pddl_factories.get_or_create_effect_composite_forall(effect.get_parameters(), effect.get_effect());
 }
 
 std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set<std::string>& simple_and_derived_predicate_names)

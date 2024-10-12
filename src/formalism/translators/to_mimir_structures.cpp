@@ -75,7 +75,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         auto tmp_effect = arg_effect;
 
         // 2. Prepare universal part
-        if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
+        if (const auto& tmp_effect_forall = std::get_if<loki::EffectCompositeForallImpl>(tmp_effect))
         {
             prepare(tmp_effect_forall->get_parameters());
 
@@ -83,7 +83,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         }
 
         // 3. Prepare conditional part
-        if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+        if (const auto& tmp_effect_when = std::get_if<loki::EffectCompositeWhenImpl>(tmp_effect))
         {
             if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(tmp_effect_when->get_condition()))
             {
@@ -501,7 +501,7 @@ std::tuple<EffectSimpleList, EffectComplexList, FunctionExpression> ToMimirStruc
 
         // 2. Parse universal part
         auto parameters = VariableList {};
-        if (const auto& tmp_effect_forall = std::get_if<loki::EffectConditionalForallImpl>(tmp_effect))
+        if (const auto& tmp_effect_forall = std::get_if<loki::EffectCompositeForallImpl>(tmp_effect))
         {
             parameters = translate_common(tmp_effect_forall->get_parameters());
 
@@ -512,7 +512,7 @@ std::tuple<EffectSimpleList, EffectComplexList, FunctionExpression> ToMimirStruc
         auto static_literals = LiteralList<Static> {};
         auto fluent_literals = LiteralList<Fluent> {};
         auto derived_literals = LiteralList<Derived> {};
-        if (const auto& tmp_effect_when = std::get_if<loki::EffectConditionalWhenImpl>(tmp_effect))
+        if (const auto& tmp_effect_when = std::get_if<loki::EffectCompositeWhenImpl>(tmp_effect))
         {
             const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*tmp_effect_when->get_condition());
             static_literals = static_literals_;
