@@ -145,19 +145,6 @@ public:
     bool is_applicable(const FlatBitset& fluent_state_atoms, const FlatBitset& derived_state_atoms, const FlatBitset& static_initial_atoms) const;
 };
 
-template<PredicateCategory P>
-bool StripsActionPrecondition::is_applicable(const FlatBitset& atoms) const
-{
-    return atoms.is_superseteq(get_positive_precondition<P>())  //
-           && atoms.are_disjoint(get_negative_precondition<P>());
-}
-
-template<DynamicPredicateCategory P>
-bool StripsActionPrecondition::is_applicable(State state) const
-{
-    return is_applicable<P>(state.get_atoms<P>());
-}
-
 class StripsActionEffectBuilder
 {
 private:
