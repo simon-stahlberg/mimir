@@ -483,7 +483,10 @@ void init_pymimir(py::module_& m)
         .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference_internal);
 
     py::class_<TermVariant>(m, "Term")  //
-        .def("get", [](const TermVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.term); }, py::keep_alive<0, 1>());
+        .def(
+            "get",
+            [](const TermVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.term); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<TermVariantList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<TermVariantList>(m, "TermVariantList");
     def_opaque_vector_repr<TermVariantList>(list_class, "TermVariantList", [](const TermVariant& elem) { return std::visit(ReprVisitor {}, *elem.term); });
@@ -517,7 +520,10 @@ void init_pymimir(py::module_& m)
             .def("__repr__", &AtomImpl<Tag>::str)
             .def("get_index", &AtomImpl<Tag>::get_index)
             .def("get_predicate", &AtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
-            .def("get_terms", [](const AtomImpl<Tag>& atom) { return atom.get_terms(); }, py::keep_alive<0, 1>());
+            .def(
+                "get_terms",
+                [](const AtomImpl<Tag>& atom) { return atom.get_terms(); },
+                py::keep_alive<0, 1>());
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);
         auto list_cls = py::bind_vector<AtomList<Tag>>(m, class_name + "List");
@@ -532,7 +538,10 @@ void init_pymimir(py::module_& m)
         .def("__repr__", &FunctionSkeletonImpl::str)
         .def("get_index", &FunctionSkeletonImpl::get_index)
         .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", [](const FunctionSkeletonImpl& self) { return VariableList(self.get_parameters()); }, py::keep_alive<0, 1>());
+        .def(
+            "get_parameters",
+            [](const FunctionSkeletonImpl& self) { return VariableList(self.get_parameters()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionSkeletonList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionSkeletonList>(m, "FunctionSkeletonList");
     def_opaque_vector_repr<FunctionSkeletonList>(list_class, "FunctionSkeletonList");
@@ -542,7 +551,10 @@ void init_pymimir(py::module_& m)
         .def("__repr__", &FunctionImpl::str)
         .def("get_index", &FunctionImpl::get_index)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def("get_terms", [](const FunctionImpl& self) { return to_term_variant_list(self.get_terms()); }, py::keep_alive<0, 1>());
+        .def(
+            "get_terms",
+            [](const FunctionImpl& self) { return to_term_variant_list(self.get_terms()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionList>(m, "FunctionList");
     def_opaque_vector_repr<FunctionSkeletonList>(list_class, "FunctionList");
@@ -552,7 +564,10 @@ void init_pymimir(py::module_& m)
         .def("__repr__", &GroundFunctionImpl::str)
         .def("get_index", &GroundFunctionImpl::get_index)
         .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def("get_objects", [](const GroundFunctionImpl& self) { return ObjectList(self.get_objects()); }, py::keep_alive<0, 1>());
+        .def(
+            "get_objects",
+            [](const GroundFunctionImpl& self) { return ObjectList(self.get_objects()); },
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundFunctionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<GroundFunctionList>(m, "GroundFunctionList");
     def_opaque_vector_repr<FunctionSkeletonList>(list_class, "GroundFunctionList");
@@ -565,7 +580,10 @@ void init_pymimir(py::module_& m)
             .def("get_index", &GroundAtomImpl<Tag>::get_index)
             .def("get_arity", &GroundAtomImpl<Tag>::get_arity)
             .def("get_predicate", &GroundAtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
-            .def("get_objects", [](const GroundAtomImpl<Tag>& self) { return ObjectList(self.get_objects()); }, py::keep_alive<0, 1>());
+            .def(
+                "get_objects",
+                [](const GroundAtomImpl<Tag>& self) { return ObjectList(self.get_objects()); },
+                py::keep_alive<0, 1>());
 
         static_assert(!py::detail::vector_needs_copy<GroundAtomList<Tag>>::value);
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
@@ -1156,10 +1174,11 @@ void init_pymimir(py::module_& m)
         .def("get_static_positive_condition", &atoms_from_conditions<false, Static, StripsActionPrecondition>)
         .def("get_derived_positive_condition", &atoms_from_conditions<false, Derived, StripsActionPrecondition>)
         .def("is_dynamically_applicable", &StripsActionPrecondition::is_dynamically_applicable, py::arg("state"))
-        .def("is_applicable",
-             py::overload_cast<mimir::Problem, mimir::State>(&StripsActionPrecondition::is_applicable, py::const_),
-             py::arg("problem"),
-             py::arg("state"));
+        .def(
+            "is_applicable",
+            [](const StripsActionPrecondition& self, Problem problem, State state) { return self.is_applicable(problem, state); },
+            py::arg("problem"),
+            py::arg("state"));
     py::class_<ConditionalEffect>(m, "ConditionalEffect")
         .def("get_positive_condition", &all_atoms_from_conditions<true, ConditionalEffect>)
         .def("get_fluent_positive_condition", &atoms_from_conditions<true, Fluent, ConditionalEffect>)
@@ -1482,7 +1501,10 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &StateVertex::operator==)
         .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::keep_alive<0, 1>());
+        .def(
+            "get_state",
+            [](const StateVertex& self) { return get_state(self); },
+            py::keep_alive<0, 1>());
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
@@ -1492,7 +1514,10 @@ void init_pymimir(py::module_& m)
         .def("get_source", &GroundActionEdge::get_source)
         .def("get_target", &GroundActionEdge::get_target)
         .def("get_cost", [](const GroundActionEdge& self) { return get_cost(self); })
-        .def("get_creating_action", [](const GroundActionEdge& self) { return get_creating_action(self); }, py::keep_alive<0, 1>());
+        .def(
+            "get_creating_action",
+            [](const GroundActionEdge& self) { return get_creating_action(self); },
+            py::keep_alive<0, 1>());
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
@@ -1506,7 +1531,10 @@ void init_pymimir(py::module_& m)
             "get_actions",
             [](const GroundActionsEdge& self) { return GroundActionList(get_actions(self).begin(), get_actions(self).end()); },
             py::keep_alive<0, 1>())
-        .def("get_representative_action", [](const GroundActionsEdge& self) { return get_representative_action(self); }, py::keep_alive<0, 1>());
+        .def(
+            "get_representative_action",
+            [](const GroundActionsEdge& self) { return get_representative_action(self); },
+            py::keep_alive<0, 1>());
 
     // StateSpace
     py::class_<StateSpaceOptions>(m, "StateSpaceOptions")
@@ -1736,7 +1764,10 @@ void init_pymimir(py::module_& m)
             "get_representative_state",
             [](const FaithfulAbstractStateVertex& self) { return get_representative_state(self); },
             py::keep_alive<0, 1>())
-        .def("get_certificate", [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_certificate",
+            [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); },
+            py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def("__str__",
@@ -2113,7 +2144,10 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
+        .def(
+            "get_states",
+            [](const TupleGraphVertex& self) { return StateList(self.get_states()); },
+            py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
@@ -2252,7 +2286,10 @@ void init_pymimir(py::module_& m)
 
     // ColorFunction
     py::class_<ColorFunction>(m, "ColorFunction")  //
-        .def("get_color_name", [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); }, py::arg("color"));
+        .def(
+            "get_color_name",
+            [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); },
+            py::arg("color"));
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, ColorFunction>(m, "ProblemColorFunction")  //
