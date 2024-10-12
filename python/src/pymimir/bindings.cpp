@@ -130,6 +130,49 @@ PYBIND11_MAKE_OPAQUE(GroundActionList);
  * Common
  */
 
+inline py::object cast_safe(const auto& obj)
+{
+    auto pyobj = py::cast(obj);
+    if (!pyobj)
+    {
+        throw py::error_already_set();
+    }
+    return pyobj;
+}
+
+inline void insert_into_list(const py::object& self, py::list& lst, const std::ranges::range auto& rng, size_t& counter)
+{
+    for (const auto& elem : rng)
+    {
+        auto pyelem = cast_safe(elem);
+        py::detail::keep_alive_impl(pyelem, self);
+        lst[counter] = std::move(pyelem);
+        ++counter;
+    }
+}
+
+inline void insert_into_list(py::list& lst, const std::ranges::range auto& rng, size_t& counter)
+{
+    for (const auto& elem : rng)
+    {
+        auto pyelem = cast_safe(elem);
+        lst[counter] = std::move(pyelem);
+        ++counter;
+    }
+}
+
+inline void insert_into_list(const py::object& self, py::list& lst, const std::ranges::range auto& rng)
+{
+    size_t counter = 0;
+    insert_into_list(self, lst, rng, counter);
+}
+
+inline void insert_into_list(py::list& lst, const std::ranges::range auto& rng)
+{
+    size_t counter = 0;
+    insert_into_list(lst, rng, counter);
+}
+
 /// @brief Binds a std::span<T> as an unmodifiable python object.
 /// Modifiable std::span are more complicated.
 /// Hence, we use std::span exclusively for unmodifiable data,
@@ -321,6 +364,32 @@ public:
     void on_exhausted_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_exhausted_impl, ); }
 };
 
+template<bool positive, PredicateCategory P, typename Self>
+auto atoms_from_conditions(const Self& self, const PDDLFactories& factories)
+{
+    if constexpr (positive)
+        return factories.get_ground_atoms_from_indices<P>(self.template get_positive_precondition<P>());
+    else
+        return factories.get_ground_atoms_from_indices<P>(self.template get_negative_precondition<P>());
+};
+
+template<bool positive, typename Self>
+auto all_atoms_from_conditions(const Self& self, const py::object& py_factories)
+{
+    const auto& factories = py::cast<const PDDLFactories&>(py_factories);
+
+    auto fluent_atoms = atoms_from_conditions<positive, Fluent>(self, factories);
+    auto static_atoms = atoms_from_conditions<positive, Static>(self, factories);
+    auto derived_atoms = atoms_from_conditions<positive, Derived>(self, factories);
+
+    py::list lst(fluent_atoms.size() + static_atoms.size() + derived_atoms.size());
+    size_t counter = 0;
+    insert_into_list(py_factories, lst, fluent_atoms, counter);
+    insert_into_list(py_factories, lst, static_atoms, counter);
+    insert_into_list(py_factories, lst, derived_atoms, counter);
+    return lst;
+};
+
 /**
  * Bindings
  */
@@ -500,7 +569,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundAtomList<Tag>>::value);
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); }, py::arg("pddl_factories"));
+                         .def(
+                             "lift",
+                             [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
+                             py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundAtomList<Tag>>(list_class, class_name + "List");
     };
     bind_ground_atom("StaticGroundAtom", Static {});
@@ -518,7 +590,10 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Tag>>::value);
         auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
-            .def("lift", [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); }, py::arg("pddl_factories"));
+                        .def(
+                            "lift",
+                            [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); },
+                            py::arg("pddl_factories"));
         def_opaque_vector_repr<GroundLiteralList<Tag>>(list, class_name + "List");
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
@@ -1059,11 +1134,42 @@ void init_pymimir(py::module_& m)
     bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "IndexGroupedVector");
 
     /* Action */
-    // TODO: add missing functions here
-    py::class_<StripsActionPrecondition>(m, "StripsActionPrecondition");
-    py::class_<StripsActionEffect>(m, "StripsActionEffect");
-    py::class_<ConditionalEffect>(m, "ConditionalEffect");
-    py::class_<FlatSimpleEffect>(m, "FlatSimpleEffect");
+    py::class_<StripsActionEffect>(m, "StripsActionEffect")
+        .def("get_negative_effects",
+             [](const StripsActionEffect& self, const PDDLFactories& factories)
+             { return factories.get_ground_atoms_from_indices<mimir::Fluent>(self.get_negative_effects()); })
+        .def("get_positive_effects",
+             [](const StripsActionEffect& self, const PDDLFactories& factories)
+             { return factories.get_ground_atoms_from_indices<mimir::Fluent>(self.get_positive_effects()); });
+
+    py::class_<FlatSimpleEffect>(m, "FlatSimpleEffect")
+        .def_readonly("is_negated", &FlatSimpleEffect::is_negated)
+        .def_readonly("atom_index", &FlatSimpleEffect::atom_index)
+        .def("__eq__", &FlatSimpleEffect::operator==);
+    py::class_<StripsActionPrecondition>(m, "StripsActionPrecondition")
+        .def("get_positive_condition", &all_atoms_from_conditions<true, StripsActionPrecondition>)
+        .def("get_fluent_positive_condition", &atoms_from_conditions<true, Fluent, StripsActionPrecondition>)
+        .def("get_static_positive_condition", &atoms_from_conditions<true, Static, StripsActionPrecondition>)
+        .def("get_derived_positive_condition", &atoms_from_conditions<true, Derived, StripsActionPrecondition>)
+        .def("get_negative_condition", &all_atoms_from_conditions<false, StripsActionPrecondition>)
+        .def("get_fluent_positive_condition", &atoms_from_conditions<false, Fluent, StripsActionPrecondition>)
+        .def("get_static_positive_condition", &atoms_from_conditions<false, Static, StripsActionPrecondition>)
+        .def("get_derived_positive_condition", &atoms_from_conditions<false, Derived, StripsActionPrecondition>)
+        .def("is_dynamically_applicable", &StripsActionPrecondition::is_dynamically_applicable, py::arg("state"))
+        .def("is_applicable",
+             py::overload_cast<mimir::Problem, mimir::State>(&StripsActionPrecondition::is_applicable, py::const_),
+             py::arg("problem"),
+             py::arg("state"));
+    py::class_<ConditionalEffect>(m, "ConditionalEffect")
+        .def("get_positive_condition", &all_atoms_from_conditions<true, ConditionalEffect>)
+        .def("get_fluent_positive_condition", &atoms_from_conditions<true, Fluent, ConditionalEffect>)
+        .def("get_static_positive_condition", &atoms_from_conditions<true, Static, ConditionalEffect>)
+        .def("get_derived_positive_condition", &atoms_from_conditions<true, Derived, ConditionalEffect>)
+        .def("get_negative_condition", &all_atoms_from_conditions<false, ConditionalEffect>)
+        .def("get_fluent_positive_condition", &atoms_from_conditions<false, Fluent, ConditionalEffect>)
+        .def("get_static_positive_condition", &atoms_from_conditions<false, Static, ConditionalEffect>)
+        .def("get_derived_positive_condition", &atoms_from_conditions<false, Derived, ConditionalEffect>)
+        .def("get_simple_effect", &ConditionalEffect::get_simple_effect);
 
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", [](const GroundAction& obj) { return std::hash<GroundAction>()(obj); })
@@ -1102,7 +1208,6 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
     def_opaque_vector_repr<GroundActionList>(list_class, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
-
 
     /* ConjunctionGrounder */
 
@@ -1170,7 +1275,10 @@ void init_pymimir(py::module_& m)
         m,
         "LiftedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     // Grounded
     py::class_<IGroundedApplicableActionGeneratorEventHandler, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(
@@ -1190,7 +1298,10 @@ void init_pymimir(py::module_& m)
         m,
         "GroundedApplicableActionGenerator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(), py::arg("problem"), py::arg("pddl_factories"), py::arg("event_handler"));
+        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
+             py::arg("problem"),
+             py::arg("pddl_factories"),
+             py::arg("event_handler"));
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //

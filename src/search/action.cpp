@@ -163,13 +163,21 @@ template const FlatBitset& StripsActionPrecondition::get_negative_precondition<S
 template const FlatBitset& StripsActionPrecondition::get_negative_precondition<Fluent>() const;
 template const FlatBitset& StripsActionPrecondition::get_negative_precondition<Derived>() const;
 
+template<PredicateCategory P>
+bool StripsActionPrecondition::is_applicable(const FlatBitset& atoms) const
+{
+    return atoms.is_superseteq(get_positive_precondition<P>())  //
+           && atoms.are_disjoint(get_negative_precondition<P>());
+}
+
+template bool StripsActionPrecondition::is_applicable<Static>(const FlatBitset& atoms) const;
+template bool StripsActionPrecondition::is_applicable<Fluent>(const FlatBitset& atoms) const;
+template bool StripsActionPrecondition::is_applicable<Derived>(const FlatBitset& atoms) const;
+
 template<DynamicPredicateCategory P>
 bool StripsActionPrecondition::is_applicable(State state) const
 {
-    const auto& state_atoms = state.get_atoms<P>();
-
-    return state_atoms.is_superseteq(get_positive_precondition<P>())  //
-           && state_atoms.are_disjoint(get_negative_precondition<P>());
+    return is_applicable<P>(state.get_atoms<P>());
 }
 
 template bool StripsActionPrecondition::is_applicable<Fluent>(State state) const;
@@ -186,17 +194,6 @@ bool StripsActionPrecondition::is_applicable(Problem problem, State state) const
 {
     return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms());
 }
-
-template<PredicateCategory P>
-bool StripsActionPrecondition::is_applicable(const FlatBitset& atoms) const
-{
-    return atoms.is_superseteq(get_positive_precondition<P>())  //
-           && atoms.are_disjoint(get_negative_precondition<P>());
-}
-
-template bool StripsActionPrecondition::is_applicable<Static>(const FlatBitset& atoms) const;
-template bool StripsActionPrecondition::is_applicable<Fluent>(const FlatBitset& atoms) const;
-template bool StripsActionPrecondition::is_applicable<Derived>(const FlatBitset& atoms) const;
 
 bool StripsActionPrecondition::is_applicable(const FlatBitset& fluent_state_atoms,
                                              const FlatBitset& derived_state_atoms,
