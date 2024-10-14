@@ -1,5 +1,10 @@
 # Import all classes for better IDE support
 
+# Common
+from _pymimir import (
+    FlatBitset,
+)
+
 # Formalism
 from _pymimir import (
     Action,
@@ -94,6 +99,7 @@ from _pymimir import (
     BrFSAlgorithm,
     BrFSAlgorithmStatistics,
     ConditionalEffect,
+    ConditionalEffectList,
     DebugAStarAlgorithmEventHandler,
     DebugBrFSAlgorithmEventHandler,
     DebugGroundedApplicableActionGeneratorEventHandler,

@@ -219,6 +219,8 @@ public:
     bool is_applicable(Problem problem, State state) const;
 };
 
+using ConditionalEffectList = std::vector<ConditionalEffect>;
+
 class GroundActionBuilder
 {
 private:
