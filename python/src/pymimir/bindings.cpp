@@ -818,32 +818,6 @@ void init_pymimir(py::module_& m)
             "get_derived_predicates",
             [](const DomainImpl& self) { return PredicateList<Derived>(self.get_predicates<Derived>()); },
             py::keep_alive<0, 1>())
-        .def("get_predicates",
-             [](const py::object& py_domain)
-             {
-                 const auto& self = py::cast<const DomainImpl&>(py_domain);
-                 size_t n_preds = self.get_predicates<Static>().size() + self.get_predicates<Fluent>().size() + self.get_predicates<Derived>().size();
-                 py::list all_predicates(n_preds);
-                 int i = 0;
-                 auto append = [&](const auto& preds)
-                 {
-                     for (const auto& pred : preds)
-                     {
-                         auto py_pred = py::cast(pred);
-                         if (!py_pred)
-                         {
-                             throw py::error_already_set();
-                         }
-                         py::detail::keep_alive_impl(py_pred, py_domain);
-                         all_predicates[i] = py_pred;
-                         ++i;
-                     }
-                 };
-                 append(self.get_predicates<Static>());
-                 append(self.get_predicates<Fluent>());
-                 append(self.get_predicates<Derived>());
-                 return all_predicates;
-             })
         .def(
             "get_functions",
             [](const DomainImpl& self) { return FunctionSkeletonList(self.get_functions()); },
@@ -909,72 +883,26 @@ void init_pymimir(py::module_& m)
         .def(
             "get_derived_goal_condition",
             [](const ProblemImpl& self) { return GroundLiteralList<Derived>(self.get_goal_condition<Derived>()); },
-            py::keep_alive<0, 1>())
-        .def("get_goal_condition",
-             [](const py::object& py_problem)
-             {
-                 const auto& self = py::cast<const ProblemImpl&>(py_problem);
-                 size_t n_goals =
-                     self.get_goal_condition<Static>().size() + self.get_goal_condition<Fluent>().size() + self.get_goal_condition<Derived>().size();
-                 py::list all_goal_literals(n_goals);
-                 int i = 0;
-                 auto append = [&](const auto& goals)
-                 {
-                     for (const auto& goal : goals)
-                     {
-                         auto py_goal = py::cast(goal);
-                         if (!py_goal)
-                         {
-                             throw py::error_already_set();
-                         }
-                         py::detail::keep_alive_impl(py_goal, py_problem);
-                         all_goal_literals[i] = py_goal;
-                         ++i;
-                     }
-                 };
-                 append(self.get_goal_condition<Static>());
-                 append(self.get_goal_condition<Fluent>());
-                 append(self.get_goal_condition<Derived>());
-                 return all_goal_literals;
-             });
+            py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<ProblemList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
     def_opaque_vector_repr<ProblemList>(list_class, "ProblemList");
 
-    py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>> pddl_factories(m, "PDDLFactories");  //
-
-    pddl_factories
-        .def("get_ground_atoms",
-             [](const py::object& py_factory)  // we need an object handle to keep the factory alive for each atom in the list
-             {
-                 const auto& factory = py::cast<const PDDLFactories&>(py_factory);
-                 const auto& static_atom_factory = factory.get_factory<GroundAtomFactory<Static>>();
-                 const auto& fluent_atom_factory = factory.get_factory<GroundAtomFactory<Fluent>>();
-                 const auto& derived_atom_factory = factory.get_factory<GroundAtomFactory<Derived>>();
-
-                 py::list all_atoms(static_atom_factory.size() + fluent_atom_factory.size() + derived_atom_factory.size());
-                 size_t i = 0;
-                 auto append = [&](const auto& atoms)
-                 {
-                     for (const auto& atom : atoms)
-                     {
-                         py::object py_atom = py::cast(atom);
-                         if (!py_atom)
-                         {
-                             throw py::error_already_set();
-                         }
-                         py::detail::keep_alive_impl(py_atom, py_factory);
-                         all_atoms[i] = py::object { py_atom };
-                         i++;
-                     }
-                 };
-                 append(static_atom_factory);
-                 append(fluent_atom_factory);
-                 append(derived_atom_factory);
-                 return all_atoms;
-             })
+    py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
+        .def(
+            "get_static_ground_atoms",
+            [](const PDDLFactories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
+            py::keep_alive<0, 1>())
         .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference_internal)
+        .def(
+            "get_static_ground_atoms",
+            [](const PDDLFactories& self) { return GroundAtomList<Fluent>(self.get_ground_atoms<Fluent>().begin(), self.get_ground_atoms<Fluent>().end()); },
+            py::keep_alive<0, 1>())
         .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>, py::return_value_policy::reference_internal)
+        .def(
+            "get_static_ground_atoms",
+            [](const PDDLFactories& self) { return GroundAtomList<Derived>(self.get_ground_atoms<Derived>().begin(), self.get_ground_atoms<Derived>().end()); },
+            py::keep_alive<0, 1>())
         .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>, py::return_value_policy::reference_internal)
         .def("get_static_ground_atoms_from_indices",
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, py::const_),
@@ -986,25 +914,6 @@ void init_pymimir(py::module_& m)
              py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
         .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal);
-
-    auto bind_ground_atoms_range = [&]<typename Tag>(std::string_view func_name, Tag)
-    {
-        pddl_factories.def(
-            func_name.data(),
-            [=](const PDDLFactories& factory)
-            {
-                GroundAtomList<Tag> atoms;
-                for (const auto& elem : factory.get_factory<GroundAtomFactory<Tag>>())
-                {
-                    atoms.emplace_back(elem);
-                }
-                return atoms;
-            },
-            py::keep_alive<0, 1>());
-    };
-    bind_ground_atoms_range("get_static_ground_atoms", Static {});
-    bind_ground_atoms_range("get_fluent_ground_atoms", Fluent {});
-    bind_ground_atoms_range("get_derived_ground_atoms", Derived {});
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>(), py::arg("domain_path"), py::arg("problem_path"))
