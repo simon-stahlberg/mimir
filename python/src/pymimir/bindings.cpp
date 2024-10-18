@@ -1438,27 +1438,29 @@ void init_pymimir(py::module_& m)
                const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = StateSpacesOptions())
-        .def("compute_shortest_forward_distances_from_states", &StateSpace::compute_shortest_distances_from_states<ForwardTraversal>, py::arg("state_indices"))
-        .def("compute_shortest_backward_distances_from_states",
-             &StateSpace::compute_shortest_distances_from_states<BackwardTraversal>,
+        .def("compute_shortest_forward_distances_from_states",
+             &StateSpace::compute_shortest_distances_from_vertices<ForwardTraversal>,
              py::arg("state_indices"))
-        .def("compute_pairwise_shortest_forward_state_distances", &StateSpace::compute_pairwise_shortest_state_distances<ForwardTraversal>)
-        .def("compute_pairwise_shortest_backward_state_distances", &StateSpace::compute_pairwise_shortest_state_distances<BackwardTraversal>)
+        .def("compute_shortest_backward_distances_from_states",
+             &StateSpace::compute_shortest_distances_from_vertices<BackwardTraversal>,
+             py::arg("state_indices"))
+        .def("compute_pairwise_shortest_forward_state_distances", &StateSpace::compute_pairwise_shortest_vertex_distances<ForwardTraversal>)
+        .def("compute_pairwise_shortest_backward_state_distances", &StateSpace::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &StateSpace::get_pddl_factories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
-        .def("get_state", &StateSpace::get_state, py::arg("state_index"))
-        .def("get_states", &StateSpace::get_states, py::return_value_policy::reference_internal)
-        .def("get_state_index", &StateSpace::get_state_index, py::arg("state"))
-        .def("get_initial_state", &StateSpace::get_initial_state)
-        .def("get_goal_states", &StateSpace::get_goal_states, py::return_value_policy::reference_internal)
-        .def("get_deadend_states", &StateSpace::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_vertex", &StateSpace::get_vertex, py::arg("state_index"))
+        .def("get_vertices", &StateSpace::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_vertex_index", &StateSpace::get_vertex_index, py::arg("state"))
+        .def("get_initial_vertex_index", &StateSpace::get_initial_vertex_index)
+        .def("get_goal_vertex_indices", &StateSpace::get_goal_vertex_indices, py::return_value_policy::reference_internal)
+        .def("get_deadend_vertex_indices", &StateSpace::get_deadend_vertex_indices, py::return_value_policy::reference_internal)
         .def(
             "get_forward_adjacent_states",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
@@ -1467,7 +1469,7 @@ void init_pymimir(py::module_& m)
             "get_backward_adjacent_states",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
@@ -1476,7 +1478,7 @@ void init_pymimir(py::module_& m)
             "get_forward_adjacent_state_indices",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
@@ -1485,24 +1487,24 @@ void init_pymimir(py::module_& m)
             "get_backward_adjacent_state_indices",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
             py::arg("state_index"))
-        .def("get_num_states", &StateSpace::get_num_states)
-        .def("get_num_goal_states", &StateSpace::get_num_goal_states)
-        .def("get_num_deadend_states", &StateSpace::get_num_deadend_states)
-        .def("is_goal_state", &StateSpace::is_goal_state, py::arg("state_index"))
-        .def("is_deadend_state", &StateSpace::is_deadend_state, py::arg("state_index"))
-        .def("is_alive_state", &StateSpace::is_alive_state, py::arg("state_index"))
-        .def("get_transitions", &StateSpace::get_transitions, py::return_value_policy::reference_internal)
-        .def("get_transition_cost", &StateSpace::get_transition_cost, py::arg("transition_index"))
+        .def("get_num_vertices", &StateSpace::get_num_vertices)
+        .def("get_num_goal_vertices", &StateSpace::get_num_goal_vertices)
+        .def("get_num_deadend_vertices", &StateSpace::get_num_deadend_vertices)
+        .def("is_goal_vertex", &StateSpace::is_goal_vertex, py::arg("state_index"))
+        .def("is_deadend_vertex", &StateSpace::is_deadend_vertex, py::arg("state_index"))
+        .def("is_alive_vertex", &StateSpace::is_alive_vertex, py::arg("state_index"))
+        .def("get_edges", &StateSpace::get_edges, py::return_value_policy::reference_internal)
+        .def("get_edge_cost", &StateSpace::get_edge_cost, py::arg("transition_index"))
         .def(
             "get_forward_adjacent_transitions",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
@@ -1511,7 +1513,7 @@ void init_pymimir(py::module_& m)
             "get_backward_adjacent_transitions",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
@@ -1520,7 +1522,7 @@ void init_pymimir(py::module_& m)
             "get_forward_adjacent_transition_indices",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
@@ -1529,16 +1531,16 @@ void init_pymimir(py::module_& m)
             "get_backward_adjacent_transition_indices",
             [](const StateSpace& self, Index state)
             {
-                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(state);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
             py::arg("state_index"))
-        .def("get_num_transitions", &StateSpace::get_num_transitions)
+        .def("get_num_edges", &StateSpace::get_num_edges)
         .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference_internal)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
-        .def("sample_state_with_goal_distance",
-             &StateSpace::sample_state_with_goal_distance,
+        .def("sample_vertex_index_with_goal_distance",
+             &StateSpace::sample_vertex_index_with_goal_distance,
              py::return_value_policy::reference_internal,
              py::arg("goal_distance"));
 
@@ -1651,104 +1653,104 @@ void init_pymimir(py::module_& m)
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionOptions())
         .def("compute_shortest_forward_distances_from_states",
-             &FaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>,
-             py::arg("state_indices"))
+             &FaithfulAbstraction::compute_shortest_distances_from_vertices<ForwardTraversal>,
+             py::arg("vertex_indices"))
         .def("compute_shortest_backward_distances_from_states",
-             &FaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>,
-             py::arg("state_indices"))
-        .def("compute_pairwise_shortest_forward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>)
-        .def("compute_pairwise_shortest_backward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>)
+             &FaithfulAbstraction::compute_shortest_distances_from_vertices<BackwardTraversal>,
+             py::arg("vertex_indices"))
+        .def("compute_pairwise_shortest_forward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_vertex_distances<ForwardTraversal>)
+        .def("compute_pairwise_shortest_backward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
-        .def("get_abstract_state_index", &FaithfulAbstraction::get_abstract_state_index, py::arg("state"))
-        .def("get_states", &FaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
-        .def("get_concrete_to_abstract_state", &FaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
-        .def("get_initial_state", &FaithfulAbstraction::get_initial_state)
-        .def("get_goal_states", &FaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
-        .def("get_deadend_states", &FaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_vertex_index", &FaithfulAbstraction::get_vertex_index, py::arg("state"))
+        .def("get_vertices", &FaithfulAbstraction::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_state_to_vertex_index", &FaithfulAbstraction::get_state_to_vertex_index, py::return_value_policy::reference_internal)
+        .def("get_initial_vertex_index", &FaithfulAbstraction::get_initial_vertex_index)
+        .def("get_goal_vertex_indices", &FaithfulAbstraction::get_goal_vertex_indices, py::return_value_policy::reference_internal)
+        .def("get_deadend_vertex_indices", &FaithfulAbstraction::get_deadend_vertex_indices, py::return_value_policy::reference_internal)
         .def(
-            "get_forward_adjacent_states",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_vertices",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_states",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_vertices",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_forward_adjacent_state_indices",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_vertex_indices",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_state_indices",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_vertex_indices",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
-        .def("get_num_states", &FaithfulAbstraction::get_num_states)
-        .def("get_num_goal_states", &FaithfulAbstraction::get_num_goal_states)
-        .def("get_num_deadend_states", &FaithfulAbstraction::get_num_deadend_states)
-        .def("is_goal_state", &FaithfulAbstraction::is_goal_state, py::arg("state_index"))
-        .def("is_deadend_state", &FaithfulAbstraction::is_deadend_state, py::arg("state_index"))
-        .def("is_alive_state", &FaithfulAbstraction::is_alive_state, py::arg("state_index"))
-        .def("get_transitions", &FaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
-        .def("get_transition_cost", &FaithfulAbstraction::get_transition_cost, py::arg("transition_index"))
+            py::arg("vertex_index"))
+        .def("get_num_vertices", &FaithfulAbstraction::get_num_vertices)
+        .def("get_num_goal_vertices", &FaithfulAbstraction::get_num_goal_vertices)
+        .def("get_num_deadend_vertices", &FaithfulAbstraction::get_num_deadend_vertices)
+        .def("is_goal_vertex", &FaithfulAbstraction::is_goal_vertex, py::arg("vertex_index"))
+        .def("is_deadend_vertex", &FaithfulAbstraction::is_deadend_vertex, py::arg("vertex_index"))
+        .def("is_alive_vertex", &FaithfulAbstraction::is_alive_vertex, py::arg("vertex_index"))
+        .def("get_edges", &FaithfulAbstraction::get_edges, py::return_value_policy::reference_internal)
+        .def("get_edge_cost", &FaithfulAbstraction::get_edge_cost, py::arg("edge_index"))
         .def(
-            "get_forward_adjacent_transitions",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_edges",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_transitions",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_edges",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_forward_adjacent_transition_indices",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_edge_indices",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_transition_indices",
-            [](const FaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_edge_indices",
+            [](const FaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
-        .def("get_num_transitions", &FaithfulAbstraction::get_num_transitions)
+            py::arg("vertex_index"))
+        .def("get_num_edges", &FaithfulAbstraction::get_num_edges)
         .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // GlobalFaithfulAbstraction
@@ -1788,112 +1790,112 @@ void init_pymimir(py::module_& m)
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionsOptions())
         .def("compute_shortest_forward_distances_from_states",
-             &GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>,
-             py::arg("state_indices"))
+             &GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<ForwardTraversal>,
+             py::arg("vertex_indices"))
         .def("compute_shortest_backward_distances_from_states",
-             &GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>,
-             py::arg("state_indices"))
-        .def("compute_pairwise_shortest_forward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>)
-        .def("compute_pairwise_shortest_backward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>)
+             &GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<BackwardTraversal>,
+             py::arg("vertex_indices"))
+        .def("compute_pairwise_shortest_forward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances<ForwardTraversal>)
+        .def("compute_pairwise_shortest_backward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
         .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &GlobalFaithfulAbstraction::get_pddl_factories)
         .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
-        .def("get_abstract_state_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state"))
-        .def("get_abstract_state_index", py::overload_cast<Index>(&GlobalFaithfulAbstraction::get_abstract_state_index, py::const_), py::arg("state_index"))
-        .def("get_states", &GlobalFaithfulAbstraction::get_states, py::return_value_policy::reference_internal)
-        .def("get_concrete_to_abstract_state", &GlobalFaithfulAbstraction::get_concrete_to_abstract_state, py::return_value_policy::reference_internal)
-        .def("get_global_state_index_to_state_index",
-             &GlobalFaithfulAbstraction::get_global_state_index_to_state_index,
+        .def("get_vertex_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_vertex_index, py::const_), py::arg("state"))
+        .def("get_vertex_index", py::overload_cast<Index>(&GlobalFaithfulAbstraction::get_vertex_index, py::const_), py::arg("global_state_index"))
+        .def("get_vertices", &GlobalFaithfulAbstraction::get_vertices, py::return_value_policy::reference_internal)
+        .def("get_state_to_vertex_index", &GlobalFaithfulAbstraction::get_state_to_vertex_index, py::return_value_policy::reference_internal)
+        .def("get_global_vertex_index_to_vertex_index",
+             &GlobalFaithfulAbstraction::get_global_vertex_index_to_vertex_index,
              py::return_value_policy::reference_internal)
-        .def("get_initial_state", &GlobalFaithfulAbstraction::get_initial_state)
-        .def("get_goal_states", &GlobalFaithfulAbstraction::get_goal_states, py::return_value_policy::reference_internal)
-        .def("get_deadend_states", &GlobalFaithfulAbstraction::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_initial_vertex_index", &GlobalFaithfulAbstraction::get_initial_vertex_index)
+        .def("get_goal_vertex_indices", &GlobalFaithfulAbstraction::get_goal_vertex_indices, py::return_value_policy::reference_internal)
+        .def("get_deadend_vertex_indices", &GlobalFaithfulAbstraction::get_deadend_vertex_indices, py::return_value_policy::reference_internal)
         .def(
-            "get_forward_adjacent_states",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_vertices",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_states<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_states",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_vertices",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_states<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_forward_adjacent_state_indices",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_vertex_indices",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_state_indices",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_vertex_indices",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
-        .def("get_num_states", &GlobalFaithfulAbstraction::get_num_states)
-        .def("get_num_goal_states", &GlobalFaithfulAbstraction::get_num_goal_states)
-        .def("get_num_deadend_states", &GlobalFaithfulAbstraction::get_num_deadend_states)
-        .def("is_goal_state", &GlobalFaithfulAbstraction::is_goal_state, py::arg("state_index"))
-        .def("is_deadend_state", &GlobalFaithfulAbstraction::is_deadend_state, py::arg("state_index"))
-        .def("is_alive_state", &GlobalFaithfulAbstraction::is_alive_state, py::arg("state_index"))
+            py::arg("vertex_index"))
+        .def("get_num_vertices", &GlobalFaithfulAbstraction::get_num_vertices)
+        .def("get_num_goal_vertices", &GlobalFaithfulAbstraction::get_num_goal_vertices)
+        .def("get_num_deadend_vertices", &GlobalFaithfulAbstraction::get_num_deadend_vertices)
+        .def("is_goal_vertex", &GlobalFaithfulAbstraction::is_goal_vertex, py::arg("vertex_index"))
+        .def("is_deadend_vertex", &GlobalFaithfulAbstraction::is_deadend_vertex, py::arg("vertex_index"))
+        .def("is_alive_vertex", &GlobalFaithfulAbstraction::is_alive_vertex, py::arg("vertex_index"))
         .def("get_num_isomorphic_states", &GlobalFaithfulAbstraction::get_num_isomorphic_states)
         .def("get_num_non_isomorphic_states", &GlobalFaithfulAbstraction::get_num_non_isomorphic_states)
-        .def("get_transitions", &GlobalFaithfulAbstraction::get_transitions, py::return_value_policy::reference_internal)
-        .def("get_transition_cost", &GlobalFaithfulAbstraction::get_transition_cost)
+        .def("get_edges", &GlobalFaithfulAbstraction::get_edges, py::return_value_policy::reference_internal)
+        .def("get_edge_cost", &GlobalFaithfulAbstraction::get_edge_cost, py::arg("edge_index"))
         .def(
-            "get_forward_adjacent_transitions",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_edges",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_transitions",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_edges",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_forward_adjacent_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_forward_adjacent_edge_indices",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_transition_indices",
-            [](const GlobalFaithfulAbstraction& self, Index state)
+            "get_backward_adjacent_edge_indices",
+            [](const GlobalFaithfulAbstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
-        .def("get_num_transitions", &GlobalFaithfulAbstraction::get_num_transitions)
+            py::arg("vertex_index"))
+        .def("get_num_edges", &GlobalFaithfulAbstraction::get_num_edges)
         .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // Abstraction
@@ -1904,72 +1906,72 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_factories", &Abstraction::get_pddl_factories)
         .def("get_aag", &Abstraction::get_aag)
         .def("get_ssg", &Abstraction::get_ssg)
-        .def("get_abstract_state_index", &Abstraction::get_abstract_state_index)
-        .def("get_initial_state", &Abstraction::get_initial_state)
-        .def("get_goal_states", &Abstraction::get_goal_states, py::return_value_policy::reference_internal)
-        .def("get_deadend_states", &Abstraction::get_deadend_states, py::return_value_policy::reference_internal)
+        .def("get_vertex_index", &Abstraction::get_vertex_index)
+        .def("get_initial_vertex_index", &Abstraction::get_initial_vertex_index)
+        .def("get_goal_vertex_indices", &Abstraction::get_goal_vertex_indices, py::return_value_policy::reference_internal)
+        .def("get_deadend_vertex_indices", &Abstraction::get_deadend_vertex_indices, py::return_value_policy::reference_internal)
         .def(
-            "get_forward_adjacent_state_indices",
-            [](const Abstraction& self, Index state)
+            "get_forward_adjacent_vertex_indices",
+            [](const Abstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_state_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_state_indices",
-            [](const Abstraction& self, Index state)
+            "get_backward_adjacent_vertex_indices",
+            [](const Abstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_state_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_vertex_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
-        .def("get_num_states", &Abstraction::get_num_states)
-        .def("get_num_goal_states", &Abstraction::get_num_goal_states)
-        .def("get_num_deadend_states", &Abstraction::get_num_deadend_states)
-        .def("is_goal_state", &Abstraction::is_goal_state, py::arg("state_index"))
-        .def("is_deadend_state", &Abstraction::is_deadend_state, py::arg("state_index"))
-        .def("is_alive_state", &Abstraction::is_alive_state, py::arg("state_index"))
-        .def("get_transition_cost", &Abstraction::get_transition_cost, py::arg("transition_index"))
+            py::arg("vertex_index"))
+        .def("get_num_vertices", &Abstraction::get_num_vertices)
+        .def("get_num_goal_vertices", &Abstraction::get_num_goal_vertices)
+        .def("get_num_deadend_vertices", &Abstraction::get_num_deadend_vertices)
+        .def("is_goal_vertex", &Abstraction::is_goal_vertex, py::arg("vertex_index"))
+        .def("is_deadend_vertex", &Abstraction::is_deadend_vertex, py::arg("vertex_index"))
+        .def("is_alive_vertex", &Abstraction::is_alive_vertex, py::arg("vertex_index"))
+        .def("get_edge_cost", &Abstraction::get_edge_cost, py::arg("edge_index"))
         .def(
-            "get_forward_adjacent_transitions",
-            [](const Abstraction& self, Index state)
+            "get_forward_adjacent_edges",
+            [](const Abstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transitions<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
             "get_backward_adjacent_transitions",
-            [](const Abstraction& self, Index state)
+            [](const Abstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transitions<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edges<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_forward_adjacent_transition_indices",
-            [](const Abstraction& self, Index state)
+            "get_forward_adjacent_edge_indices",
+            [](const Abstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transition_indices<ForwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<ForwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
+            py::arg("vertex_index"))
         .def(
-            "get_backward_adjacent_transition_indices",
-            [](const Abstraction& self, Index state)
+            "get_backward_adjacent_edge_indices",
+            [](const Abstraction& self, Index vertex)
             {
-                auto iterator = self.get_adjacent_transition_indices<BackwardTraversal>(state);
+                auto iterator = self.get_adjacent_edge_indices<BackwardTraversal>(vertex);
                 return py::make_iterator(iterator.begin(), iterator.end());
             },
             py::keep_alive<0, 1>(),
-            py::arg("state_index"))
-        .def("get_num_transitions", &Abstraction::get_num_transitions)
+            py::arg("vertex_index"))
+        .def("get_num_edges", &Abstraction::get_num_edges)
         .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

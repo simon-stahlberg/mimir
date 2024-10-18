@@ -87,20 +87,20 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     m_states(std::move(states)),
     m_num_isomorphic_states(num_isomorphic_states),
     m_num_non_isomorphic_states(num_non_isomorphic_states),
-    m_global_state_index_to_state_index()
+    m_global_vertex_index_to_vertex_index()
 {
     /* Ensure correctness. */
 
     // Check correct state ordering
-    for (size_t i = 0; i < get_num_states(); ++i)
+    for (size_t i = 0; i < get_num_vertices(); ++i)
     {
-        assert(get_states().at(i).get_index() == static_cast<Index>(i) && "State index does not match its position in the list");
+        assert(get_vertices().at(i).get_index() == static_cast<Index>(i) && "State index does not match its position in the list");
     }
 
     /* Additional */
     for (const auto& state : m_states)
     {
-        m_global_state_index_to_state_index.emplace(state.get_global_index(), state.get_index());
+        m_global_vertex_index_to_vertex_index.emplace(state.get_global_index(), state.get_index());
     }
 }
 
@@ -138,7 +138,7 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     for (auto& faithful_abstraction : faithful_abstractions)
     {
         auto has_zero_non_isomorphic_states = certificate_to_global_state.count(
-            mimir::get_certificate(faithful_abstraction.get_graph().get_vertices().at(faithful_abstraction.get_initial_state())));
+            mimir::get_certificate(faithful_abstraction.get_graph().get_vertices().at(faithful_abstraction.get_initial_vertex_index())));
 
         if (has_zero_non_isomorphic_states)
         {
@@ -167,9 +167,10 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
                 // Ensure that goals remain goals and deadends remain deadends.
                 const auto& other_faithful_abstraction = relevant_faithful_abstractions->at(it->second.get_faithful_abstraction_index());
-                const auto& other_state = other_faithful_abstraction.get_graph().get_vertices().at(it->second.get_faithful_abstract_state_index());
-                assert(faithful_abstraction.is_goal_state(state.get_index()) == other_faithful_abstraction.is_goal_state(other_state.get_index()));
-                assert(faithful_abstraction.is_deadend_state(state.get_index()) == other_faithful_abstraction.is_deadend_state(other_state.get_index()));
+                [[maybe_unused]] const auto& other_state =
+                    other_faithful_abstraction.get_graph().get_vertices().at(it->second.get_faithful_abstract_state_index());
+                assert(faithful_abstraction.is_goal_vertex(state.get_index()) == other_faithful_abstraction.is_goal_vertex(other_state.get_index()));
+                assert(faithful_abstraction.is_deadend_vertex(state.get_index()) == other_faithful_abstraction.is_deadend_vertex(other_state.get_index()));
             }
             else
             {
@@ -200,34 +201,38 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
  * Abstraction functionality
  */
 
-Index GlobalFaithfulAbstraction::get_abstract_state_index(State concrete_state) const
-{
-    return m_abstractions->at(m_index).get_abstract_state_index(concrete_state);
-}
+Index GlobalFaithfulAbstraction::get_vertex_index(State state) const { return m_abstractions->at(m_index).get_vertex_index(state); }
 
-Index GlobalFaithfulAbstraction::get_abstract_state_index(Index global_state_index) const { return m_global_state_index_to_state_index.at(global_state_index); }
+Index GlobalFaithfulAbstraction::get_vertex_index(Index global_vertex_index) const
+{
+    if (m_global_vertex_index_to_vertex_index.contains(global_vertex_index))
+    {
+        return m_global_vertex_index_to_vertex_index.at(global_vertex_index);
+    }
+    throw std::runtime_error("Failed to access vertex of global state index. Are you sure that the global vertex index is part of the abstraction?");
+}
 
 /**
  * Extended functionality
  */
 
 template<IsTraversalDirection Direction>
-ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_states(const IndexList& abstract_states) const
+ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices(const IndexList& abstract_states) const
 {
-    return m_abstractions->at(m_index).compute_shortest_distances_from_states<Direction>(abstract_states);
+    return m_abstractions->at(m_index).compute_shortest_distances_from_vertices<Direction>(abstract_states);
 }
 
-template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<ForwardTraversal>(const IndexList& abstract_states) const;
-template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_states<BackwardTraversal>(const IndexList& abstract_states) const;
+template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<ForwardTraversal>(const IndexList& abstract_states) const;
+template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<BackwardTraversal>(const IndexList& abstract_states) const;
 
 template<IsTraversalDirection Direction>
-ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances() const
+ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances() const
 {
-    return m_abstractions->at(m_index).compute_pairwise_shortest_state_distances<Direction>();
+    return m_abstractions->at(m_index).compute_pairwise_shortest_vertex_distances<Direction>();
 }
 
-template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<ForwardTraversal>() const;
-template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_state_distances<BackwardTraversal>() const;
+template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances<ForwardTraversal>() const;
+template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances<BackwardTraversal>() const;
 
 /**
  * Getters
@@ -255,104 +260,107 @@ const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() con
 const typename GlobalFaithfulAbstraction::GraphType& GlobalFaithfulAbstraction::get_graph() const { return m_abstractions->at(m_index).get_graph(); }
 
 /* States */
-const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_states() const { return m_states; }
+const GlobalFaithfulAbstractStateList& GlobalFaithfulAbstraction::get_vertices() const { return m_states; }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexConstIteratorType<Direction>>
-GlobalFaithfulAbstraction::get_adjacent_states(Index state) const
+GlobalFaithfulAbstraction::get_adjacent_vertices(Index vertex) const
 {
-    return get_graph().get_adjacent_vertices<Direction>(state);
+    return get_graph().get_adjacent_vertices<Direction>(vertex);
 }
 
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexConstIteratorType<ForwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_states<ForwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_vertices<ForwardTraversal>(Index vertex) const;
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexConstIteratorType<BackwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_states<BackwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_vertices<BackwardTraversal>(Index vertex) const;
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexIndexConstIteratorType<Direction>>
-GlobalFaithfulAbstraction::get_adjacent_state_indices(Index state) const
+GlobalFaithfulAbstraction::get_adjacent_vertex_indices(Index vertex) const
 {
-    return get_graph().get_adjacent_vertex_indices<Direction>(state);
+    return get_graph().get_adjacent_vertex_indices<Direction>(vertex);
 }
 
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexIndexConstIteratorType<ForwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_state_indices<ForwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_vertex_indices<ForwardTraversal>(Index vertex) const;
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentVertexIndexConstIteratorType<BackwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_state_indices<BackwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_vertex_indices<BackwardTraversal>(Index vertex) const;
 
-const StateMap<Index>& GlobalFaithfulAbstraction::get_concrete_to_abstract_state() const
+const StateMap<Index>& GlobalFaithfulAbstraction::get_state_to_vertex_index() const { return m_abstractions->at(m_index).get_state_to_vertex_index(); }
+
+const std::unordered_map<Index, Index>& GlobalFaithfulAbstraction::get_global_vertex_index_to_vertex_index() const
 {
-    return m_abstractions->at(m_index).get_concrete_to_abstract_state();
+    return m_global_vertex_index_to_vertex_index;
 }
 
-const std::unordered_map<Index, Index>& GlobalFaithfulAbstraction::get_global_state_index_to_state_index() const { return m_global_state_index_to_state_index; }
+Index GlobalFaithfulAbstraction::get_initial_vertex_index() const { return m_abstractions->at(m_index).get_initial_vertex_index(); }
 
-Index GlobalFaithfulAbstraction::get_initial_state() const { return m_abstractions->at(m_index).get_initial_state(); }
+const IndexSet& GlobalFaithfulAbstraction::get_goal_vertex_indices() const { return m_abstractions->at(m_index).get_goal_vertex_indices(); }
 
-const IndexSet& GlobalFaithfulAbstraction::get_goal_states() const { return m_abstractions->at(m_index).get_goal_states(); }
+const IndexSet& GlobalFaithfulAbstraction::get_deadend_vertex_indices() const { return m_abstractions->at(m_index).get_deadend_vertex_indices(); }
 
-const IndexSet& GlobalFaithfulAbstraction::get_deadend_states() const { return m_abstractions->at(m_index).get_deadend_states(); }
+size_t GlobalFaithfulAbstraction::get_num_vertices() const { return get_vertices().size(); }
 
-size_t GlobalFaithfulAbstraction::get_num_states() const { return get_states().size(); }
+size_t GlobalFaithfulAbstraction::get_num_goal_vertices() const { return get_goal_vertex_indices().size(); }
 
-size_t GlobalFaithfulAbstraction::get_num_goal_states() const { return get_goal_states().size(); }
+size_t GlobalFaithfulAbstraction::get_num_deadend_vertices() const { return get_deadend_vertex_indices().size(); }
 
-size_t GlobalFaithfulAbstraction::get_num_deadend_states() const { return get_deadend_states().size(); }
+bool GlobalFaithfulAbstraction::is_goal_vertex(Index vertex) const { return get_goal_vertex_indices().count(vertex); }
 
-bool GlobalFaithfulAbstraction::is_goal_state(Index state) const { return get_goal_states().count(state); }
+bool GlobalFaithfulAbstraction::is_deadend_vertex(Index vertex) const { return get_deadend_vertex_indices().count(vertex); }
 
-bool GlobalFaithfulAbstraction::is_deadend_state(Index state) const { return get_deadend_states().count(state); }
-
-bool GlobalFaithfulAbstraction::is_alive_state(Index state) const { return !(get_goal_states().count(state) || get_deadend_states().count(state)); }
+bool GlobalFaithfulAbstraction::is_alive_vertex(Index vertex) const
+{
+    return !(get_goal_vertex_indices().count(vertex) || get_deadend_vertex_indices().count(vertex));
+}
 
 size_t GlobalFaithfulAbstraction::get_num_isomorphic_states() const { return m_num_isomorphic_states; }
 
 size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return m_num_non_isomorphic_states; }
 
 /* Transitions */
-const GroundActionsEdgeList& GlobalFaithfulAbstraction::get_transitions() const { return get_graph().get_edges(); }
+const GroundActionsEdgeList& GlobalFaithfulAbstraction::get_edges() const { return get_graph().get_edges(); }
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>>
-GlobalFaithfulAbstraction::get_adjacent_transitions(Index state) const
+GlobalFaithfulAbstraction::get_adjacent_edges(Index vertex) const
 {
-    return get_graph().get_adjacent_edges<Direction>(state);
+    return get_graph().get_adjacent_edges<Direction>(vertex);
 }
 
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<ForwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_transitions<ForwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_edges<ForwardTraversal>(Index vertex) const;
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<BackwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_transitions<BackwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_edges<BackwardTraversal>(Index vertex) const;
 
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<Direction>>
-GlobalFaithfulAbstraction::get_adjacent_transition_indices(Index state) const
+GlobalFaithfulAbstraction::get_adjacent_edge_indices(Index vertex) const
 {
-    return get_graph().get_adjacent_edge_indices<Direction>(state);
+    return get_graph().get_adjacent_edge_indices<Direction>(vertex);
 }
 
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<ForwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_transition_indices<ForwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_edge_indices<ForwardTraversal>(Index vertex) const;
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
-GlobalFaithfulAbstraction::get_adjacent_transition_indices<BackwardTraversal>(Index state) const;
+GlobalFaithfulAbstraction::get_adjacent_edge_indices<BackwardTraversal>(Index vertex) const;
 
-ContinuousCost GlobalFaithfulAbstraction::get_transition_cost(Index transition) const
+ContinuousCost GlobalFaithfulAbstraction::get_edge_cost(Index edge) const
 {
-    return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_transition_cost(transition);
+    return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_edge_cost(edge);
 }
 
-size_t GlobalFaithfulAbstraction::get_num_transitions() const { return m_abstractions->at(m_index).get_num_transitions(); }
+size_t GlobalFaithfulAbstraction::get_num_edges() const { return m_abstractions->at(m_index).get_num_edges(); }
 
 /* Distances */
 const ContinuousCostList& GlobalFaithfulAbstraction::get_goal_distances() const { return m_abstractions->at(m_index).get_goal_distances(); }
 
-ContinuousCost GlobalFaithfulAbstraction::get_goal_distance(Index state) const { return m_abstractions->at(m_index).get_goal_distance(state); }
+ContinuousCost GlobalFaithfulAbstraction::get_goal_distance(Index vertex) const { return m_abstractions->at(m_index).get_goal_distance(vertex); }
 
 /* Additional */
 const std::map<ContinuousCost, IndexList>& GlobalFaithfulAbstraction::get_states_by_goal_distance() const
 {
-    return m_abstractions->at(m_index).get_states_by_goal_distance();
+    return m_abstractions->at(m_index).get_vertex_indices_by_goal_distance();
 }
 
 /**
@@ -368,18 +376,18 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         << "\n";
 
     // 3. Draw states
-    for (size_t state_index = 0; state_index < abstraction.get_num_states(); ++state_index)
+    for (size_t state_index = 0; state_index < abstraction.get_num_vertices(); ++state_index)
     {
         out << "s" << state_index << "[";
 
         // goal marking
-        if (abstraction.is_goal_state(state_index))
+        if (abstraction.is_goal_vertex(state_index))
         {
             out << "peripheries=2,";
         }
 
         // label
-        const auto& gfa_state = abstraction.get_states().at(state_index);
+        const auto& gfa_state = abstraction.get_vertices().at(state_index);
         out << "label=\"";
         out << "state_index=" << gfa_state.get_index() << " "
             << "global_state_index = " << gfa_state.get_global_index() << " "
@@ -398,7 +406,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
     // 4. Draw initial state and dangling edge
     out << "Dangling [ label = \"\", style = invis ]\n"
         << "{ rank = same; Dangling }\n"
-        << "Dangling -> s" << abstraction.get_initial_state() << "\n";
+        << "Dangling -> s" << abstraction.get_initial_vertex_index() << "\n";
 
     // 5. Group states with same distance together
     for (auto it = abstraction.get_states_by_goal_distance().rbegin(); it != abstraction.get_states_by_goal_distance().rend(); ++it)

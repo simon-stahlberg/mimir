@@ -111,25 +111,25 @@ public:
      * Abstraction functionality
      */
 
-    Index get_abstract_state_index(State concrete_state) const;
-    Index get_abstract_state_index(Index global_state_index) const;
+    Index get_vertex_index(State state) const;
+    Index get_vertex_index(Index global_vertex_index) const;
 
     /**
      * Extended functionality
      */
 
-    /// @brief Compute the shortest distances from the given states using Breadth-first search (unit cost 1) or Dijkstra.
+    /// @brief Compute the shortest distances from the given vertices using Breadth-first search (unit cost 1) or Dijkstra.
     /// @tparam Direction the direction of traversal.
-    /// @param states the list of states from which shortest distances are computed.
-    /// @return the shortest distances from the given states to all other states.
+    /// @param vertices the list of vertices from which shortest distances are computed.
+    /// @return the shortest distances from the given vertices to all other vertices.
     template<IsTraversalDirection Direction>
-    ContinuousCostList compute_shortest_distances_from_states(const IndexList& states) const;
+    ContinuousCostList compute_shortest_distances_from_vertices(const IndexList& vertices) const;
 
     /// @brief Compute pairwise shortest distances using Floyd-Warshall.
     /// @tparam Direction the direction of traversal.
     /// @return the pairwise shortest distances.
     template<IsTraversalDirection Direction>
-    ContinuousCostMatrix compute_pairwise_shortest_state_distances() const;
+    ContinuousCostMatrix compute_pairwise_shortest_vertex_distances() const;
 
     /**
      * Getters
@@ -151,37 +151,37 @@ public:
     const GraphType& get_graph() const;
 
     /* States */
-    const GlobalFaithfulAbstractStateList& get_states() const;
+    const GlobalFaithfulAbstractStateList& get_vertices() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_states(Index state) const;
+    std::ranges::subrange<AdjacentVertexConstIteratorType<Direction>> get_adjacent_vertices(Index vertex) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_state_indices(Index state) const;
-    const StateMap<Index>& get_concrete_to_abstract_state() const;
-    const std::unordered_map<Index, Index>& get_global_state_index_to_state_index() const;
-    Index get_initial_state() const;
-    const IndexSet& get_goal_states() const;
-    const IndexSet& get_deadend_states() const;
-    size_t get_num_states() const;
-    size_t get_num_goal_states() const;
-    size_t get_num_deadend_states() const;
-    bool is_goal_state(Index state) const;
-    bool is_deadend_state(Index state) const;
-    bool is_alive_state(Index state) const;
+    std::ranges::subrange<AdjacentVertexIndexConstIteratorType<Direction>> get_adjacent_vertex_indices(Index vertex) const;
+    const StateMap<Index>& get_state_to_vertex_index() const;
+    const std::unordered_map<Index, Index>& get_global_vertex_index_to_vertex_index() const;
+    Index get_initial_vertex_index() const;
+    const IndexSet& get_goal_vertex_indices() const;
+    const IndexSet& get_deadend_vertex_indices() const;
+    size_t get_num_vertices() const;
+    size_t get_num_goal_vertices() const;
+    size_t get_num_deadend_vertices() const;
+    bool is_goal_vertex(Index vertex) const;
+    bool is_deadend_vertex(Index vertex) const;
+    bool is_alive_vertex(Index vertex) const;
     size_t get_num_isomorphic_states() const;
     size_t get_num_non_isomorphic_states() const;
 
     /* Transitions */
-    const GroundActionsEdgeList& get_transitions() const;
+    const GroundActionsEdgeList& get_edges() const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_transitions(Index state) const;
+    std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(Index vertex) const;
     template<IsTraversalDirection Direction>
-    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_transition_indices(Index state) const;
-    ContinuousCost get_transition_cost(Index transition) const;
-    size_t get_num_transitions() const;
+    std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(Index vertex) const;
+    ContinuousCost get_edge_cost(Index edge) const;
+    size_t get_num_edges() const;
 
     /* Distances */
     const ContinuousCostList& get_goal_distances() const;
-    ContinuousCost get_goal_distance(Index state) const;
+    ContinuousCost get_goal_distance(Index vertex) const;
 
     /* Additional */
     const std::map<ContinuousCost, IndexList>& get_states_by_goal_distance() const;
@@ -201,7 +201,7 @@ private:
     size_t m_num_non_isomorphic_states;
 
     /* Additional */
-    std::unordered_map<Index, Index> m_global_state_index_to_state_index;
+    std::unordered_map<Index, Index> m_global_vertex_index_to_vertex_index;
 };
 
 static_assert(IsAbstraction<GlobalFaithfulAbstraction>);

@@ -356,7 +356,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
 
     auto visited_components = std::vector<bool>(num_components, false);
     auto scc_stack = std::stack<size_t>();
-    scc_stack.push(component_map.at(state_space->get_initial_state()));
+    scc_stack.push(component_map.at(state_space->get_initial_vertex_index()));
 
     while (!scc_stack.empty())
     {

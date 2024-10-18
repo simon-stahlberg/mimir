@@ -31,10 +31,10 @@ TEST(MimirTests, DatasetsStateSpaceCreateTest)
 
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
-    EXPECT_EQ(state_space.get_num_states(), 28);
-    EXPECT_EQ(state_space.get_num_transitions(), 104);
-    EXPECT_EQ(state_space.get_num_goal_states(), 2);
-    EXPECT_EQ(state_space.get_num_deadend_states(), 0);
+    EXPECT_EQ(state_space.get_num_vertices(), 28);
+    EXPECT_EQ(state_space.get_num_edges(), 104);
+    EXPECT_EQ(state_space.get_num_goal_vertices(), 2);
+    EXPECT_EQ(state_space.get_num_deadend_vertices(), 0);
 }
 
 TEST(MimirTests, DatasetsStateSpaceCreateParallelTest)

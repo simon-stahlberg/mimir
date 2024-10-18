@@ -32,7 +32,7 @@ TEST(MimirTests, GraphsTupleGraphTest)
 
     const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(domain_file, problem_file).value()));
 
-    EXPECT_EQ(state_space->get_num_states(), 8);
+    EXPECT_EQ(state_space->get_num_vertices(), 8);
 
     auto tuple_graph_factory_0 = TupleGraphFactory(state_space, 0, false);
     auto tuple_graph_factory_1 = TupleGraphFactory(state_space, 1, false);

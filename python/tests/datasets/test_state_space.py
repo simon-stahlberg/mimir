@@ -13,10 +13,10 @@ def test_state_space():
 
     state_space = StateSpace.create(domain_filepath, problem_filepath)
 
-    assert state_space.get_num_states() == 28
-    assert state_space.get_num_transitions() == 104
-    assert state_space.get_num_goal_states() == 2
-    assert state_space.get_num_deadend_states() == 0
+    assert state_space.get_num_vertices() == 28
+    assert state_space.get_num_edges() == 104
+    assert state_space.get_num_goal_vertices() == 2
+    assert state_space.get_num_deadend_vertices() == 0
 
 
 def test_state_space_parallel():
@@ -30,5 +30,5 @@ def test_state_space_parallel():
     state_spaces = StateSpace.create(domain_filepath, problem_filepaths)
 
     assert len(state_spaces) == 2
-    assert state_spaces[0].get_num_states() == 8
-    assert state_spaces[1].get_num_states() == 28
+    assert state_spaces[0].get_num_vertices() == 8
+    assert state_spaces[1].get_num_vertices() == 28

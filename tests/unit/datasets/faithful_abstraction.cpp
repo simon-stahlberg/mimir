@@ -29,10 +29,10 @@ TEST(MimirTests, DatasetsFaithfulAbstractionCreateTest)
 
     const auto abstraction = FaithfulAbstraction::create(domain_file, problem_file).value();
 
-    EXPECT_EQ(abstraction.get_num_states(), 12);
-    EXPECT_EQ(abstraction.get_num_transitions(), 36);
-    EXPECT_EQ(abstraction.get_num_goal_states(), 2);
-    EXPECT_EQ(abstraction.get_num_deadend_states(), 0);
+    EXPECT_EQ(abstraction.get_num_vertices(), 12);
+    EXPECT_EQ(abstraction.get_num_edges(), 36);
+    EXPECT_EQ(abstraction.get_num_goal_vertices(), 2);
+    EXPECT_EQ(abstraction.get_num_deadend_vertices(), 0);
 }
 
 TEST(MimirTests, DatasetsFaithfulAbstractionCreateParallelTest)
@@ -47,9 +47,9 @@ TEST(MimirTests, DatasetsFaithfulAbstractionCreateParallelTest)
     EXPECT_EQ(abstractions.size(), 2);
 
     // Reduced from 8 to 6 abstract states.
-    EXPECT_EQ(abstractions.at(0).get_num_states(), 6);
+    EXPECT_EQ(abstractions.at(0).get_num_vertices(), 6);
     // Reduced from 28 to 12 abstract states.
-    EXPECT_EQ(abstractions.at(1).get_num_states(), 12);
+    EXPECT_EQ(abstractions.at(1).get_num_vertices(), 12);
 }
 
 }

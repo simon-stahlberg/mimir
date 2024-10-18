@@ -53,8 +53,8 @@ int main(int argc, char** argv)
     size_t num_ss_ground_axioms = 0;
     for (const auto& state_space : state_spaces)
     {
-        num_ss_states += state_space.get_num_states();
-        num_ss_transitions += state_space.get_num_transitions();
+        num_ss_states += state_space.get_num_vertices();
+        num_ss_transitions += state_space.get_num_edges();
         num_ss_ground_actions += state_space.get_aag()->get_num_ground_actions();
         num_ss_ground_axioms += state_space.get_aag()->get_num_ground_axioms();
     }
@@ -84,10 +84,10 @@ int main(int argc, char** argv)
     size_t num_non_isomorphic_states = 0;
     for (const auto& gfa : gfas)
     {
-        std::cout << gfa.get_problem()->get_filepath().value() << " " << gfa.get_num_states() << " " << gfa.get_num_isomorphic_states() << " "
+        std::cout << gfa.get_problem()->get_filepath().value() << " " << gfa.get_num_vertices() << " " << gfa.get_num_isomorphic_states() << " "
                   << gfa.get_num_non_isomorphic_states() << std::endl;
-        num_gfa_states += gfa.get_num_states();
-        num_gfa_transitions += gfa.get_num_transitions();
+        num_gfa_states += gfa.get_num_vertices();
+        num_gfa_transitions += gfa.get_num_edges();
         num_gfa_ground_actions += gfa.get_aag()->get_num_ground_actions();
         num_gfa_ground_axioms += gfa.get_aag()->get_num_ground_axioms();
         num_isomorphic_states += gfa.get_num_isomorphic_states();

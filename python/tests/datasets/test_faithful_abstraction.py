@@ -14,10 +14,10 @@ def test_faithful_abstraction():
     abstraction = FaithfulAbstraction.create(domain_filepath, problem_filepath)
     assert abstraction is not None
 
-    assert abstraction.get_num_states() == 12
-    assert abstraction.get_num_transitions() == 36
-    assert abstraction.get_num_goal_states() == 2
-    assert abstraction.get_num_deadend_states() == 0
+    assert abstraction.get_num_vertices() == 12
+    assert abstraction.get_num_edges() == 36
+    assert abstraction.get_num_goal_vertices() == 2
+    assert abstraction.get_num_deadend_vertices() == 0
 
 
 def test_faithful_abstraction_parallel():
@@ -33,6 +33,6 @@ def test_faithful_abstraction_parallel():
     assert len(abstractions) == 2
 
     # Reduced from 8 to 6 abstract states.
-    assert abstractions[0].get_num_states() == 6
+    assert abstractions[0].get_num_vertices() == 6
     # Reduced from 28 to 12 abstract states.
-    assert abstractions[1].get_num_states() == 12
+    assert abstractions[1].get_num_vertices() == 12

@@ -56,7 +56,7 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_num_states(), 28);
+    EXPECT_EQ(state_space.get_num_vertices(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
 
@@ -87,7 +87,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_num_states(), 28);
+    EXPECT_EQ(state_space.get_num_vertices(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
 
@@ -130,7 +130,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_num_states(), 28);
+    EXPECT_EQ(state_space.get_num_vertices(), 28);
     EXPECT_EQ(certificates.size(), 1);
 }
 

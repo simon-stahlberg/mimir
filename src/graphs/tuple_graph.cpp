@@ -89,10 +89,10 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const S
     }
 
     auto optimal_distance = std::numeric_limits<ContinuousCost>::infinity();
-    const auto distances = m_state_space->compute_shortest_distances_from_states<ForwardTraversal>(IndexList { m_state_space->get_initial_state() });
+    const auto distances = m_state_space->compute_shortest_distances_from_vertices<ForwardTraversal>(IndexList { m_state_space->get_initial_vertex_index() });
     for (const auto& state : states)
     {
-        const auto state_index = m_state_space->get_state_index(state);
+        const auto state_index = m_state_space->get_vertex_index(state);
         const auto state_distance = distances.at(state_index);
         // Unreachable states have distance DISTANCE_INFINITY
         if (state_distance != std::numeric_limits<ContinuousCost>::infinity())
@@ -104,7 +104,7 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const S
     auto optimal_states = StateSet {};
     for (const auto& state : states)
     {
-        const auto state_index = m_state_space->get_state_index(state);
+        const auto state_index = m_state_space->get_vertex_index(state);
         if (distances.at(state_index) == optimal_distance)
         {
             optimal_states.insert(state);
@@ -276,7 +276,7 @@ void TupleGraphArityZeroComputation::compute_first_layer(State root_state)
 
     const auto empty_tuple_index = m_tuple_index_mapper->get_empty_tuple_index();
     const auto root_state_vertex_index = 0;
-    const auto root_state_index = m_state_space->get_state_index(root_state);
+    const auto root_state_index = m_state_space->get_vertex_index(root_state);
     for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(root_state_index))
     {
         const auto succ_state = get_state(concrete_succ_state);
@@ -360,7 +360,7 @@ bool TupleGraphArityKComputation::compute_next_state_layer()
     bool is_empty = true;
     for (const auto& state : prev_states)
     {
-        const auto state_index = m_state_space->get_state_index(state);
+        const auto state_index = m_state_space->get_vertex_index(state);
         for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))
         {
             const auto succ_state = get_state(concrete_succ_state);
@@ -419,7 +419,7 @@ void TupleGraphArityKComputation::extend_optimal_plans_from_prev_layer()
         // Bookkeeping..
         for (const auto state : prev_vertex.get_states())
         {
-            const auto state_index = m_state_space->get_state_index(state);
+            const auto state_index = m_state_space->get_vertex_index(state);
 
             // "[...] by means of a single action".
             for (const auto& concrete_succ_state : m_state_space->get_graph().get_adjacent_vertices<ForwardTraversal>(state_index))

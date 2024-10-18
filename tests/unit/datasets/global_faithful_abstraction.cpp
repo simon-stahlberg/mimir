@@ -39,12 +39,12 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateGripperTest)
 
     // Reduced from 8 to 6 abstract states.
     const auto& abstraction_0 = abstractions.at(0);
-    EXPECT_EQ(abstraction_0.get_num_states(), 6);
+    EXPECT_EQ(abstraction_0.get_num_vertices(), 6);
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 6);
     // Reduced from 28 to 12 abstract states.
     const auto& abstraction_1 = abstractions.at(1);
-    EXPECT_EQ(abstraction_1.get_num_states(), 12);
+    EXPECT_EQ(abstraction_1.get_num_vertices(), 12);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 12);
 }
@@ -61,12 +61,12 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateVisitallTest)
     EXPECT_EQ(abstractions.size(), 2);
 
     const auto& abstraction_0 = abstractions.at(0);
-    EXPECT_EQ(abstraction_0.get_num_states(), 5);
+    EXPECT_EQ(abstraction_0.get_num_vertices(), 5);
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 5);
 
     const auto& abstraction_1 = abstractions.at(1);
-    EXPECT_EQ(abstraction_1.get_num_states(), 5);
+    EXPECT_EQ(abstraction_1.get_num_vertices(), 5);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 4);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 1);
 }
@@ -83,12 +83,12 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateSpannerTest)
     EXPECT_EQ(abstractions.size(), 2);
 
     const auto& abstraction_0 = abstractions.at(0);
-    EXPECT_EQ(abstraction_0.get_num_states(), 8);
+    EXPECT_EQ(abstraction_0.get_num_vertices(), 8);
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 8);
 
     const auto& abstraction_1 = abstractions.at(1);
-    EXPECT_EQ(abstraction_1.get_num_states(), 10);
+    EXPECT_EQ(abstraction_1.get_num_vertices(), 10);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 10);
 }
@@ -108,13 +108,13 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateSpannerSccPruningTest)
     EXPECT_EQ(abstractions.size(), 2);
 
     const auto& abstraction_0 = abstractions.at(0);
-    EXPECT_EQ(abstraction_0.get_num_states(), 8);
+    EXPECT_EQ(abstraction_0.get_num_vertices(), 8);
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 8);
 
     // Now 6 isomorphic states across instances.
     const auto& abstraction_1 = abstractions.at(1);
-    EXPECT_EQ(abstraction_1.get_num_states(), 10);
+    EXPECT_EQ(abstraction_1.get_num_vertices(), 10);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 6);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 4);
 }
@@ -134,7 +134,7 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateMiconicSccPruningTest)
     EXPECT_EQ(abstractions.size(), 2);
 
     const auto& abstraction_0 = abstractions.at(0);
-    EXPECT_EQ(abstraction_0.get_num_states(), 6);
+    EXPECT_EQ(abstraction_0.get_num_vertices(), 6);
     EXPECT_EQ(abstraction_0.get_num_isomorphic_states(), 0);
     EXPECT_EQ(abstraction_0.get_num_non_isomorphic_states(), 6);
 
@@ -142,7 +142,7 @@ TEST(MimirTests, DatasetsGlobalFaithfulAbstractionCreateMiconicSccPruningTest)
 
     // Now 6 isomorphic states across instances.
     const auto& abstraction_1 = abstractions.at(1);
-    EXPECT_EQ(abstraction_1.get_num_states(), 12);
+    EXPECT_EQ(abstraction_1.get_num_vertices(), 12);
     EXPECT_EQ(abstraction_1.get_num_isomorphic_states(), 6);
     EXPECT_EQ(abstraction_1.get_num_non_isomorphic_states(), 6);
 

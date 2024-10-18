@@ -65,12 +65,12 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
         EXPECT_EQ(out_degree(*state_it, graph), state_transition_count);
     }
     // Summing over the successors of each state should give the total number of transitions.
-    EXPECT_EQ(transition_count, state_space.get_num_transitions());
+    EXPECT_EQ(transition_count, state_space.get_num_edges());
 
     // possible actions:
     // pick(ball1, rooma, right), pick(ball1, rooma, left), pick(ball2, rooma, right), pick(ball2, rooma, left)
     // move(rooma, rooma), move(rooma, roomb)
-    EXPECT_EQ(out_degree(state_space.get_initial_state(), graph), 6);
+    EXPECT_EQ(out_degree(state_space.get_initial_vertex_index(), graph), 6);
 }
 
 TEST(MimirTests, GraphsStrongComponentsTest)
@@ -120,12 +120,12 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
-        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
-        auto states = IndexList { state_space.get_initial_state() };
+        const auto edge_costs = std::vector<double>(state_space.get_num_edges(), 1);
+        auto states = IndexList { state_space.get_initial_vertex_index() };
         const auto [predecessor_map, distance_map] = dijkstra_shortest_paths(graph, edge_costs, states.begin(), states.end());
 
-        EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 0);
-        for (const auto& goal_state : state_space.get_goal_states())
+        EXPECT_EQ(distance_map.at(state_space.get_initial_vertex_index()), 0);
+        for (const auto& goal_state : state_space.get_goal_vertex_indices())
         {
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
@@ -138,11 +138,11 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
-        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        const auto edge_costs = std::vector<double>(state_space.get_num_edges(), 1);
         const auto [predecessor_map, distance_map] =
-            dijkstra_shortest_paths(graph, edge_costs, state_space.get_goal_states().begin(), state_space.get_goal_states().end());
+            dijkstra_shortest_paths(graph, edge_costs, state_space.get_goal_vertex_indices().begin(), state_space.get_goal_vertex_indices().end());
 
-        EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 4);
+        EXPECT_EQ(distance_map.at(state_space.get_initial_vertex_index()), 4);
         // There is one deadend state.
         EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 1);
     }
@@ -156,11 +156,11 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
-        auto states = IndexList { state_space.get_initial_state() };
+        auto states = IndexList { state_space.get_initial_vertex_index() };
         const auto [predecessor_map, distance_map] = breadth_first_search(graph, states.begin(), states.end());
 
-        EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 0);
-        for (const auto& goal_state : state_space.get_goal_states())
+        EXPECT_EQ(distance_map.at(state_space.get_initial_vertex_index()), 0);
+        for (const auto& goal_state : state_space.get_goal_vertex_indices())
         {
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
@@ -173,9 +173,10 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
-        const auto [predecessor_map, distance_map] = breadth_first_search(graph, state_space.get_goal_states().begin(), state_space.get_goal_states().end());
+        const auto [predecessor_map, distance_map] =
+            breadth_first_search(graph, state_space.get_goal_vertex_indices().begin(), state_space.get_goal_vertex_indices().end());
 
-        EXPECT_EQ(distance_map.at(state_space.get_initial_state()), 4);
+        EXPECT_EQ(distance_map.at(state_space.get_initial_vertex_index()), 4);
         // There is one deadend state.
         EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 1);
     }
@@ -189,13 +190,13 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), ForwardTraversal());
 
-        const auto edge_costs = std::vector<double>(state_space.get_num_transitions(), 1);
+        const auto edge_costs = std::vector<double>(state_space.get_num_edges(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
-        for (const auto& goal_state : state_space.get_goal_states())
+        for (const auto& goal_state : state_space.get_goal_vertex_indices())
         {
-            min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_state()]);
+            min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_vertex_index()]);
         }
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, std::numeric_limits<ContinuousCost>::infinity());
@@ -216,13 +217,13 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
         const auto state_space = StateSpace::create(domain_file, problem_file).value();
         auto graph = TraversalDirectionTaggedType(state_space.get_graph(), BackwardTraversal());
 
-        const auto edge_costs = ContinuousCostList(state_space.get_num_transitions(), 1);
+        const auto edge_costs = ContinuousCostList(state_space.get_num_edges(), 1);
         const auto distance_matrix = floyd_warshall_all_pairs_shortest_paths(graph, edge_costs);
 
         auto min_goal_distance = std::numeric_limits<ContinuousCost>::infinity();
-        for (const auto& goal_state : state_space.get_goal_states())
+        for (const auto& goal_state : state_space.get_goal_vertex_indices())
         {
-            min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_state()]);
+            min_goal_distance = std::min(min_goal_distance, distance_matrix[goal_state][state_space.get_initial_vertex_index()]);
         }
         EXPECT_GT(min_goal_distance, 0);
         EXPECT_NE(min_goal_distance, std::numeric_limits<ContinuousCost>::infinity());
