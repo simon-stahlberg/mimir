@@ -54,9 +54,9 @@ StateSpace::StateSpace(Problem problem,
     m_goal_distances(std::move(goal_distances)),
     m_vertex_indices_by_goal_distance()
 {
-    for (size_t state_index = 0; state_index < m_graph.get_num_vertices(); ++state_index)
+    for (Index vertex = 0; vertex < m_graph.get_num_vertices(); ++vertex)
     {
-        m_vertex_indices_by_goal_distance[m_goal_distances.at(state_index)].push_back(state_index);
+        m_vertex_indices_by_goal_distance[m_goal_distances.at(vertex)].push_back(vertex);
     }
 }
 

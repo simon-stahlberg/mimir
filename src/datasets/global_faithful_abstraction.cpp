@@ -92,9 +92,9 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     /* Ensure correctness. */
 
     // Check correct state ordering
-    for (size_t i = 0; i < get_num_vertices(); ++i)
+    for (Index vertex = 0; vertex < get_num_vertices(); ++vertex)
     {
-        assert(get_vertices().at(i).get_index() == static_cast<Index>(i) && "State index does not match its position in the list");
+        assert(get_vertices().at(vertex).get_index() == vertex && "State index does not match its position in the list");
     }
 
     /* Additional */
