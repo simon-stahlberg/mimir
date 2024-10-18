@@ -589,6 +589,8 @@ bool FaithfulAbstraction::is_alive_vertex(Index vertex) const
 
 const GroundActionsEdgeList& FaithfulAbstraction::get_edges() const { return m_graph.get_edges(); }
 
+const GroundActionsEdge& FaithfulAbstraction::get_edge(Index edge) const { return get_edges().at(edge); }
+
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename FaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>> FaithfulAbstraction::get_adjacent_edges(Index vertex) const
 {

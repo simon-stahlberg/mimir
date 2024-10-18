@@ -321,6 +321,8 @@ size_t GlobalFaithfulAbstraction::get_num_non_isomorphic_states() const { return
 /* Transitions */
 const GroundActionsEdgeList& GlobalFaithfulAbstraction::get_edges() const { return get_graph().get_edges(); }
 
+const GroundActionsEdge& GlobalFaithfulAbstraction::get_edge(Index edge) const { return get_edges().at(edge); }
+
 template<IsTraversalDirection Direction>
 std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeConstIteratorType<Direction>>
 GlobalFaithfulAbstraction::get_adjacent_edges(Index vertex) const

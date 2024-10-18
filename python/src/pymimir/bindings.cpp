@@ -1498,8 +1498,9 @@ void init_pymimir(py::module_& m)
         .def("is_goal_vertex", &StateSpace::is_goal_vertex, py::arg("state_index"))
         .def("is_deadend_vertex", &StateSpace::is_deadend_vertex, py::arg("state_index"))
         .def("is_alive_vertex", &StateSpace::is_alive_vertex, py::arg("state_index"))
-        .def("get_edges", &StateSpace::get_edges, py::return_value_policy::reference_internal)
-        .def("get_edge_cost", &StateSpace::get_edge_cost, py::arg("transition_index"))
+        .def("get_edges", &StateSpace::get_edges, py::return_value_policy::reference_internal)  // TODO: make edgelist opague to avoid segfaults
+        .def("get_edge", &StateSpace::get_edge, py::arg("edge_index"), py::return_value_policy::reference_internal)
+        .def("get_edge_cost", &StateSpace::get_edge_cost, py::arg("edge_index"))
         .def(
             "get_forward_adjacent_transitions",
             [](const StateSpace& self, Index state)
@@ -1712,7 +1713,8 @@ void init_pymimir(py::module_& m)
         .def("is_goal_vertex", &FaithfulAbstraction::is_goal_vertex, py::arg("vertex_index"))
         .def("is_deadend_vertex", &FaithfulAbstraction::is_deadend_vertex, py::arg("vertex_index"))
         .def("is_alive_vertex", &FaithfulAbstraction::is_alive_vertex, py::arg("vertex_index"))
-        .def("get_edges", &FaithfulAbstraction::get_edges, py::return_value_policy::reference_internal)
+        .def("get_edges", &FaithfulAbstraction::get_edges, py::return_value_policy::reference_internal)  // TODO: make edgelist opague to avoid segfaults
+        .def("get_edge", &FaithfulAbstraction::get_edge, py::arg("edge_index"), py::return_value_policy::reference_internal)
         .def("get_edge_cost", &FaithfulAbstraction::get_edge_cost, py::arg("edge_index"))
         .def(
             "get_forward_adjacent_edges",
@@ -1857,7 +1859,8 @@ void init_pymimir(py::module_& m)
         .def("is_alive_vertex", &GlobalFaithfulAbstraction::is_alive_vertex, py::arg("vertex_index"))
         .def("get_num_isomorphic_states", &GlobalFaithfulAbstraction::get_num_isomorphic_states)
         .def("get_num_non_isomorphic_states", &GlobalFaithfulAbstraction::get_num_non_isomorphic_states)
-        .def("get_edges", &GlobalFaithfulAbstraction::get_edges, py::return_value_policy::reference_internal)
+        .def("get_edges", &GlobalFaithfulAbstraction::get_edges, py::return_value_policy::reference_internal)  // TODO: make edgelist opague to avoid segfaults
+        .def("get_edge", &GlobalFaithfulAbstraction::get_edge, py::arg("edge_index"), py::return_value_policy::reference_internal)
         .def("get_edge_cost", &GlobalFaithfulAbstraction::get_edge_cost, py::arg("edge_index"))
         .def(
             "get_forward_adjacent_edges",

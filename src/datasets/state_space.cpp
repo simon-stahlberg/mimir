@@ -365,6 +365,8 @@ bool StateSpace::is_alive_vertex(Index vertex) const { return !(get_goal_vertex_
 /* Transitions */
 const GroundActionEdgeList& StateSpace::get_edges() const { return m_graph.get_edges(); }
 
+const GroundActionEdge& StateSpace::get_edge(Index edge) const { return get_edges().at(edge); }
+
 template<IsTraversalDirection Direction>
 std::ranges::subrange<StateSpace::AdjacentEdgeConstIteratorType<Direction>> StateSpace::get_adjacent_edges(Index vertex) const
 {

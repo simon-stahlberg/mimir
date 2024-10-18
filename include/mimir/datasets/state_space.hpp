@@ -181,6 +181,7 @@ public:
 
     /* Transitions */
     const GroundActionEdgeList& get_edges() const;
+    const GroundActionEdge& get_edge(Index edge) const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(Index vertex) const;
     template<IsTraversalDirection Direction>
