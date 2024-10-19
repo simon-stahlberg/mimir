@@ -20,10 +20,10 @@
 
 #include "mimir/graphs/graph_interface.hpp"
 
-#include <set>
-
 namespace mimir
 {
+
+// We should implement k-WL directly: https://arxiv.org/pdf/1907.09582
 
 /// @brief `ColorHistogram` stores a mapping of colors to the number of occurences in a canonical form.
 class ColorHistogram
@@ -57,12 +57,11 @@ public:
     /// @brief Perform one iteration of color refinement on the given graph and the given current coloring.
     /// @tparam G is the type of the graph.
     /// @param graph is the given graph.
-    /// @param in_out_coloring is the given coloring of the graph and holds the coloring after the iteration.
-    /// @return true iff the coloring is the stable coloring.
-    /// @return
+    /// @param in_out_unstable_vertices is the set of unstable vertices and should initially contain all vertex indices.
+    /// @param in_out_vertex_colors is the given coloring of the graph and holds the coloring after the iteration.
     template<typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-    bool refine_coloring(const G& graph, ColorList& in_out_coloring);
+    void refine_coloring(const G& graph, IndexSet& in_out_unstable_vertices, ColorMap& in_out_vertex_colors);
 
 private:
     using Configuration = std::pair<Color, ColorHistogram>;

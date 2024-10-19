@@ -44,6 +44,7 @@ using DegreeMap = std::unordered_map<VertexIndex, Degree>;
 
 using Color = uint32_t;
 using ColorList = std::vector<Color>;
+using ColorMap = std::unordered_map<Index, Color>;
 
 }
 
