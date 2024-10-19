@@ -24,6 +24,8 @@
 
 namespace mimir
 {
+using Count = uint32_t;
+
 using Index = uint32_t;
 using IndexList = std::vector<Index>;
 using IndexSet = std::unordered_set<Index>;
