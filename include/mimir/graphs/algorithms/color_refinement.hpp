@@ -22,6 +22,8 @@
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
+#include <queue>
+
 namespace mimir
 {
 
@@ -44,7 +46,7 @@ private:
 extern bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinementCertificate& rhs);
 
 /// @brief `compute_color_refinement_certificate` implements the color refinement algorithm.
-/// Source: https://people.cs.umass.edu/~immerman/pub/opt.pdf
+/// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
 /// @return
 template<typename G>
@@ -55,13 +57,48 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
     auto f = CompressionFunction();
 
-    auto coloring = ColorMap();
+    // (line 1-2): Initialize vertex colors.
+    auto vertex_to_color = IndexMap<Color>();
+    auto color_to_vertices = ColorMap<IndexList>();
+    // (line 1-2): Initialize work list.
+    auto L = ColorSet();
     for (const auto& vertex : graph.get_vertices())
     {
-        coloring.emplace(vertex.get_index(), get_color(vertex));
+        vertex_to_color.emplace(vertex.get_index(), get_color(vertex));
+        color_to_vertices[get_color(vertex)].push_back(vertex.get_index());
+        L.insert(get_color(vertex));
     }
 
-    /* TODO: implement color-refinement. */
+    // (line 1-2): Initialize multi set.
+    auto M = std::vector<std::pair<Index, Color>>();
+    // (line 3):
+    while (!L.empty())
+    {
+        // (lines 4-11):
+        for (const auto& color : L)
+        {
+            for (const auto& vertex : color_to_vertices.at(color))
+            {
+                for (const auto& outgoing_vertex : graph.get_adjacent_vertices(vertex))
+                {
+                    M.emplace_back(outgoing_vertex.get_index(), vertex_to_color.at(outgoing_vertex));
+                }
+            }
+        }
+
+        // (line 12): Perform radix sort of M (TODO radix sort)
+        std::sort(M.begin(), M.end());
+
+        // (line 13): TODO
+
+        // (line 14): TODO
+
+        /* (line 15): Add new colors to work list */
+        L.clear();
+        // TODO
+        /* (line 15): Clear multiset */
+        M.clear();
+    }
 
     /* Canonize the coloring function. */
     auto canonical_compression_function = ColorRefinementCertificate::CanonicalCompressionFunction();
@@ -72,10 +109,15 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     std::sort(canonical_compression_function.begin(), canonical_compression_function.end());
 
     /* Canonize the final coloring. */
-    std::sort(coloring.begin(), coloring.end());
+    auto canonical_coloring = ColorList();
+    for (const auto& pair : vertex_to_color)
+    {
+        canonical_coloring.push_back(pair.second);
+    }
+    std::sort(canonical_coloring.begin(), canonical_coloring.end());
 
     /* Return the certificate */
-    return ColorRefinementCertificate(std::move(canonical_compression_function), coloring);
+    return ColorRefinementCertificate(std::move(canonical_compression_function), std::move(canonical_coloring));
 }
 
 }
