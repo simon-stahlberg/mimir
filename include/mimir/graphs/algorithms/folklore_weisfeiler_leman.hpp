@@ -18,71 +18,57 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
+#include "mimir/algorithms/nauty.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 
 namespace mimir
 {
 
-/// @brief `WeisfeilerLeman` implements the k-dimensional Folklore Weisfeiler-Leman algorithm.
-/// Source: https://people.cs.umass.edu/~immerman/pub/opt.pdf
+/// @brief `FWLCertificate` encapsulates the final tuple colorings and the decoding table.
 /// @tparam K is the dimensionality.
 template<size_t K>
-requires(K >= 2)  // Color-refinement must be used for K = 1, since K+1-WL and (K)-FWL are equivalent for K>=2
-    class FolkloreWeisfeilerLeman
+class FWLCertificate
 {
 public:
-    // The algorithm ensures lexicographically sorted k-tuples
-    using KTuple = std::array<Index, K>;
-    using KTupleToColor = std::unordered_map<KTuple, Color>;
+    /* Compression of isomorphic types. */
+    using IsomorphicTypeCompressionFunction = std::unordered_map<nauty_wrapper::Certificate, Color>;
 
-    using IsoType = uint32_t;
+    /* Compression of k-color to map (c_1^i, ...,c_k^i) to an integer color. */
+    template<size_t K>
+    using TupleColorCompressionFunction = std::unordered_map<std::array<Color, K>, Color>;
 
-    /// @brief Initialization step (lines 1-2)
-    /// @tparam G is the type of the given graph.
-    /// @param graph is the given graph.
-    /// @param vertex_colors are the given vertex colors.
-    /// @param out_k_coloring is the initial coloring of all ordered k-tuples.
-    /// @param work_list is the set of unstable colors that require further refinement.
-    template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-    void initialize(const G& graph, const ColorMap& vertex_colors, KTupleToColor& out_k_coloring, ColorSet& work_list);
+    /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
+    template<size_t K>
+    using ConfigurationCompressionFunction = std::unordered_map<std::pair<Color, std::array<Color, K>>, Color>;
 
-    /// @brief Refinement step (lines 3-18)
-    /// @tparam G is the type of the given graph.
-    /// @param graph is the given graph.
-    /// @param out_k_coloring is the current coloring of all ordered k-tuples.
-    /// @param work_list is the set of unstable colors that require further refinement.
-    template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-    void refine_coloring(const G& graph, KTupleToColor& out_k_coloring, ColorSet& work_list);
+    FWLCertificate(IsomorphicTypeCompressionFunction f, TupleColorCompressionFunction<K> g, ConfigurationCompressionFunction<K> h, ColorList coloring);
 
 private:
-    /* Compression used in line 16 to map (c_1^i, ...,c_k^i) = (c_1^j, ...,c_k^j) to the same integer color. */
-    using KColorCompressionFunction = std::unordered_map<std::pair<KColor, IsoType>, Color>;
-
-    KColorCompressionFunction m_f;
-
-    /* Compression used in line 18 to map (C(v), (c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)) to an integer color */
-    using ConfigurationCompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color>;
-
-    ConfigurationCompressionFunction m_g;
+    IsomorphicTypeCompressionFunction m_f;
+    TupleColorCompressionFunction<K> m_g;
+    ConfigurationCompressionFunction<K> m_h;
+    ColorList m_coloring;
 };
 
 template<size_t K>
-template<typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-void FolkloreWeisfeilerLeman<K>::initialize(const G& graph, const ColorMap& vertex_colors, KTupleToColor& out_k_coloring, ColorSet& work_list)
-{
-    // TODO: we must compute the isomorphism type by computing a canonical graph for the subgraph induced by the k-tuple.
+bool operator==(const FWLCertificate<K>& lhs, const FWLCertificate<K>& rhs);
+
+/// @brief `compute_fwl_certificate` implements the k-dimensional Folklore Weisfeiler-Leman algorithm.
+/// Source: https://people.cs.umass.edu/~immerman/pub/opt.pdf
+/// @tparam G is the vertex-colored graph.
+/// @tparam K is the dimensionality.
+/// @return
+template<size_t K, typename G>
+requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>
+extern FWLCertificate<K> compute_fwl_certificate(const G& graph);
+
 }
 
 template<size_t K>
-template<typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-void FolkloreWeisfeilerLeman<K>::refine_coloring(const G& graph, KTupleToColor& out_k_coloring, ColorSet& work_list)
+struct std::hash<mimir::FWLCertificate<K>>
 {
-    // These steps look trivial
-}
-}
+    size_t operator()(const mimir::FWLCertificate<K>& element) const;
+};
 
 #endif

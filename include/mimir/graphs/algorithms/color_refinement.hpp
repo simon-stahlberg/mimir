@@ -19,55 +19,39 @@
 #define MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_HPP_
 
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 
 namespace mimir
 {
 
-/// @brief `ColorHistogram` stores a mapping of colors to the number of occurences in a canonical form.
-class ColorHistogram
+/// @brief `ColorRefinementCertificate` encapsulates the final coloring and the decoding table.
+class ColorRefinementCertificate
 {
 public:
-    /// @brief Constructs the empty color histogram.
-    ColorHistogram();
+    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color>;
 
-    /// @brief Constructs the color histogram for the given coloring.
-    /// @param coloring is the given coloring.
-    explicit ColorHistogram(const ColorList& coloring);
-
-    /// @brief Initialize the color histogram for the given coloring.
-    /// @param coloring is the given coloring.
-    void initialize(const ColorList& coloring);
+    ColorRefinementCertificate(CompressionFunction f, ColorList coloring);
 
 private:
-    std::vector<std::pair<Color, Count>> m_data;
-};
-
-/// @brief `ColorRefinement` implements the color refinement step of the 1-dimensional Weisfeiler-Leman algorithm. A single instantiation can be used on several
-/// graphs since the compression function is shared.
-///
-/// When handling several graphs, one should ideally use a divide-and-conquer approach where after each refinement iteration the graphs are partitioned such
-/// that each partition only contains graphs with the same color histogram. This approach keeps the compression function manageable, as graphs in a partition
-/// are indistinguishable, effectively keeping the size of the compression function small. The divide-and-conquer approach should then proceed in a
-/// depth-first-manner.
-class ColorRefinement
-{
-public:
-    /// @brief Perform one iteration of color refinement on the given graph and the given current coloring.
-    /// @tparam G is the type of the graph.
-    /// @param graph is the given graph.
-    /// @param in_out_unstable_vertices is the set of unstable vertices and should initially contain all vertex indices.
-    /// @param in_out_vertex_colors is the given coloring of the graph and holds the coloring after the iteration.
-    template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G>
-    void refine_coloring(const G& graph, IndexSet& in_out_unstable_vertices, ColorMap& in_out_vertex_colors);
-
-private:
-    using Configuration = std::pair<Color, ColorHistogram>;
-    using CompressionFunction = std::unordered_map<Configuration, Color>;
-
     CompressionFunction m_f;
+    ColorList m_coloring;
 };
+
+bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinementCertificate& rhs);
+
+/// @brief `compute_color_refinement_certificate` implements the color refinement algorithm.
+/// Source: https://people.cs.umass.edu/~immerman/pub/opt.pdf
+/// @tparam G is the vertex-colored graph.
+/// @return
+template<typename G>
+requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>
+extern ColorRefinementCertificate compute_color_refinement_certificate(const G& graph);
 
 }
+
+struct std::hash<mimir::ColorRefinementCertificate>
+{
+    size_t operator()(const mimir::ColorRefinementCertificate& element) const;
+};
 
 #endif

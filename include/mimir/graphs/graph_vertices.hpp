@@ -112,6 +112,14 @@ using ColoredVertex = Vertex<ColoredVertexTag, Color>;
 /// @return the color of the vertex.
 inline Color get_color(const ColoredVertex& vertex) { return vertex.get_property<0>(); }
 
+template<typename T>
+concept IsVertexColoredGraph = requires(T::VertexType vertex)
+{
+    {
+        get_color(vertex)
+        } -> std::same_as<Color>;
+};
+
 }
 
 #endif
