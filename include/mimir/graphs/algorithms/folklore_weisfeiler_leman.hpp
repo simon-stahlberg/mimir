@@ -15,24 +15,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_ALGORITHMS_KWL_HPP_
-#define MIMIR_GRAPHS_ALGORITHMS_KWL_HPP_
+#ifndef MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
+#define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
 #include "mimir/graphs/graph_interface.hpp"
 
 namespace mimir
 {
 
-/// @brief `WeisfeilerLeman` implements the k-dimensional Weisfeiler-Leman algorithm.
-/// Source: https://arxiv.org/pdf/1907.09582
-/// @tparam k is the dimensionality.
-template<size_t k>
-class WeisfeilerLeman
+/// @brief `WeisfeilerLeman` implements the k-dimensional Folklore Weisfeiler-Leman algorithm.
+/// Source: https://people.cs.umass.edu/~immerman/pub/opt.pdf
+/// @tparam K is the dimensionality.
+template<size_t K>
+requires K >= 2 class FolkloreWeisfeilerLeman
 {
 public:
     // The algorithm ensures lexicographically sorted k-tuples
-    using KTuple = std::array<Index, k>;
+    using KTuple = std::array<Index, K>;
     using KTupleToColor = std::unordered_map<KTuple, Color>;
+
+    using IsoType = uint32_t;
 
     /// @brief Initialization step (lines 1-2)
     /// @tparam G is the type of the given graph.
@@ -55,7 +57,7 @@ public:
 
 private:
     /* Compression used in line 16 to map (c_1^i, ...,c_k^i) = (c_1^j, ...,c_k^j) to the same integer color. */
-    using KColorCompressionFunction = std::unordered_map<std::array<Color, k>, Color>;
+    using KColorCompressionFunction = std::unordered_map<std::pair<KColor, IsoType>, Color>;
 
     KColorCompressionFunction m_f;
 
@@ -65,6 +67,21 @@ private:
     ConfigurationCompressionFunction m_g;
 };
 
+template<size_t K>
+template<typename G>
+requires IsVertexListGraph<G> && IsIncidenceGraph<G>
+void FolkloreWeisfeilerLeman<K>::initialize(const G& graph, const ColorMap& vertex_colors, KTupleToColor& out_k_coloring, ColorSet& work_list)
+{
+    // TODO: we must compute the isomorphism type by computing a canonical graph for the subgraph induced by the k-tuple.
+}
+
+template<size_t K>
+template<typename G>
+requires IsVertexListGraph<G> && IsIncidenceGraph<G>
+void FolkloreWeisfeilerLeman<K>::refine_coloring(const G& graph, KTupleToColor& out_k_coloring, ColorSet& work_list)
+{
+    // These steps look trivial
+}
 }
 
 #endif

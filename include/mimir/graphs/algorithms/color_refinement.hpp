@@ -23,8 +23,6 @@
 namespace mimir
 {
 
-// We should implement k-WL directly: https://arxiv.org/pdf/1907.09582
-
 /// @brief `ColorHistogram` stores a mapping of colors to the number of occurences in a canonical form.
 class ColorHistogram
 {
