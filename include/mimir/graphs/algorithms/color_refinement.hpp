@@ -48,7 +48,7 @@ extern bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinem
 /// @brief `compute_color_refinement_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
-/// @return
+/// @return the `ColorRefinementCerticate` that contains the canonical decoding table and the canonical vertex coloring.
 template<typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
     ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
@@ -60,20 +60,20 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     // (line 1-2): Initialize vertex colors + some additional bookkeeping to work with dynamic graphs which might skip vertex indices.
     auto max_color = Color();
     auto vertex_to_color = IndexMap<Color>();
-    auto color_to_vertices = ColorMap<IndexList>();
+    auto color_to_vertices = ColorMap<IndexSet>();
     // (line 1-2): Initialize work list.
     auto L = ColorSet();
     for (const auto& vertex : graph.get_vertices())
     {
         max_color = max(max_color, get_color(vertex));
         vertex_to_color.emplace(vertex.get_index(), get_color(vertex));
-        color_to_vertices[get_color(vertex)].push_back(vertex.get_index());
+        color_to_vertices[get_color(vertex)].insert(vertex.get_index());
         L.insert(get_color(vertex));
     }
 
     // (line 1-2): Initialize multi set.
     auto M = std::vector<std::pair<Index, Color>>();
-    // (line 3):
+    // (line 3): Process work list until all vertex colors have stabilized.
     while (!L.empty())
     {
         // (lines 4-11): Create multiset of colors of neighbors of each vertex whose color must be updated.
@@ -113,6 +113,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         std::sort(M_replaced.begin(), M_replaced.end());
 
         /* (line 15): Add new colors to work list */
+        color_to_vertices.clear();
         L.clear();
         for (auto& pair : M_replaced)
         {
@@ -128,7 +129,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             {
                 L.insert(new_color);
                 vertex_to_color[vertex] = new_color;
-                color_to_vertices[new_color] = vertex;
+                color_to_vertices[new_color].insert(vertex);
             }
         }
         /* (line 15): Clear multiset */
