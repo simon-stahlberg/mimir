@@ -57,13 +57,15 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
     auto f = CompressionFunction();
 
-    // (line 1-2): Initialize vertex colors.
+    // (line 1-2): Initialize vertex colors + some additional bookkeeping to work with dynamic graphs which might skip vertex indices.
+    auto max_color = Color();
     auto vertex_to_color = IndexMap<Color>();
     auto color_to_vertices = ColorMap<IndexList>();
     // (line 1-2): Initialize work list.
     auto L = ColorSet();
     for (const auto& vertex : graph.get_vertices())
     {
+        max_color = max(max_color, get_color(vertex));
         vertex_to_color.emplace(vertex.get_index(), get_color(vertex));
         color_to_vertices[get_color(vertex)].push_back(vertex.get_index());
         L.insert(get_color(vertex));
@@ -74,7 +76,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     // (line 3):
     while (!L.empty())
     {
-        // (lines 4-11):
+        // (lines 4-11): Create multiset of colors of neighbors of each vertex whose color must be updated.
         for (const auto& color : L)
         {
             for (const auto& vertex : color_to_vertices.at(color))
@@ -89,13 +91,46 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         // (line 12): Perform radix sort of M (TODO radix sort)
         std::sort(M.begin(), M.end());
 
-        // (line 13): TODO
+        // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v).
+        auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
+        auto it = M.begin();
+        while (it != M.end())
+        {
+            auto colors = ColorList();
+            auto vertex = it->first;
+            auto it2 = it;
+            while (it2 != M.end() && it2->first == vertex)
+            {
+                colors.push_back(it2->second);
+                ++it2;
+            }
+            // Sort to obtain canonical coloring of neighborhood.
+            std::sort(colors.begin(), colors.end());
+            M_replaced.emplace_back(vertex_to_color.at(vertex), std::move(colors), vertex);
+        }
 
-        // (line 14): TODO
+        // (line 14): Sort by old color and neighborhood colors
+        std::sort(M_replaced.begin(), M_replaced.end());
 
         /* (line 15): Add new colors to work list */
         L.clear();
-        // TODO
+        for (auto& pair : M_replaced)
+        {
+            auto old_color = std::get<0>(pair);
+            auto& neighbor_colors = std::get<1>(pair);
+            auto vertex = std::get<2>(pair);
+
+            auto free_color = f.size() + max_color + 1;
+            auto result = f.emplace(std::make_pair(old_color, std::move(neighbor_colors)), free_color);
+            auto new_color = result.first->second;
+            auto inserted = result.second;
+            if (inserted)
+            {
+                L.insert(new_color);
+                vertex_to_color[vertex] = new_color;
+                color_to_vertices[new_color] = vertex;
+            }
+        }
         /* (line 15): Clear multiset */
         M.clear();
     }
