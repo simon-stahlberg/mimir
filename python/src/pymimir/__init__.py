@@ -186,7 +186,6 @@ from _pymimir import (
 
 # Graphs (free functions)
 from _pymimir import (
-    compute_vertex_colors,
     create_object_graph
 )
 

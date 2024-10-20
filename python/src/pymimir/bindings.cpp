@@ -2305,8 +2305,6 @@ void init_pymimir(py::module_& m)
         .def("get_num_vertices", &StaticVertexColoredDigraph::get_num_vertices)
         .def("get_num_edges", &StaticVertexColoredDigraph::get_num_edges);
 
-    m.def("compute_vertex_colors", &compute_vertex_colors, py::arg("vertex_colored_graph"));
-
     // ObjectGraphPruningStrategy
     py::class_<ObjectGraphPruningStrategy>(m, "ObjectGraphPruningStrategy");
 

@@ -23,21 +23,6 @@ namespace mimir
 {
 
 /**
- * Utils
- */
-
-ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph)
-{
-    auto coloring = ColorList {};
-    coloring.reserve(graph.get_num_vertices());
-    for (const auto& vertex : graph.get_vertices())
-    {
-        coloring.push_back(get_color(vertex));
-    }
-    return coloring;
-}
-
-/**
  * Pretty printing
  */
 

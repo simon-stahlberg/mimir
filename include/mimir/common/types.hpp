@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_TYPES_HPP_
 
 #include <cstdint>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -28,6 +29,8 @@ using Count = uint32_t;
 
 using Index = uint32_t;
 using IndexList = std::vector<Index>;
+template<typename T>
+using IndexMap = std::unordered_map<Index, T>;
 using IndexSet = std::unordered_set<Index>;
 
 using ContinuousCost = double;

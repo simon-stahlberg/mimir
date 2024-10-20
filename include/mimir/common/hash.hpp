@@ -74,6 +74,17 @@ struct Hash<std::pair<T1, T2>>
     size_t operator()(const std::pair<T1, T2>& pair) const { return mimir::hash_combine(pair.first, pair.second); }
 };
 
+template<typename... Ts>
+struct Hash<std::tuple<Ts...>>
+{
+    size_t operator()(const std::tuple<Ts...>& tuple) const
+    {
+        size_t aggregated_hash = sizeof...(Ts);
+        std::apply([&aggregated_hash](const Ts&... args) { (hash_combine(aggregated_hash, args), ...); }, tuple);
+        return aggregated_hash;
+    }
+};
+
 /**
  * Definitions
  */

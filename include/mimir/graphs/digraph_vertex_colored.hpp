@@ -62,12 +62,6 @@ static_assert(!IsStaticGraph<DynamicVertexColoredDigraph>);
 static_assert(IsDynamicGraph<DynamicVertexColoredDigraph>);
 
 /**
- * Utils
- */
-
-extern ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph);
-
-/**
  * Pretty printing
  */
 

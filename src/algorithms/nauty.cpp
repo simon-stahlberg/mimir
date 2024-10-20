@@ -18,6 +18,7 @@
 #include "mimir/algorithms/nauty.hpp"
 
 #include "mimir/common/hash.hpp"
+#include "mimir/common/types.hpp"
 #include "nauty_dense_impl.hpp"
 #include "nauty_sparse_impl.hpp"
 
@@ -62,12 +63,26 @@ DenseGraph::DenseGraph(size_t num_vertices) : m_impl(std::make_unique<DenseGraph
 
 DenseGraph::DenseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<DenseGraphImpl>(digraph.get_num_vertices()))
 {
-    for (const auto& edge : digraph.get_edges())
+    /* Remap indices to 0,1,... indexing schema. */
+    auto remap = mimir::IndexMap<mimir::Index>();
+    for (const auto& vertex : digraph.get_vertices())
     {
-        add_edge(edge.get_source(), edge.get_target());
+        remap.emplace(vertex.get_index(), remap.size());
     }
 
-    add_vertex_coloring(mimir::compute_vertex_colors(digraph));
+    /* Add edges. */
+    for (const auto& edge : digraph.get_edges())
+    {
+        add_edge(remap.at(edge.get_source()), remap.at(edge.get_target()));
+    }
+
+    /* Add vertex coloring. */
+    auto coloring = mimir::ColorList(digraph.get_num_vertices());
+    for (const auto& vertex : digraph.get_vertices())
+    {
+        coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
+    }
+    add_vertex_coloring(coloring);
 }
 
 DenseGraph::DenseGraph(const DenseGraph& other) : m_impl(std::make_unique<DenseGraphImpl>(*other.m_impl)) {}
@@ -112,12 +127,26 @@ SparseGraph::SparseGraph(size_t num_vertices) : m_impl(std::make_unique<SparseGr
 
 SparseGraph::SparseGraph(const mimir::StaticVertexColoredDigraph& digraph) : m_impl(std::make_unique<SparseGraphImpl>(digraph.get_num_vertices()))
 {
-    for (const auto& edge : digraph.get_edges())
+    /* Remap indices to 0,1,... indexing schema. */
+    auto remap = mimir::IndexMap<mimir::Index>();
+    for (const auto& vertex : digraph.get_vertices())
     {
-        add_edge(edge.get_source(), edge.get_target());
+        remap.emplace(vertex.get_index(), remap.size());
     }
 
-    add_vertex_coloring(mimir::compute_vertex_colors(digraph));
+    /* Add edges. */
+    for (const auto& edge : digraph.get_edges())
+    {
+        add_edge(remap.at(edge.get_source()), remap.at(edge.get_target()));
+    }
+
+    /* Add vertex coloring. */
+    auto coloring = mimir::ColorList(digraph.get_num_vertices());
+    for (const auto& vertex : digraph.get_vertices())
+    {
+        coloring.at(remap.at(vertex.get_index())) = get_color(vertex);
+    }
+    add_vertex_coloring(coloring);
 }
 
 SparseGraph::SparseGraph(const SparseGraph& other) : m_impl(std::make_unique<SparseGraphImpl>(*other.m_impl)) {}
