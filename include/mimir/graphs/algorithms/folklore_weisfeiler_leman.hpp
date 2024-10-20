@@ -27,7 +27,8 @@ namespace mimir
 /// Source: https://people.cs.umass.edu/~immerman/pub/opt.pdf
 /// @tparam K is the dimensionality.
 template<size_t K>
-requires K >= 2 class FolkloreWeisfeilerLeman
+requires(K >= 2)  // Color-refinement must be used for K = 1, since K+1-WL and (K)-FWL are equivalent for K>=2
+    class FolkloreWeisfeilerLeman
 {
 public:
     // The algorithm ensures lexicographically sorted k-tuples
