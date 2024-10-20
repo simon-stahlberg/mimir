@@ -37,13 +37,6 @@ ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph)
     return coloring;
 }
 
-ColorList compute_sorted_vertex_colors(const StaticVertexColoredDigraph& graph)
-{
-    auto coloring = compute_vertex_colors(graph);
-    std::sort(coloring.begin(), coloring.end());
-    return coloring;
-}
-
 /**
  * Pretty printing
  */

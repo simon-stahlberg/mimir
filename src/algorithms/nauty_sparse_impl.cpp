@@ -83,6 +83,7 @@ SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
     c_(n_),
     adj_matrix_(c_ * c_, false),
     use_default_ptn_(true),
+    canon_coloring_(0, n_),
     lab_(c_),
     ptn_(c_),
     canon_graph_repr_(),
@@ -97,6 +98,7 @@ SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     c_(other.c_),
     adj_matrix_(other.adj_matrix_),
     use_default_ptn_(other.use_default_ptn_),
+    canon_coloring_(0, other.n_),
     lab_(other.lab_),
     ptn_(other.ptn_),
     canon_graph_repr_(),
@@ -123,6 +125,7 @@ SparseGraphImpl& SparseGraphImpl::operator=(const SparseGraphImpl& other)
         c_ = other.c_;
         adj_matrix_ = other.adj_matrix_;
         use_default_ptn_ = other.use_default_ptn_;
+        canon_coloring_ = other.canon_coloring_;
         lab_ = other.lab_;
         ptn_ = other.ptn_;
         canon_graph_repr_.str(other.canon_graph_repr_.str());
@@ -143,6 +146,7 @@ SparseGraphImpl::SparseGraphImpl(SparseGraphImpl&& other) noexcept :
     adj_matrix_(other.adj_matrix_),
     graph_(other.graph_),
     use_default_ptn_(other.use_default_ptn_),
+    canon_coloring_(std::move(other.canon_coloring_)),
     lab_(std::move(other.lab_)),
     ptn_(std::move(other.ptn_)),
     canon_graph_(other.canon_graph_),
@@ -165,6 +169,7 @@ SparseGraphImpl& SparseGraphImpl::operator=(SparseGraphImpl&& other) noexcept
         c_ = other.c_;
         adj_matrix_ = other.adj_matrix_;
         use_default_ptn_ = other.use_default_ptn_;
+        canon_coloring_ = std::move(other.canon_coloring_);
         lab_ = std::move(other.lab_);
         ptn_ = std::move(other.ptn_);
         canon_graph_repr_ = std::move(other.canon_graph_repr_);
@@ -191,6 +196,10 @@ void SparseGraphImpl::add_vertex_coloring(const mimir::ColorList& vertex_colorin
     {
         throw std::out_of_range("SparseGraphImpl::add_vertex_coloring: The vertex coloring is incompatible with number of vertices in the graph.");
     }
+
+    canon_coloring_ = vertex_coloring;
+    std::sort(canon_coloring_.begin(), canon_coloring_.end());
+
     initialize_lab_and_ptr(vertex_coloring, lab_, ptn_);
     use_default_ptn_ = false;
 }
@@ -212,7 +221,7 @@ void SparseGraphImpl::add_edge(size_t source, size_t target)
     }
 }
 
-std::string SparseGraphImpl::compute_certificate()
+Certificate SparseGraphImpl::compute_certificate()
 {
     bool is_directed_ = is_directed();
     bool has_loop_ = has_loop();
@@ -260,7 +269,7 @@ std::string SparseGraphImpl::compute_certificate()
     // We usually see compression ratio ~ 2
     // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
-    return canon_graph_compressed_repr_.str();
+    return Certificate(canon_graph_compressed_repr_.str(), canon_coloring_);
 }
 
 void SparseGraphImpl::clear(size_t num_vertices)
@@ -275,9 +284,10 @@ void SparseGraphImpl::clear(size_t num_vertices)
 
         n_ = num_vertices;
         c_ = num_vertices;
-        lab_ = std::vector<int>(c_);
-        ptn_ = std::vector<int>(c_);
-        adj_matrix_ = std::vector<bool>(c_ * c_, false);
+        canon_coloring_ = mimir::ColorList(0, n_);
+        lab_ = std::vector<int>(n_);
+        ptn_ = std::vector<int>(n_);
+        adj_matrix_ = std::vector<bool>(n_ * n_, false);
 
         allocate_graph(graph_);
         allocate_graph(canon_graph_);
@@ -286,6 +296,7 @@ void SparseGraphImpl::clear(size_t num_vertices)
     {
         /* Reuse memory. */
         n_ = num_vertices;
+        std::fill(canon_coloring_.begin(), canon_coloring_.begin() + n_, 0);
         std::fill(adj_matrix_.begin(), adj_matrix_.begin() + n_ * n_, false);
 
         initialize_graph_data(graph_);

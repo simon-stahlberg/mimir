@@ -1545,19 +1545,30 @@ void init_pymimir(py::module_& m)
              py::return_value_policy::reference_internal,
              py::arg("goal_distance"));
 
-    // Certificate
-    py::class_<Certificate, std::shared_ptr<Certificate>>(m, "Certificate")
-        .def(py::init<size_t, size_t, std::string, ColorList>(),
-             py::arg("num_vertices"),
-             py::arg("num_edges"),
-             py::arg("nauty_certificate"),
-             py::arg("canonical_initial_coloring"))
-        .def("__eq__", &Certificate::operator==)
-        .def("__hash__", [](const Certificate& self) { return std::hash<Certificate>()(self); })
-        .def("get_num_vertices", &Certificate::get_num_vertices)
-        .def("get_num_edges", &Certificate::get_num_edges)
-        .def("get_nauty_certificate", &Certificate::get_nauty_certificate, py::return_value_policy::reference_internal)
-        .def("get_canonical_initial_coloring", &Certificate::get_canonical_initial_coloring, py::return_value_policy::reference_internal);
+    // NautyCertificate
+    py::class_<nauty_wrapper::Certificate, std::shared_ptr<nauty_wrapper::Certificate>>(m, "NautyCertificate")
+        .def("__eq__", &nauty_wrapper::Certificate::operator==)
+        .def("__hash__", [](const nauty_wrapper::Certificate& self) { return std::hash<nauty_wrapper::Certificate>()(self); })
+        .def("get_canonical_graph", &nauty_wrapper::Certificate::get_canonical_graph, py::return_value_policy::reference_internal)
+        .def("get_canonical_coloring", &nauty_wrapper::Certificate::get_canonical_coloring, py::return_value_policy::reference_internal);
+
+    // NautyDenseGraph
+    py::class_<nauty_wrapper::DenseGraph>(m, "NautyDenseGraph")  //
+        .def(py::init<>())
+        .def(py::init<int>(), py::arg("num_vertices"))
+        .def(py::init<StaticVertexColoredDigraph>(), py::arg("digraph"))
+        .def("add_edge", &nauty_wrapper::DenseGraph::add_edge, py::arg("source"), py::arg("target"))
+        .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
+        .def("clear", &nauty_wrapper::DenseGraph::clear, py::arg("num_vertices"));
+
+    // NautySparseGraph
+    py::class_<nauty_wrapper::SparseGraph>(m, "NautySparseGraph")  //
+        .def(py::init<>())
+        .def(py::init<int>(), py::arg("num_vertices"))
+        .def(py::init<StaticVertexColoredDigraph>(), py::arg("digraph"))
+        .def("add_edge", &nauty_wrapper::SparseGraph::add_edge, py::arg("source"), py::arg("target"))
+        .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
+        .def("clear", &nauty_wrapper::SparseGraph::clear, py::arg("num_vertices"));
 
     // FaithfulAbstraction
     py::enum_<ObjectGraphPruningStrategyEnum>(m, "ObjectGraphPruningStrategyEnum")
@@ -2295,26 +2306,6 @@ void init_pymimir(py::module_& m)
         .def("get_num_edges", &StaticVertexColoredDigraph::get_num_edges);
 
     m.def("compute_vertex_colors", &compute_vertex_colors, py::arg("vertex_colored_graph"));
-
-    m.def("compute_sorted_vertex_colors", &compute_sorted_vertex_colors, py::arg("vertex_colored_graph"));
-
-    // DenseNautyGraph
-    py::class_<nauty_wrapper::DenseGraph>(m, "DenseNautyGraph")  //
-        .def(py::init<>())
-        .def(py::init<int>(), py::arg("num_vertices"))
-        .def(py::init<StaticVertexColoredDigraph>(), py::arg("digraph"))
-        .def("add_edge", &nauty_wrapper::DenseGraph::add_edge, py::arg("source"), py::arg("target"))
-        .def("compute_certificate", &nauty_wrapper::DenseGraph::compute_certificate)
-        .def("clear", &nauty_wrapper::DenseGraph::clear, py::arg("num_vertices"));
-
-    // SparseNautyGraph
-    py::class_<nauty_wrapper::SparseGraph>(m, "SparseNautyGraph")  //
-        .def(py::init<>())
-        .def(py::init<int>(), py::arg("num_vertices"))
-        .def(py::init<StaticVertexColoredDigraph>(), py::arg("digraph"))
-        .def("add_edge", &nauty_wrapper::SparseGraph::add_edge, py::arg("source"), py::arg("target"))
-        .def("compute_certificate", &nauty_wrapper::SparseGraph::compute_certificate)
-        .def("clear", &nauty_wrapper::SparseGraph::clear, py::arg("num_vertices"));
 
     // ObjectGraphPruningStrategy
     py::class_<ObjectGraphPruningStrategy>(m, "ObjectGraphPruningStrategy");

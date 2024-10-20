@@ -114,8 +114,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     }
 
     auto concrete_to_abstract_state = StateMap<Index> {};
-    auto abstract_states_by_certificate =
-        std::unordered_map<std::shared_ptr<const Certificate>, Index, UniqueCertificateSharedPtrHash, UniqueCertificateSharedPtrEqualTo> {};
+    auto abstract_states_by_certificate = std::unordered_map<std::shared_ptr<const nauty_wrapper::Certificate>,
+                                                             Index,
+                                                             nauty_wrapper::UniqueCertificateSharedPtrHash,
+                                                             nauty_wrapper::UniqueCertificateSharedPtrEqualTo> {};
 
     /* Initialize for initial state. */
     const auto color_function = ProblemColorFunction(problem);
@@ -148,10 +150,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                   *object_graph_pruning_strategy);
     // std::cout << problem->get_filepath().value() << std::endl;
     // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;
-    auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
-                                                           object_graph.get_num_edges(),
-                                                           nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
-                                                           compute_sorted_vertex_colors(object_graph));
+    auto certificate = std::make_shared<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
     const auto abstract_initial_state_index = 0;
     abstract_states_by_certificate.emplace(std::move(certificate), abstract_initial_state_index);
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_index);
@@ -202,10 +201,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                           *object_graph_pruning_strategy);
             // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;
 
-            auto certificate = std::make_shared<const Certificate>(object_graph.get_num_vertices(),
-                                                                   object_graph.get_num_edges(),
-                                                                   nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
-                                                                   compute_sorted_vertex_colors(object_graph));
+            auto certificate = std::make_shared<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
             const auto it = abstract_states_by_certificate.find(certificate);
 
             // Regenerate abstract state

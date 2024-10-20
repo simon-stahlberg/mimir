@@ -17,6 +17,7 @@
 
 #include "mimir/algorithms/nauty.hpp"
 
+#include "mimir/common/hash.hpp"
 #include "nauty_dense_impl.hpp"
 #include "nauty_sparse_impl.hpp"
 
@@ -26,6 +27,33 @@
 
 namespace nauty_wrapper
 {
+
+/* Certificate */
+Certificate::Certificate(std::string nauty_certificate, mimir::ColorList canonical_initial_coloring) :
+    m_canonical_graph(std::move(nauty_certificate)),
+    m_canonical_coloring(std::move(canonical_initial_coloring))
+{
+}
+
+bool Certificate::operator==(const Certificate& other) const
+{
+    if (this != &other)
+    {
+        return (m_canonical_coloring == other.m_canonical_coloring) && (m_canonical_graph == other.m_canonical_graph);
+    }
+    return true;
+}
+
+const std::string& Certificate::get_canonical_graph() const { return m_canonical_graph; }
+
+const mimir::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
+
+size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Certificate>& element) const { return std::hash<Certificate>()(*element); }
+
+size_t UniqueCertificateSharedPtrEqualTo::operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const
+{
+    return *lhs == *rhs;
+}
 
 /* Graph */
 DenseGraph::DenseGraph() : m_impl(std::make_unique<DenseGraphImpl>(0)) {}
@@ -70,7 +98,7 @@ void DenseGraph::add_vertex_coloring(const mimir::ColorList& vertex_coloring) { 
 
 void DenseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
-std::string DenseGraph::compute_certificate() const { return m_impl->compute_certificate(); }
+Certificate DenseGraph::compute_certificate() const { return m_impl->compute_certificate(); }
 
 void DenseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
@@ -120,10 +148,15 @@ void SparseGraph::add_vertex_coloring(const mimir::ColorList& vertex_coloring) {
 
 void SparseGraph::add_edge(size_t source, size_t target) { m_impl->add_edge(source, target); }
 
-std::string SparseGraph::compute_certificate() { return m_impl->compute_certificate(); }
+Certificate SparseGraph::compute_certificate() { return m_impl->compute_certificate(); }
 
 void SparseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 
+}
+
+size_t std::hash<nauty_wrapper::Certificate>::operator()(const nauty_wrapper::Certificate& element) const
+{
+    return mimir::hash_combine(element.get_canonical_graph(), element.get_canonical_coloring());
 }

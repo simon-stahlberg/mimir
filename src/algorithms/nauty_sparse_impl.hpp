@@ -19,6 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_SPARSE_IMPL_HPP_
 
 // Only include nauty_sparse_impl.hpp in a source file to avoid transitive includes of nauty.h.
+#include "mimir/algorithms/nauty.hpp"
 #include "mimir/graphs/declarations.hpp"
 
 #include <nausparse.h>
@@ -42,8 +43,11 @@ private:
     // The input graph
     sparsegraph graph_;
     bool use_default_ptn_;
+
+    mimir::ColorList canon_coloring_;
     std::vector<int> lab_;
     std::vector<int> ptn_;
+
     // The canonical graph
     sparsegraph canon_graph_;
 
@@ -70,7 +74,7 @@ public:
 
     void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
 
-    std::string compute_certificate();
+    Certificate compute_certificate();
 
     void clear(size_t num_vertices);
 

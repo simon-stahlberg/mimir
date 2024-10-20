@@ -19,6 +19,7 @@
 #define SRC_ALGORITHMS_NAUTY_DENSE_IMPL_HPP_
 
 // Only include nauty_impl.hpp in a source file to avoid transitive includes of nauty.h.
+#include "mimir/algorithms/nauty.hpp"
 #include "mimir/graphs/declarations.hpp"
 
 #include <nauty.h>
@@ -40,8 +41,11 @@ private:
     // The input graph
     graph* graph_;
     bool use_default_ptn_;
+
+    mimir::ColorList canon_coloring_;
     std::vector<int> lab_;
     std::vector<int> ptn_;
+
     // The canonical graph
     graph* canon_graph_;
 
@@ -64,7 +68,7 @@ public:
 
     void add_vertex_coloring(const mimir::ColorList& vertex_coloring);
 
-    std::string compute_certificate();
+    Certificate compute_certificate();
 
     void clear(size_t num_vertices);
 

@@ -30,6 +30,36 @@ namespace nauty_wrapper
 class DenseGraphImpl;
 class SparseGraphImpl;
 
+/// @brief `Certificate` encapsulates a canonical graph representation of a vertex-colored graph.
+class Certificate
+{
+private:
+    /* Core members for comparing certificates. */
+    std::string m_canonical_graph;
+    // Since the canonical graph is computed using a vertex partitioning, we additionally require a canonical representation of the vertex colors to distinguish
+    // graphs with different canonical vertex coloring but identical vertex partitioning.
+    mimir::ColorList m_canonical_coloring;
+
+public:
+    Certificate(std::string canonical_graph, mimir::ColorList canonical_coloring);
+
+    bool operator==(const Certificate& other) const;
+
+    const std::string& get_canonical_graph() const;
+    const mimir::ColorList& get_canonical_coloring() const;
+};
+
+struct UniqueCertificateSharedPtrHash
+{
+    size_t operator()(const std::shared_ptr<const Certificate>& element) const;
+};
+
+struct UniqueCertificateSharedPtrEqualTo
+{
+    size_t operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const;
+};
+
+/// @brief `DenseGraph` encapsulates a dense graph representation compatible with Nauty.
 class DenseGraph
 {
 private:
@@ -67,8 +97,8 @@ public:
     /// @param target is the index of the target vertex.
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a compressed string representation of the canonical graph of the graph.
-    std::string compute_certificate() const;
+    /// @brief Compute a graph certificate.
+    Certificate compute_certificate() const;
 
     /// @brief Clear the graph data structures by changing the number of vertices and removing all edges.
     /// @param num_vertices is the new number of vertices.
@@ -78,6 +108,7 @@ public:
     bool is_directed() const;
 };
 
+/// @brief `SparseGraph` encapsulates a sparse graph representation compatible with Nauty.
 class SparseGraph
 {
 private:
@@ -115,8 +146,8 @@ public:
     /// @param target is the index of the target vertex.
     void add_edge(size_t source, size_t target);
 
-    /// @brief Compute a compressed string representation of the canonical graph of the graph.
-    std::string compute_certificate();
+    /// @brief Compute a graph certificate.
+    Certificate compute_certificate();
 
     /// @brief Clear the graph data structures by changing the number of vertices and removing all edges.
     /// @param num_vertices is the new number of vertices.
@@ -127,5 +158,11 @@ public:
 };
 
 }
+
+template<>
+struct std::hash<nauty_wrapper::Certificate>
+{
+    size_t operator()(const nauty_wrapper::Certificate& element) const;
+};
 
 #endif

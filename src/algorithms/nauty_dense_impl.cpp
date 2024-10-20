@@ -54,6 +54,7 @@ DenseGraphImpl::DenseGraphImpl(size_t num_vertices) :
     m_(SETWORDSNEEDED(n_)),
     graph_(nullptr),
     use_default_ptn_(true),
+    canon_coloring_(0, n_),
     lab_(n_),
     ptn_(n_),
     canon_graph_(nullptr)
@@ -68,6 +69,7 @@ DenseGraphImpl::DenseGraphImpl(const DenseGraphImpl& other) :
     m_(other.m_),
     graph_(nullptr),
     use_default_ptn_(other.use_default_ptn_),
+    canon_coloring_(other.canon_coloring_),
     lab_(other.lab_),
     ptn_(other.ptn_),
     canon_graph_(nullptr),
@@ -94,6 +96,7 @@ DenseGraphImpl& DenseGraphImpl::operator=(const DenseGraphImpl& other)
         c_ = other.c_;
         m_ = other.m_;
         use_default_ptn_ = other.use_default_ptn_;
+        canon_coloring_ = other.canon_coloring_;
         lab_ = other.lab_;
         ptn_ = other.ptn_;
         canon_graph_repr_.str(other.canon_graph_repr_.str());
@@ -114,6 +117,7 @@ DenseGraphImpl::DenseGraphImpl(DenseGraphImpl&& other) noexcept :
     m_(other.m_),
     graph_(other.graph_),
     use_default_ptn_(other.use_default_ptn_),
+    canon_coloring_(std::move(other.canon_coloring_)),
     lab_(std::move(other.lab_)),
     ptn_(std::move(other.ptn_)),
     canon_graph_(other.canon_graph_),
@@ -136,6 +140,7 @@ DenseGraphImpl& DenseGraphImpl::operator=(DenseGraphImpl&& other) noexcept
         m_ = other.m_;
         graph_ = other.graph_;
         use_default_ptn_ = other.use_default_ptn_;
+        canon_coloring_ = std::move(other.canon_coloring_);
         lab_ = std::move(other.lab_);
         ptn_ = std::move(other.ptn_);
         canon_graph_ = other.canon_graph_;
@@ -160,6 +165,10 @@ void DenseGraphImpl::add_vertex_coloring(const mimir::ColorList& vertex_coloring
     {
         throw std::out_of_range("DenseGraphImpl::add_vertex_coloring: The vertex coloring is incompatible with number of vertices in the graph.");
     }
+
+    canon_coloring_ = vertex_coloring;
+    std::sort(canon_coloring_.begin(), canon_coloring_.end());
+
     initialize_lab_and_ptr(vertex_coloring, lab_, ptn_);
     use_default_ptn_ = false;
 }
@@ -173,7 +182,7 @@ void DenseGraphImpl::add_edge(size_t source, size_t target)
     ADDONEARC0(graph_, source, target, m_);
 }
 
-std::string DenseGraphImpl::compute_certificate()
+Certificate DenseGraphImpl::compute_certificate()
 {
     const auto is_directed_ = is_directed();
     const auto has_loop_ = has_loop();
@@ -216,7 +225,7 @@ std::string DenseGraphImpl::compute_certificate()
     // We usually see compression ratio ~ 2
     // std::cout << "Compression ratio: " << (double) canon_graph_repr_.str().size() / canon_graph_compressed_repr_.str().size() << std::endl;
 
-    return canon_graph_compressed_repr_.str();
+    return Certificate(canon_graph_compressed_repr_.str(), canon_coloring_);
 }
 
 void DenseGraphImpl::clear(size_t num_vertices)
@@ -232,8 +241,9 @@ void DenseGraphImpl::clear(size_t num_vertices)
         n_ = num_vertices;
         m_ = SETWORDSNEEDED(num_vertices);
         c_ = num_vertices;
-        lab_ = std::vector<int>(c_);
-        ptn_ = std::vector<int>(c_);
+        canon_coloring_ = mimir::ColorList(0, n_);
+        lab_ = std::vector<int>(n_);
+        ptn_ = std::vector<int>(n_);
 
         allocate_graph(&graph_);
         allocate_graph(&canon_graph_);
@@ -242,6 +252,9 @@ void DenseGraphImpl::clear(size_t num_vertices)
     {
         n_ = num_vertices;
         m_ = SETWORDSNEEDED(num_vertices);
+
+        std::fill(canon_coloring_.begin(), canon_coloring_.begin() + n_, 0);
+
         EMPTYGRAPH0(graph_, m_, n_);
         EMPTYGRAPH0(canon_graph_, m_, n_);
     }

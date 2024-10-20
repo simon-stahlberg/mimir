@@ -66,7 +66,6 @@ static_assert(IsDynamicGraph<DynamicVertexColoredDigraph>);
  */
 
 extern ColorList compute_vertex_colors(const StaticVertexColoredDigraph& graph);
-extern ColorList compute_sorted_vertex_colors(const StaticVertexColoredDigraph& graph);
 
 /**
  * Pretty printing

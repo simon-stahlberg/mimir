@@ -5,6 +5,13 @@ from _pymimir import (
     FlatBitset,
 )
 
+# Algorithms
+from _pymimir import (
+    NautyCertificate,
+    NautyDenseGraph,
+    NautySparseGraph,
+)
+
 # Formalism
 from _pymimir import (
     Action,
@@ -161,10 +168,8 @@ from _pymimir import (
 
 # Graphs (classes)
 from _pymimir import (
-    Certificate,
     ColoredVertex,
     ColorFunction,
-    DenseNautyGraph,
     EmptyVertex,
     EmptyEdge,
     ObjectGraphPruningStrategy,
@@ -172,7 +177,6 @@ from _pymimir import (
     ProblemColorFunction,
     StaticDigraph,
     StaticVertexColoredDigraph,
-    SparseNautyGraph,
     TupleGraphVertex,
     TupleGraphVertexSpan,
     TupleGraphVertexIndexGroupedVector,
@@ -183,7 +187,6 @@ from _pymimir import (
 # Graphs (free functions)
 from _pymimir import (
     compute_vertex_colors,
-    compute_sorted_vertex_colors,
     create_object_graph
 )
 

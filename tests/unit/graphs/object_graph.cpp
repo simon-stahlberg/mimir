@@ -20,7 +20,6 @@
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/graphs/certificate.hpp"
 
 #include <gtest/gtest.h>
 #include <unordered_set>
@@ -36,7 +35,7 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<Certificate> {};
+    auto certificates = std::unordered_set<nauty_wrapper::Certificate> {};
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
@@ -48,10 +47,7 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(object_graph.get_num_vertices(),
-                                       object_graph.get_num_edges(),
-                                       nauty_wrapper::DenseGraph(object_graph).compute_certificate(),
-                                       compute_sorted_vertex_colors(object_graph));
+        auto certificate = nauty_wrapper::DenseGraph(object_graph).compute_certificate();
 
         certificates.insert(std::move(certificate));
     }
@@ -68,7 +64,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
     const auto state_space = StateSpace::create(domain_file, problem_file).value();
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<Certificate> {};
+    auto certificates = std::unordered_set<nauty_wrapper::Certificate> {};
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
@@ -79,10 +75,7 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(object_graph.get_num_vertices(),
-                                       object_graph.get_num_edges(),
-                                       nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
-                                       compute_sorted_vertex_colors(object_graph));
+        auto certificate = nauty_wrapper::SparseGraph(object_graph).compute_certificate();
 
         certificates.insert(std::move(certificate));
     }
@@ -110,7 +103,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     };
 
     const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<Certificate> {};
+    auto certificates = std::unordered_set<nauty_wrapper::Certificate> {};
 
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
@@ -122,10 +115,7 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
 
         // std::cout << object_graph << std::endl;
 
-        auto certificate = Certificate(object_graph.get_num_vertices(),
-                                       object_graph.get_num_edges(),
-                                       nauty_wrapper::SparseGraph(object_graph).compute_certificate(),
-                                       compute_sorted_vertex_colors(object_graph));
+        auto certificate = nauty_wrapper::SparseGraph(object_graph).compute_certificate();
 
         certificates.insert(std::move(certificate));
     }

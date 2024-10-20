@@ -128,8 +128,10 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);
 
-    auto certificate_to_global_state = std::
-        unordered_map<std::shared_ptr<const Certificate>, GlobalFaithfulAbstractState, UniqueCertificateSharedPtrHash, UniqueCertificateSharedPtrEqualTo> {};
+    auto certificate_to_global_state = std::unordered_map<std::shared_ptr<const nauty_wrapper::Certificate>,
+                                                          GlobalFaithfulAbstractState,
+                                                          nauty_wrapper::UniqueCertificateSharedPtrHash,
+                                                          nauty_wrapper::UniqueCertificateSharedPtrEqualTo> {};
 
     // An abstraction is considered relevant, if it contains at least one non-isomorphic state.
     auto relevant_faithful_abstractions = std::make_shared<FaithfulAbstractionList>();

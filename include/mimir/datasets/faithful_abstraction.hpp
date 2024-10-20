@@ -18,13 +18,13 @@
 #ifndef MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 #define MIMIR_DATASETS_FAITHFUL_ABSTRACTION_HPP_
 
+#include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/ground_actions_edge.hpp"
 #include "mimir/datasets/state_space.hpp"
-#include "mimir/graphs/certificate.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/object_graph.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -69,7 +69,7 @@ struct FaithfulAbstractStateVertexTag
 {
 };
 
-using FaithfulAbstractStateVertex = Vertex<FaithfulAbstractStateVertexTag, std::span<const State>, std::shared_ptr<const Certificate>>;
+using FaithfulAbstractStateVertex = Vertex<FaithfulAbstractStateVertexTag, std::span<const State>, std::shared_ptr<const nauty_wrapper::Certificate>>;
 using FaithfulAbstractStateVertexList = std::vector<FaithfulAbstractStateVertex>;
 
 inline std::span<const State> get_states(const FaithfulAbstractStateVertex& state) { return state.get_property<0>(); }
@@ -80,7 +80,7 @@ inline State get_representative_state(const FaithfulAbstractStateVertex& state)
     return state.get_property<0>().front();
 }
 
-inline const std::shared_ptr<const Certificate>& get_certificate(const FaithfulAbstractStateVertex& state) { return state.get_property<1>(); }
+inline const std::shared_ptr<const nauty_wrapper::Certificate>& get_certificate(const FaithfulAbstractStateVertex& state) { return state.get_property<1>(); }
 
 /// @brief `FaithfulAbstraction` implements abstractions based on isomorphism testing.
 /// Source: https://mrlab.ai/papers/drexler-et-al-icaps2024wsprl.pdf
