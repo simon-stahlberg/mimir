@@ -21,6 +21,8 @@ foreach(subdir ${SUBDIRECTORIES})
     list(APPEND MIMIR_PUBLIC_HEADER_FILES ${TMP_PUBLIC_HEADER_FILES})
 endforeach()
 
+list(APPEND MIMIR_PUBLIC_HEADER_FILES "../include/mimir/mimir.hpp")
+
 add_library(core STATIC ${MIMIR_SRC_FILES} ${MIMIR_PRIVATE_HEADER_FILES} ${MIMIR_PUBLIC_HEADER_FILES})
 set_target_properties(core PROPERTIES OUTPUT_NAME mimir_core)
 

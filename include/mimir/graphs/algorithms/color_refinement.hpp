@@ -18,14 +18,24 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <queue>
 
 namespace mimir
 {
+
+inline std::ostream& operator<<(std::ostream& os, const std::tuple<Color, ColorList, Index>& tuple)
+{
+    os << "<";
+    os << std::get<0>(tuple) << "," << std::get<1>(tuple) << "," << std::get<2>(tuple);
+    os << ">";
+    return os;
+}
 
 /// @brief `ColorRefinementCertificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
 class ColorRefinementCertificate
@@ -53,6 +63,8 @@ template<typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
     ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
 {
+    bool debug = false;
+
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
 
     auto f = CompressionFunction();
@@ -65,7 +77,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     auto L = ColorSet();
     for (const auto& vertex : graph.get_vertices())
     {
-        max_color = max(max_color, get_color(vertex));
+        max_color = std::max(max_color, get_color(vertex));
         vertex_to_color.emplace(vertex.get_index(), get_color(vertex));
         color_to_vertices[get_color(vertex)].insert(vertex.get_index());
         L.insert(get_color(vertex));
@@ -77,14 +89,17 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     // (line 3): Process work list until all vertex colors have stabilized.
     while (!L.empty())
     {
+        if (debug)
+            std::cout << "L: " << L << std::endl;
+
         // (lines 4-11): Create multiset of colors of neighbors of each vertex whose color must be updated.
         for (const auto& color : L)
         {
             for (const auto& vertex : color_to_vertices.at(color))
             {
-                for (const auto& outgoing_vertex : graph.get_adjacent_vertices(vertex))
+                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(vertex))
                 {
-                    M.emplace_back(outgoing_vertex.get_index(), vertex_to_color.at(outgoing_vertex));
+                    M.emplace_back(vertex, vertex_to_color.at(outgoing_vertex.get_index()));
                 }
             }
         }
@@ -92,49 +107,105 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         // (line 12): Perform radix sort of M by vertex and colors (TODO radix sort)
         std::sort(M.begin(), M.end());
 
+        if (debug)
+            std::cout << "M: " << M << std::endl;
+
         // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v).
         auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
-        auto it = M.begin();
-        while (it != M.end())
         {
-            auto colors = ColorList();
-            auto vertex = it->first;
-
-            auto it2 = it;
-            while (it2 != M.end() && it2->first == vertex)
+            // Subroutine to replate tuples
+            auto it = M.begin();
+            while (it != M.end())
             {
-                colors.push_back(it2->second);
-                ++it2;
+                auto colors = ColorList();
+                auto vertex = it->first;
+
+                auto it2 = it;
+                while (it2 != M.end() && it2->first == vertex)
+                {
+                    colors.push_back(it2->second);
+                    ++it2;
+                }
+                it = it2;
+
+                assert(std::is_sorted(colors.begin(), colors.end()));
+                M_replaced.emplace_back(vertex_to_color.at(vertex), std::move(colors), vertex);
             }
-            it = it2;
-
-            assert(std::is_sorted(colors.begin(), colors.end()));
-            M_replaced.emplace_back(vertex_to_color.at(vertex), std::move(colors), vertex);
         }
-
         // (line 14): Perform radix sort of M by old color and neighborhood colors (TODO radix sort)
         std::sort(M_replaced.begin(), M_replaced.end());
+
+        if (debug)
+            std::cout << "M_replaced: " << M_replaced << std::endl;
 
         /* (line 15): Add new colors to work list */
         color_to_vertices.clear();
         L.clear();
-        for (auto& pair : M_replaced)
         {
-            auto old_color = std::get<0>(pair);
-            auto& neighbor_colors = std::get<1>(pair);
-            auto vertex = std::get<2>(pair);
-
-            auto result = f.emplace(std::make_pair(old_color, std::move(neighbor_colors)), next_color);
-            auto new_color = result.first->second;
-            auto inserted = result.second;
-            if (inserted)
+            // Subroutine to split color classes.
+            auto it = M_replaced.begin();
+            while (it != M_replaced.end())
             {
-                ++next_color;
-                vertex_to_color[vertex] = new_color;
-                color_to_vertices[new_color].insert(vertex);
-                L.insert(new_color);
+                const auto old_color = std::get<0>(*it);
+
+                /* Check whether old color has split. */
+                auto has_split = false;
+                auto it2 = it;
+                {
+                    // Subroutine to detect split
+                    const auto& signature = std::get<1>(*it);
+                    while (it2 != M_replaced.end() && old_color == std::get<0>(*it2))
+                    {
+                        ++it2;
+
+                        if (signature != std::get<1>(*it2))
+                        {
+                            has_split = true;
+                            break;
+                        }
+                    }
+                }
+                if (has_split)
+                {
+                    /* Split old_color class. */
+                    {
+                        // Subroutine to split color class
+                        while (it2 != M_replaced.end() && old_color == std::get<0>(*it2))
+                        {
+                            // Determine new color for (old_color, signature)
+                            const auto& signature = std::get<1>(*it2);
+                            auto new_color = next_color++;
+
+                            // Add new color to work list.
+                            L.insert(new_color);
+
+                            // Add mapping to decoding table
+                            auto result = f.emplace(std::make_pair(old_color, signature), new_color);
+                            // Ensure that we are not overwritting table entries.
+                            assert(result.second);
+
+                            {
+                                // Subroutine to assign new color to vertices with same signature.
+                                while (it2 != M_replaced.end() && old_color == std::get<0>(*it2) && signature == std::get<1>(*it2))
+                                {
+                                    auto vertex = std::get<2>(*it2);
+                                    vertex_to_color[vertex] = new_color;
+                                    color_to_vertices[new_color].insert(vertex);
+                                    ++it2;
+                                }
+                            }
+
+                            // Ensure that we either finished or entered the next old color class.
+                            assert(it2 == M_replaced.end() || old_color != std::get<0>(*it2));
+                        }
+                    }
+                }
+
+                /* Move to next old color class or the end. */
+                it = it2;
             }
         }
+
         /* (line 15): Clear multiset */
         M.clear();
     }

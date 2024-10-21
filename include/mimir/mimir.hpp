@@ -75,6 +75,7 @@
  * Graphs
  */
 
+#include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/color_function.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
