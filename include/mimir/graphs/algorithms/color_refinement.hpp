@@ -29,6 +29,9 @@
 namespace mimir
 {
 
+/**
+ * Pretty printer.
+ */
 inline std::ostream& operator<<(std::ostream& os, const std::tuple<Color, ColorList, Index>& tuple)
 {
     os << "<";
@@ -58,7 +61,7 @@ extern bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinem
 /// @brief `compute_color_refinement_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
-/// @return the `ColorRefinementCerticate` that contains the canonical decoding table and the canonical vertex coloring.
+/// @return the `ColorRefinementCerticate`
 template<typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
     ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
@@ -110,26 +113,27 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         if (debug)
             std::cout << "M: " << M << std::endl;
 
-        // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v).
+        // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v) to construct signatures.
         auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
         {
-            // Subroutine to replate tuples
+            // Subroutine to construct signatures.
             auto it = M.begin();
             while (it != M.end())
             {
-                auto colors = ColorList();
+                auto signature = ColorList();
                 auto vertex = it->first;
 
                 auto it2 = it;
                 while (it2 != M.end() && it2->first == vertex)
                 {
-                    colors.push_back(it2->second);
+                    signature.push_back(it2->second);
                     ++it2;
                 }
                 it = it2;
 
-                assert(std::is_sorted(colors.begin(), colors.end()));
-                M_replaced.emplace_back(vertex_to_color.at(vertex), std::move(colors), vertex);
+                // Ensure canonical signature.
+                assert(std::is_sorted(signature.begin(), signature.end()));
+                M_replaced.emplace_back(vertex_to_color.at(vertex), std::move(signature), vertex);
             }
         }
         // (line 14): Perform radix sort of M by old color and neighborhood colors (TODO radix sort)

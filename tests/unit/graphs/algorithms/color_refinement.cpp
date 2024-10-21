@@ -103,5 +103,26 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
 
         EXPECT_NE(two_triangle_certificate, sixgon_certificate);
     }
+
+    {
+        /* 2-vertex graphs where the order of colors is flipped to test canonical decoding table. */
+        auto line_graph_1 = StaticVertexColoredDigraph();
+        {
+            auto v1 = line_graph_1.add_vertex(Color(1));
+            auto v2 = line_graph_1.add_vertex(Color(0));
+            line_graph_1.add_undirected_edge(v1, v2);
+        }
+        auto line_graph_1_certificate = compute_color_refinement_certificate(line_graph_1);
+
+        auto line_graph_2 = StaticVertexColoredDigraph();
+        {
+            auto v1 = line_graph_2.add_vertex(Color(0));
+            auto v2 = line_graph_2.add_vertex(Color(1));
+            line_graph_2.add_undirected_edge(v1, v2);
+        }
+        auto line_graph_2_certificate = compute_color_refinement_certificate(line_graph_2);
+
+        EXPECT_EQ(line_graph_1_certificate, line_graph_2_certificate);
+    }
 }
 }
