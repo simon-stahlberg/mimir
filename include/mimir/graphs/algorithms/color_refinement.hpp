@@ -32,13 +32,7 @@ namespace mimir
 /**
  * Pretty printer.
  */
-inline std::ostream& operator<<(std::ostream& os, const std::tuple<Color, ColorList, Index>& tuple)
-{
-    os << "<";
-    os << std::get<0>(tuple) << "," << std::get<1>(tuple) << "," << std::get<2>(tuple);
-    os << ">";
-    return os;
-}
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<Color, ColorList, Index>& tuple);
 
 /// @brief `ColorRefinementCertificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
 class ColorRefinementCertificate
