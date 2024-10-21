@@ -70,6 +70,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         color_to_vertices[get_color(vertex)].insert(vertex.get_index());
         L.insert(get_color(vertex));
     }
+    auto next_color = max_color + 1;
 
     // (line 1-2): Initialize multi set.
     auto M = std::vector<std::pair<Index, Color>>();
@@ -88,7 +89,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             }
         }
 
-        // (line 12): Perform radix sort of M (TODO radix sort)
+        // (line 12): Perform radix sort of M by vertex and colors (TODO radix sort)
         std::sort(M.begin(), M.end());
 
         // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v).
@@ -98,18 +99,20 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         {
             auto colors = ColorList();
             auto vertex = it->first;
+
             auto it2 = it;
             while (it2 != M.end() && it2->first == vertex)
             {
                 colors.push_back(it2->second);
                 ++it2;
             }
-            // Sort to obtain canonical coloring of neighborhood.
-            std::sort(colors.begin(), colors.end());
+            it = it2;
+
+            assert(std::is_sorted(colors.begin(), colors.end()));
             M_replaced.emplace_back(vertex_to_color.at(vertex), std::move(colors), vertex);
         }
 
-        // (line 14): Sort by old color and neighborhood colors
+        // (line 14): Perform radix sort of M by old color and neighborhood colors (TODO radix sort)
         std::sort(M_replaced.begin(), M_replaced.end());
 
         /* (line 15): Add new colors to work list */
@@ -121,15 +124,15 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             auto& neighbor_colors = std::get<1>(pair);
             auto vertex = std::get<2>(pair);
 
-            auto free_color = f.size() + max_color + 1;
-            auto result = f.emplace(std::make_pair(old_color, std::move(neighbor_colors)), free_color);
+            auto result = f.emplace(std::make_pair(old_color, std::move(neighbor_colors)), next_color);
             auto new_color = result.first->second;
             auto inserted = result.second;
             if (inserted)
             {
-                L.insert(new_color);
+                ++next_color;
                 vertex_to_color[vertex] = new_color;
                 color_to_vertices[new_color].insert(vertex);
+                L.insert(new_color);
             }
         }
         /* (line 15): Clear multiset */
