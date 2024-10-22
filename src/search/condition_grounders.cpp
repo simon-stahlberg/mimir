@@ -47,6 +47,9 @@ bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals,
     return true;
 }
 
+template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, const State state, const ObjectList& binding);
+template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Derived>& literals, const State state, const ObjectList& binding);
+
 bool ConditionGrounder::is_valid_static_binding(const Problem problem, const LiteralList<Static>& literals, const ObjectList& binding)
 {
     for (const auto& literal : literals)
@@ -69,7 +72,7 @@ bool ConditionGrounder::is_valid_binding(const Problem problem, const State stat
            && is_valid_dynamic_binding(m_derived_conditions, state, binding);  // due to over-approx.
 }
 
-template<PredicateCategory P>
+template<DynamicPredicateCategory P>
 bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories)
 {
     for (const auto& literal : literals)
@@ -85,6 +88,11 @@ bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, co
 
     return true;
 }
+
+template bool
+ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories);
+template bool
+ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories);
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
 bool ConditionGrounder::nullary_conditions_hold(const Problem problem, const State state)
@@ -273,14 +281,51 @@ void ConditionGrounder::compute_bindings(const State state,
 
 Problem ConditionGrounder::get_problem() const { return m_problem; }
 
+const VariableList& ConditionGrounder::get_variables() const { return m_variables; }
+
+template<PredicateCategory P>
+const LiteralList<P>& ConditionGrounder::get_conditions() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_static_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_conditions;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_conditions;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const LiteralList<Static>& ConditionGrounder::get_conditions<Static>() const;
+template const LiteralList<Fluent>& ConditionGrounder::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& ConditionGrounder::get_conditions<Derived>() const;
+
+const AssignmentSet<Static>& ConditionGrounder::get_static_assignment_set() const { return m_static_assignment_set; }
+
+const std::shared_ptr<PDDLFactories>& ConditionGrounder::get_pddl_factories() const { return m_pddl_factories; }
+
+const std::shared_ptr<IConditionGrounderEventHandler>& ConditionGrounder::get_event_handler() const { return m_event_handler; }
+
+const consistency_graph::StaticConsistencyGraph& ConditionGrounder::get_static_consistency_graph() const { return m_static_consistency_graph; }
+
 std::ostream& operator<<(std::ostream& out, const ConditionGrounder& condition_grounder)
 {
     out << "Condition Grounder:" << std::endl;
-    // out << " - Variables: " << condition_grounder.m_variables << std::endl;
-    // out << " - Static Conditions: " << condition_grounder.m_static_conditions << std::endl;
-    // out << " - Fluent Conditions: " << condition_grounder.m_fluent_conditions << std::endl;
-    // out << " - Derived Conditions: " << condition_grounder.m_derived_conditions << std::endl;
-    // out << " - Static Consistency Graph: " << std::tie(condition_grounder.m_static_consistency_graph, *condition_grounder.m_pddl_factories) << std::endl;
+    out << " - Variables: " << condition_grounder.get_variables() << std::endl;
+    out << " - Static Conditions: " << condition_grounder.get_conditions<Static>() << std::endl;
+    out << " - Fluent Conditions: " << condition_grounder.get_conditions<Fluent>() << std::endl;
+    out << " - Derived Conditions: " << condition_grounder.get_conditions<Derived>() << std::endl;
+    // TODO: There are some issues with the printers, perhaps move them in a single compilation unit.
+    // out << " - Static Consistency Graph: " << std::tie(condition_grounder.get_static_consistency_graph(), *condition_grounder.get_pddl_factories())
+    //     << std::endl;
     return out;
 }
 }

@@ -55,7 +55,7 @@ private:
 
     bool is_valid_binding(const Problem problem, const State state, const ObjectList& binding);
 
-    template<PredicateCategory P>
+    template<DynamicPredicateCategory P>
     bool nullary_literals_hold(const LiteralList<P>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
@@ -101,6 +101,13 @@ public:
      */
 
     Problem get_problem() const;
+    const VariableList& get_variables() const;
+    template<PredicateCategory P>
+    const LiteralList<P>& get_conditions() const;
+    const AssignmentSet<Static>& get_static_assignment_set() const;
+    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
+    const std::shared_ptr<IConditionGrounderEventHandler>& get_event_handler() const;
+    const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 
 /**
