@@ -18,6 +18,7 @@
 #include "mimir/search/condition_grounders.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
@@ -32,7 +33,7 @@ namespace mimir
 {
 
 template<DynamicPredicateCategory P>
-bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals, const State state, const ObjectList& binding)
+bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -47,10 +48,10 @@ bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals,
     return true;
 }
 
-template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, const State state, const ObjectList& binding);
-template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Derived>& literals, const State state, const ObjectList& binding);
+template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, State state, const ObjectList& binding);
+template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Derived>& literals, State state, const ObjectList& binding);
 
-bool ConditionGrounder::is_valid_static_binding(const Problem problem, const LiteralList<Static>& literals, const ObjectList& binding)
+bool ConditionGrounder::is_valid_static_binding(Problem problem, const LiteralList<Static>& literals, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -65,7 +66,7 @@ bool ConditionGrounder::is_valid_static_binding(const Problem problem, const Lit
     return true;
 }
 
-bool ConditionGrounder::is_valid_binding(const Problem problem, const State state, const ObjectList& binding)
+bool ConditionGrounder::is_valid_binding(Problem problem, State state, const ObjectList& binding)
 {
     return is_valid_static_binding(problem, m_static_conditions, binding)      // We need to test all
            && is_valid_dynamic_binding(m_fluent_conditions, state, binding)    // types of conditions
@@ -73,7 +74,7 @@ bool ConditionGrounder::is_valid_binding(const Problem problem, const State stat
 }
 
 template<DynamicPredicateCategory P>
-bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories)
+bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLFactories& pddl_factories)
 {
     for (const auto& literal : literals)
     {
@@ -89,19 +90,17 @@ bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, co
     return true;
 }
 
-template bool
-ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories);
-template bool
-ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool ConditionGrounder::nullary_conditions_hold(const Problem problem, const State state)
+bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
 {
     return nullary_literals_hold(m_fluent_conditions, problem, state, *m_pddl_factories)
            && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_factories);
 }
 
-void ConditionGrounder::nullary_case(const State state, std::vector<ObjectList>& ref_bindings)
+void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_bindings)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
@@ -118,7 +117,7 @@ void ConditionGrounder::nullary_case(const State state, std::vector<ObjectList>&
 
 void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                                    const AssignmentSet<Derived>& derived_assignment_sets,
-                                   const State state,
+                                   State state,
                                    std::vector<ObjectList>& ref_bindings)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
@@ -142,7 +141,7 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
 
 void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                                      const AssignmentSet<Derived>& derived_assignment_sets,
-                                     const State state,
+                                     State state,
                                      std::vector<ObjectList>& ref_bindings)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
@@ -255,7 +254,7 @@ ConditionGrounder::ConditionGrounder(Problem problem,
     }
 }
 
-void ConditionGrounder::compute_bindings(const State state,
+void ConditionGrounder::compute_bindings(State state,
                                          const AssignmentSet<Fluent>& fluent_assignment_set,
                                          const AssignmentSet<Derived>& derived_assignment_set,
                                          std::vector<ObjectList>& out_bindings)

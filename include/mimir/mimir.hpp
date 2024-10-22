@@ -23,6 +23,12 @@
  */
 
 /**
+ * Common
+ */
+
+#include "mimir/common/printers.hpp"
+
+/**
  * Formalism
  */
 

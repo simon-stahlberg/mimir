@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
 #define MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
 
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
@@ -49,28 +48,28 @@ private:
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
     template<DynamicPredicateCategory P>
-    bool is_valid_dynamic_binding(const LiteralList<P>& literals, const State state, const ObjectList& binding);
+    bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);
 
-    bool is_valid_static_binding(const Problem problem, const LiteralList<Static>& literals, const ObjectList& binding);
+    bool is_valid_static_binding(Problem problem, const LiteralList<Static>& literals, const ObjectList& binding);
 
-    bool is_valid_binding(const Problem problem, const State state, const ObjectList& binding);
+    bool is_valid_binding(Problem problem, State state, const ObjectList& binding);
 
     template<DynamicPredicateCategory P>
-    bool nullary_literals_hold(const LiteralList<P>& literals, const Problem problem, const State state, PDDLFactories& pddl_factories);
+    bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_conditions_hold(const Problem problem, const State state);
+    bool nullary_conditions_hold(Problem problem, State state);
 
-    void nullary_case(const State state, std::vector<ObjectList>& ref_bindings);
+    void nullary_case(State state, std::vector<ObjectList>& ref_bindings);
 
     void unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                     const AssignmentSet<Derived>& derived_assignment_sets,
-                    const State state,
+                    State state,
                     std::vector<ObjectList>& ref_bindings);
 
     void general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                       const AssignmentSet<Derived>& derived_assignment_sets,
-                      const State state,
+                      State state,
                       std::vector<ObjectList>& ref_bindings);
 
 public:
@@ -91,7 +90,7 @@ public:
                       std::shared_ptr<PDDLFactories> pddl_factories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
-    void compute_bindings(const State state,
+    void compute_bindings(State state,
                           const AssignmentSet<Fluent>& fluent_assignment_set,
                           const AssignmentSet<Derived>& derived_assignment_set,
                           std::vector<ObjectList>& out_bindings);
