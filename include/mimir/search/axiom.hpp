@@ -111,6 +111,7 @@ public:
     /* Effect*/
     const FlatDerivedEffect& get_derived_effect() const;
 
+    // TODO: pass state instead of separated fluent and derived atoms
     bool is_applicable(const FlatBitset& state_fluent_atoms, const FlatBitset& state_derived_atoms, const FlatBitset& static_positive_atoms) const;
 
     bool is_statically_applicable(const FlatBitset& static_positive_bitset) const;

@@ -104,18 +104,22 @@ Graphs::Graphs(Problem problem, Action action, const AssignmentSet<Static>& stat
 const StaticConsistencyGraph& Graphs::get_precondition_graph() const { return m_precondition; }
 
 const std::vector<StaticConsistencyGraph>& Graphs::get_complex_effect_graphs() const { return m_complex_effects; }
+}
 
-std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGraph&, const PDDLFactories&> data)
+namespace mimir
+{
+template<>
+std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLFactories&>& data)
 {
     const auto& [graph, pddl_factories] = data;
 
-    const auto create_node = [](const Vertex& vertex, const PDDLFactories& pddl_factories, std::ostream& out)
+    const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLFactories& pddl_factories, std::ostream& out)
     {
         out << "  \"" << vertex.get_id() << "\" [label=\"#" << vertex.get_parameter_index() << " <- " << *pddl_factories.get_object(vertex.get_object_id())
             << "\"];\n";
     };
 
-    const auto create_edge = [](const Edge& edge, std::ostream& out)
+    const auto create_edge = [](const consistency_graph::Edge& edge, std::ostream& out)
     { out << "  \"" << edge.get_src().get_id() << "\" -- \"" << edge.get_dst().get_id() << "\";\n"; };
 
     // Define the undirected graph

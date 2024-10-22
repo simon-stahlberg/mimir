@@ -38,7 +38,7 @@ public:
     virtual void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) = 0;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms) = 0;
+    virtual void generate_and_apply_axioms(StateBuilder& unextended_state) = 0;
 
     // Notify that a new f-layer was reached
     virtual void on_finish_search_layer() const = 0;

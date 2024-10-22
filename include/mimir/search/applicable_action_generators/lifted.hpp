@@ -49,7 +49,7 @@ private:
 
     AxiomEvaluator m_axiom_evaluator;
 
-    std::unordered_map<Action, ConditionGrounder<State>> m_action_precondition_grounders;
+    std::unordered_map<Action, ConditionGrounder> m_action_precondition_grounders;
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_complex_effects;
 
     FlatActionSet m_flat_actions;
@@ -80,7 +80,7 @@ public:
 
     void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
 
-    void generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms) override;
+    void generate_and_apply_axioms(StateBuilder& unextended_state) override;
 
     void on_finish_search_layer() const override;
 

@@ -95,7 +95,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     /* 4. Construct extended state by evaluating Axioms */
 
-    m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
+    m_aag->generate_and_apply_axioms(m_state_builder);
     m_reached_derived_atoms |= derived_state_atoms;
 
     /* 5. Cache extended state */
@@ -173,7 +173,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 5. Construct extended state by evaluating Axioms */
 
-    m_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
+    m_aag->generate_and_apply_axioms(m_state_builder);
     m_reached_derived_atoms |= derived_state_atoms;
 
     /* 6. Cache extended state */

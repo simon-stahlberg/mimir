@@ -21,6 +21,7 @@
 #include "cista/containers/tuple.h"
 #include "cista/storage/unordered_set.h"
 #include "cista/storage/vector.h"
+#include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/state.hpp"
@@ -302,17 +303,23 @@ using GroundActionSet = std::unordered_set<GroundAction>;
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&, GroundAction>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&, GroundAction>& data);
 
 }
 

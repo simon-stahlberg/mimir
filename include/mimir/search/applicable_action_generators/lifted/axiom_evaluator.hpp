@@ -38,30 +38,6 @@
 namespace mimir
 {
 
-class PartiallyExtendedState
-{
-private:
-    const FlatBitset& m_fluent_state_atoms;
-    FlatBitset& m_ref_derived_state_atoms;
-
-public:
-    PartiallyExtendedState(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms) :
-        m_fluent_state_atoms(fluent_state_atoms),
-        m_ref_derived_state_atoms(ref_derived_state_atoms)
-    {
-    }
-
-    bool literal_holds(GroundLiteral<Fluent> fluent_literal) const
-    {
-        return m_fluent_state_atoms.get(fluent_literal->get_atom()->get_index()) != fluent_literal->is_negated();
-    }
-
-    bool literal_holds(GroundLiteral<Derived> derived_literal) const
-    {
-        return m_ref_derived_state_atoms.get(derived_literal->get_atom()->get_index()) != derived_literal->is_negated();
-    }
-};
-
 class AxiomEvaluator
 {
 private:
@@ -76,7 +52,7 @@ private:
     GroundAxiomBuilder m_axiom_builder;
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;
 
-    std::unordered_map<Axiom, ConditionGrounder<PartiallyExtendedState>> m_condition_grounders;
+    std::unordered_map<Axiom, ConditionGrounder> m_condition_grounders;
 
 public:
     /// @brief Simplest construction, expects the event handler from the lifted aag.
@@ -90,7 +66,7 @@ public:
     AxiomEvaluator& operator=(AxiomEvaluator&& other) = delete;
 
     /// @brief Generate and apply all applicable axioms.
-    void generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms);
+    void generate_and_apply_axioms(StateBuilder& unextended_state);
 
     /// @brief Return the axiom partitioning.
     const std::vector<AxiomPartition>& get_axiom_partitioning() const;

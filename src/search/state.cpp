@@ -150,6 +150,7 @@ bool operator!=(State lhs, State rhs) { return !(lhs == rhs); }
  * Pretty printing
  */
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLFactories&>& data)
 {
     const auto [problem, state, pddl_factories] = data;

@@ -138,7 +138,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         }
 
         // Create and all applicable axioms and apply them
-        delete_free_lifted_aag->generate_and_apply_axioms(fluent_state_atoms, derived_state_atoms);
+        delete_free_lifted_aag->generate_and_apply_axioms(state_builder);
 
         auto num_atoms_after = fluent_state_atoms.count();
 
@@ -216,7 +216,7 @@ void GroundedApplicableActionGenerator::generate_applicable_actions(State state,
     m_action_match_tree.get_applicable_elements(state.get_atoms<Fluent>(), state.get_atoms<Derived>(), out_applicable_actions);
 }
 
-void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
+void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateBuilder& unextended_state)
 {
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {
@@ -232,7 +232,7 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBits
 
             // TODO: For axioms, the same fluent branch is taken all the time.
             // Exploit this!
-            m_axiom_match_tree.get_applicable_elements(fluent_state_atoms, ref_derived_state_atoms, applicable_axioms);
+            m_axiom_match_tree.get_applicable_elements(unextended_state.get_atoms<Fluent>(), unextended_state.get_atoms<Derived>(), applicable_axioms);
 
             /* Apply applicable axioms */
 
@@ -248,13 +248,13 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(const FlatBits
 
                 const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_index;
 
-                if (!ref_derived_state_atoms.get(grounded_atom_id))
+                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     reached_partition_fixed_point = false;
                 }
 
-                ref_derived_state_atoms.set(grounded_atom_id);
+                unextended_state.get_atoms<Derived>().set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);

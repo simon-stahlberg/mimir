@@ -29,7 +29,7 @@
 namespace mimir
 {
 
-void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
+void AxiomEvaluator::generate_and_apply_axioms(StateBuilder& unextended_state)
 {
     /* 1. Initialize assignment set */
 
@@ -38,11 +38,11 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_at
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem,
                                                              m_problem->get_domain()->get_predicates<Fluent>(),
-                                                             m_pddl_factories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms));
+                                                             m_pddl_factories->get_ground_atoms_from_indices<Fluent>(unextended_state.get_atoms<Fluent>()));
 
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem,
                                                          m_problem->get_problem_and_domain_derived_predicates(),
-                                                         m_pddl_factories->get_ground_atoms_from_indices<Derived>(ref_derived_state_atoms));
+                                                         m_pddl_factories->get_ground_atoms_from_indices<Derived>(unextended_state.get_atoms<Derived>()));
 
     /* 2. Fixed point computation */
 
@@ -71,9 +71,8 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_at
             applicable_axioms.clear();
             for (const auto& axiom : relevant_axioms)
             {
-                auto partially_extended_state = PartiallyExtendedState(fluent_state_atoms, ref_derived_state_atoms);
                 auto& condition_grounder = m_condition_grounders.at(axiom);
-                condition_grounder.compute_bindings(partially_extended_state, fluent_assignment_set, derived_assignment_set, bindings);
+                condition_grounder.compute_bindings(State(unextended_state.get_data()), fluent_assignment_set, derived_assignment_set, bindings);
 
                 for (auto& binding : bindings)
                 {
@@ -90,11 +89,13 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_at
             {
                 assert(!grounded_axiom.get_derived_effect().is_negated);
 
-                assert(grounded_axiom.is_applicable(fluent_state_atoms, ref_derived_state_atoms, m_problem->get_static_initial_positive_atoms()));
+                assert(grounded_axiom.is_applicable(unextended_state.get_atoms<Fluent>(),
+                                                    unextended_state.get_atoms<Derived>(),
+                                                    m_problem->get_static_initial_positive_atoms()));
 
                 const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_index;
 
-                if (!ref_derived_state_atoms.get(grounded_atom_id))
+                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_id))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     const auto new_ground_atom = m_pddl_factories->get_ground_atom<Derived>(grounded_atom_id);
@@ -111,7 +112,7 @@ void AxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_state_at
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
                 }
 
-                ref_derived_state_atoms.set(grounded_atom_id);
+                unextended_state.get_atoms<Derived>().set(grounded_atom_id);
             }
 
         } while (!reached_partition_fixed_point);
@@ -179,13 +180,13 @@ AxiomEvaluator::AxiomEvaluator(Problem problem,
     for (const auto& axiom : axioms)
     {
         m_condition_grounders.emplace(axiom,
-                                      ConditionGrounder<PartiallyExtendedState>(m_problem,
-                                                                                axiom->get_parameters(),
-                                                                                axiom->get_conditions<Static>(),
-                                                                                axiom->get_conditions<Fluent>(),
-                                                                                axiom->get_conditions<Derived>(),
-                                                                                static_assignment_set,
-                                                                                m_pddl_factories));
+                                      ConditionGrounder(m_problem,
+                                                        axiom->get_parameters(),
+                                                        axiom->get_conditions<Static>(),
+                                                        axiom->get_conditions<Fluent>(),
+                                                        axiom->get_conditions<Derived>(),
+                                                        static_assignment_set,
+                                                        m_pddl_factories));
     }
 }
 

@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_CONSISTENCY_GRAPH_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_CONSISTENCY_GRAPH_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <optional>
@@ -139,12 +140,15 @@ public:
     const std::vector<StaticConsistencyGraph>& get_complex_effect_graphs() const;
 };
 
+}
+
+namespace mimir
+{
 /**
  * Print the graph nicely as dot format
  */
-
-extern std::ostream& operator<<(std::ostream& out, std::tuple<const StaticConsistencyGraph&, const PDDLFactories&> data);
-
+template<>
+std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLFactories&>& data);
 }
 
 #endif

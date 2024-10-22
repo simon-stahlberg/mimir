@@ -24,6 +24,7 @@
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"
+#include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/condition_grounders.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -344,10 +345,10 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_factories);
 }
 
-void LiftedApplicableActionGenerator::generate_and_apply_axioms(const FlatBitset& fluent_state_atoms, FlatBitset& ref_derived_state_atoms)
+void LiftedApplicableActionGenerator::generate_and_apply_axioms(StateBuilder& unextended_state)
 {
     // In the lifted case, we use the axiom evaluator.
-    m_axiom_evaluator.generate_and_apply_axioms(fluent_state_atoms, ref_derived_state_atoms);
+    m_axiom_evaluator.generate_and_apply_axioms(unextended_state);
 }
 
 void LiftedApplicableActionGenerator::on_finish_search_layer() const { m_event_handler->on_finish_search_layer(); }
@@ -385,13 +386,13 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
         m_action_precondition_grounders.emplace(action,
-                                                ConditionGrounder<State>(m_problem,
-                                                                         action->get_parameters(),
-                                                                         action->get_conditions<Static>(),
-                                                                         action->get_conditions<Fluent>(),
-                                                                         action->get_conditions<Derived>(),
-                                                                         static_assignment_set,
-                                                                         m_pddl_factories));
+                                                ConditionGrounder(m_problem,
+                                                                  action->get_parameters(),
+                                                                  action->get_conditions<Static>(),
+                                                                  action->get_conditions<Fluent>(),
+                                                                  action->get_conditions<Derived>(),
+                                                                  static_assignment_set,
+                                                                  m_pddl_factories));
         auto complex_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         complex_effects.reserve(action->get_complex_effects().size());
 

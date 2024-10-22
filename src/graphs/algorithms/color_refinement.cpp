@@ -21,14 +21,6 @@
 
 namespace mimir
 {
-/* Pretty printing. */
-std::ostream& operator<<(std::ostream& os, const std::tuple<Color, ColorList, Index>& tuple)
-{
-    os << "<";
-    os << std::get<0>(tuple) << "," << std::get<1>(tuple) << "," << std::get<2>(tuple);
-    os << ">";
-    return os;
-}
 
 /* ColorRefinementCertificate */
 ColorRefinementCertificate::ColorRefinementCertificate(CanonicalCompressionFunction canonical_compression_function, ColorList canonical_coloring) :

@@ -27,6 +27,35 @@
 namespace mimir
 {
 
+/**
+ * Forward declarations
+ */
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<const T*>& vec);
+
+template<typename T1, typename T2>
+std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair);
+
+template<typename... Ts>
+std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<const T*>& set);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set);
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const std::set<T>& set);
+
+/**
+ * Definitions
+ */
+
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<const T*>& vec)
 {
@@ -45,6 +74,15 @@ template<typename T1, typename T2>
 std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair)
 {
     os << "<" << pair.first << "," << pair.second << ">";
+    return os;
+}
+
+template<typename... Ts>
+std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple)
+{
+    os << "<";
+    std::apply([&os, &tuple](const Ts&... args) { ((os << args), ...); }, tuple);
+    os << ">";
     return os;
 }
 

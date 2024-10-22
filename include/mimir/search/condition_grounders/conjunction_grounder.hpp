@@ -30,7 +30,7 @@ namespace mimir
 class LiftedConjunctionGrounder
 {
 private:
-    ConditionGrounder<State> m_condition_grounder;
+    ConditionGrounder m_condition_grounder;
     std::shared_ptr<PDDLFactories> m_pddl_factories;
 
 public:

@@ -425,6 +425,7 @@ bool operator==(GroundAction lhs, GroundAction rhs) { return (lhs.get_index() ==
  * Pretty printing
  */
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, const PDDLFactories&>& data)
 {
     const auto [simple_effect, pddl_factories] = data;
@@ -446,6 +447,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<FlatSimpleEffect, co
     return os;
 }
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLFactories&>& data)
 {
     const auto [strips_precondition_proxy, pddl_factories] = data;
@@ -481,6 +483,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
     return os;
 }
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLFactories&>& data)
 {
     const auto [strips_effect_proxy, pddl_factories] = data;
@@ -500,6 +503,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
     return os;
 }
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLFactories&>& data)
 {
     const auto [cond_effect_proxy, pddl_factories] = data;
@@ -537,6 +541,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
     return os;
 }
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data)
 {
     const auto [action, pddl_factories] = data;
@@ -568,6 +573,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
     return os;
 }
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&, GroundAction>& data)
 {
     const auto [pddl_factories, ground_action] = data;
