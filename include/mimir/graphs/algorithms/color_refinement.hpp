@@ -52,8 +52,8 @@ extern bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinem
 /// @tparam G is the vertex-colored graph.
 /// @return the `ColorRefinementCerticate`
 template<typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
 {
     bool debug = false;
 
