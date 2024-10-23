@@ -38,15 +38,21 @@ namespace mimir
 class ColorRefinementCertificate
 {
 public:
+    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
+
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
     using CanonicalColoring = std::set<Color>;
 
-    ColorRefinementCertificate(CanonicalCompressionFunction canonical_compression_function, CanonicalColoring canonical_coloring);
+    ColorRefinementCertificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color);
+
+    const IndexMap<Color>& get_vertex_to_color() const;
 
     const CanonicalCompressionFunction& get_canonical_compression_function() const;
     const CanonicalColoring& get_canonical_coloring() const;
 
 private:
+    IndexMap<Color> m_vertex_to_color;
+
     CanonicalCompressionFunction m_canonical_compression_function;
     CanonicalColoring m_canonical_coloring;
 };
@@ -58,17 +64,14 @@ extern bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinem
 /// @tparam G is the vertex-colored graph.
 /// @return the `ColorRefinementCerticate`
 template<typename G>
-    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
+requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
 {
-    /* Type declarations. */
-    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
-
     // Toggle verbosity
     bool debug = false;
 
     // Decoding table.
-    auto f = CompressionFunction();
+    auto f = ColorRefinementCertificate::CompressionFunction();
 
     // (line 1-2): Initialize vertex colors + some additional bookkeeping to work with dynamic graphs which might skip vertex indices.
     auto max_color = Color();
@@ -212,18 +215,8 @@ ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
         M.clear();
     }
 
-    /* Canonize the decoding table. */
-    auto canonical_compression_function = ColorRefinementCertificate::CanonicalCompressionFunction(f.begin(), f.end());
-
-    /* Canonize the final coloring. */
-    auto canonical_coloring = ColorRefinementCertificate::CanonicalColoring();
-    std::transform(std::begin(vertex_to_color),
-                   std::end(vertex_to_color),
-                   std::inserter(canonical_coloring, canonical_coloring.end()),
-                   [](const auto& pair) { return pair.second; });
-
     /* Return the certificate */
-    return ColorRefinementCertificate(std::move(canonical_compression_function), std::move(canonical_coloring));
+    return ColorRefinementCertificate(std::move(f), std::move(vertex_to_color));
 }
 
 }

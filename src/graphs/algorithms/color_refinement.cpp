@@ -23,11 +23,18 @@ namespace mimir
 {
 
 /* ColorRefinementCertificate */
-ColorRefinementCertificate::ColorRefinementCertificate(CanonicalCompressionFunction canonical_compression_function, CanonicalColoring canonical_coloring) :
-    m_canonical_compression_function(std::move(canonical_compression_function)),
-    m_canonical_coloring(std::move(canonical_coloring))
+ColorRefinementCertificate::ColorRefinementCertificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color) :
+    m_vertex_to_color(std::move(vertex_to_color)),
+    m_canonical_compression_function(compression_function.begin(), compression_function.end()),
+    m_canonical_coloring()
 {
+    std::transform(std::begin(m_vertex_to_color),
+                   std::end(m_vertex_to_color),
+                   std::inserter(m_canonical_coloring, m_canonical_coloring.end()),
+                   [](const auto& pair) { return pair.second; });
 }
+
+const IndexMap<Color>& ColorRefinementCertificate::get_vertex_to_color() const { return m_vertex_to_color; }
 
 const ColorRefinementCertificate::CanonicalCompressionFunction& ColorRefinementCertificate::get_canonical_compression_function() const
 {
