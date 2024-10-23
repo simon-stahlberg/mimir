@@ -18,6 +18,8 @@
 #ifndef MIMIR_SEARCH_AXIOM_HPP_
 #define MIMIR_SEARCH_AXIOM_HPP_
 
+#include "mimir/common/printers.hpp"
+#include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
@@ -141,9 +143,11 @@ using GroundAxiomSet = std::unordered_set<GroundAxiom>;
  * Pretty printing
  */
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, const PDDLFactories&>& data);
 
-extern std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLFactories&>& data);
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLFactories&>& data);
 }
 
 #endif

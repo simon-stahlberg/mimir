@@ -23,7 +23,7 @@ namespace mimir
 {
 
 /* ColorRefinementCertificate */
-ColorRefinementCertificate::ColorRefinementCertificate(CanonicalCompressionFunction canonical_compression_function, ColorList canonical_coloring) :
+ColorRefinementCertificate::ColorRefinementCertificate(CanonicalCompressionFunction canonical_compression_function, CanonicalColoring canonical_coloring) :
     m_canonical_compression_function(std::move(canonical_compression_function)),
     m_canonical_coloring(std::move(canonical_coloring))
 {
@@ -34,7 +34,7 @@ const ColorRefinementCertificate::CanonicalCompressionFunction& ColorRefinementC
     return m_canonical_compression_function;
 }
 
-const ColorList& ColorRefinementCertificate::get_canonical_coloring() const { return m_canonical_coloring; }
+const ColorRefinementCertificate::CanonicalColoring& ColorRefinementCertificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
 bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinementCertificate& rhs)
 {
