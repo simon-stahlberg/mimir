@@ -21,6 +21,7 @@
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
+#include "mimir/common/types.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -31,11 +32,11 @@
 #include <unordered_map>
 #include <vector>
 
-namespace mimir
+namespace mimir::color_refinement
 {
 
-/// @brief `ColorRefinementCertificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
-class ColorRefinementCertificate
+/// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
+class Certificate
 {
 public:
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
@@ -43,7 +44,7 @@ public:
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
     using CanonicalColoring = std::set<Color>;
 
-    ColorRefinementCertificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color);
+    Certificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color);
 
     const IndexMap<Color>& get_vertex_to_color() const;
 
@@ -57,21 +58,21 @@ private:
     CanonicalColoring m_canonical_coloring;
 };
 
-extern bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinementCertificate& rhs);
+extern bool operator==(const Certificate& lhs, const Certificate& rhs);
 
-/// @brief `compute_color_refinement_certificate` implements the color refinement algorithm.
+/// @brief `compute_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
 /// @return the `ColorRefinementCerticate`
 template<typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    ColorRefinementCertificate compute_color_refinement_certificate(const G& graph)
+    Certificate compute_certificate(const G& graph)
 {
     // Toggle verbosity
     bool debug = false;
 
     // Decoding table.
-    auto f = ColorRefinementCertificate::CompressionFunction();
+    auto f = Certificate::CompressionFunction();
 
     // (line 1-2): Initialize vertex colors + some additional bookkeeping to work with dynamic graphs which might skip vertex indices.
     auto max_color = Color();
@@ -216,15 +217,15 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     }
 
     /* Return the certificate */
-    return ColorRefinementCertificate(std::move(f), std::move(vertex_to_color));
+    return Certificate(std::move(f), std::move(vertex_to_color));
 }
 
 }
 
 template<>
-struct std::hash<mimir::ColorRefinementCertificate>
+struct std::hash<mimir::color_refinement::Certificate>
 {
-    size_t operator()(const mimir::ColorRefinementCertificate& element) const;
+    size_t operator()(const mimir::color_refinement::Certificate& element) const;
 };
 
 #endif

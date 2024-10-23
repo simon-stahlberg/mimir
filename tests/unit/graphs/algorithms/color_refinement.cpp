@@ -43,7 +43,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
             two_triangle.add_undirected_edge(v5, v6);
             two_triangle.add_undirected_edge(v6, v4);
         }
-        auto two_triangle_certificate = compute_color_refinement_certificate(two_triangle);
+        auto two_triangle_certificate = color_refinement::compute_certificate(two_triangle);
 
         auto sixgon = StaticVertexColoredDigraph();
         {
@@ -60,7 +60,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
             sixgon.add_undirected_edge(v5, v6);
             sixgon.add_undirected_edge(v6, v1);
         }
-        auto sixgon_certificate = compute_color_refinement_certificate(sixgon);
+        auto sixgon_certificate = color_refinement::compute_certificate(sixgon);
 
         EXPECT_EQ(two_triangle_certificate, sixgon_certificate);
     }
@@ -82,7 +82,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
             two_triangle.add_undirected_edge(v5, v6);
             two_triangle.add_undirected_edge(v6, v4);
         }
-        auto two_triangle_certificate = compute_color_refinement_certificate(two_triangle);
+        auto two_triangle_certificate = color_refinement::compute_certificate(two_triangle);
 
         auto sixgon = StaticVertexColoredDigraph();
         {
@@ -99,7 +99,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
             sixgon.add_undirected_edge(v5, v6);
             sixgon.add_undirected_edge(v6, v1);
         }
-        auto sixgon_certificate = compute_color_refinement_certificate(sixgon);
+        auto sixgon_certificate = color_refinement::compute_certificate(sixgon);
 
         EXPECT_NE(two_triangle_certificate, sixgon_certificate);
     }
@@ -112,7 +112,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
             auto v2 = line_graph_1.add_vertex(Color(0));
             line_graph_1.add_undirected_edge(v1, v2);
         }
-        auto line_graph_1_certificate = compute_color_refinement_certificate(line_graph_1);
+        auto line_graph_1_certificate = color_refinement::compute_certificate(line_graph_1);
 
         auto line_graph_2 = StaticVertexColoredDigraph();
         {
@@ -120,7 +120,7 @@ TEST(MimirTests, GraphsAlgorithmsColorRefinementTest)
             auto v2 = line_graph_2.add_vertex(Color(1));
             line_graph_2.add_undirected_edge(v1, v2);
         }
-        auto line_graph_2_certificate = compute_color_refinement_certificate(line_graph_2);
+        auto line_graph_2_certificate = color_refinement::compute_certificate(line_graph_2);
 
         EXPECT_EQ(line_graph_1_certificate, line_graph_2_certificate);
     }

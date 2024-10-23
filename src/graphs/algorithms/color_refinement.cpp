@@ -19,11 +19,11 @@
 
 #include "mimir/common/hash.hpp"
 
-namespace mimir
+namespace mimir::color_refinement
 {
 
-/* ColorRefinementCertificate */
-ColorRefinementCertificate::ColorRefinementCertificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color) :
+/* Certificate */
+Certificate::Certificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color) :
     m_vertex_to_color(std::move(vertex_to_color)),
     m_canonical_compression_function(compression_function.begin(), compression_function.end()),
     m_canonical_coloring()
@@ -34,16 +34,13 @@ ColorRefinementCertificate::ColorRefinementCertificate(CompressionFunction compr
                    [](const auto& pair) { return pair.second; });
 }
 
-const IndexMap<Color>& ColorRefinementCertificate::get_vertex_to_color() const { return m_vertex_to_color; }
+const IndexMap<Color>& Certificate::get_vertex_to_color() const { return m_vertex_to_color; }
 
-const ColorRefinementCertificate::CanonicalCompressionFunction& ColorRefinementCertificate::get_canonical_compression_function() const
-{
-    return m_canonical_compression_function;
-}
+const Certificate::CanonicalCompressionFunction& Certificate::get_canonical_compression_function() const { return m_canonical_compression_function; }
 
-const ColorRefinementCertificate::CanonicalColoring& ColorRefinementCertificate::get_canonical_coloring() const { return m_canonical_coloring; }
+const Certificate::CanonicalColoring& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
-bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinementCertificate& rhs)
+bool operator==(const Certificate& lhs, const Certificate& rhs)
 {
     if (&lhs != &rhs)
     {
@@ -55,7 +52,7 @@ bool operator==(const ColorRefinementCertificate& lhs, const ColorRefinementCert
 
 }
 
-size_t std::hash<mimir::ColorRefinementCertificate>::operator()(const mimir::ColorRefinementCertificate& element) const
+size_t std::hash<mimir::color_refinement::Certificate>::operator()(const mimir::color_refinement::Certificate& element) const
 {
     return mimir::hash_combine(element.get_canonical_coloring(), element.get_canonical_compression_function());
 }
