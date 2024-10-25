@@ -23,6 +23,7 @@
 #include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
+#include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
@@ -118,6 +119,93 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices)
     return result;
 }
 
+template<size_t K, typename G>
+requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    std::tuple<typename Certificate<K>::IsomorphicTypeCompressionFunction, ColorList, ColorMap<IndexList>>
+    compute_ordered_isomorphism_types(const G& graph, Color& ref_max_color)
+{
+    const auto num_vertices = graph.get_num_vertices();
+
+    /* Temporary bookkeeping to support dynamic graphs. */
+    auto vertex_to_v = IndexMap<Index>();
+    auto v_to_vertex = IndexMap<Index>();
+    for (const auto& vertex : graph.get_vertex_indices())
+    {
+        const auto v = Index(vertex_to_v.size());
+        vertex_to_v.emplace(vertex, v);
+        v_to_vertex.emplace(v, vertex);
+    }
+
+    // Create adj matrix for fast creation of subgraph induced by k-tuple.
+    auto adj_matrix = std::vector<std::vector<bool>>(num_vertices, std::vector<bool>(num_vertices, false));
+    for (const auto& vertex1 : graph.get_vertex_indices())
+    {
+        for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<ForwardTraversal>(vertex1))
+        {
+            adj_matrix.at(vertex_to_v.at(vertex1)).at(vertex_to_v.at(vertex2)) = true;
+        }
+    }
+
+    const auto num_hashes = std::pow(num_vertices, K);
+
+    auto f = typename Certificate<K>::IsomorphicTypeCompressionFunction();
+    auto hash_to_color = ColorList(num_hashes);
+    auto color_to_hashes = ColorMap<IndexList>();
+
+    auto subgraph = nauty_wrapper::SparseGraph(K);
+    auto subgraph_coloring = ColorList();
+    auto iso_types = std::vector<std::pair<nauty_wrapper::Certificate, Index>>();
+
+    // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.
+    auto v_to_i = IndexMap<Index>();
+    for (size_t h = 0; h < num_hashes; ++h)
+    {
+        // Compress indexing of subgraph.
+        v_to_i.clear();
+        auto t = hash_to_tuple<K>(h, num_vertices);
+        for (size_t i = 0; i < K; ++i)
+        {
+            v_to_i.emplace(t[i], v_to_i.size());
+        }
+
+        // Initialize empty subgraph and coloring
+        const auto subgraph_num_vertices = v_to_i.size();
+        subgraph.clear(subgraph_num_vertices);
+        subgraph_coloring.resize(subgraph_num_vertices);
+
+        // Instantiate vertex-colored subgraph.
+        for (const auto [v1, i1] : v_to_i)
+        {
+            for (const auto [v2, i2] : v_to_i)
+            {
+                if (adj_matrix[v1][v2])
+                {
+                    subgraph.add_edge(i1, i2);
+                }
+            }
+            subgraph_coloring[i1] = get_color(graph.get_vertex(v_to_vertex.at(v1)));
+        }
+        subgraph.add_vertex_coloring(subgraph_coloring);
+
+        // Compute certificate for k-tuple h.
+        iso_types.emplace_back(subgraph.compute_certificate(), h);
+    }
+
+    // Create ordered iso-types.
+    std::sort(iso_types.begin(), iso_types.end());
+    for (const auto& [certificate, h] : iso_types)
+    {
+        auto result = f.insert(std::make_pair(certificate, ref_max_color + 1));
+        const auto new_color = result.first->second;
+        ref_max_color = new_color;
+
+        hash_to_color.at(h) = new_color;
+        color_to_hashes[new_color].push_back(h);
+    }
+
+    return std::make_tuple(std::move(f), std::move(hash_to_color), std::move(color_to_hashes));
+}
+
 /// @brief `compute_certificate` implements the k-dimensional Folklore Weisfeiler-Leman algorithm.
 /// Source: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
@@ -130,101 +218,42 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     const bool debug = false;
 
     /* Fetch some data. */
-    const auto num_vertices = graph.template get_num_vertices();
-    const auto num_hashes = std::pow(num_vertices, K);
+    const auto num_vertices = graph.get_num_vertices();
 
-    /* Bookkeeping to support dynamic graphs. */
+    /* Compute max color used in graph. */
     auto max_color = Color();
-    auto vertex_to_v = IndexMap<Index>();
-    auto v_to_vertex = IndexMap<Index>();
     for (const auto& vertex : graph.get_vertex_indices())
     {
         max_color = std::max(max_color, get_color(graph.get_vertex(vertex)));
-        const auto v = Index(vertex_to_v.size());
-        vertex_to_v.emplace(vertex, v);
-        v_to_vertex.emplace(v, vertex);
     }
-
-    /* Decoding table. */
-    auto f = typename Certificate<K>::IsomorphicTypeCompressionFunction();
-    auto g = typename Certificate<K>::ConfigurationCompressionFunction();
 
     /* Compute isomorphism types. */
-    // Create adj matrix for fast creation of subgraph induced by k-tuple.
-    auto adj_matrix = std::vector<std::vector<bool>>(num_vertices, std::vector<bool>(num_vertices, false));
-    for (const auto& vertex1 : graph.get_vertex_indices())
-    {
-        for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<ForwardTraversal>(vertex1))
-        {
-            adj_matrix.at(vertex_to_v.at(vertex1)).at(vertex_to_v.at(vertex2)) = true;
-        }
-    }
+    auto f = typename Certificate<K>::IsomorphicTypeCompressionFunction();
+    auto hash_to_color = ColorList();
+    auto color_to_hashes = ColorMap<IndexList>();
 
-    auto subgraph = nauty_wrapper::SparseGraph(K);
-    auto subgraph_coloring = ColorList();
-    auto iso_types = std::vector<std::pair<nauty_wrapper::Certificate, Index>>();
+    const auto [f_, hash_to_color_, color_to_hashes_] = compute_ordered_isomorphism_types<K>(graph, max_color);
 
-    auto L = ColorSet();
-    auto hash_to_color = ColorList(num_hashes);
-    auto color_to_hashes = ColorMap<IndexSet>();
-    {
-        // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.
-        auto v_to_i = IndexMap<Index>();
-        for (size_t h = 0; h < num_hashes; ++h)
-        {
-            // Compress indexing of subgraph.
-            v_to_i.clear();
-            auto t = hash_to_tuple<K>(h, num_vertices);
-            for (size_t i = 0; i < K; ++i)
-            {
-                v_to_i.emplace(t[i], v_to_i.size());
-            }
+    f = std::move(f_);
+    hash_to_color = std::move(hash_to_color_);
+    color_to_hashes = std::move(color_to_hashes_);
 
-            // Initialize empty subgraph and coloring
-            const auto subgraph_num_vertices = v_to_i.size();
-            subgraph.clear(subgraph_num_vertices);
-            subgraph_coloring.resize(subgraph_num_vertices);
-
-            // Instantiate vertex-colored subgraph.
-            for (const auto [v1, i1] : v_to_i)
-            {
-                for (const auto [v2, i2] : v_to_i)
-                {
-                    if (adj_matrix[v1][v2])
-                    {
-                        subgraph.add_edge(i1, i2);
-                    }
-                }
-                subgraph_coloring[i1] = get_color(graph.get_vertex(v_to_vertex.at(v1)));
-            }
-            subgraph.add_vertex_coloring(subgraph_coloring);
-
-            // Compute certificate for k-tuple h.
-            iso_types.emplace_back(subgraph.compute_certificate(), h);
-        }
-
-        // Create ordered iso-types.
-        std::sort(iso_types.begin(), iso_types.end());
-        for (const auto& [certificate, h] : iso_types)
-        {
-            auto result = f.insert(std::make_pair(certificate, max_color + 1));
-            const auto new_color = result.first->second;
-            max_color = new_color;
-
-            L.insert(new_color);
-
-            hash_to_color.at(h) = new_color;
-            color_to_hashes[new_color].insert(h);
-        }
-    }
+    /* Initialize work list of color. */
+    auto L = ColorSet(hash_to_color.begin(), hash_to_color.end());
 
     /* Refine colors of k-tuples. */
+    auto g = typename Certificate<K>::ConfigurationCompressionFunction();
     auto M = std::vector<std::pair<Index, ColorArray<K>>>();
+    auto M_replaced = std::vector<std::tuple<Color, std::vector<ColorArray<K>>, Index>>();
     // (line 3-18): subroutine to find stable coloring
     while (!L.empty())
     {
         if (debug)
             std::cout << "L: " << L << std::endl;
+
+        // Clear data structures that are reused.
+        M.clear();
+        M_replaced.clear();
 
         {
             // (lines 4-14): Subroutine to fill multiset
@@ -257,30 +286,12 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         // (line 15): Perform radix sort of M
         std::sort(M.begin(), M.end());
 
+        if (debug)
+            std::cout << "M: " << M << std::endl;
+
         // (line 16): Scan M and replace tuples (vec{v},c_1^1,...,c_k^1,...,vec{v},c_1^r,...,c_k^r) with single tuple
         // (C(vec{v}),(c_1^1,...,c_k^1),...,(c_1^r,...,c_k^r))
-        auto M_replaced = std::vector<std::tuple<Color, std::vector<ColorArray<K>>, Index>>();
-        {
-            // Subroutine to construct signatures.
-            auto it = M.begin();
-            while (it != M.end())
-            {
-                auto signature = std::vector<ColorArray<K>>();
-                const auto v_hash = it->first;
-
-                auto it2 = it;
-                while (it2 != M.end() && it2->first == v_hash)
-                {
-                    signature.push_back(it2->second);
-                    ++it2;
-                }
-                it = it2;
-
-                // Ensure canonical signature.
-                assert(std::is_sorted(signature.begin(), signature.end()));
-                M_replaced.emplace_back(hash_to_color.at(v_hash), std::move(signature), v_hash);
-            }
-        }
+        color_refinement::replace_tuples(M, hash_to_color, M_replaced);
 
         // (line 17): Perform radix sort of M
         std::sort(M_replaced.begin(), M_replaced.end());
@@ -288,76 +299,8 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         if (debug)
             std::cout << "M_replaced: " << M_replaced << std::endl;
 
-        // (line 18): Add new colors to work list
-        color_to_hashes.clear();
-        L.clear();
-        {
-            // Subroutine to split color classes.
-            auto it = M_replaced.begin();
-            while (it != M_replaced.end())
-            {
-                const auto old_color = std::get<0>(*it);
-
-                /* Check whether old color has split. */
-                auto has_split = false;
-                auto it2 = it;
-                {
-                    // Subroutine to detect split
-                    const auto& signature = std::get<1>(*it);
-                    while (it2 != M_replaced.end() && old_color == std::get<0>(*it2))
-                    {
-                        ++it2;
-
-                        if (signature != std::get<1>(*it2))
-                        {
-                            has_split = true;
-                            break;
-                        }
-                    }
-                }
-                if (has_split)
-                {
-                    /* Split old_color class. */
-                    {
-                        // Subroutine to split color class
-                        while (it2 != M_replaced.end() && old_color == std::get<0>(*it2))
-                        {
-                            // Determine new color for (old_color, signature)
-                            const auto& signature = std::get<1>(*it2);
-                            const auto new_color = ++max_color;
-
-                            // Add new color to work list.
-                            L.insert(new_color);
-
-                            // Add mapping to decoding table
-                            const auto result = g.emplace(std::make_pair(old_color, signature), new_color);
-                            // Ensure that we are not overwritting table entries.
-                            assert(result.second);
-
-                            {
-                                // Subroutine to assign new color to vertices with same signature.
-                                while (it2 != M_replaced.end() && old_color == std::get<0>(*it2) && signature == std::get<1>(*it2))
-                                {
-                                    auto h = std::get<2>(*it2);
-                                    hash_to_color[h] = new_color;
-                                    color_to_hashes[new_color].insert(h);
-                                    ++it2;
-                                }
-                            }
-
-                            // Ensure that we either finished or entered the next old color class.
-                            assert(it2 == M_replaced.end() || old_color != std::get<0>(*it2) || signature != std::get<1>(*it2));
-                        }
-                    }
-                }
-
-                /* Move to next old color class or the end. */
-                it = it2;
-            }
-        }
-
-        /* (line 15): Clear multiset */
-        M.clear();
+        // (line 18): Split color classes
+        color_refinement::split_color_classes(M_replaced, g, max_color, hash_to_color, color_to_hashes, L);
     }
 
     /* Return the certificate */
