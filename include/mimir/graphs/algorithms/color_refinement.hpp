@@ -27,6 +27,7 @@
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
+#include <cassert>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -69,7 +70,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     Certificate compute_certificate(const G& graph)
 {
     // Toggle verbosity
-    bool debug = false;
+    const bool debug = false;
 
     // Decoding table.
     auto f = Certificate::CompressionFunction();
@@ -87,7 +88,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         color_to_vertices[get_color(vertex)].insert(vertex.get_index());
         L.insert(get_color(vertex));
     }
-    auto next_color = max_color + 1;
 
     // (line 1-2): Initialize multi set.
     auto M = std::vector<std::pair<Index, Color>>();
@@ -97,14 +97,16 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         if (debug)
             std::cout << "L: " << L << std::endl;
 
-        // (lines 4-11): Create multiset of colors of neighbors of each vertex whose color must be updated.
-        for (const auto& color : L)
         {
-            for (const auto& vertex : color_to_vertices.at(color))
+            // (lines 4-11): Subroutine to fill multiset of colors of neighbors of each vertex whose color must be updated.
+            for (const auto& color : L)
             {
-                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(vertex))
+                for (const auto& vertex : color_to_vertices.at(color))
                 {
-                    M.emplace_back(vertex, vertex_to_color.at(outgoing_vertex.get_index()));
+                    for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(vertex))
+                    {
+                        M.emplace_back(vertex, vertex_to_color.at(outgoing_vertex.get_index()));
+                    }
                 }
             }
         }
@@ -123,7 +125,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             while (it != M.end())
             {
                 auto signature = ColorList();
-                auto vertex = it->first;
+                const auto vertex = it->first;
 
                 auto it2 = it;
                 while (it2 != M.end() && it2->first == vertex)
@@ -180,13 +182,13 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
                         {
                             // Determine new color for (old_color, signature)
                             const auto& signature = std::get<1>(*it2);
-                            auto new_color = next_color++;
+                            const auto new_color = ++max_color;
 
                             // Add new color to work list.
                             L.insert(new_color);
 
                             // Add mapping to decoding table
-                            auto result = f.emplace(std::make_pair(old_color, signature), new_color);
+                            const auto result = f.emplace(std::make_pair(old_color, signature), new_color);
                             // Ensure that we are not overwritting table entries.
                             assert(result.second);
 
@@ -201,8 +203,8 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
                                 }
                             }
 
-                            // Ensure that we either finished or entered the next old color class.
-                            assert(it2 == M_replaced.end() || old_color != std::get<0>(*it2));
+                            // Ensure that we either finished or entered the next color class.
+                            assert(it2 == M_replaced.end() || old_color != std::get<0>(*it2) || signature != std::get<1>(*it2));
                         }
                     }
                 }

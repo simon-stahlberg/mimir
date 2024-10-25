@@ -21,6 +21,7 @@
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
 
+#include <array>
 #include <cstdint>
 #include <limits>
 #include <unordered_map>
@@ -44,6 +45,8 @@ using DegreeMap = std::unordered_map<VertexIndex, Degree>;
 
 using Color = uint32_t;
 using ColorList = std::vector<Color>;
+template<size_t K>
+using ColorArray = std::array<Color, K>;
 using ColorSet = std::unordered_set<Color>;
 template<typename T>
 using ColorMap = std::unordered_map<Color, T>;

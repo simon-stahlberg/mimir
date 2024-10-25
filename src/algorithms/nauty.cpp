@@ -36,15 +36,6 @@ Certificate::Certificate(std::string nauty_certificate, mimir::ColorList canonic
 {
 }
 
-bool Certificate::operator==(const Certificate& other) const
-{
-    if (this != &other)
-    {
-        return (m_canonical_coloring == other.m_canonical_coloring) && (m_canonical_graph == other.m_canonical_graph);
-    }
-    return true;
-}
-
 const std::string& Certificate::get_canonical_graph() const { return m_canonical_graph; }
 
 const mimir::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
@@ -54,6 +45,28 @@ size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Ce
 size_t UniqueCertificateSharedPtrEqualTo::operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const
 {
     return *lhs == *rhs;
+}
+
+bool operator==(const Certificate& lhs, const Certificate& rhs)
+{
+    if (&lhs != &rhs)
+    {
+        return (lhs.get_canonical_coloring() == rhs.get_canonical_coloring()) && (lhs.get_canonical_graph() == rhs.get_canonical_graph());
+    }
+    return true;
+}
+
+bool operator<(const Certificate& lhs, const Certificate& rhs)
+{
+    if (&lhs != &rhs)
+    {
+        if (lhs.get_canonical_coloring() == rhs.get_canonical_coloring())
+        {
+            return lhs.get_canonical_graph() < rhs.get_canonical_graph();
+        }
+        return lhs.get_canonical_coloring() < rhs.get_canonical_coloring();
+    }
+    return false;
 }
 
 /* Graph */

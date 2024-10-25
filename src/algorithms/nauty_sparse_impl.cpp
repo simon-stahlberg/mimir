@@ -83,7 +83,7 @@ SparseGraphImpl::SparseGraphImpl(size_t num_vertices) :
     c_(n_),
     adj_matrix_(c_ * c_, false),
     use_default_ptn_(true),
-    canon_coloring_(0, n_),
+    canon_coloring_(n_, 0),
     lab_(c_),
     ptn_(c_),
     canon_graph_repr_(),
@@ -98,7 +98,7 @@ SparseGraphImpl::SparseGraphImpl(const SparseGraphImpl& other) :
     c_(other.c_),
     adj_matrix_(other.adj_matrix_),
     use_default_ptn_(other.use_default_ptn_),
-    canon_coloring_(0, other.n_),
+    canon_coloring_(other.n_, 0),
     lab_(other.lab_),
     ptn_(other.ptn_),
     canon_graph_repr_(),
@@ -284,7 +284,7 @@ void SparseGraphImpl::clear(size_t num_vertices)
 
         n_ = num_vertices;
         c_ = num_vertices;
-        canon_coloring_ = mimir::ColorList(0, n_);
+        canon_coloring_ = mimir::ColorList(n_, 0);
         lab_ = std::vector<int>(n_);
         ptn_ = std::vector<int>(n_);
         adj_matrix_ = std::vector<bool>(n_ * n_, false);

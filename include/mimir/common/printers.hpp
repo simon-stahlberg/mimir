@@ -18,6 +18,7 @@
 #ifndef MIMIR_COMMON_PRINTERS_HPP_
 #define MIMIR_COMMON_PRINTERS_HPP_
 
+#include <array>
 #include <memory>
 #include <ostream>
 #include <set>
@@ -31,6 +32,9 @@ namespace mimir
 /**
  * Forward declarations
  */
+
+template<typename T, size_t K>
+std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr);
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<const T*>& vec);
@@ -56,6 +60,20 @@ std::ostream& operator<<(std::ostream& os, const std::set<T>& set);
 /**
  * Definitions
  */
+
+template<typename T, size_t K>
+std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr)
+{
+    os << "<";
+    for (size_t i = 0; i < arr.size(); ++i)
+    {
+        if (i != 0)
+            os << ", ";
+        os << arr[i];
+    }
+    os << ">";
+    return os;
+}
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<const T*>& vec)

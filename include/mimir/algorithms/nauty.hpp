@@ -43,11 +43,12 @@ private:
 public:
     Certificate(std::string canonical_graph, mimir::ColorList canonical_coloring);
 
-    bool operator==(const Certificate& other) const;
-
     const std::string& get_canonical_graph() const;
     const mimir::ColorList& get_canonical_coloring() const;
 };
+
+extern bool operator==(const Certificate& lhs, const Certificate& rhs);
+extern bool operator<(const Certificate& lhs, const Certificate& rhs);
 
 struct UniqueCertificateSharedPtrHash
 {

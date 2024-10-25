@@ -54,7 +54,7 @@ DenseGraphImpl::DenseGraphImpl(size_t num_vertices) :
     m_(SETWORDSNEEDED(n_)),
     graph_(nullptr),
     use_default_ptn_(true),
-    canon_coloring_(0, n_),
+    canon_coloring_(n_, 0),
     lab_(n_),
     ptn_(n_),
     canon_graph_(nullptr)
@@ -241,7 +241,7 @@ void DenseGraphImpl::clear(size_t num_vertices)
         n_ = num_vertices;
         m_ = SETWORDSNEEDED(num_vertices);
         c_ = num_vertices;
-        canon_coloring_ = mimir::ColorList(0, n_);
+        canon_coloring_ = mimir::ColorList(n_, 0);
         lab_ = std::vector<int>(n_);
         ptn_ = std::vector<int>(n_);
 

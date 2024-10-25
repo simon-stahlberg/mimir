@@ -30,6 +30,7 @@ add_gtest(formalism_remove_types_test                      "formalism/translator
 add_gtest(formalism_remove_universal_quantifiers_test      "formalism/translators/remove_universal_quantifiers.cpp")
 
 add_gtest(graphs_algorithms_color_refinement_test          "graphs/algorithms/color_refinement.cpp")
+add_gtest(graphs_algorithms_folklore_weisfeiler_leman_test "graphs/algorithms/folklore_weisfeiler_leman.cpp")
 add_gtest(graphs_static_graph_boost_adapter_test           "graphs/static_graph_boost_adapter.cpp")
 add_gtest(graphs_dynamic_graph_test                        "graphs/dynamic_graph.cpp")
 add_gtest(graphs_object_graph_test                         "graphs/object_graph.cpp")
