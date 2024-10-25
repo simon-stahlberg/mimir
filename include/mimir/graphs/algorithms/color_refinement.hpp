@@ -45,15 +45,15 @@ public:
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
     using CanonicalColoring = std::set<Color>;
 
-    Certificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color);
+    Certificate(CompressionFunction compression_function, ColorList hash_to_color);
 
-    const IndexMap<Color>& get_vertex_to_color() const;
+    const ColorList& get_hash_to_color() const;
 
     const CanonicalCompressionFunction& get_canonical_compression_function() const;
     const CanonicalColoring& get_canonical_coloring() const;
 
 private:
-    IndexMap<Color> m_vertex_to_color;
+    ColorList m_hash_to_color;
 
     CanonicalCompressionFunction m_canonical_compression_function;
     CanonicalColoring m_canonical_coloring;
@@ -61,17 +61,9 @@ private:
 
 extern bool operator==(const Certificate& lhs, const Certificate& rhs);
 
-template<typename T>
-concept IsIndexToColorMapping = requires(T a, Index i)
-{
-    {
-        a.at(i)
-        } -> std::convertible_to<Color>;
-};
-
-template<typename ColorType, IsIndexToColorMapping IndexToColor>
+template<typename ColorType>
 void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
-                    const IndexToColor& index_to_color,
+                    const ColorList& index_to_color,
                     std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& out_M_replaced)
 {
     // Subroutine to construct signatures.
@@ -107,11 +99,11 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
 /// @param ref_index_to_color
 /// @param out_color_to_indices
 /// @param out_L
-template<typename ColorType, IsIndexToColorMapping IndexToColor>
+template<typename ColorType>
 void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
                          std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
                          Color& ref_max_color,
-                         IndexToColor& ref_index_to_color,
+                         ColorList& ref_index_to_color,
                          ColorMap<IndexList>& out_color_to_indices,
                          ColorSet& out_L)
 {
@@ -185,7 +177,7 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
 /// @brief `compute_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
-/// @return the `ColorRefinementCerticate`
+/// @return the `Certicate`
 template<typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
     Certificate compute_certificate(const G& graph)
@@ -193,24 +185,30 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     // Toggle verbosity
     const bool debug = false;
 
-    // Decoding table.
-    auto f = Certificate::CompressionFunction();
+    /* Fetch some data. */
+    const auto num_vertices = graph.get_num_vertices();
 
-    // (line 1-2): Initialize vertex colors + some additional bookkeeping to work with dynamic graphs which might skip vertex indices.
+    // (line 1-2): Initialize vertex colors and perfect hashes for vertex indices.
+    auto vertex_to_hash = IndexMap<Index>();
     auto max_color = Color();
-    auto vertex_to_color = IndexMap<Color>();
-    auto color_to_vertices = ColorMap<IndexList>();
+    auto hash_to_color = ColorList(num_vertices);
+    auto color_to_hashes = ColorMap<IndexList>();
     // (line 1-2): Initialize work list.
     auto L = ColorSet();
     for (const auto& vertex : graph.get_vertices())
     {
-        max_color = std::max(max_color, get_color(vertex));
-        vertex_to_color.emplace(vertex.get_index(), get_color(vertex));
-        color_to_vertices[get_color(vertex)].push_back(vertex.get_index());
-        L.insert(get_color(vertex));
+        const auto hash = vertex_to_hash.size();
+        vertex_to_hash.emplace(vertex.get_index(), hash);
+
+        const auto color = get_color(vertex);
+        max_color = std::max(max_color, color);
+        hash_to_color[hash] = color;
+        color_to_hashes[color].push_back(hash);
+        L.insert(color);
     }
 
     // (line 1-2): Initialize multi set.
+    auto f = Certificate::CompressionFunction();
     auto M = std::vector<std::pair<Index, Color>>();
     auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
@@ -227,11 +225,11 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             // (lines 4-11): Subroutine to fill multiset of colors of neighbors of each vertex whose color must be updated.
             for (const auto& color : L)
             {
-                for (const auto& vertex : color_to_vertices.at(color))
+                for (const auto& vertex : color_to_hashes.at(color))
                 {
                     for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(vertex))
                     {
-                        M.emplace_back(vertex, vertex_to_color.at(outgoing_vertex.get_index()));
+                        M.emplace_back(vertex, hash_to_color.at(vertex_to_hash.at(outgoing_vertex.get_index())));
                     }
                 }
             }
@@ -244,7 +242,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             std::cout << "M: " << M << std::endl;
 
         // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v) to construct signatures.
-        replace_tuples(M, vertex_to_color, M_replaced);
+        replace_tuples(M, hash_to_color, M_replaced);
 
         // (line 14): Perform radix sort of M by old color and neighborhood colors (TODO radix sort)
         std::sort(M_replaced.begin(), M_replaced.end());
@@ -253,11 +251,11 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             std::cout << "M_replaced: " << M_replaced << std::endl;
 
         /* (line 15): Add new colors to work list */
-        split_color_classes(M_replaced, f, max_color, vertex_to_color, color_to_vertices, L);
+        split_color_classes(M_replaced, f, max_color, hash_to_color, color_to_hashes, L);
     }
 
     /* Return the certificate */
-    return Certificate(std::move(f), std::move(vertex_to_color));
+    return Certificate(std::move(f), std::move(hash_to_color));
 }
 }
 

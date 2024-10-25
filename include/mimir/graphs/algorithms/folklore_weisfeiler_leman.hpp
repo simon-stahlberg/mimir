@@ -57,7 +57,8 @@ public:
     Certificate(IsomorphicTypeCompressionFunction f, ConfigurationCompressionFunction g, ColorList hash_to_color) :
         m_hash_to_color(std::move(hash_to_color)),
         m_f(f.begin(), f.end()),
-        m_g(g.begin(), g.end())
+        m_g(g.begin(), g.end()),
+        m_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
     {
     }
 
@@ -210,9 +211,10 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 /// Source: https://arxiv.org/pdf/1907.09582
 /// @tparam G is the vertex-colored graph.
 /// @tparam K is the dimensionality.
-/// @return
+/// @return the `Certicate`
 template<size_t K, typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> Certificate<K> compute_certificate(const G& graph)
+requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+    Certificate<K> compute_certificate(const G& graph)
 {
     // Toggle verbosity
     const bool debug = false;

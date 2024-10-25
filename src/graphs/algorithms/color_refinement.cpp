@@ -23,18 +23,14 @@ namespace mimir::color_refinement
 {
 
 /* Certificate */
-Certificate::Certificate(CompressionFunction compression_function, IndexMap<Color> vertex_to_color) :
-    m_vertex_to_color(std::move(vertex_to_color)),
+Certificate::Certificate(CompressionFunction compression_function, ColorList hash_to_color) :
+    m_hash_to_color(std::move(hash_to_color)),
     m_canonical_compression_function(compression_function.begin(), compression_function.end()),
-    m_canonical_coloring()
+    m_canonical_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
 {
-    std::transform(std::begin(m_vertex_to_color),
-                   std::end(m_vertex_to_color),
-                   std::inserter(m_canonical_coloring, m_canonical_coloring.end()),
-                   [](const auto& pair) { return pair.second; });
 }
 
-const IndexMap<Color>& Certificate::get_vertex_to_color() const { return m_vertex_to_color; }
+const ColorList& Certificate::get_hash_to_color() const { return m_hash_to_color; }
 
 const Certificate::CanonicalCompressionFunction& Certificate::get_canonical_compression_function() const { return m_canonical_compression_function; }
 
