@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple)
 {
     os << "<";
     std::size_t n = 0;
-    std::apply([&os, &tuple, &n](const Ts&... args) { ((os << (n++ == 0 ? "" : ", ") << args), ...); }, tuple);
+    std::apply([&os, &n](const Ts&... args) { ((os << (n++ == 0 ? "" : ", ") << args), ...); }, tuple);
     os << ">";
     return os;
 }

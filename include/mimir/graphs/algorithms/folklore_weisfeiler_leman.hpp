@@ -152,7 +152,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     /* Compute isomorphism types. */
     // Create adj matrix for fast creation of subgraph induced by k-tuple.
     auto adj_matrix = std::vector<std::vector<bool>>(num_vertices, std::vector<bool>(num_vertices, false));
-    for (const auto& vertex1 : graph.template get_vertex_indices())
+    for (const auto& vertex1 : graph.get_vertex_indices())
     {
         for (const auto& vertex2 : graph.template get_adjacent_vertex_indices<ForwardTraversal>(vertex1))
         {
