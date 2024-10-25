@@ -314,7 +314,12 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 template<size_t K>
 struct std::hash<mimir::kfwl::Certificate<K>>
 {
-    size_t operator()(const mimir::kfwl::Certificate<K>& element) const;
+    size_t operator()(const mimir::kfwl::Certificate<K>& element) const
+    {
+        return mimir::hash_combine(element.get_canonical_coloring(),
+                                   element.get_canonical_isomorphic_type_compression_function(),
+                                   element.get_canonical_configuration_compression_function());
+    }
 };
 
 #endif
