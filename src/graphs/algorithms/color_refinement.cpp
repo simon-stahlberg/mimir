@@ -23,16 +23,16 @@ namespace mimir::color_refinement
 {
 
 /* Certificate */
-Certificate::Certificate(CompressionFunction compression_function, ColorList hash_to_color) :
+Certificate::Certificate(CompressionFunction f, ColorList hash_to_color) :
     m_hash_to_color(std::move(hash_to_color)),
-    m_canonical_compression_function(compression_function.begin(), compression_function.end()),
+    m_f(f.begin(), f.end()),
     m_canonical_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
 {
 }
 
 const ColorList& Certificate::get_hash_to_color() const { return m_hash_to_color; }
 
-const Certificate::CanonicalCompressionFunction& Certificate::get_canonical_compression_function() const { return m_canonical_compression_function; }
+const Certificate::CanonicalCompressionFunction& Certificate::get_canonical_compression_function() const { return m_f; }
 
 const Certificate::CanonicalColoring& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 

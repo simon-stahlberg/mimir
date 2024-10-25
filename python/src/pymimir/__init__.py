@@ -168,6 +168,10 @@ from _pymimir import (
 
 # Graphs (classes)
 from _pymimir import (
+    CertificateColorRefinement,
+    Certificate2FWL,
+    Certificate3FWL,
+    Certificate4FWL,
     ColoredVertex,
     ColorFunction,
     EmptyVertex,
@@ -186,6 +190,10 @@ from _pymimir import (
 
 # Graphs (free functions)
 from _pymimir import (
+    compute_certificate_color_refinement,
+    compute_certificate_2fwl,
+    compute_certificate_3fwl,
+    compute_certificate_4fwl,
     create_object_graph
 )
 

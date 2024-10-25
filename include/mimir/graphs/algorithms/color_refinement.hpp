@@ -45,7 +45,7 @@ public:
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
     using CanonicalColoring = std::set<Color>;
 
-    Certificate(CompressionFunction compression_function, ColorList hash_to_color);
+    Certificate(CompressionFunction f, ColorList hash_to_color);
 
     const ColorList& get_hash_to_color() const;
 
@@ -55,15 +55,20 @@ public:
 private:
     ColorList m_hash_to_color;
 
-    CanonicalCompressionFunction m_canonical_compression_function;
+    CanonicalCompressionFunction m_f;
     CanonicalColoring m_canonical_coloring;
 };
 
 extern bool operator==(const Certificate& lhs, const Certificate& rhs);
 
+/// @brief Replace tuples by grouping colors with same hash.
+/// @tparam ColorType
+/// @param M
+/// @param hash_to_color
+/// @param out_M_replaced
 template<typename ColorType>
 void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
-                    const ColorList& index_to_color,
+                    const ColorList& hash_to_color,
                     std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& out_M_replaced)
 {
     // Subroutine to construct signatures.
@@ -71,10 +76,10 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
     while (it != M.end())
     {
         auto signature = std::vector<ColorType>();
-        const auto vertex = it->first;
+        const auto hash = it->first;
 
         auto it2 = it;
-        while (it2 != M.end() && it2->first == vertex)
+        while (it2 != M.end() && it2->first == hash)
         {
             signature.push_back(it2->second);
             ++it2;
@@ -83,31 +88,27 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
 
         // Ensure canonical signature.
         assert(std::is_sorted(signature.begin(), signature.end()));
-        out_M_replaced.emplace_back(index_to_color.at(vertex), std::move(signature), vertex);
+        out_M_replaced.emplace_back(hash_to_color.at(hash), std::move(signature), hash);
     }
 }
 
 /// @brief Split the color classes into new colors.
 /// @tparam ColorType is Color for color-refinement and ColorArray<K> for k-FWL.
-/// @tparam IndexToColor is a mapping from index to color where index is vertex for color-refinement or hash of k-tuple for k-FWL.
-/// TODO: template parameters can go if we make the following changes:
-/// 1) color refinement must map vertices to indexing schema 0,1,2,...
-/// 2) k-FWL must compress colors of k-tuples.
 /// @param M_replaced
 /// @param ref_f
 /// @param ref_max_color
-/// @param ref_index_to_color
-/// @param out_color_to_indices
+/// @param ref_hash_to_color
+/// @param out_color_to_hashes
 /// @param out_L
 template<typename ColorType>
 void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
                          std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
                          Color& ref_max_color,
-                         ColorList& ref_index_to_color,
-                         ColorMap<IndexList>& out_color_to_indices,
+                         ColorList& ref_hash_to_color,
+                         ColorMap<IndexList>& out_color_to_hashes,
                          ColorSet& out_L)
 {
-    out_color_to_indices.clear();
+    out_color_to_hashes.clear();
     out_L.clear();
 
     // Subroutine to split color classes.
@@ -156,9 +157,9 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
                         // Subroutine to assign new color to vertices with same signature.
                         while (it2 != M_replaced.end() && old_color == std::get<0>(*it2) && signature == std::get<1>(*it2))
                         {
-                            auto vertex = std::get<2>(*it2);
-                            ref_index_to_color[vertex] = new_color;
-                            out_color_to_indices[new_color].push_back(vertex);
+                            auto hash = std::get<2>(*it2);
+                            ref_hash_to_color[hash] = new_color;
+                            out_color_to_hashes[new_color].push_back(hash);
                             ++it2;
                         }
                     }
@@ -229,7 +230,9 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
                 {
                     for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(vertex))
                     {
-                        M.emplace_back(vertex, hash_to_color.at(vertex_to_hash.at(outgoing_vertex.get_index())));
+                        const auto hash = vertex_to_hash.at(outgoing_vertex.get_index());
+
+                        M.emplace_back(vertex, hash_to_color.at(hash));
                     }
                 }
             }

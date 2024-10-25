@@ -54,24 +54,24 @@ public:
 
     using CanonicalColoring = std::set<Color>;
 
-    Certificate(IsomorphicTypeCompressionFunction f, ConfigurationCompressionFunction g, ColorList hash_to_color) :
+    Certificate(IsomorphicTypeCompressionFunction f1, ConfigurationCompressionFunction f2, ColorList hash_to_color) :
         m_hash_to_color(std::move(hash_to_color)),
-        m_f(f.begin(), f.end()),
-        m_g(g.begin(), g.end()),
-        m_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
+        m_f1(f1.begin(), f1.end()),
+        m_f2(f2.begin(), f2.end()),
+        m_coloring_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
     {
     }
 
-    const CanonicalIsomorphicTypeCompressionFunction& get_canonical_isomorphic_type_compression_function() const { return m_f; }
-    const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const { return m_g; }
-    const CanonicalColoring& get_canonical_coloring() const { return m_coloring; }
+    const CanonicalIsomorphicTypeCompressionFunction& get_canonical_isomorphic_type_compression_function() const { return m_f1; }
+    const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const { return m_f2; }
+    const CanonicalColoring& get_canonical_coloring() const { return m_coloring_coloring; }
 
 private:
     ColorList m_hash_to_color;
 
-    CanonicalIsomorphicTypeCompressionFunction m_f;
-    CanonicalConfigurationCompressionFunction m_g;
-    CanonicalColoring m_coloring;
+    CanonicalIsomorphicTypeCompressionFunction m_f1;
+    CanonicalConfigurationCompressionFunction m_f2;
+    CanonicalColoring m_coloring_coloring;
 };
 
 template<size_t K>
@@ -149,7 +149,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
     const auto num_hashes = std::pow(num_vertices, K);
 
-    auto f = typename Certificate<K>::IsomorphicTypeCompressionFunction();
+    auto f1 = typename Certificate<K>::IsomorphicTypeCompressionFunction();
     auto hash_to_color = ColorList(num_hashes);
     auto color_to_hashes = ColorMap<IndexList>();
 
@@ -159,11 +159,11 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
     // Subroutine to compute (ordered) isomorphic types of all k-tuples of vertices.
     auto v_to_i = IndexMap<Index>();
-    for (size_t h = 0; h < num_hashes; ++h)
+    for (size_t hash = 0; hash < num_hashes; ++hash)
     {
         // Compress indexing of subgraph.
         v_to_i.clear();
-        auto t = hash_to_tuple<K>(h, num_vertices);
+        auto t = hash_to_tuple<K>(hash, num_vertices);
         for (size_t i = 0; i < K; ++i)
         {
             v_to_i.emplace(t[i], v_to_i.size());
@@ -188,23 +188,23 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         }
         subgraph.add_vertex_coloring(subgraph_coloring);
 
-        // Compute certificate for k-tuple h.
-        iso_types.emplace_back(subgraph.compute_certificate(), h);
+        // Compute certificate for k-tuple hash.
+        iso_types.emplace_back(subgraph.compute_certificate(), hash);
     }
 
     // Create ordered iso-types.
     std::sort(iso_types.begin(), iso_types.end());
-    for (const auto& [certificate, h] : iso_types)
+    for (const auto& [certificate, hash] : iso_types)
     {
-        auto result = f.insert(std::make_pair(certificate, ref_max_color + 1));
+        auto result = f1.insert(std::make_pair(certificate, ref_max_color + 1));
         const auto new_color = result.first->second;
         ref_max_color = new_color;
 
-        hash_to_color.at(h) = new_color;
-        color_to_hashes[new_color].push_back(h);
+        hash_to_color.at(hash) = new_color;
+        color_to_hashes[new_color].push_back(hash);
     }
 
-    return std::make_tuple(std::move(f), std::move(hash_to_color), std::move(color_to_hashes));
+    return std::make_tuple(std::move(f1), std::move(hash_to_color), std::move(color_to_hashes));
 }
 
 /// @brief `compute_certificate` implements the k-dimensional Folklore Weisfeiler-Leman algorithm.
@@ -230,13 +230,13 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     }
 
     /* Compute isomorphism types. */
-    auto f = typename Certificate<K>::IsomorphicTypeCompressionFunction();
+    auto f1 = typename Certificate<K>::IsomorphicTypeCompressionFunction();
     auto hash_to_color = ColorList();
     auto color_to_hashes = ColorMap<IndexList>();
 
-    const auto [f_, hash_to_color_, color_to_hashes_] = compute_ordered_isomorphism_types<K>(graph, max_color);
+    const auto [f1_, hash_to_color_, color_to_hashes_] = compute_ordered_isomorphism_types<K>(graph, max_color);
 
-    f = std::move(f_);
+    f1 = std::move(f1_);
     hash_to_color = std::move(hash_to_color_);
     color_to_hashes = std::move(color_to_hashes_);
 
@@ -244,7 +244,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     auto L = ColorSet(hash_to_color.begin(), hash_to_color.end());
 
     /* Refine colors of k-tuples. */
-    auto g = typename Certificate<K>::ConfigurationCompressionFunction();
+    auto f2 = typename Certificate<K>::ConfigurationCompressionFunction();
     auto M = std::vector<std::pair<Index, ColorArray<K>>>();
     auto M_replaced = std::vector<std::tuple<Color, std::vector<ColorArray<K>>, Index>>();
     // (line 3-18): subroutine to find stable coloring
@@ -261,22 +261,22 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             // (lines 4-14): Subroutine to fill multiset
             for (const auto& color : L)
             {
-                for (const auto& h : color_to_hashes.at(color))
+                for (const auto& hash : color_to_hashes.at(color))
                 {
-                    const auto tuple = hash_to_tuple<K>(h, num_vertices);
+                    const auto tuple = hash_to_tuple<K>(hash, num_vertices);
 
                     for (size_t j = 0; j < K; ++j)
                     {
                         for (size_t u = 0; u < num_vertices; ++u)
                         {
-                            auto v_tuple = tuple;
-                            v_tuple[j] = u;
-                            const auto v_hash = tuple_to_hash(v_tuple, num_vertices);
+                            auto tmp_tuple = tuple;
+                            tmp_tuple[j] = u;
+                            const auto v_hash = tuple_to_hash(tmp_tuple, num_vertices);
                             auto k_coloring = ColorArray<K>();
                             for (size_t i = 0; i < K; ++i)
                             {
-                                v_tuple[i] = u;
-                                k_coloring.at(i) = hash_to_color.at(tuple_to_hash<K>(v_tuple, num_vertices));
+                                tmp_tuple[i] = u;
+                                k_coloring.at(i) = hash_to_color.at(tuple_to_hash<K>(tmp_tuple, num_vertices));
                             }
                             M.emplace_back(v_hash, std::move(k_coloring));
                         }
@@ -302,11 +302,11 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             std::cout << "M_replaced: " << M_replaced << std::endl;
 
         // (line 18): Split color classes
-        color_refinement::split_color_classes(M_replaced, g, max_color, hash_to_color, color_to_hashes, L);
+        color_refinement::split_color_classes(M_replaced, f2, max_color, hash_to_color, color_to_hashes, L);
     }
 
     /* Return the certificate */
-    return Certificate(std::move(f), std::move(g), std::move(hash_to_color));
+    return Certificate(std::move(f1), std::move(f2), std::move(hash_to_color));
 }
 
 }
