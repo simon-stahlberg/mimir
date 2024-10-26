@@ -311,6 +311,19 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
 }
 
+namespace mimir
+{
+template<size_t K>
+std::ostream& operator<<(std::ostream& out, const kfwl::Certificate<K>& element)
+{
+    out << "Certificate" << K << "FWL("
+        << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+        << "canonical_isomorphic_type_compression_function=" << element.get_canonical_isomorphic_type_compression_function() << ", "
+        << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
+    return out;
+}
+}
+
 template<size_t K>
 struct std::hash<mimir::kfwl::Certificate<K>>
 {

@@ -149,7 +149,7 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
                     out_L.insert(new_color);
 
                     // Add mapping to decoding table
-                    const auto result = ref_f.emplace(std::make_pair(old_color, signature), new_color);
+                    [[maybe_unused]] const auto result = ref_f.emplace(std::make_pair(old_color, signature), new_color);
                     // Ensure that we are not overwritting table entries.
                     assert(result.second);
 
@@ -260,6 +260,11 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     /* Return the certificate */
     return Certificate(std::move(f), std::move(hash_to_color));
 }
+}
+
+namespace mimir
+{
+extern std::ostream& operator<<(std::ostream& out, const color_refinement::Certificate& element);
 }
 
 template<>

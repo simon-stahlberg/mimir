@@ -2324,7 +2324,15 @@ void init_pymimir(py::module_& m)
     py::class_<color_refinement::Certificate>(m, "CertificateColorRefinement")
         .def("__eq__", [](const color_refinement::Certificate& lhs, const color_refinement::Certificate& rhs) { return lhs == rhs; })
         .def("__hash__", [](const color_refinement::Certificate& self) { return std::hash<color_refinement::Certificate>()(self); })
-        .def("get_canonical_configuration_compression_function", &color_refinement::Certificate::get_canonical_compression_function)
+        .def("__str__",
+             [](const color_refinement::Certificate& self)
+             {
+                 auto os = std::stringstream();
+                 os << self;
+                 return os.str();
+             })
+        // Returning canonical compression functions does not work due to unhashable type list.
+        //.def("get_canonical_configuration_compression_function", &color_refinement::Certificate::get_canonical_compression_function)
         .def("get_canonical_coloring", &color_refinement::Certificate::get_canonical_coloring);
 
     m.def("compute_certificate_color_refinement",
@@ -2340,8 +2348,16 @@ void init_pymimir(py::module_& m)
         py::class_<CertificateK>(m, class_name.c_str())
             .def("__eq__", [](const CertificateK& lhs, const CertificateK& rhs) { return lhs == rhs; })
             .def("__hash__", [](const CertificateK& self) { return std::hash<CertificateK>()(self); })
-            .def("get_canonical_isomorphic_type_compression_function", &CertificateK::get_canonical_isomorphic_type_compression_function)
-            .def("get_canonical_configuration_compression_function", &CertificateK::get_canonical_configuration_compression_function)
+            .def("__str__",
+                 [](const CertificateK& self)
+                 {
+                     auto os = std::stringstream();
+                     os << self;
+                     return os.str();
+                 })
+            // Returning canonical compression functions does not work due to unhashable type list.
+            //.def("get_canonical_isomorphic_type_compression_function", &CertificateK::get_canonical_isomorphic_type_compression_function)
+            //.def("get_canonical_configuration_compression_function", &CertificateK::get_canonical_configuration_compression_function)
             .def("get_canonical_coloring", &CertificateK::get_canonical_coloring);
     };
     bind_kfwl_certificate("Certificate2FWL", std::integral_constant<size_t, 2> {});

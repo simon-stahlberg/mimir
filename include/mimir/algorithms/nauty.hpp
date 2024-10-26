@@ -18,10 +18,12 @@
 #ifndef MIMIR_ALGORITHMS_NAUTY_HPP_
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <memory>
+#include <ostream>
 #include <vector>
 
 /// @brief Wrap a namespace around nauty's interface
@@ -158,6 +160,11 @@ public:
     bool is_directed() const;
 };
 
+}
+
+namespace mimir
+{
+extern std::ostream& operator<<(std::ostream& os, const nauty_wrapper::Certificate& element);
 }
 
 template<>

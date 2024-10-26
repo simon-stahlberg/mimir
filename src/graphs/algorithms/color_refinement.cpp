@@ -48,6 +48,17 @@ bool operator==(const Certificate& lhs, const Certificate& rhs)
 
 }
 
+namespace mimir
+{
+std::ostream& operator<<(std::ostream& out, const color_refinement::Certificate& element)
+{
+    out << "CertificateColorRefinement("
+        << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+        << "canonical_compression_function=" << element.get_canonical_compression_function() << ")";
+    return out;
+}
+}
+
 size_t std::hash<mimir::color_refinement::Certificate>::operator()(const mimir::color_refinement::Certificate& element) const
 {
     return mimir::hash_combine(element.get_canonical_coloring(), element.get_canonical_compression_function());
