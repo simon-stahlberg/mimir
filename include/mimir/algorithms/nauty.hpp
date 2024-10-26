@@ -52,6 +52,8 @@ public:
 extern bool operator==(const Certificate& lhs, const Certificate& rhs);
 extern bool operator<(const Certificate& lhs, const Certificate& rhs);
 
+extern std::ostream& operator<<(std::ostream& os, const Certificate& element);
+
 struct UniqueCertificateSharedPtrHash
 {
     size_t operator()(const std::shared_ptr<const Certificate>& element) const;
@@ -160,11 +162,6 @@ public:
     bool is_directed() const;
 };
 
-}
-
-namespace mimir
-{
-extern std::ostream& operator<<(std::ostream& os, const nauty_wrapper::Certificate& element);
 }
 
 template<>

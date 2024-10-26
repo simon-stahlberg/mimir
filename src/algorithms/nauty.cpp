@@ -28,6 +28,7 @@
 
 namespace nauty_wrapper
 {
+using mimir::operator<<;
 
 /* Certificate */
 Certificate::Certificate(std::string nauty_certificate, mimir::ColorList canonical_initial_coloring) :
@@ -67,6 +68,14 @@ bool operator<(const Certificate& lhs, const Certificate& rhs)
         return lhs.get_canonical_coloring() < rhs.get_canonical_coloring();
     }
     return false;
+}
+
+std::ostream& operator<<(std::ostream& os, const Certificate& element)
+{
+    os << "CertificateNauty("
+       << "canonical_graph=" << element.get_canonical_graph() << ", "
+       << "canonical_coloring=" << element.get_canonical_coloring() << ")";
+    return os;
 }
 
 /* Graph */
@@ -195,17 +204,6 @@ Certificate SparseGraph::compute_certificate() { return m_impl->compute_certific
 void SparseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
-}
-
-namespace mimir
-{
-std::ostream& operator<<(std::ostream& os, const nauty_wrapper::Certificate& element)
-{
-    os << "CertificateNauty("
-       << "canonical_graph=" << element.get_canonical_graph() << ", "
-       << "canonical_coloring=" << element.get_canonical_coloring() << ")";
-    return os;
-}
 }
 
 size_t std::hash<nauty_wrapper::Certificate>::operator()(const nauty_wrapper::Certificate& element) const

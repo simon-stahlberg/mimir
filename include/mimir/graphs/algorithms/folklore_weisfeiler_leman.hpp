@@ -37,6 +37,8 @@
 
 namespace mimir::kfwl
 {
+using mimir::operator<<;
+
 /// @brief `Certificate` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
 template<size_t K>
@@ -84,6 +86,16 @@ bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs)
                && (lhs.get_canonical_configuration_compression_function() == rhs.get_canonical_configuration_compression_function());
     }
     return true;
+}
+
+template<size_t K>
+std::ostream& operator<<(std::ostream& out, const Certificate<K>& element)
+{
+    // out << "Certificate" << K << "FWL("
+    //     << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+    //     << "canonical_isomorphic_type_compression_function=" << element.get_canonical_isomorphic_type_compression_function() << ", "
+    //     << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
+    return out;
 }
 
 /// @brief Compute the perfect hash of the given k-tuple.
@@ -309,19 +321,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     return Certificate(std::move(f1), std::move(f2), std::move(hash_to_color));
 }
 
-}
-
-namespace mimir
-{
-template<size_t K>
-std::ostream& operator<<(std::ostream& out, const kfwl::Certificate<K>& element)
-{
-    out << "Certificate" << K << "FWL("
-        << "canonical_coloring=" << element.get_canonical_coloring() << ", "
-        << "canonical_isomorphic_type_compression_function=" << element.get_canonical_isomorphic_type_compression_function() << ", "
-        << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
-    return out;
-}
 }
 
 template<size_t K>

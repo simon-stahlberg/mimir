@@ -35,6 +35,7 @@
 
 namespace mimir::color_refinement
 {
+using mimir::operator<<;
 
 /// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
 class Certificate
@@ -60,6 +61,8 @@ private:
 };
 
 extern bool operator==(const Certificate& lhs, const Certificate& rhs);
+
+extern std::ostream& operator<<(std::ostream& out, const Certificate& element);
 
 /// @brief Replace tuples by grouping colors with same hash.
 /// @tparam ColorType
@@ -260,11 +263,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     /* Return the certificate */
     return Certificate(std::move(f), std::move(hash_to_color));
 }
-}
-
-namespace mimir
-{
-extern std::ostream& operator<<(std::ostream& out, const color_refinement::Certificate& element);
 }
 
 template<>
