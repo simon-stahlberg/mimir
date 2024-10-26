@@ -2331,12 +2331,24 @@ void init_pymimir(py::module_& m)
     bind_kfwl_certificate("Certificate3FWL", std::integral_constant<size_t, 3> {});
     bind_kfwl_certificate("Certificate4FWL", std::integral_constant<size_t, 4> {});
 
+    auto bind_kfwl_iso_type_function = [&]<size_t K>(const std::string& class_name, std::integral_constant<size_t, K>)
+    {
+        using IsomorphismTypeFunctionK = kfwl::IsomorphismTypeFunction<K>;
+
+        py::class_<IsomorphismTypeFunctionK>(m, class_name.c_str());
+    };
+    bind_kfwl_iso_type_function("IsomorphismTypeFunction2FWL", std::integral_constant<size_t, 2> {});
+    bind_kfwl_iso_type_function("IsomorphismTypeFunction3FWL", std::integral_constant<size_t, 3> {});
+    bind_kfwl_iso_type_function("IsomorphismTypeFunction4FWL", std::integral_constant<size_t, 4> {});
+
     auto bind_compute_kfwl_certificate = [&]<size_t K>(const std::string& function_name, std::integral_constant<size_t, K>)
     {
         m.def(
             function_name.c_str(),
-            [](const StaticVertexColoredDigraph& graph) { return kfwl::compute_certificate<K>(graph); },
-            py::arg("static_vertex_colored_digraph"));
+            [](const StaticVertexColoredDigraph& graph, kfwl::IsomorphismTypeFunction<K>& iso_type_function)
+            { return kfwl::compute_certificate<K>(graph, iso_type_function); },
+            py::arg("static_vertex_colored_digraph"),
+            py::arg("isomorphism_type_function"));
     };
     bind_compute_kfwl_certificate("compute_certificate_2fwl", std::integral_constant<size_t, 2> {});
     bind_compute_kfwl_certificate("compute_certificate_3fwl", std::integral_constant<size_t, 3> {});
