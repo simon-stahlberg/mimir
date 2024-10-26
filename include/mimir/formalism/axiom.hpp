@@ -63,6 +63,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const AxiomImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, Axiom element);
+
 }
 
 #endif

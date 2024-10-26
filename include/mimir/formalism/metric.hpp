@@ -55,6 +55,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, OptimizationMetric element);
+
 }
 
 #endif

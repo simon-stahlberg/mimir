@@ -48,4 +48,11 @@ std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, FunctionSkeleton element)
+{
+    out << *element;
+    return out;
+}
+
 }

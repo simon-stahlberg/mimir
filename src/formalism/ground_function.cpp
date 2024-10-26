@@ -50,4 +50,10 @@ std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element)
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, GroundFunction element)
+{
+    out << *element;
+    return out;
+}
+
 }

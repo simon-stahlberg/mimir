@@ -1,6 +1,7 @@
 #include "init_declarations.hpp"
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/search/condition_grounders/conjunction_grounder.hpp"
+
+#define STRINGIFY(x) #x
+#define MACRO_STRINGIFY(x) STRINGIFY(x)
 
 using namespace mimir;
 
@@ -393,7 +394,6 @@ void init_pymimir(py::module_& m)
         .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<ObjectList>::value);  // Ensure return by reference + keep alive
     auto list_class = py::bind_vector<ObjectList>(m, "ObjectList");
-    def_opaque_vector_repr<ObjectList>(list_class, "ObjectList");
 
     py::class_<VariableImpl>(m, "Variable")  //
         .def("__str__", &VariableImpl::str)
@@ -402,7 +402,6 @@ void init_pymimir(py::module_& m)
         .def("get_name", &VariableImpl::get_name, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<VariableList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<VariableList>(m, "VariableList");
-    def_opaque_vector_repr<VariableList>(list_class, "VariableList");
 
     py::class_<TermObjectImpl>(m, "TermObject")  //
         .def("__str__", &TermObjectImpl::str)
@@ -423,7 +422,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<TermVariantList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<TermVariantList>(m, "TermVariantList");
-    def_opaque_vector_repr<TermVariantList>(list_class, "TermVariantList", [](const TermVariant& elem) { return std::visit(ReprVisitor {}, *elem.term); });
 
     auto bind_predicate = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -440,7 +438,6 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<PredicateList<Tag>>::value);
         auto predicate_list = py::bind_vector<PredicateList<Tag>>(m, class_name + "List");
-        def_opaque_vector_repr<PredicateList<Tag>>(predicate_list, class_name + "List");
         py::bind_map<ToPredicateMap<std::string, Tag>>(m, "StringTo" + class_name + "Map");
     };
     bind_predicate("StaticPredicate", Static {});
@@ -461,7 +458,6 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);
         auto list_cls = py::bind_vector<AtomList<Tag>>(m, class_name + "List");
-        def_opaque_vector_repr<AtomList<Tag>>(list_cls, class_name + "List");
     };
     bind_atom("StaticAtom", Static {});
     bind_atom("FluentAtom", Fluent {});
@@ -478,7 +474,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionSkeletonList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionSkeletonList>(m, "FunctionSkeletonList");
-    def_opaque_vector_repr<FunctionSkeletonList>(list_class, "FunctionSkeletonList");
 
     py::class_<FunctionImpl>(m, "Function")  //
         .def("__str__", &FunctionImpl::str)
@@ -491,7 +486,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionList>(m, "FunctionList");
-    def_opaque_vector_repr<FunctionSkeletonList>(list_class, "FunctionList");
 
     py::class_<GroundFunctionImpl>(m, "GroundFunction")  //
         .def("__str__", &GroundFunctionImpl::str)
@@ -504,7 +498,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundFunctionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<GroundFunctionList>(m, "GroundFunctionList");
-    def_opaque_vector_repr<FunctionSkeletonList>(list_class, "GroundFunctionList");
 
     auto bind_ground_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -525,7 +518,6 @@ void init_pymimir(py::module_& m)
                              "lift",
                              [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
                              py::arg("pddl_factories"));
-        def_opaque_vector_repr<GroundAtomList<Tag>>(list_class, class_name + "List");
     };
     bind_ground_atom("StaticGroundAtom", Static {});
     bind_ground_atom("FluentGroundAtom", Fluent {});
@@ -546,7 +538,6 @@ void init_pymimir(py::module_& m)
                             "lift",
                             [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); },
                             py::arg("pddl_factories"));
-        def_opaque_vector_repr<GroundLiteralList<Tag>>(list, class_name + "List");
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
     bind_ground_literal("FluentGroundLiteral", Fluent {});
@@ -563,7 +554,6 @@ void init_pymimir(py::module_& m)
 
         static_assert(!py::detail::vector_needs_copy<LiteralList<Tag>>::value);
         auto list = py::bind_vector<LiteralList<Tag>>(m, class_name + "List");
-        def_opaque_vector_repr<GroundLiteralList<Tag>>(list, "List");
     };
     bind_literal("StaticLiteral", Static {});
     bind_literal("FluentLiteral", Fluent {});
@@ -577,7 +567,6 @@ void init_pymimir(py::module_& m)
         .def("get_number", &NumericFluentImpl::get_number);
     static_assert(!py::detail::vector_needs_copy<NumericFluentList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<NumericFluentList>(m, "NumericFluentList");
-    def_opaque_vector_repr<NumericFluentList>(list_class, "NumericFluentList");
 
     py::class_<EffectSimpleImpl>(m, "EffectSimple")  //
         .def("__str__", &EffectSimpleImpl::str)
@@ -586,7 +575,6 @@ void init_pymimir(py::module_& m)
         .def("get_effect", &EffectSimpleImpl::get_effect, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<EffectSimpleList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<EffectSimpleList>(m, "EffectSimpleList");
-    def_opaque_vector_repr<EffectSimpleList>(list_class, "EffectSimpleList");
 
     py::class_<FunctionExpressionVariant>(m, "FunctionExpression")  //
         .def(
@@ -596,7 +584,6 @@ void init_pymimir(py::module_& m)
     ;
     static_assert(!py::detail::vector_needs_copy<FunctionExpressionVariantList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionExpressionVariantList>(m, "FunctionExpressionVariantList");
-    def_opaque_vector_repr<FunctionExpressionVariantList>(list_class, "FunctionExpressionVariantList");
 
     py::class_<EffectComplexImpl>(m, "EffectComplex")  //
         .def("__str__", &EffectComplexImpl::str)
@@ -621,7 +608,6 @@ void init_pymimir(py::module_& m)
         .def("get_effect", &EffectComplexImpl::get_effect, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<EffectComplexList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<EffectComplexList>(m, "EffectComplexList");
-    def_opaque_vector_repr<EffectComplexList>(list_class, "EffectComplexList");
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
         .def("__str__", &FunctionExpressionNumberImpl::str)
@@ -679,7 +665,6 @@ void init_pymimir(py::module_& m)
     ;
     static_assert(!py::detail::vector_needs_copy<GroundFunctionExpressionVariantList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<GroundFunctionExpressionVariantList>(m, "GroundFunctionExpressionVariantList");
-    def_opaque_vector_repr<GroundFunctionExpressionVariantList>(list_class, "GroundFunctionExpressionVariantList");
 
     py::class_<GroundFunctionExpressionNumberImpl>(m, "GroundFunctionExpressionNumber")  //
         .def("__str__", &GroundFunctionExpressionNumberImpl::str)
@@ -769,7 +754,6 @@ void init_pymimir(py::module_& m)
         .def("get_arity", &ActionImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<ActionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<ActionList>(m, "ActionList");
-    def_opaque_vector_repr<ActionList>(list_class, "ActionList");
 
     py::class_<AxiomImpl>(m, "Axiom")  //
         .def("__str__", &AxiomImpl::str)
@@ -791,7 +775,6 @@ void init_pymimir(py::module_& m)
         .def("get_arity", &AxiomImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<AxiomList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<AxiomList>(m, "AxiomList");
-    def_opaque_vector_repr<AxiomList>(list_class, "AxiomList");
 
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", &DomainImpl::str)
@@ -841,7 +824,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<DomainList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<DomainList>(m, "DomainList");
-    def_opaque_vector_repr<DomainList>(list_class, "DomainList");
 
     py::class_<ProblemImpl>(m, "Problem")  //
         .def("__str__", &ProblemImpl::str)
@@ -886,7 +868,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<ProblemList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
-    def_opaque_vector_repr<ProblemList>(list_class, "ProblemList");
 
     py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
         .def(
@@ -946,17 +927,6 @@ void init_pymimir(py::module_& m)
     py::class_<State>(m, "State")  //
         .def("__hash__", [](const State& self) { return std::hash<State>()(self); })
         .def("__eq__", [](const State& lhs, const State& rhs) { return lhs == rhs; })
-        .def("__repr__",
-             [](State self)
-             {
-                 std::stringstream ss;
-                 ss << "State(#Fluent=";
-                 ss << std::to_string(self.get_atoms<Fluent>().count());
-                 ss << "; #Derived=";
-                 ss << std::to_string(self.get_atoms<Derived>().count());
-                 ss << ")";
-                 return ss.str();
-             })
         .def("get_fluent_atoms",
              [](State self)
              {
@@ -990,7 +960,6 @@ void init_pymimir(py::module_& m)
         .def("get_index", &State::get_index);
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<StateList>(m, "StateList");
-    def_opaque_vector_repr<StateList>(list_class, "StateList");
     bind_const_span<std::span<const State>>(m, "StateSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "IndexGroupedVector");
 
@@ -1030,7 +999,6 @@ void init_pymimir(py::module_& m)
         .def("get_derived_negative_condition", &ConditionalEffect::get_negative_precondition<Derived>, py::return_value_policy::copy)
         .def("get_simple_effect", &ConditionalEffect::get_simple_effect, py::return_value_policy::copy);
     list_class = py::bind_vector<ConditionalEffectList>(m, "ConditionalEffectList");
-    def_opaque_vector_repr<ConditionalEffectList>(list_class, "ConditionalEffectList");
 
     py::class_<GroundAction>(m, "GroundAction")  //
         .def("__hash__", [](const GroundAction& obj) { return std::hash<GroundAction>()(obj); })
@@ -1061,7 +1029,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
-    def_opaque_vector_repr<GroundActionList>(list_class, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
 
     /* ConjunctionGrounder */

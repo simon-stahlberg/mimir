@@ -71,4 +71,10 @@ std::ostream& operator<<(std::ostream& out, const TermImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, Term element)
+{
+    std::visit([&](const auto& arg) { out << arg; }, *element);
+    return out;
+}
 }

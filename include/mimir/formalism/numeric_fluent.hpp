@@ -53,6 +53,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, NumericFluent element);
+
 }
 
 #endif

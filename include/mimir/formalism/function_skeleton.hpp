@@ -53,6 +53,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, FunctionSkeleton element);
+
 }
 
 #endif

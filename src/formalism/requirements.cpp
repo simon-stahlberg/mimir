@@ -45,4 +45,10 @@ std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, Requirements element)
+{
+    out << *element;
+    return out;
+}
 }

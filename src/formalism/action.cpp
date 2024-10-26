@@ -135,4 +135,10 @@ std::ostream& operator<<(std::ostream& out, const ActionImpl& element)
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, Action element)
+{
+    out << *element;
+    return out;
+}
+
 }

@@ -53,4 +53,10 @@ std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& elemen
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, OptimizationMetric element)
+{
+    out << *element;
+    return out;
+}
+
 }

@@ -53,6 +53,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, Requirements element);
+
 }
 
 #endif

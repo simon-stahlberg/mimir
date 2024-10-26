@@ -45,4 +45,10 @@ std::ostream& operator<<(std::ostream& out, const VariableImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, Variable element)
+{
+    out << *element;
+    return out;
+}
 }

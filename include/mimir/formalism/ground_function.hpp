@@ -51,6 +51,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, GroundFunction element);
+
 }
 
 #endif

@@ -77,4 +77,15 @@ template std::ostream& operator<<(std::ostream& out, const AtomImpl<Static>& ele
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<Derived>& element);
 
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, Atom<P> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, Atom<Static> element);
+template std::ostream& operator<<(std::ostream& out, Atom<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, Atom<Derived> element);
+
 }

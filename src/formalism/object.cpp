@@ -40,4 +40,10 @@ std::ostream& operator<<(std::ostream& out, const ObjectImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, Object element)
+{
+    out << *element;
+    return out;
+}
 }

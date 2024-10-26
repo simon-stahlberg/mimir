@@ -82,4 +82,15 @@ template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Static>
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived>& element);
 
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, Predicate<P> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, Predicate<Static> element);
+template std::ostream& operator<<(std::ostream& out, Predicate<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, Predicate<Derived> element);
+
 }

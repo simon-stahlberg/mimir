@@ -21,6 +21,7 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
+
 #include <map>
 
 namespace mimir
@@ -118,4 +119,15 @@ std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Static>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derived>& element);
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, GroundAtom<Static> element);
+template std::ostream& operator<<(std::ostream& out, GroundAtom<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, GroundAtom<Derived> element);
 }

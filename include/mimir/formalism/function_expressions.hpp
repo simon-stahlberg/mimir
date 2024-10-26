@@ -228,6 +228,8 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMulti
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
+
+extern std::ostream& operator<<(std::ostream& out, FunctionExpression element);
 }
 
 #endif

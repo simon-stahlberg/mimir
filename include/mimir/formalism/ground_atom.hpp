@@ -63,6 +63,9 @@ extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground
 template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
 
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, GroundAtom<P> element);
+
 }
 
 #endif

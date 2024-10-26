@@ -102,4 +102,10 @@ std::ostream& operator<<(std::ostream& out, const AxiomImpl& element)
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, Axiom element)
+{
+    out << *element;
+    return out;
+}
+
 }

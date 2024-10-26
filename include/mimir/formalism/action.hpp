@@ -84,6 +84,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const ActionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, Action element);
+
 }
 
 #endif

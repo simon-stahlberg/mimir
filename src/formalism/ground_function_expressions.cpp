@@ -173,4 +173,10 @@ std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& 
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element)
+{
+    std::visit([&](const auto& arg) { out << arg; }, *element);
+    return out;
+}
 }

@@ -61,6 +61,9 @@ extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& 
 
 template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);
+
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element);
 }
 
 #endif

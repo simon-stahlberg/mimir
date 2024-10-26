@@ -132,4 +132,16 @@ std::ostream& operator<<(std::ostream& out, const EffectComplexImpl& element)
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, EffectSimple element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, EffectComplex element)
+{
+    out << *element;
+    return out;
+}
+
 }

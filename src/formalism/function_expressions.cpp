@@ -169,4 +169,11 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& elemen
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, FunctionExpression element)
+{
+    std::visit([&](const auto& arg) { out << arg; }, *element);
+    return out;
+}
+
 }

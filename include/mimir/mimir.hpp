@@ -61,6 +61,7 @@
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom.hpp"
+#include "mimir/search/condition_grounders/conjunction_grounder.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/planners.hpp"

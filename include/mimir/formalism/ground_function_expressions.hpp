@@ -179,6 +179,8 @@ extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressio
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);
+
 }
 
 #endif

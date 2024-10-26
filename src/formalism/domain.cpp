@@ -176,4 +176,10 @@ std::ostream& operator<<(std::ostream& out, const DomainImpl& element)
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, Domain element)
+{
+    out << *element;
+    return out;
+}
+
 }

@@ -54,7 +54,6 @@ TEST_F(PymimirFixture, get_goal_condition)
     EXPECT_GE(py::len(goals), py::len(fluent_goals) + py::len(derived_goals) + py::len(static_goals));
 }
 
-
 TEST_F(PymimirFixture, parser_factory_atom_lifetime)
 {
     auto parser =
@@ -76,16 +75,11 @@ TEST_F(PymimirFixture, test_list_repr)
     auto factory = parser.attr("get_pddl_factories")();
     auto atoms = factory.attr("get_fluent_ground_atoms")();
     auto str = py::str(atoms).cast<std::string>();
-#ifndef NDEBUG
-    fmt::println("{}", str);
-#endif
+
     EXPECT_TRUE(str.find("FluentGroundAtomList") != std::string::npos);
     for (auto atom : py::cast<py::list>(atoms))
     {
         auto atom_str = py::str(atom).cast<std::string>();
-#ifndef NDEBUG
-        fmt::println("{}", atom_str);
-#endif
         EXPECT_TRUE(str.find(atom_str) != std::string::npos);
     }
 }

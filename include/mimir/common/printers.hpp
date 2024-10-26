@@ -35,9 +35,6 @@ namespace mimir
  * Forward declarations
  */
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const T*& ptr);
-
 template<typename T, size_t K>
 std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr);
 
@@ -65,13 +62,6 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec);
 /**
  * Definitions
  */
-
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const T*& ptr)
-{
-    os << *ptr;
-    return os;
-}
 
 template<typename T, size_t K>
 std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr)

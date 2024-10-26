@@ -100,6 +100,9 @@ public:
 extern std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const EffectComplexImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, EffectSimple element);
+extern std::ostream& operator<<(std::ostream& out, EffectComplex element);
+
 }
 
 #endif

@@ -43,4 +43,11 @@ std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, NumericFluent element)
+{
+    out << *element;
+    return out;
+}
+
 }

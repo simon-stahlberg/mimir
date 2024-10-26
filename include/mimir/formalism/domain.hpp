@@ -84,6 +84,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const DomainImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, Domain element);
+
 }
 
 #endif

@@ -202,4 +202,10 @@ std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
     return out;
 }
 
+std::ostream& operator<<(std::ostream& out, Problem element)
+{
+    out << *element;
+    return out;
+}
+
 }

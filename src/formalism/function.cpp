@@ -49,4 +49,10 @@ std::ostream& operator<<(std::ostream& out, const FunctionImpl& element)
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, Function element)
+{
+    out << *element;
+    return out;
+}
 }

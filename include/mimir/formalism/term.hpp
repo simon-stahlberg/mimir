@@ -77,6 +77,9 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const TermObjectImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const TermVariableImpl& element);
+
+extern std::ostream& operator<<(std::ostream& out, Term element);
+
 }
 
 #endif

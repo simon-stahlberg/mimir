@@ -98,6 +98,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, Problem element);
+
 }
 
 #endif

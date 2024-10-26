@@ -54,6 +54,8 @@ public:
 
 extern std::ostream& operator<<(std::ostream& out, const VariableImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, Variable element);
+
 }
 
 #endif

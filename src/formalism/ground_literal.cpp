@@ -108,4 +108,15 @@ std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
 template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Static>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Derived>& element);
+
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, GroundLiteral<Static> element);
+template std::ostream& operator<<(std::ostream& out, GroundLiteral<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, GroundLiteral<Derived> element);
 }

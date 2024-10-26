@@ -70,4 +70,15 @@ template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Static>& 
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Derived>& element);
 
+template<PredicateCategory P>
+std::ostream& operator<<(std::ostream& out, Literal<P> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, Literal<Static> element);
+template std::ostream& operator<<(std::ostream& out, Literal<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, Literal<Derived> element);
+
 }

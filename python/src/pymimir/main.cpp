@@ -1,10 +1,10 @@
+#include "init_declarations.hpp"
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>  // Necessary for automatic conversion of e.g. std::vectors
-#include "init_declarations.hpp"
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
-
 
 PYBIND11_MODULE(_pymimir, m)
 {

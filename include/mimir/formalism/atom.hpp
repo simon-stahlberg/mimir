@@ -58,6 +58,9 @@ public:
 template<PredicateCategory P>
 extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
+template<PredicateCategory P>
+extern std::ostream& operator<<(std::ostream& out, Atom<P> element);
+
 }
 
 #endif
