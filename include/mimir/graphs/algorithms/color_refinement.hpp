@@ -104,12 +104,15 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
 /// @param out_color_to_hashes
 /// @param out_L
 template<typename ColorType>
-bool split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
+void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
                          std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
                          Color& ref_max_color,
-                         ColorList& ref_hash_to_color)
+                         ColorList& ref_hash_to_color,
+                         ColorMap<IndexList>& out_color_to_hashes,
+                         ColorSet& out_L)
 {
-    bool is_stable = true;
+    out_color_to_hashes.clear();
+    out_L.clear();
 
     // Subroutine to split color classes.
     auto it = M_replaced.begin();
@@ -141,8 +144,6 @@ bool split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
         }
         else
         {
-            is_stable = false;
-
             /* Split old_color class. */
             {
                 // Subroutine to split color class
@@ -151,6 +152,9 @@ bool split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
                     // Determine new color for (old_color, signature)
                     const auto& signature = std::get<1>(*it);
                     const auto new_color = ++ref_max_color;
+
+                    // Add new color to work list.
+                    out_L.insert(new_color);
 
                     // Add mapping to decoding table
                     [[maybe_unused]] const auto result = ref_f.emplace(std::make_pair(old_color, signature), new_color);
@@ -163,6 +167,7 @@ bool split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
                         {
                             auto hash = std::get<2>(*it);
                             ref_hash_to_color[hash] = new_color;
+                            out_color_to_hashes[new_color].push_back(hash);
                             ++it;
                         }
                     }
@@ -170,7 +175,6 @@ bool split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
             }
         }
     }
-    return is_stable;
 }
 
 /// @brief `compute_certificate` implements the color refinement algorithm.
@@ -182,7 +186,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     Certificate compute_certificate(const G& graph)
 {
     // Toggle verbosity
-    const bool debug = true;
+    const bool debug = false;
 
     /* Fetch some data. */
     const auto num_vertices = graph.get_num_vertices();
@@ -192,7 +196,9 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     auto hash_to_vertex = IndexMap<Index>();
     auto max_color = Color();
     auto hash_to_color = ColorList(num_vertices);
+    auto color_to_hashes = ColorMap<IndexList>();
     // (line 1-2): Initialize work list.
+    auto L = ColorSet();
     for (const auto& vertex : graph.get_vertices())
     {
         const auto hash = vertex_to_hash.size();
@@ -202,6 +208,8 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         const auto color = get_color(vertex);
         max_color = std::max(max_color, color);
         hash_to_color[hash] = color;
+        color_to_hashes[color].push_back(hash);
+        L.insert(color);
     }
 
     // (line 1-2): Initialize multi set.
@@ -210,9 +218,11 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
 
-    bool is_stable = false;
-    do
+    while (!L.empty())
     {
+        if (debug)
+            std::cout << "L: " << L << std::endl;
+
         // Clear data structures that are reused.
         M.clear();
         M_replaced.clear();
@@ -246,9 +256,8 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             std::cout << "M_replaced: " << M_replaced << std::endl;
 
         /* (line 15): Add new colors to work list */
-        is_stable = split_color_classes(M_replaced, f, max_color, hash_to_color);
-
-    } while (!is_stable);
+        split_color_classes(M_replaced, f, max_color, hash_to_color, color_to_hashes, L);
+    }
 
     /* Report final neighborhood structures in the decoding table. */
     for (const auto& [old_color, signature, hash] : M_replaced)

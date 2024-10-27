@@ -2335,7 +2335,8 @@ void init_pymimir(py::module_& m)
     {
         using IsomorphismTypeFunctionK = kfwl::IsomorphismTypeFunction<K>;
 
-        py::class_<IsomorphismTypeFunctionK>(m, class_name.c_str());
+        py::class_<IsomorphismTypeFunctionK>(m, class_name.c_str())  //
+            .def(py::init<>());
     };
     bind_kfwl_iso_type_function("IsomorphismTypeFunction2FWL", std::integral_constant<size_t, 2> {});
     bind_kfwl_iso_type_function("IsomorphismTypeFunction3FWL", std::integral_constant<size_t, 3> {});
