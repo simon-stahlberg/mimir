@@ -250,6 +250,12 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
     } while (!is_stable);
 
+    /* Report final neighborhood structures in the decoding table. */
+    for (const auto& [old_color, signature, hash] : M_replaced)
+    {
+        f.emplace(std::make_pair(old_color, signature), old_color);
+    }
+
     /* Return the certificate */
     return Certificate(std::move(f), std::move(hash_to_color));
 }
