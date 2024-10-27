@@ -199,7 +199,6 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                           successor_state.get_index(),
                                                           options.mark_true_goal_literals,
                                                           *object_graph_pruning_strategy);
-            // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;
 
             auto certificate = std::make_shared<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
             const auto it = abstract_states_by_certificate.find(certificate);
@@ -209,36 +208,36 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
             if (abstract_state_exists)
             {
+                const auto abstract_successor_state_index = it->second;
+                transitions.emplace_back(transitions.size(),
+                                         abstract_state_index,
+                                         abstract_successor_state_index,
+                                         action);  // TODO: options.compute_complete_abstraction_mapping = True -> must filter duplicate transitions later
+                                                   // because it also depends on the source state.
+
                 /* Add concrete state to abstraction mapping. */
-                concrete_to_abstract_state.emplace(successor_state, it->second);
+                if (options.compute_complete_abstraction_mapping)
+                {
+                    concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
+                    lifo_queue.push_back(successor_state);
+                }
             }
             else
             {
                 /* Generate new abstract state and add concrete state to abstraction mapping.  */
                 const auto abstract_successor_state_index = next_abstract_state_index++;
                 abstract_states_by_certificate.emplace(std::move(certificate), abstract_successor_state_index);
+
+                transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
+
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
-
-                if (next_abstract_state_index >= options.max_num_abstract_states)
-                {
-                    // Ran out of state resources
-                    return std::nullopt;
-                }
+                lifo_queue.push_back(successor_state);
             }
-
-            const auto abstract_successor_state_index = concrete_to_abstract_state.at(successor_state);
-            transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
-            concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
 
             if (concrete_to_abstract_state.size() >= options.max_num_concrete_states)
             {
                 // Ran out of state resources
                 return std::nullopt;
-            }
-
-            if (options.compute_complete_abstraction_mapping || !abstract_state_exists)
-            {
-                lifo_queue.push_back(successor_state);
             }
         }
     }
@@ -287,6 +286,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             certificate);
     }
     std::sort(abstract_states.begin(), abstract_states.end(), [](const auto& l, const auto& r) { return l.get_index() < r.get_index(); });
+
+    // Ensure that each abstract state and abstract transition contain a single representative.
+    assert(options.compute_complete_abstraction_mapping
+           || std::all_of(abstract_states.begin(), abstract_states.end(), [](const auto& state) { return get_states(state).size() == 1; }));
 
     /* Sort concrete transitions by source and target state. */
     std::sort(transitions.begin(),
