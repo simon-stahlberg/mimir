@@ -28,13 +28,14 @@ Certificate::Certificate(CompressionFunction f, ColorList hash_to_color) :
     m_f(f.begin(), f.end()),
     m_canonical_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
 {
+    std::sort(m_canonical_coloring.begin(), m_canonical_coloring.end());
 }
 
 const ColorList& Certificate::get_hash_to_color() const { return m_hash_to_color; }
 
 const Certificate::CanonicalCompressionFunction& Certificate::get_canonical_compression_function() const { return m_f; }
 
-const Certificate::CanonicalColoring& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
+const ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
 bool operator==(const Certificate& lhs, const Certificate& rhs)
 {

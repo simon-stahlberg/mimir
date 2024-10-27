@@ -28,10 +28,8 @@
 
 size_t std::hash<mimir::GlobalFaithfulAbstractState>::operator()(const mimir::GlobalFaithfulAbstractState& element) const
 {
-    return mimir::hash_combine(element.get_index(),
-                               element.get_global_index(),
-                               element.get_faithful_abstraction_index(),
-                               element.get_faithful_abstract_state_index());
+    // Note: we do not use element.get_index() because it is fa specific
+    return mimir::hash_combine(element.get_global_index(), element.get_faithful_abstraction_index(), element.get_faithful_abstract_state_index());
 }
 
 namespace mimir
@@ -55,7 +53,8 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
 {
     if (this != &other)
     {
-        return (m_index == other.m_index) && (m_global_index == other.m_global_index) && (m_faithful_abstraction_index == other.m_faithful_abstraction_index)
+        // Note: we do not use m_index because it is fa specific
+        return (m_global_index == other.m_global_index) && (m_faithful_abstraction_index == other.m_faithful_abstraction_index)
                && (m_faithful_abstract_state_index == other.m_faithful_abstract_state_index);
     }
     return true;

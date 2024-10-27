@@ -50,23 +50,22 @@ public:
         std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
     using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color>;
 
-    using CanonicalColoring = std::set<Color>;
-
     Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color) :
         m_hash_to_color(std::move(hash_to_color)),
         m_f(f.begin(), f.end()),
         m_coloring_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
     {
+        std::sort(m_coloring_coloring.begin(), m_coloring_coloring.end());
     }
 
     const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const { return m_f; }
-    const CanonicalColoring& get_canonical_coloring() const { return m_coloring_coloring; }
+    const ColorList& get_canonical_coloring() const { return m_coloring_coloring; }
 
 private:
     ColorList m_hash_to_color;
 
     CanonicalConfigurationCompressionFunction m_f;
-    CanonicalColoring m_coloring_coloring;
+    ColorList m_coloring_coloring;
 };
 
 template<size_t K>
@@ -267,7 +266,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     /* Refine colors of k-tuples. */
     auto f = typename Certificate<K>::ConfigurationCompressionFunction();
     auto M = std::vector<std::pair<Index, ColorArray<K>>>();
-    // auto X = std::vector<std::pair<Index, IndexArray<K>>>();
     auto M_replaced = std::vector<std::tuple<Color, std::vector<ColorArray<K>>, Index>>();
     // (line 3-18): subroutine to find stable coloring
 
@@ -278,7 +276,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
         // Clear data structures that are reused.
         M.clear();
-        // X.clear();
         M_replaced.clear();
 
         {
@@ -294,7 +291,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
                         {
                             // C[\vec{v}[1,u]],...,C[\vec{v}[k,u]]
                             auto k_coloring = ColorArray<K>();
-                            // auto k_indexing = IndexArray<K>();
                             for (size_t i = 0; i < K; ++i)
                             {
                                 // \vec{x} = \vec{v}[i,u]
@@ -303,11 +299,9 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
                                 const auto x_hash = tuple_to_hash<K>(x, num_vertices);
 
                                 k_coloring.at(i) = hash_to_color.at(x_hash);
-                                // k_indexing.at(i) = x_hash;
                             }
 
                             M.emplace_back(h, std::move(k_coloring));
-                            // X.emplace_back(h, std::move(k_indexing));
                         }
                     }
                 }
@@ -316,13 +310,9 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
         // (line 15): Perform radix sort of M
         std::sort(M.begin(), M.end());
-        // std::sort(X.begin(), X.end());
 
         if (debug)
             std::cout << "M: " << M << std::endl;
-
-        // if (debug)
-        //     std::cout << "X: " << X << std::endl;
 
         // (line 16): Scan M and replace tuples (vec{v},c_1^1,...,c_k^1,...,vec{v},c_1^r,...,c_k^r) with single tuple
         // (C(vec{v}),(c_1^1,...,c_k^1),...,(c_1^r,...,c_k^r))

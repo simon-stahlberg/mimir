@@ -35,6 +35,7 @@ Certificate::Certificate(std::string nauty_certificate, mimir::ColorList canonic
     m_canonical_graph(std::move(nauty_certificate)),
     m_canonical_coloring(std::move(canonical_initial_coloring))
 {
+    assert(std::is_sorted(m_canonical_coloring.begin(), m_canonical_coloring.end()));
 }
 
 const std::string& Certificate::get_canonical_graph() const { return m_canonical_graph; }

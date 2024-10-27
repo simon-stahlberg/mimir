@@ -44,20 +44,19 @@ public:
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
 
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
-    using CanonicalColoring = std::set<Color>;
 
     Certificate(CompressionFunction f, ColorList hash_to_color);
 
     const ColorList& get_hash_to_color() const;
 
     const CanonicalCompressionFunction& get_canonical_compression_function() const;
-    const CanonicalColoring& get_canonical_coloring() const;
+    const ColorList& get_canonical_coloring() const;
 
 private:
     ColorList m_hash_to_color;
 
     CanonicalCompressionFunction m_f;
-    CanonicalColoring m_canonical_coloring;
+    ColorList m_canonical_coloring;
 };
 
 extern bool operator==(const Certificate& lhs, const Certificate& rhs);
