@@ -24,6 +24,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
@@ -145,9 +146,6 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
         {
             /* Split old_color class. */
             {
-                // Keep track of largest color class to stop refining it.
-                auto largest_color_class_size = size_t(0);
-                auto largest_color_class = Color(0);
                 while (it != M_replaced.end() && old_color == std::get<0>(*it))
                 {
                     auto current_color_class_size = size_t(1);
@@ -174,14 +172,7 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
                             ++it;
                         }
                     }
-                    if (current_color_class_size > largest_color_class_size)
-                    {
-                        largest_color_class_size = current_color_class_size;
-                        largest_color_class = new_color;
-                    }
                 }
-                // dont need to keep refining largest color class
-                out_L.erase(largest_color_class);
             }
         }
     }
@@ -198,7 +189,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     if (!is_undirected_graph(graph))
     {
         throw std::runtime_error("Color-refinement does not support directed graphs because they can be translated into undirected graphs by introducing two "
-                                 "vertices along the edge with different colors to encode the direction.")
+                                 "vertices along the edge with different colors to encode the direction.");
     }
 
     // Toggle verbosity
@@ -233,7 +224,6 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     auto M = std::vector<std::pair<Index, Color>>();
     auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
-
     while (!L.empty())
     {
         if (debug)
@@ -245,6 +235,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
         {
             // Subroutine to compute multiset M.
+            // Note: this computes the stable coloring, not the coarsest stable coloring.
             for (size_t h = 0; h < num_vertices; ++h)
             {
                 for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(hash_to_vertex.at(h)))

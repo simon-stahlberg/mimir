@@ -228,7 +228,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     if (!is_undirected_graph(graph))
     {
         throw std::runtime_error("K-FWL does not support directed graphs because they can be translated into undirected graphs by introducing two vertices "
-                                 "along the edge with different colors to encode the direction.")
+                                 "along the edge with different colors to encode the direction.");
     }
 
     // Toggle verbosity
@@ -280,6 +280,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
         {
             // (lines 4-14): Subroutine to fill multiset
+            // Note: this computes the stable coloring, not the coarsest stable coloring.
             for (size_t h = 0; h < num_hashes; ++h)
             {
                 const auto w = hash_to_tuple<K>(h, num_vertices);
