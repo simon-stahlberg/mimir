@@ -24,6 +24,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+#include "mimir/graphs/graph_properties.hpp"
 #include "mimir/graphs/graph_traversal_interface.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 
@@ -37,13 +38,15 @@ namespace mimir::color_refinement
 {
 using mimir::operator<<;
 
+using Signature = std::pair<ColorList, ColorList>;
+
 /// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
 class Certificate
 {
 public:
-    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
+    using CompressionFunction = std::unordered_map<std::pair<Color, Signature>, Color, Hash<std::pair<Color, Signature>>>;
 
-    using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
+    using CanonicalCompressionFunction = std::map<std::pair<Color, Signature>, Color>;
 
     Certificate(CompressionFunction f, ColorList hash_to_color);
 
@@ -69,28 +72,60 @@ extern std::ostream& operator<<(std::ostream& out, const Certificate& element);
 /// @param hash_to_color
 /// @param out_M_replaced
 template<typename ColorType>
-void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
+void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M_outgoing,
+                    const std::vector<std::pair<Index, ColorType>>& M_ingoing,
                     const ColorList& hash_to_color,
-                    std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& out_M_replaced)
+                    std::vector<std::tuple<Color, std::pair<std::vector<ColorType>, std::vector<ColorType>>, Index>>& out_M_replaced)
 {
-    // Subroutine to construct signatures.
-    auto it = M.begin();
-    while (it != M.end())
-    {
-        auto signature = std::vector<ColorType>();
-        const auto hash = it->first;
+    using M_IteratorType = std::vector<std::pair<Index, ColorType>>::const_iterator;
 
-        auto it2 = it;
-        while (it2 != M.end() && it2->first == hash)
+    auto collect_color = [](Index hash, std::vector<ColorType>& signature, M_IteratorType& M_iter, M_IteratorType M_end)
+    {
+        auto it2 = M_iter;
+        while (it2 != M_end && it2->first == hash)
         {
             signature.push_back(it2->second);
             ++it2;
         }
-        it = it2;
+        M_iter = it2;
+    };
+
+    // Subroutine to construct signatures.
+    auto it_outgoing = M_outgoing.begin();
+    auto it_ingoing = M_ingoing.begin();
+
+    while (it_outgoing != M_outgoing.end() || it_ingoing != M_ingoing.end())
+    {
+        const auto hash_outgoing = (it_outgoing != M_outgoing.end()) ? it_outgoing->first : std::numeric_limits<Index>::max();
+        const auto hash_ingoing = (it_ingoing != M_ingoing.end()) ? it_ingoing->first : std::numeric_limits<Index>::max();
+
+        auto signature_outgoing = std::vector<ColorType>();
+        auto signature_ingoing = std::vector<ColorType>();
+
+        if (hash_outgoing < hash_ingoing)  // only has outgoing
+        {
+            collect_color(hash_outgoing, signature_outgoing, it_outgoing, M_outgoing.end());
+        }
+        else if (hash_outgoing > hash_ingoing)  // only has ingoing
+        {
+            collect_color(hash_ingoing, signature_ingoing, it_ingoing, M_ingoing.end());
+        }
+        else  // has outgoing and ingoing
+        {
+            collect_color(hash_outgoing, signature_outgoing, it_outgoing, M_outgoing.end());
+            collect_color(hash_ingoing, signature_ingoing, it_ingoing, M_ingoing.end());
+        }
 
         // Ensure canonical signature.
-        assert(std::is_sorted(signature.begin(), signature.end()));
-        out_M_replaced.emplace_back(hash_to_color.at(hash), std::move(signature), hash);
+        assert(std::is_sorted(signature_outgoing.begin(), signature_outgoing.end()));
+        assert(std::is_sorted(signature_ingoing.begin(), signature_ingoing.end()));
+
+        // In the k-FWL case, it might look strange to only consider either the hash_to_color_outgoing and ingoing.
+        // The reason it works is that one isomorphic type implies the other.
+        // TODO: double check that it works.
+        out_M_replaced.emplace_back(hash_to_color.at(hash_outgoing),
+                                    std::make_pair(std::move(signature_outgoing), std::move(signature_ingoing)),
+                                    hash_outgoing);
     }
 }
 
@@ -103,8 +138,10 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
 /// @param out_color_to_hashes
 /// @param out_L
 template<typename ColorType>
-void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
-                         std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
+void split_color_classes(const std::vector<std::tuple<Color, std::pair<std::vector<ColorType>, std::vector<ColorType>>, Index>>& M_replaced,
+                         std::unordered_map<std::pair<Color, std::pair<std::vector<ColorType>, std::vector<ColorType>>>,
+                                            Color,
+                                            Hash<std::pair<Color, std::pair<std::vector<ColorType>, std::vector<ColorType>>>>>& ref_f,
                          Color& ref_max_color,
                          ColorList& ref_hash_to_color,
                          ColorMap<IndexList>& out_color_to_hashes,
@@ -196,10 +233,15 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
     Certificate compute_certificate(const G& graph)
 {
     // Toggle verbosity
-    const bool debug = false;
+    const bool debug = true;
 
     /* Fetch some data. */
     const auto num_vertices = graph.get_num_vertices();
+    const auto is_undirected = is_undirected_graph(graph);
+
+    if (debug)
+        std::cout << "num_vertices=" << num_vertices << std::endl  //
+                  << "is_undirected=" << is_undirected << std::endl;
 
     // (line 1-2): Initialize vertex colors and perfect hashes for vertex indices.
     auto vertex_to_hash = IndexMap<Index>();
@@ -224,8 +266,9 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
     // (line 1-2): Initialize multi set.
     auto f = Certificate::CompressionFunction();
-    auto M = std::vector<std::pair<Index, Color>>();
-    auto M_replaced = std::vector<std::tuple<Color, ColorList, Index>>();
+    auto M_outgoing = std::vector<std::pair<Index, Color>>();
+    auto M_ingoing = std::vector<std::pair<Index, Color>>();
+    auto M_combined_replaced = std::vector<std::tuple<Color, Signature, Index>>();
     // (line 3): Process work list until all vertex colors have stabilized.
 
     while (!L.empty())
@@ -234,43 +277,58 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
             std::cout << "L: " << L << std::endl;
 
         // Clear data structures that are reused.
-        M.clear();
-        M_replaced.clear();
+        M_outgoing.clear();
+        M_ingoing.clear();
+        M_combined_replaced.clear();
 
         {
-            // Subroutine to compute multiset M.
+            // Subroutine to compute multiset M_outgoing and M_ingoing.
             for (size_t h = 0; h < num_vertices; ++h)
             {
-                for (const auto& outgoing_vertex : graph.template get_adjacent_vertices<ForwardTraversal>(hash_to_vertex.at(h)))
-                {
-                    const auto hash = vertex_to_hash.at(outgoing_vertex.get_index());
+                const auto vertex = hash_to_vertex.at(h);
 
-                    M.emplace_back(h, hash_to_color.at(hash));
+                for (const auto& outgoing_vertex : graph.template get_adjacent_vertex_indices<ForwardTraversal>(vertex))
+                {
+                    const auto hash = vertex_to_hash.at(outgoing_vertex);
+
+                    M_outgoing.emplace_back(h, hash_to_color.at(hash));
+                }
+
+                if (!is_undirected)
+                {
+                    for (const auto& ingoing_vertex : graph.template get_adjacent_vertex_indices<BackwardTraversal>(vertex))
+                    {
+                        const auto hash = vertex_to_hash.at(ingoing_vertex);
+
+                        M_ingoing.emplace_back(h, hash_to_color.at(hash));
+                    }
                 }
             }
         }
 
         // (line 12): Perform radix sort of M by vertex and colors (TODO radix sort)
-        std::sort(M.begin(), M.end());
+        std::sort(M_outgoing.begin(), M_outgoing.end());
+        std::sort(M_ingoing.begin(), M_ingoing.end());
 
         if (debug)
-            std::cout << "M: " << M << std::endl;
+            std::cout << "M_outgoing: " << M_outgoing << std::endl  //
+                      << "M_ingoing: " << M_ingoing << std::endl;
 
         // (line 13): Scan M and replace tuples (v,c1),...,(v,cr) with single tuple (C(v),c1,...,cr,v) to construct signatures.
-        replace_tuples(M, hash_to_color, M_replaced);
+        replace_tuples(M_outgoing, M_ingoing, hash_to_color, M_combined_replaced);
 
         // (line 14): Perform radix sort of M by old color and neighborhood colors (TODO radix sort)
-        std::sort(M_replaced.begin(), M_replaced.end());
+        std::sort(M_combined_replaced.begin(), M_combined_replaced.end());
 
         if (debug)
-            std::cout << "M_replaced: " << M_replaced << std::endl;
+            std::cout << "M_combined_replaced: " << M_combined_replaced << std::endl;
 
         /* (line 15): Add new colors to work list */
-        split_color_classes(M_replaced, f, max_color, hash_to_color, color_to_hashes, L);
+        split_color_classes(M_combined_replaced, f, max_color, hash_to_color, color_to_hashes, L);
     }
 
     /* Report final neighborhood structures in the decoding table. */
-    for (const auto& [old_color, signature, hash] : M_replaced)
+    for (const auto& [old_color, signature, hash] : M_combined_replaced)
     {
         f.emplace(std::make_pair(old_color, signature), old_color);
     }

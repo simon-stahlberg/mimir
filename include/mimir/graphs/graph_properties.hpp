@@ -18,7 +18,11 @@
 #ifndef MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 #define MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 
+#include "mimir/common/hash.hpp"
+#include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
+
+#include <unordered_set>
 
 namespace mimir
 {
@@ -28,15 +32,15 @@ requires IsEdgeListGraph<G>  //
 bool is_undirected_graph(const G& graph)
 {
     // Create datastructure for efficient lookup
-    auto directed_edges = std::unordered_set<std::pair<Index, Index>>();
+    auto directed_edges = std::unordered_set<std::pair<Index, Index>, Hash<std::pair<Index, Index>>>();
     for (const auto& edge : graph.get_edges())
     {
-        directed_edges.emplace(get_source<ForwardTraversal>(edge), get_target<ForwardTraversal>(edge));
+        directed_edges.emplace(edge.get_source(), edge.get_target());
     }
 
     for (const auto& edge : graph.get_edges())
     {
-        if (!directed_edges.contains(std::make_pair(get_source<BackwardTraversal>(edge), get_target<BackwardTraversal>(edge))))
+        if (!directed_edges.contains(std::make_pair(edge.get_target(), edge.get_source())))
         {
             return false;  // found no matching anti-parallel edge => directed graph
         }
@@ -49,10 +53,10 @@ template<typename G>
 requires IsEdgeListGraph<G>  //
 bool is_multi_graph(const G& graph)
 {
-    auto directed_edges = std::unordered_set<std::pair<Index, Index>>();
+    auto directed_edges = std::unordered_set<std::pair<Index, Index>, Hash<std::pair<Index, Index>>>();
     for (const auto& edge : graph.get_edges())
     {
-        if (!directed_edges.emplace(get_source<ForwardTraversal>(edge), get_target<ForwardTraversal>(edge)).second)
+        if (!directed_edges.emplace(edge.get_source(), edge.get_target()).second)
         {
             return true;  // found parallel edge => multi-graph
         }
