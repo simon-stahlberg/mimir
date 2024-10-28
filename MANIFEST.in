@@ -8,6 +8,7 @@ include Config.cmake.in
 include dependencies/benchmark/CMakeLists.txt
 include dependencies/boost/CMakeLists.txt
 include dependencies/flatmemory/CMakeLists.txt
+include dependencies/fmt/CMakeLists.txt
 include dependencies/googletest/CMakeLists.txt
 include dependencies/loki/CMakeLists.txt
 include dependencies/nauty/CMakeLists.txt
