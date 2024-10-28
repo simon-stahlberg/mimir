@@ -280,8 +280,9 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
         {
             // (lines 4-14): Subroutine to fill multiset
+            for (const auto& c : L)
             {
-                for (size_t h = 0; h < num_hashes; ++h)
+                for (const auto& h : color_to_hashes.at(c))
                 {
                     const auto w = hash_to_tuple<K>(h, num_vertices);
 
