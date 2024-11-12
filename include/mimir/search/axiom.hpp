@@ -31,87 +31,39 @@
 namespace mimir
 {
 
-/**
- * Flatmemory types
- */
-
-struct FlatDerivedEffect
+struct SimpleDerivedEffect
 {
     bool is_negated;
-    size_t atom_index;
-
-    bool operator==(const FlatDerivedEffect& other) const;
-};
-
-using FlatAxiom = cista::tuple<Index,          // GroundAxiomIndex
-                               Index,          // AxiomIndex
-                               FlatIndexList,  // ObjectIndices
-                               FlatStripsActionPrecondition,
-                               FlatStripsActionEffect,
-                               FlatDerivedEffect>;
-
-using FlatAxiomVector = cista::offset::vector<FlatAxiom>;
-}
-
-template<>
-struct cista::storage::DerefStdHasher<mimir::FlatAxiom>
-{
-    size_t operator()(const mimir::FlatAxiom* ptr) const;
-};
-
-template<>
-struct cista::storage::DerefStdEqualTo<mimir::FlatAxiom>
-{
-    bool operator()(const mimir::FlatAxiom* lhs, const mimir::FlatAxiom* rhs) const;
-};
-
-namespace mimir
-{
-using FlatAxiomSet = cista::storage::UnorderedSet<FlatAxiom>;
-
-/**
- * GroundAxiomBuilder
- */
-class GroundAxiomBuilder
-{
-private:
-    FlatAxiom m_builder;
-
-public:
-    FlatAxiom& get_data();
-    const FlatAxiom& get_data() const;
-
-    Index& get_index();
-    Index& get_axiom();
-    FlatIndexList& get_objects();
-    /* STRIPS part */
-    FlatStripsActionPrecondition& get_strips_precondition();
-    FlatStripsActionEffect& get_strips_effect();
-    /* Simple effect */
-    FlatDerivedEffect& get_derived_effect();
+    uint32_t atom_index;
 };
 
 /**
  * GroundAxiom
  */
-class GroundAxiom
+struct GroundAxiomImpl
 {
-private:
-    std::reference_wrapper<const FlatAxiom> m_view;
+    Index m_index;
+    Index m_axiom_index;
+    FlatIndexList m_objects;
+    StripsActionPrecondition m_strips_precondition;
+    SimpleDerivedEffect m_effect;
 
-public:
-    /// @brief Create a view on a Axiom.
-    explicit GroundAxiom(const FlatAxiom& view);
-
+    Index& get_index();
     Index get_index() const;
+
+    Index& get_axiom();
     Index get_axiom_index() const;
+
+    FlatIndexList& get_objects();
     const FlatIndexList& get_objects() const;
 
     /* STRIPS part */
-    const FlatStripsActionPrecondition& get_strips_precondition() const;
-    const FlatStripsActionEffect& get_strips_effect() const;
+    StripsActionPrecondition& get_strips_precondition();
+    const StripsActionPrecondition& get_strips_precondition() const;
+
     /* Effect*/
-    const FlatDerivedEffect& get_derived_effect() const;
+    SimpleDerivedEffect& get_derived_effect();
+    const SimpleDerivedEffect& get_derived_effect() const;
 
     // TODO: pass state instead of separated fluent and derived atoms
     bool is_applicable(const FlatBitset& state_fluent_atoms, const FlatBitset& state_derived_atoms, const FlatBitset& static_positive_atoms) const;
@@ -119,14 +71,20 @@ public:
     bool is_statically_applicable(const FlatBitset& static_positive_bitset) const;
 };
 
-extern bool operator==(GroundAxiom lhs, GroundAxiom rhs);
+extern bool operator==(const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs);
 
 }
 
 template<>
-struct std::hash<mimir::GroundAxiom>
+struct cista::storage::DerefStdHasher<mimir::GroundAxiomImpl>
 {
-    size_t operator()(mimir::GroundAxiom element) const;
+    size_t operator()(const mimir::GroundAxiomImpl* ptr) const;
+};
+
+template<>
+struct cista::storage::DerefStdEqualTo<mimir::GroundAxiomImpl>
+{
+    bool operator()(const mimir::GroundAxiomImpl* lhs, const mimir::GroundAxiomImpl* rhs) const;
 };
 
 namespace mimir
@@ -136,6 +94,8 @@ namespace mimir
  * Mimir types
  */
 
+using FlatAxiomSet = cista::storage::UnorderedSet<GroundAxiomImpl>;
+
 using GroundAxiomList = std::vector<GroundAxiom>;
 using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 
@@ -144,7 +104,7 @@ using GroundAxiomSet = std::unordered_set<GroundAxiom>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<FlatDerivedEffect, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLFactories&>& data);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLFactories&>& data);

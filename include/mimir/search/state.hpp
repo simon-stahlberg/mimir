@@ -88,17 +88,10 @@ struct cista::storage::DerefStdEqualTo<mimir::StateImpl>
     bool operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const;
 };
 
-// Hash the state index, since states returned by the `StateRepository` are already unique by their index.
-template<>
-struct std::hash<mimir::State>
-{
-    size_t operator()(mimir::State element) const;
-};
-
 namespace mimir
 {
 
-using FlatStateSet = cista::storage::UnorderedSet<StateImpl>;
+using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
 
 using StateList = std::vector<State>;
 

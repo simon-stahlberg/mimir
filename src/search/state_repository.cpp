@@ -126,17 +126,15 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     /* 3. Construct non-extended state */
 
     /* STRIPS effects*/
-    auto strips_action_effect = StripsActionEffect(action.get_strips_effect());
+    const auto& strips_action_effect = action->get_strips_effect();
     fluent_state_atoms -= strips_action_effect.get_negative_effects();
     fluent_state_atoms |= strips_action_effect.get_positive_effects();
     /* Conditional effects */
-    for (const auto& flat_conditional_effect : action.get_conditional_effects())
+    for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        auto cond_effect_proxy = ConditionalEffect(flat_conditional_effect);
-
-        if (cond_effect_proxy.is_applicable(m_aag->get_problem(), state))
+        if (conditional_effect.is_applicable(m_aag->get_problem(), state))
         {
-            const auto simple_effect = cond_effect_proxy.get_simple_effect();
+            const auto simple_effect = conditional_effect.get_simple_effect();
 
             if (simple_effect.is_negated)
             {

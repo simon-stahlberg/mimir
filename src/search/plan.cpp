@@ -29,7 +29,7 @@ Plan to_plan(const GroundActionList& action_view_list, const PDDLFactories& fact
         std::stringstream ss;
         ss << std::make_tuple(std::cref(factories), action);
         actions.push_back(ss.str());
-        cost += action.get_cost();
+        cost += action->get_cost();
     }
     return Plan(std::move(actions), cost);
 }

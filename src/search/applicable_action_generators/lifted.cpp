@@ -127,7 +127,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_effect = [this](const Literal<Fluent>& literal, FlatSimpleEffect& ref_effect, const auto& binding)
+    const auto fill_effect = [this](const Literal<Fluent>& literal, SimpleEffect& ref_effect, const auto& binding)
     {
         const auto grounded_literal = m_pddl_factories->ground_literal(literal, binding);
         ref_effect.is_negated = grounded_literal->is_negated();

@@ -37,7 +37,7 @@ private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     bool m_problem_or_domain_has_axioms;
 
-    FlatStateSet m_states;
+    StateImplSet m_states;
     StateImpl m_state_builder;
 
     FlatBitset m_reached_fluent_atoms;

@@ -34,8 +34,6 @@ bool cista::storage::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::
     return lhs->get_atoms<mimir::Fluent>() == rhs->get_atoms<mimir::Fluent>();
 }
 
-size_t std::hash<mimir::State>::operator()(mimir::State element) const { return element->get_index(); }
-
 namespace mimir
 {
 
