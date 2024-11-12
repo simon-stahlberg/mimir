@@ -320,7 +320,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
                     state_space->get_pddl_factories()->get_ground_atoms_from_indices<Derived>(precondition.get_positive_precondition<Derived>()),
                     pruned_objects);
 
-                for (const auto& conditional_effect : get_creating_action(transition).get_conditional_effects())
+                for (const auto& conditional_effect : get_creating_action(transition)->get_conditional_effects())
                 {
                     mark_objects_as_not_prunable(
                         state_space->get_pddl_factories()->get_ground_atoms_from_indices<Static>(conditional_effect.get_negative_precondition<Static>()),

@@ -167,11 +167,11 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     for (const auto& action : delete_free_lifted_aag->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_factories->get_action(action.get_action_index())))
+        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_factories->get_action(action->get_action_index())))
         {
-            auto action_arguments = m_pddl_factories->get_objects_from_indices(action.get_object_indices());
+            auto action_arguments = m_pddl_factories->get_objects_from_indices(action->get_object_indices());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action.is_statically_applicable(problem->get_static_initial_positive_atoms()))
+            if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms()))
             {
                 ground_actions.push_back(grounded_action);
             }
@@ -190,11 +190,11 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     for (const auto& axiom : delete_free_lifted_aag->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_factories->get_axiom(axiom.get_axiom_index())))
+        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_factories->get_axiom(axiom->get_axiom_index())))
         {
-            auto axiom_arguments = m_pddl_factories->get_objects_from_indices(axiom.get_objects());
+            auto axiom_arguments = m_pddl_factories->get_objects_from_indices(axiom->get_objects());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom.is_statically_applicable(problem->get_static_initial_positive_atoms()))
+            if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
@@ -238,15 +238,15 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& une
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                if (!lifted_partition.get_axioms().count(m_pddl_factories->get_axiom(grounded_axiom.get_axiom_index())))
+                if (!lifted_partition.get_axioms().count(m_pddl_factories->get_axiom(grounded_axiom->get_axiom_index())))
                 {
                     // axiom not part of same partition
                     continue;
                 }
 
-                assert(!grounded_axiom.get_derived_effect().is_negated);
+                assert(!grounded_axiom->get_derived_effect().is_negated);
 
-                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_index;
+                const auto grounded_atom_id = grounded_axiom->get_derived_effect().atom_index;
 
                 if (!unextended_state.get_atoms<Derived>().get(grounded_atom_id))
                 {

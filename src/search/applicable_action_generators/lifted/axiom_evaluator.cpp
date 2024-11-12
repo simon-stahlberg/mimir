@@ -87,13 +87,13 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(!grounded_axiom.get_derived_effect().is_negated);
+                assert(!grounded_axiom->get_derived_effect().is_negated);
 
-                assert(grounded_axiom.is_applicable(unextended_state.get_atoms<Fluent>(),
-                                                    unextended_state.get_atoms<Derived>(),
-                                                    m_problem->get_static_initial_positive_atoms()));
+                assert(grounded_axiom->is_applicable(unextended_state.get_atoms<Fluent>(),
+                                                     unextended_state.get_atoms<Derived>(),
+                                                     m_problem->get_static_initial_positive_atoms()));
 
-                const auto grounded_atom_id = grounded_axiom.get_derived_effect().atom_index;
+                const auto grounded_atom_id = grounded_axiom->get_derived_effect().atom_index;
 
                 if (!unextended_state.get_atoms<Derived>().get(grounded_atom_id))
                 {
@@ -223,13 +223,13 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     }
 
     /* Precondition */
-    auto strips_precondition_proxy = StripsActionPreconditionBuilder(m_axiom_builder.get_strips_precondition());
-    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
-    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
-    auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
-    auto& negative_static_precondition = strips_precondition_proxy.get_negative_precondition<Static>();
-    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_precondition<Derived>();
-    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_precondition<Derived>();
+    auto& strips_precondition = m_axiom_builder.get_strips_precondition();
+    auto& positive_fluent_precondition = strips_precondition.get_positive_precondition<Fluent>();
+    auto& negative_fluent_precondition = strips_precondition.get_negative_precondition<Fluent>();
+    auto& positive_static_precondition = strips_precondition.get_positive_precondition<Static>();
+    auto& negative_static_precondition = strips_precondition.get_negative_precondition<Static>();
+    auto& positive_derived_precondition = strips_precondition.get_positive_precondition<Derived>();
+    auto& negative_derived_precondition = strips_precondition.get_negative_precondition<Derived>();
     positive_fluent_precondition.unset_all();
     negative_fluent_precondition.unset_all();
     positive_static_precondition.unset_all();
@@ -255,8 +255,8 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     m_axiom_builder.get_derived_effect().is_negated = false;
     m_axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
 
-    const auto [iter, inserted] = m_flat_axioms.insert(m_axiom_builder.get_data());
-    const auto grounded_axiom = GroundAxiom(**iter);
+    const auto [iter, inserted] = m_flat_axioms.insert(m_axiom_builder);
+    const auto grounded_axiom = *iter;
 
     if (inserted)
     {

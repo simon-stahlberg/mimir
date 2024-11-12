@@ -177,7 +177,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
             set_status(successor_search_node, SearchNodeStatus::OPEN);
             set_parent_state(successor_search_node, state->get_index());
-            set_creating_action(successor_search_node, action.get_index());
+            set_creating_action(successor_search_node, action->get_index());
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
             queue.emplace_back(successor_state);

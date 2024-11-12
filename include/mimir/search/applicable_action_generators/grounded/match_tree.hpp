@@ -171,12 +171,10 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
     auto dontcare_elements = std::vector<T> {};
     for (const auto& element : elements)
     {
-        const bool positive_condition = (is_fluent) ?
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_positive_precondition<Fluent>().get(atom_id) :
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_positive_precondition<Derived>().get(atom_id);
-        const bool negative_condition = (is_fluent) ?
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_negative_precondition<Fluent>().get(atom_id) :
-                                            StripsActionPrecondition(element.get_strips_precondition()).get_negative_precondition<Derived>().get(atom_id);
+        const bool positive_condition = (is_fluent) ? element->get_strips_precondition().template get_positive_precondition<Fluent>().get(atom_id) :
+                                                      element->get_strips_precondition().template get_positive_precondition<Derived>().get(atom_id);
+        const bool negative_condition = (is_fluent) ? element->get_strips_precondition().template get_negative_precondition<Fluent>().get(atom_id) :
+                                                      element->get_strips_precondition().template get_negative_precondition<Derived>().get(atom_id);
 
         if (positive_condition && negative_condition)
         {

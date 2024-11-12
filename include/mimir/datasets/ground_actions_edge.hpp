@@ -47,7 +47,7 @@ inline ContinuousCost get_cost(const GroundActionsEdge& edge)
     auto cost = std::numeric_limits<ContinuousCost>::infinity();
 
     const auto actions = get_actions(edge);
-    std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, action.get_cost()); });
+    std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, action->get_cost()); });
 
     return cost;
 }

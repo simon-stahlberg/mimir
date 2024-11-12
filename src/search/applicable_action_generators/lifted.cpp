@@ -148,13 +148,13 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     }
 
     /* Precondition */
-    auto strips_precondition_proxy = StripsActionPreconditionBuilder(m_action_builder.get_strips_precondition());
-    auto& positive_fluent_precondition = strips_precondition_proxy.get_positive_precondition<Fluent>();
-    auto& negative_fluent_precondition = strips_precondition_proxy.get_negative_precondition<Fluent>();
-    auto& positive_static_precondition = strips_precondition_proxy.get_positive_precondition<Static>();
-    auto& negative_static_precondition = strips_precondition_proxy.get_negative_precondition<Static>();
-    auto& positive_derived_precondition = strips_precondition_proxy.get_positive_precondition<Derived>();
-    auto& negative_derived_precondition = strips_precondition_proxy.get_negative_precondition<Derived>();
+    auto& strips_precondition = m_action_builder.get_strips_precondition();
+    auto& positive_fluent_precondition = strips_precondition.get_positive_precondition<Fluent>();
+    auto& negative_fluent_precondition = strips_precondition.get_negative_precondition<Fluent>();
+    auto& positive_static_precondition = strips_precondition.get_positive_precondition<Static>();
+    auto& negative_static_precondition = strips_precondition.get_negative_precondition<Static>();
+    auto& positive_derived_precondition = strips_precondition.get_positive_precondition<Derived>();
+    auto& negative_derived_precondition = strips_precondition.get_negative_precondition<Derived>();
     positive_fluent_precondition.unset_all();
     negative_fluent_precondition.unset_all();
     positive_static_precondition.unset_all();
@@ -166,9 +166,9 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     m_pddl_factories->ground_and_fill_bitset(action->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Simple effects */
-    auto strips_effect_proxy = StripsActionEffectBuilder(m_action_builder.get_strips_effect());
-    auto& positive_effect = strips_effect_proxy.get_positive_effects();
-    auto& negative_effect = strips_effect_proxy.get_negative_effects();
+    auto& strips_effect = m_action_builder.get_strips_effect();
+    auto& positive_effect = strips_effect.get_positive_effects();
+    auto& negative_effect = strips_effect.get_negative_effects();
     positive_effect.unset_all();
     negative_effect.unset_all();
     auto effect_literals = LiteralList<Fluent> {};
@@ -226,14 +226,14 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                         binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
                     }
 
-                    auto cond_effect_proxy_j = ConditionalEffectBuilder(conditional_effects[j]);
-                    auto& cond_positive_fluent_precondition_j = cond_effect_proxy_j.get_positive_precondition<Fluent>();
-                    auto& cond_negative_fluent_precondition_j = cond_effect_proxy_j.get_negative_precondition<Fluent>();
-                    auto& cond_positive_static_precondition_j = cond_effect_proxy_j.get_positive_precondition<Static>();
-                    auto& cond_negative_static_precondition_j = cond_effect_proxy_j.get_negative_precondition<Static>();
-                    auto& cond_positive_derived_precondition_j = cond_effect_proxy_j.get_positive_precondition<Derived>();
-                    auto& cond_negative_derived_precondition_j = cond_effect_proxy_j.get_negative_precondition<Derived>();
-                    auto& cond_simple_effect_j = cond_effect_proxy_j.get_simple_effect();
+                    auto& cond_effect_j = conditional_effects[j];
+                    auto& cond_positive_fluent_precondition_j = cond_effect_j.get_positive_precondition<Fluent>();
+                    auto& cond_negative_fluent_precondition_j = cond_effect_j.get_negative_precondition<Fluent>();
+                    auto& cond_positive_static_precondition_j = cond_effect_j.get_positive_precondition<Static>();
+                    auto& cond_negative_static_precondition_j = cond_effect_j.get_negative_precondition<Static>();
+                    auto& cond_positive_derived_precondition_j = cond_effect_j.get_positive_precondition<Derived>();
+                    auto& cond_negative_derived_precondition_j = cond_effect_j.get_negative_precondition<Derived>();
+                    auto& cond_simple_effect_j = cond_effect_j.get_simple_effect();
                     cond_positive_fluent_precondition_j.clear();
                     cond_negative_fluent_precondition_j.clear();
                     cond_positive_static_precondition_j.clear();
@@ -261,14 +261,14 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
             else
             {
                 conditional_effects.resize(conditional_effects.size() + 1);
-                auto cond_effect_proxy = ConditionalEffectBuilder(conditional_effects.back());
-                auto& cond_positive_fluent_precondition = cond_effect_proxy.get_positive_precondition<Fluent>();
-                auto& cond_negative_fluent_precondition = cond_effect_proxy.get_negative_precondition<Fluent>();
-                auto& cond_positive_static_precondition = cond_effect_proxy.get_positive_precondition<Static>();
-                auto& cond_negative_static_precondition = cond_effect_proxy.get_negative_precondition<Static>();
-                auto& cond_positive_derived_precondition = cond_effect_proxy.get_positive_precondition<Derived>();
-                auto& cond_negative_derived_precondition = cond_effect_proxy.get_negative_precondition<Derived>();
-                auto& cond_simple_effect = cond_effect_proxy.get_simple_effect();
+                auto& cond_effect = conditional_effects.back();
+                auto& cond_positive_fluent_precondition = cond_effect.get_positive_precondition<Fluent>();
+                auto& cond_negative_fluent_precondition = cond_effect.get_negative_precondition<Fluent>();
+                auto& cond_positive_static_precondition = cond_effect.get_positive_precondition<Static>();
+                auto& cond_negative_static_precondition = cond_effect.get_negative_precondition<Static>();
+                auto& cond_positive_derived_precondition = cond_effect.get_positive_precondition<Derived>();
+                auto& cond_negative_derived_precondition = cond_effect.get_negative_precondition<Derived>();
+                auto& cond_simple_effect = cond_effect.get_simple_effect();
                 cond_positive_fluent_precondition.clear();
                 cond_negative_fluent_precondition.clear();
                 cond_positive_static_precondition.clear();
@@ -293,8 +293,8 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
         }
     }
 
-    const auto [iter, inserted] = m_flat_actions.insert(m_action_builder.get_data());
-    const auto grounded_action = GroundAction(**iter);
+    const auto [iter, inserted] = m_flat_actions.insert(m_action_builder);
+    const auto grounded_action = *iter;
     if (inserted)
     {
         m_actions_by_index.push_back(grounded_action);

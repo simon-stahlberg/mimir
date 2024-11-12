@@ -221,14 +221,14 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
             /* Check whether state must be reopened or not. */
 
-            const auto new_successor_g_value = get_g_value(search_node) + action.get_cost();
+            const auto new_successor_g_value = get_g_value(search_node) + action->get_cost();
             if (new_successor_g_value < get_g_value(successor_search_node))
             {
                 /* Open/Reopen state with updated f_value. */
 
                 set_status(successor_search_node, SearchNodeStatus::OPEN);
                 set_parent_state(successor_search_node, state->get_index());
-                set_creating_action(successor_search_node, action.get_index());
+                set_creating_action(successor_search_node, action->get_index());
                 set_g_value(successor_search_node, new_successor_g_value);
                 if (is_new_successor_state)
                 {

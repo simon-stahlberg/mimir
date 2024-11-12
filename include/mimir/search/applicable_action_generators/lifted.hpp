@@ -54,7 +54,7 @@ private:
 
     FlatActionSet m_flat_actions;
     GroundActionList m_actions_by_index;
-    GroundActionBuilder m_action_builder;
+    GroundActionImpl m_action_builder;
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;
 
     GroundFunctionToValue m_ground_function_value_costs;
