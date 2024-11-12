@@ -104,7 +104,7 @@ template Color ProblemColorFunction::get_color(GroundAtom<Derived> atom, size_t 
 template<DynamicPredicateCategory P>
 Color ProblemColorFunction::get_color(State state, GroundLiteral<P> literal, size_t pos, bool mark_true_goal_literal) const
 {
-    bool is_satisfied_in_goal = state.literal_holds(literal);
+    bool is_satisfied_in_goal = state->literal_holds(literal);
     return m_name_to_color.at(literal->get_atom()->get_predicate()->get_name() + ":g"
                               + (mark_true_goal_literal ? (is_satisfied_in_goal ? ":true" : ":false") : "") + ":" + std::to_string(pos));
 }

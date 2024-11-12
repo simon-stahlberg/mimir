@@ -24,63 +24,34 @@
 #include <ostream>
 #include <tuple>
 
-size_t cista::storage::DerefStdHasher<mimir::FlatState>::operator()(const mimir::FlatState* ptr) const { return mimir::hash_combine(cista::get<1>(*ptr)); }
-
-bool cista::storage::DerefStdEqualTo<mimir::FlatState>::operator()(const mimir::FlatState* lhs, const mimir::FlatState* rhs) const
+size_t cista::storage::DerefStdHasher<mimir::StateImpl>::operator()(const mimir::StateImpl* ptr) const
 {
-    return cista::get<1>(*lhs) == cista::get<1>(*rhs);
+    return mimir::hash_combine(ptr->get_atoms<mimir::Fluent>());
 }
 
-size_t std::hash<mimir::State>::operator()(mimir::State element) const { return element.get_index(); }
+bool cista::storage::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const
+{
+    return lhs->get_atoms<mimir::Fluent>() == rhs->get_atoms<mimir::Fluent>();
+}
+
+size_t std::hash<mimir::State>::operator()(mimir::State element) const { return element->get_index(); }
 
 namespace mimir
 {
 
-/* StateBuilder */
-
-StateBuilder::StateBuilder() : m_data() {}
-
-Index& StateBuilder::get_index() { return cista::get<0>(m_data); }
-
-template<DynamicPredicateCategory P>
-FlatBitset& StateBuilder::get_atoms()
-{
-    if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return cista::get<1>(m_data);
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return cista::get<2>(m_data);
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
-
-template FlatBitset& StateBuilder::get_atoms<Fluent>();
-template FlatBitset& StateBuilder::get_atoms<Derived>();
-
-FlatState& StateBuilder::get_data() { return m_data; }
-const FlatState& StateBuilder::get_data() const { return m_data; }
-
 /* State */
-State::State(const FlatState& data) : m_data(data) {}
-
-Index State::get_index() const { return cista::get<0>(m_data.get()); }
 
 template<DynamicPredicateCategory P>
-bool State::contains(GroundAtom<P> atom) const
+bool StateImpl::contains(GroundAtom<P> atom) const
 {
     return get_atoms<P>().get(atom->get_index());
 }
 
-template bool State::contains(GroundAtom<Fluent> atom) const;
-template bool State::contains(GroundAtom<Derived> atom) const;
+template bool StateImpl::contains(GroundAtom<Fluent> atom) const;
+template bool StateImpl::contains(GroundAtom<Derived> atom) const;
 
 template<DynamicPredicateCategory P>
-bool State::superset_of(const GroundAtomList<P>& atoms) const
+bool StateImpl::superset_of(const GroundAtomList<P>& atoms) const
 {
     for (const auto& atom : atoms)
     {
@@ -93,20 +64,20 @@ bool State::superset_of(const GroundAtomList<P>& atoms) const
     return true;
 }
 
-template bool State::superset_of(const GroundAtomList<Fluent>& atoms) const;
-template bool State::superset_of(const GroundAtomList<Derived>& atoms) const;
+template bool StateImpl::superset_of(const GroundAtomList<Fluent>& atoms) const;
+template bool StateImpl::superset_of(const GroundAtomList<Derived>& atoms) const;
 
 template<DynamicPredicateCategory P>
-bool State::literal_holds(GroundLiteral<P> literal) const
+bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
     return literal->is_negated() != contains(literal->get_atom());
 }
 
-template bool State::literal_holds(GroundLiteral<Fluent> literal) const;
-template bool State::literal_holds(GroundLiteral<Derived> literal) const;
+template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
+template bool StateImpl::literal_holds(GroundLiteral<Derived> literal) const;
 
 template<DynamicPredicateCategory P>
-bool State::literals_hold(const GroundLiteralList<P>& literals) const
+bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 {
     for (const auto& literal : literals)
     {
@@ -119,31 +90,55 @@ bool State::literals_hold(const GroundLiteralList<P>& literals) const
     return true;
 }
 
-template bool State::literals_hold(const GroundLiteralList<Fluent>& literals) const;
-template bool State::literals_hold(const GroundLiteralList<Derived>& literals) const;
+template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals) const;
+template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
+
+Index& StateImpl::get_index() { return m_index; }
+
+Index StateImpl::get_index() const { return m_index; }
 
 template<DynamicPredicateCategory P>
-const FlatBitset& State::get_atoms() const
+FlatBitset& StateImpl::get_atoms()
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
-        return cista::get<1>(m_data.get());
+        return m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return cista::get<2>(m_data.get());
+        return m_derived_atoms;
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for DynamicPredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
     }
 }
 
-template const FlatBitset& State::get_atoms<Fluent>() const;
-template const FlatBitset& State::get_atoms<Derived>() const;
+template FlatBitset& StateImpl::get_atoms<Fluent>();
+template FlatBitset& StateImpl::get_atoms<Derived>();
 
-bool operator==(State lhs, State rhs) { return lhs.get_index() == rhs.get_index(); }
-bool operator!=(State lhs, State rhs) { return !(lhs == rhs); }
+template<DynamicPredicateCategory P>
+const FlatBitset& StateImpl::get_atoms() const
+{
+    if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_fluent_atoms;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_derived_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+    }
+}
+
+template const FlatBitset& StateImpl::get_atoms<Fluent>() const;
+template const FlatBitset& StateImpl::get_atoms<Derived>() const;
+
+bool operator==(const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); }
+bool operator!=(const StateImpl& lhs, const StateImpl& rhs) { return !(lhs == rhs); }
 
 /**
  * Pretty printing
@@ -158,12 +153,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
     auto out_static_ground_atoms = GroundAtomList<Static> {};
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_indices(state.get_atoms<Fluent>(), out_fluent_ground_atoms);
+    pddl_factories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), out_fluent_ground_atoms);
     pddl_factories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms(), out_static_ground_atoms);
-    pddl_factories.get_ground_atoms_from_indices(state.get_atoms<Derived>(), out_derived_ground_atoms);
+    pddl_factories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), out_derived_ground_atoms);
 
     os << "State("
-       << "index=" << state.get_index() << ", "
+       << "index=" << state->get_index() << ", "
        << "fluent atoms=" << out_fluent_ground_atoms << ", "
        << "static atoms=" << out_static_ground_atoms << ", "
        << "derived atoms=" << out_derived_ground_atoms << ")";

@@ -112,7 +112,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     const auto start_h_value = m_heuristic->compute_heuristic(start_state);
     const auto start_f_value = start_g_value + start_h_value;
 
-    auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
+    auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     set_status(start_search_node, (start_h_value == std::numeric_limits<ContinuousCost>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN);
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
@@ -151,7 +151,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         const auto state = openlist.top();
         openlist.pop();
 
-        auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
+        auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
 
@@ -205,7 +205,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         for (const auto& action : applicable_actions)
         {
             const auto successor_state = m_ssg->get_or_create_successor_state(state, action);
-            auto successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
+            auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
 
@@ -227,7 +227,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                 /* Open/Reopen state with updated f_value. */
 
                 set_status(successor_search_node, SearchNodeStatus::OPEN);
-                set_parent_state(successor_search_node, state.get_index());
+                set_parent_state(successor_search_node, state->get_index());
                 set_creating_action(successor_search_node, action.get_index());
                 set_g_value(successor_search_node, new_successor_g_value);
                 if (is_new_successor_state)

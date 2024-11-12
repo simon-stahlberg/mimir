@@ -33,19 +33,19 @@ namespace mimir
 
 ProblemGoalCounter::ProblemGoalCounter(Problem problem, State state) : m_problem(problem), m_initial_num_unsatisfied_goals(count_unsatisfied_goals(state)) {}
 
-int ProblemGoalCounter::count_unsatisfied_goals(const State state) const
+int ProblemGoalCounter::count_unsatisfied_goals(State state) const
 {
     int num_unsatisfied_goals = 0;
     for (const auto& literal : m_problem->get_goal_condition<Fluent>())
     {
-        if (!state.literal_holds(literal))
+        if (!state->literal_holds(literal))
         {
             ++num_unsatisfied_goals;
         }
     }
     for (const auto& literal : m_problem->get_goal_condition<Derived>())
     {
-        if (!state.literal_holds(literal))
+        if (!state->literal_holds(literal))
         {
             ++num_unsatisfied_goals;
         }
@@ -55,7 +55,7 @@ int ProblemGoalCounter::count_unsatisfied_goals(const State state) const
 
 bool ProblemGoalCounter::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoalCounter::test_dynamic_goal(const State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
+bool ProblemGoalCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 /* SIW */
 

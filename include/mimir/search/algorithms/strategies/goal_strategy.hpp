@@ -33,7 +33,7 @@ public:
     virtual ~IGoalStrategy() = default;
 
     virtual bool test_static_goal() = 0;
-    virtual bool test_dynamic_goal(const State state) = 0;
+    virtual bool test_dynamic_goal(State state) = 0;
 };
 
 class ProblemGoal : public IGoalStrategy
@@ -45,7 +45,7 @@ public:
     explicit ProblemGoal(Problem problem);
 
     bool test_static_goal() override;
-    bool test_dynamic_goal(const State state) override;
+    bool test_dynamic_goal(State state) override;
 };
 }
 

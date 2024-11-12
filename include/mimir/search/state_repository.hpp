@@ -38,7 +38,7 @@ private:
     bool m_problem_or_domain_has_axioms;
 
     FlatStateSet m_states;
-    StateBuilder m_state_builder;
+    StateImpl m_state_builder;
 
     FlatBitset m_reached_fluent_atoms;
     FlatBitset m_reached_derived_atoms;

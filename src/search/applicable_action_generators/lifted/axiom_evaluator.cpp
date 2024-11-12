@@ -29,7 +29,7 @@
 namespace mimir
 {
 
-void AxiomEvaluator::generate_and_apply_axioms(StateBuilder& unextended_state)
+void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
 {
     /* 1. Initialize assignment set */
 
@@ -72,7 +72,7 @@ void AxiomEvaluator::generate_and_apply_axioms(StateBuilder& unextended_state)
             for (const auto& axiom : relevant_axioms)
             {
                 auto& condition_grounder = m_condition_grounders.at(axiom);
-                condition_grounder.compute_bindings(State(unextended_state.get_data()), fluent_assignment_set, derived_assignment_set, bindings);
+                condition_grounder.compute_bindings(&unextended_state, fluent_assignment_set, derived_assignment_set, bindings);
 
                 for (auto& binding : bindings)
                 {

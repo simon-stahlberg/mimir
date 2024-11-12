@@ -71,7 +71,7 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const G
     {
         for (const auto& state : group)
         {
-            if (state.get_atoms<Fluent>().is_superseteq(fluent_atom_bitset))
+            if (state->get_atoms<Fluent>().is_superseteq(fluent_atom_bitset))
             {
                 states.push_back(state);
             }

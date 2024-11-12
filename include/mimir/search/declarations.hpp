@@ -38,7 +38,8 @@ class GroundAction;
 class GroundAxiom;
 
 // State
-class State;
+struct StateImpl;
+using State = const StateImpl*;
 
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;

@@ -248,8 +248,8 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         auto group = partitioning.at(group_index);
 
         // Reuse memory.
-        always_true_fluent_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second)).get_atoms<Fluent>();
-        always_true_derived_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second)).get_atoms<Derived>();
+        always_true_fluent_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second))->get_atoms<Fluent>();
+        always_true_derived_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second))->get_atoms<Derived>();
         always_false_fluent_atoms.unset_all();
         always_false_derived_atoms.unset_all();
 
@@ -260,10 +260,10 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
         for (const auto& [group_index, state_index] : group)
         {
             const auto& state = get_state(state_space->get_graph().get_vertices().at(state_index));
-            always_true_fluent_atoms &= state.get_atoms<Fluent>();
-            always_true_derived_atoms &= state.get_atoms<Derived>();
-            always_false_fluent_atoms -= state.get_atoms<Fluent>();
-            always_false_derived_atoms -= state.get_atoms<Derived>();
+            always_true_fluent_atoms &= state->get_atoms<Fluent>();
+            always_true_derived_atoms &= state->get_atoms<Derived>();
+            always_false_fluent_atoms -= state->get_atoms<Fluent>();
+            always_false_derived_atoms -= state->get_atoms<Derived>();
         }
 
         /* 2. Initialize prunable objects to all objects.

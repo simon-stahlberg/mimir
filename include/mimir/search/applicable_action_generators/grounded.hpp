@@ -64,7 +64,7 @@ public:
 
     void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
 
-    void generate_and_apply_axioms(StateBuilder& unextended_state) override;
+    void generate_and_apply_axioms(StateImpl& unextended_state) override;
 
     void on_finish_search_layer() const override;
 

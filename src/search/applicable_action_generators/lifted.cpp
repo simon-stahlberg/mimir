@@ -318,13 +318,13 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     // Create the assignment sets that are shared by all action schemas.
 
     auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
-    auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state.get_atoms<Fluent>());
+    auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
 
     auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
 
-    auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state.get_atoms<Derived>());
+    auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
 
     // Get all applicable ground actions.
@@ -345,7 +345,7 @@ void LiftedApplicableActionGenerator::generate_applicable_actions(State state, G
     m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_factories);
 }
 
-void LiftedApplicableActionGenerator::generate_and_apply_axioms(StateBuilder& unextended_state)
+void LiftedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& unextended_state)
 {
     // In the lifted case, we use the axiom evaluator.
     m_axiom_evaluator.generate_and_apply_axioms(unextended_state);

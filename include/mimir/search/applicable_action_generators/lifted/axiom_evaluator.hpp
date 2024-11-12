@@ -66,7 +66,7 @@ public:
     AxiomEvaluator& operator=(AxiomEvaluator&& other) = delete;
 
     /// @brief Generate and apply all applicable axioms.
-    void generate_and_apply_axioms(StateBuilder& unextended_state);
+    void generate_and_apply_axioms(StateImpl& unextended_state);
 
     /// @brief Return the axiom partitioning.
     const std::vector<AxiomPartition>& get_axiom_partitioning() const;

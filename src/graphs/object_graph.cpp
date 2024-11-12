@@ -81,14 +81,14 @@ static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_
             add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
         }
     }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Fluent>(state.get_atoms<Fluent>()))
+    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>()))
     {
         if (!pruning_strategy.prune(state_index, atom))
         {
             add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
         }
     }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Derived>(state.get_atoms<Derived>()))
+    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>()))
     {
         if (!pruning_strategy.prune(state_index, atom))
         {

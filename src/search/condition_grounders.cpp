@@ -39,7 +39,7 @@ bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals,
     {
         auto ground_literal = m_pddl_factories->ground_literal(literal, binding);
 
-        if (!state.literal_holds(ground_literal))
+        if (!state->literal_holds(ground_literal))
         {
             return false;
         }
@@ -80,7 +80,7 @@ bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Pr
     {
         if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            if (!state.literal_holds(pddl_factories.ground_literal(literal, {})))
+            if (!state->literal_holds(pddl_factories.ground_literal(literal, {})))
             {
                 return false;
             }

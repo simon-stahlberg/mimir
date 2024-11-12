@@ -264,7 +264,7 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::begin(const S
 {
     atom_indices.clear();
 
-    const auto& fluent_atoms = state.get_atoms<Fluent>();
+    const auto& fluent_atoms = state->get_atoms<Fluent>();
     atom_indices.insert(atom_indices.end(), fluent_atoms.begin(), fluent_atoms.end());
     // Add place holder to generate tuples of size < arity
     atom_indices.push_back(tuple_index_mapper->get_num_atoms());
@@ -622,8 +622,8 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
 {
     a_atom_indices[0].clear();
     a_atom_indices[1].clear();
-    const auto& state_fluent_atoms = state.get_atoms<Fluent>();
-    const auto& succ_state_fluent_atoms = succ_state.get_atoms<Fluent>();
+    const auto& state_fluent_atoms = state->get_atoms<Fluent>();
+    const auto& succ_state_fluent_atoms = succ_state->get_atoms<Fluent>();
     for (const auto& fluent_atom : succ_state_fluent_atoms)
     {
         state_fluent_atoms.get(fluent_atom) ? a_atom_indices[0].push_back(fluent_atom) : a_atom_indices[1].push_back(fluent_atom);
@@ -788,12 +788,12 @@ ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_n
 
 bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 {
-    if (m_generated_states.count(state.get_index()))
+    if (m_generated_states.count(state->get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state));
         return true;
     }
-    m_generated_states.insert(state.get_index());
+    m_generated_states.insert(state->get_index());
 
     return !m_novelty_table.test_novelty_and_update_table(state);
 }
@@ -805,12 +805,12 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
         return true;
     }
 
-    if (m_generated_states.count(succ_state.get_index()))
+    if (m_generated_states.count(succ_state->get_index()))
     {
         assert(!m_novelty_table.test_novelty_and_update_table(state, succ_state));
         return true;
     }
-    m_generated_states.insert(succ_state.get_index());
+    m_generated_states.insert(succ_state->get_index());
 
     return !m_novelty_table.test_novelty_and_update_table(state, succ_state);
 }

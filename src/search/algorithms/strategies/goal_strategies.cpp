@@ -24,8 +24,8 @@ ProblemGoal::ProblemGoal(Problem problem) : m_problem(problem) {}
 
 bool ProblemGoal::test_static_goal() { return m_problem->static_goal_holds(); }
 
-bool ProblemGoal::test_dynamic_goal(const State state)
+bool ProblemGoal::test_dynamic_goal(State state)
 {
-    return state.literals_hold(m_problem->get_goal_condition<Fluent>()) && state.literals_hold(m_problem->get_goal_condition<Derived>());
+    return state->literals_hold(m_problem->get_goal_condition<Fluent>()) && state->literals_hold(m_problem->get_goal_condition<Derived>());
 }
 }

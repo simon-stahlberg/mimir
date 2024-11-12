@@ -45,17 +45,6 @@ bool cista::storage::DerefStdEqualTo<mimir::FlatAction>::operator()(const mimir:
 namespace mimir
 {
 
-/* FlatSimpleEffect*/
-
-bool FlatSimpleEffect::operator==(const FlatSimpleEffect& other) const
-{
-    if (this != &other)
-    {
-        return is_negated == other.is_negated && atom_index == other.atom_index;
-    }
-    return true;
-}
-
 /* StripsActionPreconditionBuilder */
 StripsActionPreconditionBuilder::StripsActionPreconditionBuilder(FlatStripsActionPrecondition& builder) : m_builder(builder) {}
 
@@ -176,7 +165,7 @@ template bool StripsActionPrecondition::is_applicable<Derived>(const FlatBitset&
 template<DynamicPredicateCategory P>
 bool StripsActionPrecondition::is_applicable(State state) const
 {
-    return is_applicable<P>(state.get_atoms<P>());
+    return is_applicable<P>(state->get_atoms<P>());
 }
 
 template bool StripsActionPrecondition::is_applicable<Fluent>(State state) const;
@@ -331,7 +320,7 @@ const FlatSimpleEffect& ConditionalEffect::get_simple_effect() const { return ci
 template<DynamicPredicateCategory P>
 bool ConditionalEffect::is_applicable(State state) const
 {
-    const auto& state_atoms = state.get_atoms<P>();
+    const auto& state_atoms = state->get_atoms<P>();
 
     return is_superseteq(state_atoms, get_positive_precondition<P>())  //
            && are_disjoint(state_atoms, get_negative_precondition<P>());

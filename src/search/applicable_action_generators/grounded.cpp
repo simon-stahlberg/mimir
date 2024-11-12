@@ -101,13 +101,13 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     auto delete_free_lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(delete_free_problem, m_pddl_factories);
     auto delete_free_ssg = StateRepository(delete_free_lifted_aag);
 
-    auto state_builder = StateBuilder();
-    auto state_builder_tmp = StateBuilder();
+    auto state_builder = StateImpl();
+    auto state_builder_tmp = StateImpl();
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
     auto& derived_state_atoms = state_builder.get_atoms<Derived>();
     const auto initial_state = delete_free_ssg.get_or_create_initial_state();
-    fluent_state_atoms = initial_state.get_atoms<Fluent>();
-    derived_state_atoms = initial_state.get_atoms<Derived>();
+    fluent_state_atoms = initial_state->get_atoms<Fluent>();
+    derived_state_atoms = initial_state->get_atoms<Derived>();
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -121,17 +121,17 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         reached_delete_free_explore_fixpoint = true;
 
         state_builder_tmp = state_builder;
-        const auto state = State(state_builder_tmp.get_data());
+        const auto state = state_builder_tmp;
 
         auto num_atoms_before = fluent_state_atoms.count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        delete_free_lifted_aag->generate_applicable_actions(state, actions);
+        delete_free_lifted_aag->generate_applicable_actions(&state, actions);
         for (const auto& action : actions)
         {
-            const auto succ_state = delete_free_ssg.get_or_create_successor_state(state, action);
-            for (const auto atom_id : succ_state.get_atoms<Fluent>())
+            const auto succ_state = delete_free_ssg.get_or_create_successor_state(&state, action);
+            for (const auto atom_id : succ_state->get_atoms<Fluent>())
             {
                 fluent_state_atoms.set(atom_id);
             }
@@ -213,10 +213,10 @@ void GroundedApplicableActionGenerator::generate_applicable_actions(State state,
 {
     out_applicable_actions.clear();
 
-    m_action_match_tree.get_applicable_elements(state.get_atoms<Fluent>(), state.get_atoms<Derived>(), out_applicable_actions);
+    m_action_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), out_applicable_actions);
 }
 
-void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateBuilder& unextended_state)
+void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& unextended_state)
 {
     for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
     {

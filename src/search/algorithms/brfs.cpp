@@ -105,7 +105,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     const auto& pddl_factories = *m_aag->get_pddl_factories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
-    auto start_search_node = get_or_create_search_node(start_state.get_index(), default_search_node, search_nodes);
+    auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     set_status(start_search_node, SearchNodeStatus::OPEN);
     set_g_value(start_search_node, 0);
 
@@ -133,7 +133,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         queue.pop_front();
 
         // We need this before goal test for correct statistics reporting.
-        auto search_node = get_or_create_search_node(state.get_index(), default_search_node, search_nodes);
+        auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
         if (get_g_value(search_node) > g_value)
         {
@@ -164,7 +164,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         {
             /* Open state. */
             const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
-            auto successor_search_node = get_or_create_search_node(successor_state.get_index(), default_search_node, search_nodes);
+            auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
 
@@ -176,7 +176,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             }
 
             set_status(successor_search_node, SearchNodeStatus::OPEN);
-            set_parent_state(successor_search_node, state.get_index());
+            set_parent_state(successor_search_node, state->get_index());
             set_creating_action(successor_search_node, action.get_index());
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 

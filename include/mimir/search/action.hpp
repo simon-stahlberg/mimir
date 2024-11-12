@@ -37,12 +37,12 @@ class PDDLFactories;
  * Flatmemory types
  */
 
+/// @brief `FlatSimpleEffect` encapsulates the effect on a single grounded atom.
+/// We cannot consistently use cista::tuple since nested tuples will automatically be flattened.
 struct FlatSimpleEffect
 {
     bool is_negated;
     uint32_t atom_index;
-
-    bool operator==(const FlatSimpleEffect& other) const;
 };
 
 using FlatStripsActionPrecondition = cista::tuple<FlatBitset,   // positive static atoms

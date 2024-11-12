@@ -75,17 +75,17 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     /* 3. Retrieve cached extended state */
 
     // Test whether there exists an extended state for the given non extended state
-    auto iter = m_states.find(m_state_builder.get_data());
+    auto iter = m_states.find(m_state_builder);
     if (iter != m_states.end())
     {
-        return State(**iter);
+        return *iter;
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
-        auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
-        return State(**iter2);
+        auto [iter2, inserted] = m_states.insert(m_state_builder);
+        return *iter2;
     }
 
     /* Fetch member references for extended construction. */
@@ -100,11 +100,11 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     /* 5. Cache extended state */
 
-    auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
+    auto [iter2, inserted] = m_states.insert(m_state_builder);
 
     /* 6. Return newly generated extended state */
 
-    return State(**iter2);
+    return *iter2;
 }
 
 State StateRepository::get_or_create_successor_state(State state, GroundAction action)
@@ -116,7 +116,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     fluent_state_atoms.unset_all();
 
     // 1. Initialize non-extended state
-    fluent_state_atoms = state.get_atoms<Fluent>();
+    fluent_state_atoms = state->get_atoms<Fluent>();
 
     /* 2. Set state id */
 
@@ -153,17 +153,17 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     /* 4. Retrieve cached extended state */
 
     // Test whether there exists an extended state for the given non extended state
-    auto iter = m_states.find(m_state_builder.get_data());
+    auto iter = m_states.find(m_state_builder);
     if (iter != m_states.end())
     {
-        return State(**iter);
+        return *iter;
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
-        auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
-        return State(**iter2);
+        auto [iter2, inserted] = m_states.insert(m_state_builder);
+        return *iter2;
     }
 
     /* Fetch member references for extended construction. */
@@ -178,11 +178,11 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 6. Cache extended state */
 
-    auto [iter2, inserted] = m_states.insert(m_state_builder.get_data());
+    auto [iter2, inserted] = m_states.insert(m_state_builder);
 
     /* 7. Return newly generated extended state */
 
-    return State(**iter2);
+    return *iter2;
 }
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }

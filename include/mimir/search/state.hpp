@@ -33,33 +33,15 @@
 
 namespace mimir
 {
-using FlatState = cista::tuple<Index, FlatBitset, FlatBitset>;
 
-/// @brief `StateBuilder` encapsulates mutable data of a state.
-class StateBuilder
+/// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
+/// We refer to the fluent atoms as the non-extended state
+/// and the fluent and derived atoms as the extended state.
+struct StateImpl
 {
-public:
-    explicit StateBuilder();
-
-    Index& get_index();
-
-    template<DynamicPredicateCategory P>
-    FlatBitset& get_atoms();
-
-    FlatState& get_data();
-    const FlatState& get_data() const;
-
-private:
-    FlatState m_data;
-};
-
-/// @brief `State` is an immutable view on the data of a state.
-class State
-{
-public:
-    explicit State(const FlatState& data);
-
-    Index get_index() const;
+    Index m_index;
+    FlatBitset m_fluent_atoms;
+    FlatBitset m_derived_atoms;
 
     template<DynamicPredicateCategory P>
     bool contains(GroundAtom<P> atom) const;
@@ -73,16 +55,22 @@ public:
     template<DynamicPredicateCategory P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
+    /* Getters */
+
+    Index& get_index();
+
+    Index get_index() const;
+
+    template<DynamicPredicateCategory P>
+    FlatBitset& get_atoms();
+
     template<DynamicPredicateCategory P>
     const FlatBitset& get_atoms() const;
-
-private:
-    std::reference_wrapper<const FlatState> m_data;
 };
 
 // Compare the state index, since states returned by the `StateRepository` are already unique by their index.
-extern bool operator==(State lhs, State rhs);
-extern bool operator!=(State lhs, State rhs);
+extern bool operator==(const StateImpl& lhs, const StateImpl& rhs);
+extern bool operator!=(const StateImpl& lhs, const StateImpl& rhs);
 
 }
 
@@ -90,14 +78,14 @@ extern bool operator!=(State lhs, State rhs);
 // The extended portion is always equal for the same non-extended portion.
 // We use it for the unique state construction in the `StateRepository`.
 template<>
-struct cista::storage::DerefStdHasher<mimir::FlatState>
+struct cista::storage::DerefStdHasher<mimir::StateImpl>
 {
-    size_t operator()(const mimir::FlatState* ptr) const;
+    size_t operator()(const mimir::StateImpl* ptr) const;
 };
 template<>
-struct cista::storage::DerefStdEqualTo<mimir::FlatState>
+struct cista::storage::DerefStdEqualTo<mimir::StateImpl>
 {
-    bool operator()(const mimir::FlatState* lhs, const mimir::FlatState* rhs) const;
+    bool operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const;
 };
 
 // Hash the state index, since states returned by the `StateRepository` are already unique by their index.
@@ -110,7 +98,7 @@ struct std::hash<mimir::State>
 namespace mimir
 {
 
-using FlatStateSet = cista::storage::UnorderedSet<FlatState>;
+using FlatStateSet = cista::storage::UnorderedSet<StateImpl>;
 
 using StateList = std::vector<State>;
 

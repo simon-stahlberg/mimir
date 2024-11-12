@@ -100,8 +100,8 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         const auto vertex = lifo_queue.back();
         const auto vertex_index = vertex.get_index();
         lifo_queue.pop_back();
-        if (mimir::get_state(vertex).literals_hold(problem->get_goal_condition<Fluent>())
-            && mimir::get_state(vertex).literals_hold(problem->get_goal_condition<Derived>()))
+        if (mimir::get_state(vertex)->literals_hold(problem->get_goal_condition<Fluent>())
+            && mimir::get_state(vertex)->literals_hold(problem->get_goal_condition<Derived>()))
         {
             goal_vertex_indices.insert(vertex_index);
         }

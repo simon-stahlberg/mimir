@@ -145,7 +145,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                   *factories,
                                                   problem,
                                                   initial_state,
-                                                  initial_state.get_index(),
+                                                  initial_state->get_index(),
                                                   options.mark_true_goal_literals,
                                                   *object_graph_pruning_strategy);
     // std::cout << problem->get_filepath().value() << std::endl;
@@ -171,7 +171,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
         lifo_queue.pop_back();
 
-        if (state.literals_hold(problem->get_goal_condition<Fluent>()) && state.literals_hold(problem->get_goal_condition<Derived>()))
+        if (state->literals_hold(problem->get_goal_condition<Fluent>()) && state->literals_hold(problem->get_goal_condition<Derived>()))
         {
             abstract_goal_states.insert(abstract_state_index);
         }
@@ -196,7 +196,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                           *factories,
                                                           problem,
                                                           successor_state,
-                                                          successor_state.get_index(),
+                                                          successor_state->get_index(),
                                                           options.mark_true_goal_literals,
                                                           *object_graph_pruning_strategy);
 
