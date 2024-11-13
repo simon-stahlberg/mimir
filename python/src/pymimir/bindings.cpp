@@ -925,25 +925,17 @@ void init_pymimir(py::module_& m)
     /* Bitset */
     py::class_<FlatBitset>(m, "FlatBitset")  //
         .def("get", &FlatBitset::get)
-        // TODO add members
-        ;
+        .def(
+            "__iter__",
+            [](const FlatBitset& self) { return py::make_iterator(self.begin(), self.end()); },
+            py::keep_alive<0, 1>());
 
     /* State */
     py::class_<StateImpl>(m, "State")  //
         .def("__hash__", [](const StateImpl& self) { return self.get_index(); })
         .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
-        .def("get_fluent_atoms",  // TODO: extend FlatBitset bindings and simplify here
-             [](StateImpl self)
-             {
-                 auto atoms = self.get_atoms<Fluent>();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             })
-        .def("get_derived_atoms",  // TODO: extend FlatBitset bindings and simplify here
-             [](StateImpl self)
-             {
-                 auto atoms = self.get_atoms<Derived>();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             })
+        .def("get_fluent_atoms", py::overload_cast<>(&StateImpl::get_atoms<Fluent>, py::const_), py::return_value_policy::copy)
+        .def("get_derived_atoms", py::overload_cast<>(&StateImpl::get_atoms<Derived>, py::const_), py::return_value_policy::copy)
         .def("contains", py::overload_cast<GroundAtom<Fluent>>(&StateImpl::contains<Fluent>, py::const_), py::arg("atom"))
         .def("contains", py::overload_cast<GroundAtom<Derived>>(&StateImpl::contains<Derived>, py::const_), py::arg("atom"))
         .def("superset_of", py::overload_cast<const GroundAtomList<Fluent>&>(&StateImpl::superset_of<Fluent>, py::const_), py::arg("atoms"))
