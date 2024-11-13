@@ -17,6 +17,8 @@
 
 #include "mimir/search/plan.hpp"
 
+#include "mimir/search/action.hpp"
+
 namespace mimir
 {
 

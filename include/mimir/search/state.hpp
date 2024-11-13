@@ -93,12 +93,6 @@ namespace mimir
 
 using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
 
-using StateList = std::vector<State>;
-
-template<typename T>
-using StateMap = std::unordered_map<State, T>;
-using StateSet = std::unordered_set<State>;
-
 /**
  * Pretty printing
  */

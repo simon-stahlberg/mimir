@@ -40,16 +40,6 @@ struct StripsActionPrecondition
     FlatBitset m_positive_derived_atoms = FlatBitset();
     FlatBitset m_negative_derived_atoms = FlatBitset();
 
-    auto cista_members()
-    {
-        return std::tie(m_positive_static_atoms,
-                        m_negative_static_atoms,
-                        m_positive_fluent_atoms,
-                        m_negative_fluent_atoms,
-                        m_positive_derived_atoms,
-                        m_negative_derived_atoms);
-    }
-
     template<PredicateCategory P>
     FlatBitset& get_positive_precondition();
 
@@ -82,8 +72,6 @@ struct StripsActionEffect
     FlatBitset m_positive_effects = FlatBitset();
     FlatBitset m_negative_effects = FlatBitset();
 
-    auto cista_members() { return std::tie(m_positive_effects, m_negative_effects); }
-
     FlatBitset& get_positive_effects();
 
     const FlatBitset& get_positive_effects() const;
@@ -93,9 +81,9 @@ struct StripsActionEffect
     const FlatBitset& get_negative_effects() const;
 };
 
-/// @brief `SimpleEffect` encapsulates the effect on a single grounded atom.
+/// @brief `SimpleFluentEffect` encapsulates the effect on a single grounded atom.
 /// We cannot consistently use cista::tuple since nested tuples will automatically be flattened.
-struct SimpleEffect
+struct SimpleFluentEffect
 {
     bool is_negated = false;
     Index atom_index = Index(0);
@@ -109,18 +97,7 @@ struct ConditionalEffect
     FlatIndexList m_negative_fluent_atoms = FlatIndexList();
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
-    SimpleEffect m_effect = SimpleEffect();
-
-    auto cista_members()
-    {
-        return std::tie(m_positive_static_atoms,
-                        m_negative_static_atoms,
-                        m_positive_fluent_atoms,
-                        m_negative_fluent_atoms,
-                        m_positive_derived_atoms,
-                        m_negative_derived_atoms,
-                        m_effect);
-    }
+    SimpleFluentEffect m_effect = SimpleFluentEffect();
 
     /* Precondition */
 
@@ -137,9 +114,9 @@ struct ConditionalEffect
     const FlatIndexList& get_negative_precondition() const;
 
     /* Simple effects */
-    SimpleEffect& get_simple_effect();
+    SimpleFluentEffect& get_simple_effect();
 
-    const SimpleEffect& get_simple_effect() const;
+    const SimpleFluentEffect& get_simple_effect() const;
 
     template<DynamicPredicateCategory P>
     bool is_applicable(State state) const;
@@ -167,8 +144,6 @@ struct GroundActionImpl
     StripsActionPrecondition m_strips_precondition = StripsActionPrecondition();
     StripsActionEffect m_strips_effect = StripsActionEffect();
     ConditionalEffects m_conditional_effects = ConditionalEffects();
-
-    auto cista_members() { return std::tie(m_index, m_action_index, m_cost, m_objects, m_strips_precondition, m_strips_effect, m_conditional_effects); }
 
     Index& get_index();
     Index& get_action_index();
@@ -219,17 +194,14 @@ namespace mimir
  * Mimir types
  */
 
-using FlatActionSet = cista::storage::UnorderedSet<GroundActionImpl>;
-
-using GroundActionList = std::vector<GroundAction>;
-using GroundActionSet = std::unordered_set<GroundAction>;
+using GroundActionImplSet = cista::storage::UnorderedSet<GroundActionImpl>;
 
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleEffect, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLFactories&>& data);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLFactories&>& data);

@@ -21,15 +21,14 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/predicate_category.hpp"
-#include "mimir/formalism/problem.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/lifted/axiom_stratification.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
-#include "mimir/search/axiom.hpp"
 #include "mimir/search/condition_grounders.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <stdexcept>
 #include <unordered_map>
@@ -47,7 +46,7 @@ private:
 
     std::vector<AxiomPartition> m_partitioning;
 
-    FlatAxiomSet m_flat_axioms;
+    GroundAxiomImplSet m_flat_axioms;
     GroundAxiomList m_axioms_by_index;
     GroundAxiomImpl m_axiom_builder;
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;

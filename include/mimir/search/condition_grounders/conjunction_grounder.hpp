@@ -20,7 +20,6 @@
 
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/state.hpp"
 
 #include <memory>
 

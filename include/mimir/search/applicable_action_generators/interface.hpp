@@ -19,9 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
-#include "mimir/search/axiom.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {

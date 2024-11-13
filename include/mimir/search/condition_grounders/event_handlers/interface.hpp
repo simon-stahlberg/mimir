@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include "mimir/formalism/factories.hpp"
-#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {

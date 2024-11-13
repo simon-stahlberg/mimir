@@ -18,8 +18,11 @@
 #include "mimir/search/state_repository.hpp"
 
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 
 namespace mimir

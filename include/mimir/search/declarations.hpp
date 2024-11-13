@@ -34,14 +34,22 @@ class StateRepository;
 // GroundACtion
 struct GroundActionImpl;
 using GroundAction = const GroundActionImpl*;
+using GroundActionList = std::vector<GroundAction>;
+using GroundActionSet = std::unordered_set<GroundAction>;
 
 // Axiom
 struct GroundAxiomImpl;
 using GroundAxiom = const GroundAxiomImpl*;
+using GroundAxiomList = std::vector<GroundAxiom>;
+using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 
 // State
 struct StateImpl;
 using State = const StateImpl*;
+using StateList = std::vector<State>;
+using StateSet = std::unordered_set<State>;
+template<typename T>
+using StateMap = std::unordered_map<State, T>;
 
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;

@@ -18,15 +18,14 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 
-#include "mimir/formalism/action.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/axiom_evaluator.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
-#include "mimir/search/axiom.hpp"
 #include "mimir/search/condition_grounders.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -52,7 +51,7 @@ private:
     std::unordered_map<Action, ConditionGrounder> m_action_precondition_grounders;
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_complex_effects;
 
-    FlatActionSet m_flat_actions;
+    GroundActionImplSet m_flat_actions;
     GroundActionList m_actions_by_index;
     GroundActionImpl m_action_builder;
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;

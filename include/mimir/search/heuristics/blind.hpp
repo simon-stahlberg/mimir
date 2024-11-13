@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 #define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 
 namespace mimir

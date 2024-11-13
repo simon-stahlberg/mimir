@@ -308,9 +308,9 @@ template const FlatIndexList& ConditionalEffect::get_negative_precondition<Stati
 template const FlatIndexList& ConditionalEffect::get_negative_precondition<Fluent>() const;
 template const FlatIndexList& ConditionalEffect::get_negative_precondition<Derived>() const;
 
-SimpleEffect& ConditionalEffect::get_simple_effect() { return m_effect; }
+SimpleFluentEffect& ConditionalEffect::get_simple_effect() { return m_effect; }
 
-const SimpleEffect& ConditionalEffect::get_simple_effect() const { return m_effect; }
+const SimpleFluentEffect& ConditionalEffect::get_simple_effect() const { return m_effect; }
 
 template<DynamicPredicateCategory P>
 bool ConditionalEffect::is_applicable(State state) const
@@ -390,7 +390,7 @@ bool operator==(const GroundActionImpl& lhs, const GroundActionImpl& rhs) { retu
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleEffect, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLFactories&>& data)
 {
     const auto [simple_effect, pddl_factories] = data;
 

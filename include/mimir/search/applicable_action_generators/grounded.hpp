@@ -23,6 +23,7 @@
 #include "mimir/search/applicable_action_generators/grounded/match_tree.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <variant>
 

@@ -18,7 +18,8 @@
 #ifndef MIMIR_SEARCH_PLAN_HPP_
 #define MIMIR_SEARCH_PLAN_HPP_
 
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <cstdint>
 #include <ostream>
