@@ -33,8 +33,8 @@ namespace mimir
 
 struct SimpleDerivedEffect
 {
-    bool is_negated;
-    uint32_t atom_index;
+    bool is_negated = false;
+    Index atom_index = Index(0);
 };
 
 /**
@@ -42,11 +42,13 @@ struct SimpleDerivedEffect
  */
 struct GroundAxiomImpl
 {
-    Index m_index;
-    Index m_axiom_index;
-    FlatIndexList m_objects;
-    StripsActionPrecondition m_strips_precondition;
-    SimpleDerivedEffect m_effect;
+    Index m_index = Index(0);
+    Index m_axiom_index = Index(0);
+    FlatIndexList m_objects = FlatIndexList();
+    StripsActionPrecondition m_strips_precondition = StripsActionPrecondition();
+    SimpleDerivedEffect m_effect = SimpleDerivedEffect();
+
+    auto cista_members() { return std::tie(m_index, m_axiom_index, m_objects, m_strips_precondition, m_effect); }
 
     Index& get_index();
     Index get_index() const;

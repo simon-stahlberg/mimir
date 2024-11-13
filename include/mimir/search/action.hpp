@@ -33,12 +33,22 @@ namespace mimir
 {
 struct StripsActionPrecondition
 {
-    FlatBitset m_positive_static_atoms;
-    FlatBitset m_negative_static_atoms;
-    FlatBitset m_positive_fluent_atoms;
-    FlatBitset m_negative_fluent_atoms;
-    FlatBitset m_positive_derived_atoms;
-    FlatBitset m_negative_derived_atoms;
+    FlatBitset m_positive_static_atoms = FlatBitset();
+    FlatBitset m_negative_static_atoms = FlatBitset();
+    FlatBitset m_positive_fluent_atoms = FlatBitset();
+    FlatBitset m_negative_fluent_atoms = FlatBitset();
+    FlatBitset m_positive_derived_atoms = FlatBitset();
+    FlatBitset m_negative_derived_atoms = FlatBitset();
+
+    auto cista_members()
+    {
+        return std::tie(m_positive_static_atoms,
+                        m_negative_static_atoms,
+                        m_positive_fluent_atoms,
+                        m_negative_fluent_atoms,
+                        m_positive_derived_atoms,
+                        m_negative_derived_atoms);
+    }
 
     template<PredicateCategory P>
     FlatBitset& get_positive_precondition();
@@ -69,8 +79,10 @@ struct StripsActionPrecondition
 
 struct StripsActionEffect
 {
-    FlatBitset m_positive_effects;
-    FlatBitset m_negative_effects;
+    FlatBitset m_positive_effects = FlatBitset();
+    FlatBitset m_negative_effects = FlatBitset();
+
+    auto cista_members() { return std::tie(m_positive_effects, m_negative_effects); }
 
     FlatBitset& get_positive_effects();
 
@@ -85,19 +97,30 @@ struct StripsActionEffect
 /// We cannot consistently use cista::tuple since nested tuples will automatically be flattened.
 struct SimpleEffect
 {
-    bool is_negated;
-    uint32_t atom_index;
+    bool is_negated = false;
+    Index atom_index = Index(0);
 };
 
 struct ConditionalEffect
 {
-    FlatIndexList m_positive_static_atoms;
-    FlatIndexList m_negative_static_atoms;
-    FlatIndexList m_positive_fluent_atoms;
-    FlatIndexList m_negative_fluent_atoms;
-    FlatIndexList m_positive_derived_atoms;
-    FlatIndexList m_negative_derived_atoms;
-    SimpleEffect m_effect;
+    FlatIndexList m_positive_static_atoms = FlatIndexList();
+    FlatIndexList m_negative_static_atoms = FlatIndexList();
+    FlatIndexList m_positive_fluent_atoms = FlatIndexList();
+    FlatIndexList m_negative_fluent_atoms = FlatIndexList();
+    FlatIndexList m_positive_derived_atoms = FlatIndexList();
+    FlatIndexList m_negative_derived_atoms = FlatIndexList();
+    SimpleEffect m_effect = SimpleEffect();
+
+    auto cista_members()
+    {
+        return std::tie(m_positive_static_atoms,
+                        m_negative_static_atoms,
+                        m_positive_fluent_atoms,
+                        m_negative_fluent_atoms,
+                        m_positive_derived_atoms,
+                        m_negative_derived_atoms,
+                        m_effect);
+    }
 
     /* Precondition */
 
@@ -137,13 +160,15 @@ using ConditionalEffects = cista::offset::vector<ConditionalEffect>;
  */
 struct GroundActionImpl
 {
-    Index m_index;
-    Index m_action_index;
-    ContinuousCost m_cost;
-    FlatIndexList m_objects;
-    StripsActionPrecondition m_strips_precondition;
-    StripsActionEffect m_strips_effect;
-    ConditionalEffects m_conditional_effects;
+    Index m_index = Index(0);
+    Index m_action_index = Index(0);
+    ContinuousCost m_cost = ContinuousCost(0.0);
+    FlatIndexList m_objects = FlatIndexList();
+    StripsActionPrecondition m_strips_precondition = StripsActionPrecondition();
+    StripsActionEffect m_strips_effect = StripsActionEffect();
+    ConditionalEffects m_conditional_effects = ConditionalEffects();
+
+    auto cista_members() { return std::tie(m_index, m_action_index, m_cost, m_objects, m_strips_precondition, m_strips_effect, m_conditional_effects); }
 
     Index& get_index();
     Index& get_action_index();

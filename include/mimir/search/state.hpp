@@ -39,9 +39,9 @@ namespace mimir
 /// and the fluent and derived atoms as the extended state.
 struct StateImpl
 {
-    Index m_index;
-    FlatBitset m_fluent_atoms;
-    FlatBitset m_derived_atoms;
+    Index m_index = Index(0);
+    FlatBitset m_fluent_atoms = FlatBitset();
+    FlatBitset m_derived_atoms = FlatBitset();
 
     template<DynamicPredicateCategory P>
     bool contains(GroundAtom<P> atom) const;

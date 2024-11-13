@@ -387,7 +387,7 @@ template<typename Ctx, typename Block, template<typename> typename Ptr>
 void serialize(Ctx& c, basic_dynamic_bitset<Block, Ptr> const* origin, offset_t const pos)
 {
     using Type = basic_dynamic_bitset<Block, Ptr>;
-    serialize(c, &origin->default_bit_value_, pos);
+    serialize(c, &origin->default_bit_value_, pos + cista_member_offset(Type, default_bit_value_));
     serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
 }
 

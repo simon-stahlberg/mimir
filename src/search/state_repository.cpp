@@ -129,12 +129,13 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     const auto& strips_action_effect = action->get_strips_effect();
     fluent_state_atoms -= strips_action_effect.get_negative_effects();
     fluent_state_atoms |= strips_action_effect.get_positive_effects();
+
     /* Conditional effects */
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
         if (conditional_effect.is_applicable(m_aag->get_problem(), state))
         {
-            const auto simple_effect = conditional_effect.get_simple_effect();
+            const auto& simple_effect = conditional_effect.get_simple_effect();
 
             if (simple_effect.is_negated)
             {

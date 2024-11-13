@@ -51,14 +51,17 @@ FlatBitset& StripsActionPrecondition::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        std::cout << "m_positive_static_atoms.default_bit_value_: " << m_positive_static_atoms.default_bit_value_ << std::endl;
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        std::cout << "m_positive_fluent_atoms.default_bit_value_: " << m_positive_fluent_atoms.default_bit_value_ << std::endl;
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        std::cout << "m_positive_derived_atoms.default_bit_value_: " << m_positive_derived_atoms.default_bit_value_ << std::endl;
         return m_positive_derived_atoms;
     }
     else
@@ -189,9 +192,17 @@ bool StripsActionPrecondition::is_applicable(const FlatBitset& fluent_state_atom
 
 FlatBitset& StripsActionEffect::get_positive_effects() { return m_positive_effects; }
 
-const FlatBitset& StripsActionEffect::get_positive_effects() const { return m_positive_effects; }
+const FlatBitset& StripsActionEffect::get_positive_effects() const
+{
+    std::cout << "m_positive_effects.default_bit_value_: " << m_positive_effects.default_bit_value_ << std::endl;
+    return m_positive_effects;
+}
 
-FlatBitset& StripsActionEffect::get_negative_effects() { return m_negative_effects; }
+FlatBitset& StripsActionEffect::get_negative_effects()
+{
+    std::cout << "m_negative_effects.default_bit_value_: " << m_negative_effects.default_bit_value_ << std::endl;
+    return m_negative_effects;
+}
 
 const FlatBitset& StripsActionEffect::get_negative_effects() const { return m_negative_effects; }
 
