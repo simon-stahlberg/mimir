@@ -1144,16 +1144,13 @@ void init_pymimir(py::module_& m)
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>>(), py::arg("applicable_action_generator"))
-        .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::keep_alive<0, 1>())  // keep_alive because value type
-        .def("get_or_create_state",
-             &StateRepository::get_or_create_state,
-             py::keep_alive<0, 1>(),
-             py::arg("atoms"))  // keep_alive because value type
+        .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
+        .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
         .def("get_or_create_successor_state",
              &StateRepository::get_or_create_successor_state,
-             py::keep_alive<0, 1>(),
+             py::return_value_policy::reference_internal,
              py::arg("state"),
-             py::arg("action"))  // keep_alive because value type
+             py::arg("action"))
         .def("get_state_count", &StateRepository::get_state_count)
         .def("get_reached_fluent_ground_atoms",
              [](const StateRepository& self)
