@@ -1082,7 +1082,7 @@ void init_pymimir(py::module_& m)
                 return actions;
             },
             py::keep_alive<0, 1>())
-        .def("get_ground_action", &IApplicableActionGenerator::get_ground_action, py::keep_alive<0, 1>(), py::arg("action_index"))
+        .def("get_ground_action", &IApplicableActionGenerator::get_ground_action, py::return_value_policy::reference_internal, py::arg("action_index"))
         .def(
             "get_ground_axioms",
             [](const IApplicableActionGenerator& self)
@@ -1091,7 +1091,7 @@ void init_pymimir(py::module_& m)
                 return axioms;
             },
             py::keep_alive<0, 1>())
-        .def("get_ground_action", &IApplicableActionGenerator::get_ground_axiom, py::keep_alive<0, 1>(), py::arg("axiom_index"))
+        .def("get_ground_axiom", &IApplicableActionGenerator::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
         .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_factories", &IApplicableActionGenerator::get_pddl_factories);
 
@@ -1152,18 +1152,8 @@ void init_pymimir(py::module_& m)
              py::arg("state"),
              py::arg("action"))
         .def("get_state_count", &StateRepository::get_state_count)
-        .def("get_reached_fluent_ground_atoms",
-             [](const StateRepository& self)
-             {
-                 const auto& atoms = self.get_reached_fluent_ground_atoms();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             })
-        .def("get_reached_derived_ground_atoms",
-             [](const StateRepository& self)
-             {
-                 const auto& atoms = self.get_reached_derived_ground_atoms();
-                 return std::vector<size_t>(atoms.begin(), atoms.end());
-             });
+        .def("get_reached_fluent_ground_atoms", &StateRepository::get_reached_fluent_ground_atoms, py::return_value_policy::copy)
+        .def("get_reached_derived_ground_atoms", &StateRepository::get_reached_derived_ground_atoms, py::return_value_policy::copy);
 
     /* Heuristics */
     py::class_<IHeuristic, IPyHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic").def(py::init<>());
@@ -1320,7 +1310,7 @@ void init_pymimir(py::module_& m)
         .def(
             "get_state",
             [](const StateVertex& self) { return get_state(self); },
-            py::keep_alive<0, 1>());
+            py::return_value_policy::reference_internal);
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
@@ -1333,7 +1323,7 @@ void init_pymimir(py::module_& m)
         .def(
             "get_creating_action",
             [](const GroundActionEdge& self) { return get_creating_action(self); },
-            py::keep_alive<0, 1>());
+            py::return_value_policy::reference_internal);
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
@@ -1350,7 +1340,7 @@ void init_pymimir(py::module_& m)
         .def(
             "get_representative_action",
             [](const GroundActionsEdge& self) { return get_representative_action(self); },
-            py::keep_alive<0, 1>());
+            py::return_value_policy::reference_internal);
 
     // StateSpace
     py::class_<StateSpaceOptions>(m, "StateSpaceOptions")
