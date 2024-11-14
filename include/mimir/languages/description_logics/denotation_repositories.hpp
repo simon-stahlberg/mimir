@@ -34,10 +34,8 @@ template<IsConceptOrRole D>
 class DenotationRepository
 {
 private:
-    using FlatDenotationType = typename Denotation<D>::FlatDenotationType;
-
     // Store denotations uniquely.
-    cista::storage::UnorderedSet<FlatDenotationType> m_storage;
+    DenotationImplSet<D> m_storage;
 
     struct Key
     {
@@ -58,7 +56,7 @@ private:
     std::unordered_map<Key, Denotation<D>, KeyHash, KeyEqual> m_cached_dynamic_denotations;
 
 public:
-    Denotation<D> insert(Constructor<D> constructor, size_t state_index, const DenotationBuilder<D>& denotation);
+    Denotation<D> insert(Constructor<D> constructor, size_t state_index, const DenotationImpl<D>& denotation);
 
     std::optional<Denotation<D>> get_if(Constructor<D> constructor, size_t state_index) const;
 };

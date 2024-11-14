@@ -22,10 +22,20 @@
 namespace mimir
 {
 
+/* Plan */
+
+Plan::Plan(std::vector<std::string> actions, ContinuousCost cost) : m_actions(std::move(actions)), m_cost(cost) {}
+
+const std::vector<std::string>& Plan::get_actions() const { return m_actions; }
+
+ContinuousCost Plan::get_cost() const { return m_cost; }
+
+/* Utility */
+
 Plan to_plan(const GroundActionList& action_view_list, const PDDLFactories& factories)
 {
-    std::vector<std::string> actions;
-    auto cost = 0;
+    auto actions = std::vector<std::string> {};
+    auto cost = ContinuousCost(0);
     for (const auto action : action_view_list)
     {
         std::stringstream ss;

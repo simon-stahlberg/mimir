@@ -22,6 +22,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <concepts>
 #include <cstddef>
@@ -49,14 +50,14 @@ private:
     std::reference_wrapper<const GroundAtomList<Fluent>> m_fluent_goal_atoms;
     std::reference_wrapper<const GroundAtomList<Derived>> m_derived_goal_atoms;
 
-    /* Evaluation memory. */
-    DenotationBuilder<Concept> m_concept_denotation_builder;
-    DenotationBuilder<Role> m_role_denotation_builder;
+    /* Temporary denotations. */
+    DenotationImpl<Concept> m_concept_denotation_builder;
+    DenotationImpl<Role> m_role_denotation_builder;
 
 public:
     EvaluationContext(DenotationRepository<Concept>& concept_denotation_repository,
                       DenotationRepository<Role>& role_denotation_repository,
-                      size_t state_index,
+                      Index state_index,
                       const GroundAtomList<Static>& static_state_atoms,
                       const GroundAtomList<Fluent>& fluent_state_atoms,
                       const GroundAtomList<Derived>& derived_state_atoms,
@@ -69,8 +70,8 @@ public:
      * Setters
      */
 
-    /// @brief Set the state id used to identify the result for caching.
-    void set_state_index(size_t state_index);
+    /// @brief Set the state index used to identify the result for caching.
+    void set_state_index(Index state_index);
 
     /// @brief Set the state atoms.
     template<DynamicPredicateCategory P>
@@ -81,12 +82,12 @@ public:
      */
 
     template<IsConceptOrRole D>
-    DenotationBuilder<D>& get_denotation_builder();
+    DenotationImpl<D>& get_denotation_builder();
 
     template<IsConceptOrRole D>
     DenotationRepository<D>& get_denotation_repository();
 
-    size_t get_state_index() const;
+    Index get_state_index() const;
 
     template<PredicateCategory P>
     const GroundAtomList<P>& get_state_atoms() const;

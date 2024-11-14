@@ -21,7 +21,7 @@ namespace mimir::dl
 {
 EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_denotation_repository,
                                      DenotationRepository<Role>& role_denotation_repository,
-                                     size_t state_index,
+                                     Index state_index,
                                      const GroundAtomList<Static>& static_state_atoms,
                                      const GroundAtomList<Fluent>& fluent_state_atoms,
                                      const GroundAtomList<Derived>& derived_state_atoms,
@@ -39,11 +39,12 @@ EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_deno
     m_fluent_goal_atoms(fluent_goal_atoms),
     m_derived_goal_atoms(derived_goal_atoms),
     m_concept_denotation_builder(),
-    m_role_denotation_builder(num_objects)
+    m_role_denotation_builder()
 {
+    m_role_denotation_builder.get_data().resize(num_objects);
 }
 
-void EvaluationContext::set_state_index(size_t state_index) { m_state_index = state_index; }
+void EvaluationContext::set_state_index(Index state_index) { m_state_index = state_index; }
 
 template<DynamicPredicateCategory P>
 void EvaluationContext::set_state_atoms(const GroundAtomList<P>& state_atoms)
@@ -66,7 +67,7 @@ template void EvaluationContext::set_state_atoms(const GroundAtomList<Fluent>& s
 template void EvaluationContext::set_state_atoms(const GroundAtomList<Derived>& state_atoms);
 
 template<IsConceptOrRole D>
-DenotationBuilder<D>& EvaluationContext::get_denotation_builder()
+DenotationImpl<D>& EvaluationContext::get_denotation_builder()
 {
     if constexpr (std::is_same_v<D, Concept>)
     {
@@ -82,8 +83,8 @@ DenotationBuilder<D>& EvaluationContext::get_denotation_builder()
     }
 }
 
-template DenotationBuilder<Concept>& EvaluationContext::get_denotation_builder<Concept>();
-template DenotationBuilder<Role>& EvaluationContext::get_denotation_builder<Role>();
+template DenotationImpl<Concept>& EvaluationContext::get_denotation_builder<Concept>();
+template DenotationImpl<Role>& EvaluationContext::get_denotation_builder<Role>();
 
 template<IsConceptOrRole D>
 DenotationRepository<D>& EvaluationContext::get_denotation_repository()
@@ -105,7 +106,7 @@ DenotationRepository<D>& EvaluationContext::get_denotation_repository()
 template DenotationRepository<Concept>& EvaluationContext::get_denotation_repository<Concept>();
 template DenotationRepository<Role>& EvaluationContext::get_denotation_repository<Role>();
 
-size_t EvaluationContext::get_state_index() const { return m_state_index; }
+Index EvaluationContext::get_state_index() const { return m_state_index; }
 
 template<PredicateCategory P>
 const GroundAtomList<P>& EvaluationContext::get_state_atoms() const

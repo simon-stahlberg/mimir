@@ -74,8 +74,6 @@ bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive
     return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
 }
 
-bool operator==(const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return lhs.get_index() == rhs.get_index(); }
-
 /**
  * Pretty printing
  */

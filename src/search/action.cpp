@@ -383,7 +383,6 @@ bool GroundActionImpl::is_applicable(Problem problem, State state) const
 {  //
     return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms());
 }
-bool operator==(const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return (lhs.get_index() == rhs.get_index()); }
 
 /**
  * Pretty printing

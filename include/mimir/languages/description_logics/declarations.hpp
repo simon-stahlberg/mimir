@@ -32,6 +32,15 @@ class ConstructorRepository;
 class EvaluationContext;
 
 /**
+ * Denotations
+ */
+
+template<IsConceptOrRole D>
+struct DenotationImpl;
+template<IsConceptOrRole D>
+using Denotation = const DenotationImpl<D>*;
+
+/**
  * Constructors
  */
 

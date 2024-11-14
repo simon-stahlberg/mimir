@@ -180,8 +180,8 @@ void ConceptAndImpl::evaluate_impl(EvaluationContext& context) const
     bitset.unset_all();
 
     // Compute result
-    bitset |= eval_left.get_bitset();
-    bitset &= eval_right.get_bitset();
+    bitset |= eval_left->get_data();
+    bitset &= eval_right->get_data();
 }
 
 bool ConceptAndImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
@@ -345,11 +345,11 @@ void RoleAndImpl::evaluate_impl(EvaluationContext& context) const
     }
 
     // Compute result
-    for (size_t i = 0; i < eval_left.get_data().size(); ++i)
+    for (size_t i = 0; i < eval_left->get_data().size(); ++i)
     {
         auto& bitset = bitsets.at(i);
-        bitset |= eval_left.get_data().at(i);
-        bitset &= eval_right.get_data().at(i);
+        bitset |= eval_left->get_data().at(i);
+        bitset &= eval_right->get_data().at(i);
     }
 }
 

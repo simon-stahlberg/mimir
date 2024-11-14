@@ -135,9 +135,6 @@ const FlatBitset& StateImpl::get_atoms() const
 template const FlatBitset& StateImpl::get_atoms<Fluent>() const;
 template const FlatBitset& StateImpl::get_atoms<Derived>() const;
 
-bool operator==(const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); }
-bool operator!=(const StateImpl& lhs, const StateImpl& rhs) { return !(lhs == rhs); }
-
 /**
  * Pretty printing
  */

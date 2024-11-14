@@ -18,6 +18,9 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 
+#include "cista/storage/unordered_set.h"
+#include "mimir/common/equal_to.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/languages/description_logics/constructor_category.hpp"
@@ -28,93 +31,36 @@
 
 namespace mimir::dl
 {
-template<IsConceptOrRole D>
-class DenotationBuilder
-{
-};
 
 template<IsConceptOrRole D>
-class Denotation
+struct DenotationImpl
 {
+    using DenotationType = typename D::DenotationType;
+
+    DenotationType m_data = DenotationType();
+
+    DenotationType& get_data() { return m_data; }
+    const DenotationType& get_data() const { return m_data; }
 };
 
-using FlatConceptDenotation = FlatBitset;
+}
 
-template<>
-class DenotationBuilder<Concept>
+template<mimir::dl::IsConceptOrRole D>
+struct cista::storage::DerefStdHasher<mimir::dl::DenotationImpl<D>>
 {
-private:
-    FlatConceptDenotation m_builder;
-
-public:
-    using FlatDenotationType = FlatConceptDenotation;
-
-    explicit DenotationBuilder() {}
-
-    /**
-     * Getters
-     */
-
-    FlatConceptDenotation& get_data() { return m_builder; }
-    const FlatConceptDenotation& get_data() const { return m_builder; }
+    size_t operator()(const mimir::dl::DenotationImpl<D>* ptr) const { return mimir::hash_combine(ptr->get_data()); }
+};
+template<mimir::dl::IsConceptOrRole D>
+struct cista::storage::DerefStdEqualTo<mimir::dl::DenotationImpl<D>>
+{
+    bool operator()(const mimir::dl::DenotationImpl<D>* lhs, const mimir::dl::DenotationImpl<D>* rhs) const { return lhs->get_data() == rhs->get_data(); }
 };
 
-template<>
-class Denotation<Concept>
+namespace mimir::dl
 {
-private:
-    const FlatConceptDenotation* m_view;
 
-public:
-    using FlatDenotationType = FlatConceptDenotation;
-
-    explicit Denotation(const FlatConceptDenotation* view) : m_view(view) {}
-
-    /**
-     * Getters
-     */
-
-    const FlatConceptDenotation& get_bitset() const { return *m_view; }
-};
-
-using FlatRoleDenotation = cista::offset::vector<FlatBitset>;
-
-template<>
-class DenotationBuilder<Role>
-{
-private:
-    FlatRoleDenotation m_builder;
-
-public:
-    using FlatDenotationType = FlatRoleDenotation;
-
-    explicit DenotationBuilder(size_t num_objects) : m_builder(num_objects) {}
-
-    /**
-     * Getters
-     */
-
-    FlatRoleDenotation& get_data() { return m_builder; }
-    const FlatRoleDenotation& get_data() const { return m_builder; }
-};
-
-template<>
-class Denotation<Role>
-{
-private:
-    const FlatRoleDenotation* m_view;
-
-public:
-    using FlatDenotationType = FlatRoleDenotation;
-
-    explicit Denotation(const FlatRoleDenotation* view) : m_view(view) {}
-
-    /**
-     * Getters
-     */
-
-    const FlatRoleDenotation& get_data() const { return *m_view; }
-};
+template<IsConceptOrRole D>
+using DenotationImplSet = cista::storage::UnorderedSet<DenotationImpl<D>>;
 
 }
 

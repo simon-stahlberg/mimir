@@ -71,8 +71,6 @@ struct GroundAxiomImpl
     bool is_statically_applicable(const FlatBitset& static_positive_bitset) const;
 };
 
-extern bool operator==(const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs);
-
 }
 
 template<>
