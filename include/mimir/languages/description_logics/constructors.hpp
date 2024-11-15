@@ -34,6 +34,62 @@ namespace mimir::dl
  * Concepts
  */
 
+class ConceptBotImpl : public ConstructorEvaluatorBase<Concept, ConceptBotImpl>
+{
+private:
+    Index m_index;
+
+    explicit ConceptBotImpl(Index index);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptBotImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptBotImpl(const ConceptBotImpl& other) = delete;
+    ConceptBotImpl& operator=(const ConceptBotImpl& other) = delete;
+    ConceptBotImpl(ConceptBotImpl&& other) = default;
+    ConceptBotImpl& operator=(ConceptBotImpl&& other) = default;
+
+    Index get_index() const;
+};
+
+class ConceptTopImpl : public ConstructorEvaluatorBase<Concept, ConceptTopImpl>
+{
+private:
+    Index m_index;
+    Problem m_problem;
+
+    ConceptTopImpl(Index index, Problem problem);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptTopImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptTopImpl(const ConceptTopImpl& other) = delete;
+    ConceptTopImpl& operator=(const ConceptTopImpl& other) = delete;
+    ConceptTopImpl(ConceptTopImpl&& other) = default;
+    ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
+
+    Index get_index() const;
+    Problem get_problem() const;
+};
+
 template<PredicateCategory P>
 class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>
 {
@@ -156,9 +212,220 @@ public:
     Constructor<Concept> get_concept_right() const;
 };
 
+class ConceptNegationImpl : public ConstructorEvaluatorBase<Concept, ConceptNegationImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_concept;
+
+    ConceptNegationImpl(Index index, Constructor<Concept> concept_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptNegationImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptNegationImpl(const ConceptNegationImpl& other) = delete;
+    ConceptNegationImpl& operator=(const ConceptNegationImpl& other) = delete;
+    ConceptNegationImpl(ConceptNegationImpl&& other) = default;
+    ConceptNegationImpl& operator=(ConceptNegationImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_concept() const;
+};
+
+class ConceptValueRestrictionImpl : public ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_concept;
+    Constructor<Role> m_role;
+
+    ConceptValueRestrictionImpl(Index index, Constructor<Concept> concept_, Constructor<Role> role_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptValueRestrictionImpl(const ConceptValueRestrictionImpl& other) = delete;
+    ConceptValueRestrictionImpl& operator=(const ConceptValueRestrictionImpl& other) = delete;
+    ConceptValueRestrictionImpl(ConceptValueRestrictionImpl&& other) = default;
+    ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_concept() const;
+    Constructor<Role> get_role() const;
+};
+
+class ConceptExistentialQuantificationImpl : public ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_concept;
+    Constructor<Role> m_role;
+
+    ConceptExistentialQuantificationImpl(Index index, Constructor<Concept> concept_, Constructor<Role> role_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptExistentialQuantificationImpl(const ConceptExistentialQuantificationImpl& other) = delete;
+    ConceptExistentialQuantificationImpl& operator=(const ConceptExistentialQuantificationImpl& other) = delete;
+    ConceptExistentialQuantificationImpl(ConceptExistentialQuantificationImpl&& other) = default;
+    ConceptExistentialQuantificationImpl& operator=(ConceptExistentialQuantificationImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_concept() const;
+    Constructor<Role> get_role() const;
+};
+
+class ConceptRoleValueMapContainmentImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role_left;
+    Constructor<Role> m_role_right;
+
+    ConceptRoleValueMapContainmentImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptRoleValueMapContainmentImpl(const ConceptRoleValueMapContainmentImpl& other) = delete;
+    ConceptRoleValueMapContainmentImpl& operator=(const ConceptRoleValueMapContainmentImpl& other) = delete;
+    ConceptRoleValueMapContainmentImpl(ConceptRoleValueMapContainmentImpl&& other) = default;
+    ConceptRoleValueMapContainmentImpl& operator=(ConceptRoleValueMapContainmentImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role_left() const;
+    Constructor<Role> get_role_right() const;
+};
+
+class ConceptRoleValueMapEqualityImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapEqualityImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role_left;
+    Constructor<Role> m_role_right;
+
+    ConceptRoleValueMapEqualityImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptRoleValueMapEqualityImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptRoleValueMapEqualityImpl(const ConceptRoleValueMapEqualityImpl& other) = delete;
+    ConceptRoleValueMapEqualityImpl& operator=(const ConceptRoleValueMapEqualityImpl& other) = delete;
+    ConceptRoleValueMapEqualityImpl(ConceptRoleValueMapEqualityImpl&& other) = default;
+    ConceptRoleValueMapEqualityImpl& operator=(ConceptRoleValueMapEqualityImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role_left() const;
+    Constructor<Role> get_role_right() const;
+};
+
+class ConceptNominalImpl : public ConstructorEvaluatorBase<Concept, ConceptNominalImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_concept;
+
+    ConceptNominalImpl(Index index, Constructor<Concept> concept_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptNegationImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptNominalImpl(const ConceptNominalImpl& other) = delete;
+    ConceptNominalImpl& operator=(const ConceptNominalImpl& other) = delete;
+    ConceptNominalImpl(ConceptNominalImpl&& other) = default;
+    ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_concept() const;
+};
+
 /**
  * Roles
  */
+
+class RoleUniversalImpl : public ConstructorEvaluatorBase<Role, RoleUniversalImpl>
+{
+private:
+    Index m_index;
+    Problem m_problem;
+
+    RoleUniversalImpl(Index index, Problem problem);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleUniversalImpl>;
+
+public:
+    // moveable but not copyable
+    RoleUniversalImpl(const RoleUniversalImpl& other) = delete;
+    RoleUniversalImpl& operator=(const RoleUniversalImpl& other) = delete;
+    RoleUniversalImpl(RoleUniversalImpl&& other) = default;
+    RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
+
+    Index get_index() const;
+    Problem get_problem() const;
+};
 
 template<PredicateCategory P>
 class RoleAtomicStateImpl : public ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>
@@ -249,6 +516,244 @@ public:
     Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
+};
+
+class RoleUnionImpl : public ConstructorEvaluatorBase<Role, RoleUnionImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role_left;
+    Constructor<Role> m_role_right;
+
+    RoleUnionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleUnionImpl>;
+
+public:
+    // moveable but not copyable
+    RoleUnionImpl(const RoleUnionImpl& other) = delete;
+    RoleUnionImpl& operator=(const RoleUnionImpl& other) = delete;
+    RoleUnionImpl(RoleUnionImpl&& other) = default;
+    RoleUnionImpl& operator=(RoleUnionImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role_left() const;
+    Constructor<Role> get_role_right() const;
+};
+
+class RoleComplementImpl : public ConstructorEvaluatorBase<Role, RoleComplementImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role;
+
+    RoleComplementImpl(Index index, Constructor<Role> role_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleComplementImpl>;
+
+public:
+    // moveable but not copyable
+    RoleComplementImpl(const RoleComplementImpl& other) = delete;
+    RoleComplementImpl& operator=(const RoleComplementImpl& other) = delete;
+    RoleComplementImpl(RoleComplementImpl&& other) = default;
+    RoleComplementImpl& operator=(RoleComplementImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role() const;
+};
+
+class RoleInverseImpl : public ConstructorEvaluatorBase<Role, RoleInverseImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role;
+
+    RoleInverseImpl(Index index, Constructor<Role> role_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleInverseImpl>;
+
+public:
+    // moveable but not copyable
+    RoleInverseImpl(const RoleInverseImpl& other) = delete;
+    RoleInverseImpl& operator=(const RoleInverseImpl& other) = delete;
+    RoleInverseImpl(RoleInverseImpl&& other) = default;
+    RoleInverseImpl& operator=(RoleInverseImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role() const;
+};
+
+class RoleCompositionImpl : public ConstructorEvaluatorBase<Role, RoleCompositionImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role_left;
+    Constructor<Role> m_role_right;
+
+    RoleCompositionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleCompositionImpl>;
+
+public:
+    // moveable but not copyable
+    RoleCompositionImpl(const RoleCompositionImpl& other) = delete;
+    RoleCompositionImpl& operator=(const RoleCompositionImpl& other) = delete;
+    RoleCompositionImpl(RoleCompositionImpl&& other) = default;
+    RoleCompositionImpl& operator=(RoleCompositionImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role_left() const;
+    Constructor<Role> get_role_right() const;
+};
+
+class RoleTransitiveClosureImpl : public ConstructorEvaluatorBase<Role, RoleTransitiveClosureImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role;
+
+    RoleTransitiveClosureImpl(Index index, Constructor<Role> role_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleTransitiveClosureImpl>;
+
+public:
+    // moveable but not copyable
+    RoleTransitiveClosureImpl(const RoleTransitiveClosureImpl& other) = delete;
+    RoleTransitiveClosureImpl& operator=(const RoleTransitiveClosureImpl& other) = delete;
+    RoleTransitiveClosureImpl(RoleTransitiveClosureImpl&& other) = default;
+    RoleTransitiveClosureImpl& operator=(RoleTransitiveClosureImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role() const;
+};
+
+class RoleReflexiveTransitiveClosureImpl : public ConstructorEvaluatorBase<Role, RoleReflexiveTransitiveClosureImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role;
+
+    RoleReflexiveTransitiveClosureImpl(Index index, Constructor<Role> role_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleReflexiveTransitiveClosureImpl>;
+
+public:
+    // moveable but not copyable
+    RoleReflexiveTransitiveClosureImpl(const RoleReflexiveTransitiveClosureImpl& other) = delete;
+    RoleReflexiveTransitiveClosureImpl& operator=(const RoleReflexiveTransitiveClosureImpl& other) = delete;
+    RoleReflexiveTransitiveClosureImpl(RoleReflexiveTransitiveClosureImpl&& other) = default;
+    RoleReflexiveTransitiveClosureImpl& operator=(RoleReflexiveTransitiveClosureImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role() const;
+};
+
+class RoleRestrictionImpl : public ConstructorEvaluatorBase<Role, RoleRestrictionImpl>
+{
+private:
+    Index m_index;
+    Constructor<Role> m_role;
+    Constructor<Concept> m_concept;
+
+    RoleRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleRestrictionImpl>;
+
+public:
+    // moveable but not copyable
+    RoleRestrictionImpl(const RoleRestrictionImpl& other) = delete;
+    RoleRestrictionImpl& operator=(const RoleRestrictionImpl& other) = delete;
+    RoleRestrictionImpl(RoleRestrictionImpl&& other) = default;
+    RoleRestrictionImpl& operator=(RoleRestrictionImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Role> get_role() const;
+    Constructor<Concept> get_concept() const;
+};
+
+class RoleIdentityImpl : public ConstructorEvaluatorBase<Role, RoleIdentityImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_concept;
+
+    RoleIdentityImpl(Index index, Constructor<Concept> concept_);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Role>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Role, RoleIdentityImpl>;
+
+public:
+    // moveable but not copyable
+    RoleIdentityImpl(const RoleIdentityImpl& other) = delete;
+    RoleIdentityImpl& operator=(const RoleIdentityImpl& other) = delete;
+    RoleIdentityImpl(RoleIdentityImpl&& other) = default;
+    RoleIdentityImpl& operator=(RoleIdentityImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_concept() const;
 };
 
 }
