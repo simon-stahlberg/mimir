@@ -35,7 +35,23 @@ namespace mimir::dl
 template<IsConceptOrRole D>
 struct DenotationImpl
 {
-    using DenotationType = typename D::DenotationType;
+};
+
+template<>
+struct DenotationImpl<Concept>
+{
+    using DenotationType = FlatBitset;
+
+    DenotationType m_data = DenotationType();
+
+    DenotationType& get_data() { return m_data; }
+    const DenotationType& get_data() const { return m_data; }
+};
+
+template<>
+struct DenotationImpl<Role>
+{
+    using DenotationType = cista::offset::vector<FlatBitset>;
 
     DenotationType m_data = DenotationType();
 
