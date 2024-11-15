@@ -83,6 +83,8 @@ class ConceptNominalImpl;
 using ConceptNominal = const ConceptNominalImpl*;
 
 /* Concrete roles */
+class RoleUniversalImpl;
+using RoleUniversal = const RoleUniversalImpl*;
 template<PredicateCategory P>
 class RoleAtomicStateImpl;
 template<PredicateCategory P>
@@ -93,6 +95,22 @@ template<PredicateCategory P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
+class RoleUnionImpl;
+using RoleUnion = const RoleUnionImpl*;
+class RoleComplementImpl;
+using RoleComplement = const RoleComplementImpl*;
+class RoleInverseImpl;
+using RoleInverse = const RoleInverseImpl*;
+class RoleCompositionImpl;
+using RoleComposition = const RoleCompositionImpl*;
+class RoleTransitiveClosureImpl;
+using RoleTransitiveClosure = const RoleTransitiveClosureImpl*;
+class RoleReflexiveTransitiveClosureImpl;
+using RoleReflexiveTransitiveClosure = const RoleReflexiveTransitiveClosureImpl*;
+class RoleRestrictionImpl;
+using RoleRestriction = const RoleRestrictionImpl*;
+class RoleIdentityImpl;
+using RoleIdentity = const RoleIdentityImpl*;
 
 namespace grammar
 {
@@ -163,6 +181,8 @@ class ConceptNominalImpl;
 using ConceptNominal = const ConceptNominalImpl*;
 
 /* Concrete roles */
+class RoleUniversalImpl;
+using RoleUniversal = const RoleUniversalImpl*;
 template<PredicateCategory P>
 class RoleAtomicStateImpl;
 template<PredicateCategory P>
@@ -173,6 +193,22 @@ template<PredicateCategory P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
+class RoleUnionImpl;
+using RoleUnion = const RoleUnionImpl*;
+class RoleComplementImpl;
+using RoleComplement = const RoleComplementImpl*;
+class RoleInverseImpl;
+using RoleInverse = const RoleInverseImpl*;
+class RoleCompositionImpl;
+using RoleComposition = const RoleCompositionImpl*;
+class RoleTransitiveClosureImpl;
+using RoleTransitiveClosure = const RoleTransitiveClosureImpl*;
+class RoleReflexiveTransitiveClosureImpl;
+using RoleReflexiveTransitiveClosure = const RoleReflexiveTransitiveClosureImpl*;
+class RoleRestrictionImpl;
+using RoleRestriction = const RoleRestrictionImpl*;
+class RoleIdentityImpl;
+using RoleIdentity = const RoleIdentityImpl*;
 
 /**
  * Visitors

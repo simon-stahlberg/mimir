@@ -37,6 +37,8 @@ public:
     // Default implementations always return false
 
     /* Concepts */
+    virtual bool visit(dl::ConceptBot constructor) const { return false; }
+    virtual bool visit(dl::ConceptTop constructor) const { return false; }
     virtual bool visit(dl::ConceptAtomicState<Static> constructor) const { return false; }
     virtual bool visit(dl::ConceptAtomicState<Fluent> constructor) const { return false; }
     virtual bool visit(dl::ConceptAtomicState<Derived> constructor) const { return false; }
@@ -45,6 +47,12 @@ public:
     virtual bool visit(dl::ConceptAtomicGoal<Derived> constructor) const { return false; }
     virtual bool visit(dl::ConceptIntersection constructor) const { return false; }
     virtual bool visit(dl::ConceptUnion constructor) const { return false; }
+    virtual bool visit(dl::ConceptNegation constructor) const { return false; }
+    virtual bool visit(dl::ConceptValueRestriction constructor) const { return false; }
+    virtual bool visit(dl::ConceptExistentialQuantification constructor) const { return false; }
+    virtual bool visit(dl::ConceptRoleValueMapContainment constructor) const { return false; }
+    virtual bool visit(dl::ConceptRoleValueMapEquality constructor) const { return false; }
+    virtual bool visit(dl::ConceptNominal constructor) const { return false; }
 };
 
 /**
@@ -60,6 +68,7 @@ public:
     // Default implementations always return false
 
     /* Roles */
+    virtual bool visit(dl::RoleUniversal constructor) const { return false; }
     virtual bool visit(dl::RoleAtomicState<Static> constructor) const { return false; }
     virtual bool visit(dl::RoleAtomicState<Fluent> constructor) const { return false; }
     virtual bool visit(dl::RoleAtomicState<Derived> constructor) const { return false; }
@@ -67,6 +76,14 @@ public:
     virtual bool visit(dl::RoleAtomicGoal<Fluent> constructor) const { return false; }
     virtual bool visit(dl::RoleAtomicGoal<Derived> constructor) const { return false; }
     virtual bool visit(dl::RoleIntersection constructor) const { return false; }
+    virtual bool visit(dl::RoleUnion constructor) const { return false; }
+    virtual bool visit(dl::RoleComplement constructor) const { return false; }
+    virtual bool visit(dl::RoleInverse constructor) const { return false; }
+    virtual bool visit(dl::RoleComposition constructor) const { return false; }
+    virtual bool visit(dl::RoleTransitiveClosure constructor) const { return false; }
+    virtual bool visit(dl::RoleReflexiveTransitiveClosure constructor) const { return false; }
+    virtual bool visit(dl::RoleRestriction constructor) const { return false; }
+    virtual bool visit(dl::RoleIdentity constructor) const { return false; }
 };
 
 }
