@@ -29,14 +29,14 @@ TEST(MimirTests, LanguagesDescriptionLogicsParserTest)
     auto ast = dl::ast::Grammar();
 
     auto text = std::string(R"(
-<concept_predicate1_state> ::= @concept_predicate_state "predicate1"
-<concept_predicate1_goal> ::= @concept_predicate_goal "predicate1"
-<concept_and> ::= @concept_and <concept> <concept_predicate1_goal>
-<concept> ::= <concept_predicate1_state> | <concept_predicate1_goal> | <concept_and>
-<role_predicate1_state> ::= @role_predicate_state "predicate1"
-<role_predicate1_goal> ::= @role_predicate_goal "predicate1"
-<role_and> ::= @role_and <role> <role_predicate1_goal>
-<role> ::= <role_predicate1_state> | <role_predicate1_goal> | <role_and>
+<concept_predicate1_state> ::= @concept_atomic_state "predicate1"
+<concept_predicate1_goal> ::= @concept_atomic_goal "predicate1"
+<concept_intersection> ::= @concept_intersection <concept> <concept_predicate1_goal>
+<concept> ::= <concept_predicate1_state> | <concept_predicate1_goal> | <concept_intersection>
+<role_predicate1_state> ::= @role_atomic_state "predicate1"
+<role_predicate1_goal> ::= @role_atomic_goal "predicate1"
+<role_intersection> ::= @role_intersection <role> <role_predicate1_goal>
+<role> ::= <role_predicate1_state> | <role_predicate1_goal> | <role_intersection>
 )");
 
     EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));
@@ -48,11 +48,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsParser2Test)
 
     auto text = std::string(R"(
 <concept_x> ::=
-    @concept_and
-        @concept_and
-            @concept_predicate_state "predicate1"
-            @concept_predicate_goal "predicate1"
-        @concept_predicate_state "predicate2"
+    @concept_intersection
+        @concept_intersection
+            @concept_atomic_state "predicate1"
+            @concept_atomic_goal "predicate1"
+        @concept_atomic_state "predicate2"
 )");
 
     EXPECT_NO_THROW(dl::parse_ast(text, dl::grammar_parser(), ast));

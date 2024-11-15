@@ -57,17 +57,17 @@ using ascii::space;
 ///////////////////////////////////////////////////////////////////////////
 
 concept_type const concept_ = "concept";
-concept_predicate_state_type const concept_predicate_state = "concept_predicate_state";
-concept_predicate_goal_type const concept_predicate_goal = "concept_predicate_goal";
-concept_and_type const concept_and = "concept_and";
+concept_atomic_state_type const concept_predicate_state = "concept_atomic_state";
+concept_atomic_goal_type const concept_predicate_goal = "concept_atomic_goal";
+concept_intersection_type const concept_and = "concept_intersection";
 concept_non_terminal_type const concept_non_terminal = "concept_non_terminal";
 concept_choice_type const concept_choice = "concept_choice";
 concept_derivation_rule_type const concept_derivation_rule = "concept_derivation_rule";
 
 role_type const role = "role";
-role_predicate_state_type const role_predicate_state = "role_predicate_state";
-role_predicate_goal_type const role_predicate_goal = "role_predicate_goal";
-role_and_type const role_and = "role_and";
+role_atomic_state_type const role_predicate_state = "role_atomic_state";
+role_atomic_goal_type const role_predicate_goal = "role_atomic_goal";
+role_intersection_type const role_and = "role_intersection";
 role_non_terminal_type const role_non_terminal = "role_non_terminal";
 role_choice_type const role_choice = "role_choice";
 role_derivation_rule_type const role_derivation_rule = "role_derivation_rule";
@@ -85,17 +85,17 @@ inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | 
 inline auto predicate_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 
 const auto concept__def = concept_non_terminal | concept_predicate_state | concept_predicate_goal | concept_and;
-const auto concept_predicate_state_def = lit("@concept_predicate_state") > predicate_name_parser();
-const auto concept_predicate_goal_def = lit("@concept_predicate_goal") > predicate_name_parser();
-const auto concept_and_def = lit("@concept_and") > concept_ > concept_;
+const auto concept_predicate_state_def = lit("@concept_atomic_state") > predicate_name_parser();
+const auto concept_predicate_goal_def = lit("@concept_atomic_goal") > predicate_name_parser();
+const auto concept_and_def = lit("@concept_intersection") > concept_ > concept_;
 const auto concept_non_terminal_def = concept_non_terminal_parser();
 const auto concept_choice_def = concept_non_terminal | concept_;
 const auto concept_derivation_rule_def = concept_non_terminal > "::=" > (concept_choice % lit("|"));
 
 const auto role_def = role_non_terminal | role_predicate_state | role_predicate_goal | role_and;
-const auto role_predicate_state_def = lit("@role_predicate_state") > predicate_name_parser();
-const auto role_predicate_goal_def = lit("@role_predicate_goal") > predicate_name_parser();
-const auto role_and_def = lit("@role_and") > role > role;
+const auto role_predicate_state_def = lit("@role_atomic_state") > predicate_name_parser();
+const auto role_predicate_goal_def = lit("@role_atomic_goal") > predicate_name_parser();
+const auto role_and_def = lit("@role_intersection") > role > role;
 const auto role_non_terminal_def = role_non_terminal_parser();
 const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
@@ -116,13 +116,13 @@ BOOST_SPIRIT_DEFINE(derivation_rule, grammar)
 struct ConceptClass : x3::annotate_on_success
 {
 };
-struct ConceptPredicateStateClass : x3::annotate_on_success
+struct ConceptAtomicStateClass : x3::annotate_on_success
 {
 };
-struct ConceptPredicateGoalClass : x3::annotate_on_success
+struct ConceptAtomicGoalClass : x3::annotate_on_success
 {
 };
-struct ConceptAndClass : x3::annotate_on_success
+struct ConceptIntersectionClass : x3::annotate_on_success
 {
 };
 struct ConceptNonTerminalClass : x3::annotate_on_success
@@ -138,13 +138,13 @@ struct ConceptDerivationRuleClass : x3::annotate_on_success
 struct RoleClass : x3::annotate_on_success
 {
 };
-struct RolePredicateStateClass : x3::annotate_on_success
+struct RoleAtomicStateClass : x3::annotate_on_success
 {
 };
-struct RolePredicateGoalClass : x3::annotate_on_success
+struct RoleAtomicGoalClass : x3::annotate_on_success
 {
 };
-struct RoleAndClass : x3::annotate_on_success
+struct RoleIntersectionClass : x3::annotate_on_success
 {
 };
 struct RoleNonTerminalClass : x3::annotate_on_success
@@ -168,17 +168,17 @@ struct GrammarClass : x3::annotate_on_success, error_handler_base
 namespace mimir::dl
 {
 parser::concept_type const& concept_() { return parser::concept_; }
-parser::concept_predicate_state_type const& concept_predicate_state() { return parser::concept_predicate_state; }
-parser::concept_predicate_goal_type const& concept_predicate_goal() { return parser::concept_predicate_goal; }
-parser::concept_and_type const& concept_and() { return parser::concept_and; }
+parser::concept_atomic_state_type const& concept_predicate_state() { return parser::concept_predicate_state; }
+parser::concept_atomic_goal_type const& concept_predicate_goal() { return parser::concept_predicate_goal; }
+parser::concept_intersection_type const& concept_and() { return parser::concept_and; }
 parser::concept_non_terminal_type const& concept_non_terminal() { return parser::concept_non_terminal; }
 parser::concept_choice_type const& concept_choice() { return parser::concept_choice; }
 parser::concept_derivation_rule_type const& concept_derivation_rule() { return parser::concept_derivation_rule; }
 
 parser::role_type const& role() { return parser::role; }
-parser::role_predicate_state_type const& role_predicate_state() { return parser::role_predicate_state; }
-parser::role_predicate_goal_type const& role_predicate_goal() { return parser::role_predicate_goal; }
-parser::role_and_type const& role_and() { return parser::role_and; }
+parser::role_atomic_state_type const& role_predicate_state() { return parser::role_predicate_state; }
+parser::role_atomic_goal_type const& role_predicate_goal() { return parser::role_predicate_goal; }
+parser::role_intersection_type const& role_and() { return parser::role_and; }
 parser::role_non_terminal_type const& role_non_terminal() { return parser::role_non_terminal; }
 parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }

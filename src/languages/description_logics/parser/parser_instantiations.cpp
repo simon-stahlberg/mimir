@@ -26,17 +26,17 @@ using phrase_context_type = mimir::dl::phrase_context_type;
 using context_type = mimir::dl::context_type;
 
 BOOST_SPIRIT_INSTANTIATE(concept_type, iterator_type, context_type)
-BOOST_SPIRIT_INSTANTIATE(concept_predicate_state_type, iterator_type, context_type)
-BOOST_SPIRIT_INSTANTIATE(concept_predicate_goal_type, iterator_type, context_type)
-BOOST_SPIRIT_INSTANTIATE(concept_and_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(concept_atomic_state_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(concept_atomic_goal_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(concept_intersection_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_non_terminal_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_choice_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(concept_derivation_rule_type, iterator_type, context_type)
 
 BOOST_SPIRIT_INSTANTIATE(role_type, iterator_type, context_type)
-BOOST_SPIRIT_INSTANTIATE(role_predicate_state_type, iterator_type, context_type)
-BOOST_SPIRIT_INSTANTIATE(role_predicate_goal_type, iterator_type, context_type)
-BOOST_SPIRIT_INSTANTIATE(role_and_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(role_atomic_state_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(role_atomic_goal_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(role_intersection_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_non_terminal_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_choice_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_derivation_rule_type, iterator_type, context_type)

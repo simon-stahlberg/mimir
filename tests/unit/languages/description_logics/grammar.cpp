@@ -31,14 +31,14 @@ namespace mimir::tests
 TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
 {
     auto bnf_description = std::string(R"(
-<concept_at-robby_state> ::= @concept_predicate_state "at-robby"
-<concept_at-robby_goal> ::= @concept_predicate_goal "at-robby"
-<concept_and> ::= @concept_and <concept_at-robby_state> <concept_at-robby_goal>
-<concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_and>
-<role_at_state> ::= @role_predicate_state "at"
-<role_at_goal> ::= @role_predicate_goal "at"
-<role_and> ::= @role_and <role> <role_at_goal>
-<role> ::= <role_at_state> | <role_at_goal> | <role_and>
+<concept_at-robby_state> ::= @concept_atomic_state "at-robby"
+<concept_at-robby_goal> ::= @concept_atomic_goal "at-robby"
+<concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
+<concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
+<role_at_state> ::= @role_atomic_state "at"
+<role_at_goal> ::= @role_atomic_goal "at"
+<role_intersection> ::= @role_intersection <role> <role_at_goal>
+<role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");
 
     auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
@@ -62,13 +62,13 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
 
     const auto concept_goal_at_robby =
         constructor_repositories.get<dl::ConceptPredicateGoalFactory<Fluent>>().get_or_create<dl::ConceptAtomicGoalImpl<Fluent>>(predicate_at_robby);
-    const auto concept_at_robby_and_goal_at_robby =
+    const auto concept_at_robby_intersect_goal_at_robby =
         constructor_repositories.get<dl::ConceptAndFactory>().get_or_create<dl::ConceptIntersectionImpl>(concept_at_robby, concept_goal_at_robby);
-    EXPECT_TRUE(grammar.test_match(concept_at_robby_and_goal_at_robby));
+    EXPECT_TRUE(grammar.test_match(concept_at_robby_intersect_goal_at_robby));
 
-    const auto concept_goal_at_robby_and_at_robby =
+    const auto concept_goal_at_robby_intersect_at_robby =
         constructor_repositories.get<dl::ConceptAndFactory>().get_or_create<dl::ConceptIntersectionImpl>(concept_goal_at_robby, concept_at_robby);
-    EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_and_at_robby));
+    EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_intersect_at_robby));
 }
 
 }

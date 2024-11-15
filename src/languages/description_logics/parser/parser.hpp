@@ -41,17 +41,17 @@ using ascii::space;
 namespace parser
 {
 struct ConceptClass;
-struct ConceptPredicateStateClass;
-struct ConceptPredicateGoalClass;
-struct ConceptAndClass;
+struct ConceptAtomicStateClass;
+struct ConceptAtomicGoalClass;
+struct ConceptIntersectionClass;
 struct ConceptNonTerminalClass;
 struct ConceptChoiceClass;
 struct ConceptDerivationRuleClass;
 
 struct RoleClass;
-struct RolePredicateStateClass;
-struct RolePredicateGoalClass;
-struct RoleAndClass;
+struct RoleAtomicStateClass;
+struct RoleAtomicGoalClass;
+struct RoleIntersectionClass;
 struct RoleNonTerminalClass;
 struct RoleChoiceClass;
 struct RoleDerivationRuleClass;
@@ -59,17 +59,17 @@ struct RoleDerivationRuleClass;
 struct DerivationRuleClass;
 
 typedef x3::rule<ConceptClass, ast::Concept> concept_type;
-typedef x3::rule<ConceptPredicateStateClass, ast::ConceptAtomicState> concept_predicate_state_type;
-typedef x3::rule<ConceptPredicateGoalClass, ast::ConceptAtomicGoal> concept_predicate_goal_type;
-typedef x3::rule<ConceptAndClass, ast::ConceptIntersection> concept_and_type;
+typedef x3::rule<ConceptAtomicStateClass, ast::ConceptAtomicState> concept_atomic_state_type;
+typedef x3::rule<ConceptAtomicGoalClass, ast::ConceptAtomicGoal> concept_atomic_goal_type;
+typedef x3::rule<ConceptIntersectionClass, ast::ConceptIntersection> concept_intersection_type;
 typedef x3::rule<ConceptNonTerminalClass, ast::ConceptNonTerminal> concept_non_terminal_type;
 typedef x3::rule<ConceptChoiceClass, ast::ConceptChoice> concept_choice_type;
 typedef x3::rule<ConceptDerivationRuleClass, ast::ConceptDerivationRule> concept_derivation_rule_type;
 
 typedef x3::rule<RoleClass, ast::Role> role_type;
-typedef x3::rule<RolePredicateStateClass, ast::RoleAtomicState> role_predicate_state_type;
-typedef x3::rule<RolePredicateGoalClass, ast::RoleAtomicGoal> role_predicate_goal_type;
-typedef x3::rule<RoleAndClass, ast::RoleIntersection> role_and_type;
+typedef x3::rule<RoleAtomicStateClass, ast::RoleAtomicState> role_atomic_state_type;
+typedef x3::rule<RoleAtomicGoalClass, ast::RoleAtomicGoal> role_atomic_goal_type;
+typedef x3::rule<RoleIntersectionClass, ast::RoleIntersection> role_intersection_type;
 typedef x3::rule<RoleNonTerminalClass, ast::RoleNonTerminal> role_non_terminal_type;
 typedef x3::rule<RoleChoiceClass, ast::RoleChoice> role_choice_type;
 typedef x3::rule<RoleDerivationRuleClass, ast::RoleDerivationRule> role_derivation_rule_type;
@@ -77,17 +77,17 @@ typedef x3::rule<RoleDerivationRuleClass, ast::RoleDerivationRule> role_derivati
 typedef x3::rule<DerivationRuleClass, ast::DerivationRule> derivation_rule_type;
 
 BOOST_SPIRIT_DECLARE(concept_type,
-                     concept_predicate_state_type,
-                     concept_predicate_goal_type,
-                     concept_and_type,
+                     concept_atomic_state_type,
+                     concept_atomic_goal_type,
+                     concept_intersection_type,
                      concept_non_terminal_type,
                      concept_choice_type,
                      concept_derivation_rule_type)
 
 BOOST_SPIRIT_DECLARE(role_type,
-                     role_predicate_state_type,
-                     role_predicate_goal_type,
-                     role_and_type,
+                     role_atomic_state_type,
+                     role_atomic_goal_type,
+                     role_intersection_type,
                      role_non_terminal_type,
                      role_choice_type,
                      role_derivation_rule_type)
@@ -97,17 +97,17 @@ BOOST_SPIRIT_DECLARE(derivation_rule_type)
 }
 
 parser::concept_type const& concept_();
-parser::concept_predicate_state_type const& concept_predicate_state();
-parser::concept_predicate_goal_type const& concept_predicate_goal();
-parser::concept_and_type const& concept_and();
+parser::concept_atomic_state_type const& concept_predicate_state();
+parser::concept_atomic_goal_type const& concept_predicate_goal();
+parser::concept_intersection_type const& concept_and();
 parser::concept_non_terminal_type const& concept_non_terminal();
 parser::concept_choice_type const& concept_choice();
 parser::concept_derivation_rule_type const& concept_derivation_rule();
 
 parser::role_type const& role();
-parser::role_predicate_state_type const& role_predicate_state();
-parser::role_predicate_goal_type const& role_predicate_goal();
-parser::role_and_type const& role_and();
+parser::role_atomic_state_type const& role_predicate_state();
+parser::role_atomic_goal_type const& role_predicate_goal();
+parser::role_intersection_type const& role_and();
 parser::role_non_terminal_type const& role_non_terminal();
 parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();
