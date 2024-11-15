@@ -53,6 +53,10 @@ template<IsConceptOrRole D>
 using ConstructorList = std::vector<Constructor<D>>;
 
 /* Concrete concepts */
+class ConceptTopImpl;
+using ConceptTop = const ConceptTopImpl*;
+class ConceptBotImpl;
+using ConceptBot = const ConceptBotImpl*;
 template<PredicateCategory P>
 class ConceptAtomicStateImpl;
 template<PredicateCategory P>
@@ -65,6 +69,18 @@ class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
 class ConceptUnionImpl;
 using ConceptUnion = const ConceptUnionImpl*;
+class ConceptNegationImpl;
+using ConceptNegation = const ConceptNegationImpl*;
+class ConceptValueRestrictionImpl;
+using ConceptValueRestriction = const ConceptValueRestrictionImpl*;
+class ConceptExistentialQuantificationImpl;
+using ConceptExistentialQuantification = const ConceptExistentialQuantificationImpl*;
+class ConceptRoleValueMapContainmentImpl;
+using ConceptRoleValueMapContainment = const ConceptRoleValueMapContainmentImpl*;
+class ConceptRoleValueMapEqualityImpl;
+using ConceptRoleValueMapEquality = const ConceptRoleValueMapEqualityImpl*;
+class ConceptNominalImpl;
+using ConceptNominal = const ConceptNominalImpl*;
 
 /* Concrete roles */
 template<PredicateCategory P>
@@ -117,6 +133,10 @@ template<dl::IsConceptOrRole D>
 using ChoiceList = std::vector<Choice<D>>;
 
 /* Concrete concepts */
+class ConceptTopImpl;
+using ConceptTop = const ConceptTopImpl*;
+class ConceptBotImpl;
+using ConceptBot = const ConceptBotImpl*;
 template<PredicateCategory P>
 class ConceptAtomicStateImpl;
 template<PredicateCategory P>
@@ -129,6 +149,18 @@ class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
 class ConceptUnionImpl;
 using ConceptUnion = const ConceptUnionImpl*;
+class ConceptNegationImpl;
+using ConceptNegation = const ConceptNegationImpl*;
+class ConceptValueRestrictionImpl;
+using ConceptValueRestriction = const ConceptValueRestrictionImpl*;
+class ConceptExistentialQuantificationImpl;
+using ConceptExistentialQuantification = const ConceptExistentialQuantificationImpl*;
+class ConceptRoleValueMapContainmentImpl;
+using ConceptRoleValueMapContainment = const ConceptRoleValueMapContainmentImpl*;
+class ConceptRoleValueMapEqualityImpl;
+using ConceptRoleValueMapEquality = const ConceptRoleValueMapEqualityImpl*;
+class ConceptNominalImpl;
+using ConceptNominal = const ConceptNominalImpl*;
 
 /* Concrete roles */
 template<PredicateCategory P>
