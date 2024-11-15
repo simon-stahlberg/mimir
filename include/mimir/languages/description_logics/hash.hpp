@@ -60,7 +60,7 @@ public:
 
 /// Spezialization for std::ranges::forward_range.
 template<typename ForwardRange>
-requires std::ranges::forward_range<ForwardRange>
+    requires std::ranges::forward_range<ForwardRange>
 struct UniqueDLHasher<ForwardRange>
 {
     size_t operator()(const ForwardRange& range) const
@@ -91,41 +91,41 @@ struct UniqueDLHasher<std::variant<Ts...>>
 /* Concepts */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const ConceptPredicateStateImpl<P>*>
+struct UniqueDLHasher<const ConceptAtomicStateImpl<P>*>
 {
-    size_t operator()(const ConceptPredicateStateImpl<P>* e) const;
+    size_t operator()(const ConceptAtomicStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const ConceptPredicateGoalImpl<P>*>
+struct UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>
 {
-    size_t operator()(const ConceptPredicateGoalImpl<P>* e) const;
+    size_t operator()(const ConceptAtomicGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const ConceptAndImpl*>
+struct UniqueDLHasher<const ConceptIntersectionImpl*>
 {
-    size_t operator()(const ConceptAndImpl* e) const;
+    size_t operator()(const ConceptIntersectionImpl* e) const;
 };
 
 /* Roles */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const RolePredicateStateImpl<P>*>
+struct UniqueDLHasher<const RoleAtomicStateImpl<P>*>
 {
-    size_t operator()(const RolePredicateStateImpl<P>* e) const;
+    size_t operator()(const RoleAtomicStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const RolePredicateGoalImpl<P>*>
+struct UniqueDLHasher<const RoleAtomicGoalImpl<P>*>
 {
-    size_t operator()(const RolePredicateGoalImpl<P>* e) const;
+    size_t operator()(const RoleAtomicGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const RoleAndImpl*>
+struct UniqueDLHasher<const RoleIntersectionImpl*>
 {
-    size_t operator()(const RoleAndImpl* e) const;
+    size_t operator()(const RoleIntersectionImpl* e) const;
 };
 
 /**
@@ -159,41 +159,41 @@ struct UniqueDLHasher<const grammar::ChoiceImpl<D>*>
 /* Concepts */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const grammar::ConceptPredicateStateImpl<P>*>
+struct UniqueDLHasher<const grammar::ConceptAtomicStateImpl<P>*>
 {
-    size_t operator()(const grammar::ConceptPredicateStateImpl<P>* e) const;
+    size_t operator()(const grammar::ConceptAtomicStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const grammar::ConceptPredicateGoalImpl<P>*>
+struct UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<P>*>
 {
-    size_t operator()(const grammar::ConceptPredicateGoalImpl<P>* e) const;
+    size_t operator()(const grammar::ConceptAtomicGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const grammar::ConceptAndImpl*>
+struct UniqueDLHasher<const grammar::ConceptIntersectionImpl*>
 {
-    size_t operator()(const grammar::ConceptAndImpl* e) const;
+    size_t operator()(const grammar::ConceptIntersectionImpl* e) const;
 };
 
 /* Roles */
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const grammar::RolePredicateStateImpl<P>*>
+struct UniqueDLHasher<const grammar::RoleAtomicStateImpl<P>*>
 {
-    size_t operator()(const grammar::RolePredicateStateImpl<P>* e) const;
+    size_t operator()(const grammar::RoleAtomicStateImpl<P>* e) const;
 };
 
 template<PredicateCategory P>
-struct UniqueDLHasher<const grammar::RolePredicateGoalImpl<P>*>
+struct UniqueDLHasher<const grammar::RoleAtomicGoalImpl<P>*>
 {
-    size_t operator()(const grammar::RolePredicateGoalImpl<P>* e) const;
+    size_t operator()(const grammar::RoleAtomicGoalImpl<P>* e) const;
 };
 
 template<>
-struct UniqueDLHasher<const grammar::RoleAndImpl*>
+struct UniqueDLHasher<const grammar::RoleIntersectionImpl*>
 {
-    size_t operator()(const grammar::RoleAndImpl* e) const;
+    size_t operator()(const grammar::RoleIntersectionImpl* e) const;
 };
 
 }

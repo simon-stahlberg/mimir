@@ -40,19 +40,20 @@ template<IsConceptOrRole D>
 using DerivationRuleFactory =
     loki::UniqueFactory<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
 template<PredicateCategory P>
-using ConceptPredicateStateFactory = loki::
-    UniqueFactory<ConceptPredicateStateImpl<P>, UniqueDLHasher<const ConceptPredicateStateImpl<P>*>, UniqueDLEqualTo<const ConceptPredicateStateImpl<P>*>>;
+using ConceptPredicateStateFactory =
+    loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
 using ConceptPredicateGoalFactory =
-    loki::UniqueFactory<ConceptPredicateGoalImpl<P>, UniqueDLHasher<const ConceptPredicateGoalImpl<P>*>, UniqueDLEqualTo<const ConceptPredicateGoalImpl<P>*>>;
-using ConceptAndFactory = loki::UniqueFactory<ConceptAndImpl, UniqueDLHasher<const ConceptAndImpl*>, UniqueDLEqualTo<const ConceptAndImpl*>>;
+    loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
+using ConceptAndFactory =
+    loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
 template<PredicateCategory P>
 using RolePredicateStateFactory =
-    loki::UniqueFactory<RolePredicateStateImpl<P>, UniqueDLHasher<const RolePredicateStateImpl<P>*>, UniqueDLEqualTo<const RolePredicateStateImpl<P>*>>;
+    loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
 using RolePredicateGoalFactory =
-    loki::UniqueFactory<RolePredicateGoalImpl<P>, UniqueDLHasher<const RolePredicateGoalImpl<P>*>, UniqueDLEqualTo<const RolePredicateGoalImpl<P>*>>;
-using RoleAndFactory = loki::UniqueFactory<RoleAndImpl, UniqueDLHasher<const RoleAndImpl*>, UniqueDLEqualTo<const RoleAndImpl*>>;
+    loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
+using RoleAndFactory = loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
 
 using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFactory<Concept>,  //
                                                                   ChoiceFactory<Concept>,

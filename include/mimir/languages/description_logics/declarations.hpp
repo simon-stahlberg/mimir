@@ -54,27 +54,29 @@ using ConstructorList = std::vector<Constructor<D>>;
 
 /* Concrete concepts */
 template<PredicateCategory P>
-class ConceptPredicateStateImpl;
+class ConceptAtomicStateImpl;
 template<PredicateCategory P>
-using ConceptPredicateState = const ConceptPredicateStateImpl<P>*;
+using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
 template<PredicateCategory P>
-class ConceptPredicateGoalImpl;
+class ConceptAtomicGoalImpl;
 template<PredicateCategory P>
-using ConceptPredicateGoal = const ConceptPredicateGoalImpl<P>*;
-class ConceptAndImpl;
-using ConceptAnd = const ConceptAndImpl*;
+using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
+class ConceptIntersectionImpl;
+using ConceptIntersection = const ConceptIntersectionImpl*;
+class ConceptUnionImpl;
+using ConceptUnion = const ConceptUnionImpl*;
 
 /* Concrete roles */
 template<PredicateCategory P>
-class RolePredicateStateImpl;
+class RoleAtomicStateImpl;
 template<PredicateCategory P>
-using RolePredicateState = const RolePredicateStateImpl<P>*;
+using RoleAtomicState = const RoleAtomicStateImpl<P>*;
 template<PredicateCategory P>
-class RolePredicateGoalImpl;
+class RoleAtomicGoalImpl;
 template<PredicateCategory P>
-using RolePredicateGoal = const RolePredicateGoalImpl<P>*;
-class RoleAndImpl;
-using RoleAnd = const RoleAndImpl*;
+using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
+class RoleIntersectionImpl;
+using RoleIntersection = const RoleIntersectionImpl*;
 
 namespace grammar
 {
@@ -116,27 +118,29 @@ using ChoiceList = std::vector<Choice<D>>;
 
 /* Concrete concepts */
 template<PredicateCategory P>
-class ConceptPredicateStateImpl;
+class ConceptAtomicStateImpl;
 template<PredicateCategory P>
-using ConceptPredicateState = const ConceptPredicateStateImpl<P>*;
+using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
 template<PredicateCategory P>
-class ConceptPredicateGoalImpl;
+class ConceptAtomicGoalImpl;
 template<PredicateCategory P>
-using ConceptPredicateGoal = const ConceptPredicateGoalImpl<P>*;
-class ConceptAndImpl;
-using ConceptAnd = const ConceptAndImpl*;
+using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
+class ConceptIntersectionImpl;
+using ConceptIntersection = const ConceptIntersectionImpl*;
+class ConceptUnionImpl;
+using ConceptUnion = const ConceptUnionImpl*;
 
 /* Concrete roles */
 template<PredicateCategory P>
-class RolePredicateStateImpl;
+class RoleAtomicStateImpl;
 template<PredicateCategory P>
-using RolePredicateState = const RolePredicateStateImpl<P>*;
+using RoleAtomicState = const RoleAtomicStateImpl<P>*;
 template<PredicateCategory P>
-class RolePredicateGoalImpl;
+class RoleAtomicGoalImpl;
 template<PredicateCategory P>
-using RolePredicateGoal = const RolePredicateGoalImpl<P>*;
-class RoleAndImpl;
-using RoleAnd = const RoleAndImpl*;
+using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
+class RoleIntersectionImpl;
+using RoleIntersection = const RoleIntersectionImpl*;
 
 /**
  * Visitors

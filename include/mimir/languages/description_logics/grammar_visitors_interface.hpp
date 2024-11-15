@@ -37,13 +37,14 @@ public:
     // Default implementations always return false
 
     /* Concepts */
-    virtual bool visit(dl::ConceptPredicateState<Static> constructor) const { return false; }
-    virtual bool visit(dl::ConceptPredicateState<Fluent> constructor) const { return false; }
-    virtual bool visit(dl::ConceptPredicateState<Derived> constructor) const { return false; }
-    virtual bool visit(dl::ConceptPredicateGoal<Static> constructor) const { return false; }
-    virtual bool visit(dl::ConceptPredicateGoal<Fluent> constructor) const { return false; }
-    virtual bool visit(dl::ConceptPredicateGoal<Derived> constructor) const { return false; }
-    virtual bool visit(dl::ConceptAnd constructor) const { return false; }
+    virtual bool visit(dl::ConceptAtomicState<Static> constructor) const { return false; }
+    virtual bool visit(dl::ConceptAtomicState<Fluent> constructor) const { return false; }
+    virtual bool visit(dl::ConceptAtomicState<Derived> constructor) const { return false; }
+    virtual bool visit(dl::ConceptAtomicGoal<Static> constructor) const { return false; }
+    virtual bool visit(dl::ConceptAtomicGoal<Fluent> constructor) const { return false; }
+    virtual bool visit(dl::ConceptAtomicGoal<Derived> constructor) const { return false; }
+    virtual bool visit(dl::ConceptIntersection constructor) const { return false; }
+    virtual bool visit(dl::ConceptUnion constructor) const { return false; }
 };
 
 /**
@@ -59,13 +60,13 @@ public:
     // Default implementations always return false
 
     /* Roles */
-    virtual bool visit(dl::RolePredicateState<Static> constructor) const { return false; }
-    virtual bool visit(dl::RolePredicateState<Fluent> constructor) const { return false; }
-    virtual bool visit(dl::RolePredicateState<Derived> constructor) const { return false; }
-    virtual bool visit(dl::RolePredicateGoal<Static> constructor) const { return false; }
-    virtual bool visit(dl::RolePredicateGoal<Fluent> constructor) const { return false; }
-    virtual bool visit(dl::RolePredicateGoal<Derived> constructor) const { return false; }
-    virtual bool visit(dl::RoleAnd constructor) const { return false; }
+    virtual bool visit(dl::RoleAtomicState<Static> constructor) const { return false; }
+    virtual bool visit(dl::RoleAtomicState<Fluent> constructor) const { return false; }
+    virtual bool visit(dl::RoleAtomicState<Derived> constructor) const { return false; }
+    virtual bool visit(dl::RoleAtomicGoal<Static> constructor) const { return false; }
+    virtual bool visit(dl::RoleAtomicGoal<Fluent> constructor) const { return false; }
+    virtual bool visit(dl::RoleAtomicGoal<Derived> constructor) const { return false; }
+    virtual bool visit(dl::RoleIntersection constructor) const { return false; }
 };
 
 }

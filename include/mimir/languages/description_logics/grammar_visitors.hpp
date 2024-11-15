@@ -34,38 +34,49 @@ namespace mimir::dl::grammar
  */
 
 template<PredicateCategory P>
-class ConceptPredicateStateVisitor : public Visitor<Concept>
+class ConceptAtomicStateVisitor : public Visitor<Concept>
 {
 private:
-    grammar::ConceptPredicateState<P> m_grammar_constructor;
+    grammar::ConceptAtomicState<P> m_grammar_constructor;
 
 public:
-    explicit ConceptPredicateStateVisitor(grammar::ConceptPredicateState<P> grammar_constructor);
+    explicit ConceptAtomicStateVisitor(grammar::ConceptAtomicState<P> grammar_constructor);
 
-    bool visit(dl::ConceptPredicateState<P> constructor) const override;
+    bool visit(dl::ConceptAtomicState<P> constructor) const override;
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoalVisitor : public Visitor<Concept>
+class ConceptAtomicGoalVisitor : public Visitor<Concept>
 {
 private:
-    ConceptPredicateGoal<P> m_grammar_constructor;
+    ConceptAtomicGoal<P> m_grammar_constructor;
 
 public:
-    explicit ConceptPredicateGoalVisitor(ConceptPredicateGoal<P> grammar_constructor);
+    explicit ConceptAtomicGoalVisitor(ConceptAtomicGoal<P> grammar_constructor);
 
-    bool visit(dl::ConceptPredicateGoal<P> constructor) const override;
+    bool visit(dl::ConceptAtomicGoal<P> constructor) const override;
 };
 
-class ConceptAndVisitor : public Visitor<Concept>
+class ConceptIntersectionVisitor : public Visitor<Concept>
 {
 private:
-    ConceptAnd m_grammar_constructor;
+    ConceptIntersection m_grammar_constructor;
 
 public:
-    explicit ConceptAndVisitor(ConceptAnd grammar_constructor);
+    explicit ConceptIntersectionVisitor(ConceptIntersection grammar_constructor);
 
-    bool visit(dl::ConceptAnd constructor) const override;
+    bool visit(dl::ConceptIntersection constructor) const override;
+};
+
+class ConceptUnionVisitor : public Visitor<Concept>
+{
+private:
+    ConceptUnion m_grammar_constructor;
+
+public:
+    explicit ConceptUnionVisitor(ConceptUnion grammar_constructor);
+
+    bool visit(dl::ConceptUnion constructor) const override;
 };
 
 /**
@@ -73,38 +84,38 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateStateVisitor : public Visitor<Role>
+class RoleAtomicStateVisitor : public Visitor<Role>
 {
 private:
-    RolePredicateState<P> m_grammar_constructor;
+    RoleAtomicState<P> m_grammar_constructor;
 
 public:
-    explicit RolePredicateStateVisitor(RolePredicateState<P> grammar_constructor);
+    explicit RoleAtomicStateVisitor(RoleAtomicState<P> grammar_constructor);
 
-    bool visit(dl::RolePredicateState<P> constructor) const override;
+    bool visit(dl::RoleAtomicState<P> constructor) const override;
 };
 
 template<PredicateCategory P>
-class RolePredicateGoalVisitor : public Visitor<Role>
+class RoleAtomicGoalVisitor : public Visitor<Role>
 {
 private:
-    RolePredicateGoal<P> m_grammar_constructor;
+    RoleAtomicGoal<P> m_grammar_constructor;
 
 public:
-    explicit RolePredicateGoalVisitor(RolePredicateGoal<P> grammar_constructor);
+    explicit RoleAtomicGoalVisitor(RoleAtomicGoal<P> grammar_constructor);
 
-    bool visit(dl::RolePredicateGoal<P> constructor) const override;
+    bool visit(dl::RoleAtomicGoal<P> constructor) const override;
 };
 
-class RoleAndVisitor : public Visitor<Role>
+class RoleIntersectionVisitor : public Visitor<Role>
 {
 private:
-    RoleAnd m_grammar_constructor;
+    RoleIntersection m_grammar_constructor;
 
 public:
-    explicit RoleAndVisitor(RoleAnd grammar_constructor);
+    explicit RoleIntersectionVisitor(RoleIntersection grammar_constructor);
 
-    bool visit(dl::RoleAnd constructor) const override;
+    bool visit(dl::RoleIntersection constructor) const override;
 };
 
 }

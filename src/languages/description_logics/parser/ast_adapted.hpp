@@ -24,15 +24,15 @@
 // We need to tell fusion about our rexpr and rexpr_key_value
 // to make them a first-class fusion citizens
 
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptPredicateState, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptPredicateGoal, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptAnd, concept_left, concept_right)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptAtomicState, predicate_name)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptAtomicGoal, predicate_name)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptIntersection, concept_left, concept_right)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptNonTerminal, name)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptDerivationRule, non_terminal, choices)
 
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RolePredicateState, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RolePredicateGoal, predicate_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleAnd, role_left, role_right)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleAtomicState, predicate_name)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleAtomicGoal, predicate_name)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleIntersection, role_left, role_right)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleNonTerminal, name)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleDerivationRule, non_terminal, choices)
 

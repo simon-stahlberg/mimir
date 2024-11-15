@@ -51,32 +51,32 @@ namespace x3 = boost::spirit::x3;
  */
 
 struct ConceptNonTerminal;
-struct ConceptPredicateState;
-struct ConceptPredicateGoal;
-struct ConceptAnd;
+struct ConceptAtomicState;
+struct ConceptAtomicGoal;
+struct ConceptIntersection;
 
 struct Concept :
     x3::position_tagged,
     x3::variant<x3::forward_ast<ConceptNonTerminal>,  //
-                x3::forward_ast<ConceptPredicateState>,
-                x3::forward_ast<ConceptPredicateGoal>,
-                x3::forward_ast<ConceptAnd>>
+                x3::forward_ast<ConceptAtomicState>,
+                x3::forward_ast<ConceptAtomicGoal>,
+                x3::forward_ast<ConceptIntersection>>
 {
     using base_type::base_type;
     using base_type::operator=;
 };
 
-struct ConceptPredicateState : x3::position_tagged
+struct ConceptAtomicState : x3::position_tagged
 {
     std::string predicate_name;
 };
 
-struct ConceptPredicateGoal : x3::position_tagged
+struct ConceptAtomicGoal : x3::position_tagged
 {
     std::string predicate_name;
 };
 
-struct ConceptAnd : x3::position_tagged
+struct ConceptIntersection : x3::position_tagged
 {
     Concept concept_left;
     Concept concept_right;
@@ -104,32 +104,32 @@ struct ConceptDerivationRule : x3::position_tagged
  */
 
 struct RoleNonTerminal;
-struct RolePredicateState;
-struct RolePredicateGoal;
-struct RoleAnd;
+struct RoleAtomicState;
+struct RoleAtomicGoal;
+struct RoleIntersection;
 
 struct Role :
     x3::position_tagged,
     x3::variant<x3::forward_ast<RoleNonTerminal>,  //
-                x3::forward_ast<RolePredicateState>,
-                x3::forward_ast<RolePredicateGoal>,
-                x3::forward_ast<RoleAnd>>
+                x3::forward_ast<RoleAtomicState>,
+                x3::forward_ast<RoleAtomicGoal>,
+                x3::forward_ast<RoleIntersection>>
 {
     using base_type::base_type;
     using base_type::operator=;
 };
 
-struct RolePredicateState : x3::position_tagged
+struct RoleAtomicState : x3::position_tagged
 {
     std::string predicate_name;
 };
 
-struct RolePredicateGoal : x3::position_tagged
+struct RoleAtomicGoal : x3::position_tagged
 {
     std::string predicate_name;
 };
 
-struct RoleAnd : x3::position_tagged
+struct RoleIntersection : x3::position_tagged
 {
     Role role_left;
     Role role_right;

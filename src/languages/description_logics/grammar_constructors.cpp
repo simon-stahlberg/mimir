@@ -130,158 +130,181 @@ template class DerivationRuleImpl<Concept>;
 template class DerivationRuleImpl<Role>;
 
 /**
- * ConceptPredicateStateImpl
+ * ConceptAtomicStateImpl
  */
 
 template<PredicateCategory P>
-ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateStateImpl<P>::test_match(dl::Constructor<Concept> constructor) const
+bool ConceptAtomicStateImpl<P>::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(grammar::ConceptPredicateStateVisitor<P>(this));
+    return constructor->accept(grammar::ConceptAtomicStateVisitor<P>(this));
 }
 
 template<PredicateCategory P>
-Index ConceptPredicateStateImpl<P>::get_index() const
+Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateStateImpl<P>::get_predicate() const
+Predicate<P> ConceptAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptPredicateStateImpl<Static>;
-template class ConceptPredicateStateImpl<Fluent>;
-template class ConceptPredicateStateImpl<Derived>;
+template class ConceptAtomicStateImpl<Static>;
+template class ConceptAtomicStateImpl<Fluent>;
+template class ConceptAtomicStateImpl<Derived>;
 
 /**
- * ConceptPredicateGoal
+ * ConceptAtomicGoal
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoalImpl<P>::test_match(dl::Constructor<Concept> constructor) const
+bool ConceptAtomicGoalImpl<P>::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(ConceptPredicateGoalVisitor<P>(this));
+    return constructor->accept(ConceptAtomicGoalVisitor<P>(this));
 }
 
 template<PredicateCategory P>
-Index ConceptPredicateGoalImpl<P>::get_index() const
+Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateGoalImpl<P>::get_predicate() const
+Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptPredicateGoalImpl<Static>;
-template class ConceptPredicateGoalImpl<Fluent>;
-template class ConceptPredicateGoalImpl<Derived>;
+template class ConceptAtomicGoalImpl<Static>;
+template class ConceptAtomicGoalImpl<Fluent>;
+template class ConceptAtomicGoalImpl<Derived>;
 
 /**
- * ConceptAnd
+ * ConceptIntersection
  */
-ConceptAndImpl::ConceptAndImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right) :
+ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right) :
     m_index(index),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
 {
 }
 
-bool ConceptAndImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptAndVisitor(this)); }
+bool ConceptIntersectionImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptIntersectionVisitor(this)); }
 
-Index ConceptAndImpl::get_index() const { return m_index; }
+Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
-Choice<Concept> ConceptAndImpl::get_concept_left() const { return m_concept_left; }
+Choice<Concept> ConceptIntersectionImpl::get_concept_left() const { return m_concept_left; }
 
-Choice<Concept> ConceptAndImpl::get_concept_right() const { return m_concept_right; }
+Choice<Concept> ConceptIntersectionImpl::get_concept_right() const { return m_concept_right; }
 
 /**
- * RolePredicateState
+ * ConceptUnion
+ */
+ConceptUnionImpl::ConceptUnionImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right) :
+    m_index(index),
+    m_concept_left(concept_left),
+    m_concept_right(concept_right)
+{
+}
+
+bool ConceptUnionImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptUnionVisitor(this)); }
+
+Index ConceptUnionImpl::get_index() const { return m_index; }
+
+Choice<Concept> ConceptUnionImpl::get_concept_left() const { return m_concept_left; }
+
+Choice<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_right; }
+
+/**
+ * RoleAtomicState
  */
 
 template<PredicateCategory P>
-RolePredicateStateImpl<P>::RolePredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool RolePredicateStateImpl<P>::test_match(dl::Constructor<Role> constructor) const
+bool RoleAtomicStateImpl<P>::test_match(dl::Constructor<Role> constructor) const
 {
-    return constructor->accept(RolePredicateStateVisitor<P>(this));
+    return constructor->accept(RoleAtomicStateVisitor<P>(this));
 }
 
 template<PredicateCategory P>
-Index RolePredicateStateImpl<P>::get_index() const
+Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateStateImpl<P>::get_predicate() const
+Predicate<P> RoleAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RolePredicateStateImpl<Static>;
-template class RolePredicateStateImpl<Fluent>;
-template class RolePredicateStateImpl<Derived>;
+template class RoleAtomicStateImpl<Static>;
+template class RoleAtomicStateImpl<Fluent>;
+template class RoleAtomicStateImpl<Derived>;
 
 /**
- * RolePredicateGoal
+ * RoleAtomicGoal
  */
 
 template<PredicateCategory P>
-RolePredicateGoalImpl<P>::RolePredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoalImpl<P>::test_match(dl::Constructor<Role> constructor) const
+bool RoleAtomicGoalImpl<P>::test_match(dl::Constructor<Role> constructor) const
 {
-    return constructor->accept(RolePredicateGoalVisitor<P>(this));
+    return constructor->accept(RoleAtomicGoalVisitor<P>(this));
 }
 
 template<PredicateCategory P>
-Index RolePredicateGoalImpl<P>::get_index() const
+Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateGoalImpl<P>::get_predicate() const
+Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RolePredicateGoalImpl<Static>;
-template class RolePredicateGoalImpl<Fluent>;
-template class RolePredicateGoalImpl<Derived>;
+template class RoleAtomicGoalImpl<Static>;
+template class RoleAtomicGoalImpl<Fluent>;
+template class RoleAtomicGoalImpl<Derived>;
 
 /**
- * RoleAnd
+ * RoleIntersection
  */
-RoleAndImpl::RoleAndImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) : m_index(index), m_role_left(role_left), m_role_right(role_right) {}
+RoleIntersectionImpl::RoleIntersectionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
 
-bool RoleAndImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleAndVisitor(this)); }
+bool RoleIntersectionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleIntersectionVisitor(this)); }
 
-Index RoleAndImpl::get_index() const { return m_index; }
+Index RoleIntersectionImpl::get_index() const { return m_index; }
 
-Choice<Role> RoleAndImpl::get_role_left() const { return m_role_left; }
+Choice<Role> RoleIntersectionImpl::get_role_left() const { return m_role_left; }
 
-Choice<Role> RoleAndImpl::get_role_right() const { return m_role_right; }
+Choice<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right; }
 
 }

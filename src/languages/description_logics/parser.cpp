@@ -41,17 +41,17 @@ static Choice<Concept> parse(const dl::ast::Concept& node, Domain domain, Variad
 }
 
 const Choice<Concept>
-parse(const dl::ast::ConceptPredicateState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
-            throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
+            throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptPredicateStateFactory<Static>>().template get_or_create<ConceptPredicateStateImpl<Static>>(
+            ref_grammar_constructor_repos.template get<ConceptPredicateStateFactory<Static>>().template get_or_create<ConceptAtomicStateImpl<Static>>(
                 predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
@@ -59,10 +59,10 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, VariadicGrammar
         const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
-            throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
+            throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptPredicateStateFactory<Fluent>>().template get_or_create<ConceptPredicateStateImpl<Fluent>>(
+            ref_grammar_constructor_repos.template get<ConceptPredicateStateFactory<Fluent>>().template get_or_create<ConceptAtomicStateImpl<Fluent>>(
                 predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
@@ -70,10 +70,10 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, VariadicGrammar
         const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
-            throw std::runtime_error("Cannot construct ConceptPredicateState from predicates with arity != 1.");
+            throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptPredicateStateFactory<Derived>>().template get_or_create<ConceptPredicateStateImpl<Derived>>(
+            ref_grammar_constructor_repos.template get<ConceptPredicateStateFactory<Derived>>().template get_or_create<ConceptAtomicStateImpl<Derived>>(
                 predicate));
     }
     else
@@ -83,39 +83,37 @@ parse(const dl::ast::ConceptPredicateState& node, Domain domain, VariadicGrammar
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
-            throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
+            throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptPredicateGoalFactory<Static>>().template get_or_create<ConceptPredicateGoalImpl<Static>>(
-                predicate));
+            ref_grammar_constructor_repos.template get<ConceptPredicateGoalFactory<Static>>().template get_or_create<ConceptAtomicGoalImpl<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
-            throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
+            throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptPredicateGoalFactory<Fluent>>().template get_or_create<ConceptPredicateGoalImpl<Fluent>>(
-                predicate));
+            ref_grammar_constructor_repos.template get<ConceptPredicateGoalFactory<Fluent>>().template get_or_create<ConceptAtomicGoalImpl<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 1)
         {
-            throw std::runtime_error("Cannot construct ConceptPredicateGoal from predicates with arity != 1.");
+            throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptPredicateGoalFactory<Derived>>().template get_or_create<ConceptPredicateGoalImpl<Derived>>(
+            ref_grammar_constructor_repos.template get<ConceptPredicateGoalFactory<Derived>>().template get_or_create<ConceptAtomicGoalImpl<Derived>>(
                 predicate));
     }
     else
@@ -124,10 +122,11 @@ parse(const dl::ast::ConceptPredicateGoal& node, Domain domain, VariadicGrammarC
     }
 }
 
-static Choice<Concept> parse(const dl::ast::ConceptAnd& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept>
+parse(const dl::ast::ConceptIntersection& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptAndFactory>().template get_or_create<ConceptAndImpl>(
+        ref_grammar_constructor_repos.template get<ConceptAndFactory>().template get_or_create<ConceptIntersectionImpl>(
             parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
             parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
 }
@@ -170,38 +169,37 @@ static Choice<Role> parse(const dl::ast::Role& node, Domain domain, VariadicGram
 }
 
 static Choice<Role>
-parse(const dl::ast::RolePredicateState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleAtomicState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
-            throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
+            throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Static>>().template get_or_create<RolePredicateStateImpl<Static>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Static>>().template get_or_create<RoleAtomicStateImpl<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
-            throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
+            throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Fluent>>().template get_or_create<RolePredicateStateImpl<Fluent>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Fluent>>().template get_or_create<RoleAtomicStateImpl<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
-            throw std::runtime_error("Cannot construct RolePredicateState from predicates with arity != 2.");
+            throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Derived>>().template get_or_create<RolePredicateStateImpl<Derived>>(
-                predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Derived>>().template get_or_create<RoleAtomicStateImpl<Derived>>(predicate));
     }
     else
     {
@@ -210,37 +208,37 @@ parse(const dl::ast::RolePredicateState& node, Domain domain, VariadicGrammarCon
 }
 
 static Choice<Role>
-parse(const dl::ast::RolePredicateGoal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Static>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
-            throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
+            throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Static>>().template get_or_create<RolePredicateGoalImpl<Static>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Static>>().template get_or_create<RoleAtomicGoalImpl<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Fluent>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
-            throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
+            throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Fluent>>().template get_or_create<RolePredicateGoalImpl<Fluent>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Fluent>>().template get_or_create<RoleAtomicGoalImpl<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
         const auto predicate = domain->get_name_to_predicate<Derived>().at(node.predicate_name);
         if (predicate->get_arity() != 2)
         {
-            throw std::runtime_error("Cannot construct RolePredicateGoal from predicates with arity != 2.");
+            throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Derived>>().template get_or_create<RolePredicateGoalImpl<Derived>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Derived>>().template get_or_create<RoleAtomicGoalImpl<Derived>>(predicate));
     }
     else
     {
@@ -248,10 +246,11 @@ parse(const dl::ast::RolePredicateGoal& node, Domain domain, VariadicGrammarCons
     }
 }
 
-static Choice<Role> parse(const dl::ast::RoleAnd& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role>
+parse(const dl::ast::RoleIntersection& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleAndFactory>().template get_or_create<RoleAndImpl>(
+        ref_grammar_constructor_repos.template get<RoleAndFactory>().template get_or_create<RoleIntersectionImpl>(
             parse(node.role_left, domain, ref_grammar_constructor_repos, context),
             parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }

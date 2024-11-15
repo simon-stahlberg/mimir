@@ -59,17 +59,17 @@ struct RoleDerivationRuleClass;
 struct DerivationRuleClass;
 
 typedef x3::rule<ConceptClass, ast::Concept> concept_type;
-typedef x3::rule<ConceptPredicateStateClass, ast::ConceptPredicateState> concept_predicate_state_type;
-typedef x3::rule<ConceptPredicateGoalClass, ast::ConceptPredicateGoal> concept_predicate_goal_type;
-typedef x3::rule<ConceptAndClass, ast::ConceptAnd> concept_and_type;
+typedef x3::rule<ConceptPredicateStateClass, ast::ConceptAtomicState> concept_predicate_state_type;
+typedef x3::rule<ConceptPredicateGoalClass, ast::ConceptAtomicGoal> concept_predicate_goal_type;
+typedef x3::rule<ConceptAndClass, ast::ConceptIntersection> concept_and_type;
 typedef x3::rule<ConceptNonTerminalClass, ast::ConceptNonTerminal> concept_non_terminal_type;
 typedef x3::rule<ConceptChoiceClass, ast::ConceptChoice> concept_choice_type;
 typedef x3::rule<ConceptDerivationRuleClass, ast::ConceptDerivationRule> concept_derivation_rule_type;
 
 typedef x3::rule<RoleClass, ast::Role> role_type;
-typedef x3::rule<RolePredicateStateClass, ast::RolePredicateState> role_predicate_state_type;
-typedef x3::rule<RolePredicateGoalClass, ast::RolePredicateGoal> role_predicate_goal_type;
-typedef x3::rule<RoleAndClass, ast::RoleAnd> role_and_type;
+typedef x3::rule<RolePredicateStateClass, ast::RoleAtomicState> role_predicate_state_type;
+typedef x3::rule<RolePredicateGoalClass, ast::RoleAtomicGoal> role_predicate_goal_type;
+typedef x3::rule<RoleAndClass, ast::RoleIntersection> role_and_type;
 typedef x3::rule<RoleNonTerminalClass, ast::RoleNonTerminal> role_non_terminal_type;
 typedef x3::rule<RoleChoiceClass, ast::RoleChoice> role_choice_type;
 typedef x3::rule<RoleDerivationRuleClass, ast::RoleDerivationRule> role_derivation_rule_type;

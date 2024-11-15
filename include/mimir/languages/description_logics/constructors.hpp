@@ -35,13 +35,13 @@ namespace mimir::dl
  */
 
 template<PredicateCategory P>
-class ConceptPredicateStateImpl : public ConstructorEvaluatorBase<Concept, ConceptPredicateStateImpl<P>>
+class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>
 {
 private:
     Index m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateStateImpl(Index index, Predicate<P> predicate);
+    ConceptAtomicStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -51,27 +51,27 @@ private:
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateStateImpl<P>>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>;
 
 public:
     // moveable but not copyable
-    ConceptPredicateStateImpl(const ConceptPredicateStateImpl& other) = delete;
-    ConceptPredicateStateImpl& operator=(const ConceptPredicateStateImpl& other) = delete;
-    ConceptPredicateStateImpl(ConceptPredicateStateImpl&& other) = default;
-    ConceptPredicateStateImpl& operator=(ConceptPredicateStateImpl&& other) = default;
+    ConceptAtomicStateImpl(const ConceptAtomicStateImpl& other) = delete;
+    ConceptAtomicStateImpl& operator=(const ConceptAtomicStateImpl& other) = delete;
+    ConceptAtomicStateImpl(ConceptAtomicStateImpl&& other) = default;
+    ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class ConceptPredicateGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptPredicateGoalImpl<P>>
+class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>
 {
 private:
     Index m_index;
     Predicate<P> m_predicate;
 
-    ConceptPredicateGoalImpl(Index index, Predicate<P> predicate);
+    ConceptAtomicGoalImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -81,27 +81,27 @@ private:
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptPredicateGoalImpl<P>>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>;
 
 public:
     // moveable but not copyable
-    ConceptPredicateGoalImpl(const ConceptPredicateGoalImpl& other) = delete;
-    ConceptPredicateGoalImpl& operator=(const ConceptPredicateGoalImpl& other) = delete;
-    ConceptPredicateGoalImpl(ConceptPredicateGoalImpl&& other) = default;
-    ConceptPredicateGoalImpl& operator=(ConceptPredicateGoalImpl&& other) = default;
+    ConceptAtomicGoalImpl(const ConceptAtomicGoalImpl& other) = delete;
+    ConceptAtomicGoalImpl& operator=(const ConceptAtomicGoalImpl& other) = delete;
+    ConceptAtomicGoalImpl(ConceptAtomicGoalImpl&& other) = default;
+    ConceptAtomicGoalImpl& operator=(ConceptAtomicGoalImpl&& other) = default;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
-class ConceptAndImpl : public ConstructorEvaluatorBase<Concept, ConceptAndImpl>
+class ConceptIntersectionImpl : public ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>
 {
 private:
     Index m_index;
     Constructor<Concept> m_concept_left;
     Constructor<Concept> m_concept_right;
 
-    ConceptAndImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
+    ConceptIntersectionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -111,14 +111,45 @@ private:
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptAndImpl>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>;
 
 public:
     // moveable but not copyable
-    ConceptAndImpl(const ConceptAndImpl& other) = delete;
-    ConceptAndImpl& operator=(const ConceptAndImpl& other) = delete;
-    ConceptAndImpl(ConceptAndImpl&& other) = default;
-    ConceptAndImpl& operator=(ConceptAndImpl&& other) = default;
+    ConceptIntersectionImpl(const ConceptIntersectionImpl& other) = delete;
+    ConceptIntersectionImpl& operator=(const ConceptIntersectionImpl& other) = delete;
+    ConceptIntersectionImpl(ConceptIntersectionImpl&& other) = default;
+    ConceptIntersectionImpl& operator=(ConceptIntersectionImpl&& other) = default;
+
+    Index get_index() const;
+    Constructor<Concept> get_concept_left() const;
+    Constructor<Concept> get_concept_right() const;
+};
+
+class ConceptUnionImpl : public ConstructorEvaluatorBase<Concept, ConceptUnionImpl>
+{
+private:
+    Index m_index;
+    Constructor<Concept> m_concept_left;
+    Constructor<Concept> m_concept_right;
+
+    ConceptUnionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class loki::UniqueFactory;
+
+    void evaluate_impl(EvaluationContext& context) const;
+
+    bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
+
+    friend class ConstructorEvaluatorBase<Concept, ConceptUnionImpl>;
+
+public:
+    // moveable but not copyable
+    ConceptUnionImpl(const ConceptUnionImpl& other) = delete;
+    ConceptUnionImpl& operator=(const ConceptUnionImpl& other) = delete;
+    ConceptUnionImpl(ConceptUnionImpl&& other) = default;
+    ConceptUnionImpl& operator=(ConceptUnionImpl&& other) = default;
 
     Index get_index() const;
     Constructor<Concept> get_concept_left() const;
@@ -130,13 +161,13 @@ public:
  */
 
 template<PredicateCategory P>
-class RolePredicateStateImpl : public ConstructorEvaluatorBase<Role, RolePredicateStateImpl<P>>
+class RoleAtomicStateImpl : public ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>
 {
 private:
     Index m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateStateImpl(Index index, Predicate<P> predicate);
+    RoleAtomicStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -146,27 +177,27 @@ private:
 
     bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RolePredicateStateImpl<P>>;
+    friend class ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>;
 
 public:
     // moveable but not copyable
-    RolePredicateStateImpl(const RolePredicateStateImpl& other) = delete;
-    RolePredicateStateImpl& operator=(const RolePredicateStateImpl& other) = delete;
-    RolePredicateStateImpl(RolePredicateStateImpl&& other) = default;
-    RolePredicateStateImpl& operator=(RolePredicateStateImpl&& other) = default;
+    RoleAtomicStateImpl(const RoleAtomicStateImpl& other) = delete;
+    RoleAtomicStateImpl& operator=(const RoleAtomicStateImpl& other) = delete;
+    RoleAtomicStateImpl(RoleAtomicStateImpl&& other) = default;
+    RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
 template<PredicateCategory P>
-class RolePredicateGoalImpl : public ConstructorEvaluatorBase<Role, RolePredicateGoalImpl<P>>
+class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>
 {
 private:
     Index m_index;
     Predicate<P> m_predicate;
 
-    RolePredicateGoalImpl(Index index, Predicate<P> predicate);
+    RoleAtomicGoalImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -176,27 +207,27 @@ private:
 
     bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RolePredicateGoalImpl<P>>;
+    friend class ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>;
 
 public:
     // moveable but not copyable
-    RolePredicateGoalImpl(const RolePredicateGoalImpl& other) = delete;
-    RolePredicateGoalImpl& operator=(const RolePredicateGoalImpl& other) = delete;
-    RolePredicateGoalImpl(RolePredicateGoalImpl&& other) = default;
-    RolePredicateGoalImpl& operator=(RolePredicateGoalImpl&& other) = default;
+    RoleAtomicGoalImpl(const RoleAtomicGoalImpl& other) = delete;
+    RoleAtomicGoalImpl& operator=(const RoleAtomicGoalImpl& other) = delete;
+    RoleAtomicGoalImpl(RoleAtomicGoalImpl&& other) = default;
+    RoleAtomicGoalImpl& operator=(RoleAtomicGoalImpl&& other) = default;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
 };
 
-class RoleAndImpl : public ConstructorEvaluatorBase<Role, RoleAndImpl>
+class RoleIntersectionImpl : public ConstructorEvaluatorBase<Role, RoleIntersectionImpl>
 {
 private:
     Index m_index;
     Constructor<Role> m_role_left;
     Constructor<Role> m_role_right;
 
-    RoleAndImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
+    RoleIntersectionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -206,14 +237,14 @@ private:
 
     bool accept_impl(const grammar::Visitor<Role>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Role, RoleAndImpl>;
+    friend class ConstructorEvaluatorBase<Role, RoleIntersectionImpl>;
 
 public:
     // moveable but not copyable
-    RoleAndImpl(const RoleAndImpl& other) = delete;
-    RoleAndImpl& operator=(const RoleAndImpl& other) = delete;
-    RoleAndImpl(RoleAndImpl&& other) = default;
-    RoleAndImpl& operator=(RoleAndImpl&& other) = default;
+    RoleIntersectionImpl(const RoleIntersectionImpl& other) = delete;
+    RoleIntersectionImpl& operator=(const RoleIntersectionImpl& other) = delete;
+    RoleIntersectionImpl(RoleIntersectionImpl&& other) = default;
+    RoleIntersectionImpl& operator=(RoleIntersectionImpl&& other) = default;
 
     Index get_index() const;
     Constructor<Role> get_role_left() const;

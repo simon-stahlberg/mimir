@@ -52,22 +52,22 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
 
     const auto predicate_at_robby = parser.get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
     const auto concept_at_robby =
-        constructor_repositories.get<dl::ConceptPredicateStateFactory<Fluent>>().get_or_create<dl::ConceptPredicateStateImpl<Fluent>>(predicate_at_robby);
+        constructor_repositories.get<dl::ConceptPredicateStateFactory<Fluent>>().get_or_create<dl::ConceptAtomicStateImpl<Fluent>>(predicate_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby));
 
     const auto predicate_ball = parser.get_domain()->get_name_to_predicate<Static>().at("ball");
     const auto concept_ball =
-        constructor_repositories.get<dl::ConceptPredicateStateFactory<Static>>().get_or_create<dl::ConceptPredicateStateImpl<Static>>(predicate_ball);
+        constructor_repositories.get<dl::ConceptPredicateStateFactory<Static>>().get_or_create<dl::ConceptAtomicStateImpl<Static>>(predicate_ball);
     EXPECT_FALSE(grammar.test_match(concept_ball));
 
     const auto concept_goal_at_robby =
-        constructor_repositories.get<dl::ConceptPredicateGoalFactory<Fluent>>().get_or_create<dl::ConceptPredicateGoalImpl<Fluent>>(predicate_at_robby);
+        constructor_repositories.get<dl::ConceptPredicateGoalFactory<Fluent>>().get_or_create<dl::ConceptAtomicGoalImpl<Fluent>>(predicate_at_robby);
     const auto concept_at_robby_and_goal_at_robby =
-        constructor_repositories.get<dl::ConceptAndFactory>().get_or_create<dl::ConceptAndImpl>(concept_at_robby, concept_goal_at_robby);
+        constructor_repositories.get<dl::ConceptAndFactory>().get_or_create<dl::ConceptIntersectionImpl>(concept_at_robby, concept_goal_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby_and_goal_at_robby));
 
     const auto concept_goal_at_robby_and_at_robby =
-        constructor_repositories.get<dl::ConceptAndFactory>().get_or_create<dl::ConceptAndImpl>(concept_goal_at_robby, concept_at_robby);
+        constructor_repositories.get<dl::ConceptAndFactory>().get_or_create<dl::ConceptIntersectionImpl>(concept_goal_at_robby, concept_at_robby);
     EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_and_at_robby));
 }
 

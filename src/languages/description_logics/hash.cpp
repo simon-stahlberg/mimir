@@ -31,26 +31,26 @@ namespace mimir::dl
 /* Concepts */
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const ConceptPredicateStateImpl<P>*>::operator()(const ConceptPredicateStateImpl<P>* e) const
+size_t UniqueDLHasher<const ConceptAtomicStateImpl<P>*>::operator()(const ConceptAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const ConceptPredicateStateImpl<Static>*>::operator()(const ConceptPredicateStateImpl<Static>* e) const;
-template size_t UniqueDLHasher<const ConceptPredicateStateImpl<Fluent>*>::operator()(const ConceptPredicateStateImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const ConceptPredicateStateImpl<Derived>*>::operator()(const ConceptPredicateStateImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Static>*>::operator()(const ConceptAtomicStateImpl<Static>* e) const;
+template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Fluent>*>::operator()(const ConceptAtomicStateImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Derived>*>::operator()(const ConceptAtomicStateImpl<Derived>* e) const;
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const ConceptPredicateGoalImpl<P>*>::operator()(const ConceptPredicateGoalImpl<P>* e) const
+size_t UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>::operator()(const ConceptAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const ConceptPredicateGoalImpl<Static>*>::operator()(const ConceptPredicateGoalImpl<Static>* e) const;
-template size_t UniqueDLHasher<const ConceptPredicateGoalImpl<Fluent>*>::operator()(const ConceptPredicateGoalImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const ConceptPredicateGoalImpl<Derived>*>::operator()(const ConceptPredicateGoalImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const ConceptAtomicGoalImpl<Static>*>::operator()(const ConceptAtomicGoalImpl<Static>* e) const;
+template size_t UniqueDLHasher<const ConceptAtomicGoalImpl<Fluent>*>::operator()(const ConceptAtomicGoalImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const ConceptAtomicGoalImpl<Derived>*>::operator()(const ConceptAtomicGoalImpl<Derived>* e) const;
 
-size_t UniqueDLHasher<const ConceptAndImpl*>::operator()(const ConceptAndImpl* e) const
+size_t UniqueDLHasher<const ConceptIntersectionImpl*>::operator()(const ConceptIntersectionImpl* e) const
 {
     return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
 }
@@ -58,26 +58,29 @@ size_t UniqueDLHasher<const ConceptAndImpl*>::operator()(const ConceptAndImpl* e
 /* Roles */
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const RolePredicateStateImpl<P>*>::operator()(const RolePredicateStateImpl<P>* e) const
+size_t UniqueDLHasher<const RoleAtomicStateImpl<P>*>::operator()(const RoleAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const RolePredicateStateImpl<Static>*>::operator()(const RolePredicateStateImpl<Static>* e) const;
-template size_t UniqueDLHasher<const RolePredicateStateImpl<Fluent>*>::operator()(const RolePredicateStateImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const RolePredicateStateImpl<Derived>*>::operator()(const RolePredicateStateImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const RoleAtomicStateImpl<Static>*>::operator()(const RoleAtomicStateImpl<Static>* e) const;
+template size_t UniqueDLHasher<const RoleAtomicStateImpl<Fluent>*>::operator()(const RoleAtomicStateImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const RoleAtomicStateImpl<Derived>*>::operator()(const RoleAtomicStateImpl<Derived>* e) const;
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const RolePredicateGoalImpl<P>*>::operator()(const RolePredicateGoalImpl<P>* e) const
+size_t UniqueDLHasher<const RoleAtomicGoalImpl<P>*>::operator()(const RoleAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const RolePredicateGoalImpl<Static>*>::operator()(const RolePredicateGoalImpl<Static>* e) const;
-template size_t UniqueDLHasher<const RolePredicateGoalImpl<Fluent>*>::operator()(const RolePredicateGoalImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const RolePredicateGoalImpl<Derived>*>::operator()(const RolePredicateGoalImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const RoleAtomicGoalImpl<Static>*>::operator()(const RoleAtomicGoalImpl<Static>* e) const;
+template size_t UniqueDLHasher<const RoleAtomicGoalImpl<Fluent>*>::operator()(const RoleAtomicGoalImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const RoleAtomicGoalImpl<Derived>*>::operator()(const RoleAtomicGoalImpl<Derived>* e) const;
 
-size_t UniqueDLHasher<const RoleAndImpl*>::operator()(const RoleAndImpl* e) const { return mimir::hash_combine(e->get_role_left(), e->get_role_right()); }
+size_t UniqueDLHasher<const RoleIntersectionImpl*>::operator()(const RoleIntersectionImpl* e) const
+{
+    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+}
 
 /**
  * DL grammar constructors
@@ -123,26 +126,26 @@ template size_t UniqueDLHasher<const grammar::ChoiceImpl<Role>*>::operator()(con
 /* Concepts */
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const grammar::ConceptPredicateStateImpl<P>*>::operator()(const grammar::ConceptPredicateStateImpl<P>* e) const
+size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<P>*>::operator()(const grammar::ConceptAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const grammar::ConceptPredicateStateImpl<Static>*>::operator()(const grammar::ConceptPredicateStateImpl<Static>* e) const;
-template size_t UniqueDLHasher<const grammar::ConceptPredicateStateImpl<Fluent>*>::operator()(const grammar::ConceptPredicateStateImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const grammar::ConceptPredicateStateImpl<Derived>*>::operator()(const grammar::ConceptPredicateStateImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Static>*>::operator()(const grammar::ConceptAtomicStateImpl<Static>* e) const;
+template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Fluent>*>::operator()(const grammar::ConceptAtomicStateImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Derived>*>::operator()(const grammar::ConceptAtomicStateImpl<Derived>* e) const;
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const grammar::ConceptPredicateGoalImpl<P>*>::operator()(const grammar::ConceptPredicateGoalImpl<P>* e) const
+size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<P>*>::operator()(const grammar::ConceptAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const grammar::ConceptPredicateGoalImpl<Static>*>::operator()(const grammar::ConceptPredicateGoalImpl<Static>* e) const;
-template size_t UniqueDLHasher<const grammar::ConceptPredicateGoalImpl<Fluent>*>::operator()(const grammar::ConceptPredicateGoalImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const grammar::ConceptPredicateGoalImpl<Derived>*>::operator()(const grammar::ConceptPredicateGoalImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<Static>*>::operator()(const grammar::ConceptAtomicGoalImpl<Static>* e) const;
+template size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<Fluent>*>::operator()(const grammar::ConceptAtomicGoalImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<Derived>*>::operator()(const grammar::ConceptAtomicGoalImpl<Derived>* e) const;
 
-size_t UniqueDLHasher<const grammar::ConceptAndImpl*>::operator()(const grammar::ConceptAndImpl* e) const
+size_t UniqueDLHasher<const grammar::ConceptIntersectionImpl*>::operator()(const grammar::ConceptIntersectionImpl* e) const
 {
     return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
 }
@@ -150,26 +153,26 @@ size_t UniqueDLHasher<const grammar::ConceptAndImpl*>::operator()(const grammar:
 /* Roles */
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const grammar::RolePredicateStateImpl<P>*>::operator()(const grammar::RolePredicateStateImpl<P>* e) const
+size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<P>*>::operator()(const grammar::RoleAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const grammar::RolePredicateStateImpl<Static>*>::operator()(const grammar::RolePredicateStateImpl<Static>* e) const;
-template size_t UniqueDLHasher<const grammar::RolePredicateStateImpl<Fluent>*>::operator()(const grammar::RolePredicateStateImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const grammar::RolePredicateStateImpl<Derived>*>::operator()(const grammar::RolePredicateStateImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Static>*>::operator()(const grammar::RoleAtomicStateImpl<Static>* e) const;
+template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Fluent>*>::operator()(const grammar::RoleAtomicStateImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Derived>*>::operator()(const grammar::RoleAtomicStateImpl<Derived>* e) const;
 
 template<PredicateCategory P>
-size_t UniqueDLHasher<const grammar::RolePredicateGoalImpl<P>*>::operator()(const grammar::RolePredicateGoalImpl<P>* e) const
+size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<P>*>::operator()(const grammar::RoleAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
 }
 
-template size_t UniqueDLHasher<const grammar::RolePredicateGoalImpl<Static>*>::operator()(const grammar::RolePredicateGoalImpl<Static>* e) const;
-template size_t UniqueDLHasher<const grammar::RolePredicateGoalImpl<Fluent>*>::operator()(const grammar::RolePredicateGoalImpl<Fluent>* e) const;
-template size_t UniqueDLHasher<const grammar::RolePredicateGoalImpl<Derived>*>::operator()(const grammar::RolePredicateGoalImpl<Derived>* e) const;
+template size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<Static>*>::operator()(const grammar::RoleAtomicGoalImpl<Static>* e) const;
+template size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<Fluent>*>::operator()(const grammar::RoleAtomicGoalImpl<Fluent>* e) const;
+template size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<Derived>*>::operator()(const grammar::RoleAtomicGoalImpl<Derived>* e) const;
 
-size_t UniqueDLHasher<const grammar::RoleAndImpl*>::operator()(const grammar::RoleAndImpl* e) const
+size_t UniqueDLHasher<const grammar::RoleIntersectionImpl*>::operator()(const grammar::RoleIntersectionImpl* e) const
 {
     return mimir::hash_combine(e->get_role_left(), e->get_role_right());
 }

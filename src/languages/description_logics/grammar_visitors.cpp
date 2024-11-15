@@ -24,100 +24,112 @@ namespace mimir::dl::grammar
 {
 
 /**
- * ConceptPredicateStateVisitor
+ * ConceptAtomicStateVisitor
  */
 
 template<PredicateCategory P>
-ConceptPredicateStateVisitor<P>::ConceptPredicateStateVisitor(ConceptPredicateState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
+ConceptAtomicStateVisitor<P>::ConceptAtomicStateVisitor(ConceptAtomicState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateStateVisitor<P>::visit(dl::ConceptPredicateState<P> constructor) const
+bool ConceptAtomicStateVisitor<P>::visit(dl::ConceptAtomicState<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class ConceptPredicateStateVisitor<Static>;
-template class ConceptPredicateStateVisitor<Fluent>;
-template class ConceptPredicateStateVisitor<Derived>;
+template class ConceptAtomicStateVisitor<Static>;
+template class ConceptAtomicStateVisitor<Fluent>;
+template class ConceptAtomicStateVisitor<Derived>;
 
 /**
- * ConceptPredicateGoalVisitor
+ * ConceptAtomicGoalVisitor
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoalVisitor<P>::ConceptPredicateGoalVisitor(ConceptPredicateGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
+ConceptAtomicGoalVisitor<P>::ConceptAtomicGoalVisitor(ConceptAtomicGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoalVisitor<P>::visit(dl::ConceptPredicateGoal<P> constructor) const
+bool ConceptAtomicGoalVisitor<P>::visit(dl::ConceptAtomicGoal<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class ConceptPredicateGoalVisitor<Static>;
-template class ConceptPredicateGoalVisitor<Fluent>;
-template class ConceptPredicateGoalVisitor<Derived>;
+template class ConceptAtomicGoalVisitor<Static>;
+template class ConceptAtomicGoalVisitor<Fluent>;
+template class ConceptAtomicGoalVisitor<Derived>;
 
 /**
- * ConceptAndVisitor
+ * ConceptIntersectionVisitor
  */
 
-ConceptAndVisitor::ConceptAndVisitor(ConceptAnd grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+ConceptIntersectionVisitor::ConceptIntersectionVisitor(ConceptIntersection grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
 
-bool ConceptAndVisitor::visit(dl::ConceptAnd constructor) const
+bool ConceptIntersectionVisitor::visit(dl::ConceptIntersection constructor) const
 {
     return m_grammar_constructor->get_concept_left()->test_match(constructor->get_concept_left())  //
            && m_grammar_constructor->get_concept_right()->test_match(constructor->get_concept_right());
 }
 
 /**
- * RolePredicateStateVisitor
+ * ConceptUnionVisitor
+ */
+
+ConceptUnionVisitor::ConceptUnionVisitor(ConceptUnion grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+
+bool ConceptUnionVisitor::visit(dl::ConceptUnion constructor) const
+{
+    return m_grammar_constructor->get_concept_left()->test_match(constructor->get_concept_left())  //
+           && m_grammar_constructor->get_concept_right()->test_match(constructor->get_concept_right());
+}
+
+/**
+ * RoleAtomicStateVisitor
  */
 
 template<PredicateCategory P>
-RolePredicateStateVisitor<P>::RolePredicateStateVisitor(RolePredicateState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
+RoleAtomicStateVisitor<P>::RoleAtomicStateVisitor(RoleAtomicState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
 template<PredicateCategory P>
-bool RolePredicateStateVisitor<P>::visit(dl::RolePredicateState<P> constructor) const
+bool RoleAtomicStateVisitor<P>::visit(dl::RoleAtomicState<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class RolePredicateStateVisitor<Static>;
-template class RolePredicateStateVisitor<Fluent>;
-template class RolePredicateStateVisitor<Derived>;
+template class RoleAtomicStateVisitor<Static>;
+template class RoleAtomicStateVisitor<Fluent>;
+template class RoleAtomicStateVisitor<Derived>;
 
 /**
- * RolePredicateGoalVisitor
+ * RoleAtomicGoalVisitor
  */
 
 template<PredicateCategory P>
-RolePredicateGoalVisitor<P>::RolePredicateGoalVisitor(RolePredicateGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
+RoleAtomicGoalVisitor<P>::RoleAtomicGoalVisitor(RoleAtomicGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoalVisitor<P>::visit(dl::RolePredicateGoal<P> constructor) const
+bool RoleAtomicGoalVisitor<P>::visit(dl::RoleAtomicGoal<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
 }
 
-template class RolePredicateGoalVisitor<Static>;
-template class RolePredicateGoalVisitor<Fluent>;
-template class RolePredicateGoalVisitor<Derived>;
+template class RoleAtomicGoalVisitor<Static>;
+template class RoleAtomicGoalVisitor<Fluent>;
+template class RoleAtomicGoalVisitor<Derived>;
 
 /**
- * RoleAndVisitor
+ * RoleIntersectionVisitor
  */
 
-RoleAndVisitor::RoleAndVisitor(RoleAnd grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
+RoleIntersectionVisitor::RoleIntersectionVisitor(RoleIntersection grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
 
-bool RoleAndVisitor::visit(dl::RoleAnd constructor) const
+bool RoleIntersectionVisitor::visit(dl::RoleIntersection constructor) const
 {
     return m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left())
            && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right());

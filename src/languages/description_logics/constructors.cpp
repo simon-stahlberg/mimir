@@ -46,16 +46,16 @@ namespace mimir::dl
 {
 
 /**
- * ConceptPredicateState
+ * ConceptAtomicState
  */
 
 template<PredicateCategory P>
-ConceptPredicateStateImpl<P>::ConceptPredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-void ConceptPredicateStateImpl<P>::evaluate_impl(EvaluationContext& context) const
+void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_data();
@@ -72,7 +72,7 @@ void ConceptPredicateStateImpl<P>::evaluate_impl(EvaluationContext& context) con
 }
 
 template<>
-void ConceptPredicateStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
+void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_data();
@@ -89,38 +89,38 @@ void ConceptPredicateStateImpl<Static>::evaluate_impl(EvaluationContext& context
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateStateImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
+bool ConceptAtomicStateImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
     return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-Index ConceptPredicateStateImpl<P>::get_index() const
+Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateStateImpl<P>::get_predicate() const
+Predicate<P> ConceptAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptPredicateStateImpl<Static>;
-template class ConceptPredicateStateImpl<Fluent>;
-template class ConceptPredicateStateImpl<Derived>;
+template class ConceptAtomicStateImpl<Static>;
+template class ConceptAtomicStateImpl<Fluent>;
+template class ConceptAtomicStateImpl<Derived>;
 
 /**
- * ConceptPredicateGoal
+ * ConceptAtomicGoal
  */
 
 template<PredicateCategory P>
-ConceptPredicateGoalImpl<P>::ConceptPredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-void ConceptPredicateGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
+void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitset = context.get_denotation_builder<Concept>().get_data();
@@ -137,39 +137,39 @@ void ConceptPredicateGoalImpl<P>::evaluate_impl(EvaluationContext& context) cons
 }
 
 template<PredicateCategory P>
-bool ConceptPredicateGoalImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
+bool ConceptAtomicGoalImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
     return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-Index ConceptPredicateGoalImpl<P>::get_index() const
+Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> ConceptPredicateGoalImpl<P>::get_predicate() const
+Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class ConceptPredicateGoalImpl<Static>;
-template class ConceptPredicateGoalImpl<Fluent>;
-template class ConceptPredicateGoalImpl<Derived>;
+template class ConceptAtomicGoalImpl<Static>;
+template class ConceptAtomicGoalImpl<Fluent>;
+template class ConceptAtomicGoalImpl<Derived>;
 
 /**
- * ConceptAnd
+ * ConceptIntersection
  */
 
-ConceptAndImpl::ConceptAndImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
     m_index(index),
     m_concept_left(concept_left),
     m_concept_right(concept_right)
 {
 }
 
-void ConceptAndImpl::evaluate_impl(EvaluationContext& context) const
+void ConceptIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
     const auto eval_left = m_concept_left->evaluate(context);
@@ -184,25 +184,59 @@ void ConceptAndImpl::evaluate_impl(EvaluationContext& context) const
     bitset &= eval_right->get_data();
 }
 
-bool ConceptAndImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+bool ConceptIntersectionImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
-Index ConceptAndImpl::get_index() const { return m_index; }
+Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
-Constructor<Concept> ConceptAndImpl::get_concept_left() const { return m_concept_left; }
+Constructor<Concept> ConceptIntersectionImpl::get_concept_left() const { return m_concept_left; }
 
-Constructor<Concept> ConceptAndImpl::get_concept_right() const { return m_concept_right; }
+Constructor<Concept> ConceptIntersectionImpl::get_concept_right() const { return m_concept_right; }
 
 /**
- * RolePredicateState
+ * ConceptUnion
+ */
+
+ConceptUnionImpl::ConceptUnionImpl(Index index, Constructor<Concept> concept_left, Constructor<Concept> concept_right) :
+    m_index(index),
+    m_concept_left(concept_left),
+    m_concept_right(concept_right)
+{
+}
+
+void ConceptUnionImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate children
+    const auto eval_left = m_concept_left->evaluate(context);
+    const auto eval_right = m_concept_left->evaluate(context);
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    bitset |= eval_left->get_data();
+    bitset |= eval_right->get_data();
+}
+
+bool ConceptUnionImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptUnionImpl::get_index() const { return m_index; }
+
+Constructor<Concept> ConceptUnionImpl::get_concept_left() const { return m_concept_left; }
+
+Constructor<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_right; }
+
+/**
+ * RoleAtomicState
  */
 
 template<PredicateCategory P>
-RolePredicateStateImpl<P>::RolePredicateStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-void RolePredicateStateImpl<P>::evaluate_impl(EvaluationContext& context) const
+void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
@@ -224,7 +258,7 @@ void RolePredicateStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<>
-void RolePredicateStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
+void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
@@ -246,38 +280,38 @@ void RolePredicateStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
 }
 
 template<PredicateCategory P>
-bool RolePredicateStateImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
+bool RoleAtomicStateImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
     return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-Index RolePredicateStateImpl<P>::get_index() const
+Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateStateImpl<P>::get_predicate() const
+Predicate<P> RoleAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RolePredicateStateImpl<Static>;
-template class RolePredicateStateImpl<Fluent>;
-template class RolePredicateStateImpl<Derived>;
+template class RoleAtomicStateImpl<Static>;
+template class RoleAtomicStateImpl<Fluent>;
+template class RoleAtomicStateImpl<Derived>;
 
 /**
- * RolePredicateGoal
+ * RoleAtomicGoal
  */
 
 template<PredicateCategory P>
-RolePredicateGoalImpl<P>::RolePredicateGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
 template<PredicateCategory P>
-void RolePredicateGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
+void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
@@ -299,39 +333,39 @@ void RolePredicateGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 }
 
 template<PredicateCategory P>
-bool RolePredicateGoalImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
+bool RoleAtomicGoalImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
     return visitor.visit(this);
 }
 
 template<PredicateCategory P>
-Index RolePredicateGoalImpl<P>::get_index() const
+Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
 template<PredicateCategory P>
-Predicate<P> RolePredicateGoalImpl<P>::get_predicate() const
+Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template class RolePredicateGoalImpl<Static>;
-template class RolePredicateGoalImpl<Fluent>;
-template class RolePredicateGoalImpl<Derived>;
+template class RoleAtomicGoalImpl<Static>;
+template class RoleAtomicGoalImpl<Fluent>;
+template class RoleAtomicGoalImpl<Derived>;
 
 /**
- * RoleAnd
+ * RoleIntersection
  */
 
-RoleAndImpl::RoleAndImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+RoleIntersectionImpl::RoleIntersectionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
     m_index(index),
     m_role_left(role_left),
     m_role_right(role_right)
 {
 }
 
-void RoleAndImpl::evaluate_impl(EvaluationContext& context) const
+void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 {
     // Evaluate children
     const auto eval_left = m_role_left->evaluate(context);
@@ -353,11 +387,11 @@ void RoleAndImpl::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-bool RoleAndImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+bool RoleIntersectionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
-Index RoleAndImpl::get_index() const { return m_index; }
+Index RoleIntersectionImpl::get_index() const { return m_index; }
 
-Constructor<Role> RoleAndImpl::get_role_left() const { return m_role_left; }
+Constructor<Role> RoleIntersectionImpl::get_role_left() const { return m_role_left; }
 
-Constructor<Role> RoleAndImpl::get_role_right() const { return m_role_right; }
+Constructor<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right; }
 }
