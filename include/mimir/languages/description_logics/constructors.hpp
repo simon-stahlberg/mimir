@@ -369,9 +369,9 @@ class ConceptNominalImpl : public ConstructorEvaluatorBase<Concept, ConceptNomin
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept;
+    Object m_object;
 
-    ConceptNominalImpl(Index index, Constructor<Concept> concept_);
+    ConceptNominalImpl(Index index, Object object);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -391,7 +391,7 @@ public:
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
     Index get_index() const;
-    Constructor<Concept> get_concept() const;
+    Object get_object() const;
 };
 
 /**
