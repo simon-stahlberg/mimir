@@ -15,6 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_HPP_
+#define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_HPP_
+
 #include "mimir/formalism/domain.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
@@ -28,3 +31,5 @@ extern std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
 parse(const std::string& bnf_grammar_description, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos);
 
 }
+
+#endif
