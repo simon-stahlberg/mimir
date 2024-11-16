@@ -103,9 +103,6 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanBlocks3opsTest)
         const auto& state_1 = get_representative_state(abstraction.get_vertices().at(0));
         const auto& state_2 = get_representative_state(abstraction.get_vertices().at(49));
 
-        // std::cout << std::make_tuple(abstraction.get_problem(), state_1, std::cref(*abstraction.get_pddl_factories())) << std::endl;
-        // std::cout << std::make_tuple(abstraction.get_problem(), state_2, std::cref(*abstraction.get_pddl_factories())) << std::endl;
-
         const auto object_graph_1 = create_object_graph(color_function, *abstraction.get_pddl_factories(), abstraction.get_problem(), state_1, 1);
         const auto object_graph_2 = create_object_graph(color_function, *abstraction.get_pddl_factories(), abstraction.get_problem(), state_2, 2);
 
