@@ -64,12 +64,6 @@ const ColorList& Certificate<K>::get_canonical_coloring() const
 }
 
 template<size_t K>
-IsomorphismTypeFunction<K>::IsomorphicTypeCompressionFunction& IsomorphismTypeFunction<K>::get_isomorphic_type_compression_function()
-{
-    return m_f1;
-}
-
-template<size_t K>
 bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs)
 {
     if (&lhs != &rhs)
@@ -124,7 +118,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices)
 /// @return two mappings: k-tuple hash to color and color to k-tuple hashes.
 template<size_t K, typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeFunction<K>& iso_type_function)
+    std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     const auto num_vertices = graph.get_num_vertices();
     const auto num_hashes = std::pow(num_vertices, K);
@@ -187,8 +181,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
         subgraph.add_vertex_coloring(subgraph_coloring);
 
         // Isomorphism function is shared among several runs to ensure canonical form for different runs.
-        auto result = iso_type_function.get_isomorphic_type_compression_function().emplace(subgraph.compute_certificate(),
-                                                                                           iso_type_function.get_isomorphic_type_compression_function().size());
+        auto result = iso_type_function.emplace(subgraph.compute_certificate(), iso_type_function.size());
 
         const auto color = result.first->second;
         hash_to_color.at(hash) = color;
@@ -200,7 +193,7 @@ requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G> 
 
 template<size_t K, typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    Certificate<K> compute_certificate(const G& graph, IsomorphismTypeFunction<K>& iso_type_function)
+    Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function)
 {
     if (!is_undirected_graph(graph))
     {

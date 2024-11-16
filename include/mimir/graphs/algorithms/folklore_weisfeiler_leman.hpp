@@ -62,20 +62,8 @@ private:
     ColorList m_coloring_coloring;
 };
 
-/// @brief `IsomorphismTypeFunction` encapsulates mappings from canonical subgraphs to colors.
-/// @tparam K is the dimensionality.
-template<size_t K>
-class IsomorphismTypeFunction
-{
-public:
-    /* Compression of isomorphic types. */
-    using IsomorphicTypeCompressionFunction = std::unordered_map<nauty_wrapper::Certificate, Color>;
-
-    IsomorphicTypeCompressionFunction& get_isomorphic_type_compression_function();
-
-private:
-    IsomorphicTypeCompressionFunction m_f1;
-};
+/// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
+using IsomorphismTypeCompressionFunction = std::unordered_map<nauty_wrapper::Certificate, Color>;
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.
@@ -115,7 +103,7 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices);
 /// @return the `Certicate`
 template<size_t K, typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    Certificate<K> compute_certificate(const G& graph, IsomorphismTypeFunction<K>& iso_type_function);
+    Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function);
 }
 
 /// @brief std::hash specialization for the certificate.

@@ -29,7 +29,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
 {
     {
         /* The famous two triangle / sixgon example */
-        auto iso_type_function = kfwl::IsomorphismTypeFunction<2>();
+        auto iso_type_function = kfwl::IsomorphismTypeCompressionFunction();
         auto two_triangle = StaticVertexColoredDigraph();
         {
             auto v1 = two_triangle.add_vertex(Color(0));
@@ -69,7 +69,7 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
 
     {
         /* 2-vertex graphs where the order of colors is flipped to test canonical decoding table. */
-        auto iso_type_function = kfwl::IsomorphismTypeFunction<2>();
+        auto iso_type_function = kfwl::IsomorphismTypeCompressionFunction();
         auto line_graph_1 = StaticVertexColoredDigraph();
         {
             auto v1 = line_graph_1.add_vertex(Color(1));
@@ -109,14 +109,13 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanBlocks3opsTest)
         const auto object_graph_1 = create_object_graph(color_function, *abstraction.get_pddl_factories(), abstraction.get_problem(), state_1, 1);
         const auto object_graph_2 = create_object_graph(color_function, *abstraction.get_pddl_factories(), abstraction.get_problem(), state_2, 2);
 
-        auto iso_type_function = kfwl::IsomorphismTypeFunction<2>();
+        auto iso_type_function = kfwl::IsomorphismTypeCompressionFunction();
 
         auto certificate_1 = kfwl::compute_certificate<2>(object_graph_1, iso_type_function);
 
         auto certificate_2 = kfwl::compute_certificate<2>(object_graph_2, iso_type_function);
 
-        // This fails! Why?
-        // EXPECT_NE(certificate_1, certificate_2);
+        EXPECT_NE(certificate_1, certificate_2);
     }
 }
 }
