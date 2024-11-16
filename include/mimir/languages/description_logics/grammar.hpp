@@ -43,6 +43,7 @@ using DerivationRuleFactory =
     loki::UniqueFactory<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
 
 using ConceptBotFactory = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
+using ConceptTopFactory = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
 template<PredicateCategory P>
 using ConceptAtomicStateFactory =
     loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
@@ -51,7 +52,23 @@ using ConceptAtomicGoalFactory =
     loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
 using ConceptIntersectionFactory =
     loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
+using ConceptUnionFactory = loki::UniqueFactory<ConceptUnionImpl, UniqueDLHasher<const ConceptUnionImpl*>, UniqueDLEqualTo<const ConceptUnionImpl*>>;
+using ConceptNegationFactory =
+    loki::UniqueFactory<ConceptNegationImpl, UniqueDLHasher<const ConceptNegationImpl*>, UniqueDLEqualTo<const ConceptNegationImpl*>>;
+using ConceptValueRestrictionFactory =
+    loki::UniqueFactory<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestriction*>, UniqueDLEqualTo<const ConceptValueRestriction*>>;
+using ConceptExistentialQuantificationFactory = loki::UniqueFactory<ConceptExistentialQuantificationImpl,
+                                                                    UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
+                                                                    UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;
+using ConceptRoleValueMapContainmentFactory = loki::UniqueFactory<ConceptRoleValueMapContainmentImpl,
+                                                                  UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>,
+                                                                  UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>>;
+using ConceptRoleValueMapEqualityFactory = loki::UniqueFactory<ConceptRoleValueMapEqualityImpl,
+                                                               UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>,
+                                                               UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>>;
+using ConceptNominalFactory = loki::UniqueFactory<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
 
+using RoleUniversalFactory = loki::UniqueFactory<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
 template<PredicateCategory P>
 using RolePredicateStateFactory =
     loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
@@ -64,6 +81,8 @@ using RoleIntersectionFactory =
 using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFactory<Concept>,  //
                                                                   ChoiceFactory<Concept>,
                                                                   DerivationRuleFactory<Concept>,
+                                                                  ConceptBotFactory,
+                                                                  ConceptTopFactory,
                                                                   ConceptAtomicStateFactory<Static>,
                                                                   ConceptAtomicStateFactory<Fluent>,
                                                                   ConceptAtomicStateFactory<Derived>,
@@ -71,9 +90,17 @@ using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFac
                                                                   ConceptAtomicGoalFactory<Fluent>,
                                                                   ConceptAtomicGoalFactory<Derived>,
                                                                   ConceptIntersectionFactory,
+                                                                  ConceptUnionFactory,
+                                                                  ConceptNegationFactory,
+                                                                  ConceptValueRestrictionFactory,
+                                                                  ConceptExistentialQuantificationFactory,
+                                                                  ConceptRoleValueMapContainmentFactory,
+                                                                  ConceptRoleValueMapEqualityFactory,
+                                                                  ConceptNominalFactory,
                                                                   NonTerminalFactory<Role>,
                                                                   ChoiceFactory<Role>,
                                                                   DerivationRuleFactory<Role>,
+                                                                  RoleUniversalFactory,
                                                                   RolePredicateStateFactory<Static>,
                                                                   RolePredicateStateFactory<Fluent>,
                                                                   RolePredicateStateFactory<Derived>,
