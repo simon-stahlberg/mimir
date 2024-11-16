@@ -114,8 +114,11 @@ extern VariadicConstructorFactory create_default_variadic_constructor_factory();
 
 struct GeneratorOptions
 {
+    size_t max_memory_in_kb;
+    size_t max_time_in_ms;
 };
 
+/// @brief `GeneratorPruningFunction` defines an interface for pruning dl constructors (= features).
 class GeneratorPruningFunction
 {
 public:
@@ -132,24 +135,47 @@ public:
     virtual bool test_prune(Constructor<Role> role_) = 0;
 };
 
+/// @brief `GeneratorStateListPruningFunction` implements a pruning function based on a given state list.
+/// A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature.
+/// This ensures that only features with unique evaluations across all states are retained.
 class GeneratorStateListPruningFunction : public GeneratorPruningFunction
 {
 public:
-    GeneratorStateListPruningFunction(Problem problem, StateList states) : m_problem(problem), m_states(std::move(states)) {}
+    GeneratorStateListPruningFunction(Problem problem, StateList states) : GeneratorPruningFunction(), m_problem(problem), m_states(std::move(states)) {}
 
+    /// @brief Tests whether a concept should be pruned.
+    /// @param concept_ The concept to evaluate.
+    /// @return True if the concept is pruned (i.e., its evaluation is not unique across states), false otherwise.
     bool test_prune(Constructor<Concept> concept_) override;
 
+    /// @brief Tests whether a role should be pruned.
+    /// @param role_ The role to evaluate.
+    /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
     bool test_prune(Constructor<Role> role_) override;
 
 private:
-    Problem m_problem;
-    StateList m_states;
+    Problem m_problem;   ///< The problem definition used for evaluating features.
+    StateList m_states;  ///< The list of states used for evaluating features and pruning.
+
+    /// @brief Repository for managing concept denotations.
+    /// This stores the computed denotations for each concept feature across all states.
+    DenotationRepository<Concept> m_concept_denotation_repository;
+
+    /// @brief Repository for managing role denotations.
+    /// This stores the computed denotations for each role feature across all states.
+    DenotationRepository<Role> m_role_denotation_repository;
+
+    /// @brief Uniquely store feature denotations among all states.
+    /// Each state feature denotation is uniquely identified by its memory address.
+    /// These addresses are stored as vectors of `uintptr_t`.
+    /// Two identical vectors imply identical evaluations across all states.
+    std::unordered_set<std::vector<uintptr_t>, Hash<std::vector<uintptr_t>>> m_denotations_repository;
 };
 
 extern std::tuple<ConstructorList<Concept>, ConstructorList<Role>> generate(const grammar::Grammar grammar,
                                                                             const GeneratorOptions& options,
-                                                                            GeneratorPruningFunction& pruning_function,
-                                                                            VariadicConstructorFactory& ref_constructor_repos);
+                                                                            VariadicConstructorFactory& ref_constructor_repos,
+                                                                            GeneratorPruningFunction& ref_pruning_function);
 
 }
 

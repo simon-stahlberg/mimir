@@ -116,6 +116,12 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices)
     return result;
 }
 
+/// @brief Compute the ordered isomorphism types of all k-tuples in the graph.
+/// @tparam G is the graph type.
+/// @tparam K is the dimensionality.
+/// @param graph is the graph
+/// @param iso_type_function is the function that tracks assigned colors to canonical subgraphs.
+/// @return two mappings: k-tuple hash to color and color to k-tuple hashes.
 template<size_t K, typename G>
 requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
     std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeFunction<K>& iso_type_function)

@@ -36,7 +36,6 @@
 
 namespace mimir::color_refinement
 {
-using mimir::operator<<;
 
 /// @brief `Certificate` encapsulates the canonical coloring and the canonical compression function (decoding table).
 class Certificate
@@ -71,32 +70,6 @@ extern bool operator==(const Certificate& lhs, const Certificate& rhs);
 /// @param element is the certificate.
 /// @return a reference to the ostream.
 extern std::ostream& operator<<(std::ostream& out, const Certificate& element);
-
-/// @brief Replace tuples by grouping colors with same hash.
-/// @tparam ColorType
-/// @param M
-/// @param hash_to_color
-/// @param out_M_replaced
-template<typename ColorType>
-void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
-                    const ColorList& hash_to_color,
-                    std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& out_M_replaced);
-
-/// @brief Split the color classes into new colors.
-/// @tparam ColorType is Color for color-refinement and ColorArray<K> for k-FWL.
-/// @param M_replaced
-/// @param ref_f
-/// @param ref_max_color
-/// @param ref_hash_to_color
-/// @param out_color_to_hashes
-/// @param out_L
-template<typename ColorType>
-void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
-                         std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
-                         Color& ref_max_color,
-                         ColorList& ref_hash_to_color,
-                         ColorMap<IndexList>& out_color_to_hashes,
-                         ColorSet& out_L);
 
 /// @brief `compute_certificate` implements the color refinement algorithm.
 /// Sources: https://arxiv.org/pdf/1907.09582

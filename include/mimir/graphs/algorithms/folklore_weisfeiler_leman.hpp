@@ -38,7 +38,6 @@
 
 namespace mimir::kfwl
 {
-using mimir::operator<<;
 
 /// @brief `Certificate` encapsulates the final tuple colorings and the decoding tables.
 /// @tparam K is the dimensionality.
@@ -108,16 +107,6 @@ size_t tuple_to_hash(const IndexArray<K>& tuple, size_t num_vertices);
 /// @return the k-tuple of the perfect hash.
 template<size_t K>
 IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices);
-
-/// @brief Compute the ordered isomorphism types of all k-tuples in the graph.
-/// @tparam G is the graph type.
-/// @tparam K is the dimensionality.
-/// @param graph is the graph
-/// @param iso_type_function is the function that tracks assigned colors to canonical subgraphs.
-/// @return two mappings: k-tuple hash to color and color to k-tuple hashes.
-template<size_t K, typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    std::pair<ColorList, ColorMap<IndexList>> compute_ordered_isomorphism_types(const G& graph, IsomorphismTypeFunction<K>& iso_type_function);
 
 /// @brief `compute_certificate` implements the k-dimensional Folklore Weisfeiler-Leman algorithm.
 /// Source: https://arxiv.org/pdf/1907.09582
