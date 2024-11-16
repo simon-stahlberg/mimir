@@ -65,9 +65,8 @@ class ConceptTopImpl : public ConstructorEvaluatorBase<Concept, ConceptTopImpl>
 {
 private:
     Index m_index;
-    Problem m_problem;
 
-    ConceptTopImpl(Index index, Problem problem);
+    explicit ConceptTopImpl(Index index);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -87,7 +86,6 @@ public:
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
     Index get_index() const;
-    Problem get_problem() const;
 };
 
 template<PredicateCategory P>
@@ -402,9 +400,8 @@ class RoleUniversalImpl : public ConstructorEvaluatorBase<Role, RoleUniversalImp
 {
 private:
     Index m_index;
-    Problem m_problem;
 
-    RoleUniversalImpl(Index index, Problem problem);
+    explicit RoleUniversalImpl(Index index);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -424,7 +421,6 @@ public:
     RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
 
     Index get_index() const;
-    Problem get_problem() const;
 };
 
 template<PredicateCategory P>

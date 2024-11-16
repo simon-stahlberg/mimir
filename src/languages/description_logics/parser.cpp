@@ -40,8 +40,21 @@ static Choice<Concept> parse(const dl::ast::Concept& node, Domain domain, Variad
     return boost::apply_visitor([&](const auto& arg) -> Choice<Concept> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
+static Choice<Role> parse(const dl::ast::Role& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
+}
+
 const Choice<Concept> parse(const dl::ast::ConceptBot& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptBotFactory>().template get_or_create<ConceptBotImpl>());
+}
+
+const Choice<Concept> parse(const dl::ast::ConceptTop& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptTopFactory>().template get_or_create<ConceptTopImpl>());
 }
 
 const Choice<Concept>
@@ -130,6 +143,32 @@ parse(const dl::ast::ConceptIntersection& node, Domain domain, VariadicGrammarCo
         ref_grammar_constructor_repos.template get<ConceptIntersectionFactory>().template get_or_create<ConceptIntersectionImpl>(
             parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
             parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept>
+parse(const dl::ast::ConceptUnion& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptUnionFactory>().template get_or_create<ConceptUnionImpl>(
+            parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
+            parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept>
+parse(const dl::ast::ConceptNegation& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptNegationFactory>().template get_or_create<ConceptNegationImpl>(
+            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept>
+parse(const dl::ast::ConceptValueRestriction& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptValueRestrictionFactory>().template get_or_create<ConceptValueRestrictionImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context),
+            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Concept>
