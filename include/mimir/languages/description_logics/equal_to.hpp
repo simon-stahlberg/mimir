@@ -136,6 +136,18 @@ struct UniqueDLEqualTo<const grammar::ChoiceImpl<D>*>
 
 /* Concepts */
 
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptBotImpl*>
+{
+    bool operator()(const grammar::ConceptBotImpl* l, const grammar::ConceptBotImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptTopImpl*>
+{
+    bool operator()(const grammar::ConceptTopImpl* l, const grammar::ConceptTopImpl* r) const;
+};
+
 template<PredicateCategory P>
 struct UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<P>*>
 {
@@ -154,7 +166,55 @@ struct UniqueDLEqualTo<const grammar::ConceptIntersectionImpl*>
     bool operator()(const grammar::ConceptIntersectionImpl* l, const grammar::ConceptIntersectionImpl* r) const;
 };
 
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptUnionImpl*>
+{
+    bool operator()(const grammar::ConceptUnionImpl* l, const grammar::ConceptUnionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptNegationImpl*>
+{
+    bool operator()(const grammar::ConceptNegationImpl* l, const grammar::ConceptNegationImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptValueRestrictionImpl*>
+{
+    bool operator()(const grammar::ConceptValueRestrictionImpl* l, const grammar::ConceptValueRestrictionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptExistentialQuantificationImpl*>
+{
+    bool operator()(const grammar::ConceptExistentialQuantificationImpl* l, const grammar::ConceptExistentialQuantificationImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptRoleValueMapContainmentImpl*>
+{
+    bool operator()(const grammar::ConceptRoleValueMapContainmentImpl* l, const grammar::ConceptRoleValueMapContainmentImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptRoleValueMapEqualityImpl*>
+{
+    bool operator()(const grammar::ConceptRoleValueMapEqualityImpl* l, const grammar::ConceptRoleValueMapEqualityImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::ConceptNominalImpl*>
+{
+    bool operator()(const grammar::ConceptNominalImpl* l, const grammar::ConceptNominalImpl* r) const;
+};
+
 /* Roles */
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleUniversalImpl*>
+{
+    bool operator()(const grammar::RoleUniversalImpl* l, const grammar::RoleUniversalImpl* r) const;
+};
 
 template<PredicateCategory P>
 struct UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<P>*>
@@ -172,6 +232,54 @@ template<>
 struct UniqueDLEqualTo<const grammar::RoleIntersectionImpl*>
 {
     bool operator()(const grammar::RoleIntersectionImpl* l, const grammar::RoleIntersectionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleUnionImpl*>
+{
+    bool operator()(const grammar::RoleUnionImpl* l, const grammar::RoleUnionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleComplementImpl*>
+{
+    bool operator()(const grammar::RoleComplementImpl* l, const grammar::RoleComplementImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleInverseImpl*>
+{
+    bool operator()(const grammar::RoleInverseImpl* l, const grammar::RoleInverseImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleCompositionImpl*>
+{
+    bool operator()(const grammar::RoleCompositionImpl* l, const grammar::RoleCompositionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleTransitiveClosureImpl*>
+{
+    bool operator()(const grammar::RoleTransitiveClosureImpl* l, const grammar::RoleTransitiveClosureImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleReflexiveTransitiveClosureImpl*>
+{
+    bool operator()(const grammar::RoleReflexiveTransitiveClosureImpl* l, const grammar::RoleReflexiveTransitiveClosureImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleRestrictionImpl*>
+{
+    bool operator()(const grammar::RoleRestrictionImpl* l, const grammar::RoleRestrictionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const grammar::RoleIdentityImpl*>
+{
+    bool operator()(const grammar::RoleIdentityImpl* l, const grammar::RoleIdentityImpl* r) const;
 };
 
 }

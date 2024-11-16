@@ -22,20 +22,20 @@ namespace mimir::dl
 
 VariadicConstructorFactory create_default_variadic_constructor_factory()
 {
-    return VariadicConstructorFactory(ConceptPredicateStateFactory<Static>(),
-                                      ConceptPredicateStateFactory<Fluent>(),
-                                      ConceptPredicateStateFactory<Derived>(),
-                                      ConceptPredicateGoalFactory<Static>(),
-                                      ConceptPredicateGoalFactory<Fluent>(),
-                                      ConceptPredicateGoalFactory<Derived>(),
-                                      ConceptAndFactory(),
+    return VariadicConstructorFactory(ConceptAtomicStateFactory<Static>(),
+                                      ConceptAtomicStateFactory<Fluent>(),
+                                      ConceptAtomicStateFactory<Derived>(),
+                                      ConceptAtomicGoalFactory<Static>(),
+                                      ConceptAtomicGoalFactory<Fluent>(),
+                                      ConceptAtomicGoalFactory<Derived>(),
+                                      ConceptIntersectionFactory(),
                                       RolePredicateStateFactory<Static>(),
                                       RolePredicateStateFactory<Fluent>(),
                                       RolePredicateStateFactory<Derived>(),
                                       RolePredicateGoalFactory<Static>(),
                                       RolePredicateGoalFactory<Fluent>(),
                                       RolePredicateGoalFactory<Derived>(),
-                                      RoleAndFactory());
+                                      RoleIntersectionFactory());
 }
 
 }

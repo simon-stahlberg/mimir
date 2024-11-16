@@ -28,12 +28,12 @@
 namespace mimir::dl
 {
 template<PredicateCategory P>
-using ConceptPredicateStateFactory =
+using ConceptAtomicStateFactory =
     loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
-using ConceptPredicateGoalFactory =
+using ConceptAtomicGoalFactory =
     loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
-using ConceptAndFactory =
+using ConceptIntersectionFactory =
     loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
 template<PredicateCategory P>
 using RolePredicateStateFactory =
@@ -41,22 +41,23 @@ using RolePredicateStateFactory =
 template<PredicateCategory P>
 using RolePredicateGoalFactory =
     loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
-using RoleAndFactory = loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
+using RoleIntersectionFactory =
+    loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
 
-using VariadicConstructorFactory = loki::VariadicContainer<ConceptPredicateStateFactory<Static>,
-                                                           ConceptPredicateStateFactory<Fluent>,
-                                                           ConceptPredicateStateFactory<Derived>,
-                                                           ConceptPredicateGoalFactory<Static>,
-                                                           ConceptPredicateGoalFactory<Fluent>,
-                                                           ConceptPredicateGoalFactory<Derived>,
-                                                           ConceptAndFactory,
+using VariadicConstructorFactory = loki::VariadicContainer<ConceptAtomicStateFactory<Static>,
+                                                           ConceptAtomicStateFactory<Fluent>,
+                                                           ConceptAtomicStateFactory<Derived>,
+                                                           ConceptAtomicGoalFactory<Static>,
+                                                           ConceptAtomicGoalFactory<Fluent>,
+                                                           ConceptAtomicGoalFactory<Derived>,
+                                                           ConceptIntersectionFactory,
                                                            RolePredicateStateFactory<Static>,
                                                            RolePredicateStateFactory<Fluent>,
                                                            RolePredicateStateFactory<Derived>,
                                                            RolePredicateGoalFactory<Static>,
                                                            RolePredicateGoalFactory<Fluent>,
                                                            RolePredicateGoalFactory<Derived>,
-                                                           RoleAndFactory>;
+                                                           RoleIntersectionFactory>;
 
 extern VariadicConstructorFactory create_default_variadic_constructor_factory();
 

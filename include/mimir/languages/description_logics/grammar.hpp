@@ -34,37 +34,43 @@ namespace mimir::dl::grammar
 
 template<IsConceptOrRole D>
 using NonTerminalFactory = loki::UniqueFactory<NonTerminalImpl<D>, UniqueDLHasher<const NonTerminalImpl<D>*>, UniqueDLEqualTo<const NonTerminalImpl<D>*>>;
+
 template<IsConceptOrRole D>
 using ChoiceFactory = loki::UniqueFactory<ChoiceImpl<D>, UniqueDLHasher<const ChoiceImpl<D>*>, UniqueDLEqualTo<const ChoiceImpl<D>*>>;
+
 template<IsConceptOrRole D>
 using DerivationRuleFactory =
     loki::UniqueFactory<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
+
+using ConceptBotFactory = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
 template<PredicateCategory P>
-using ConceptPredicateStateFactory =
+using ConceptAtomicStateFactory =
     loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
-using ConceptPredicateGoalFactory =
+using ConceptAtomicGoalFactory =
     loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
-using ConceptAndFactory =
+using ConceptIntersectionFactory =
     loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
+
 template<PredicateCategory P>
 using RolePredicateStateFactory =
     loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
 using RolePredicateGoalFactory =
     loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
-using RoleAndFactory = loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
+using RoleIntersectionFactory =
+    loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
 
 using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFactory<Concept>,  //
                                                                   ChoiceFactory<Concept>,
                                                                   DerivationRuleFactory<Concept>,
-                                                                  ConceptPredicateStateFactory<Static>,
-                                                                  ConceptPredicateStateFactory<Fluent>,
-                                                                  ConceptPredicateStateFactory<Derived>,
-                                                                  ConceptPredicateGoalFactory<Static>,
-                                                                  ConceptPredicateGoalFactory<Fluent>,
-                                                                  ConceptPredicateGoalFactory<Derived>,
-                                                                  ConceptAndFactory,
+                                                                  ConceptAtomicStateFactory<Static>,
+                                                                  ConceptAtomicStateFactory<Fluent>,
+                                                                  ConceptAtomicStateFactory<Derived>,
+                                                                  ConceptAtomicGoalFactory<Static>,
+                                                                  ConceptAtomicGoalFactory<Fluent>,
+                                                                  ConceptAtomicGoalFactory<Derived>,
+                                                                  ConceptIntersectionFactory,
                                                                   NonTerminalFactory<Role>,
                                                                   ChoiceFactory<Role>,
                                                                   DerivationRuleFactory<Role>,
@@ -74,7 +80,7 @@ using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFac
                                                                   RolePredicateGoalFactory<Static>,
                                                                   RolePredicateGoalFactory<Fluent>,
                                                                   RolePredicateGoalFactory<Derived>,
-                                                                  RoleAndFactory>;
+                                                                  RoleIntersectionFactory>;
 
 extern VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_factory();
 

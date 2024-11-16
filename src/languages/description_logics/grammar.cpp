@@ -29,13 +29,13 @@ VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_fa
     return VariadicGrammarConstructorFactory(NonTerminalFactory<Concept>(),
                                              ChoiceFactory<Concept>(),
                                              DerivationRuleFactory<Concept>(),
-                                             ConceptPredicateStateFactory<Static>(),
-                                             ConceptPredicateStateFactory<Fluent>(),
-                                             ConceptPredicateStateFactory<Derived>(),
-                                             ConceptPredicateGoalFactory<Static>(),
-                                             ConceptPredicateGoalFactory<Fluent>(),
-                                             ConceptPredicateGoalFactory<Derived>(),
-                                             ConceptAndFactory(),
+                                             ConceptAtomicStateFactory<Static>(),
+                                             ConceptAtomicStateFactory<Fluent>(),
+                                             ConceptAtomicStateFactory<Derived>(),
+                                             ConceptAtomicGoalFactory<Static>(),
+                                             ConceptAtomicGoalFactory<Fluent>(),
+                                             ConceptAtomicGoalFactory<Derived>(),
+                                             ConceptIntersectionFactory(),
                                              NonTerminalFactory<Role>(),
                                              ChoiceFactory<Role>(),
                                              DerivationRuleFactory<Role>(),
@@ -45,7 +45,7 @@ VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_fa
                                              RolePredicateGoalFactory<Static>(),
                                              RolePredicateGoalFactory<Fluent>(),
                                              RolePredicateGoalFactory<Derived>(),
-                                             RoleAndFactory());
+                                             RoleIntersectionFactory());
 }
 
 /**
