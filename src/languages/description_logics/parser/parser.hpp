@@ -151,17 +151,35 @@ BOOST_SPIRIT_DECLARE(derivation_rule_type)
 }
 
 parser::concept_type const& concept_();
+parser::concept_bot_type const& concept_bot();
+parser::concept_top_type const& concept_top();
 parser::concept_atomic_state_type const& concept_atomic_state();
 parser::concept_atomic_goal_type const& concept_atomic_goal();
 parser::concept_intersection_type const& concept_intersection();
+parser::concept_union_type const& concept_union();
+parser::concept_negation_type const& concept_negation();
+parser::concept_value_restriction_type const& concept_value_restriction();
+parser::concept_existential_quantification_type const& concept_existential_quantification();
+parser::concept_role_value_map_containment_type const& concept_role_value_map_containment();
+parser::concept_role_value_map_equality_type const& concept_role_value_map_equality();
+parser::concept_nominal_type const& concept_nominal();
 parser::concept_non_terminal_type const& concept_non_terminal();
 parser::concept_choice_type const& concept_choice();
 parser::concept_derivation_rule_type const& concept_derivation_rule();
 
 parser::role_type const& role();
+parser::role_universal_type const& role_universal();
 parser::role_atomic_state_type const& role_atomic_state();
 parser::role_atomic_goal_type const& role_atomic_goal();
 parser::role_intersection_type const& role_intersection();
+parser::role_union_type const& role_union();
+parser::role_complement_type const& role_complement();
+parser::role_inverse_type const& role_inverse();
+parser::role_composition_type const& role_composition();
+parser::role_transitive_closure_type const& role_transitive_closure();
+parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure();
+parser::role_restriction_type const& role_restriction();
+parser::role_identity_type const& role_identity();
 parser::role_non_terminal_type const& role_non_terminal();
 parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();

@@ -292,17 +292,35 @@ struct GrammarClass : x3::annotate_on_success, error_handler_base
 namespace mimir::dl
 {
 parser::concept_type const& concept_() { return parser::concept_; }
+parser::concept_bot_type const& concept_bot() { return parser::concept_bot; }
+parser::concept_top_type const& concept_top() { return parser::concept_top; }
 parser::concept_atomic_state_type const& concept_atomic_state() { return parser::concept_atomic_state; }
 parser::concept_atomic_goal_type const& concept_atomic_goal() { return parser::concept_atomic_goal; }
 parser::concept_intersection_type const& concept_intersection() { return parser::concept_intersection; }
+parser::concept_union_type const& concept_union() { return parser::concept_union; }
+parser::concept_negation_type const& concept_negation() { return parser::concept_negation; }
+parser::concept_value_restriction_type const& concept_value_restriction() { return parser::concept_value_restriction; }
+parser::concept_existential_quantification_type const& concept_existential_quantification() { return parser::concept_existential_quantification; }
+parser::concept_role_value_map_containment_type const& concept_role_value_map_containment() { return parser::concept_role_value_map_containment; }
+parser::concept_role_value_map_equality_type const& concept_role_value_map_equality() { return parser::concept_role_value_map_equality; }
+parser::concept_nominal_type const& concept_nominal() { return parser::concept_nominal; }
 parser::concept_non_terminal_type const& concept_non_terminal() { return parser::concept_non_terminal; }
 parser::concept_choice_type const& concept_choice() { return parser::concept_choice; }
 parser::concept_derivation_rule_type const& concept_derivation_rule() { return parser::concept_derivation_rule; }
 
 parser::role_type const& role() { return parser::role; }
+parser::role_universal_type const& role_universal() { return parser::role_universal; }
 parser::role_atomic_state_type const& role_atomic_state() { return parser::role_atomic_state; }
 parser::role_atomic_goal_type const& role_atomic_goal() { return parser::role_atomic_goal; }
 parser::role_intersection_type const& role_intersection() { return parser::role_intersection; }
+parser::role_union_type const& role_union() { return parser::role_union; }
+parser::role_complement_type const& role_complement() { return parser::role_complement; }
+parser::role_inverse_type const& role_inverse() { return parser::role_inverse; }
+parser::role_composition_type const& role_composition() { return parser::role_composition; }
+parser::role_transitive_closure_type const& role_transitive_closure() { return parser::role_transitive_closure; }
+parser::role_reflexive_transitive_closure_type const& role_reflexive_transitive_closure() { return parser::role_reflexive_transitive_closure; }
+parser::role_restriction_type const& role_restriction() { return parser::role_restriction; }
+parser::role_identity_type const& role_identity() { return parser::role_identity; }
 parser::role_non_terminal_type const& role_non_terminal() { return parser::role_non_terminal; }
 parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
