@@ -108,6 +108,9 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
+            // Ensure that object index is within bounds.
+            assert(atom->get_objects().at(0)->get_index() < context.get_num_objects());
+
             bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
@@ -125,7 +128,10 @@ void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
     {
         if (atom->get_predicate() == m_predicate)
         {
-            bitset.set(atom->get_index());
+            // Ensure that object index is within bounds.
+            assert(atom->get_objects().at(0)->get_index() < context.get_num_objects());
+
+            bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
 }
@@ -173,6 +179,9 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
+            // Ensure that object index is within bounds.
+            assert(atom->get_objects().at(0)->get_index() < context.get_num_objects());
+
             bitset.set(atom->get_objects().at(0)->get_index());
         }
     }
@@ -310,7 +319,32 @@ ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Constructo
 {
 }
 
-void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) const
+{  // Evaluate children
+    const auto eval_role = m_role->evaluate(context);
+    const auto eval_concept = m_concept->evaluate(context);
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitset.set(i);
+    }
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role->get_data().at(i).get(j) && !eval_concept->get_data().get(j))
+            {
+                bitset.unset(i);
+                break;
+            }
+        }
+    }
+}
 
 bool ConceptValueRestrictionImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
@@ -331,7 +365,29 @@ ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index
 {
 }
 
-void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate children
+    const auto eval_role = m_role->evaluate(context);
+    const auto eval_concept = m_concept->evaluate(context);
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role->get_data().at(i).get(j) && eval_concept->get_data().get(j))
+            {
+                bitset.set(i);
+                break;
+            }
+        }
+    }
+}
 
 bool ConceptExistentialQuantificationImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
@@ -352,7 +408,32 @@ ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index ind
 {
 }
 
-void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& context) const
+{  // Evaluate children
+    const auto eval_role_left = m_role_left->evaluate(context);
+    const auto eval_role_right = m_role_right->evaluate(context);
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitset.set(i);
+    }
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role_left->get_data().at(i).get(j) && !eval_role_right->get_data().at(i).get(j))
+            {
+                bitset.unset(i);
+                break;
+            }
+        }
+    }
+}
 
 bool ConceptRoleValueMapContainmentImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
@@ -373,7 +454,33 @@ ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Co
 {
 }
 
-void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) const {}
+void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate children
+    const auto eval_role_left = m_role_left->evaluate(context);
+    const auto eval_role_right = m_role_right->evaluate(context);
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitset.set(i);
+    }
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role_left->get_data().at(i).get(j) != eval_role_right->get_data().at(i).get(j))
+            {
+                bitset.unset(i);
+                break;
+            }
+        }
+    }
+}
 
 bool ConceptRoleValueMapEqualityImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
@@ -389,7 +496,18 @@ Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_right() const { retu
 
 ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(index), m_object(object) {}
 
-void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Ensure that object index is within bounds.
+    assert(m_object->get_index() < context.get_num_objects());
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    bitset.set(m_object->get_index());
+}
 
 bool ConceptNominalImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
 
@@ -403,7 +521,25 @@ Object ConceptNominalImpl::get_object() const { return m_object; }
 
 RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
 
-void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            bitsets.at(i).set(j);
+        }
+    }
+}
 
 bool RoleUniversalImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -423,6 +559,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -433,9 +570,14 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0)->get_index();
-            const auto object_right_id = atom->get_objects().at(1)->get_index();
-            bitsets.at(object_left_id).set(object_right_id);
+            const auto object_left_index = atom->get_objects().at(0)->get_index();
+            const auto object_right_index = atom->get_objects().at(1)->get_index();
+
+            // Ensure that object index is within bounds.
+            assert(object_left_index < context.get_num_objects());
+            assert(object_right_index < context.get_num_objects());
+
+            bitsets.at(object_left_index).set(object_right_index);
         }
     }
 }
@@ -445,6 +587,7 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -455,9 +598,14 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0)->get_index();
-            const auto object_right_id = atom->get_objects().at(1)->get_index();
-            bitsets.at(object_left_id).set(object_right_id);
+            const auto object_left_index = atom->get_objects().at(0)->get_index();
+            const auto object_right_index = atom->get_objects().at(1)->get_index();
+
+            // Ensure that object index is within bounds.
+            assert(object_left_index < context.get_num_objects());
+            assert(object_right_index < context.get_num_objects());
+
+            bitsets.at(object_left_index).set(object_right_index);
         }
     }
 }
@@ -498,6 +646,7 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -508,9 +657,14 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     {
         if (atom->get_predicate() == m_predicate)
         {
-            const auto object_left_id = atom->get_objects().at(0)->get_index();
-            const auto object_right_id = atom->get_objects().at(1)->get_index();
-            bitsets.at(object_left_id).set(object_right_id);
+            const auto object_left_index = atom->get_objects().at(0)->get_index();
+            const auto object_right_index = atom->get_objects().at(1)->get_index();
+
+            // Ensure that object index is within bounds.
+            assert(object_left_index < context.get_num_objects());
+            assert(object_right_index < context.get_num_objects());
+
+            bitsets.at(object_left_index).set(object_right_index);
         }
     }
 }
@@ -556,6 +710,7 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
 
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
     for (auto& bitset : bitsets)
     {
         bitset.unset_all();
@@ -589,7 +744,28 @@ RoleUnionImpl::RoleUnionImpl(Index index, Constructor<Role> role_left, Construct
 {
 }
 
-void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate children
+    const auto eval_left = m_role_left->evaluate(context);
+    const auto eval_right = m_role_left->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < eval_left->get_data().size(); ++i)
+    {
+        auto& bitset = bitsets.at(i);
+        bitset |= eval_left->get_data().at(i);
+        bitset |= eval_right->get_data().at(i);
+    }
+}
 
 bool RoleUnionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -605,7 +781,31 @@ Constructor<Role> RoleUnionImpl::get_role_right() const { return m_role_right; }
 
 RoleComplementImpl::RoleComplementImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
 
-void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_role = m_role->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (!eval_role->get_data().at(i).get(j))
+            {
+                bitsets.at(i).set(j);
+            }
+        }
+    }
+}
 
 bool RoleComplementImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -619,7 +819,31 @@ Constructor<Role> RoleComplementImpl::get_role() const { return m_role; }
 
 RoleInverseImpl::RoleInverseImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
 
-void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_role = m_role->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role->get_data().at(i).get(j))
+            {
+                bitsets.at(j).set(i);
+            }
+        }
+    }
+}
 
 bool RoleInverseImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -638,7 +862,32 @@ RoleCompositionImpl::RoleCompositionImpl(Index index, Constructor<Role> role_lef
 {
 }
 
-void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_role_left = m_role_left->evaluate(context);
+    const auto eval_role_right = m_role_right->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role_left->get_data().at(i).get(j))
+            {
+                bitsets.at(i) |= eval_role_right->get_data().at(j);
+            }
+        }
+    }
+}
 
 bool RoleCompositionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -654,7 +903,35 @@ Constructor<Role> RoleCompositionImpl::get_role_right() const { return m_role_ri
 
 RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
 
-void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_role = m_role->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitsets.at(i) |= eval_role->get_data().at(i);
+    }
+    for (size_t k = 0; k < context.get_num_objects(); ++k)
+    {
+        for (size_t i = 0; i < context.get_num_objects(); ++i)
+        {
+            if (bitsets.at(i).get(k))
+            {
+                bitsets.at(i) |= bitsets.at(k);
+            }
+        }
+    }
+}
 
 bool RoleTransitiveClosureImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -668,7 +945,40 @@ Constructor<Role> RoleTransitiveClosureImpl::get_role() const { return m_role; }
 
 RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
 
-void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_role = m_role->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitsets.at(i) |= eval_role->get_data().at(i);
+    }
+    for (size_t k = 0; k < context.get_num_objects(); ++k)
+    {
+        for (size_t i = 0; i < context.get_num_objects(); ++i)
+        {
+            if (bitsets.at(i).get(k))
+            {
+                bitsets.at(i) |= bitsets.at(k);
+            }
+        }
+    }
+    // Add reflexive part
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitsets.at(i).set(i);
+    }
+}
 
 bool RoleReflexiveTransitiveClosureImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -687,7 +997,32 @@ RoleRestrictionImpl::RoleRestrictionImpl(Index index, Constructor<Role> role_, C
 {
 }
 
-void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_role = m_role->evaluate(context);
+    const auto eval_concept = m_concept->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        for (size_t j = 0; j < context.get_num_objects(); ++j)
+        {
+            if (eval_role->get_data().at(i).get(j) && eval_concept->get_data().get(j))
+            {
+                bitsets.at(i).set(j);
+            }
+        }
+    }
+}
 
 bool RoleRestrictionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
@@ -703,7 +1038,28 @@ Constructor<Concept> RoleRestrictionImpl::get_concept() const { return m_concept
 
 RoleIdentityImpl::RoleIdentityImpl(Index index, Constructor<Concept> concept_) : m_index(index), m_concept(concept_) {}
 
-void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate the children
+    const auto eval_concept = m_concept->evaluate(context);
+
+    // Fetch data
+    auto& bitsets = context.get_denotation_builder<Role>().get_data();
+    assert(bitsets.size() == context.get_num_objects());
+    for (auto& bitset : bitsets)
+    {
+        bitset.unset_all();
+    }
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        if (eval_concept->get_data().get(i))
+        {
+            bitsets.at(i).set(i);
+        }
+    }
+}
 
 bool RoleIdentityImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
 
