@@ -179,6 +179,24 @@ template bool UniqueDLEqualTo<const grammar::ChoiceImpl<Role>*>::operator()(cons
 
 /* Concepts */
 
+bool UniqueDLEqualTo<const grammar::ConceptBotImpl*>::operator()(const grammar::ConceptBotImpl* l, const grammar::ConceptBotImpl* r) const
+{
+    if (&l != &r)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptTopImpl*>::operator()(const grammar::ConceptTopImpl* l, const grammar::ConceptTopImpl* r) const
+{
+    if (&l != &r)
+    {
+        return false;
+    }
+    return true;
+}
+
 template<PredicateCategory P>
 bool UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<P>*>::operator()(const grammar::ConceptAtomicStateImpl<P>* l,
                                                                             const grammar::ConceptAtomicStateImpl<P>* r) const
@@ -225,7 +243,83 @@ bool UniqueDLEqualTo<const grammar::ConceptIntersectionImpl*>::operator()(const 
     return true;
 }
 
+bool UniqueDLEqualTo<const grammar::ConceptUnionImpl*>::operator()(const grammar::ConceptUnionImpl* l, const grammar::ConceptUnionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_concept_left() == r->get_concept_left()) && (l->get_concept_right() == r->get_concept_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptNegationImpl*>::operator()(const grammar::ConceptNegationImpl* l, const grammar::ConceptNegationImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptValueRestrictionImpl*>::operator()(const grammar::ConceptValueRestrictionImpl* l,
+                                                                              const grammar::ConceptValueRestrictionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptExistentialQuantificationImpl*>::operator()(const grammar::ConceptExistentialQuantificationImpl* l,
+                                                                                       const grammar::ConceptExistentialQuantificationImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapContainmentImpl*>::operator()(const grammar::ConceptRoleValueMapContainmentImpl* l,
+                                                                                     const grammar::ConceptRoleValueMapContainmentImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapEqualityImpl*>::operator()(const grammar::ConceptRoleValueMapEqualityImpl* l,
+                                                                                  const grammar::ConceptRoleValueMapEqualityImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::ConceptNominalImpl*>::operator()(const grammar::ConceptNominalImpl* l, const grammar::ConceptNominalImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_object() == r->get_object());
+    }
+    return true;
+}
+
 /* Roles */
+
+bool UniqueDLEqualTo<const grammar::RoleUniversalImpl*>::operator()(const grammar::RoleUniversalImpl* l, const grammar::RoleUniversalImpl* r) const
+{
+    if (&l != &r)
+    {
+        return false;
+    }
+    return true;
+}
 
 template<PredicateCategory P>
 bool UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<P>*>::operator()(const grammar::RoleAtomicStateImpl<P>* l,
@@ -267,6 +361,80 @@ bool UniqueDLEqualTo<const grammar::RoleIntersectionImpl*>::operator()(const gra
     if (&l != &r)
     {
         return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleUnionImpl*>::operator()(const grammar::RoleUnionImpl* l, const grammar::RoleUnionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleComplementImpl*>::operator()(const grammar::RoleComplementImpl* l, const grammar::RoleComplementImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleInverseImpl*>::operator()(const grammar::RoleInverseImpl* l, const grammar::RoleInverseImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleCompositionImpl*>::operator()(const grammar::RoleCompositionImpl* l, const grammar::RoleCompositionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleTransitiveClosureImpl*>::operator()(const grammar::RoleTransitiveClosureImpl* l,
+                                                                            const grammar::RoleTransitiveClosureImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleReflexiveTransitiveClosureImpl*>::operator()(const grammar::RoleReflexiveTransitiveClosureImpl* l,
+                                                                                     const grammar::RoleReflexiveTransitiveClosureImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleRestrictionImpl*>::operator()(const grammar::RoleRestrictionImpl* l, const grammar::RoleRestrictionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const grammar::RoleIdentityImpl*>::operator()(const grammar::RoleIdentityImpl* l, const grammar::RoleIdentityImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_concept() == r->get_concept());
     }
     return true;
 }

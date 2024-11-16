@@ -60,7 +60,7 @@ public:
 
 /// Spezialization for std::ranges::forward_range.
 template<typename ForwardRange>
-    requires std::ranges::forward_range<ForwardRange>
+requires std::ranges::forward_range<ForwardRange>
 struct UniqueDLHasher<ForwardRange>
 {
     size_t operator()(const ForwardRange& range) const

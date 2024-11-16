@@ -441,7 +441,7 @@ public:
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
     Index get_index() const;
-    Object object() const;
+    Object get_object() const;
 };
 
 /**
