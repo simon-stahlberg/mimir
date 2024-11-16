@@ -38,6 +38,7 @@ EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_deno
     m_static_goal_atoms(static_goal_atoms),
     m_fluent_goal_atoms(fluent_goal_atoms),
     m_derived_goal_atoms(derived_goal_atoms),
+    m_num_objects(num_objects),
     m_concept_denotation_builder(),
     m_role_denotation_builder()
 {
@@ -157,4 +158,6 @@ const GroundAtomList<P>& EvaluationContext::get_goal_atoms() const
 template const GroundAtomList<Static>& EvaluationContext::get_goal_atoms<Static>() const;
 template const GroundAtomList<Fluent>& EvaluationContext::get_goal_atoms<Fluent>() const;
 template const GroundAtomList<Derived>& EvaluationContext::get_goal_atoms<Derived>() const;
+
+size_t EvaluationContext::get_num_objects() const { return m_num_objects; }
 }

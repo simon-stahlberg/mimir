@@ -30,6 +30,10 @@ namespace mimir::dl
 
 /* Concepts */
 
+size_t UniqueDLHasher<const ConceptBotImpl*>::operator()(const ConceptBotImpl* e) const { return mimir::hash_combine(e); }
+
+size_t UniqueDLHasher<const ConceptTopImpl*>::operator()(const ConceptTopImpl* e) const { return mimir::hash_combine(e); }
+
 template<PredicateCategory P>
 size_t UniqueDLHasher<const ConceptAtomicStateImpl<P>*>::operator()(const ConceptAtomicStateImpl<P>* e) const
 {
@@ -55,7 +59,38 @@ size_t UniqueDLHasher<const ConceptIntersectionImpl*>::operator()(const ConceptI
     return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
 }
 
+size_t UniqueDLHasher<const ConceptUnionImpl*>::operator()(const ConceptUnionImpl* e) const
+{
+    return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
+}
+
+size_t UniqueDLHasher<const ConceptNegationImpl*>::operator()(const ConceptNegationImpl* e) const { return mimir::hash_combine(e->get_concept()); }
+
+size_t UniqueDLHasher<const ConceptValueRestrictionImpl*>::operator()(const ConceptValueRestrictionImpl* e) const
+{
+    return mimir::hash_combine(e->get_role(), e->get_concept());
+}
+
+size_t UniqueDLHasher<const ConceptExistentialQuantificationImpl*>::operator()(const ConceptExistentialQuantificationImpl* e) const
+{
+    return mimir::hash_combine(e->get_role(), e->get_concept());
+}
+
+size_t UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>::operator()(const ConceptRoleValueMapContainmentImpl* e) const
+{
+    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+}
+
+size_t UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>::operator()(const ConceptRoleValueMapEqualityImpl* e) const
+{
+    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+}
+
+size_t UniqueDLHasher<const ConceptNominalImpl*>::operator()(const ConceptNominalImpl* e) const { return mimir::hash_combine(e->get_object()); }
+
 /* Roles */
+
+size_t UniqueDLHasher<const RoleUniversalImpl*>::operator()(const RoleUniversalImpl* e) const { return mimir::hash_combine(e); }
 
 template<PredicateCategory P>
 size_t UniqueDLHasher<const RoleAtomicStateImpl<P>*>::operator()(const RoleAtomicStateImpl<P>* e) const
@@ -81,6 +116,31 @@ size_t UniqueDLHasher<const RoleIntersectionImpl*>::operator()(const RoleInterse
 {
     return mimir::hash_combine(e->get_role_left(), e->get_role_right());
 }
+
+size_t UniqueDLHasher<const RoleUnionImpl*>::operator()(const RoleUnionImpl* e) const { return mimir::hash_combine(e->get_role_left(), e->get_role_right()); }
+
+size_t UniqueDLHasher<const RoleComplementImpl*>::operator()(const RoleComplementImpl* e) const { return mimir::hash_combine(e->get_role()); }
+
+size_t UniqueDLHasher<const RoleInverseImpl*>::operator()(const RoleInverseImpl* e) const { return mimir::hash_combine(e->get_role()); }
+
+size_t UniqueDLHasher<const RoleCompositionImpl*>::operator()(const RoleCompositionImpl* e) const
+{
+    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+}
+
+size_t UniqueDLHasher<const RoleTransitiveClosureImpl*>::operator()(const RoleTransitiveClosureImpl* e) const { return mimir::hash_combine(e->get_role()); }
+
+size_t UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>::operator()(const RoleReflexiveTransitiveClosureImpl* e) const
+{
+    return mimir::hash_combine(e->get_role());
+}
+
+size_t UniqueDLHasher<const RoleRestrictionImpl*>::operator()(const RoleRestrictionImpl* e) const
+{
+    return mimir::hash_combine(e->get_role(), e->get_concept());
+}
+
+size_t UniqueDLHasher<const RoleIdentityImpl*>::operator()(const RoleIdentityImpl* e) const { return mimir::hash_combine(e->get_concept()); }
 
 /**
  * DL grammar constructors
@@ -125,9 +185,9 @@ template size_t UniqueDLHasher<const grammar::ChoiceImpl<Role>*>::operator()(con
 
 /* Concepts */
 
-size_t UniqueDLHasher<const ConceptBotImpl*>::operator()(const ConceptBotImpl* e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<const grammar::ConceptBotImpl*>::operator()(const grammar::ConceptBotImpl* e) const { return mimir::hash_combine(e); }
 
-size_t UniqueDLHasher<const ConceptTopImpl*>::operator()(const ConceptTopImpl* e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<const grammar::ConceptTopImpl*>::operator()(const grammar::ConceptTopImpl* e) const { return mimir::hash_combine(e); }
 
 template<PredicateCategory P>
 size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<P>*>::operator()(const grammar::ConceptAtomicStateImpl<P>* e) const
@@ -154,33 +214,44 @@ size_t UniqueDLHasher<const grammar::ConceptIntersectionImpl*>::operator()(const
     return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
 }
 
-size_t UniqueDLHasher<const ConceptUnionImpl*>::operator()(const ConceptUnionImpl* e) const
+size_t UniqueDLHasher<const grammar::ConceptUnionImpl*>::operator()(const grammar::ConceptUnionImpl* e) const
 {
     return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
 }
 
-size_t UniqueDLHasher<const ConceptNegationImpl*>::operator()(const ConceptNegationImpl* e) const { return mimir::hash_combine(e->get_concept()); }
+size_t UniqueDLHasher<const grammar::ConceptNegationImpl*>::operator()(const grammar::ConceptNegationImpl* e) const
+{
+    return mimir::hash_combine(e->get_concept());
+}
 
-size_t UniqueDLHasher<const ConceptValueRestrictionImpl*>::operator()(const ConceptValueRestrictionImpl* e) const
+size_t UniqueDLHasher<const grammar::ConceptValueRestrictionImpl*>::operator()(const grammar::ConceptValueRestrictionImpl* e) const
 {
     return mimir::hash_combine(e->get_role(), e->get_concept());
 }
 
-size_t UniqueDLHasher<const ConceptExistentialQuantificationImpl*>::operator()(const ConceptExistentialQuantificationImpl* e) const
+size_t UniqueDLHasher<const grammar::ConceptExistentialQuantificationImpl*>::operator()(const grammar::ConceptExistentialQuantificationImpl* e) const
 {
     return mimir::hash_combine(e->get_role(), e->get_concept());
 }
 
-size_t UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>::operator()(const ConceptRoleValueMapContainmentImpl* e) const
+size_t UniqueDLHasher<const grammar::ConceptRoleValueMapContainmentImpl*>::operator()(const grammar::ConceptRoleValueMapContainmentImpl* e) const
 {
     return mimir::hash_combine(e->get_role_left(), e->get_role_right());
 }
 
-size_t UniqueDLHasher<const ConceptNominalImpl*>::operator()(const ConceptNominalImpl* e) const { return mimir::hash_combine(e->get_object()); }
+size_t UniqueDLHasher<const grammar::ConceptRoleValueMapEqualityImpl*>::operator()(const grammar::ConceptRoleValueMapEqualityImpl* e) const
+{
+    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+}
+
+size_t UniqueDLHasher<const grammar::ConceptNominalImpl*>::operator()(const grammar::ConceptNominalImpl* e) const
+{
+    return mimir::hash_combine(e->get_object());
+}
 
 /* Roles */
 
-size_t UniqueDLHasher<const RoleUniversalImpl*>::operator()(const RoleUniversalImpl* e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<const grammar::RoleUniversalImpl*>::operator()(const grammar::RoleUniversalImpl* e) const { return mimir::hash_combine(e); }
 
 template<PredicateCategory P>
 size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<P>*>::operator()(const grammar::RoleAtomicStateImpl<P>* e) const
@@ -207,29 +278,35 @@ size_t UniqueDLHasher<const grammar::RoleIntersectionImpl*>::operator()(const gr
     return mimir::hash_combine(e->get_role_left(), e->get_role_right());
 }
 
-size_t UniqueDLHasher<const RoleUnionImpl*>::operator()(const RoleUnionImpl* e) const { return mimir::hash_combine(e->get_role_left(), e->get_role_right()); }
-
-size_t UniqueDLHasher<const RoleComplementImpl*>::operator()(const RoleComplementImpl* e) const { return mimir::hash_combine(e->get_role()); }
-
-size_t UniqueDLHasher<const RoleInverseImpl*>::operator()(const RoleInverseImpl* e) const { return mimir::hash_combine(e->get_role()); }
-
-size_t UniqueDLHasher<const RoleCompositionImpl*>::operator()(const RoleCompositionImpl* e) const
+size_t UniqueDLHasher<const grammar::RoleUnionImpl*>::operator()(const grammar::RoleUnionImpl* e) const
 {
     return mimir::hash_combine(e->get_role_left(), e->get_role_right());
 }
 
-size_t UniqueDLHasher<const RoleTransitiveClosureImpl*>::operator()(const RoleTransitiveClosureImpl* e) const { return mimir::hash_combine(e->get_role()); }
+size_t UniqueDLHasher<const grammar::RoleComplementImpl*>::operator()(const grammar::RoleComplementImpl* e) const { return mimir::hash_combine(e->get_role()); }
 
-size_t UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>::operator()(const RoleReflexiveTransitiveClosureImpl* e) const
+size_t UniqueDLHasher<const grammar::RoleInverseImpl*>::operator()(const grammar::RoleInverseImpl* e) const { return mimir::hash_combine(e->get_role()); }
+
+size_t UniqueDLHasher<const grammar::RoleCompositionImpl*>::operator()(const grammar::RoleCompositionImpl* e) const
+{
+    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+}
+
+size_t UniqueDLHasher<const grammar::RoleTransitiveClosureImpl*>::operator()(const grammar::RoleTransitiveClosureImpl* e) const
 {
     return mimir::hash_combine(e->get_role());
 }
 
-size_t UniqueDLHasher<const RoleRestrictionImpl*>::operator()(const RoleRestrictionImpl* e) const
+size_t UniqueDLHasher<const grammar::RoleReflexiveTransitiveClosureImpl*>::operator()(const grammar::RoleReflexiveTransitiveClosureImpl* e) const
+{
+    return mimir::hash_combine(e->get_role());
+}
+
+size_t UniqueDLHasher<const grammar::RoleRestrictionImpl*>::operator()(const grammar::RoleRestrictionImpl* e) const
 {
     return mimir::hash_combine(e->get_role(), e->get_concept());
 }
 
-size_t UniqueDLHasher<const RoleIdentityImpl*>::operator()(const RoleIdentityImpl* e) const { return mimir::hash_combine(e->get_concept()); }
+size_t UniqueDLHasher<const grammar::RoleIdentityImpl*>::operator()(const grammar::RoleIdentityImpl* e) const { return mimir::hash_combine(e->get_concept()); }
 
 }

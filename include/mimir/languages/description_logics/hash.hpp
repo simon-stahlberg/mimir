@@ -151,6 +151,12 @@ struct UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>
 };
 
 template<>
+struct UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>
+{
+    size_t operator()(const ConceptRoleValueMapEqualityImpl* e) const;
+};
+
+template<>
 struct UniqueDLHasher<const ConceptNominalImpl*>
 {
     size_t operator()(const ConceptNominalImpl* e) const;
@@ -260,6 +266,18 @@ struct UniqueDLHasher<const grammar::ChoiceImpl<D>*>
 
 /* Concepts */
 
+template<>
+struct UniqueDLHasher<const grammar::ConceptBotImpl*>
+{
+    size_t operator()(const grammar::ConceptBotImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptTopImpl*>
+{
+    size_t operator()(const grammar::ConceptTopImpl* e) const;
+};
+
 template<PredicateCategory P>
 struct UniqueDLHasher<const grammar::ConceptAtomicStateImpl<P>*>
 {
@@ -278,7 +296,55 @@ struct UniqueDLHasher<const grammar::ConceptIntersectionImpl*>
     size_t operator()(const grammar::ConceptIntersectionImpl* e) const;
 };
 
+template<>
+struct UniqueDLHasher<const grammar::ConceptUnionImpl*>
+{
+    size_t operator()(const grammar::ConceptUnionImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptNegationImpl*>
+{
+    size_t operator()(const grammar::ConceptNegationImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptValueRestrictionImpl*>
+{
+    size_t operator()(const grammar::ConceptValueRestrictionImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptExistentialQuantificationImpl*>
+{
+    size_t operator()(const grammar::ConceptExistentialQuantificationImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptRoleValueMapContainmentImpl*>
+{
+    size_t operator()(const grammar::ConceptRoleValueMapContainmentImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptRoleValueMapEqualityImpl*>
+{
+    size_t operator()(const grammar::ConceptRoleValueMapEqualityImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::ConceptNominalImpl*>
+{
+    size_t operator()(const grammar::ConceptNominalImpl* e) const;
+};
+
 /* Roles */
+
+template<>
+struct UniqueDLHasher<const grammar::RoleUniversalImpl*>
+{
+    size_t operator()(const grammar::RoleUniversalImpl* e) const;
+};
 
 template<PredicateCategory P>
 struct UniqueDLHasher<const grammar::RoleAtomicStateImpl<P>*>
@@ -296,6 +362,54 @@ template<>
 struct UniqueDLHasher<const grammar::RoleIntersectionImpl*>
 {
     size_t operator()(const grammar::RoleIntersectionImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleUnionImpl*>
+{
+    size_t operator()(const grammar::RoleUnionImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleComplementImpl*>
+{
+    size_t operator()(const grammar::RoleComplementImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleInverseImpl*>
+{
+    size_t operator()(const grammar::RoleInverseImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleCompositionImpl*>
+{
+    size_t operator()(const grammar::RoleCompositionImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleTransitiveClosureImpl*>
+{
+    size_t operator()(const grammar::RoleTransitiveClosureImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleReflexiveTransitiveClosureImpl*>
+{
+    size_t operator()(const grammar::RoleReflexiveTransitiveClosureImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleRestrictionImpl*>
+{
+    size_t operator()(const grammar::RoleRestrictionImpl* e) const;
+};
+
+template<>
+struct UniqueDLHasher<const grammar::RoleIdentityImpl*>
+{
+    size_t operator()(const grammar::RoleIdentityImpl* e) const;
 };
 
 }

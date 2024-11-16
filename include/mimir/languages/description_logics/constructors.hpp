@@ -243,10 +243,10 @@ class ConceptValueRestrictionImpl : public ConstructorEvaluatorBase<Concept, Con
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept;
     Constructor<Role> m_role;
+    Constructor<Concept> m_concept;
 
-    ConceptValueRestrictionImpl(Index index, Constructor<Concept> concept_, Constructor<Role> role_);
+    ConceptValueRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -266,18 +266,18 @@ public:
     ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
 
     Index get_index() const;
-    Constructor<Concept> get_concept() const;
     Constructor<Role> get_role() const;
+    Constructor<Concept> get_concept() const;
 };
 
 class ConceptExistentialQuantificationImpl : public ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>
 {
 private:
     Index m_index;
-    Constructor<Concept> m_concept;
     Constructor<Role> m_role;
+    Constructor<Concept> m_concept;
 
-    ConceptExistentialQuantificationImpl(Index index, Constructor<Concept> concept_, Constructor<Role> role_);
+    ConceptExistentialQuantificationImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -287,7 +287,7 @@ private:
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>;
 
 public:
     // moveable but not copyable
@@ -297,8 +297,8 @@ public:
     ConceptExistentialQuantificationImpl& operator=(ConceptExistentialQuantificationImpl&& other) = default;
 
     Index get_index() const;
-    Constructor<Concept> get_concept() const;
     Constructor<Role> get_role() const;
+    Constructor<Concept> get_concept() const;
 };
 
 class ConceptRoleValueMapContainmentImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>
@@ -318,7 +318,7 @@ private:
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>;
 
 public:
     // moveable but not copyable
@@ -379,7 +379,7 @@ private:
 
     bool accept_impl(const grammar::Visitor<Concept>& visitor) const;
 
-    friend class ConstructorEvaluatorBase<Concept, ConceptNegationImpl>;
+    friend class ConstructorEvaluatorBase<Concept, ConceptNominalImpl>;
 
 public:
     // moveable but not copyable

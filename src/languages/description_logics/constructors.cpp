@@ -46,6 +46,48 @@ namespace mimir::dl
 {
 
 /**
+ * ConceptBot
+ */
+
+ConceptBotImpl::ConceptBotImpl(Index index) : m_index(index) {}
+
+void ConceptBotImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Result is computed.
+}
+
+bool ConceptBotImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptBotImpl::get_index() const { return m_index; }
+
+/**
+ * ConceptTop
+ */
+
+ConceptTopImpl::ConceptTopImpl(Index index) : m_index(index) {}
+
+void ConceptTopImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        bitset.set(i);
+    }
+}
+
+bool ConceptTopImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptTopImpl::get_index() const { return m_index; }
+
+/**
  * ConceptAtomicState
  */
 
@@ -227,6 +269,147 @@ Constructor<Concept> ConceptUnionImpl::get_concept_left() const { return m_conce
 Constructor<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_right; }
 
 /**
+ * ConceptNegation
+ */
+
+ConceptNegationImpl::ConceptNegationImpl(Index index, Constructor<Concept> concept_) : m_index(index), m_concept(concept_) {}
+
+void ConceptNegationImpl::evaluate_impl(EvaluationContext& context) const
+{
+    // Evaluate children
+    const auto eval = m_concept->evaluate(context);
+
+    // Fetch data
+    auto& bitset = context.get_denotation_builder<Concept>().get_data();
+    bitset.unset_all();
+
+    // Compute result
+    for (size_t i = 0; i < context.get_num_objects(); ++i)
+    {
+        if (!eval->get_data().get(i))
+        {
+            bitset.set(i);
+        }
+    }
+}
+
+bool ConceptNegationImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptNegationImpl::get_index() const { return m_index; }
+
+Constructor<Concept> ConceptNegationImpl::get_concept() const { return m_concept; }
+
+/**
+ * ConceptValueRestriction
+ */
+
+ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_) :
+    m_index(index),
+    m_role(role_),
+    m_concept(concept_)
+{
+}
+
+void ConceptValueRestrictionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool ConceptValueRestrictionImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
+
+Constructor<Role> ConceptValueRestrictionImpl::get_role() const { return m_role; }
+
+Constructor<Concept> ConceptValueRestrictionImpl::get_concept() const { return m_concept; }
+
+/**
+ * ConceptExistentialQuantification
+ */
+
+ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_) :
+    m_index(index),
+    m_role(role_),
+    m_concept(concept_)
+{
+}
+
+void ConceptExistentialQuantificationImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool ConceptExistentialQuantificationImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
+
+Constructor<Role> ConceptExistentialQuantificationImpl::get_role() const { return m_role; }
+
+Constructor<Concept> ConceptExistentialQuantificationImpl::get_concept() const { return m_concept; }
+
+/**
+ * ConceptRoleValueMapContainment
+ */
+
+ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool ConceptRoleValueMapContainmentImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
+
+Constructor<Role> ConceptRoleValueMapContainmentImpl::get_role_left() const { return m_role_left; }
+
+Constructor<Role> ConceptRoleValueMapContainmentImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * ConceptRoleValueMapEquality
+ */
+
+ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+void ConceptRoleValueMapEqualityImpl::evaluate_impl(EvaluationContext& context) const {}
+
+bool ConceptRoleValueMapEqualityImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
+
+Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_left() const { return m_role_left; }
+
+Constructor<Role> ConceptRoleValueMapEqualityImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * ConceptNominalImpl
+ */
+
+ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(index), m_object(object) {}
+
+void ConceptNominalImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool ConceptNominalImpl::accept_impl(const grammar::Visitor<Concept>& visitor) const { return visitor.visit(this); }
+
+Index ConceptNominalImpl::get_index() const { return m_index; }
+
+Object ConceptNominalImpl::get_object() const { return m_object; }
+
+/**
+ * RoleUniversal
+ */
+
+RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
+
+void RoleUniversalImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleUniversalImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleUniversalImpl::get_index() const { return m_index; }
+
+/**
  * RoleAtomicState
  */
 
@@ -394,4 +577,138 @@ Index RoleIntersectionImpl::get_index() const { return m_index; }
 Constructor<Role> RoleIntersectionImpl::get_role_left() const { return m_role_left; }
 
 Constructor<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * RoleUnion
+ */
+
+RoleUnionImpl::RoleUnionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleUnionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleUnionImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleUnionImpl::get_role_left() const { return m_role_left; }
+
+Constructor<Role> RoleUnionImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * RoleComplement
+ */
+
+RoleComplementImpl::RoleComplementImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+
+void RoleComplementImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleComplementImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleComplementImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleComplementImpl::get_role() const { return m_role; }
+
+/**
+ * RoleInverse
+ */
+
+RoleInverseImpl::RoleInverseImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+
+void RoleInverseImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleInverseImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleInverseImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleInverseImpl::get_role() const { return m_role; }
+
+/**
+ * RoleComposition
+ */
+
+RoleCompositionImpl::RoleCompositionImpl(Index index, Constructor<Role> role_left, Constructor<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+void RoleCompositionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleCompositionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleCompositionImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleCompositionImpl::get_role_left() const { return m_role_left; }
+
+Constructor<Role> RoleCompositionImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * RoleTransitiveClosure
+ */
+
+RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+
+void RoleTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleTransitiveClosureImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleTransitiveClosureImpl::get_role() const { return m_role; }
+
+/**
+ * RoleReflexiveTransitiveClosure
+ */
+
+RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, Constructor<Role> role_) : m_index(index), m_role(role_) {}
+
+void RoleReflexiveTransitiveClosureImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleReflexiveTransitiveClosureImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_role; }
+
+/**
+ * RoleRestriction
+ */
+
+RoleRestrictionImpl::RoleRestrictionImpl(Index index, Constructor<Role> role_, Constructor<Concept> concept_) :
+    m_index(index),
+    m_role(role_),
+    m_concept(concept_)
+{
+}
+
+void RoleRestrictionImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleRestrictionImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleRestrictionImpl::get_index() const { return m_index; }
+
+Constructor<Role> RoleRestrictionImpl::get_role() const { return m_role; }
+
+Constructor<Concept> RoleRestrictionImpl::get_concept() const { return m_concept; }
+
+/**
+ * RoleIdentity
+ */
+
+RoleIdentityImpl::RoleIdentityImpl(Index index, Constructor<Concept> concept_) : m_index(index), m_concept(concept_) {}
+
+void RoleIdentityImpl::evaluate_impl(EvaluationContext& context) const { throw std::runtime_error("Not implemented"); }
+
+bool RoleIdentityImpl::accept_impl(const grammar::Visitor<Role>& visitor) const { return visitor.visit(this); }
+
+Index RoleIdentityImpl::get_index() const { return m_index; }
+
+Constructor<Concept> RoleIdentityImpl::get_concept() const { return m_concept; }
+
 }

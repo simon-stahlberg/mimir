@@ -29,6 +29,24 @@ namespace mimir::dl
 
 /* Concepts */
 
+bool UniqueDLEqualTo<const ConceptBotImpl*>::operator()(const ConceptBotImpl* l, const ConceptBotImpl* r) const
+{
+    if (&l != &r)
+    {
+        return false;
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptTopImpl*>::operator()(const ConceptTopImpl* l, const ConceptTopImpl* r) const
+{
+    if (&l != &r)
+    {
+        return false;
+    }
+    return true;
+}
+
 template<PredicateCategory P>
 bool UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>::operator()(const ConceptAtomicStateImpl<P>* l, const ConceptAtomicStateImpl<P>* r) const
 {
@@ -72,7 +90,82 @@ bool UniqueDLEqualTo<const ConceptIntersectionImpl*>::operator()(const ConceptIn
     return true;
 }
 
+bool UniqueDLEqualTo<const ConceptUnionImpl*>::operator()(const ConceptUnionImpl* l, const ConceptUnionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_concept_left() == r->get_concept_left()) && (l->get_concept_right() == r->get_concept_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptNegationImpl*>::operator()(const ConceptNegationImpl* l, const ConceptNegationImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptValueRestrictionImpl*>::operator()(const ConceptValueRestrictionImpl* l, const ConceptValueRestrictionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>::operator()(const ConceptExistentialQuantificationImpl* l,
+                                                                              const ConceptExistentialQuantificationImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>::operator()(const ConceptRoleValueMapContainmentImpl* l,
+                                                                            const ConceptRoleValueMapContainmentImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>::operator()(const ConceptRoleValueMapEqualityImpl* l,
+                                                                         const ConceptRoleValueMapEqualityImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const ConceptNominalImpl*>::operator()(const ConceptNominalImpl* l, const ConceptNominalImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_object() == r->get_object());
+    }
+    return true;
+}
+
 /* Roles */
+
+bool UniqueDLEqualTo<const RoleUniversalImpl*>::operator()(const RoleUniversalImpl* l, const RoleUniversalImpl* r) const
+{
+    if (&l != &r)
+    {
+        return false;
+    }
+    return true;
+}
 
 template<PredicateCategory P>
 bool UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>::operator()(const RoleAtomicStateImpl<P>* l, const RoleAtomicStateImpl<P>* r) const
@@ -108,6 +201,79 @@ bool UniqueDLEqualTo<const RoleIntersectionImpl*>::operator()(const RoleIntersec
     if (&l != &r)
     {
         return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleUnionImpl*>::operator()(const RoleUnionImpl* l, const RoleUnionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleComplementImpl*>::operator()(const RoleComplementImpl* l, const RoleComplementImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleInverseImpl*>::operator()(const RoleInverseImpl* l, const RoleInverseImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleCompositionImpl*>::operator()(const RoleCompositionImpl* l, const RoleCompositionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleTransitiveClosureImpl*>::operator()(const RoleTransitiveClosureImpl* l, const RoleTransitiveClosureImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>::operator()(const RoleReflexiveTransitiveClosureImpl* l,
+                                                                            const RoleReflexiveTransitiveClosureImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleRestrictionImpl*>::operator()(const RoleRestrictionImpl* l, const RoleRestrictionImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+    }
+    return true;
+}
+
+bool UniqueDLEqualTo<const RoleIdentityImpl*>::operator()(const RoleIdentityImpl* l, const RoleIdentityImpl* r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_concept() == r->get_concept());
     }
     return true;
 }

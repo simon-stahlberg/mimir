@@ -68,6 +68,18 @@ struct UniqueDLEqualTo<std::variant<Ts...>>
 
 /* Concepts */
 
+template<>
+struct UniqueDLEqualTo<const ConceptBotImpl*>
+{
+    bool operator()(const ConceptBotImpl* l, const ConceptBotImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptTopImpl*>
+{
+    bool operator()(const ConceptTopImpl* l, const ConceptTopImpl* r) const;
+};
+
 template<PredicateCategory P>
 struct UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>
 {
@@ -86,7 +98,55 @@ struct UniqueDLEqualTo<const ConceptIntersectionImpl*>
     bool operator()(const ConceptIntersectionImpl* l, const ConceptIntersectionImpl* r) const;
 };
 
+template<>
+struct UniqueDLEqualTo<const ConceptUnionImpl*>
+{
+    bool operator()(const ConceptUnionImpl* l, const ConceptUnionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptNegationImpl*>
+{
+    bool operator()(const ConceptNegationImpl* l, const ConceptNegationImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptValueRestrictionImpl*>
+{
+    bool operator()(const ConceptValueRestrictionImpl* l, const ConceptValueRestrictionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>
+{
+    bool operator()(const ConceptExistentialQuantificationImpl* l, const ConceptExistentialQuantificationImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>
+{
+    bool operator()(const ConceptRoleValueMapContainmentImpl* l, const ConceptRoleValueMapContainmentImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>
+{
+    bool operator()(const ConceptRoleValueMapEqualityImpl* l, const ConceptRoleValueMapEqualityImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const ConceptNominalImpl*>
+{
+    bool operator()(const ConceptNominalImpl* l, const ConceptNominalImpl* r) const;
+};
+
 /* Roles */
+
+template<>
+struct UniqueDLEqualTo<const RoleUniversalImpl*>
+{
+    bool operator()(const RoleUniversalImpl* l, const RoleUniversalImpl* r) const;
+};
 
 template<PredicateCategory P>
 struct UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>
@@ -104,6 +164,54 @@ template<>
 struct UniqueDLEqualTo<const RoleIntersectionImpl*>
 {
     bool operator()(const RoleIntersectionImpl* l, const RoleIntersectionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleUnionImpl*>
+{
+    bool operator()(const RoleUnionImpl* l, const RoleUnionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleComplementImpl*>
+{
+    bool operator()(const RoleComplementImpl* l, const RoleComplementImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleInverseImpl*>
+{
+    bool operator()(const RoleInverseImpl* l, const RoleInverseImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleCompositionImpl*>
+{
+    bool operator()(const RoleCompositionImpl* l, const RoleCompositionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleTransitiveClosureImpl*>
+{
+    bool operator()(const RoleTransitiveClosureImpl* l, const RoleTransitiveClosureImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>
+{
+    bool operator()(const RoleReflexiveTransitiveClosureImpl* l, const RoleReflexiveTransitiveClosureImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleRestrictionImpl*>
+{
+    bool operator()(const RoleRestrictionImpl* l, const RoleRestrictionImpl* r) const;
+};
+
+template<>
+struct UniqueDLEqualTo<const RoleIdentityImpl*>
+{
+    bool operator()(const RoleIdentityImpl* l, const RoleIdentityImpl* r) const;
 };
 
 /**

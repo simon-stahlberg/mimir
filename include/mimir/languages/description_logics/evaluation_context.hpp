@@ -50,6 +50,8 @@ private:
     std::reference_wrapper<const GroundAtomList<Fluent>> m_fluent_goal_atoms;
     std::reference_wrapper<const GroundAtomList<Derived>> m_derived_goal_atoms;
 
+    size_t m_num_objects;
+
     /* Temporary denotations. */
     DenotationImpl<Concept> m_concept_denotation_builder;
     DenotationImpl<Role> m_role_denotation_builder;
@@ -94,6 +96,8 @@ public:
 
     template<PredicateCategory P>
     const GroundAtomList<P>& get_goal_atoms() const;
+
+    size_t get_num_objects() const;
 };
 }
 
