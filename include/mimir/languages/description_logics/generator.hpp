@@ -27,6 +27,9 @@
 
 namespace mimir::dl
 {
+
+using ConceptBotFactory = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
+using ConceptTopFactory = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
 template<PredicateCategory P>
 using ConceptAtomicStateFactory =
     loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
@@ -35,6 +38,23 @@ using ConceptAtomicGoalFactory =
     loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
 using ConceptIntersectionFactory =
     loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
+using ConceptUnionFactory = loki::UniqueFactory<ConceptUnionImpl, UniqueDLHasher<const ConceptUnionImpl*>, UniqueDLEqualTo<const ConceptUnionImpl*>>;
+using ConceptNegationFactory =
+    loki::UniqueFactory<ConceptNegationImpl, UniqueDLHasher<const ConceptNegationImpl*>, UniqueDLEqualTo<const ConceptNegationImpl*>>;
+using ConceptValueRestrictionFactory =
+    loki::UniqueFactory<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestrictionImpl*>, UniqueDLEqualTo<const ConceptValueRestrictionImpl*>>;
+using ConceptExistentialQuantificationFactory = loki::UniqueFactory<ConceptExistentialQuantificationImpl,
+                                                                    UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
+                                                                    UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;
+using ConceptRoleValueMapContainmentFactory = loki::UniqueFactory<ConceptRoleValueMapContainmentImpl,
+                                                                  UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>,
+                                                                  UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>>;
+using ConceptRoleValueMapEqualityFactory = loki::UniqueFactory<ConceptRoleValueMapEqualityImpl,
+                                                               UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>,
+                                                               UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>>;
+using ConceptNominalFactory = loki::UniqueFactory<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
+
+using RoleUniversalFactory = loki::UniqueFactory<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
 template<PredicateCategory P>
 using RolePredicateStateFactory =
     loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
@@ -43,38 +63,94 @@ using RolePredicateGoalFactory =
     loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
 using RoleIntersectionFactory =
     loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
+using RoleUnionFactory = loki::UniqueFactory<RoleUnionImpl, UniqueDLHasher<const RoleUnionImpl*>, UniqueDLEqualTo<const RoleUnionImpl*>>;
+using RoleComplementFactory = loki::UniqueFactory<RoleComplementImpl, UniqueDLHasher<const RoleComplementImpl*>, UniqueDLEqualTo<const RoleComplementImpl*>>;
+using RoleInverseFactory = loki::UniqueFactory<RoleInverseImpl, UniqueDLHasher<const RoleInverseImpl*>, UniqueDLEqualTo<const RoleInverseImpl*>>;
+using RoleCompositionFactory =
+    loki::UniqueFactory<RoleCompositionImpl, UniqueDLHasher<const RoleCompositionImpl*>, UniqueDLEqualTo<const RoleCompositionImpl*>>;
+using RoleTransitiveClosureFactory =
+    loki::UniqueFactory<RoleTransitiveClosureImpl, UniqueDLHasher<const RoleTransitiveClosureImpl*>, UniqueDLEqualTo<const RoleTransitiveClosureImpl*>>;
+using RoleReflexiveTransitiveClosureFactory = loki::UniqueFactory<RoleReflexiveTransitiveClosureImpl,
+                                                                  UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>,
+                                                                  UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>>;
+using RoleRestrictionFactory =
+    loki::UniqueFactory<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
+using RoleIdentityFactory = loki::UniqueFactory<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
-using VariadicConstructorFactory = loki::VariadicContainer<ConceptAtomicStateFactory<Static>,
+using VariadicConstructorFactory = loki::VariadicContainer<ConceptBotFactory,
+                                                           ConceptTopFactory,
+                                                           ConceptAtomicStateFactory<Static>,
                                                            ConceptAtomicStateFactory<Fluent>,
                                                            ConceptAtomicStateFactory<Derived>,
                                                            ConceptAtomicGoalFactory<Static>,
                                                            ConceptAtomicGoalFactory<Fluent>,
                                                            ConceptAtomicGoalFactory<Derived>,
                                                            ConceptIntersectionFactory,
+                                                           ConceptUnionFactory,
+                                                           ConceptNegationFactory,
+                                                           ConceptValueRestrictionFactory,
+                                                           ConceptExistentialQuantificationFactory,
+                                                           ConceptRoleValueMapContainmentFactory,
+                                                           ConceptRoleValueMapEqualityFactory,
+                                                           ConceptNominalFactory,
+                                                           RoleUniversalFactory,
                                                            RolePredicateStateFactory<Static>,
                                                            RolePredicateStateFactory<Fluent>,
                                                            RolePredicateStateFactory<Derived>,
                                                            RolePredicateGoalFactory<Static>,
                                                            RolePredicateGoalFactory<Fluent>,
                                                            RolePredicateGoalFactory<Derived>,
-                                                           RoleIntersectionFactory>;
+                                                           RoleIntersectionFactory,
+                                                           RoleUnionFactory,
+                                                           RoleComplementFactory,
+                                                           RoleInverseFactory,
+                                                           RoleCompositionFactory,
+                                                           RoleTransitiveClosureFactory,
+                                                           RoleReflexiveTransitiveClosureFactory,
+                                                           RoleRestrictionFactory,
+                                                           RoleIdentityFactory>;
 
 extern VariadicConstructorFactory create_default_variadic_constructor_factory();
 
-class Generator
+struct GeneratorOptions
 {
-private:
-    /* Memory */
-    VariadicConstructorFactory m_constructor_repos;
-
-    /* Grammar specification */
-    grammar::Grammar m_grammar;
-
-public:
-    Generator(grammar::Grammar grammar);
-
-    /* TODO: refinement operators */
 };
+
+class GeneratorPruningFunction
+{
+public:
+    virtual ~GeneratorPruningFunction() = default;
+
+    /// @brief Tests whether the given concept should be pruned.
+    /// @param concept_ is the concept to be tested
+    /// @return true iff the concept must be pruned, false otherwise.
+    virtual bool test_prune(Constructor<Concept> concept_) = 0;
+
+    /// @brief Tests whether the given role should be pruned.
+    /// @param role_ is the role to be tested
+    /// @return true iff the role must be pruned, false otherwise.
+    virtual bool test_prune(Constructor<Role> role_) = 0;
+};
+
+class GeneratorStateListPruningFunction : public GeneratorPruningFunction
+{
+public:
+    GeneratorStateListPruningFunction(Problem problem, StateList states) : m_problem(problem), m_states(std::move(states)) {}
+
+    bool test_prune(Constructor<Concept> concept_) override;
+
+    bool test_prune(Constructor<Role> role_) override;
+
+private:
+    Problem m_problem;
+    StateList m_states;
+};
+
+extern std::tuple<ConstructorList<Concept>, ConstructorList<Role>> generate(const grammar::Grammar grammar,
+                                                                            const GeneratorOptions& options,
+                                                                            GeneratorPruningFunction& pruning_function,
+                                                                            VariadicConstructorFactory& ref_constructor_repos);
+
 }
 
 #endif

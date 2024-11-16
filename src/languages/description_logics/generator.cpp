@@ -22,20 +22,38 @@ namespace mimir::dl
 
 VariadicConstructorFactory create_default_variadic_constructor_factory()
 {
-    return VariadicConstructorFactory(ConceptAtomicStateFactory<Static>(),
+    return VariadicConstructorFactory(ConceptBotFactory(),
+                                      ConceptTopFactory(),
+                                      ConceptAtomicStateFactory<Static>(),
                                       ConceptAtomicStateFactory<Fluent>(),
                                       ConceptAtomicStateFactory<Derived>(),
                                       ConceptAtomicGoalFactory<Static>(),
                                       ConceptAtomicGoalFactory<Fluent>(),
                                       ConceptAtomicGoalFactory<Derived>(),
                                       ConceptIntersectionFactory(),
+                                      ConceptUnionFactory(),
+                                      ConceptNegationFactory(),
+                                      ConceptValueRestrictionFactory(),
+                                      ConceptExistentialQuantificationFactory(),
+                                      ConceptRoleValueMapContainmentFactory(),
+                                      ConceptRoleValueMapEqualityFactory(),
+                                      ConceptNominalFactory(),
+                                      RoleUniversalFactory(),
                                       RolePredicateStateFactory<Static>(),
                                       RolePredicateStateFactory<Fluent>(),
                                       RolePredicateStateFactory<Derived>(),
                                       RolePredicateGoalFactory<Static>(),
                                       RolePredicateGoalFactory<Fluent>(),
                                       RolePredicateGoalFactory<Derived>(),
-                                      RoleIntersectionFactory());
+                                      RoleIntersectionFactory(),
+                                      RoleUnionFactory(),
+                                      RoleComplementFactory(),
+                                      RoleInverseFactory(),
+                                      RoleCompositionFactory(),
+                                      RoleTransitiveClosureFactory(),
+                                      RoleReflexiveTransitiveClosureFactory(),
+                                      RoleRestrictionFactory(),
+                                      RoleIdentityFactory());
 }
 
 }

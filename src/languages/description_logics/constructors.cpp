@@ -409,7 +409,8 @@ ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index ind
 }
 
 void ConceptRoleValueMapContainmentImpl::evaluate_impl(EvaluationContext& context) const
-{  // Evaluate children
+{
+    // Evaluate children
     const auto eval_role_left = m_role_left->evaluate(context);
     const auto eval_role_right = m_role_right->evaluate(context);
 
