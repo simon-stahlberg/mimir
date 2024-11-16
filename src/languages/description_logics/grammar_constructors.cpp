@@ -130,6 +130,26 @@ template class DerivationRuleImpl<Concept>;
 template class DerivationRuleImpl<Role>;
 
 /**
+ * ConceptBot
+ */
+
+ConceptBotImpl::ConceptBotImpl(Index index) : m_index(index) {}
+
+bool ConceptBotImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(grammar::ConceptBotVisitor(this)); }
+
+Index ConceptBotImpl::get_index() const { return m_index; }
+
+/**
+ * ConceptTop
+ */
+
+ConceptTopImpl::ConceptTopImpl(Index index) : m_index(index) {}
+
+bool ConceptTopImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(grammar::ConceptTopVisitor(this)); }
+
+Index ConceptTopImpl::get_index() const { return m_index; }
+
+/**
  * ConceptAtomicStateImpl
  */
 
@@ -212,6 +232,7 @@ Choice<Concept> ConceptIntersectionImpl::get_concept_right() const { return m_co
 /**
  * ConceptUnion
  */
+
 ConceptUnionImpl::ConceptUnionImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right) :
     m_index(index),
     m_concept_left(concept_left),
@@ -226,6 +247,125 @@ Index ConceptUnionImpl::get_index() const { return m_index; }
 Choice<Concept> ConceptUnionImpl::get_concept_left() const { return m_concept_left; }
 
 Choice<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_right; }
+
+/**
+ * ConceptNegation
+ */
+
+ConceptNegationImpl::ConceptNegationImpl(Index index, Choice<Concept> concept_) : m_index(index), m_concept(concept_) {}
+
+bool ConceptNegationImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptNegationVisitor(this)); }
+
+Index ConceptNegationImpl::get_index() const { return m_index; }
+
+Choice<Concept> ConceptNegationImpl::get_concept() const { return m_concept; }
+
+/**
+ * ConceptValueRestriction
+ */
+
+ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Choice<Role> role_, Choice<Concept> concept_) :
+    m_index(index),
+    m_role(role_),
+    m_concept(concept_)
+{
+}
+
+bool ConceptValueRestrictionImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptValueRestrictionVisitor(this)); }
+
+Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
+
+Choice<Role> ConceptValueRestrictionImpl::get_role() const { return m_role; }
+
+Choice<Concept> ConceptValueRestrictionImpl::get_concept() const { return m_concept; }
+
+/**
+ * ConceptExistentialQuantification
+ */
+
+ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index index, Choice<Role> role_, Choice<Concept> concept_) :
+    m_index(index),
+    m_role(role_),
+    m_concept(concept_)
+{
+}
+
+bool ConceptExistentialQuantificationImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    return constructor->accept(ConceptExistentialQuantificationVisitor(this));
+}
+
+Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
+
+Choice<Role> ConceptExistentialQuantificationImpl::get_role() const { return m_role; }
+
+Choice<Concept> ConceptExistentialQuantificationImpl::get_concept() const { return m_concept; }
+
+/**
+ * ConceptRoleValueMapContainment
+ */
+
+ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+bool ConceptRoleValueMapContainmentImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    return constructor->accept(ConceptRoleValueMapContainmentVisitor(this));
+}
+
+Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
+
+Choice<Role> ConceptRoleValueMapContainmentImpl::get_role_left() const { return m_role_left; }
+
+Choice<Role> ConceptRoleValueMapContainmentImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * ConceptRoleValueMapEquality
+ */
+
+ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+bool ConceptRoleValueMapEqualityImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    return constructor->accept(ConceptRoleValueMapEqualityVisitor(this));
+}
+
+Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
+
+Choice<Role> ConceptRoleValueMapEqualityImpl::get_role_left() const { return m_role_left; }
+
+Choice<Role> ConceptRoleValueMapEqualityImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * ConceptNominal
+ */
+
+ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(index), m_object(object) {}
+
+bool ConceptNominalImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptNominalVisitor(this)); }
+
+Index ConceptNominalImpl::get_index() const { return m_index; }
+
+Object ConceptNominalImpl::get_object() const { return m_object; }
+
+/**
+ * RoleUniversal
+ */
+
+RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
+
+bool RoleUniversalImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleUniversalVisitor(this)); }
+
+Index RoleUniversalImpl::get_index() const { return m_index; }
 
 /**
  * RoleAtomicState
@@ -292,6 +432,7 @@ template class RoleAtomicGoalImpl<Derived>;
 /**
  * RoleIntersection
  */
+
 RoleIntersectionImpl::RoleIntersectionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) :
     m_index(index),
     m_role_left(role_left),
@@ -307,4 +448,113 @@ Choice<Role> RoleIntersectionImpl::get_role_left() const { return m_role_left; }
 
 Choice<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right; }
 
+/**
+ * RoleUnion
+ */
+
+RoleUnionImpl::RoleUnionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) : m_index(index), m_role_left(role_left), m_role_right(role_right) {}
+
+bool RoleUnionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleUnionVisitor(this)); }
+
+Index RoleUnionImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleUnionImpl::get_role_left() const { return m_role_left; }
+
+Choice<Role> RoleUnionImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * RoleComplement
+ */
+
+RoleComplementImpl::RoleComplementImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
+
+bool RoleComplementImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleComplementVisitor(this)); }
+
+Index RoleComplementImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleComplementImpl::get_role() const { return m_role; }
+
+/**
+ * RoleInverse
+ */
+
+RoleInverseImpl::RoleInverseImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
+
+bool RoleInverseImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleInverseVisitor(this)); }
+
+Index RoleInverseImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleInverseImpl::get_role() const { return m_role; }
+
+/**
+ * RoleComposition
+ */
+
+RoleCompositionImpl::RoleCompositionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) :
+    m_index(index),
+    m_role_left(role_left),
+    m_role_right(role_right)
+{
+}
+
+bool RoleCompositionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleCompositionVisitor(this)); }
+
+Index RoleCompositionImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleCompositionImpl::get_role_left() const { return m_role_left; }
+
+Choice<Role> RoleCompositionImpl::get_role_right() const { return m_role_right; }
+
+/**
+ * RoleTransitiveClosure
+ */
+
+RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
+
+bool RoleTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleTransitiveClosureVisitor(this)); }
+
+Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleTransitiveClosureImpl::get_role() const { return m_role; }
+
+/**
+ * RoleReflexiveTransitiveClosure
+ */
+
+RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
+
+bool RoleReflexiveTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    return constructor->accept(RoleReflexiveTransitiveClosureVisitor(this));
+}
+
+Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_role; }
+
+/**
+ * RoleRestriction
+ */
+
+RoleRestrictionImpl::RoleRestrictionImpl(Index index, Choice<Role> role_, Choice<Concept> concept_) : m_index(index), m_role(role_), m_concept(concept_) {}
+
+bool RoleRestrictionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleRestrictionVisitor(this)); }
+
+Index RoleRestrictionImpl::get_index() const { return m_index; }
+
+Choice<Role> RoleRestrictionImpl::get_role() const { return m_role; }
+
+Choice<Concept> RoleRestrictionImpl::get_concept() const { return m_concept; }
+
+/**
+ * RoleIdentity
+ */
+
+RoleIdentityImpl::RoleIdentityImpl(Index index, Choice<Concept> concept_) : m_index(index), m_concept(concept_) {}
+
+bool RoleIdentityImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleIdentityVisitor(this)); }
+
+Index RoleIdentityImpl::get_index() const { return m_index; }
+
+Choice<Concept> RoleIdentityImpl::get_concept() const { return m_concept; }
 }
