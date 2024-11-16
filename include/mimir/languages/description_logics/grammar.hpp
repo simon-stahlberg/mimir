@@ -77,6 +77,19 @@ using RolePredicateGoalFactory =
     loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
 using RoleIntersectionFactory =
     loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
+using RoleUnionFactory = loki::UniqueFactory<RoleUnionImpl, UniqueDLHasher<const RoleUnionImpl*>, UniqueDLEqualTo<const RoleUnionImpl*>>;
+using RoleComplementFactory = loki::UniqueFactory<RoleComplementImpl, UniqueDLHasher<const RoleComplementImpl*>, UniqueDLEqualTo<const RoleComplementImpl*>>;
+using RoleInverseFactory = loki::UniqueFactory<RoleInverseImpl, UniqueDLHasher<const RoleInverseImpl*>, UniqueDLEqualTo<const RoleInverseImpl*>>;
+using RoleCompositionFactory =
+    loki::UniqueFactory<RoleCompositionImpl, UniqueDLHasher<const RoleCompositionImpl*>, UniqueDLEqualTo<const RoleCompositionImpl*>>;
+using RoleTransitiveClosureFactory =
+    loki::UniqueFactory<RoleTransitiveClosureImpl, UniqueDLHasher<const RoleTransitiveClosureImpl*>, UniqueDLEqualTo<const RoleTransitiveClosureImpl*>>;
+using RoleReflexiveTransitiveClosureFactory = loki::UniqueFactory<RoleReflexiveTransitiveClosureImpl,
+                                                                  UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>,
+                                                                  UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>>;
+using RoleRestrictionFactory =
+    loki::UniqueFactory<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
+using RoleIdentityFactory = loki::UniqueFactory<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
 using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFactory<Concept>,  //
                                                                   ChoiceFactory<Concept>,
@@ -107,7 +120,15 @@ using VariadicGrammarConstructorFactory = loki::VariadicContainer<NonTerminalFac
                                                                   RolePredicateGoalFactory<Static>,
                                                                   RolePredicateGoalFactory<Fluent>,
                                                                   RolePredicateGoalFactory<Derived>,
-                                                                  RoleIntersectionFactory>;
+                                                                  RoleIntersectionFactory,
+                                                                  RoleUnionFactory,
+                                                                  RoleComplementFactory,
+                                                                  RoleInverseFactory,
+                                                                  RoleCompositionFactory,
+                                                                  RoleTransitiveClosureFactory,
+                                                                  RoleReflexiveTransitiveClosureFactory,
+                                                                  RoleRestrictionFactory,
+                                                                  RoleIdentityFactory>;
 
 extern VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_factory();
 

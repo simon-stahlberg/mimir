@@ -55,7 +55,15 @@ VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_fa
                                              RolePredicateGoalFactory<Static>(),
                                              RolePredicateGoalFactory<Fluent>(),
                                              RolePredicateGoalFactory<Derived>(),
-                                             RoleIntersectionFactory());
+                                             RoleIntersectionFactory(),
+                                             RoleUnionFactory(),
+                                             RoleComplementFactory(),
+                                             RoleInverseFactory(),
+                                             RoleCompositionFactory(),
+                                             RoleTransitiveClosureFactory(),
+                                             RoleReflexiveTransitiveClosureFactory(),
+                                             RoleRestrictionFactory(),
+                                             RoleIdentityFactory());
 }
 
 /**
