@@ -452,9 +452,8 @@ class RoleUniversalImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Problem m_problem;
 
-    RoleUniversalImpl(Index index, Problem problem);
+    explicit RoleUniversalImpl(Index index);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -470,7 +469,6 @@ public:
     bool test_match(dl::Constructor<Role> constructor) const override;
 
     Index get_index() const;
-    Problem get_problem() const;
 };
 
 template<PredicateCategory P>

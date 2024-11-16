@@ -45,19 +45,21 @@ static Choice<Role> parse(const dl::ast::Role& node, Domain domain, VariadicGram
     return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-const Choice<Concept> parse(const dl::ast::ConceptBot& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static const Choice<Concept>
+parse(const dl::ast::ConceptBot& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
         ref_grammar_constructor_repos.template get<ConceptBotFactory>().template get_or_create<ConceptBotImpl>());
 }
 
-const Choice<Concept> parse(const dl::ast::ConceptTop& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static const Choice<Concept>
+parse(const dl::ast::ConceptTop& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
         ref_grammar_constructor_repos.template get<ConceptTopFactory>().template get_or_create<ConceptTopImpl>());
 }
 
-const Choice<Concept>
+static const Choice<Concept>
 parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
@@ -172,6 +174,45 @@ parse(const dl::ast::ConceptValueRestriction& node, Domain domain, VariadicGramm
 }
 
 static Choice<Concept>
+parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptExistentialQuantificationFactory>().template get_or_create<ConceptExistentialQuantificationImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context),
+            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept>
+parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptRoleValueMapContainmentFactory>().template get_or_create<ConceptRoleValueMapContainmentImpl>(
+            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept>
+parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptRoleValueMapEqualityFactory>().template get_or_create<ConceptRoleValueMapEqualityImpl>(
+            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept>
+parse(const dl::ast::ConceptNominal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    if (!domain->get_name_to_constants().contains(node.object_name))
+    {
+        throw std::runtime_error("Domain has no constant with name \"" + node.object_name + "\".");
+    }
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
+        ref_grammar_constructor_repos.template get<ConceptNominalFactory>().template get_or_create<ConceptNominalImpl>(
+            domain->get_name_to_constants().at(node.object_name)));
+}
+
+static Choice<Concept>
 parse(const dl::ast::ConceptNonTerminal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
     const auto& non_terminal =
@@ -203,9 +244,11 @@ parse(const dl::ast::ConceptDerivationRule& node, Domain domain, VariadicGrammar
     return rule;
 }
 
-static Choice<Role> parse(const dl::ast::Role& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static const Choice<Role>
+parse(const dl::ast::RoleUniversal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
 {
-    return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleUniversalFactory>().template get_or_create<RoleUniversalImpl>());
 }
 
 static Choice<Role>
@@ -293,6 +336,70 @@ parse(const dl::ast::RoleIntersection& node, Domain domain, VariadicGrammarConst
         ref_grammar_constructor_repos.template get<RoleIntersectionFactory>().template get_or_create<RoleIntersectionImpl>(
             parse(node.role_left, domain, ref_grammar_constructor_repos, context),
             parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role> parse(const dl::ast::RoleUnion& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleUnionFactory>().template get_or_create<RoleUnionImpl>(
+            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role>
+parse(const dl::ast::RoleComplement& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleComplementFactory>().template get_or_create<RoleComplementImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role> parse(const dl::ast::RoleInverse& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleInverseFactory>().template get_or_create<RoleInverseImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role>
+parse(const dl::ast::RoleComposition& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleCompositionFactory>().template get_or_create<RoleCompositionImpl>(
+            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role>
+parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleTransitiveClosureFactory>().template get_or_create<RoleTransitiveClosureImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role>
+parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleReflexiveTransitiveClosureFactory>().template get_or_create<RoleReflexiveTransitiveClosureImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role>
+parse(const dl::ast::RoleRestriction& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleRestrictionFactory>().template get_or_create<RoleRestrictionImpl>(
+            parse(node.role_, domain, ref_grammar_constructor_repos, context),
+            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role> parse(const dl::ast::RoleIdentity& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+{
+    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
+        ref_grammar_constructor_repos.template get<RoleIdentityFactory>().template get_or_create<RoleIdentityImpl>(
+            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Role>

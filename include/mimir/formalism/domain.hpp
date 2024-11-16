@@ -38,6 +38,7 @@ private:
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
+    ToObjectMap<std::string> m_name_to_constants;
     ToPredicateMap<std::string, Static> m_name_to_static_predicate;
     ToPredicateMap<std::string, Fluent> m_name_to_fluent_predicate;
     ToPredicateMap<std::string, Derived> m_name_to_derived_predicate;
@@ -78,6 +79,7 @@ public:
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
+    const ToObjectMap<std::string> get_name_to_constants() const;
     template<PredicateCategory P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
 };

@@ -56,7 +56,7 @@ using ConceptUnionFactory = loki::UniqueFactory<ConceptUnionImpl, UniqueDLHasher
 using ConceptNegationFactory =
     loki::UniqueFactory<ConceptNegationImpl, UniqueDLHasher<const ConceptNegationImpl*>, UniqueDLEqualTo<const ConceptNegationImpl*>>;
 using ConceptValueRestrictionFactory =
-    loki::UniqueFactory<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestriction*>, UniqueDLEqualTo<const ConceptValueRestriction*>>;
+    loki::UniqueFactory<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestrictionImpl*>, UniqueDLEqualTo<const ConceptValueRestrictionImpl*>>;
 using ConceptExistentialQuantificationFactory = loki::UniqueFactory<ConceptExistentialQuantificationImpl,
                                                                     UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
                                                                     UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;

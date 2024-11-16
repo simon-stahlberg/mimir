@@ -82,6 +82,10 @@ DomainImpl::DomainImpl(Index index,
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
     /* Additional */
+    for (const auto& object : m_constants)
+    {
+        m_name_to_constants.emplace(object->get_name(), object);
+    }
     for (const auto& predicate : m_static_predicates)
     {
         m_name_to_static_predicate.emplace(predicate->get_name(), predicate);
@@ -143,6 +147,8 @@ const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functio
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 
 const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
+
+const ToObjectMap<std::string> DomainImpl::get_name_to_constants() const { return m_name_to_constants; }
 
 template<PredicateCategory P>
 const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
