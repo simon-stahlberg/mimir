@@ -20,8 +20,8 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/generator.hpp"
 
 #include <gtest/gtest.h>
 

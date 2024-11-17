@@ -1,0 +1,128 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
+
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/equal_to.hpp"
+#include "mimir/languages/description_logics/evaluation_context.hpp"
+#include "mimir/languages/description_logics/grammar.hpp"
+#include "mimir/languages/description_logics/hash.hpp"
+
+#include <loki/loki.hpp>
+
+namespace mimir::dl
+{
+
+/// @brief `RefinementPruningFunction` defines an interface for pruning dl constructors (= features).
+class RefinementPruningFunction
+{
+public:
+    virtual ~RefinementPruningFunction() = default;
+
+    /// @brief Tests whether the given concept should be pruned.
+    /// @param concept_ is the concept to be tested
+    /// @return true iff the concept must be pruned, false otherwise.
+    virtual bool should_prune(Constructor<Concept> concept_) = 0;
+
+    /// @brief Tests whether the given role should be pruned.
+    /// @param role_ is the role to be tested
+    /// @return true iff the role must be pruned, false otherwise.
+    virtual bool should_prune(Constructor<Role> role_) = 0;
+};
+
+/// @brief `RefinementStateListPruningFunction` implements a pruning function based on a given state list.
+/// A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature.
+/// This ensures that only features with unique evaluations across all states are retained.
+class RefinementStateListPruningFunction : public RefinementPruningFunction
+{
+public:
+    RefinementStateListPruningFunction(const PDDLFactories& pddl_factories, Problem problem, StateList states);
+
+    /// @brief Tests whether a concept should be pruned.
+    /// @param concept_ The concept to evaluate.
+    /// @return True if the concept is pruned (i.e., its evaluation is not unique across states), false otherwise.
+    bool should_prune(Constructor<Concept> concept_) override;
+
+    /// @brief Tests whether a role should be pruned.
+    /// @param role_ The role to evaluate.
+    /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
+    bool should_prune(Constructor<Role> role_) override;
+
+private:
+    template<IsConceptOrRole D>
+    bool should_prune_impl(Constructor<D> constructor);
+
+    const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.
+    Problem m_problem;                                     ///< The problem definition used for evaluating features.
+    StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
+    DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation
+    DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation
+
+    /// @brief Repository for managing concept denotations.
+    /// This stores the computed denotations for each concept feature across all states.
+    DenotationRepository<Concept> m_concept_denotation_repository;
+
+    /// @brief Repository for managing role denotations.
+    /// This stores the computed denotations for each role feature across all states.
+    DenotationRepository<Role> m_role_denotation_repository;
+
+    /// @brief Uniquely store feature denotations among all states.
+    /// Each state feature denotation is uniquely identified by its memory address.
+    /// These addresses are stored as vectors of `uintptr_t`.
+    /// Two identical vectors imply identical evaluations across all states.
+    using DenotationsList = std::vector<uintptr_t>;
+    std::unordered_set<DenotationsList, Hash<DenotationsList>> m_denotations_repository;
+};
+
+/**
+ * Brfs-style refinement.
+ *
+ * Generates concepts and roles with increasing complexity starting at 1.
+ */
+
+struct RefinementBrfsOptions
+{
+    size_t max_complexity = 0;
+    size_t max_memory_in_kb = 0;
+    size_t max_time_in_ms = 0;
+};
+
+struct RefinementBrfsResult
+{
+    ConstructorList<Concept> concepts = ConstructorList<Concept>();
+    ConstructorList<Role> roles = ConstructorList<Role>();
+
+    size_t memory_in_kb = 0;
+    size_t time_ms = 0;
+    size_t num_pruned_concepts = 0;
+    size_t num_pruned_roles = 0;
+    size_t num_generated_concepts = 0;
+    size_t num_generated_roles = 0;
+};
+
+extern RefinementBrfsResult refine_brfs(Problem problem,
+                                        const grammar::Grammar grammar,
+                                        const RefinementBrfsOptions& options,
+                                        VariadicConstructorFactory& ref_constructor_repos,
+                                        RefinementPruningFunction& ref_pruning_function);
+
+}
+
+#endif

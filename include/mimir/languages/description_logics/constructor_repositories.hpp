@@ -15,13 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GENERATOR_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
 
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/equal_to.hpp"
-#include "mimir/languages/description_logics/evaluation_context.hpp"
-#include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/hash.hpp"
 
 #include <loki/loki.hpp>
@@ -112,78 +110,6 @@ using VariadicConstructorFactory = loki::VariadicContainer<ConceptBotFactory,
                                                            RoleIdentityFactory>;
 
 extern VariadicConstructorFactory create_default_variadic_constructor_factory();
-
-struct GeneratorOptions
-{
-    size_t max_memory_in_kb;
-    size_t max_time_in_ms;
-};
-
-/// @brief `GeneratorPruningFunction` defines an interface for pruning dl constructors (= features).
-class GeneratorPruningFunction
-{
-public:
-    virtual ~GeneratorPruningFunction() = default;
-
-    /// @brief Tests whether the given concept should be pruned.
-    /// @param concept_ is the concept to be tested
-    /// @return true iff the concept must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Concept> concept_) = 0;
-
-    /// @brief Tests whether the given role should be pruned.
-    /// @param role_ is the role to be tested
-    /// @return true iff the role must be pruned, false otherwise.
-    virtual bool should_prune(Constructor<Role> role_) = 0;
-};
-
-/// @brief `GeneratorStateListPruningFunction` implements a pruning function based on a given state list.
-/// A feature is pruned if it does not evaluate differently on at least one state compared to a previously tested feature.
-/// This ensures that only features with unique evaluations across all states are retained.
-class GeneratorStateListPruningFunction : public GeneratorPruningFunction
-{
-public:
-    GeneratorStateListPruningFunction(const PDDLFactories& pddl_factories, Problem problem, StateList states);
-
-    /// @brief Tests whether a concept should be pruned.
-    /// @param concept_ The concept to evaluate.
-    /// @return True if the concept is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Concept> concept_) override;
-
-    /// @brief Tests whether a role should be pruned.
-    /// @param role_ The role to evaluate.
-    /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool should_prune(Constructor<Role> role_) override;
-
-private:
-    template<IsConceptOrRole D>
-    bool should_prune_impl(Constructor<D> constructor);
-
-    const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.
-    Problem m_problem;                                     ///< The problem definition used for evaluating features.
-    StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
-    DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation
-    DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation
-
-    /// @brief Repository for managing concept denotations.
-    /// This stores the computed denotations for each concept feature across all states.
-    DenotationRepository<Concept> m_concept_denotation_repository;
-
-    /// @brief Repository for managing role denotations.
-    /// This stores the computed denotations for each role feature across all states.
-    DenotationRepository<Role> m_role_denotation_repository;
-
-    /// @brief Uniquely store feature denotations among all states.
-    /// Each state feature denotation is uniquely identified by its memory address.
-    /// These addresses are stored as vectors of `uintptr_t`.
-    /// Two identical vectors imply identical evaluations across all states.
-    using DenotationsList = std::vector<uintptr_t>;
-    std::unordered_set<DenotationsList, Hash<DenotationsList>> m_denotations_repository;
-};
-
-extern std::tuple<ConstructorList<Concept>, ConstructorList<Role>> generate(const grammar::Grammar grammar,
-                                                                            const GeneratorOptions& options,
-                                                                            VariadicConstructorFactory& ref_constructor_repos,
-                                                                            GeneratorPruningFunction& ref_pruning_function);
 
 }
 

@@ -16,8 +16,8 @@
  */
 
 #include "mimir/formalism/factories.hpp"
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
-#include "mimir/languages/description_logics/generator.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
 #include <gtest/gtest.h>
