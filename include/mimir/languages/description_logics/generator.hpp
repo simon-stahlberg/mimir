@@ -128,12 +128,12 @@ public:
     /// @brief Tests whether the given concept should be pruned.
     /// @param concept_ is the concept to be tested
     /// @return true iff the concept must be pruned, false otherwise.
-    virtual bool test_prune(Constructor<Concept> concept_) = 0;
+    virtual bool should_prune(Constructor<Concept> concept_) = 0;
 
     /// @brief Tests whether the given role should be pruned.
     /// @param role_ is the role to be tested
     /// @return true iff the role must be pruned, false otherwise.
-    virtual bool test_prune(Constructor<Role> role_) = 0;
+    virtual bool should_prune(Constructor<Role> role_) = 0;
 };
 
 /// @brief `GeneratorStateListPruningFunction` implements a pruning function based on a given state list.
@@ -147,14 +147,17 @@ public:
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
     /// @return True if the concept is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool test_prune(Constructor<Concept> concept_) override;
+    bool should_prune(Constructor<Concept> concept_) override;
 
     /// @brief Tests whether a role should be pruned.
     /// @param role_ The role to evaluate.
     /// @return True if the role is pruned (i.e., its evaluation is not unique across states), false otherwise.
-    bool test_prune(Constructor<Role> role_) override;
+    bool should_prune(Constructor<Role> role_) override;
 
 private:
+    template<IsConceptOrRole D>
+    bool should_prune_impl(Constructor<D> constructor);
+
     const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.
     Problem m_problem;                                     ///< The problem definition used for evaluating features.
     StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
@@ -173,7 +176,8 @@ private:
     /// Each state feature denotation is uniquely identified by its memory address.
     /// These addresses are stored as vectors of `uintptr_t`.
     /// Two identical vectors imply identical evaluations across all states.
-    std::unordered_set<std::vector<uintptr_t>, Hash<std::vector<uintptr_t>>> m_denotations_repository;
+    using DenotationsList = std::vector<uintptr_t>;
+    std::unordered_set<DenotationsList, Hash<DenotationsList>> m_denotations_repository;
 };
 
 extern std::tuple<ConstructorList<Concept>, ConstructorList<Role>> generate(const grammar::Grammar grammar,

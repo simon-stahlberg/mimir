@@ -77,8 +77,16 @@ GeneratorStateListPruningFunction::GeneratorStateListPruningFunction(const PDDLF
     m_role_denotation_builder.get_data().resize(m_problem->get_objects().size());
 }
 
-bool GeneratorStateListPruningFunction::test_prune(Constructor<Concept> concept_)
+bool GeneratorStateListPruningFunction::should_prune(Constructor<Concept> concept_) { return should_prune_impl(concept_); }
+
+bool GeneratorStateListPruningFunction::should_prune(Constructor<Role> role_) { return should_prune_impl(role_); }
+
+template<IsConceptOrRole D>
+bool GeneratorStateListPruningFunction::should_prune_impl(Constructor<D> constructor)
 {
+    auto denotations = DenotationsList();
+    denotations.reserve(m_states.size());
+
     for (const auto& state : m_states)
     {
         auto evaluation_context = EvaluationContext(m_pddl_factories,
@@ -89,10 +97,28 @@ bool GeneratorStateListPruningFunction::test_prune(Constructor<Concept> concept_
                                                     m_concept_denotation_repository,
                                                     m_role_denotation_repository);
 
-        const auto eval = concept_->evaluate(evaluation_context);
+        const auto eval = constructor->evaluate(evaluation_context);
+
+        denotations.push_back(reinterpret_cast<uintptr_t>(eval));
     }
+
+    return !m_denotations_repository.insert(denotations).second;
 }
 
-bool GeneratorStateListPruningFunction::test_prune(Constructor<Role> role_) {}
+template bool GeneratorStateListPruningFunction::should_prune_impl(Constructor<Concept> constructor);
+template bool GeneratorStateListPruningFunction::should_prune_impl(Constructor<Role> constructor);
+
+std::tuple<ConstructorList<Concept>, ConstructorList<Role>> generate(const grammar::Grammar grammar,
+                                                                     const GeneratorOptions& options,
+                                                                     VariadicConstructorFactory& ref_constructor_repos,
+                                                                     GeneratorPruningFunction& ref_pruning_function)
+{
+    auto generated_concepts = ConstructorList<Concept>();
+    auto generated_roles = ConstructorList<Role>();
+
+    // TODO: implement generator logic
+
+    return std::tie(generated_concepts, generated_roles);
+}
 
 }
