@@ -72,14 +72,76 @@ static bool refine_concept_atomic_state(Problem problem,
  * Refinement of constructors that accept concepts and/or roles.
  */
 
+template<size_t N>
+class ComplexityDistributionConstIterator
+{
+private:
+    size_t m_complexity;
+    std::array<size_t, N> m_distribution;
+    size_t m_pos;
+
+public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = std::array<size_t, N>;
+    using pointer = value_type*;
+    using reference = const value_type&;
+    using iterator_category = std::forward_iterator_tag;
+
+    ComplexityDistributionConstIterator() : m_complexity(0), m_distribution() {}
+    ComplexityDistributionConstIterator(size_t complexity, bool begin) : m_complexity(complexity), m_distribution() {}
+    value_type operator*() const { return m_distribution; }
+    ComplexityDistributionConstIterator& operator++();
+    ComplexityDistributionConstIterator operator++(int);
+    bool operator==(const ComplexityDistributionConstIterator& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const ComplexityDistributionConstIterator& other) const { return !(*this == other); }
+};
+
 template<IsConceptOrRole... Ds>
 class ConstructorArgumentConstIterator
 {
 private:
-    std::tuple<std::reference_wrapper<std::vector<ConstructorList<Ds>>>...> constructors_by_complexity;
-    size_t complexity;
+    std::tuple<std::vector<ConstructorList<Ds>>*...> m_constructors_by_complexity;
+    std::array<size_t, sizeof...(Ds)> m_sizes;
+    size_t m_complexity;
 
-    void advance();
+    ComplexityDistributionConstIterator<sizeof...(Ds)> m_complexity_distribution_iterator;
+    std::array<size_t, sizeof...(Ds)> m_distribution;
+
+    std::array<size_t, sizeof...(Ds) + 1> m_indices;
+    size_t m_i;
+    std::tuple<Constructor<Ds>...> m_values;
+    size_t m_pos;
+
+    void advance()
+    {
+        ++m_pos;
+
+        for (size_t i = 0; i < sizeof...(Ds); ++i)
+        {
+            // Increment the current dimension
+            ++m_indices[i];
+
+            // Check if it's within bounds
+            if (m_indices[i] < m_sizes[i])
+            {
+                return;  // No carry-over, exit
+            }
+
+            // Reset current index and carry over to the next dimension
+            m_indices[i] = 0;
+            if (i + 1 < sizeof...(Ds))
+            {
+                ++m_indices[i + 1];
+                if (m_indices[i + 1] < m_sizes[i + 1])
+                {
+                    return;
+                }
+            }
+        }
+
+        // If we reach here, we've iterated through all combinations
+        m_pos = std::numeric_limits<size_t>::max();  // Mark as finished
+    }
 
 public:
     using difference_type = std::ptrdiff_t;
@@ -88,15 +150,50 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    ConstructorArgumentConstIterator();
+    ConstructorArgumentConstIterator() :
+        m_constructors_by_complexity(),
+        m_complexity(0),
+        m_complexity_distribution_iterator(ComplexityDistributionConstIterator<sizeof...(Ds)>(0, false)),
+        m_indices(),
+        m_i(0),
+        m_values(),
+        m_pos(0)
+    {
+    }
     ConstructorArgumentConstIterator(std::tuple<std::reference_wrapper<std::vector<ConstructorList<Ds>>>...>& constructors_by_complexity,
                                      size_t complexity,
-                                     bool begin);
-    value_type operator*() const;
-    ConstructorArgumentConstIterator& operator++();
-    ConstructorArgumentConstIterator operator++(int);
-    bool operator==(const ConstructorArgumentConstIterator& other) const;
-    bool operator!=(const ConstructorArgumentConstIterator& other) const;
+                                     bool begin) :
+        m_constructors_by_complexity(std::apply([](auto&... refs) { return std::make_tuple(&refs.get()...); }, constructors_by_complexity)),
+        m_complexity(complexity),
+        m_complexity_distribution_iterator(ComplexityDistributionConstIterator<sizeof...(Ds)>(m_complexity, begin))
+    {
+    }
+    value_type operator*()
+    {
+        constexpr std::size_t num_elements = sizeof...(Ds);
+
+        // Use fold expression with explicit index expansion
+        [&]<std::size_t... Indices>(std::index_sequence<Indices...>)
+        {
+            ((std::get<Indices>(m_values) = std::get<Indices>(m_constructors_by_complexity)->at(m_distribution[Indices]).at(m_indices[Indices])), ...);
+        }
+        (std::make_index_sequence<num_elements> {});
+
+        return m_values;
+    }
+    ConstructorArgumentConstIterator& operator++()
+    {
+        advance();
+        return *this;
+    }
+    ConstructorArgumentConstIterator operator++(int)
+    {
+        ConstructorArgumentConstIterator it = *this;
+        advance();
+        return it;
+    }
+    bool operator==(const ConstructorArgumentConstIterator& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const ConstructorArgumentConstIterator& other) const { return !(*this == other); }
 };
 
 template<IsConceptOrRole D>

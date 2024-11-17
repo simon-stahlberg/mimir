@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_COMMON_TIMERS_HPP_
-#define MIMIR_FORMALISM_COMMON_TIMERS_HPP_
+#ifndef MIMIR_COMMON_TIMERS_HPP_
+#define MIMIR_COMMON_TIMERS_HPP_
 
 #include <chrono>
 
