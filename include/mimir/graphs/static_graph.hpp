@@ -20,12 +20,12 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/common/typed_vector.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
 #include "mimir/graphs/static_graph_iterators.hpp"
 
+#include <boost/hana.hpp>
 #include <ranges>
 #include <span>
 #include <vector>
@@ -156,7 +156,10 @@ private:
     VertexList m_vertices;
     EdgeList m_edges;
 
-    TypedVector<DegreeList, ForwardTraversal, BackwardTraversal> m_degrees;
+    using TraversalDirectionToDegrees = boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTraversal>, DegreeList>,
+                                                         boost::hana::pair<boost::hana::type<BackwardTraversal>, DegreeList>>;
+
+    TraversalDirectionToDegrees m_degrees;
 
     // Slice over all edge indices for using the iterators.
     EdgeIndexList m_slice;
@@ -304,7 +307,11 @@ public:
 private:
     G m_graph;
 
-    TypedVector<IndexGroupedVector<const EdgeIndex>, ForwardTraversal, BackwardTraversal> m_edge_indices_grouped_by_vertex;
+    using TraversalDirectionToEdgesGroupedByVertex =
+        boost::hana::map<boost::hana::pair<boost::hana::type<ForwardTraversal>, IndexGroupedVector<const EdgeIndex>>,
+                         boost::hana::pair<boost::hana::type<BackwardTraversal>, IndexGroupedVector<const EdgeIndex>>>;
+
+    TraversalDirectionToEdgesGroupedByVertex m_edge_indices_grouped_by_vertex;
 };
 
 /**
@@ -324,8 +331,9 @@ requires HasVertexProperties<V, VertexProperties...> VertexIndex StaticGraph<V, 
 {
     const auto index = m_vertices.size();
     m_vertices.emplace_back(index, std::forward<VertexProperties>(properties)...);
-    m_degrees.get<ForwardTraversal>().resize(index + 1, 0);
-    m_degrees.get<BackwardTraversal>().resize(index + 1, 0);
+
+    boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).resize(index + 1, 0);
+    boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).resize(index + 1, 0);
 
     return index;
 }
@@ -340,8 +348,8 @@ requires HasEdgeProperties<E, EdgeProperties...>
 
     const auto index = m_edges.size();
     m_edges.emplace_back(index, source, target, std::forward<EdgeProperties>(properties)...);
-    ++m_degrees.get<ForwardTraversal>().at(source);
-    ++m_degrees.get<BackwardTraversal>().at(target);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).at(source);
+    ++boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).at(target);
     m_slice.push_back(index);
 
     return index;
@@ -370,8 +378,8 @@ void StaticGraph<V, E>::clear()
 {
     m_vertices.clear();
     m_edges.clear();
-    m_degrees.get<ForwardTraversal>().clear();
-    m_degrees.get<BackwardTraversal>().clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<ForwardTraversal> {}).clear();
+    boost::hana::at_key(m_degrees, boost::hana::type<BackwardTraversal> {}).clear();
     m_slice.clear();
 }
 
@@ -519,7 +527,7 @@ template<IsVertex V, IsEdge E>
 template<IsTraversalDirection Direction>
 const DegreeList& StaticGraph<V, E>::get_degrees() const
 {
-    return m_degrees.get<Direction>();
+    return boost::hana::at_key(m_degrees, boost::hana::type<Direction> {});
 }
 
 template<IsVertex V, IsEdge E>
@@ -528,7 +536,7 @@ Degree StaticGraph<V, E>::get_degree(VertexIndex vertex) const
 {
     vertex_index_check(vertex, "StaticGraph<V, E>::get_degree(...): Vertex out of range");
 
-    return m_degrees.get<Direction>()[vertex];
+    return boost::hana::at_key(m_degrees, boost::hana::type<Direction> {}).at(vertex);
 }
 
 template<IsVertex V, IsEdge E>
@@ -786,8 +794,10 @@ Degree StaticForwardGraph<G>::get_degree(VertexIndex vertex) const
 template<IsStaticGraph G>
 StaticBidirectionalGraph<G>::StaticBidirectionalGraph(G graph) : m_graph(std::move(graph)), m_edge_indices_grouped_by_vertex()
 {
-    m_edge_indices_grouped_by_vertex.get<ForwardTraversal>() = std::move(compute_index_grouped_edge_indices(m_graph, true));
-    m_edge_indices_grouped_by_vertex.get<BackwardTraversal>() = std::move(compute_index_grouped_edge_indices(m_graph, false));
+    boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<ForwardTraversal> {}) =
+        std::move(compute_index_grouped_edge_indices(m_graph, true));
+    boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<BackwardTraversal> {}) =
+        std::move(compute_index_grouped_edge_indices(m_graph, false));
 }
 
 template<IsStaticGraph G>
@@ -807,17 +817,18 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentVertexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertices(VertexIndex vertex) const
 {
-    return std::ranges::subrange(
-        typename StaticBidirectionalGraph<G>::AdjacentVertexConstIteratorType<Direction>(vertex,
-                                                                                         m_graph.get_vertices(),
-                                                                                         m_graph.get_edges(),
-                                                                                         m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                         true),
-        typename StaticBidirectionalGraph<G>::AdjacentVertexConstIteratorType<Direction>(vertex,
-                                                                                         m_graph.get_vertices(),
-                                                                                         m_graph.get_edges(),
-                                                                                         m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                         false));
+    return std::ranges::subrange(typename StaticBidirectionalGraph<G>::AdjacentVertexConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_vertices(),
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     true),
+                                 typename StaticBidirectionalGraph<G>::AdjacentVertexConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_vertices(),
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     false));
 }
 
 template<IsStaticGraph G>
@@ -825,15 +836,16 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentVertexIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_vertex_indices(VertexIndex vertex) const
 {
-    return std::ranges::subrange(
-        typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>(vertex,
-                                                                                              m_graph.get_edges(),
-                                                                                              m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                              true),
-        typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>(vertex,
-                                                                                              m_graph.get_edges(),
-                                                                                              m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                              false));
+    return std::ranges::subrange(typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     true),
+                                 typename StaticBidirectionalGraph<G>::AdjacentVertexIndexConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     false));
 }
 
 template<IsStaticGraph G>
@@ -841,15 +853,16 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentEdgeConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edges(VertexIndex vertex) const
 {
-    return std::ranges::subrange(
-        typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<Direction>(vertex,
-                                                                                       m_graph.get_edges(),
-                                                                                       m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                       true),
-        typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<Direction>(vertex,
-                                                                                       m_graph.get_edges(),
-                                                                                       m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                       false));
+    return std::ranges::subrange(typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     true),
+                                 typename StaticBidirectionalGraph<G>::AdjacentEdgeConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     false));
 }
 
 template<IsStaticGraph G>
@@ -857,15 +870,16 @@ template<IsTraversalDirection Direction>
 std::ranges::subrange<typename StaticBidirectionalGraph<G>::template AdjacentEdgeIndexConstIteratorType<Direction>>
 StaticBidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 {
-    return std::ranges::subrange(
-        typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex,
-                                                                                            m_graph.get_edges(),
-                                                                                            m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                            true),
-        typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>(vertex,
-                                                                                            m_graph.get_edges(),
-                                                                                            m_edge_indices_grouped_by_vertex.get<Direction>().at(vertex),
-                                                                                            false));
+    return std::ranges::subrange(typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     true),
+                                 typename StaticBidirectionalGraph<G>::AdjacentEdgeIndexConstIteratorType<Direction>(
+                                     vertex,
+                                     m_graph.get_edges(),
+                                     boost::hana::at_key(m_edge_indices_grouped_by_vertex, boost::hana::type<Direction> {}).at(vertex),
+                                     false));
 }
 
 template<IsStaticGraph G>

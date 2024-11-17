@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
 
-#include "mimir/common/typed_vector.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/equal_to.hpp"
@@ -26,6 +25,7 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/hash.hpp"
 
+#include <boost/hana.hpp>
 #include <loki/loki.hpp>
 
 namespace mimir::dl
@@ -109,7 +109,10 @@ struct Options
     size_t max_memory_usage_in_kb = 0;
     size_t max_execution_time_in_ms = 0;
 
-    TypedVector<size_t, Concept, Role> max_constructors = TypedVector<size_t, Concept, Role>();
+    using CategoryToSizeT =
+        boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
+
+    CategoryToSizeT max_constructors = CategoryToSizeT();
 };
 
 struct Statistics
@@ -117,9 +120,12 @@ struct Statistics
     size_t memory_usage_in_kb = 0;
     size_t execution_time_ms = 0;
 
-    TypedVector<size_t, Concept, Role> num_generated = TypedVector<size_t, Concept, Role>();
-    TypedVector<size_t, Concept, Role> num_pruned = TypedVector<size_t, Concept, Role>();
-    TypedVector<size_t, Concept, Role> num_rejected_by_grammar = TypedVector<size_t, Concept, Role>();
+    using CategoryToSizeT =
+        boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
+
+    CategoryToSizeT num_generated = CategoryToSizeT();
+    CategoryToSizeT num_pruned = CategoryToSizeT();
+    CategoryToSizeT num_rejected_by_grammar = CategoryToSizeT();
 };
 
 struct Result

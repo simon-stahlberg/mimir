@@ -157,7 +157,7 @@ static bool refine_constructor(Problem problem,
 
         if (!grammar.test_match(constructor))
         {
-            ++ref_statistics.num_rejected_by_grammar.get<ConstructorType>();
+            ++boost::hana::at_key(ref_statistics.num_rejected_by_grammar, boost::hana::type<ConstructorType> {});
 
             continue;
         }
@@ -166,7 +166,7 @@ static bool refine_constructor(Problem problem,
 
         if (!ref_pruning_function.should_prune(constructor))
         {
-            ++ref_statistics.num_generated.get<ConstructorType>();
+            ++boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<ConstructorType> {});
 
             if (ref_search_space.concepts_by_complexity.size() < complexity)
                 ref_search_space.concepts_by_complexity.resize(complexity + 1);
@@ -175,12 +175,13 @@ static bool refine_constructor(Problem problem,
         }
         else
         {
-            ++ref_statistics.num_pruned.get<ConstructorType>();
+            ++boost::hana::at_key(ref_statistics.num_pruned, boost::hana::type<ConstructorType> {});
         }
 
         /* Check whether resource limits were reached; TODO: time and memory limit. */
 
-        if (ref_statistics.num_generated.get<ConstructorType>() >= options.max_constructors.get<ConstructorType>())
+        if (boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<ConstructorType> {})
+            >= boost::hana::at_key(options.max_constructors, boost::hana::type<ConstructorType> {}))
         {
             return true;
         }
