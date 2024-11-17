@@ -83,6 +83,7 @@ using NumericFluentFactory = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHa
 using DomainFactory = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
 using ProblemFactory = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
 
+// TODO: use boost::hana::map
 using VariadicPDDLConstructorFactory = loki::VariadicContainer<RequirementsFactory,
                                                                VariableFactory,
                                                                TermFactory,

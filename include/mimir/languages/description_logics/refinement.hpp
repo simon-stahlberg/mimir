@@ -130,8 +130,10 @@ struct Statistics
 
 struct Result
 {
-    ConstructorList<Concept> concepts = ConstructorList<Concept>();
-    ConstructorList<Role> roles = ConstructorList<Role>();
+    using CategoryToConstructorList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ConstructorList<Concept>>,
+                                                       boost::hana::pair<boost::hana::type<Role>, ConstructorList<Role>>>;
+
+    CategoryToConstructorList constructors = CategoryToConstructorList();
 
     Statistics statistics = Statistics();
 };

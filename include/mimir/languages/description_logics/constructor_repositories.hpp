@@ -76,6 +76,7 @@ using RoleRestrictionFactory =
     loki::UniqueFactory<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
 using RoleIdentityFactory = loki::UniqueFactory<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
+// TODO: use boost::hana::map
 using VariadicConstructorFactory = loki::VariadicContainer<ConceptBotFactory,
                                                            ConceptTopFactory,
                                                            ConceptAtomicStateFactory<Static>,

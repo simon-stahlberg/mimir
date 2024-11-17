@@ -33,8 +33,10 @@ namespace mimir::dl::refinement_brfs
 
 struct SearchSpace
 {
-    std::vector<ConstructorList<Concept>> concepts_by_complexity;
-    std::vector<ConstructorList<Role>> roles_by_complexity;
+    using CategoryToConstructorsByComplexity = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::vector<ConstructorList<Concept>>>,
+                                                                boost::hana::pair<boost::hana::type<Role>, std::vector<ConstructorList<Role>>>>;
+
+    CategoryToConstructorsByComplexity constructors_by_complexity = CategoryToConstructorsByComplexity();
 };
 
 /**
@@ -58,10 +60,10 @@ static bool refine_concept_atomic_state(Problem problem,
 
         if (grammar.test_match(concept_) && !ref_pruning_function.should_prune(concept_))
         {
-            if (ref_search_space.concepts_by_complexity.size() < 1)
-                ref_search_space.concepts_by_complexity.resize(1);
+            if (boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<Concept> {}).size() < 2)
+                boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<Concept> {}).resize(2);
 
-            ref_search_space.concepts_by_complexity[0].push_back(concept_);
+            boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<Concept> {})[1].push_back(concept_);
         }
     }
 
@@ -72,13 +74,64 @@ static bool refine_concept_atomic_state(Problem problem,
  * Refinement of constructors that accept concepts and/or roles.
  */
 
+/// @brief `SumPartitionConstIterator` generates partitions of a number into `N` elements.
+/// Each element is at least `1`, and the sum of the elements is equal to `sum`.
+/// The iterator traverses all unique partitions in lexicographic order.
+///
+/// Example usage:
+/// @code
+/// SumPartitionConstIterator<3> it(5, true);
+/// for (; it != SumPartitionConstIterator<3>(5, false); ++it) {
+///     for (auto value : *it) {
+///         std::cout << value << " ";
+///     }
+///     std::cout << std::endl;
+/// }
+/// // Output:
+/// // 3 1 1
+/// // 2 2 1
+/// // 2 1 2
+/// // 1 3 1
+/// // 1 2 2
+/// // 1 1 3
+/// @endcode
+/// @tparam N is the size of each partition.
 template<size_t N>
-class ComplexityDistributionConstIterator
+class SumPartitionConstIterator
 {
 private:
-    size_t m_complexity;
-    std::array<size_t, N> m_distribution;
+    /* Inputs */
+    size_t m_sum;
+
+    /* Internal state */
+    std::array<size_t, N> m_partition;
     size_t m_pos;
+
+    bool increment_distribution()
+    {
+        for (size_t i = N - 1; i > 0; --i)
+        {
+            if (m_partition[i] > 1)
+            {
+                m_partition[i]--;
+                m_partition[i - 1]++;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void advance()
+    {
+        ++m_pos;
+
+        if (increment_distribution())
+            return;
+
+        // If we reach here, we've iterated through all combinations
+        m_pos = std::numeric_limits<size_t>::max();
+    }
 
 public:
     using difference_type = std::ptrdiff_t;
@@ -87,60 +140,83 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    ComplexityDistributionConstIterator() : m_complexity(0), m_distribution() {}
-    ComplexityDistributionConstIterator(size_t complexity, bool begin) : m_complexity(complexity), m_distribution() {}
-    value_type operator*() const { return m_distribution; }
-    ComplexityDistributionConstIterator& operator++();
-    ComplexityDistributionConstIterator operator++(int);
-    bool operator==(const ComplexityDistributionConstIterator& other) const { return m_pos == other.m_pos; }
-    bool operator!=(const ComplexityDistributionConstIterator& other) const { return !(*this == other); }
+    SumPartitionConstIterator() : m_sum(0), m_partition(), m_pos(0) {}
+    SumPartitionConstIterator(size_t sum, bool begin) : m_sum(sum), m_partition(), m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
+    {
+        if (sum < N)
+            throw std::invalid_argument("Complexity must be greater than or equal to the number of elements (N).");
+
+        if (begin)
+        {
+            // min value is 1.
+            m_partition.fill(1);
+            m_partition[0] = m_sum - (N - 1);
+        }
+    }
+    value_type operator*() const { return m_partition; }
+    SumPartitionConstIterator& operator++()
+    {
+        advance();
+        return *this;
+    }
+    SumPartitionConstIterator operator++(int)
+    {
+        SumPartitionConstIterator it = *this;
+        advance();
+        return it;
+    }
+    bool operator==(const SumPartitionConstIterator& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const SumPartitionConstIterator& other) const { return !(*this == other); }
 };
 
 template<IsConceptOrRole... Ds>
 class ConstructorArgumentConstIterator
 {
 private:
+    /* Inputs */
     std::tuple<std::vector<ConstructorList<Ds>>*...> m_constructors_by_complexity;
     std::array<size_t, sizeof...(Ds)> m_sizes;
-    size_t m_complexity;
 
-    ComplexityDistributionConstIterator<sizeof...(Ds)> m_complexity_distribution_iterator;
-    std::array<size_t, sizeof...(Ds)> m_distribution;
-
+    /* Internal state */
+    SumPartitionConstIterator<sizeof...(Ds)> m_complexity_distribution_iter;
+    SumPartitionConstIterator<sizeof...(Ds)> m_complexity_distribution_end;
     std::array<size_t, sizeof...(Ds) + 1> m_indices;
-    size_t m_i;
     std::tuple<Constructor<Ds>...> m_values;
     size_t m_pos;
+
+    bool increment_indices()
+    {
+        for (size_t i = 0; i < sizeof...(Ds); ++i)
+        {
+            if (++m_indices[i] < m_sizes[i])
+                return true;
+
+            m_indices[i] = 0;
+        }
+
+        return false;
+    }
+
+    bool increment_distribution()
+    {
+        ++m_complexity_distribution_iter;
+        m_indices.fill(0);
+
+        return (m_complexity_distribution_iter != m_complexity_distribution_end);
+    }
 
     void advance()
     {
         ++m_pos;
 
-        for (size_t i = 0; i < sizeof...(Ds); ++i)
-        {
-            // Increment the current dimension
-            ++m_indices[i];
+        if (increment_indices())
+            return;
 
-            // Check if it's within bounds
-            if (m_indices[i] < m_sizes[i])
-            {
-                return;  // No carry-over, exit
-            }
-
-            // Reset current index and carry over to the next dimension
-            m_indices[i] = 0;
-            if (i + 1 < sizeof...(Ds))
-            {
-                ++m_indices[i + 1];
-                if (m_indices[i + 1] < m_sizes[i + 1])
-                {
-                    return;
-                }
-            }
-        }
+        if (increment_distribution())
+            return;
 
         // If we reach here, we've iterated through all combinations
-        m_pos = std::numeric_limits<size_t>::max();  // Mark as finished
+        m_pos = std::numeric_limits<size_t>::max();
     }
 
 public:
@@ -152,10 +228,10 @@ public:
 
     ConstructorArgumentConstIterator() :
         m_constructors_by_complexity(),
-        m_complexity(0),
-        m_complexity_distribution_iterator(ComplexityDistributionConstIterator<sizeof...(Ds)>(0, false)),
+        m_sizes(),
+        m_complexity_distribution_iter(SumPartitionConstIterator<sizeof...(Ds)>(std::numeric_limits<size_t>::max(), true)),
+        m_complexity_distribution_end(SumPartitionConstIterator<sizeof...(Ds)>(std::numeric_limits<size_t>::max(), false)),
         m_indices(),
-        m_i(0),
         m_values(),
         m_pos(0)
     {
@@ -164,8 +240,12 @@ public:
                                      size_t complexity,
                                      bool begin) :
         m_constructors_by_complexity(std::apply([](auto&... refs) { return std::make_tuple(&refs.get()...); }, constructors_by_complexity)),
-        m_complexity(complexity),
-        m_complexity_distribution_iterator(ComplexityDistributionConstIterator<sizeof...(Ds)>(m_complexity, begin))
+        m_sizes(std::apply([](auto&... refs) { return std::array<size_t, sizeof...(Ds)> { refs.get().size()... }; }, constructors_by_complexity)),
+        m_complexity_distribution_iter(SumPartitionConstIterator<sizeof...(Ds)>(complexity, true)),
+        m_complexity_distribution_end(SumPartitionConstIterator<sizeof...(Ds)>(complexity, false)),
+        m_indices(),
+        m_values(),
+        m_pos(0)
     {
     }
     value_type operator*()
@@ -175,7 +255,9 @@ public:
         // Use fold expression with explicit index expansion
         [&]<std::size_t... Indices>(std::index_sequence<Indices...>)
         {
-            ((std::get<Indices>(m_values) = std::get<Indices>(m_constructors_by_complexity)->at(m_distribution[Indices]).at(m_indices[Indices])), ...);
+            ((std::get<Indices>(m_values) =
+                  std::get<Indices>(m_constructors_by_complexity)->at((*m_complexity_distribution_iter)[Indices]).at(m_indices[Indices])),
+             ...);
         }
         (std::make_index_sequence<num_elements> {});
 
@@ -196,38 +278,21 @@ public:
     bool operator!=(const ConstructorArgumentConstIterator& other) const { return !(*this == other); }
 };
 
-template<IsConceptOrRole D>
-auto& get_constructors_by_type(SearchSpace& search_space)
-{
-    if constexpr (std::is_same_v<D, Concept>)
-    {
-        return search_space.concepts_by_complexity;
-    }
-    else if constexpr (std::is_same_v<D, Role>)
-    {
-        return search_space.roles_by_complexity;
-    }
-    else
-    {
-        static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
-    }
-}
-
 template<typename... Ds>
-auto make_constructors_by_complexity(SearchSpace& search_space)
+static auto make_constructors_by_complexity(SearchSpace& search_space)
 {
-    return std::tuple(std::ref(get_constructors_by_type<Ds>(search_space))...);
+    return std::tuple(std::ref(boost::hana::at_key(search_space.constructors_by_complexity, boost::hana::type<Ds> {}))...);
 }
 
 template<typename ConstructorImplType>
-static bool refine_constructor(Problem problem,
-                               const grammar::Grammar& grammar,
-                               const Options& options,
-                               VariadicConstructorFactory& ref_constructor_repos,
-                               RefinementPruningFunction& ref_pruning_function,
-                               SearchSpace& ref_search_space,
-                               Statistics& ref_statistics,
-                               size_t complexity)
+static bool refine_composite_constructor(Problem problem,
+                                         const grammar::Grammar& grammar,
+                                         const Options& options,
+                                         VariadicConstructorFactory& ref_constructor_repos,
+                                         RefinementPruningFunction& ref_pruning_function,
+                                         SearchSpace& ref_search_space,
+                                         Statistics& ref_statistics,
+                                         size_t complexity)
 {
     /* Extract properties using ConstructorProperties */
     using ConstructorType = typename ConstructorProperties<ConstructorImplType>::ConstructorType;
@@ -265,10 +330,10 @@ static bool refine_constructor(Problem problem,
         {
             ++boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<ConstructorType> {});
 
-            if (ref_search_space.concepts_by_complexity.size() < complexity)
-                ref_search_space.concepts_by_complexity.resize(complexity + 1);
+            if (boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<ConstructorType> {}).size() < complexity)
+                boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<ConstructorType> {}).resize(complexity + 2);
 
-            ref_search_space.concepts_by_complexity[complexity].push_back(constructor);
+            boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<ConstructorType> {})[complexity + 1].push_back(constructor);
         }
         else
         {
@@ -287,6 +352,78 @@ static bool refine_constructor(Problem problem,
     return false;
 }
 
+static bool refine_primitives(Problem problem,
+                              const grammar::Grammar& grammar,
+                              const Options& options,
+                              VariadicConstructorFactory& ref_constructor_repos,
+                              RefinementPruningFunction& ref_pruning_function,
+                              SearchSpace& ref_search_space,
+                              Statistics& ref_statistics)
+{
+    return refine_concept_atomic_state<Static>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space)
+           || refine_concept_atomic_state<Fluent>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space)
+           || refine_concept_atomic_state<Derived>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space);
+}
+
+static bool refine_composites(Problem problem,
+                              const grammar::Grammar& grammar,
+                              const Options& options,
+                              VariadicConstructorFactory& ref_constructor_repos,
+                              RefinementPruningFunction& ref_pruning_function,
+                              SearchSpace& ref_search_space,
+                              Statistics& ref_statistics)
+{
+    for (size_t complexity = 1; complexity < options.max_complexity; ++complexity)
+    {
+        if (complexity >= 1)  // unary composites need at least complexity 1.
+        {
+            // TODO: add refinements later
+        }
+        if (complexity >= 2)  // binary composites need at least complexity 2.
+        {
+            if (refine_composite_constructor<ConceptIntersectionImpl>(problem,
+                                                                      grammar,
+                                                                      options,
+                                                                      ref_constructor_repos,
+                                                                      ref_pruning_function,
+                                                                      ref_search_space,
+                                                                      ref_statistics,
+                                                                      complexity))
+                return true;
+
+            if (refine_composite_constructor<
+                    ConceptUnionImpl>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics, complexity))
+                return true;
+
+            // TODO: add more refinements later
+        }
+        if (complexity >= 3)  // ternary composites need at least complexity 3.
+        {
+            // TODO: add refinements later
+        }
+    }
+
+    return false;
+}
+
+static void fetch_results(const SearchSpace& search_space, Result& result)
+{
+    boost::hana::for_each(search_space.constructors_by_complexity,
+                          [&](auto pair)
+                          {
+                              // Access the key and value using hana::first and hana::second
+                              const auto& key = boost::hana::first(pair);                          // Access the key (e.g., Concept or Role)
+                              const auto& constructors_by_complexity = boost::hana::second(pair);  // Access the associated constructors
+
+                              // Append the constructors to the corresponding result entry
+                              auto& result_constructors = boost::hana::at_key(result.constructors, key);
+                              for (const auto& constructors : constructors_by_complexity)
+                              {
+                                  result_constructors.insert(result_constructors.end(), constructors.begin(), constructors.end());
+                              }
+                          });
+}
+
 void refine_helper(Problem problem,
                    const grammar::Grammar& grammar,
                    const Options& options,
@@ -297,29 +434,11 @@ void refine_helper(Problem problem,
 {
     if (options.max_complexity > 0)
     {
-        if (refine_concept_atomic_state<Static>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space))
-            return;
-        if (refine_concept_atomic_state<Fluent>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space))
-            return;
-        if (refine_concept_atomic_state<Derived>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space))
+        if (refine_primitives(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics))
             return;
 
-        for (size_t complexity = 2; complexity <= options.max_complexity; ++complexity)
-        {
-            if (refine_constructor<ConceptIntersectionImpl>(problem,
-                                                            grammar,
-                                                            options,
-                                                            ref_constructor_repos,
-                                                            ref_pruning_function,
-                                                            ref_search_space,
-                                                            ref_statistics,
-                                                            complexity))
-                return;
-
-            if (refine_constructor<
-                    ConceptUnionImpl>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics, complexity))
-                return;
-        }
+        if (refine_composites(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics))
+            return;
     }
 }
 
@@ -330,26 +449,11 @@ Result refine(Problem problem,
               RefinementPruningFunction& ref_pruning_function)
 {
     auto result = Result();
-
-    /* Initialize the search space. */
-
     auto search_space = SearchSpace();
-
-    /* Refine within resource limits */
 
     refine_helper(problem, grammar, options, ref_constructor_repos, ref_pruning_function, search_space, result.statistics);
 
-    /* Fetch and return result. */
-
-    for (const auto& concepts : search_space.concepts_by_complexity)
-    {
-        result.concepts.insert(result.concepts.end(), concepts.begin(), concepts.end());
-    }
-
-    for (const auto& roles : search_space.roles_by_complexity)
-    {
-        result.roles.insert(result.roles.end(), roles.begin(), roles.end());
-    }
+    fetch_results(search_space, result);
 
     return result;
 }
