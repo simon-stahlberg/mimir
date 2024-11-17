@@ -47,7 +47,7 @@ template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Derived>*>::operator
 template<PredicateCategory P>
 size_t UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>::operator()(const ConceptAtomicGoalImpl<P>* e) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return mimir::hash_combine(e->is_negated(), e->get_predicate());
 }
 
 template size_t UniqueDLHasher<const ConceptAtomicGoalImpl<Static>*>::operator()(const ConceptAtomicGoalImpl<Static>* e) const;
@@ -105,7 +105,7 @@ template size_t UniqueDLHasher<const RoleAtomicStateImpl<Derived>*>::operator()(
 template<PredicateCategory P>
 size_t UniqueDLHasher<const RoleAtomicGoalImpl<P>*>::operator()(const RoleAtomicGoalImpl<P>* e) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return mimir::hash_combine(e->is_negated(), e->get_predicate());
 }
 
 template size_t UniqueDLHasher<const RoleAtomicGoalImpl<Static>*>::operator()(const RoleAtomicGoalImpl<Static>* e) const;
@@ -202,7 +202,7 @@ template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Derived>*>:
 template<PredicateCategory P>
 size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<P>*>::operator()(const grammar::ConceptAtomicGoalImpl<P>* e) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return mimir::hash_combine(e->is_negated(), e->get_predicate());
 }
 
 template size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<Static>*>::operator()(const grammar::ConceptAtomicGoalImpl<Static>* e) const;
@@ -266,7 +266,7 @@ template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Derived>*>::op
 template<PredicateCategory P>
 size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<P>*>::operator()(const grammar::RoleAtomicGoalImpl<P>* e) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return mimir::hash_combine(e->is_negated(), e->get_predicate());
 }
 
 template size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<Static>*>::operator()(const grammar::RoleAtomicGoalImpl<Static>* e) const;

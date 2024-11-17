@@ -102,6 +102,11 @@ inline auto concept_non_terminal_parser() { return raw[lexeme["<concept" >> *(al
 inline auto role_non_terminal_parser() { return raw[lexeme["<role" >> *(alnum | char_('-') | char_('_')) >> ">"]]; }
 inline auto predicate_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
 inline auto object_name_parser() { return lexeme[omit[lit('"')]] > raw[lexeme[alpha >> *(alnum | char_('-') | char_('_'))]] > lexeme[omit[lit('"')]]; }
+inline auto bool_parser()
+{
+    return x3::lexeme[(x3::lit("true") >> x3::attr(true)) | (x3::lit("false") >> x3::attr(false)) | (x3::lit("1") >> x3::attr(true))
+                      | (x3::lit("0") >> x3::attr(false))];
+}
 
 const auto concept__def = concept_non_terminal | concept_bot | concept_top | concept_atomic_state | concept_atomic_goal | concept_intersection | concept_union
                           | concept_negation | concept_value_restriction | concept_existential_quantification | concept_role_value_map_containment
@@ -109,7 +114,7 @@ const auto concept__def = concept_non_terminal | concept_bot | concept_top | con
 const auto concept_bot_def = lit("@concept_bot") >> x3::attr(ast::ConceptBot {});
 const auto concept_top_def = lit("@concept_top") >> x3::attr(ast::ConceptTop {});
 const auto concept_atomic_state_def = lit("@concept_atomic_state") > predicate_name_parser();
-const auto concept_atomic_goal_def = lit("@concept_atomic_goal") > predicate_name_parser();
+const auto concept_atomic_goal_def = lit("@concept_atomic_goal") > predicate_name_parser() > bool_parser();
 const auto concept_intersection_def = lit("@concept_intersection") > concept_ > concept_;
 const auto concept_union_def = lit("@concept_union") > concept_ > concept_;
 const auto concept_negation_def = lit("@concept_negation") > concept_;
@@ -126,7 +131,7 @@ const auto role_def = role_non_terminal | role_universal | role_atomic_state | r
                       | role_inverse | role_composition | role_transitive_closure | role_reflexive_transitive_closure | role_restriction | role_identity;
 const auto role_universal_def = lit("@role_universal") >> x3::attr(ast::RoleUniversal {});
 const auto role_atomic_state_def = lit("@role_atomic_state") > predicate_name_parser();
-const auto role_atomic_goal_def = lit("@role_atomic_goal") > predicate_name_parser();
+const auto role_atomic_goal_def = lit("@role_atomic_goal") > predicate_name_parser() > bool_parser();
 const auto role_intersection_def = lit("@role_intersection") > role > role;
 const auto role_union_def = lit("@role_union") > role > role;
 const auto role_complement_def = lit("@role_complement") > role;

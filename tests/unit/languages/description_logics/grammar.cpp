@@ -32,11 +32,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
 {
     auto bnf_description = std::string(R"(
 <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
-<concept_at-robby_goal> ::= @concept_atomic_goal "at-robby"
+<concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
 <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
 <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
 <role_at_state> ::= @role_atomic_state "at"
-<role_at_goal> ::= @role_atomic_goal "at"
+<role_at_goal> ::= @role_atomic_goal "at" false
 <role_intersection> ::= @role_intersection <role> <role_at_goal>
 <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");
@@ -61,7 +61,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
     EXPECT_FALSE(grammar.test_match(concept_ball));
 
     const auto concept_goal_at_robby =
-        constructor_repositories.get<dl::ConceptAtomicGoalFactory<Fluent>>().get_or_create<dl::ConceptAtomicGoalImpl<Fluent>>(predicate_at_robby);
+        constructor_repositories.get<dl::ConceptAtomicGoalFactory<Fluent>>().get_or_create<dl::ConceptAtomicGoalImpl<Fluent>>(predicate_at_robby, false);
     const auto concept_at_robby_intersect_goal_at_robby =
         constructor_repositories.get<dl::ConceptIntersectionFactory>().get_or_create<dl::ConceptIntersectionImpl>(concept_at_robby, concept_goal_at_robby);
     EXPECT_TRUE(grammar.test_match(concept_at_robby_intersect_goal_at_robby));

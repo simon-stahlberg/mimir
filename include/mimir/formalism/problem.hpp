@@ -85,7 +85,7 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
-    const FlatBitset& get_static_initial_positive_atoms() const;
+    const FlatBitset& get_static_initial_positive_atoms_bitset() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     template<PredicateCategory P>

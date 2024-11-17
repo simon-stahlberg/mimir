@@ -110,7 +110,9 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Static>>().template get_or_create<ConceptAtomicGoalImpl<Static>>(predicate));
+            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Static>>().template get_or_create<ConceptAtomicGoalImpl<Static>>(
+                predicate,
+                node.is_negated));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -120,7 +122,9 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Fluent>>().template get_or_create<ConceptAtomicGoalImpl<Fluent>>(predicate));
+            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Fluent>>().template get_or_create<ConceptAtomicGoalImpl<Fluent>>(
+                predicate,
+                node.is_negated));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -130,7 +134,9 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Derived>>().template get_or_create<ConceptAtomicGoalImpl<Derived>>(predicate));
+            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Derived>>().template get_or_create<ConceptAtomicGoalImpl<Derived>>(
+                predicate,
+                node.is_negated));
     }
     else
     {
@@ -301,7 +307,8 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Static>>().template get_or_create<RoleAtomicGoalImpl<Static>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Static>>().template get_or_create<RoleAtomicGoalImpl<Static>>(predicate,
+                                                                                                                                              node.is_negated));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -311,7 +318,8 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Fluent>>().template get_or_create<RoleAtomicGoalImpl<Fluent>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Fluent>>().template get_or_create<RoleAtomicGoalImpl<Fluent>>(predicate,
+                                                                                                                                              node.is_negated));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -321,7 +329,9 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
         return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Derived>>().template get_or_create<RoleAtomicGoalImpl<Derived>>(predicate));
+            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Derived>>().template get_or_create<RoleAtomicGoalImpl<Derived>>(
+                predicate,
+                node.is_negated));
     }
     else
     {

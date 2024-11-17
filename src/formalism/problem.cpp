@@ -153,7 +153,7 @@ const PredicateList<Derived>& ProblemImpl::get_problem_and_domain_derived_predic
 
 const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() const { return m_static_initial_literals; }
 
-const FlatBitset& ProblemImpl::get_static_initial_positive_atoms() const { return m_static_initial_positive_atoms; }
+const FlatBitset& ProblemImpl::get_static_initial_positive_atoms_bitset() const { return m_static_initial_positive_atoms; }
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
@@ -192,7 +192,7 @@ bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 
 bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
 {
-    return (literal->is_negated() != get_static_initial_positive_atoms().get(literal->get_atom()->get_index()));
+    return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)

@@ -69,7 +69,7 @@ bool UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>::operator()(const ConceptA
 {
     if (&l != &r)
     {
-        return (l->get_predicate() == r->get_predicate());
+        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
     }
     return true;
 }
@@ -187,7 +187,7 @@ bool UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>::operator()(const RoleAtomicG
 {
     if (&l != &r)
     {
-        return (l->get_predicate() == r->get_predicate());
+        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
     }
     return true;
 }
@@ -387,7 +387,7 @@ bool UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<P>*>::operator()(const
 {
     if (&l != &r)
     {
-        return (l->get_predicate() == r->get_predicate());
+        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
     }
     return true;
 }
@@ -510,7 +510,7 @@ bool UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<P>*>::operator()(const gr
 {
     if (&l != &r)
     {
-        return (l->get_predicate() == r->get_predicate());
+        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
     }
     return true;
 }

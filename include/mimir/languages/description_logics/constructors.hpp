@@ -124,8 +124,9 @@ class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptAt
 private:
     Index m_index;
     Predicate<P> m_predicate;
+    bool m_is_negated;
 
-    ConceptAtomicGoalImpl(Index index, Predicate<P> predicate);
+    ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -146,6 +147,7 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
+    bool is_negated() const;
 };
 
 class ConceptIntersectionImpl : public ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>
@@ -459,8 +461,9 @@ class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<Role, RoleAtomicGoalI
 private:
     Index m_index;
     Predicate<P> m_predicate;
+    bool m_is_negated;
 
-    RoleAtomicGoalImpl(Index index, Predicate<P> predicate);
+    RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -481,6 +484,7 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
+    bool is_negated() const;
 };
 
 class RoleIntersectionImpl : public ConstructorEvaluatorBase<Role, RoleIntersectionImpl>

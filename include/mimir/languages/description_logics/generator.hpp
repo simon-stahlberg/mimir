@@ -20,6 +20,7 @@
 
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/equal_to.hpp"
+#include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/hash.hpp"
 
@@ -141,7 +142,7 @@ public:
 class GeneratorStateListPruningFunction : public GeneratorPruningFunction
 {
 public:
-    GeneratorStateListPruningFunction(Problem problem, StateList states) : GeneratorPruningFunction(), m_problem(problem), m_states(std::move(states)) {}
+    GeneratorStateListPruningFunction(const PDDLFactories& pddl_factories, Problem problem, StateList states);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -154,8 +155,11 @@ public:
     bool test_prune(Constructor<Role> role_) override;
 
 private:
-    Problem m_problem;   ///< The problem definition used for evaluating features.
-    StateList m_states;  ///< The list of states used for evaluating features and pruning.
+    const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.
+    Problem m_problem;                                     ///< The problem definition used for evaluating features.
+    StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
+    DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation
+    DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation
 
     /// @brief Repository for managing concept denotations.
     /// This stores the computed denotations for each concept feature across all states.

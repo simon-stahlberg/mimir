@@ -19,53 +19,28 @@
 
 namespace mimir::dl
 {
-EvaluationContext::EvaluationContext(DenotationRepository<Concept>& concept_denotation_repository,
-                                     DenotationRepository<Role>& role_denotation_repository,
-                                     Index state_index,
-                                     const GroundAtomList<Static>& static_state_atoms,
-                                     const GroundAtomList<Fluent>& fluent_state_atoms,
-                                     const GroundAtomList<Derived>& derived_state_atoms,
-                                     const GroundAtomList<Static>& static_goal_atoms,
-                                     const GroundAtomList<Fluent>& fluent_goal_atoms,
-                                     const GroundAtomList<Derived>& derived_goal_atoms,
-                                     size_t num_objects) :
-    m_concept_denotation_repository(concept_denotation_repository),
-    m_role_denotation_repository(role_denotation_repository),
-    m_state_index(state_index),
-    m_static_state_atoms(static_state_atoms),
-    m_fluent_state_atoms(fluent_state_atoms),
-    m_derived_state_atoms(derived_state_atoms),
-    m_static_goal_atoms(static_goal_atoms),
-    m_fluent_goal_atoms(fluent_goal_atoms),
-    m_derived_goal_atoms(derived_goal_atoms),
-    m_num_objects(num_objects),
-    m_concept_denotation_builder(),
-    m_role_denotation_builder()
+EvaluationContext::EvaluationContext(const PDDLFactories& pddl_factories,
+                                     Problem problem,
+                                     State state,
+                                     DenotationImpl<Concept>& ref_concept_denotation_builder,
+                                     DenotationImpl<Role>& ref_role_denotation_builder,
+                                     DenotationRepository<Concept>& ref_concept_denotation_repository,
+                                     DenotationRepository<Role>& ref_role_denotation_repository) :
+    m_pddl_factories(pddl_factories),
+    m_problem(problem),
+    m_state(state),
+    m_concept_denotation_builder(ref_concept_denotation_builder),
+    m_role_denotation_builder(ref_role_denotation_builder),
+    m_concept_denotation_repository(ref_concept_denotation_repository),
+    m_role_denotation_repository(ref_role_denotation_repository)
 {
-    m_role_denotation_builder.get_data().resize(num_objects);
 }
 
-void EvaluationContext::set_state_index(Index state_index) { m_state_index = state_index; }
+const PDDLFactories& EvaluationContext::get_pddl_factories() const { return m_pddl_factories; }
 
-template<DynamicPredicateCategory P>
-void EvaluationContext::set_state_atoms(const GroundAtomList<P>& state_atoms)
-{
-    if constexpr (std::is_same_v<P, Fluent>)
-    {
-        m_fluent_state_atoms = state_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        m_derived_state_atoms = state_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
+Problem EvaluationContext::get_problem() const { return m_problem; }
 
-template void EvaluationContext::set_state_atoms(const GroundAtomList<Fluent>& state_atoms);
-template void EvaluationContext::set_state_atoms(const GroundAtomList<Derived>& state_atoms);
+State EvaluationContext::get_state() const { return m_state; }
 
 template<IsConceptOrRole D>
 DenotationImpl<D>& EvaluationContext::get_denotation_builder()
@@ -107,57 +82,4 @@ DenotationRepository<D>& EvaluationContext::get_denotation_repository()
 template DenotationRepository<Concept>& EvaluationContext::get_denotation_repository<Concept>();
 template DenotationRepository<Role>& EvaluationContext::get_denotation_repository<Role>();
 
-Index EvaluationContext::get_state_index() const { return m_state_index; }
-
-template<PredicateCategory P>
-const GroundAtomList<P>& EvaluationContext::get_state_atoms() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_state_atoms.get();
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_state_atoms.get();
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_state_atoms.get();
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
-
-template const GroundAtomList<Static>& EvaluationContext::get_state_atoms<Static>() const;
-template const GroundAtomList<Fluent>& EvaluationContext::get_state_atoms<Fluent>() const;
-template const GroundAtomList<Derived>& EvaluationContext::get_state_atoms<Derived>() const;
-
-template<PredicateCategory P>
-const GroundAtomList<P>& EvaluationContext::get_goal_atoms() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_goal_atoms.get();
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_goal_atoms.get();
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_goal_atoms.get();
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
-    }
-}
-
-template const GroundAtomList<Static>& EvaluationContext::get_goal_atoms<Static>() const;
-template const GroundAtomList<Fluent>& EvaluationContext::get_goal_atoms<Fluent>() const;
-template const GroundAtomList<Derived>& EvaluationContext::get_goal_atoms<Derived>() const;
-
-size_t EvaluationContext::get_num_objects() const { return m_num_objects; }
 }

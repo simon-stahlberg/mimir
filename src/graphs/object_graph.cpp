@@ -74,7 +74,7 @@ static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                               StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Static>(problem->get_static_initial_positive_atoms()))
+    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Static>(problem->get_static_initial_positive_atoms_bitset()))
     {
         if (!pruning_strategy.prune(state_index, atom))
         {

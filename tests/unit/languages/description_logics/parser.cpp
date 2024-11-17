@@ -30,11 +30,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsParserTest)
 
     auto text = std::string(R"(
 <concept_predicate1_state> ::= @concept_atomic_state "predicate1"
-<concept_predicate1_goal> ::= @concept_atomic_goal "predicate1"
+<concept_predicate1_goal> ::= @concept_atomic_goal "predicate1" false
 <concept_intersection> ::= @concept_intersection <concept> <concept_predicate1_goal>
 <concept> ::= <concept_predicate1_state> | <concept_predicate1_goal> | <concept_intersection>
 <role_predicate1_state> ::= @role_atomic_state "predicate1"
-<role_predicate1_goal> ::= @role_atomic_goal "predicate1"
+<role_predicate1_goal> ::= @role_atomic_goal "predicate1" false
 <role_intersection> ::= @role_intersection <role> <role_predicate1_goal>
 <role> ::= <role_predicate1_state> | <role_predicate1_goal> | <role_intersection>
 )");
@@ -51,7 +51,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsParser2Test)
     @concept_intersection
         @concept_intersection
             @concept_atomic_state "predicate1"
-            @concept_atomic_goal "predicate1"
+            @concept_atomic_goal "predicate1" false
         @concept_atomic_state "predicate2"
 )");
 

@@ -185,7 +185,10 @@ template class ConceptAtomicStateImpl<Derived>;
  */
 
 template<PredicateCategory P>
-ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
+    m_index(index),
+    m_predicate(predicate),
+    m_is_negated(is_negated)
 {
 }
 
@@ -205,6 +208,12 @@ template<PredicateCategory P>
 Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
+}
+
+template<PredicateCategory P>
+bool ConceptAtomicGoalImpl<P>::is_negated() const
+{
+    return m_is_negated;
 }
 
 template class ConceptAtomicGoalImpl<Static>;
@@ -403,7 +412,10 @@ template class RoleAtomicStateImpl<Derived>;
  */
 
 template<PredicateCategory P>
-RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
+RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
+    m_index(index),
+    m_predicate(predicate),
+    m_is_negated(is_negated)
 {
 }
 
@@ -423,6 +435,12 @@ template<PredicateCategory P>
 Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
+}
+
+template<PredicateCategory P>
+bool RoleAtomicGoalImpl<P>::is_negated() const
+{
+    return m_is_negated;
 }
 
 template class RoleAtomicGoalImpl<Static>;

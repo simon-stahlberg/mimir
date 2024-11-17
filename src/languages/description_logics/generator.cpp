@@ -17,6 +17,9 @@
 
 #include "mimir/languages/description_logics/generator.hpp"
 
+#include "mimir/formalism/problem.hpp"
+#include "mimir/search/state.hpp"
+
 namespace mimir::dl
 {
 
@@ -55,5 +58,41 @@ VariadicConstructorFactory create_default_variadic_constructor_factory()
                                       RoleRestrictionFactory(),
                                       RoleIdentityFactory());
 }
+
+/**
+ * GeneratorStateListPruningFunction
+ */
+
+GeneratorStateListPruningFunction::GeneratorStateListPruningFunction(const PDDLFactories& pddl_factories, Problem problem, StateList states) :
+    GeneratorPruningFunction(),
+    m_pddl_factories(pddl_factories),
+    m_problem(problem),
+    m_states(std::move(states)),
+    m_concept_denotation_builder(),
+    m_role_denotation_builder(),
+    m_concept_denotation_repository(),
+    m_role_denotation_repository()
+
+{
+    m_role_denotation_builder.get_data().resize(m_problem->get_objects().size());
+}
+
+bool GeneratorStateListPruningFunction::test_prune(Constructor<Concept> concept_)
+{
+    for (const auto& state : m_states)
+    {
+        auto evaluation_context = EvaluationContext(m_pddl_factories,
+                                                    m_problem,
+                                                    state,
+                                                    m_concept_denotation_builder,
+                                                    m_role_denotation_builder,
+                                                    m_concept_denotation_repository,
+                                                    m_role_denotation_repository);
+
+        const auto eval = concept_->evaluate(evaluation_context);
+    }
+}
+
+bool GeneratorStateListPruningFunction::test_prune(Constructor<Role> role_) {}
 
 }

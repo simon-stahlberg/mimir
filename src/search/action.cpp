@@ -178,7 +178,7 @@ bool StripsActionPrecondition::is_statically_applicable(const FlatBitset& static
 
 bool StripsActionPrecondition::is_applicable(Problem problem, State state) const
 {
-    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms());
+    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
 bool StripsActionPrecondition::is_applicable(const FlatBitset& fluent_state_atoms,
@@ -331,7 +331,7 @@ bool ConditionalEffect::is_dynamically_applicable(State state) const
 
 bool ConditionalEffect::is_statically_applicable(Problem problem) const
 {
-    const auto& static_initial_atoms = problem->get_static_initial_positive_atoms();
+    const auto& static_initial_atoms = problem->get_static_initial_positive_atoms_bitset();
 
     return is_superseteq(static_initial_atoms, get_positive_precondition<Static>())  //
            && are_disjoint(static_initial_atoms, get_negative_precondition<Static>());
@@ -381,7 +381,7 @@ bool GroundActionImpl::is_statically_applicable(const FlatBitset& static_positiv
 
 bool GroundActionImpl::is_applicable(Problem problem, State state) const
 {  //
-    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms());
+    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
 /**

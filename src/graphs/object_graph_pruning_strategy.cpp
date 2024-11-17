@@ -231,7 +231,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
     /* 1. Compute atoms that are always true or false in the SCC
        Use default bit value 1 for always false part.
     */
-    auto always_true_static_atoms = FlatBitset(state_space->get_problem()->get_static_initial_positive_atoms());
+    auto always_true_static_atoms = FlatBitset(state_space->get_problem()->get_static_initial_positive_atoms_bitset());
     auto always_true_fluent_atoms = FlatBitset();
     auto always_true_derived_atoms = FlatBitset();
     auto always_false_static_atoms = FlatBitset(0, 1);

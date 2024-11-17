@@ -149,7 +149,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
 
     pddl_factories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), out_fluent_ground_atoms);
-    pddl_factories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms(), out_static_ground_atoms);
+    pddl_factories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
     pddl_factories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), out_derived_ground_atoms);
 
     os << "State("

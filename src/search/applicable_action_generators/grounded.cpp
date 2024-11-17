@@ -171,7 +171,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         {
             auto action_arguments = m_pddl_factories->get_objects_from_indices(action->get_object_indices());
             auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms()))
+            if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
             }
@@ -194,7 +194,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         {
             auto axiom_arguments = m_pddl_factories->get_objects_from_indices(axiom->get_objects());
             auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms()))
+            if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
