@@ -85,51 +85,6 @@ private:
     std::reference_wrapper<T> m_data;
 };
 
-/// @brief `TraversalDirectionContainer` contains a type `T` for `ForwardTraversal` and `BackwardTraversal`.
-/// @tparam T is the type that we want to store for `ForwardTraversal` and `BackwardTraversal`.
-template<typename T>
-class TraversalDirectionStorage
-{
-public:
-    template<IsTraversalDirection Direction>
-    const T& get() const
-    {
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
-        {
-            return m_forward_element;
-        }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
-        {
-            return m_backward_element;
-        }
-        else
-        {
-            static_assert(dependent_false<Direction>::value, "TraversalDirectionDependentStorage.get(): Missing implementation for IsTraversalDirection.");
-        }
-    }
-
-    template<IsTraversalDirection Direction>
-    T& get()
-    {
-        if constexpr (std::is_same_v<Direction, ForwardTraversal>)
-        {
-            return m_forward_element;
-        }
-        else if constexpr (std::is_same_v<Direction, BackwardTraversal>)
-        {
-            return m_backward_element;
-        }
-        else
-        {
-            static_assert(dependent_false<Direction>::value, "TraversalDirectionDependentStorage.get(): Missing implementation for IsTraversalDirection.");
-        }
-    }
-
-private:
-    T m_forward_element;
-    T m_backward_element;
-};
-
 }
 
 #endif

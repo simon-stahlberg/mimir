@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_REFINEMENT_HPP_
 
+#include "mimir/common/typed_vector.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/equal_to.hpp"
@@ -72,8 +73,8 @@ private:
     const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.
     Problem m_problem;                                     ///< The problem definition used for evaluating features.
     StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
-    DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation
-    DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation
+    DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation.
+    DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation.
 
     /// @brief Repository for managing concept denotations.
     /// This stores the computed denotations for each concept feature across all states.
@@ -97,31 +98,45 @@ private:
  * Generates concepts and roles with increasing complexity starting at 1.
  */
 
-struct RefinementBrfsOptions
+namespace refinement_brfs
 {
+
+struct Options
+{
+    bool debug = false;
+
     size_t max_complexity = 0;
-    size_t max_memory_in_kb = 0;
-    size_t max_time_in_ms = 0;
+    size_t max_memory_usage_in_kb = 0;
+    size_t max_execution_time_in_ms = 0;
+
+    TypedVector<size_t, Concept, Role> max_constructors = TypedVector<size_t, Concept, Role>();
 };
 
-struct RefinementBrfsResult
+struct Statistics
+{
+    size_t memory_usage_in_kb = 0;
+    size_t execution_time_ms = 0;
+
+    TypedVector<size_t, Concept, Role> num_generated = TypedVector<size_t, Concept, Role>();
+    TypedVector<size_t, Concept, Role> num_pruned = TypedVector<size_t, Concept, Role>();
+    TypedVector<size_t, Concept, Role> num_rejected_by_grammar = TypedVector<size_t, Concept, Role>();
+};
+
+struct Result
 {
     ConstructorList<Concept> concepts = ConstructorList<Concept>();
     ConstructorList<Role> roles = ConstructorList<Role>();
 
-    size_t memory_in_kb = 0;
-    size_t time_ms = 0;
-    size_t num_pruned_concepts = 0;
-    size_t num_pruned_roles = 0;
-    size_t num_generated_concepts = 0;
-    size_t num_generated_roles = 0;
+    Statistics statistics = Statistics();
 };
 
-extern RefinementBrfsResult refine_brfs(Problem problem,
-                                        const grammar::Grammar grammar,
-                                        const RefinementBrfsOptions& options,
-                                        VariadicConstructorFactory& ref_constructor_repos,
-                                        RefinementPruningFunction& ref_pruning_function);
+extern Result refine(Problem problem,
+                     const grammar::Grammar& grammar,
+                     const Options& options,
+                     VariadicConstructorFactory& ref_constructor_repos,
+                     RefinementPruningFunction& ref_pruning_function);
+
+}
 
 }
 

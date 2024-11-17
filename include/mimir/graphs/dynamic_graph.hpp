@@ -19,6 +19,7 @@
 #define MIMIR_GRAPHS_DYNAMIC_GRAPH_HPP_
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/typed_vector.hpp"
 #include "mimir/graphs/dynamic_graph_interface.hpp"
 #include "mimir/graphs/dynamic_graph_iterators.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
@@ -173,9 +174,9 @@ private:
     EdgeIndexList m_free_edges;
     size_t m_next_edge_index;
 
-    TraversalDirectionStorage<std::unordered_map<VertexIndex, EdgeIndexSet>> m_adjacent_edges;
+    TypedVector<std::unordered_map<VertexIndex, EdgeIndexSet>, ForwardTraversal, BackwardTraversal> m_adjacent_edges;
 
-    TraversalDirectionStorage<DegreeMap> m_degrees;
+    TypedVector<DegreeMap, ForwardTraversal, BackwardTraversal> m_degrees;
 
     /**
      * Error handling

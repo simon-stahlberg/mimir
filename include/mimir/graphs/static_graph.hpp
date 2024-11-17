@@ -20,6 +20,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/grouped_vector.hpp"
+#include "mimir/common/typed_vector.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
@@ -155,7 +156,7 @@ private:
     VertexList m_vertices;
     EdgeList m_edges;
 
-    TraversalDirectionStorage<DegreeList> m_degrees;
+    TypedVector<DegreeList, ForwardTraversal, BackwardTraversal> m_degrees;
 
     // Slice over all edge indices for using the iterators.
     EdgeIndexList m_slice;
@@ -303,7 +304,7 @@ public:
 private:
     G m_graph;
 
-    TraversalDirectionStorage<IndexGroupedVector<const EdgeIndex>> m_edge_indices_grouped_by_vertex;
+    TypedVector<IndexGroupedVector<const EdgeIndex>, ForwardTraversal, BackwardTraversal> m_edge_indices_grouped_by_vertex;
 };
 
 /**
