@@ -29,11 +29,7 @@
 namespace mimir
 {
 
-struct ConcreteTransitionTag
-{
-};
-
-using GroundActionEdge = Edge<ConcreteTransitionTag, GroundAction>;
+using GroundActionEdge = Edge<GroundAction>;
 using GroundActionEdgeList = std::vector<GroundActionEdge>;
 
 inline GroundAction get_creating_action(const GroundActionEdge& edge) { return edge.get_property<0>(); }

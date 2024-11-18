@@ -65,11 +65,8 @@ struct FaithfulAbstractionsOptions
 };
 
 /// @brief `FaithfulAbstractStateVertex` encapsulates data of an abstract state in a `FaithfulAbstraction`.
-struct FaithfulAbstractStateVertexTag
-{
-};
 
-using FaithfulAbstractStateVertex = Vertex<FaithfulAbstractStateVertexTag, std::span<const State>, std::shared_ptr<const nauty_wrapper::Certificate>>;
+using FaithfulAbstractStateVertex = Vertex<std::span<const State>, std::shared_ptr<const nauty_wrapper::Certificate>>;
 using FaithfulAbstractStateVertexList = std::vector<FaithfulAbstractStateVertex>;
 
 inline std::span<const State> get_states(const FaithfulAbstractStateVertex& state) { return state.get_property<0>(); }

@@ -33,11 +33,7 @@ namespace mimir
  * Declarations
  */
 
-struct GroundActionsEdgeTag
-{
-};
-
-using GroundActionsEdge = Edge<GroundActionsEdgeTag, std::span<const GroundAction>>;
+using GroundActionsEdge = Edge<std::span<const GroundAction>>;
 using GroundActionsEdgeList = std::vector<GroundActionsEdge>;
 
 inline std::span<const GroundAction> get_actions(const GroundActionsEdge& edge) { return edge.get_property<0>(); }

@@ -29,9 +29,8 @@ namespace mimir
 
 /// @brief `Vertex` implements a vertex with additional `VertexProperties`.
 /// See examples on how to define vertices below.
-/// @tparam Tag is an empty struct used for dispatching.
 /// @tparam ...VertexProperties are additional vertex properties.
-template<typename Tag, typename... VertexProperties>
+template<typename... VertexProperties>
 class Vertex
 {
 public:
@@ -63,10 +62,10 @@ private:
 };
 }
 
-template<typename Tag, typename... VertexProperties>
-struct std::hash<mimir::Vertex<Tag, VertexProperties...>>
+template<typename... VertexProperties>
+struct std::hash<mimir::Vertex<VertexProperties...>>
 {
-    size_t operator()(const mimir::Vertex<Tag, VertexProperties...>& element) const
+    size_t operator()(const mimir::Vertex<VertexProperties...>& element) const
     {
         size_t seed = element.get_index();
         apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(VertexProperties)> {});
@@ -75,7 +74,7 @@ struct std::hash<mimir::Vertex<Tag, VertexProperties...>>
 
     // Helper function to apply hashing to all properties
     template<std::size_t... Is>
-    void apply_properties_hash(size_t& seed, const mimir::Vertex<Tag, VertexProperties...>& element, std::index_sequence<Is...>) const
+    void apply_properties_hash(size_t& seed, const mimir::Vertex<VertexProperties...>& element, std::index_sequence<Is...>) const
     {
         (..., mimir::hash_combine(seed, element.template get_property<Is>()));
     }
@@ -88,24 +87,16 @@ namespace mimir
  * EmptyVertex
  */
 
-struct EmptyVertexTag
-{
-};
-
-/// @brief `EmptyVertex` has name tag `EmptyVertexTag` and is a vertex without `VertexProperties`.
-using EmptyVertex = Vertex<EmptyVertexTag>;
+/// @brief `EmptyVertex` is a vertex without `VertexProperties`.
+using EmptyVertex = Vertex<>;
 
 /**
  * ColoredVertex
  */
 
-struct ColoredVertexTag
-{
-};
-
-/// @brief `ColoredVertex` has name tag `ColoredVertexTag` and is a vertex with a color `VertexProperties`.
+/// @brief `ColoredVertex` is a vertex with a color `VertexProperties`.
 /// For readability of code that uses a `ColoredVertex`, we provide a free function get_color to access the color of a given vertex.
-using ColoredVertex = Vertex<ColoredVertexTag, Color>;
+using ColoredVertex = Vertex<Color>;
 
 /// @brief Get the color of a colored vertex.
 /// @param edge the colored vertex.

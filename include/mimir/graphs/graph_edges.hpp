@@ -27,9 +27,8 @@ namespace mimir
 
 /// @brief `Edge` implements a directed edge with additional `EdgeProperties`.
 /// See examples on how to define edges below.
-/// @tparam Tag is an empty struct used for dispatching.
 /// @tparam ...EdgeProperties are additional edge properties.
-template<typename Tag, typename... EdgeProperties>
+template<typename... EdgeProperties>
 class Edge
 {
 public:
@@ -75,10 +74,10 @@ private:
 };
 }
 
-template<typename Tag, typename... EdgeProperties>
-struct std::hash<mimir::Edge<Tag, EdgeProperties...>>
+template<typename... EdgeProperties>
+struct std::hash<mimir::Edge<EdgeProperties...>>
 {
-    size_t operator()(const mimir::Edge<Tag, EdgeProperties...>& element) const
+    size_t operator()(const mimir::Edge<EdgeProperties...>& element) const
     {
         size_t seed = mimir::hash_combine(element.get_index(), element.get_source(), element.get_target());
         apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(EdgeProperties)> {});
@@ -87,7 +86,7 @@ struct std::hash<mimir::Edge<Tag, EdgeProperties...>>
 
     // Helper function to apply hashing to all properties
     template<std::size_t... Is>
-    void apply_properties_hash(size_t& seed, const mimir::Edge<Tag, EdgeProperties...>& element, std::index_sequence<Is...>) const
+    void apply_properties_hash(size_t& seed, const mimir::Edge<EdgeProperties...>& element, std::index_sequence<Is...>) const
     {
         (..., mimir::hash_combine(seed, element.template get_property<Is>()));
     }
@@ -100,24 +99,16 @@ namespace mimir
  * EmptyEdge
  */
 
-struct EmptyEdgeTag
-{
-};
-
-/// @brief `EmptyEdge` has name tag `EmptyEdgeTag` and is an edge without `EdgeProperties`.
-using EmptyEdge = Edge<EmptyEdgeTag>;
+/// @brief `EmptyEdge` is an edge without `EdgeProperties`.
+using EmptyEdge = Edge<>;
 
 /**
  * ColoredEdge
  */
 
-struct ColoredEdgeTag
-{
-};
-
-/// @brief `ColoredEdge` has name tag `ColoredEdgeTag` and is an edge with a color `EdgeProperties`.
+/// @brief `ColoredEdge` is an edge with a color `EdgeProperties`.
 /// For readability of code that uses a `ColoredEdge`, we provide a free function get_color to access the color of a given edge.
-using ColoredEdge = Edge<ColoredEdgeTag, Color>;
+using ColoredEdge = Edge<Color>;
 
 /// @brief Get the color of a colored edge.
 /// @param edge the colored edge.
