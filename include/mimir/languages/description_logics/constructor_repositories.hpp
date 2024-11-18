@@ -28,90 +28,90 @@
 namespace mimir::dl
 {
 
-using ConceptBotFactory = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
-using ConceptTopFactory = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
+using ConceptBotRepository = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
+using ConceptTopRepository = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
 template<PredicateCategory P>
-using ConceptAtomicStateFactory =
+using ConceptAtomicStateRepository =
     loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
-using ConceptAtomicGoalFactory =
+using ConceptAtomicGoalRepository =
     loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
-using ConceptIntersectionFactory =
+using ConceptIntersectionRepository =
     loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
-using ConceptUnionFactory = loki::UniqueFactory<ConceptUnionImpl, UniqueDLHasher<const ConceptUnionImpl*>, UniqueDLEqualTo<const ConceptUnionImpl*>>;
-using ConceptNegationFactory =
+using ConceptUnionRepository = loki::UniqueFactory<ConceptUnionImpl, UniqueDLHasher<const ConceptUnionImpl*>, UniqueDLEqualTo<const ConceptUnionImpl*>>;
+using ConceptNegationRepository =
     loki::UniqueFactory<ConceptNegationImpl, UniqueDLHasher<const ConceptNegationImpl*>, UniqueDLEqualTo<const ConceptNegationImpl*>>;
-using ConceptValueRestrictionFactory =
+using ConceptValueRestrictionRepository =
     loki::UniqueFactory<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestrictionImpl*>, UniqueDLEqualTo<const ConceptValueRestrictionImpl*>>;
-using ConceptExistentialQuantificationFactory = loki::UniqueFactory<ConceptExistentialQuantificationImpl,
-                                                                    UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
-                                                                    UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;
-using ConceptRoleValueMapContainmentFactory = loki::UniqueFactory<ConceptRoleValueMapContainmentImpl,
-                                                                  UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>,
-                                                                  UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>>;
-using ConceptRoleValueMapEqualityFactory = loki::UniqueFactory<ConceptRoleValueMapEqualityImpl,
-                                                               UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>,
-                                                               UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>>;
-using ConceptNominalFactory = loki::UniqueFactory<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
+using ConceptExistentialQuantificationRepository = loki::UniqueFactory<ConceptExistentialQuantificationImpl,
+                                                                       UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
+                                                                       UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;
+using ConceptRoleValueMapContainmentRepository = loki::UniqueFactory<ConceptRoleValueMapContainmentImpl,
+                                                                     UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>,
+                                                                     UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>>;
+using ConceptRoleValueMapEqualityRepository = loki::UniqueFactory<ConceptRoleValueMapEqualityImpl,
+                                                                  UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>,
+                                                                  UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>>;
+using ConceptNominalRepository = loki::UniqueFactory<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
 
-using RoleUniversalFactory = loki::UniqueFactory<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
+using RoleUniversalRepository = loki::UniqueFactory<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
 template<PredicateCategory P>
-using RoleAtomicStateFactory =
+using RoleAtomicStateRepository =
     loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
 template<PredicateCategory P>
-using RoleAtomicGoalFactory =
+using RoleAtomicGoalRepository =
     loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
-using RoleIntersectionFactory =
+using RoleIntersectionRepository =
     loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
-using RoleUnionFactory = loki::UniqueFactory<RoleUnionImpl, UniqueDLHasher<const RoleUnionImpl*>, UniqueDLEqualTo<const RoleUnionImpl*>>;
-using RoleComplementFactory = loki::UniqueFactory<RoleComplementImpl, UniqueDLHasher<const RoleComplementImpl*>, UniqueDLEqualTo<const RoleComplementImpl*>>;
-using RoleInverseFactory = loki::UniqueFactory<RoleInverseImpl, UniqueDLHasher<const RoleInverseImpl*>, UniqueDLEqualTo<const RoleInverseImpl*>>;
-using RoleCompositionFactory =
+using RoleUnionRepository = loki::UniqueFactory<RoleUnionImpl, UniqueDLHasher<const RoleUnionImpl*>, UniqueDLEqualTo<const RoleUnionImpl*>>;
+using RoleComplementRepository = loki::UniqueFactory<RoleComplementImpl, UniqueDLHasher<const RoleComplementImpl*>, UniqueDLEqualTo<const RoleComplementImpl*>>;
+using RoleInverseRepository = loki::UniqueFactory<RoleInverseImpl, UniqueDLHasher<const RoleInverseImpl*>, UniqueDLEqualTo<const RoleInverseImpl*>>;
+using RoleCompositionRepository =
     loki::UniqueFactory<RoleCompositionImpl, UniqueDLHasher<const RoleCompositionImpl*>, UniqueDLEqualTo<const RoleCompositionImpl*>>;
-using RoleTransitiveClosureFactory =
+using RoleTransitiveClosureRepository =
     loki::UniqueFactory<RoleTransitiveClosureImpl, UniqueDLHasher<const RoleTransitiveClosureImpl*>, UniqueDLEqualTo<const RoleTransitiveClosureImpl*>>;
-using RoleReflexiveTransitiveClosureFactory = loki::UniqueFactory<RoleReflexiveTransitiveClosureImpl,
-                                                                  UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>,
-                                                                  UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>>;
-using RoleRestrictionFactory =
+using RoleReflexiveTransitiveClosureRepository = loki::UniqueFactory<RoleReflexiveTransitiveClosureImpl,
+                                                                     UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>,
+                                                                     UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>>;
+using RoleRestrictionRepository =
     loki::UniqueFactory<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
 using RoleIdentityFactory = loki::UniqueFactory<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
-using ConstructorRepositories =
-    boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotFactory>,  //
-                     boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateFactory<Static>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Fluent>>, ConceptAtomicStateFactory<Fluent>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Derived>>, ConceptAtomicStateFactory<Derived>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Static>>, ConceptAtomicGoalFactory<Static>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Fluent>>, ConceptAtomicGoalFactory<Fluent>>,
-                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Derived>>, ConceptAtomicGoalFactory<Derived>>,
-                     boost::hana::pair<boost::hana::type<ConceptIntersectionImpl>, ConceptIntersectionFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptUnionImpl>, ConceptUnionFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptNegationImpl>, ConceptNegationFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptValueRestrictionImpl>, ConceptValueRestrictionFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptExistentialQuantificationImpl>, ConceptExistentialQuantificationFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptRoleValueMapContainmentImpl>, ConceptRoleValueMapContainmentFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityFactory>,
-                     boost::hana::pair<boost::hana::type<ConceptNominalImpl>, ConceptNominalFactory>,
-                     boost::hana::pair<boost::hana::type<RoleUniversalImpl>, RoleUniversalFactory>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Static>>, RoleAtomicStateFactory<Static>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Fluent>>, RoleAtomicStateFactory<Fluent>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Derived>>, RoleAtomicStateFactory<Derived>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Static>>, RoleAtomicGoalFactory<Static>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Fluent>>, RoleAtomicGoalFactory<Fluent>>,
-                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Derived>>, RoleAtomicGoalFactory<Derived>>,
-                     boost::hana::pair<boost::hana::type<RoleIntersectionImpl>, RoleIntersectionFactory>,
-                     boost::hana::pair<boost::hana::type<RoleUnionImpl>, RoleUnionFactory>,
-                     boost::hana::pair<boost::hana::type<RoleComplementImpl>, RoleComplementFactory>,
-                     boost::hana::pair<boost::hana::type<RoleInverseImpl>, RoleInverseFactory>,
-                     boost::hana::pair<boost::hana::type<RoleCompositionImpl>, RoleCompositionFactory>,
-                     boost::hana::pair<boost::hana::type<RoleTransitiveClosureImpl>, RoleTransitiveClosureFactory>,
-                     boost::hana::pair<boost::hana::type<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureFactory>,
-                     boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionFactory>,
+using ConstructorTypeToRepository =
+    boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
+                     boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Fluent>>, ConceptAtomicStateRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Derived>>, ConceptAtomicStateRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Static>>, ConceptAtomicGoalRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Fluent>>, ConceptAtomicGoalRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<ConceptAtomicGoalImpl<Derived>>, ConceptAtomicGoalRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<ConceptIntersectionImpl>, ConceptIntersectionRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptUnionImpl>, ConceptUnionRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptNegationImpl>, ConceptNegationRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptValueRestrictionImpl>, ConceptValueRestrictionRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptExistentialQuantificationImpl>, ConceptExistentialQuantificationRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptRoleValueMapContainmentImpl>, ConceptRoleValueMapContainmentRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityRepository>,
+                     boost::hana::pair<boost::hana::type<ConceptNominalImpl>, ConceptNominalRepository>,
+                     boost::hana::pair<boost::hana::type<RoleUniversalImpl>, RoleUniversalRepository>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Static>>, RoleAtomicStateRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Fluent>>, RoleAtomicStateRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Derived>>, RoleAtomicStateRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Static>>, RoleAtomicGoalRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Fluent>>, RoleAtomicGoalRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<RoleAtomicGoalImpl<Derived>>, RoleAtomicGoalRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<RoleIntersectionImpl>, RoleIntersectionRepository>,
+                     boost::hana::pair<boost::hana::type<RoleUnionImpl>, RoleUnionRepository>,
+                     boost::hana::pair<boost::hana::type<RoleComplementImpl>, RoleComplementRepository>,
+                     boost::hana::pair<boost::hana::type<RoleInverseImpl>, RoleInverseRepository>,
+                     boost::hana::pair<boost::hana::type<RoleCompositionImpl>, RoleCompositionRepository>,
+                     boost::hana::pair<boost::hana::type<RoleTransitiveClosureImpl>, RoleTransitiveClosureRepository>,
+                     boost::hana::pair<boost::hana::type<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureRepository>,
+                     boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
 
-extern ConstructorRepositories create_default_constructor_repositories();
+extern ConstructorTypeToRepository create_default_constructor_type_to_repository();
 
 }
 

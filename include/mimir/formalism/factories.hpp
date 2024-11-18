@@ -84,46 +84,46 @@ using NumericFluentFactory = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHa
 using DomainFactory = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
 using ProblemFactory = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
 
-using PDDLRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsFactory>,
-                                          boost::hana::pair<boost::hana::type<VariableImpl>, VariableFactory>,
-                                          boost::hana::pair<boost::hana::type<TermImpl>, TermFactory>,
-                                          boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectFactory>,
-                                          boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomFactory<Static>>,
-                                          boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomFactory<Fluent>>,
-                                          boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomFactory<Derived>>,
-                                          boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomFactory<Static>>,
-                                          boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomFactory<Fluent>>,
-                                          boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomFactory<Derived>>,
-                                          boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralFactory<Static>>,
-                                          boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralFactory<Fluent>>,
-                                          boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralFactory<Derived>>,
-                                          boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralFactory<Static>>,
-                                          boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralFactory<Fluent>>,
-                                          boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralFactory<Derived>>,
-                                          boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateFactory<Static>>,
-                                          boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateFactory<Fluent>>,
-                                          boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateFactory<Derived>>,
-                                          boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionFactory>,
-                                          boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionFactory>,
-                                          boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionFactory>,
-                                          boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionFactory>,
-                                          boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonFactory>,
-                                          boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleFactory>,
-                                          boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalFactory>,
-                                          boost::hana::pair<boost::hana::type<ActionImpl>, ActionFactory>,
-                                          boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomFactory>,
-                                          boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricFactory>,
-                                          boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentFactory>,
-                                          boost::hana::pair<boost::hana::type<DomainImpl>, DomainFactory>,
-                                          boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemFactory>>;
+using PDDLTypeToFactory = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsFactory>,
+                                           boost::hana::pair<boost::hana::type<VariableImpl>, VariableFactory>,
+                                           boost::hana::pair<boost::hana::type<TermImpl>, TermFactory>,
+                                           boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectFactory>,
+                                           boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomFactory<Static>>,
+                                           boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomFactory<Fluent>>,
+                                           boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomFactory<Derived>>,
+                                           boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomFactory<Static>>,
+                                           boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomFactory<Fluent>>,
+                                           boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomFactory<Derived>>,
+                                           boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralFactory<Static>>,
+                                           boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralFactory<Fluent>>,
+                                           boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralFactory<Derived>>,
+                                           boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralFactory<Static>>,
+                                           boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralFactory<Fluent>>,
+                                           boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralFactory<Derived>>,
+                                           boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateFactory<Static>>,
+                                           boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateFactory<Fluent>>,
+                                           boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateFactory<Derived>>,
+                                           boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionFactory>,
+                                           boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionFactory>,
+                                           boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionFactory>,
+                                           boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionFactory>,
+                                           boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonFactory>,
+                                           boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleFactory>,
+                                           boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalFactory>,
+                                           boost::hana::pair<boost::hana::type<ActionImpl>, ActionFactory>,
+                                           boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomFactory>,
+                                           boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricFactory>,
+                                           boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentFactory>,
+                                           boost::hana::pair<boost::hana::type<DomainImpl>, DomainFactory>,
+                                           boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemFactory>>;
 
-extern PDDLRepositories create_default_pddl_repositories();
+extern PDDLTypeToFactory create_default_pddl_type_to_factory();
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLFactories
 {
 private:
-    PDDLRepositories m_repositories;
+    PDDLTypeToFactory m_repositories;
 
     VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
 
@@ -275,7 +275,7 @@ public:
     /* Accessors */
 
     // Factory
-    const PDDLRepositories& get_repositories() const;
+    const PDDLTypeToFactory& get_pddl_type_to_factory() const;
 
     // GroundAtom
     template<PredicateCategory P>

@@ -47,7 +47,7 @@ template<PredicateCategory P>
 static bool refine_concept_atomic_state(Problem problem,
                                         const grammar::Grammar& grammar,
                                         const Options& options,
-                                        ConstructorRepositories& ref_constructor_repos,
+                                        ConstructorTypeToRepository& ref_constructor_repos,
                                         RefinementPruningFunction& ref_pruning_function,
                                         SearchSpace& ref_search_space)
 {
@@ -289,7 +289,7 @@ template<typename ConstructorImplType>
 static bool refine_composite_constructor(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         ConstructorRepositories& ref_constructor_repos,
+                                         ConstructorTypeToRepository& ref_constructor_repos,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics,
@@ -355,7 +355,7 @@ static bool refine_composite_constructor(Problem problem,
 static bool refine_primitives(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorRepositories& ref_constructor_repos,
+                              ConstructorTypeToRepository& ref_constructor_repos,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -368,7 +368,7 @@ static bool refine_primitives(Problem problem,
 static bool refine_composites(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorRepositories& ref_constructor_repos,
+                              ConstructorTypeToRepository& ref_constructor_repos,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -427,7 +427,7 @@ static void fetch_results(const SearchSpace& search_space, Result& result)
 void refine_helper(Problem problem,
                    const grammar::Grammar& grammar,
                    const Options& options,
-                   ConstructorRepositories& ref_constructor_repos,
+                   ConstructorTypeToRepository& ref_constructor_repos,
                    RefinementPruningFunction& ref_pruning_function,
                    SearchSpace& ref_search_space,
                    Statistics& ref_statistics)
@@ -445,7 +445,7 @@ void refine_helper(Problem problem,
 Result refine(Problem problem,
               const grammar::Grammar& grammar,
               const Options& options,
-              ConstructorRepositories& ref_constructor_repos,
+              ConstructorTypeToRepository& ref_constructor_repos,
               RefinementPruningFunction& ref_pruning_function)
 {
     auto result = Result();

@@ -48,7 +48,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
     EXPECT_EQ(grammar.get_concept_rules().size(), 4);
     EXPECT_EQ(grammar.get_role_rules().size(), 4);
 
-    auto constructor_repositories = dl::create_default_constructor_repositories();
+    auto constructor_repositories = dl::create_default_constructor_type_to_repository();
 
     const auto predicate_at_robby = parser.get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
     const auto concept_at_robby = boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Fluent>> {})

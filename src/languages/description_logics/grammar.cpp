@@ -22,7 +22,7 @@
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos(create_default_constructor_repositories())
+Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos(create_default_constructor_type_to_repository())
 {
     const auto [concept_rules, role_rules] = parse(bnf_description, domain, m_grammar_constructor_repos);
     m_concept_rules = std::move(concept_rules);

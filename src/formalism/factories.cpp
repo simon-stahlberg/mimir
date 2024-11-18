@@ -20,7 +20,7 @@
 namespace mimir
 {
 
-PDDLRepositories create_default_pddl_repositories()
+PDDLTypeToFactory create_default_pddl_type_to_factory()
 {
     return boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<RequirementsImpl>, RequirementsFactory {}),
                                  boost::hana::make_pair(boost::hana::type_c<VariableImpl>, VariableFactory {}),
@@ -56,7 +56,7 @@ PDDLRepositories create_default_pddl_repositories()
                                  boost::hana::make_pair(boost::hana::type_c<ProblemImpl>, ProblemFactory {}));
 }
 
-PDDLFactories::PDDLFactories() : m_repositories(create_default_pddl_repositories()) {}
+PDDLFactories::PDDLFactories() : m_repositories(create_default_pddl_type_to_factory()) {}
 
 PDDLFactories::PDDLFactories(PDDLFactories&& other) = default;
 
@@ -408,7 +408,7 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
 }
 
 // Factory
-const PDDLRepositories& PDDLFactories::get_repositories() const { return m_repositories; }
+const PDDLTypeToFactory& PDDLFactories::get_pddl_type_to_factory() const { return m_repositories; }
 
 // GroundAtom
 template<PredicateCategory P>
