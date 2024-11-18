@@ -24,12 +24,12 @@
 
 namespace mimir
 {
-template<PredicateCategory P>
+template<PredicateTag P>
 AtomImpl<P>::AtomImpl(Index index, Predicate<P> predicate, TermList terms) : m_index(index), m_predicate(std::move(predicate)), m_terms(std::move(terms))
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::string AtomImpl<P>::str() const
 {
     auto out = std::stringstream();
@@ -37,25 +37,25 @@ std::string AtomImpl<P>::str() const
     return out.str();
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index AtomImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> AtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const TermList& AtomImpl<P>::get_terms() const
 {
     return m_terms;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t AtomImpl<P>::get_arity() const
 {
     return m_terms.size();
@@ -65,7 +65,7 @@ template class AtomImpl<Static>;
 template class AtomImpl<Fluent>;
 template class AtomImpl<Derived>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -77,7 +77,7 @@ template std::ostream& operator<<(std::ostream& out, const AtomImpl<Static>& ele
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const AtomImpl<Derived>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, Atom<P> element)
 {
     out << *element;

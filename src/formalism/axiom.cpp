@@ -68,7 +68,7 @@ const VariableList& AxiomImpl::get_parameters() const { return m_parameters; }
 
 const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const LiteralList<P>& AxiomImpl::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -85,7 +85,7 @@ const LiteralList<P>& AxiomImpl::get_conditions() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

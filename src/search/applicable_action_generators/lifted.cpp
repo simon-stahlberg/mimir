@@ -22,7 +22,7 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"

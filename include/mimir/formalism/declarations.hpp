@@ -20,7 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 
 #include <loki/loki.hpp>
 #include <string>
@@ -45,11 +45,11 @@ class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class AtomImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using Atom = const AtomImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 using AtomList = std::vector<Atom<P>>;
 
 class AxiomImpl;
@@ -95,13 +95,13 @@ class FunctionImpl;
 using Function = const FunctionImpl*;
 using FunctionList = std::vector<Function>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class GroundAtomImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using GroundAtom = const GroundAtomImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 using GroundAtomList = std::vector<GroundAtom<P>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using GroundAtomSet = std::unordered_set<GroundAtom<P>>;
 
 class GroundFunctionExpressionNumberImpl;
@@ -126,22 +126,22 @@ class GroundFunctionImpl;
 using GroundFunction = const GroundFunctionImpl*;
 using GroundFunctionList = std::vector<GroundFunction>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class GroundLiteralImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using GroundLiteral = const GroundLiteralImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 using GroundLiteralList = std::vector<GroundLiteral<P>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class LiteralImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using Literal = const LiteralImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 using LiteralList = std::vector<Literal<P>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using LiteralSet = std::unordered_set<Literal<P>>;
 
 class OptimizationMetricImpl;
@@ -159,15 +159,15 @@ using ToObjectMap = std::unordered_map<Key, Object, Hash, KeyEqual>;
 
 class PDDLFactories;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class PredicateImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using Predicate = const PredicateImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 using PredicateList = std::vector<Predicate<P>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
-template<typename Key, PredicateCategory P, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+template<typename Key, PredicateTag P, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 
 class ProblemImpl;

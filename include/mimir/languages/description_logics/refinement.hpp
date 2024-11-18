@@ -67,7 +67,7 @@ public:
     bool should_prune(Constructor<Role> role_) override;
 
 private:
-    template<IsConceptOrRole D>
+    template<ConstructorTag D>
     bool should_prune_impl(Constructor<D> constructor);
 
     const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.

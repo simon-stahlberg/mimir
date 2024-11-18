@@ -95,7 +95,7 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const LiteralList<P>& ActionImpl::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -112,7 +112,7 @@ const LiteralList<P>& ActionImpl::get_conditions() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

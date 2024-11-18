@@ -30,7 +30,7 @@ namespace mimir::dl
 {
 
 /// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 class DenotationRepository
 {
 private:

@@ -43,16 +43,16 @@ struct StateImpl
     FlatBitset m_fluent_atoms = FlatBitset();
     FlatBitset m_derived_atoms = FlatBitset();
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     bool contains(GroundAtom<P> atom) const;
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     bool superset_of(const GroundAtomList<P>& atoms) const;
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     bool literal_holds(GroundLiteral<P> literal) const;
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
     /* Getters */
@@ -61,10 +61,10 @@ struct StateImpl
 
     Index get_index() const;
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     FlatBitset& get_atoms();
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     const FlatBitset& get_atoms() const;
 };
 

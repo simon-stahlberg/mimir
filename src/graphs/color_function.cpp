@@ -91,7 +91,7 @@ void ProblemColorFunction::initialize_predicates()
 
 Color ProblemColorFunction::get_color(Object object) const { return m_name_to_color.at(""); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Color ProblemColorFunction::get_color(GroundAtom<P> atom, size_t pos) const
 {
     return m_name_to_color.at(atom->get_predicate()->get_name() + ":" + std::to_string(pos));
@@ -101,7 +101,7 @@ template Color ProblemColorFunction::get_color(GroundAtom<Static> atom, size_t p
 template Color ProblemColorFunction::get_color(GroundAtom<Fluent> atom, size_t pos) const;
 template Color ProblemColorFunction::get_color(GroundAtom<Derived> atom, size_t pos) const;
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 Color ProblemColorFunction::get_color(State state, GroundLiteral<P> literal, size_t pos, bool mark_true_goal_literal) const
 {
     bool is_satisfied_in_goal = state->literal_holds(literal);

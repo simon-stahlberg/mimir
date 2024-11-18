@@ -27,38 +27,38 @@ namespace mimir::dl::grammar
  * NonTerminal
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)), m_rule(std::nullopt)
 {
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor) const
 {
     assert(m_rule.has_value());
     return m_rule.value()->test_match(constructor);
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 Index NonTerminalImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 const std::string& NonTerminalImpl<D>::get_name() const
 {
     return m_name;
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 DerivationRule<D> NonTerminalImpl<D>::get_rule() const
 {
     assert(m_rule.has_value());
     return m_rule.value();
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 void NonTerminalImpl<D>::set_rule(DerivationRule<D> rule) const
 {
     m_rule = rule;
@@ -71,24 +71,24 @@ template class NonTerminalImpl<Role>;
  * Choice
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 ChoiceImpl<D>::ChoiceImpl(Index index, ConstructorOrNonTerminalChoice<D> choice) : m_index(index), m_choice(std::move(choice))
 {
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 bool ChoiceImpl<D>::test_match(dl::Constructor<D> constructor) const
 {
     return std::visit([&constructor](const auto& arg) -> bool { return arg->test_match(constructor); }, m_choice);
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 Index ChoiceImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 const ConstructorOrNonTerminalChoice<D>& ChoiceImpl<D>::get_choice() const
 {
     return m_choice;
@@ -101,26 +101,26 @@ template class ChoiceImpl<Role>;
  * DerivationRule
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 DerivationRuleImpl<D>::DerivationRuleImpl(Index index, ChoiceList<D> choices) : m_index(index), m_choices(std::move(choices))
 {
     /* Canonize */
     std::sort(m_choices.begin(), m_choices.end(), [](const auto& lhs, const auto& rhs) { return lhs->get_index() < rhs->get_index(); });
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 bool DerivationRuleImpl<D>::test_match(dl::Constructor<D> constructor) const
 {
     return std::any_of(m_choices.begin(), m_choices.end(), [&constructor](const auto& choice) { return choice->test_match(constructor); });
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 Index DerivationRuleImpl<D>::get_index() const
 {
     return m_index;
 }
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 const ChoiceList<D>& DerivationRuleImpl<D>::get_choices() const
 {
     return m_choices;
@@ -153,24 +153,24 @@ Index ConceptTopImpl::get_index() const { return m_index; }
  * ConceptAtomicStateImpl
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicStateImpl<P>::test_match(dl::Constructor<Concept> constructor) const
 {
     return constructor->accept(grammar::ConceptAtomicStateVisitor<P>(this));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> ConceptAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
@@ -184,7 +184,7 @@ template class ConceptAtomicStateImpl<Derived>;
  * ConceptAtomicGoal
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
     m_index(index),
     m_predicate(predicate),
@@ -192,25 +192,25 @@ ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predic
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicGoalImpl<P>::test_match(dl::Constructor<Concept> constructor) const
 {
     return constructor->accept(ConceptAtomicGoalVisitor<P>(this));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicGoalImpl<P>::is_negated() const
 {
     return m_is_negated;
@@ -380,24 +380,24 @@ Index RoleUniversalImpl::get_index() const { return m_index; }
  * RoleAtomicState
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicStateImpl<P>::test_match(dl::Constructor<Role> constructor) const
 {
     return constructor->accept(RoleAtomicStateVisitor<P>(this));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> RoleAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
@@ -411,7 +411,7 @@ template class RoleAtomicStateImpl<Derived>;
  * RoleAtomicGoal
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
     m_index(index),
     m_predicate(predicate),
@@ -419,25 +419,25 @@ RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, b
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicGoalImpl<P>::test_match(dl::Constructor<Role> constructor) const
 {
     return constructor->accept(RoleAtomicGoalVisitor<P>(this));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicGoalImpl<P>::is_negated() const
 {
     return m_is_negated;

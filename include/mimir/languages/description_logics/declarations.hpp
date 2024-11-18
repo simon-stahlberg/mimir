@@ -18,8 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
-#include "mimir/formalism/predicate_category.hpp"
-#include "mimir/languages/description_logics/constructor_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
+#include "mimir/languages/description_logics/constructor_tag.hpp"
 
 #include <variant>
 #include <vector>
@@ -35,9 +35,9 @@ class EvaluationContext;
  * Denotations
  */
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct DenotationImpl;
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 using Denotation = const DenotationImpl<D>*;
 
 /**
@@ -45,11 +45,11 @@ using Denotation = const DenotationImpl<D>*;
  */
 
 /* Constructor */
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 class ConstructorImpl;
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 using Constructor = const ConstructorImpl<D>*;
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 using ConstructorList = std::vector<Constructor<D>>;
 
 /* Concrete concepts */
@@ -57,13 +57,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicStateImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicGoalImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -85,13 +85,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicStateImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicGoalImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -119,35 +119,35 @@ namespace grammar
  */
 
 /* Constructor */
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class ConstructorImpl;
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 using Constructor = const ConstructorImpl<D>*;
 
 /* DerivationRule */
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class DerivationRuleImpl;
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
 
 /* NonTerminal */
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class NonTerminalImpl;
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 using NonTerminal = const NonTerminalImpl<D>*;
 
 /* ConstructorOrNonTerminalChoice */
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 using ConstructorOrNonTerminalChoice = std::variant<Constructor<D>, NonTerminal<D>>;
 
 /* Choice */
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class ChoiceImpl;
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 using Choice = const ChoiceImpl<D>*;
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 using ChoiceList = std::vector<Choice<D>>;
 
 /* Concrete concepts */
@@ -155,13 +155,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicStateImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicGoalImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -183,13 +183,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicStateImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicGoalImpl;
-template<PredicateCategory P>
+template<PredicateTag P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -214,7 +214,7 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class Visitor;
 
 }

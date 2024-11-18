@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-template<PredicateCategory P>
+template<PredicateTag P>
 class AtomImpl
 {
 private:
@@ -55,10 +55,10 @@ public:
     size_t get_arity() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, const AtomImpl<P>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, Atom<P> element);
 
 }

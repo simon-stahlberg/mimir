@@ -69,7 +69,7 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    template<PredicateCategory P>
+    template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const EffectSimpleList& get_simple_effects() const;
     const EffectComplexList& get_complex_effects() const;

@@ -55,7 +55,7 @@ public:
     bool visit(dl::ConceptTop constructor) const override;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicStateVisitor : public Visitor<Concept>
 {
 private:
@@ -67,7 +67,7 @@ public:
     bool visit(dl::ConceptAtomicState<P> constructor) const override;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicGoalVisitor : public Visitor<Concept>
 {
 private:
@@ -182,7 +182,7 @@ public:
     bool visit(dl::RoleUniversal constructor) const override;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicStateVisitor : public Visitor<Role>
 {
 private:
@@ -194,7 +194,7 @@ public:
     bool visit(dl::RoleAtomicState<P> constructor) const override;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicGoalVisitor : public Visitor<Role>
 {
 private:

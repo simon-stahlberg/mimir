@@ -29,7 +29,7 @@ namespace mimir::dl::grammar
  * Grammar constructor hierarchy parallel to dl constructors.
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class ConstructorImpl
 {
 protected:

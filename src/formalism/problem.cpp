@@ -159,7 +159,7 @@ const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() cons
 
 const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -176,7 +176,7 @@ const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

@@ -134,7 +134,7 @@ inline size_t num_assignments(size_t arity, size_t num_objects)
 ///   2. the assignment [i/o] is consistent
 ///
 /// We say that an assignment set is static if all atoms it considers are static.
-template<PredicateCategory P>
+template<PredicateTag P>
 class AssignmentSet
 {
 private:
@@ -167,7 +167,7 @@ public:
     bool consistent_literals(const LiteralList<P>& literals, const consistency_graph::Vertex& consistent_vertex) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_problem(problem)
 {
     const auto num_objects = problem->get_objects().size();
@@ -208,7 +208,7 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
     const auto num_objects = m_problem->get_objects().size();
@@ -233,7 +233,7 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     }
 }
 
-template<PredicateCategory P, typename AssignmentIterator>
+template<PredicateTag P, typename AssignmentIterator>
 bool consistent_literals_helper(const Problem& problem,
                                 const std::vector<std::vector<bool>>& assignment_sets,
                                 const LiteralList<P>& literals,
@@ -285,13 +285,13 @@ bool consistent_literals_helper(const Problem& problem,
     return true;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool AssignmentSet<P>::consistent_literals(const LiteralList<P>& literals, const consistency_graph::Edge& edge) const
 {
     return consistent_literals_helper<P, EdgeAssignmentIterator>(m_problem, m_f, literals, edge);
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool AssignmentSet<P>::consistent_literals(const LiteralList<P>& literals, const consistency_graph::Vertex& vertex) const
 {
     return consistent_literals_helper<P, VertexAssignmentIterator>(m_problem, m_f, literals, vertex);

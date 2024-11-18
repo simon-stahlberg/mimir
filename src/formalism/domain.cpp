@@ -117,7 +117,7 @@ const Requirements& DomainImpl::get_requirements() const { return m_requirements
 
 const ObjectList& DomainImpl::get_constants() const { return m_constants; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const PredicateList<P>& DomainImpl::get_predicates() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -134,7 +134,7 @@ const PredicateList<P>& DomainImpl::get_predicates() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -150,7 +150,7 @@ const AxiomList& DomainImpl::get_axioms() const { return m_axioms; }
 
 const ToObjectMap<std::string> DomainImpl::get_name_to_constants() const { return m_name_to_constants; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -167,7 +167,7 @@ const ToPredicateMap<std::string, P>& DomainImpl::get_name_to_predicate() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

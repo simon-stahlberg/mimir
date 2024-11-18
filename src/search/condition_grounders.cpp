@@ -22,7 +22,7 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/condition_grounders/event_handlers/default.hpp"
@@ -32,7 +32,7 @@
 namespace mimir
 {
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding)
 {
     for (const auto& literal : literals)
@@ -73,7 +73,7 @@ bool ConditionGrounder::is_valid_binding(Problem problem, State state, const Obj
            && is_valid_dynamic_binding(m_derived_conditions, state, binding);  // due to over-approx.
 }
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLFactories& pddl_factories)
 {
     for (const auto& literal : literals)
@@ -282,7 +282,7 @@ Problem ConditionGrounder::get_problem() const { return m_problem; }
 
 const VariableList& ConditionGrounder::get_variables() const { return m_variables; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const LiteralList<P>& ConditionGrounder::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -299,7 +299,7 @@ const LiteralList<P>& ConditionGrounder::get_conditions() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

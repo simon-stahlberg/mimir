@@ -46,7 +46,7 @@ namespace mimir
 
 /* StripsActionPrecondition */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 FlatBitset& StripsActionPrecondition::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -66,7 +66,7 @@ FlatBitset& StripsActionPrecondition::get_positive_precondition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -74,7 +74,7 @@ template FlatBitset& StripsActionPrecondition::get_positive_precondition<Static>
 template FlatBitset& StripsActionPrecondition::get_positive_precondition<Fluent>();
 template FlatBitset& StripsActionPrecondition::get_positive_precondition<Derived>();
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const FlatBitset& StripsActionPrecondition::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -91,7 +91,7 @@ const FlatBitset& StripsActionPrecondition::get_positive_precondition() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -99,7 +99,7 @@ template const FlatBitset& StripsActionPrecondition::get_positive_precondition<S
 template const FlatBitset& StripsActionPrecondition::get_positive_precondition<Fluent>() const;
 template const FlatBitset& StripsActionPrecondition::get_positive_precondition<Derived>() const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 FlatBitset& StripsActionPrecondition::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -116,7 +116,7 @@ FlatBitset& StripsActionPrecondition::get_negative_precondition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -124,7 +124,7 @@ template FlatBitset& StripsActionPrecondition::get_negative_precondition<Static>
 template FlatBitset& StripsActionPrecondition::get_negative_precondition<Fluent>();
 template FlatBitset& StripsActionPrecondition::get_negative_precondition<Derived>();
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const FlatBitset& StripsActionPrecondition::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -141,7 +141,7 @@ const FlatBitset& StripsActionPrecondition::get_negative_precondition() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -149,7 +149,7 @@ template const FlatBitset& StripsActionPrecondition::get_negative_precondition<S
 template const FlatBitset& StripsActionPrecondition::get_negative_precondition<Fluent>() const;
 template const FlatBitset& StripsActionPrecondition::get_negative_precondition<Derived>() const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool StripsActionPrecondition::is_applicable(const FlatBitset& atoms) const
 {
     return atoms.is_superseteq(get_positive_precondition<P>())  //
@@ -160,7 +160,7 @@ template bool StripsActionPrecondition::is_applicable<Static>(const FlatBitset& 
 template bool StripsActionPrecondition::is_applicable<Fluent>(const FlatBitset& atoms) const;
 template bool StripsActionPrecondition::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool StripsActionPrecondition::is_applicable(State state) const
 {
     return is_applicable<P>(state->get_atoms<P>());
@@ -208,7 +208,7 @@ const FlatBitset& StripsActionEffect::get_negative_effects() const { return m_ne
 
 /* ConditionalEffect */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 FlatIndexList& ConditionalEffect::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -225,7 +225,7 @@ FlatIndexList& ConditionalEffect::get_positive_precondition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -233,7 +233,7 @@ template FlatIndexList& ConditionalEffect::get_positive_precondition<Static>();
 template FlatIndexList& ConditionalEffect::get_positive_precondition<Fluent>();
 template FlatIndexList& ConditionalEffect::get_positive_precondition<Derived>();
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const FlatIndexList& ConditionalEffect::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -250,7 +250,7 @@ const FlatIndexList& ConditionalEffect::get_positive_precondition() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -258,7 +258,7 @@ template const FlatIndexList& ConditionalEffect::get_positive_precondition<Stati
 template const FlatIndexList& ConditionalEffect::get_positive_precondition<Fluent>() const;
 template const FlatIndexList& ConditionalEffect::get_positive_precondition<Derived>() const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 FlatIndexList& ConditionalEffect::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -275,7 +275,7 @@ FlatIndexList& ConditionalEffect::get_negative_precondition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -283,7 +283,7 @@ template FlatIndexList& ConditionalEffect::get_negative_precondition<Static>();
 template FlatIndexList& ConditionalEffect::get_negative_precondition<Fluent>();
 template FlatIndexList& ConditionalEffect::get_negative_precondition<Derived>();
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const FlatIndexList& ConditionalEffect::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -300,7 +300,7 @@ const FlatIndexList& ConditionalEffect::get_negative_precondition() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -312,7 +312,7 @@ SimpleFluentEffect& ConditionalEffect::get_simple_effect() { return m_effect; }
 
 const SimpleFluentEffect& ConditionalEffect::get_simple_effect() const { return m_effect; }
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool ConditionalEffect::is_applicable(State state) const
 {
     const auto& state_atoms = state->get_atoms<P>();

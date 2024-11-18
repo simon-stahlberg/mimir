@@ -88,7 +88,7 @@ public:
     Index get_index() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>
 {
 private:
@@ -118,7 +118,7 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>
 {
 private:
@@ -425,7 +425,7 @@ public:
     Index get_index() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicStateImpl : public ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>
 {
 private:
@@ -455,7 +455,7 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>
 {
 private:

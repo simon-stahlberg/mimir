@@ -64,27 +64,27 @@ protected:
     void prepare_base(const TermObjectImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermVariableImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_base(const PredicateImpl<P>& predicate)
     {
         self().prepare_impl(predicate);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_base(const AtomImpl<P>& atom)
     {
         self().prepare_impl(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_base(const GroundAtomImpl<P>& atom)
     {
         self().prepare_impl(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_base(const LiteralImpl<P>& literal)
     {
         self().prepare_impl(literal);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_base(const GroundLiteralImpl<P>& literal)
     {
         self().prepare_impl(literal);
@@ -127,29 +127,29 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_impl(const PredicateImpl<P>& predicate)
     {
         this->prepare(predicate.get_parameters());
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_impl(const AtomImpl<P>& atom)
     {
         this->prepare(*atom.get_predicate());
         this->prepare(atom.get_terms());
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_impl(const GroundAtomImpl<P>& atom)
     {
         this->prepare(*atom.get_predicate());
         this->prepare(atom.get_objects());
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_impl(const LiteralImpl<P>& literal)
     {
         this->prepare(*literal.get_atom());
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare_impl(const GroundLiteralImpl<P>& literal)
     {
         this->prepare(*literal.get_atom());
@@ -266,27 +266,27 @@ protected:
     {
         return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, term);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Predicate<P> transform_base(const PredicateImpl<P>& predicate)
     {
         return this->self().transform_impl(predicate);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Atom<P> transform_base(const AtomImpl<P>& atom)
     {
         return this->self().transform_impl(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundAtom<P> transform_base(const GroundAtomImpl<P>& atom)
     {
         return this->self().transform_impl(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Literal<P> transform_base(const LiteralImpl<P>& literal)
     {
         return this->self().transform_impl(literal);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundLiteral<P> transform_base(const GroundLiteralImpl<P>& literal)
     {
         return this->self().transform_impl(literal);
@@ -368,22 +368,22 @@ protected:
     {
         return this->m_pddl_factories.template get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Atom<P> transform_impl(const AtomImpl<P>& atom)
     {
         return this->m_pddl_factories.get_or_create_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_terms()));
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundAtom<P> transform_impl(const GroundAtomImpl<P>& atom)
     {
         return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Literal<P> transform_impl(const LiteralImpl<P>& literal)
     {
         return this->m_pddl_factories.get_or_create_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundLiteral<P> transform_impl(const GroundLiteralImpl<P>& literal)
     {
         return this->m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));

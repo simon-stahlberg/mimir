@@ -22,7 +22,7 @@
 #include "cista/containers/vector.h"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 
 #include <ostream>
 

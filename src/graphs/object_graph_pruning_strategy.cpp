@@ -51,7 +51,7 @@ bool ObjectGraphStaticSccPruningStrategy::prune(Index state, Object object) cons
     return pruned_objects.get(object->get_index());
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
                   const std::vector<size_t>& component_map,
                   Index state,
@@ -84,7 +84,7 @@ bool ObjectGraphStaticSccPruningStrategy::prune(Index state, GroundAtom<Derived>
     return mimir::prune(m_pruning_components, m_component_map, state, atom);
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static bool prune(const std::vector<ObjectGraphStaticSccPruningStrategy::SccPruningComponent>& pruning_components,
                   const std::vector<size_t>& component_map,
                   Index state,
@@ -118,7 +118,7 @@ ObjectGraphStaticSccPruningStrategy::SccPruningComponent::operator&=(const Objec
     return *this;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const FlatBitset& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_pruned_goal_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -135,7 +135,7 @@ const FlatBitset& ObjectGraphStaticSccPruningStrategy::SccPruningComponent::get_
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
@@ -164,7 +164,7 @@ static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_component
     return StaticForwardGraph<StaticDigraph>(std::move(g));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void mark_objects_as_not_prunable(const GroundLiteralList<P>& goal_condition,
                                   const FlatBitset& always_true_state_atoms,
                                   const FlatBitset& always_false_state_atoms,
@@ -190,7 +190,7 @@ void mark_objects_as_not_prunable(const GroundLiteralList<P>& goal_condition,
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitset& ref_pruned_objects)
 {
     for (const auto& atom : atoms)

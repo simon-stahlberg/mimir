@@ -22,7 +22,7 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 #include "mimir/search/applicable_action_generators/lifted/axiom_stratification.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"

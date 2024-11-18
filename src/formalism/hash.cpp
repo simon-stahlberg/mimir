@@ -53,7 +53,7 @@ size_t UniquePDDLHasher<const ActionImpl*>::operator()(const ActionImpl* e) cons
                                     e->get_function_expression());
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniquePDDLHasher<const AtomImpl<P>*>::operator()(const AtomImpl<P>* e) const
 {
     return UniquePDDLHashCombiner()(e->get_predicate(), e->get_terms());
@@ -136,7 +136,7 @@ size_t UniquePDDLHasher<const FunctionImpl*>::operator()(const FunctionImpl* e) 
     return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_terms());
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniquePDDLHasher<const GroundAtomImpl<P>*>::operator()(const GroundAtomImpl<P>* e) const
 {
     return UniquePDDLHashCombiner()(e->get_predicate(), e->get_objects());
@@ -181,7 +181,7 @@ size_t UniquePDDLHasher<const GroundFunctionImpl*>::operator()(const GroundFunct
     return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_objects());
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniquePDDLHasher<const GroundLiteralImpl<P>*>::operator()(const GroundLiteralImpl<P>* e) const
 {
     return UniquePDDLHashCombiner()(e->is_negated(), e->get_atom());
@@ -191,7 +191,7 @@ template size_t UniquePDDLHasher<const GroundLiteralImpl<Static>*>::operator()(c
 template size_t UniquePDDLHasher<const GroundLiteralImpl<Fluent>*>::operator()(const GroundLiteralImpl<Fluent>* e) const;
 template size_t UniquePDDLHasher<const GroundLiteralImpl<Derived>*>::operator()(const GroundLiteralImpl<Derived>* e) const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniquePDDLHasher<const LiteralImpl<P>*>::operator()(const LiteralImpl<P>* e) const
 {
     return UniquePDDLHashCombiner()(e->is_negated(), e->get_atom());
@@ -213,7 +213,7 @@ size_t UniquePDDLHasher<const NumericFluentImpl*>::operator()(const NumericFluen
 
 size_t UniquePDDLHasher<const ObjectImpl*>::operator()(const ObjectImpl* e) const { return UniquePDDLHashCombiner()(e->get_name()); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniquePDDLHasher<const PredicateImpl<P>*>::operator()(const PredicateImpl<P>* e) const
 {
     return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters());

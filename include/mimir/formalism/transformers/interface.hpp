@@ -55,27 +55,27 @@ public:
     void prepare(const TermObjectImpl& term) { self().prepare_base(term); }
     void prepare(const TermVariableImpl& term) { self().prepare_base(term); }
     void prepare(const TermImpl& term) { self().prepare_base(term); }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare(const PredicateImpl<P>& predicate)
     {
         self().prepare_base(predicate);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare(const AtomImpl<P>& atom)
     {
         self().prepare_base(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare(const GroundAtomImpl<P>& atom)
     {
         self().prepare_base(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare(const LiteralImpl<P>& literal)
     {
         self().prepare_base(literal);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void prepare(const GroundLiteralImpl<P>& literal)
     {
         self().prepare_base(literal);
@@ -115,27 +115,27 @@ public:
     Term transform(const TermObjectImpl& term) { return self().transform_base(term); }
     Term transform(const TermVariableImpl& term) { return self().transform_base(term); }
     Term transform(const TermImpl& term) { return self().transform_base(term); }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Predicate<P> transform(const PredicateImpl<P>& predicate)
     {
         return self().transform_base(predicate);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Atom<P> transform(const AtomImpl<P>& atom)
     {
         return self().transform_base(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundAtom<P> transform(const GroundAtomImpl<P>& atom)
     {
         return self().transform_base(atom);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Literal<P> transform(const LiteralImpl<P>& literal)
     {
         return self().transform_base(literal);
     }
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundLiteral<P> transform(const GroundLiteralImpl<P>& literal)
     {
         return self().transform_base(literal);

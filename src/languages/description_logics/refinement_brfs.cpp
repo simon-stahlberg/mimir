@@ -43,7 +43,7 @@ struct SearchSpace
  * Refinement of constructors that accept predicates.
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static bool refine_concept_atomic_state(Problem problem,
                                         const grammar::Grammar& grammar,
                                         const Options& options,
@@ -170,7 +170,7 @@ public:
     bool operator!=(const SumPartitionConstIterator& other) const { return !(*this == other); }
 };
 
-template<IsConceptOrRole... Ds>
+template<ConstructorTag... Ds>
 class ConstructorArgumentConstIterator
 {
 private:
@@ -259,8 +259,7 @@ public:
             ((std::get<Indices>(m_values) =
                   std::get<Indices>(m_constructors_by_complexity)->at((*m_complexity_distribution_iter)[Indices]).at(m_indices[Indices])),
              ...);
-        }
-        (std::make_index_sequence<num_elements> {});
+        }(std::make_index_sequence<num_elements> {});
 
         return m_values;
     }

@@ -39,14 +39,14 @@ private:
     using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::prepare_impl;
     using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::transform_impl;
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     LiteralList<P> transform_impl(const LiteralList<P>& literals);
     EffectSimpleList transform_impl(const EffectSimpleList& effects);
     EffectComplexList transform_impl(const EffectComplexList& effects);
     ActionList transform_impl(const ActionList& actions);
     AxiomList transform_impl(const AxiomList& axioms);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Literal<P> transform_impl(const LiteralImpl<P>& literal);
     EffectSimple transform_impl(const EffectSimpleImpl& effect);
     EffectComplex transform_impl(const EffectComplexImpl& effect);
@@ -74,7 +74,7 @@ public:
  * Implementations
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 LiteralList<P> DeleteRelaxTransformer::transform_impl(const LiteralList<P>& literals)
 {
     auto positive_literals = LiteralList<P> {};
@@ -89,7 +89,7 @@ LiteralList<P> DeleteRelaxTransformer::transform_impl(const LiteralList<P>& lite
     return positive_literals;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Literal<P> DeleteRelaxTransformer::transform_impl(const LiteralImpl<P>& literal)
 {
     if (literal.is_negated())

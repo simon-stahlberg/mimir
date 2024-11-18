@@ -34,7 +34,7 @@ size_t UniqueDLHasher<const ConceptBotImpl*>::operator()(const ConceptBotImpl* e
 
 size_t UniqueDLHasher<const ConceptTopImpl*>::operator()(const ConceptTopImpl* e) const { return mimir::hash_combine(e); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const ConceptAtomicStateImpl<P>*>::operator()(const ConceptAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
@@ -44,7 +44,7 @@ template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Static>*>::operator(
 template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Fluent>*>::operator()(const ConceptAtomicStateImpl<Fluent>* e) const;
 template size_t UniqueDLHasher<const ConceptAtomicStateImpl<Derived>*>::operator()(const ConceptAtomicStateImpl<Derived>* e) const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>::operator()(const ConceptAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->is_negated(), e->get_predicate());
@@ -92,7 +92,7 @@ size_t UniqueDLHasher<const ConceptNominalImpl*>::operator()(const ConceptNomina
 
 size_t UniqueDLHasher<const RoleUniversalImpl*>::operator()(const RoleUniversalImpl* e) const { return mimir::hash_combine(e); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const RoleAtomicStateImpl<P>*>::operator()(const RoleAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
@@ -102,7 +102,7 @@ template size_t UniqueDLHasher<const RoleAtomicStateImpl<Static>*>::operator()(c
 template size_t UniqueDLHasher<const RoleAtomicStateImpl<Fluent>*>::operator()(const RoleAtomicStateImpl<Fluent>* e) const;
 template size_t UniqueDLHasher<const RoleAtomicStateImpl<Derived>*>::operator()(const RoleAtomicStateImpl<Derived>* e) const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const RoleAtomicGoalImpl<P>*>::operator()(const RoleAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->is_negated(), e->get_predicate());
@@ -146,7 +146,7 @@ size_t UniqueDLHasher<const RoleIdentityImpl*>::operator()(const RoleIdentityImp
  * DL grammar constructors
  */
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 size_t UniqueDLHasher<const grammar::DerivationRuleImpl<D>*>::operator()(const grammar::DerivationRuleImpl<D>* e) const
 {
     return mimir::hash_combine(e->get_choices());
@@ -155,7 +155,7 @@ size_t UniqueDLHasher<const grammar::DerivationRuleImpl<D>*>::operator()(const g
 template size_t UniqueDLHasher<const grammar::DerivationRuleImpl<Concept>*>::operator()(const grammar::DerivationRuleImpl<Concept>* e) const;
 template size_t UniqueDLHasher<const grammar::DerivationRuleImpl<Role>*>::operator()(const grammar::DerivationRuleImpl<Role>* e) const;
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 size_t UniqueDLHasher<const grammar::NonTerminalImpl<D>*>::operator()(const grammar::NonTerminalImpl<D>* e) const
 {
     return mimir::hash_combine(e->get_name());
@@ -164,7 +164,7 @@ size_t UniqueDLHasher<const grammar::NonTerminalImpl<D>*>::operator()(const gram
 template size_t UniqueDLHasher<const grammar::NonTerminalImpl<Concept>*>::operator()(const grammar::NonTerminalImpl<Concept>* e) const;
 template size_t UniqueDLHasher<const grammar::NonTerminalImpl<Role>*>::operator()(const grammar::NonTerminalImpl<Role>* e) const;
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 size_t UniqueDLHasher<const grammar::ConstructorOrNonTerminalChoice<D>*>::operator()(const grammar::ConstructorOrNonTerminalChoice<D>* e) const
 {
     return mimir::hash_combine(*e);
@@ -174,7 +174,7 @@ template size_t
 UniqueDLHasher<const grammar::ConstructorOrNonTerminalChoice<Concept>*>::operator()(const grammar::ConstructorOrNonTerminalChoice<Concept>* e) const;
 template size_t UniqueDLHasher<const grammar::ConstructorOrNonTerminalChoice<Role>*>::operator()(const grammar::ConstructorOrNonTerminalChoice<Role>* e) const;
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 size_t UniqueDLHasher<const grammar::ChoiceImpl<D>*>::operator()(const grammar::ChoiceImpl<D>* e) const
 {
     return mimir::hash_combine(e->get_choice());
@@ -189,7 +189,7 @@ size_t UniqueDLHasher<const grammar::ConceptBotImpl*>::operator()(const grammar:
 
 size_t UniqueDLHasher<const grammar::ConceptTopImpl*>::operator()(const grammar::ConceptTopImpl* e) const { return mimir::hash_combine(e); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<P>*>::operator()(const grammar::ConceptAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
@@ -199,7 +199,7 @@ template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Static>*>::
 template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Fluent>*>::operator()(const grammar::ConceptAtomicStateImpl<Fluent>* e) const;
 template size_t UniqueDLHasher<const grammar::ConceptAtomicStateImpl<Derived>*>::operator()(const grammar::ConceptAtomicStateImpl<Derived>* e) const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<P>*>::operator()(const grammar::ConceptAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->is_negated(), e->get_predicate());
@@ -253,7 +253,7 @@ size_t UniqueDLHasher<const grammar::ConceptNominalImpl*>::operator()(const gram
 
 size_t UniqueDLHasher<const grammar::RoleUniversalImpl*>::operator()(const grammar::RoleUniversalImpl* e) const { return mimir::hash_combine(e); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<P>*>::operator()(const grammar::RoleAtomicStateImpl<P>* e) const
 {
     return mimir::hash_combine(e->get_predicate());
@@ -263,7 +263,7 @@ template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Static>*>::ope
 template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Fluent>*>::operator()(const grammar::RoleAtomicStateImpl<Fluent>* e) const;
 template size_t UniqueDLHasher<const grammar::RoleAtomicStateImpl<Derived>*>::operator()(const grammar::RoleAtomicStateImpl<Derived>* e) const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t UniqueDLHasher<const grammar::RoleAtomicGoalImpl<P>*>::operator()(const grammar::RoleAtomicGoalImpl<P>* e) const
 {
     return mimir::hash_combine(e->is_negated(), e->get_predicate());

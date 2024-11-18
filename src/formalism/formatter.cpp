@@ -102,7 +102,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     m_indent -= m_add_indent;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFormatter::write(const AtomImpl<P>& element, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
@@ -341,7 +341,7 @@ void PDDLFormatter::write(const FunctionImpl& element, std::ostream& out)
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFormatter::write(const GroundAtomImpl<P>& element, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
@@ -412,7 +412,7 @@ void PDDLFormatter::write(const GroundFunctionImpl& element, std::ostream& out)
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFormatter::write(const GroundLiteralImpl<P>& element, std::ostream& out)
 {
     if (element.is_negated())
@@ -431,7 +431,7 @@ template void PDDLFormatter::write(const GroundLiteralImpl<Static>& element, std
 template void PDDLFormatter::write(const GroundLiteralImpl<Fluent>& element, std::ostream& out);
 template void PDDLFormatter::write(const GroundLiteralImpl<Derived>& element, std::ostream& out);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFormatter::write(const LiteralImpl<P>& element, std::ostream& out)
 {
     if (element.is_negated())
@@ -466,7 +466,7 @@ void PDDLFormatter::write(const NumericFluentImpl& element, std::ostream& out)
 
 void PDDLFormatter::write(const ObjectImpl& element, std::ostream& out) { out << element.get_name(); }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFormatter::write(const PredicateImpl<P>& element, std::ostream& out)
 {
     out << "(" << element.get_name();

@@ -20,43 +20,43 @@
 namespace mimir
 {
 
-PDDLTypeToFactory create_default_pddl_type_to_factory()
+PDDLTypeToRepository create_default_pddl_type_to_repository()
 {
-    return boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<RequirementsImpl>, RequirementsFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<VariableImpl>, VariableFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<TermImpl>, TermFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<ObjectImpl>, ObjectFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<AtomImpl<Static>>, AtomFactory<Static> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<AtomImpl<Fluent>>, AtomFactory<Fluent> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<AtomImpl<Derived>>, AtomFactory<Derived> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundAtomImpl<Static>>, GroundAtomFactory<Static> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundAtomImpl<Fluent>>, GroundAtomFactory<Fluent> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundAtomImpl<Derived>>, GroundAtomFactory<Derived> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<LiteralImpl<Static>>, LiteralFactory<Static> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<LiteralImpl<Fluent>>, LiteralFactory<Fluent> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<LiteralImpl<Derived>>, LiteralFactory<Derived> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundLiteralImpl<Static>>, GroundLiteralFactory<Static> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundLiteralImpl<Fluent>>, GroundLiteralFactory<Fluent> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundLiteralImpl<Derived>>, GroundLiteralFactory<Derived> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<PredicateImpl<Static>>, PredicateFactory<Static> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<PredicateImpl<Fluent>>, PredicateFactory<Fluent> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<PredicateImpl<Derived>>, PredicateFactory<Derived> {}),
-                                 boost::hana::make_pair(boost::hana::type_c<FunctionExpressionImpl>, FunctionExpressionFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundFunctionExpressionImpl>, GroundFunctionExpressionFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<FunctionImpl>, FunctionFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<GroundFunctionImpl>, GroundFunctionFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<FunctionSkeletonImpl>, FunctionSkeletonFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<EffectSimpleImpl>, EffectSimpleFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<EffectComplexImpl>, EffectUniversalFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<ActionImpl>, ActionFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<AxiomImpl>, AxiomFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<OptimizationMetricImpl>, OptimizationMetricFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<NumericFluentImpl>, NumericFluentFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<DomainImpl>, DomainFactory {}),
-                                 boost::hana::make_pair(boost::hana::type_c<ProblemImpl>, ProblemFactory {}));
+    return boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<RequirementsImpl>, RequirementsRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<VariableImpl>, VariableRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<TermImpl>, TermRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<ObjectImpl>, ObjectRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<AtomImpl<Static>>, AtomRepository<Static> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<AtomImpl<Fluent>>, AtomRepository<Fluent> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<AtomImpl<Derived>>, AtomRepository<Derived> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundAtomImpl<Static>>, GroundAtomRepository<Static> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<LiteralImpl<Static>>, LiteralRepository<Static> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<LiteralImpl<Fluent>>, LiteralRepository<Fluent> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<LiteralImpl<Derived>>, LiteralRepository<Derived> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<PredicateImpl<Static>>, PredicateRepository<Static> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<PredicateImpl<Fluent>>, PredicateRepository<Fluent> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<PredicateImpl<Derived>>, PredicateRepository<Derived> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<FunctionExpressionImpl>, FunctionExpressionRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<FunctionImpl>, FunctionRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<GroundFunctionImpl>, GroundFunctionRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<FunctionSkeletonImpl>, FunctionSkeletonRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<EffectSimpleImpl>, EffectSimpleRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<EffectComplexImpl>, EffectUniversalRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<ActionImpl>, ActionRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<AxiomImpl>, AxiomRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<OptimizationMetricImpl>, OptimizationMetricRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<NumericFluentImpl>, NumericFluentRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<DomainImpl>, DomainRepository {}),
+                                 boost::hana::make_pair(boost::hana::type_c<ProblemImpl>, ProblemRepository {}));
 }
 
-PDDLFactories::PDDLFactories() : m_repositories(create_default_pddl_type_to_factory()) {}
+PDDLFactories::PDDLFactories() : m_repositories(create_default_pddl_type_to_repository()) {}
 
 PDDLFactories::PDDLFactories(PDDLFactories&& other) = default;
 
@@ -88,7 +88,7 @@ Object PDDLFactories::get_or_create_object(std::string name)
     return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).template get_or_create<ObjectImpl>(std::move(name));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Atom<P> PDDLFactories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AtomImpl<P>> {}).template get_or_create<AtomImpl<P>>(std::move(predicate), std::move(terms));
@@ -98,7 +98,7 @@ template Atom<Static> PDDLFactories::get_or_create_atom(Predicate<Static> predic
 template Atom<Fluent> PDDLFactories::get_or_create_atom(Predicate<Fluent> predicate, TermList terms);
 template Atom<Derived> PDDLFactories::get_or_create_atom(Predicate<Derived> predicate, TermList terms);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundAtom<P> PDDLFactories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {})
@@ -109,7 +109,7 @@ template GroundAtom<Static> PDDLFactories::get_or_create_ground_atom(Predicate<S
 template GroundAtom<Fluent> PDDLFactories::get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList ObjectList);
 template GroundAtom<Derived> PDDLFactories::get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList ObjectList);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Literal<P> PDDLFactories::get_or_create_literal(bool is_negated, Atom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).template get_or_create<LiteralImpl<P>>(is_negated, std::move(atom));
@@ -119,7 +119,7 @@ template Literal<Static> PDDLFactories::get_or_create_literal(bool is_negated, A
 template Literal<Fluent> PDDLFactories::get_or_create_literal(bool is_negated, Atom<Fluent> atom);
 template Literal<Derived> PDDLFactories::get_or_create_literal(bool is_negated, Atom<Derived> atom);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundLiteral<P> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {})
@@ -130,7 +130,7 @@ template GroundLiteral<Static> PDDLFactories::get_or_create_ground_literal(bool 
 template GroundLiteral<Fluent> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<Fluent> atom);
 template GroundLiteral<Derived> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PredicateImpl<P>> {}).template get_or_create<PredicateImpl<P>>(name, std::move(parameters));
@@ -408,10 +408,10 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
 }
 
 // Factory
-const PDDLTypeToFactory& PDDLFactories::get_pddl_type_to_factory() const { return m_repositories; }
+const PDDLTypeToRepository& PDDLFactories::get_pddl_type_to_factory() const { return m_repositories; }
 
 // GroundAtom
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundAtom<P> PDDLFactories::get_ground_atom(size_t atom_id) const
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).at(atom_id);
@@ -456,7 +456,7 @@ void PDDLFactories::ground_variables(const TermList& terms, const ObjectList& bi
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
@@ -494,7 +494,7 @@ GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const O
     return grounded_literal;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
                                            FlatBitset& ref_positive_bitset,
                                            FlatBitset& ref_negative_bitset,
@@ -528,7 +528,7 @@ template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<De
                                                     FlatBitset& ref_negative_bitset,
                                                     const ObjectList& binding);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& literals,
                                            FlatIndexList& ref_positive_indices,
                                            FlatIndexList& ref_negative_indices,

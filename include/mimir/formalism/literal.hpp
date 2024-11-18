@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class LiteralImpl
 {
 private:
@@ -55,10 +55,10 @@ public:
     const Atom<P>& get_atom() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, Literal<P> element);
 
 }

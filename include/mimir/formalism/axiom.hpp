@@ -55,7 +55,7 @@ public:
     Index get_index() const;
     const VariableList& get_parameters() const;
     const Literal<Derived>& get_literal() const;
-    template<PredicateCategory P>
+    template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
 
     size_t get_arity() const;

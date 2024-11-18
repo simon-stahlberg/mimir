@@ -47,7 +47,7 @@ static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(cons
     return object_to_vertex_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static void add_ground_atom_graph_structures(const ProblemColorFunction& color_function,
                                              const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                              GroundAtom<P> atom,
@@ -97,7 +97,7 @@ static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static void add_ground_literal_graph_structures(const ProblemColorFunction& color_function,
                                                 const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                 bool mark_true_goal_literals,

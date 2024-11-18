@@ -37,7 +37,7 @@ namespace mimir
 /// The basic idea is that those can be potential mutex variables and grouping them together
 /// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
 /// We also consider larger groups first since such mutex variables would result in a very large linear split.
-template<PredicateCategory P>
+template<PredicateTag P>
 static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLFactories& pddl_factories)
 {
     auto ground_atoms_order = std::vector<size_t> {};

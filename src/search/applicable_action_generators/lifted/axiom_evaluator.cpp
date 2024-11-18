@@ -20,7 +20,7 @@
 #include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/condition_grounders.hpp"

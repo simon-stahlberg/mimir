@@ -39,7 +39,7 @@ namespace mimir
 
 /* State */
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool StateImpl::contains(GroundAtom<P> atom) const
 {
     return get_atoms<P>().get(atom->get_index());
@@ -48,7 +48,7 @@ bool StateImpl::contains(GroundAtom<P> atom) const
 template bool StateImpl::contains(GroundAtom<Fluent> atom) const;
 template bool StateImpl::contains(GroundAtom<Derived> atom) const;
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool StateImpl::superset_of(const GroundAtomList<P>& atoms) const
 {
     for (const auto& atom : atoms)
@@ -65,7 +65,7 @@ bool StateImpl::superset_of(const GroundAtomList<P>& atoms) const
 template bool StateImpl::superset_of(const GroundAtomList<Fluent>& atoms) const;
 template bool StateImpl::superset_of(const GroundAtomList<Derived>& atoms) const;
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
     return literal->is_negated() != contains(literal->get_atom());
@@ -74,7 +74,7 @@ bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
 template bool StateImpl::literal_holds(GroundLiteral<Derived> literal) const;
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 {
     for (const auto& literal : literals)
@@ -95,7 +95,7 @@ Index& StateImpl::get_index() { return m_index; }
 
 Index StateImpl::get_index() const { return m_index; }
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 FlatBitset& StateImpl::get_atoms()
 {
     if constexpr (std::is_same_v<P, Fluent>)
@@ -108,14 +108,14 @@ FlatBitset& StateImpl::get_atoms()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 
 template FlatBitset& StateImpl::get_atoms<Fluent>();
 template FlatBitset& StateImpl::get_atoms<Derived>();
 
-template<DynamicPredicateCategory P>
+template<DynamicPredicateTag P>
 const FlatBitset& StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
@@ -128,7 +128,7 @@ const FlatBitset& StateImpl::get_atoms() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

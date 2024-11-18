@@ -63,10 +63,10 @@ public:
 
     State get_state() const;
 
-    template<IsConceptOrRole D>
+    template<ConstructorTag D>
     DenotationImpl<D>& get_denotation_builder();
 
-    template<IsConceptOrRole D>
+    template<ConstructorTag D>
     DenotationRepository<D>& get_denotation_repository();
 };
 }

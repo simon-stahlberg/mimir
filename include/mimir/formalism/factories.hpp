@@ -50,80 +50,81 @@
 namespace mimir
 {
 
-using RequirementsFactory = loki::UniqueFactory<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
-using VariableFactory = loki::UniqueFactory<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
-using TermFactory = loki::UniqueFactory<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
-using ObjectFactory = loki::UniqueFactory<ObjectImpl, UniquePDDLHasher<const ObjectImpl*>, UniquePDDLEqualTo<const ObjectImpl*>>;
-template<PredicateCategory P>
-using AtomFactory = loki::UniqueFactory<AtomImpl<P>, UniquePDDLHasher<const AtomImpl<P>*>, UniquePDDLEqualTo<const AtomImpl<P>*>>;
-template<PredicateCategory P>
-using GroundAtomFactory = loki::UniqueFactory<GroundAtomImpl<P>, UniquePDDLHasher<const GroundAtomImpl<P>*>, UniquePDDLEqualTo<const GroundAtomImpl<P>*>>;
-template<PredicateCategory P>
-using LiteralFactory = loki::UniqueFactory<LiteralImpl<P>, UniquePDDLHasher<const LiteralImpl<P>*>, UniquePDDLEqualTo<const LiteralImpl<P>*>>;
-template<PredicateCategory P>
-using GroundLiteralFactory =
+using RequirementsRepository = loki::UniqueFactory<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
+using VariableRepository = loki::UniqueFactory<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
+using TermRepository = loki::UniqueFactory<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
+using ObjectRepository = loki::UniqueFactory<ObjectImpl, UniquePDDLHasher<const ObjectImpl*>, UniquePDDLEqualTo<const ObjectImpl*>>;
+template<PredicateTag P>
+using AtomRepository = loki::UniqueFactory<AtomImpl<P>, UniquePDDLHasher<const AtomImpl<P>*>, UniquePDDLEqualTo<const AtomImpl<P>*>>;
+template<PredicateTag P>
+using GroundAtomRepository = loki::UniqueFactory<GroundAtomImpl<P>, UniquePDDLHasher<const GroundAtomImpl<P>*>, UniquePDDLEqualTo<const GroundAtomImpl<P>*>>;
+template<PredicateTag P>
+using LiteralRepository = loki::UniqueFactory<LiteralImpl<P>, UniquePDDLHasher<const LiteralImpl<P>*>, UniquePDDLEqualTo<const LiteralImpl<P>*>>;
+template<PredicateTag P>
+using GroundLiteralRepository =
     loki::UniqueFactory<GroundLiteralImpl<P>, UniquePDDLHasher<const GroundLiteralImpl<P>*>, UniquePDDLEqualTo<const GroundLiteralImpl<P>*>>;
-template<PredicateCategory P>
-using PredicateFactory = loki::UniqueFactory<PredicateImpl<P>, UniquePDDLHasher<const PredicateImpl<P>*>, UniquePDDLEqualTo<const PredicateImpl<P>*>>;
-using FunctionExpressionFactory =
+template<PredicateTag P>
+using PredicateRepository = loki::UniqueFactory<PredicateImpl<P>, UniquePDDLHasher<const PredicateImpl<P>*>, UniquePDDLEqualTo<const PredicateImpl<P>*>>;
+using FunctionExpressionRepository =
     loki::UniqueFactory<FunctionExpressionImpl, UniquePDDLHasher<const FunctionExpressionImpl*>, UniquePDDLEqualTo<const FunctionExpressionImpl*>>;
-using GroundFunctionExpressionFactory = loki::
+using GroundFunctionExpressionRepository = loki::
     UniqueFactory<GroundFunctionExpressionImpl, UniquePDDLHasher<const GroundFunctionExpressionImpl*>, UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>>;
-using FunctionFactory = loki::UniqueFactory<FunctionImpl, UniquePDDLHasher<const FunctionImpl*>, UniquePDDLEqualTo<const FunctionImpl*>>;
-using GroundFunctionFactory =
+using FunctionRepository = loki::UniqueFactory<FunctionImpl, UniquePDDLHasher<const FunctionImpl*>, UniquePDDLEqualTo<const FunctionImpl*>>;
+using GroundFunctionRepository =
     loki::UniqueFactory<GroundFunctionImpl, UniquePDDLHasher<const GroundFunctionImpl*>, UniquePDDLEqualTo<const GroundFunctionImpl*>>;
-using FunctionSkeletonFactory =
+using FunctionSkeletonRepository =
     loki::UniqueFactory<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
-using EffectSimpleFactory = loki::UniqueFactory<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
-using EffectUniversalFactory = loki::UniqueFactory<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
-using ActionFactory = loki::UniqueFactory<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
-using AxiomFactory = loki::UniqueFactory<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
-using OptimizationMetricFactory =
+using EffectSimpleRepository = loki::UniqueFactory<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
+using EffectUniversalRepository =
+    loki::UniqueFactory<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
+using ActionRepository = loki::UniqueFactory<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
+using AxiomRepository = loki::UniqueFactory<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
+using OptimizationMetricRepository =
     loki::UniqueFactory<OptimizationMetricImpl, UniquePDDLHasher<const OptimizationMetricImpl*>, UniquePDDLEqualTo<const OptimizationMetricImpl*>>;
-using NumericFluentFactory = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHasher<const NumericFluentImpl*>, UniquePDDLEqualTo<const NumericFluentImpl*>>;
-using DomainFactory = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
-using ProblemFactory = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
+using NumericFluentRepository = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHasher<const NumericFluentImpl*>, UniquePDDLEqualTo<const NumericFluentImpl*>>;
+using DomainRepository = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
+using ProblemRepository = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
 
-using PDDLTypeToFactory = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsFactory>,
-                                           boost::hana::pair<boost::hana::type<VariableImpl>, VariableFactory>,
-                                           boost::hana::pair<boost::hana::type<TermImpl>, TermFactory>,
-                                           boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectFactory>,
-                                           boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomFactory<Static>>,
-                                           boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomFactory<Fluent>>,
-                                           boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomFactory<Derived>>,
-                                           boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomFactory<Static>>,
-                                           boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomFactory<Fluent>>,
-                                           boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomFactory<Derived>>,
-                                           boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralFactory<Static>>,
-                                           boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralFactory<Fluent>>,
-                                           boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralFactory<Derived>>,
-                                           boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralFactory<Static>>,
-                                           boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralFactory<Fluent>>,
-                                           boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralFactory<Derived>>,
-                                           boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateFactory<Static>>,
-                                           boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateFactory<Fluent>>,
-                                           boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateFactory<Derived>>,
-                                           boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionFactory>,
-                                           boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionFactory>,
-                                           boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionFactory>,
-                                           boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionFactory>,
-                                           boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonFactory>,
-                                           boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleFactory>,
-                                           boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalFactory>,
-                                           boost::hana::pair<boost::hana::type<ActionImpl>, ActionFactory>,
-                                           boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomFactory>,
-                                           boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricFactory>,
-                                           boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentFactory>,
-                                           boost::hana::pair<boost::hana::type<DomainImpl>, DomainFactory>,
-                                           boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemFactory>>;
+using PDDLTypeToRepository = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
+                                              boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
+                                              boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
+                                              boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
+                                              boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomRepository<Static>>,
+                                              boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomRepository<Fluent>>,
+                                              boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomRepository<Derived>>,
+                                              boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomRepository<Static>>,
+                                              boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent>>,
+                                              boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived>>,
+                                              boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralRepository<Static>>,
+                                              boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralRepository<Fluent>>,
+                                              boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralRepository<Derived>>,
+                                              boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static>>,
+                                              boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent>>,
+                                              boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived>>,
+                                              boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateRepository<Static>>,
+                                              boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateRepository<Fluent>>,
+                                              boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateRepository<Derived>>,
+                                              boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionRepository>,
+                                              boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository>,
+                                              boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionRepository>,
+                                              boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionRepository>,
+                                              boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
+                                              boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleRepository>,
+                                              boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalRepository>,
+                                              boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
+                                              boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
+                                              boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
+                                              boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentRepository>,
+                                              boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
+                                              boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
 
-extern PDDLTypeToFactory create_default_pddl_type_to_factory();
+extern PDDLTypeToRepository create_default_pddl_type_to_repository();
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLFactories
 {
 private:
-    PDDLTypeToFactory m_repositories;
+    PDDLTypeToRepository m_repositories;
 
     VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
 
@@ -151,19 +152,19 @@ public:
     /// @brief Get or create an object for the given parameters.
     Object get_or_create_object(std::string name);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Literal<P> get_or_create_literal(bool is_negated, Atom<P> atom);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundLiteral<P> get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Predicate<P> get_or_create_predicate(std::string name, VariableList parameters);
 
     /// @brief Get or create a number function expression for the given parameters.
@@ -275,22 +276,22 @@ public:
     /* Accessors */
 
     // Factory
-    const PDDLTypeToFactory& get_pddl_type_to_factory() const;
+    const PDDLTypeToRepository& get_pddl_type_to_factory() const;
 
     // GroundAtom
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundAtom<P> get_ground_atom(size_t atom_id) const;
 
-    template<PredicateCategory P, std::ranges::forward_range Iterable>
+    template<PredicateTag P, std::ranges::forward_range Iterable>
     void get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const;
 
-    template<PredicateCategory P, std::ranges::forward_range Iterable>
+    template<PredicateTag P, std::ranges::forward_range Iterable>
     GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_ids) const;
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     auto get_ground_atoms() const;
 
     // Object
@@ -312,16 +313,16 @@ public:
 
     void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     GroundLiteral<P> ground_literal(const Literal<P> literal, const ObjectList& binding);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
                                 FlatBitset& ref_positive_bitset,
                                 FlatBitset& ref_negative_bitset,
                                 const ObjectList& binding);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
                                 FlatIndexList& ref_positive_indices,
                                 FlatIndexList& ref_negative_indices,
@@ -332,7 +333,7 @@ public:
  * Implementations
  */
 
-template<PredicateCategory P, std::ranges::forward_range Iterable>
+template<PredicateTag P, std::ranges::forward_range Iterable>
 void PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -343,7 +344,7 @@ void PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids, Grou
     }
 }
 
-template<PredicateCategory P, std::ranges::forward_range Iterable>
+template<PredicateTag P, std::ranges::forward_range Iterable>
 GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids) const
 {
     auto result = GroundAtomList<P> {};
@@ -351,7 +352,7 @@ GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& a
     return result;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -361,7 +362,7 @@ void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 auto PDDLFactories::get_ground_atoms() const
 {
     const auto& factory = boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {});

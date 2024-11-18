@@ -52,13 +52,13 @@ private:
 
     /* Transform step */
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void transform_conditions(const LiteralList<P>& conditions,
                               const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals,
                               LiteralList<P>& ref_transformed_conditions,
                               LiteralList<Derived>& ref_transformed_derived_conditions);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void compute_duals(const DomainImpl& domain,
                        const LiteralSet<P>& negative_conditions,
                        std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_transformed_duals,
@@ -71,7 +71,7 @@ private:
     EffectComplex transform_impl(const EffectComplexImpl& effect);
     Action transform_impl(const ActionImpl& action);
 
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals, AxiomList& ref_axioms);
 
     Domain transform_impl(const DomainImpl& domain);
@@ -84,7 +84,7 @@ public:
  * Implementations
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>& conditions,
                                                            const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals,
                                                            LiteralList<P>& ref_transformed_conditions,
@@ -112,7 +112,7 @@ void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>&
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
                                                     const LiteralSet<P>& negative_conditions,
                                                     std::unordered_map<Literal<P>, Literal<Derived>>& out_negative_transformed_duals,
@@ -155,7 +155,7 @@ void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unordered_map<Literal<P>, Literal<Derived>>& negative_transformed_duals,
                                                                AxiomList& ref_axioms)
 {
@@ -191,7 +191,7 @@ void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unorde
         }
         else
         {
-            static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+            static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
         }
 
         ref_axioms.push_back(this->m_pddl_factories.get_or_create_axiom(transformed_parameters,

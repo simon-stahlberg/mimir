@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
 {
     auto positive_literals = LiteralList<P> {};

@@ -27,7 +27,7 @@
 
 namespace mimir
 {
-template<PredicateCategory P>
+template<PredicateTag P>
 class AssignmentSet;
 }
 

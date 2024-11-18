@@ -22,13 +22,13 @@
 namespace mimir::dl
 {
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 size_t DenotationRepository<D>::KeyHash::operator()(const Key& key) const
 {
     return mimir::hash_combine(key.constructor, key.state_index);
 }
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 bool DenotationRepository<D>::KeyEqual::operator()(const Key& left, const Key& right) const
 {
     if (&left != &right)
@@ -38,7 +38,7 @@ bool DenotationRepository<D>::KeyEqual::operator()(const Key& left, const Key& r
     return true;
 }
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, size_t state_index, const DenotationImpl<D>& denotation)
 {
     const auto [it, inserted] = m_storage.insert(denotation);
@@ -49,7 +49,7 @@ Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, size_t
     return Denotation<D>(*it);
 }
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 std::optional<Denotation<D>> DenotationRepository<D>::get_if(Constructor<D> constructor, size_t state_index) const
 {
     auto it = m_cached_dynamic_denotations.find(Key { constructor, state_index });

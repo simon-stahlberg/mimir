@@ -23,7 +23,7 @@
 #include "mimir/common/hash.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
-#include "mimir/languages/description_logics/constructor_category.hpp"
+#include "mimir/languages/description_logics/constructor_tag.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -32,7 +32,7 @@
 namespace mimir::dl
 {
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct DenotationImpl
 {
 };
@@ -61,12 +61,12 @@ struct DenotationImpl<Role>
 
 }
 
-template<mimir::dl::IsConceptOrRole D>
+template<mimir::dl::ConstructorTag D>
 struct cista::storage::DerefStdHasher<mimir::dl::DenotationImpl<D>>
 {
     size_t operator()(const mimir::dl::DenotationImpl<D>* ptr) const { return mimir::hash_combine(ptr->get_data()); }
 };
-template<mimir::dl::IsConceptOrRole D>
+template<mimir::dl::ConstructorTag D>
 struct cista::storage::DerefStdEqualTo<mimir::dl::DenotationImpl<D>>
 {
     bool operator()(const mimir::dl::DenotationImpl<D>* lhs, const mimir::dl::DenotationImpl<D>* rhs) const { return lhs->get_data() == rhs->get_data(); }
@@ -75,7 +75,7 @@ struct cista::storage::DerefStdEqualTo<mimir::dl::DenotationImpl<D>>
 namespace mimir::dl
 {
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 using DenotationImplSet = cista::storage::UnorderedSet<DenotationImpl<D>>;
 
 }

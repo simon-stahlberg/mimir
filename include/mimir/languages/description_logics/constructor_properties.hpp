@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_PROPERTIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_PROPERTIES_HPP_
 
-#include "mimir/languages/description_logics/constructor_category.hpp"
+#include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
 namespace mimir::dl

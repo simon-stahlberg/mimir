@@ -29,7 +29,7 @@ namespace mimir
  * Prepare step.
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 static void collect_negative_conditions(const LiteralList<P>& conditions, LiteralSet<P>& ref_negative_conditions)
 {
     for (const auto& literal : conditions)

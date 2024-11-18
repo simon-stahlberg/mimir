@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_INTERFACE_HPP_
 
-#include "mimir/languages/description_logics/constructor_category.hpp"
+#include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 
@@ -30,7 +30,7 @@
 namespace mimir::dl
 {
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 class ConstructorImpl
 {
 protected:

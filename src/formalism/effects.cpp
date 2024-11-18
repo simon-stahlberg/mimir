@@ -89,7 +89,7 @@ Index EffectComplexImpl::get_index() const { return m_index; }
 
 const VariableList& EffectComplexImpl::get_parameters() const { return m_quantified_variables; }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const LiteralList<P>& EffectComplexImpl::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -106,7 +106,7 @@ const LiteralList<P>& EffectComplexImpl::get_conditions() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateCategory.");
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
     }
 }
 

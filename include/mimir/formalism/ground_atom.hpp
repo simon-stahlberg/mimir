@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class GroundAtomImpl
 {
 private:
@@ -57,13 +57,13 @@ public:
     Atom<P> lift(const TermList& terms, PDDLFactories& pddl_factories) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, GroundAtom<P> element);
 
 }

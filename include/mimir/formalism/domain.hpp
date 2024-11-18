@@ -73,14 +73,14 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_constants() const;
-    template<PredicateCategory P>
+    template<PredicateTag P>
     const PredicateList<P>& get_predicates() const;
     const FunctionSkeletonList& get_functions() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
     const ToObjectMap<std::string> get_name_to_constants() const;
-    template<PredicateCategory P>
+    template<PredicateTag P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
 };
 

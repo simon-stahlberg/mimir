@@ -24,11 +24,11 @@ namespace mimir
 {
 
 /// @brief Translates a ground literal list into a list of ground atoms.
-template<PredicateCategory P>
+template<PredicateTag P>
 extern void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms);
 
 /// @brief Translates a ground literal list into a list of ground atoms.
-template<PredicateCategory P>
+template<PredicateTag P>
 extern GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals);
 
 }

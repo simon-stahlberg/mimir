@@ -53,11 +53,11 @@ public:
     Color get_color(Object object) const;
 
     /// @brief Get unique color of state atom.
-    template<PredicateCategory P>
+    template<PredicateTag P>
     Color get_color(GroundAtom<P> atom, size_t pos) const;
 
     /// @brief Get unique color of dynamic goal literal.
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     Color get_color(State state, GroundLiteral<P> literal, size_t pos, bool mark_true_goal_literal = false) const;
 
     /// @brief Get unique color of static goal literal.

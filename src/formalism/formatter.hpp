@@ -60,7 +60,7 @@ public:
     PDDLFormatter(size_t indent = 0, size_t add_indent = 4, bool action_costs = false);
 
     void write(const ActionImpl& element, std::ostream& out);
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void write(const AtomImpl<P>& element, std::ostream& out);
     void write(const AxiomImpl& element, std::ostream& out);
     void write(const DomainImpl& element, std::ostream& out);
@@ -74,7 +74,7 @@ public:
     void write(const FunctionExpressionImpl& element, std::ostream& out);
     void write(const FunctionSkeletonImpl& element, std::ostream& out);
     void write(const FunctionImpl& element, std::ostream& out);
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void write(const GroundAtomImpl<P>& element, std::ostream& out);
     void write(const GroundFunctionExpressionNumberImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
@@ -83,14 +83,14 @@ public:
     void write(const GroundFunctionExpressionFunctionImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionImpl& element, std::ostream& out);
     void write(const GroundFunctionImpl& element, std::ostream& out);
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void write(const GroundLiteralImpl<P>& element, std::ostream& out);
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void write(const LiteralImpl<P>& element, std::ostream& out);
     void write(const OptimizationMetricImpl& element, std::ostream& out);
     void write(const NumericFluentImpl& element, std::ostream& out);
     void write(const ObjectImpl& element, std::ostream& out);
-    template<PredicateCategory P>
+    template<PredicateTag P>
     void write(const PredicateImpl<P>& element, std::ostream& out);
     void write(const ProblemImpl& element, std::ostream& out);
     void write(const RequirementsImpl& element, std::ostream& out);

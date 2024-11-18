@@ -53,7 +53,7 @@ bool UniquePDDLEqualTo<const ActionImpl*>::operator()(const ActionImpl* l, const
     return true;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool UniquePDDLEqualTo<const AtomImpl<P>*>::operator()(const AtomImpl<P>* l, const AtomImpl<P>* r) const
 {
     if (&l != &r)
@@ -182,7 +182,7 @@ bool UniquePDDLEqualTo<const FunctionImpl*>::operator()(const FunctionImpl* l, c
     return true;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool UniquePDDLEqualTo<const GroundAtomImpl<P>*>::operator()(const GroundAtomImpl<P>* l, const GroundAtomImpl<P>* r) const
 {
     if (&l != &r)
@@ -261,7 +261,7 @@ bool UniquePDDLEqualTo<const GroundFunctionImpl*>::operator()(const GroundFuncti
     return true;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool UniquePDDLEqualTo<const GroundLiteralImpl<P>*>::operator()(const GroundLiteralImpl<P>* l, const GroundLiteralImpl<P>* r) const
 {
     if (&l != &r)
@@ -275,7 +275,7 @@ template bool UniquePDDLEqualTo<const GroundLiteralImpl<Static>*>::operator()(co
 template bool UniquePDDLEqualTo<const GroundLiteralImpl<Fluent>*>::operator()(const GroundLiteralImpl<Fluent>* l, const GroundLiteralImpl<Fluent>* r) const;
 template bool UniquePDDLEqualTo<const GroundLiteralImpl<Derived>*>::operator()(const GroundLiteralImpl<Derived>* l, const GroundLiteralImpl<Derived>* r) const;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool UniquePDDLEqualTo<const LiteralImpl<P>*>::operator()(const LiteralImpl<P>* l, const LiteralImpl<P>* r) const
 {
     if (&l != &r)
@@ -316,7 +316,7 @@ bool UniquePDDLEqualTo<const ObjectImpl*>::operator()(const ObjectImpl* l, const
     return true;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool UniquePDDLEqualTo<const PredicateImpl<P>*>::operator()(const PredicateImpl<P>* l, const PredicateImpl<P>* r) const
 {
     if (&l != &r)

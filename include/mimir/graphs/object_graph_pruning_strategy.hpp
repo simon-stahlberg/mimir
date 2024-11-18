@@ -82,7 +82,7 @@ public:
 
         SccPruningComponent& operator&=(const SccPruningComponent& other);
 
-        template<PredicateCategory P>
+        template<PredicateTag P>
         const FlatBitset& get_pruned_goal_literals() const;
     };
 

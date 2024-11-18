@@ -19,7 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTORS_HPP_
 
 #include "mimir/formalism/predicate.hpp"
-#include "mimir/languages/description_logics/constructor_category.hpp"
+#include "mimir/languages/description_logics/constructor_tag.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
 #include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
@@ -37,7 +37,7 @@ namespace mimir::dl::grammar
  * NonTerminal
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class NonTerminalImpl
 {
 private:
@@ -74,7 +74,7 @@ public:
  * Choice
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class ChoiceImpl
 {
 private:
@@ -104,7 +104,7 @@ public:
  * DerivationRule
  */
 
-template<dl::IsConceptOrRole D>
+template<dl::ConstructorTag D>
 class DerivationRuleImpl
 {
 protected:
@@ -180,7 +180,7 @@ public:
     Index get_index() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicStateImpl : public ConstructorImpl<Concept>
 {
 private:
@@ -206,7 +206,7 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class ConceptAtomicGoalImpl : public ConstructorImpl<Concept>
 {
 private:
@@ -473,7 +473,7 @@ public:
     Index get_index() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicStateImpl : public ConstructorImpl<Role>
 {
 private:
@@ -499,7 +499,7 @@ public:
     Predicate<P> get_predicate() const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class RoleAtomicGoalImpl : public ConstructorImpl<Role>
 {
 private:

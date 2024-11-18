@@ -26,7 +26,7 @@
 
 namespace mimir
 {
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects) :
     m_index(index),
     m_predicate(std::move(predicate)),
@@ -34,7 +34,7 @@ GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectLis
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::string GroundAtomImpl<P>::str() const
 {
     auto out = std::stringstream();
@@ -42,31 +42,31 @@ std::string GroundAtomImpl<P>::str() const
     return out.str();
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index GroundAtomImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> GroundAtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const ObjectList& GroundAtomImpl<P>::get_objects() const
 {
     return m_objects;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t GroundAtomImpl<P>::get_arity() const
 {
     return m_objects.size();
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLFactories& pddl_factories) const
 {
     return pddl_factories.get_or_create_atom(m_predicate, terms);
@@ -76,7 +76,7 @@ template class GroundAtomImpl<Static>;
 template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories)
 {
     VariableList variables;
@@ -108,7 +108,7 @@ template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Sta
 template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLFactories&);
 template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLFactories&);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -120,7 +120,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Static
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derived>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
 {
     out << *element;

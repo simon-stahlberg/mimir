@@ -80,13 +80,13 @@ struct UniqueDLEqualTo<const ConceptTopImpl*>
     bool operator()(const ConceptTopImpl* l, const ConceptTopImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>
 {
     bool operator()(const ConceptAtomicStateImpl<P>* l, const ConceptAtomicStateImpl<P>* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>
 {
     bool operator()(const ConceptAtomicGoalImpl<P>* l, const ConceptAtomicGoalImpl<P>* r) const;
@@ -148,13 +148,13 @@ struct UniqueDLEqualTo<const RoleUniversalImpl*>
     bool operator()(const RoleUniversalImpl* l, const RoleUniversalImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>
 {
     bool operator()(const RoleAtomicStateImpl<P>* l, const RoleAtomicStateImpl<P>* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>
 {
     bool operator()(const RoleAtomicGoalImpl<P>* l, const RoleAtomicGoalImpl<P>* r) const;
@@ -218,25 +218,25 @@ struct UniqueDLEqualTo<const RoleIdentityImpl*>
  * DL grammar constructors
  */
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>
 {
     bool operator()(const grammar::DerivationRuleImpl<D>* l, const grammar::DerivationRuleImpl<D>* r) const;
 };
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLEqualTo<const grammar::NonTerminalImpl<D>*>
 {
     bool operator()(const grammar::NonTerminalImpl<D>* l, const grammar::NonTerminalImpl<D>* r) const;
 };
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalChoice<D>*>
 {
     bool operator()(const grammar::ConstructorOrNonTerminalChoice<D>* l, const grammar::ConstructorOrNonTerminalChoice<D>* r) const;
 };
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLEqualTo<const grammar::ChoiceImpl<D>*>
 {
     bool operator()(const grammar::ChoiceImpl<D>* l, const grammar::ChoiceImpl<D>* r) const;
@@ -256,13 +256,13 @@ struct UniqueDLEqualTo<const grammar::ConceptTopImpl*>
     bool operator()(const grammar::ConceptTopImpl* l, const grammar::ConceptTopImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<P>*>
 {
     bool operator()(const grammar::ConceptAtomicStateImpl<P>* l, const grammar::ConceptAtomicStateImpl<P>* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<P>*>
 {
     bool operator()(const grammar::ConceptAtomicGoalImpl<P>* l, const grammar::ConceptAtomicGoalImpl<P>* r) const;
@@ -324,13 +324,13 @@ struct UniqueDLEqualTo<const grammar::RoleUniversalImpl*>
     bool operator()(const grammar::RoleUniversalImpl* l, const grammar::RoleUniversalImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<P>*>
 {
     bool operator()(const grammar::RoleAtomicStateImpl<P>* l, const grammar::RoleAtomicStateImpl<P>* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<P>*>
 {
     bool operator()(const grammar::RoleAtomicGoalImpl<P>* l, const grammar::RoleAtomicGoalImpl<P>* r) const;

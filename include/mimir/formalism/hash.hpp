@@ -60,7 +60,7 @@ public:
 
 /// Spezialization for std::ranges::forward_range.
 template<typename ForwardRange>
-requires std::ranges::forward_range<ForwardRange>
+    requires std::ranges::forward_range<ForwardRange>
 struct UniquePDDLHasher<ForwardRange>
 {
     size_t operator()(const ForwardRange& range) const
@@ -90,7 +90,7 @@ struct UniquePDDLHasher<const ActionImpl*>
     size_t operator()(const ActionImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLHasher<const AtomImpl<P>*>
 {
     size_t operator()(const AtomImpl<P>* e) const;
@@ -168,7 +168,7 @@ struct UniquePDDLHasher<const FunctionImpl*>
     size_t operator()(const FunctionImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLHasher<const GroundAtomImpl<P>*>
 {
     size_t operator()(const GroundAtomImpl<P>* e) const;
@@ -216,13 +216,13 @@ struct UniquePDDLHasher<const GroundFunctionImpl*>
     size_t operator()(const GroundFunctionImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLHasher<const GroundLiteralImpl<P>*>
 {
     size_t operator()(const GroundLiteralImpl<P>* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLHasher<const LiteralImpl<P>*>
 {
     size_t operator()(const LiteralImpl<P>* e) const;
@@ -246,7 +246,7 @@ struct UniquePDDLHasher<const ObjectImpl*>
     size_t operator()(const ObjectImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLHasher<const PredicateImpl<P>*>
 {
     size_t operator()(const PredicateImpl<P>* e) const;

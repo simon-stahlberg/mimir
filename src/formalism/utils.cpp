@@ -22,7 +22,7 @@
 namespace mimir
 {
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms)
 {
     out_ground_atoms.clear();
@@ -37,7 +37,7 @@ template void to_ground_atoms(const GroundLiteralList<Static>& literals, GroundA
 template void to_ground_atoms(const GroundLiteralList<Fluent>& literals, GroundAtomList<Fluent>& out_ground_atoms);
 template void to_ground_atoms(const GroundLiteralList<Derived>& literals, GroundAtomList<Derived>& out_ground_atoms);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals)
 {
     GroundAtomList<P> ground_atoms;

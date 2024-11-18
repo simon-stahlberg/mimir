@@ -93,12 +93,12 @@ Index ConceptTopImpl::get_index() const { return m_index; }
  * ConceptAtomicState
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
@@ -142,19 +142,19 @@ void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicStateImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index ConceptAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> ConceptAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
@@ -168,7 +168,7 @@ template class ConceptAtomicStateImpl<Derived>;
  * ConceptAtomicGoal
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
     m_index(index),
     m_predicate(predicate),
@@ -176,7 +176,7 @@ ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predic
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
@@ -198,25 +198,25 @@ void ConceptAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicGoalImpl<P>::accept_impl(const grammar::Visitor<Concept>& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index ConceptAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> ConceptAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicGoalImpl<P>::is_negated() const
 {
     return m_is_negated;
@@ -573,12 +573,12 @@ Index RoleUniversalImpl::get_index() const { return m_index; }
  * RoleAtomicState
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate) : m_index(index), m_predicate(predicate)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
@@ -640,19 +640,19 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicStateImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index RoleAtomicStateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> RoleAtomicStateImpl<P>::get_predicate() const
 {
     return m_predicate;
@@ -666,7 +666,7 @@ template class RoleAtomicStateImpl<Derived>;
  * RoleAtomicGoal
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated) :
     m_index(index),
     m_predicate(predicate),
@@ -674,7 +674,7 @@ RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, b
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
 {
     // Fetch data
@@ -705,25 +705,25 @@ void RoleAtomicGoalImpl<P>::evaluate_impl(EvaluationContext& context) const
     }
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicGoalImpl<P>::accept_impl(const grammar::Visitor<Role>& visitor) const
 {
     return visitor.visit(this);
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index RoleAtomicGoalImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Predicate<P> RoleAtomicGoalImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicGoalImpl<P>::is_negated() const
 {
     return m_is_negated;

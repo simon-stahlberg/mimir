@@ -23,7 +23,7 @@
 namespace mimir::dl::grammar
 {
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 class Visitor
 {
 };

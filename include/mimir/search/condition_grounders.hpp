@@ -47,14 +47,14 @@ private:
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);
 
     bool is_valid_static_binding(Problem problem, const LiteralList<Static>& literals, const ObjectList& binding);
 
     bool is_valid_binding(Problem problem, State state, const ObjectList& binding);
 
-    template<DynamicPredicateCategory P>
+    template<DynamicPredicateTag P>
     bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
@@ -101,7 +101,7 @@ public:
 
     Problem get_problem() const;
     const VariableList& get_variables() const;
-    template<PredicateCategory P>
+    template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const AssignmentSet<Static>& get_static_assignment_set() const;
     const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;

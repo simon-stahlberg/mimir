@@ -30,10 +30,10 @@ namespace mimir::dl
 
 using ConceptBotRepository = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
 using ConceptTopRepository = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using ConceptAtomicStateRepository =
     loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using ConceptAtomicGoalRepository =
     loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
 using ConceptIntersectionRepository =
@@ -55,10 +55,10 @@ using ConceptRoleValueMapEqualityRepository = loki::UniqueFactory<ConceptRoleVal
 using ConceptNominalRepository = loki::UniqueFactory<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
 
 using RoleUniversalRepository = loki::UniqueFactory<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using RoleAtomicStateRepository =
     loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
-template<PredicateCategory P>
+template<PredicateTag P>
 using RoleAtomicGoalRepository =
     loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
 using RoleIntersectionRepository =

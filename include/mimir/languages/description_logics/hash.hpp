@@ -60,7 +60,7 @@ public:
 
 /// Spezialization for std::ranges::forward_range.
 template<typename ForwardRange>
-requires std::ranges::forward_range<ForwardRange>
+    requires std::ranges::forward_range<ForwardRange>
 struct UniqueDLHasher<ForwardRange>
 {
     size_t operator()(const ForwardRange& range) const
@@ -102,13 +102,13 @@ struct UniqueDLHasher<const ConceptTopImpl*>
     size_t operator()(const ConceptTopImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const ConceptAtomicStateImpl<P>*>
 {
     size_t operator()(const ConceptAtomicStateImpl<P>* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>
 {
     size_t operator()(const ConceptAtomicGoalImpl<P>* e) const;
@@ -170,13 +170,13 @@ struct UniqueDLHasher<const RoleUniversalImpl*>
     size_t operator()(const RoleUniversalImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const RoleAtomicStateImpl<P>*>
 {
     size_t operator()(const RoleAtomicStateImpl<P>* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const RoleAtomicGoalImpl<P>*>
 {
     size_t operator()(const RoleAtomicGoalImpl<P>* e) const;
@@ -240,25 +240,25 @@ struct UniqueDLHasher<const RoleIdentityImpl*>
  * DL grammar constructors
  */
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLHasher<const grammar::DerivationRuleImpl<D>*>
 {
     size_t operator()(const grammar::DerivationRuleImpl<D>* e) const;
 };
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLHasher<const grammar::NonTerminalImpl<D>*>
 {
     size_t operator()(const grammar::NonTerminalImpl<D>* e) const;
 };
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLHasher<const grammar::ConstructorOrNonTerminalChoice<D>*>
 {
     size_t operator()(const grammar::ConstructorOrNonTerminalChoice<D>* e) const;
 };
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 struct UniqueDLHasher<const grammar::ChoiceImpl<D>*>
 {
     size_t operator()(const grammar::ChoiceImpl<D>* e) const;
@@ -278,13 +278,13 @@ struct UniqueDLHasher<const grammar::ConceptTopImpl*>
     size_t operator()(const grammar::ConceptTopImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const grammar::ConceptAtomicStateImpl<P>*>
 {
     size_t operator()(const grammar::ConceptAtomicStateImpl<P>* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const grammar::ConceptAtomicGoalImpl<P>*>
 {
     size_t operator()(const grammar::ConceptAtomicGoalImpl<P>* e) const;
@@ -346,13 +346,13 @@ struct UniqueDLHasher<const grammar::RoleUniversalImpl*>
     size_t operator()(const grammar::RoleUniversalImpl* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const grammar::RoleAtomicStateImpl<P>*>
 {
     size_t operator()(const grammar::RoleAtomicStateImpl<P>* e) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniqueDLHasher<const grammar::RoleAtomicGoalImpl<P>*>
 {
     size_t operator()(const grammar::RoleAtomicGoalImpl<P>* e) const;

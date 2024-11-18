@@ -68,7 +68,7 @@ struct UniquePDDLEqualTo<const ActionImpl*>
     bool operator()(const ActionImpl* l, const ActionImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLEqualTo<const AtomImpl<P>*>
 {
     bool operator()(const AtomImpl<P>* l, const AtomImpl<P>* r) const;
@@ -146,7 +146,7 @@ struct UniquePDDLEqualTo<const FunctionImpl*>
     bool operator()(const FunctionImpl* l, const FunctionImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLEqualTo<const GroundAtomImpl<P>*>
 {
     bool operator()(const GroundAtomImpl<P>* l, const GroundAtomImpl<P>* r) const;
@@ -194,13 +194,13 @@ struct UniquePDDLEqualTo<const GroundFunctionImpl*>
     bool operator()(const GroundFunctionImpl* l, const GroundFunctionImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLEqualTo<const GroundLiteralImpl<P>*>
 {
     bool operator()(const GroundLiteralImpl<P>* l, const GroundLiteralImpl<P>* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLEqualTo<const LiteralImpl<P>*>
 {
     bool operator()(const LiteralImpl<P>* l, const LiteralImpl<P>* r) const;
@@ -224,7 +224,7 @@ struct UniquePDDLEqualTo<const ObjectImpl*>
     bool operator()(const ObjectImpl* l, const ObjectImpl* r) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 struct UniquePDDLEqualTo<const PredicateImpl<P>*>
 {
     bool operator()(const PredicateImpl<P>* l, const PredicateImpl<P>* r) const;

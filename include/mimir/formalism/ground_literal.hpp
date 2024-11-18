@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateCategory P>
+template<PredicateTag P>
 class GroundLiteralImpl
 {
 private:
@@ -56,13 +56,13 @@ public:
     Literal<P> lift(const TermList& terms, PDDLFactories& pddl_factories) const;
 };
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element);
 }
 

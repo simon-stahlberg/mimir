@@ -19,13 +19,13 @@
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/formalism/predicate_category.hpp"
+#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/variable.hpp"
 
 namespace mimir
 {
 
-template<PredicateCategory P>
+template<PredicateTag P>
 PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
@@ -34,7 +34,7 @@ PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList para
     assert(is_all_unique(m_parameters));
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::string PredicateImpl<P>::str() const
 {
     auto out = std::stringstream();
@@ -42,25 +42,25 @@ std::string PredicateImpl<P>::str() const
     return out.str();
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index PredicateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const std::string& PredicateImpl<P>::get_name() const
 {
     return m_name;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const VariableList& PredicateImpl<P>::get_parameters() const
 {
     return m_parameters;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 size_t PredicateImpl<P>::get_arity() const
 {
     return m_parameters.size();
@@ -70,7 +70,7 @@ template class PredicateImpl<Static>;
 template class PredicateImpl<Fluent>;
 template class PredicateImpl<Derived>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -82,7 +82,7 @@ template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Static>
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, Predicate<P> element)
 {
     out << *element;

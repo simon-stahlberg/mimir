@@ -15,34 +15,34 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_CATEGORY_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_CATEGORY_HPP_
+#ifndef MIMIR_FORMALISM_PREDICATE_CATEGORY_HPP_
+#define MIMIR_FORMALISM_PREDICATE_CATEGORY_HPP_
 
 #include <concepts>
+#include <type_traits>
 
-namespace mimir::dl
+namespace mimir
 {
 
 /**
- * ID classes.
- *
- * We need those to write generic code independent of concept or role.
+ * Dispatchers
  */
 
-struct Concept
+struct Static
 {
 };
-
-struct Role
+struct Fluent
 {
 };
-
-/**
- * Concepts
- */
+struct Derived
+{
+};
 
 template<typename T>
-concept IsConceptOrRole = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
+concept PredicateTag = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
+
+template<typename T>
+concept DynamicPredicateTag = std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
 
 }
 

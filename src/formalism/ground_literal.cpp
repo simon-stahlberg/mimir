@@ -24,12 +24,12 @@
 
 namespace mimir
 {
-template<PredicateCategory P>
+template<PredicateTag P>
 GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool is_negated, GroundAtom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::string GroundLiteralImpl<P>::str() const
 {
     auto out = std::stringstream();
@@ -37,25 +37,25 @@ std::string GroundLiteralImpl<P>::str() const
     return out.str();
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Index GroundLiteralImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool GroundLiteralImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
 {
     return m_atom;
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLFactories& pddl_factories) const
 {
     return pddl_factories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_factories));
@@ -65,7 +65,7 @@ template class GroundLiteralImpl<Static>;
 template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories)
 {
     VariableList variables;
@@ -97,7 +97,7 @@ template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralLi
 template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, PDDLFactories&);
 template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, PDDLFactories&);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -109,7 +109,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Sta
 template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<Derived>& element);
 
-template<PredicateCategory P>
+template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, GroundLiteral<P> element)
 {
     out << *element;

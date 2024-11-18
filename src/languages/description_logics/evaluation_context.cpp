@@ -42,7 +42,7 @@ Problem EvaluationContext::get_problem() const { return m_problem; }
 
 State EvaluationContext::get_state() const { return m_state; }
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 DenotationImpl<D>& EvaluationContext::get_denotation_builder()
 {
     if constexpr (std::is_same_v<D, Concept>)
@@ -55,14 +55,14 @@ DenotationImpl<D>& EvaluationContext::get_denotation_builder()
     }
     else
     {
-        static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
+        static_assert(dependent_false<D>::value, "Missing implementation for ConstructorTag.");
     }
 }
 
 template DenotationImpl<Concept>& EvaluationContext::get_denotation_builder<Concept>();
 template DenotationImpl<Role>& EvaluationContext::get_denotation_builder<Role>();
 
-template<IsConceptOrRole D>
+template<ConstructorTag D>
 DenotationRepository<D>& EvaluationContext::get_denotation_repository()
 {
     if constexpr (std::is_same_v<D, Concept>)
@@ -75,7 +75,7 @@ DenotationRepository<D>& EvaluationContext::get_denotation_repository()
     }
     else
     {
-        static_assert(dependent_false<D>::value, "Missing implementation for IsConceptOrRole.");
+        static_assert(dependent_false<D>::value, "Missing implementation for ConstructorTag.");
     }
 }
 

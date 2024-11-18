@@ -90,7 +90,7 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    template<PredicateCategory P>
+    template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const Literal<Fluent>& get_effect() const;
 

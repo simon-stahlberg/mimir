@@ -43,12 +43,12 @@ bool ConceptTopVisitor::visit(dl::ConceptTop constructor) const { return true; }
  * ConceptAtomicStateVisitor
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 ConceptAtomicStateVisitor<P>::ConceptAtomicStateVisitor(ConceptAtomicState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicStateVisitor<P>::visit(dl::ConceptAtomicState<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
@@ -62,12 +62,12 @@ template class ConceptAtomicStateVisitor<Derived>;
  * ConceptAtomicGoalVisitor
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 ConceptAtomicGoalVisitor<P>::ConceptAtomicGoalVisitor(ConceptAtomicGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool ConceptAtomicGoalVisitor<P>::visit(dl::ConceptAtomicGoal<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
@@ -189,12 +189,12 @@ bool RoleUniversalVisitor::visit(dl::RoleUniversal constructor) const { return t
  * RoleAtomicStateVisitor
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 RoleAtomicStateVisitor<P>::RoleAtomicStateVisitor(RoleAtomicState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicStateVisitor<P>::visit(dl::RoleAtomicState<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
@@ -208,12 +208,12 @@ template class RoleAtomicStateVisitor<Derived>;
  * RoleAtomicGoalVisitor
  */
 
-template<PredicateCategory P>
+template<PredicateTag P>
 RoleAtomicGoalVisitor<P>::RoleAtomicGoalVisitor(RoleAtomicGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateCategory P>
+template<PredicateTag P>
 bool RoleAtomicGoalVisitor<P>::visit(dl::RoleAtomicGoal<P> constructor) const
 {
     return constructor->get_predicate() == m_grammar_constructor->get_predicate();
