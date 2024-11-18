@@ -21,11 +21,11 @@
 
 namespace mimir
 {
-void DefaultIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) const {}
+void DefaultIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) const {}
 
 void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(const Problem problem,
                                                                 const State initial_state,
-                                                                const PDDLRepositories& pddl_factories,
+                                                                const PDDLRepositories& pddl_repositories,
                                                                 int arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
@@ -35,9 +35,9 @@ void DefaultIWAlgorithmEventHandler::on_end_arity_search_impl(const BrFSAlgorith
 
 void DefaultIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) const
+void DefaultIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) const
 {
-    auto plan = to_plan(ground_action_plan, pddl_factories);
+    auto plan = to_plan(ground_action_plan, pddl_repositories);
     std::cout << "[IW] Plan found.\n"
               << "[IW] Plan cost: " << plan.get_cost() << "\n"
               << "[IW] Plan length: " << plan.get_actions().size() << std::endl;

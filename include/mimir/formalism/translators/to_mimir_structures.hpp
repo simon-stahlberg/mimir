@@ -37,7 +37,7 @@ using StaticOrFluentOrDerivedGroundLiteral = std::variant<GroundLiteral<Static>,
 class ToMimirStructures
 {
 private:
-    PDDLRepositories& m_pddl_factories;
+    PDDLRepositories& m_pddl_repositories;
 
     /* Computed in prepare step */
 
@@ -174,7 +174,7 @@ private:
     Problem translate_grounded(const loki::ProblemImpl& problem);
 
 public:
-    explicit ToMimirStructures(PDDLRepositories& pddl_factories);
+    explicit ToMimirStructures(PDDLRepositories& pddl_repositories);
 
     Problem run(const loki::ProblemImpl& problem);
 };

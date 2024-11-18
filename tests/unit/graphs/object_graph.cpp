@@ -41,7 +41,8 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     {
         const auto state = get_state(vertex);
 
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_repositories())) << std::endl;
+        // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
+        // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
 
         const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state);
 
@@ -69,7 +70,8 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
         const auto state = get_state(vertex);
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_repositories())) << std::endl;
+        // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
+        // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
 
         const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state);
 
@@ -108,7 +110,8 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
         const auto state = get_state(vertex);
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_repositories())) << std::endl;
+        // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
+        // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
 
         const auto object_graph =
             create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state, 0, true, PruneAllObjects());

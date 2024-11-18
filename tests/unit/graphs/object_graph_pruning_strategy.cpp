@@ -28,9 +28,11 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategySingleSCCTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "delivery/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl");
     const auto parser = PDDLParser(domain_file, problem_file);
-    const auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-    const auto ssg = std::make_shared<StateRepository>(aag);
-    const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg).value();
+    const auto applicable_action_generator = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+    const auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+    const auto pruning_strategy =
+        ObjectGraphStaticSccPruningStrategy::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository)
+            .value();
 
     EXPECT_EQ(pruning_strategy.get_pruning_components().size(), 1);
     EXPECT_EQ(pruning_strategy.get_num_components(), 1);
@@ -41,9 +43,11 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategyMultiSCCTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
     const auto parser = PDDLParser(domain_file, problem_file);
-    const auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-    const auto ssg = std::make_shared<StateRepository>(aag);
-    const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg).value();
+    const auto applicable_action_generator = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+    const auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+    const auto pruning_strategy =
+        ObjectGraphStaticSccPruningStrategy::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository)
+            .value();
 
     EXPECT_EQ(pruning_strategy.get_pruning_components().size(), 6);
     EXPECT_EQ(pruning_strategy.get_num_components(), 6);

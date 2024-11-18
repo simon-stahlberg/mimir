@@ -43,7 +43,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    PDDLRepositories& m_pddl_factories;
+    PDDLRepositories& m_pddl_repositories;
 
     std::unordered_map<Requirements, Requirements> m_transformed_requirements;
     std::unordered_map<Object, Object> m_transformed_objects;
@@ -78,7 +78,7 @@ protected:
     std::unordered_map<OptimizationMetric, OptimizationMetric> m_transformed_optimization_metrics;
     std::unordered_map<Problem, Problem> m_transformed_problems;
 
-    explicit BaseCachedRecurseTransformer(PDDLRepositories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseCachedRecurseTransformer(PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
 
 protected:
     /* Implement ITranslator interface */
@@ -284,7 +284,7 @@ protected:
     }
 
     /// @brief Apply problem translation.
-    ///        Default behavior reparses it into the pddl_factories.
+    ///        Default behavior reparses it into the pddl_repositories.
     template<typename Container>
     auto transform_base(const Container& input)
     {
@@ -476,89 +476,90 @@ protected:
     }
     Requirements transform_impl(const RequirementsImpl& requirements)
     {
-        return this->m_pddl_factories.get_or_create_requirements(requirements.get_requirements());
+        return this->m_pddl_repositories.get_or_create_requirements(requirements.get_requirements());
     }
-    Object transform_impl(const ObjectImpl& object) { return this->m_pddl_factories.get_or_create_object(object.get_name()); }
+    Object transform_impl(const ObjectImpl& object) { return this->m_pddl_repositories.get_or_create_object(object.get_name()); }
     Variable transform_impl(const VariableImpl& variable)
     {
-        return this->m_pddl_factories.get_or_create_variable(variable.get_name(), variable.get_parameter_index());
+        return this->m_pddl_repositories.get_or_create_variable(variable.get_name(), variable.get_parameter_index());
     }
-    Term transform_impl(const TermObjectImpl& term) { return this->m_pddl_factories.get_or_create_term_object(this->transform(*term.get_object())); }
-    Term transform_impl(const TermVariableImpl& term) { return this->m_pddl_factories.get_or_create_term_variable(this->transform(*term.get_variable())); }
+    Term transform_impl(const TermObjectImpl& term) { return this->m_pddl_repositories.get_or_create_term_object(this->transform(*term.get_object())); }
+    Term transform_impl(const TermVariableImpl& term) { return this->m_pddl_repositories.get_or_create_term_variable(this->transform(*term.get_variable())); }
     Term transform_impl(const TermImpl& term)
     {
         return std::visit([this](auto&& arg) { return this->transform(arg); }, term);
     }
     Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate)
     {
-        return this->m_pddl_factories.template get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_repositories.template get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     Predicate<Fluent> transform_impl(const PredicateImpl<Fluent>& predicate)
     {
-        return this->m_pddl_factories.template get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_repositories.template get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate)
     {
-        return this->m_pddl_factories.template get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        return this->m_pddl_repositories.template get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
     }
     template<PredicateTag P>
     Atom<P> transform_impl(const AtomImpl<P>& atom)
     {
-        return this->m_pddl_factories.get_or_create_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_terms()));
+        return this->m_pddl_repositories.get_or_create_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_terms()));
     }
     template<PredicateTag P>
     GroundAtom<P> transform_impl(const GroundAtomImpl<P>& atom)
     {
-        return this->m_pddl_factories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
+        return this->m_pddl_repositories.get_or_create_ground_atom(this->transform(*atom.get_predicate()), this->transform(atom.get_objects()));
     }
     template<PredicateTag P>
     Literal<P> transform_impl(const LiteralImpl<P>& literal)
     {
-        return this->m_pddl_factories.get_or_create_literal(literal.is_negated(), this->transform(*literal.get_atom()));
+        return this->m_pddl_repositories.get_or_create_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
     template<PredicateTag P>
     GroundLiteral<P> transform_impl(const GroundLiteralImpl<P>& literal)
     {
-        return this->m_pddl_factories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));
+        return this->m_pddl_repositories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
     NumericFluent transform_impl(const NumericFluentImpl& numeric_fluent)
     {
-        return this->m_pddl_factories.get_or_create_numeric_fluent(this->transform(*numeric_fluent.get_function()), numeric_fluent.get_number());
+        return this->m_pddl_repositories.get_or_create_numeric_fluent(this->transform(*numeric_fluent.get_function()), numeric_fluent.get_number());
     }
     EffectSimple transform_impl(const EffectSimpleImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_simple_effect(this->transform(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(*effect.get_effect()));
     }
     EffectComplex transform_impl(const EffectComplexImpl& effect)
     {
-        return this->m_pddl_factories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
-                                                                   this->transform(effect.get_conditions<Static>()),
-                                                                   this->transform(effect.get_conditions<Fluent>()),
-                                                                   this->transform(effect.get_conditions<Derived>()),
-                                                                   this->transform(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
+                                                                      this->transform(effect.get_conditions<Static>()),
+                                                                      this->transform(effect.get_conditions<Fluent>()),
+                                                                      this->transform(effect.get_conditions<Derived>()),
+                                                                      this->transform(*effect.get_effect()));
     }
     FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_function_expression_number(function_expression.get_number());
+        return this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number());
     }
     FunctionExpression transform_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_function_expression_binary_operator(function_expression.get_binary_operator(),
-                                                                                        this->transform(*function_expression.get_left_function_expression()),
-                                                                                        this->transform(*function_expression.get_right_function_expression()));
+        return this->m_pddl_repositories.get_or_create_function_expression_binary_operator(
+            function_expression.get_binary_operator(),
+            this->transform(*function_expression.get_left_function_expression()),
+            this->transform(*function_expression.get_right_function_expression()));
     }
     FunctionExpression transform_impl(const FunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                       this->transform(function_expression.get_function_expressions()));
+        return this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                          this->transform(function_expression.get_function_expressions()));
     }
     FunctionExpression transform_impl(const FunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression()));
     }
     FunctionExpression transform_impl(const FunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_function_expression_function(this->transform(*function_expression.get_function()));
+        return this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(*function_expression.get_function()));
     }
     FunctionExpression transform_impl(const FunctionExpressionImpl& function_expression)
     {
@@ -566,27 +567,28 @@ protected:
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_ground_function_expression_number(function_expression.get_number());
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_number(function_expression.get_number());
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_ground_function_expression_binary_operator(
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(
             function_expression.get_binary_operator(),
             this->transform(*function_expression.get_left_function_expression()),
             this->transform(*function_expression.get_right_function_expression()));
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_ground_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                              this->transform(function_expression.get_function_expressions()));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(
+            function_expression.get_multi_operator(),
+            this->transform(function_expression.get_function_expressions()));
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression()));
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_factories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function()));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function()));
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionImpl& function_expression)
     {
@@ -594,58 +596,59 @@ protected:
     }
     FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton)
     {
-        return this->m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
+        return this->m_pddl_repositories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
     }
     Function transform_impl(const FunctionImpl& function)
     {
-        return this->m_pddl_factories.get_or_create_function(this->transform(*function.get_function_skeleton()), this->transform(function.get_terms()));
+        return this->m_pddl_repositories.get_or_create_function(this->transform(*function.get_function_skeleton()), this->transform(function.get_terms()));
     }
     GroundFunction transform_impl(const GroundFunctionImpl& function)
     {
-        return this->m_pddl_factories.get_or_create_ground_function(this->transform(*function.get_function_skeleton()),
-                                                                    this->transform(function.get_objects()));
+        return this->m_pddl_repositories.get_or_create_ground_function(this->transform(*function.get_function_skeleton()),
+                                                                       this->transform(function.get_objects()));
     }
     Action transform_impl(const ActionImpl& action)
     {
-        return this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                           action.get_original_arity(),
-                                                           this->transform(action.get_parameters()),
-                                                           this->transform(action.get_conditions<Static>()),
-                                                           this->transform(action.get_conditions<Fluent>()),
-                                                           this->transform(action.get_conditions<Derived>()),
-                                                           this->transform(action.get_simple_effects()),
-                                                           this->transform(action.get_complex_effects()),
-                                                           this->transform(*action.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                              action.get_original_arity(),
+                                                              this->transform(action.get_parameters()),
+                                                              this->transform(action.get_conditions<Static>()),
+                                                              this->transform(action.get_conditions<Fluent>()),
+                                                              this->transform(action.get_conditions<Derived>()),
+                                                              this->transform(action.get_simple_effects()),
+                                                              this->transform(action.get_complex_effects()),
+                                                              this->transform(*action.get_function_expression()));
     }
     Axiom transform_impl(const AxiomImpl& axiom)
     {
-        return this->m_pddl_factories.get_or_create_axiom(this->transform(axiom.get_parameters()),
-                                                          this->transform(*axiom.get_literal()),
-                                                          this->transform(axiom.get_conditions<Static>()),
-                                                          this->transform(axiom.get_conditions<Fluent>()),
-                                                          this->transform(axiom.get_conditions<Derived>()));
+        return this->m_pddl_repositories.get_or_create_axiom(this->transform(axiom.get_parameters()),
+                                                             this->transform(*axiom.get_literal()),
+                                                             this->transform(axiom.get_conditions<Static>()),
+                                                             this->transform(axiom.get_conditions<Fluent>()),
+                                                             this->transform(axiom.get_conditions<Derived>()));
     }
     Domain transform_impl(const DomainImpl& domain)
     {
-        return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
-                                                           domain.get_name(),
-                                                           this->transform(*domain.get_requirements()),
-                                                           this->transform(domain.get_constants()),
-                                                           this->transform(domain.get_predicates<Static>()),
-                                                           this->transform(domain.get_predicates<Fluent>()),
-                                                           this->transform(domain.get_predicates<Derived>()),
-                                                           this->transform(domain.get_functions()),
-                                                           this->transform(domain.get_actions()),
-                                                           this->transform(domain.get_axioms()));
+        return this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
+                                                              domain.get_name(),
+                                                              this->transform(*domain.get_requirements()),
+                                                              this->transform(domain.get_constants()),
+                                                              this->transform(domain.get_predicates<Static>()),
+                                                              this->transform(domain.get_predicates<Fluent>()),
+                                                              this->transform(domain.get_predicates<Derived>()),
+                                                              this->transform(domain.get_functions()),
+                                                              this->transform(domain.get_actions()),
+                                                              this->transform(domain.get_axioms()));
     }
     OptimizationMetric transform_impl(const OptimizationMetricImpl& metric)
     {
-        return this->m_pddl_factories.get_or_create_optimization_metric(metric.get_optimization_metric(), this->transform(*metric.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_optimization_metric(metric.get_optimization_metric(),
+                                                                           this->transform(*metric.get_function_expression()));
     }
 
     Problem transform_impl(const ProblemImpl& problem)
     {
-        return this->m_pddl_factories.get_or_create_problem(
+        return this->m_pddl_repositories.get_or_create_problem(
             problem.get_filepath(),
             this->transform(*problem.get_domain()),
             problem.get_name(),

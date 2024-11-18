@@ -76,13 +76,13 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
                                                                      std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                                      std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
                                                                      std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler) :
-    m_aag(applicable_action_generator),
+    m_applicable_action_generator(applicable_action_generator),
     m_max_arity(max_arity),
-    m_ssg(successor_state_generator),
+    m_state_repository(successor_state_generator),
     m_brfs_event_handler(brfs_event_handler),
     m_iw_event_handler(iw_event_handler),
     m_siw_event_handler(siw_event_handler),
-    m_initial_state(m_ssg->get_or_create_initial_state()),
+    m_initial_state(m_state_repository->get_or_create_initial_state()),
     m_iw(applicable_action_generator, max_arity, successor_state_generator, brfs_event_handler, iw_event_handler)
 {
     if (max_arity >= MAX_ARITY)
@@ -102,9 +102,9 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
 
 SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
 {
-    const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_repositories();
-    m_siw_event_handler->on_start_search(m_aag->get_problem(), start_state, pddl_factories);
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
+    m_siw_event_handler->on_start_search(m_applicable_action_generator->get_problem(), start_state, pddl_repositories);
 
     auto problem_goal_test = std::make_unique<ProblemGoal>(problem);
 
@@ -119,7 +119,7 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     while (!problem_goal_test->test_dynamic_goal(cur_state))
     {
         // Run IW to decrease goal counter
-        m_siw_event_handler->on_start_subproblem_search(problem, cur_state, pddl_factories);
+        m_siw_event_handler->on_start_subproblem_search(problem, cur_state, pddl_repositories);
 
         auto partial_plan = GroundActionList {};
 
@@ -150,12 +150,15 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     m_siw_event_handler->on_end_search();
     if (!m_siw_event_handler->is_quiet())
     {
-        m_aag->on_end_search();
+        m_applicable_action_generator->on_end_search();
     }
-    m_siw_event_handler->on_solved(out_plan, *m_aag->get_pddl_repositories());
+    m_siw_event_handler->on_solved(out_plan, *m_applicable_action_generator->get_pddl_repositories());
     return SearchStatus::SOLVED;
 }
 
-const std::shared_ptr<PDDLRepositories>& SerializedIterativeWidthAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
+const std::shared_ptr<PDDLRepositories>& SerializedIterativeWidthAlgorithm::get_pddl_repositories() const
+{
+    return m_applicable_action_generator->get_pddl_repositories();
+}
 
 }

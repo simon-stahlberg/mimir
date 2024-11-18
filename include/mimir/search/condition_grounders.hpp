@@ -42,7 +42,7 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     AssignmentSet<Static> m_static_assignment_set;
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<IConditionGrounderEventHandler> m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
@@ -55,7 +55,7 @@ private:
     bool is_valid_binding(Problem problem, State state, const ObjectList& binding);
 
     template<DynamicPredicateTag P>
-    bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_factories);
+    bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(Problem problem, State state);
@@ -79,7 +79,7 @@ public:
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
                       AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<PDDLRepositories> pddl_factories);
+                      std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     ConditionGrounder(Problem problem,
                       VariableList variables,
@@ -87,7 +87,7 @@ public:
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
                       AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<PDDLRepositories> pddl_factories,
+                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
     void compute_bindings(State state,

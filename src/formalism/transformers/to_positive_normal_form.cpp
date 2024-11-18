@@ -97,11 +97,11 @@ EffectComplex ToPositiveNormalFormTransformer::transform_impl(const EffectComple
                          transformed_derived_conditions,
                          transformed_derived_conditions);
 
-    return this->m_pddl_factories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
-                                                               transformed_static_conditions,
-                                                               transformed_fluent_conditions,
-                                                               transformed_derived_conditions,
-                                                               this->transform(*effect.get_effect()));
+    return this->m_pddl_repositories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
+                                                                  transformed_static_conditions,
+                                                                  transformed_fluent_conditions,
+                                                                  transformed_derived_conditions,
+                                                                  this->transform(*effect.get_effect()));
 }
 
 Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
@@ -117,15 +117,15 @@ Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
                          transformed_derived_conditions,
                          transformed_derived_conditions);
 
-    return this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                       action.get_original_arity(),
-                                                       this->transform(action.get_parameters()),
-                                                       transformed_static_conditions,
-                                                       transformed_fluent_conditions,
-                                                       transformed_derived_conditions,
-                                                       this->transform(action.get_simple_effects()),
-                                                       this->transform(action.get_complex_effects()),
-                                                       this->transform(*action.get_function_expression()));
+    return this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                          action.get_original_arity(),
+                                                          this->transform(action.get_parameters()),
+                                                          transformed_static_conditions,
+                                                          transformed_fluent_conditions,
+                                                          transformed_derived_conditions,
+                                                          this->transform(action.get_simple_effects()),
+                                                          this->transform(action.get_complex_effects()),
+                                                          this->transform(*action.get_function_expression()));
 }
 
 Domain ToPositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
@@ -143,20 +143,20 @@ Domain ToPositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
     introduce_axiom_for_dual(m_negative_fluent_transformed_duals, transformed_axioms);
     introduce_axiom_for_dual(m_negative_derived_transformed_duals, transformed_axioms);
 
-    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
-                                                       domain.get_name(),
-                                                       this->transform(*domain.get_requirements()),
-                                                       this->transform(domain.get_constants()),
-                                                       this->transform(domain.get_predicates<Static>()),
-                                                       this->transform(domain.get_predicates<Fluent>()),
-                                                       uniquify_elements(transformed_derived_predicates),
-                                                       this->transform(domain.get_functions()),
-                                                       this->transform(domain.get_actions()),
-                                                       uniquify_elements(transformed_axioms));
+    return this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
+                                                          domain.get_name(),
+                                                          this->transform(*domain.get_requirements()),
+                                                          this->transform(domain.get_constants()),
+                                                          this->transform(domain.get_predicates<Static>()),
+                                                          this->transform(domain.get_predicates<Fluent>()),
+                                                          uniquify_elements(transformed_derived_predicates),
+                                                          this->transform(domain.get_functions()),
+                                                          this->transform(domain.get_actions()),
+                                                          uniquify_elements(transformed_axioms));
 }
 
-ToPositiveNormalFormTransformer::ToPositiveNormalFormTransformer(PDDLRepositories& pddl_factories) :
-    BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>(pddl_factories)
+ToPositiveNormalFormTransformer::ToPositiveNormalFormTransformer(PDDLRepositories& pddl_repositories) :
+    BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>(pddl_repositories)
 {
 }
 }

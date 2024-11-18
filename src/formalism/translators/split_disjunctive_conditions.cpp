@@ -25,7 +25,7 @@ using namespace std::string_literals;
 namespace mimir
 {
 
-static loki::ActionList split_actions_at_disjunction(const loki::ActionList& actions, loki::PDDLRepositories& pddl_factories)
+static loki::ActionList split_actions_at_disjunction(const loki::ActionList& actions, loki::PDDLRepositories& pddl_repositories)
 {
     auto split_actions = loki::ActionList {};
 
@@ -36,11 +36,11 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
         {
             for (const auto& part : std::get<loki::ConditionOrImpl>(*condition.value()).get_conditions())
             {
-                split_actions.push_back(pddl_factories.get_or_create_action(action->get_name(),
-                                                                            action->get_original_arity(),
-                                                                            action->get_parameters(),
-                                                                            part,
-                                                                            action->get_effect()));
+                split_actions.push_back(pddl_repositories.get_or_create_action(action->get_name(),
+                                                                               action->get_original_arity(),
+                                                                               action->get_parameters(),
+                                                                               part,
+                                                                               action->get_effect()));
             }
         }
         else
@@ -51,7 +51,7 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
     return uniquify_elements(split_actions);
 }
 
-static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms, loki::PDDLRepositories& pddl_factories)
+static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms, loki::PDDLRepositories& pddl_repositories)
 {
     auto split_axioms = loki::AxiomList {};
 
@@ -62,10 +62,10 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
         {
             for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
             {
-                split_axioms.push_back(pddl_factories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                                          axiom->get_parameters(),
-                                                                          part,
-                                                                          axiom->get_num_parameters_to_ground_head()));
+                split_axioms.push_back(pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
+                                                                             axiom->get_parameters(),
+                                                                             part,
+                                                                             axiom->get_num_parameters_to_ground_head()));
             }
         }
         else
@@ -85,41 +85,41 @@ loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::Ef
         for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
         {
             split_effects.push_back(
-                this->m_pddl_factories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect())));
+                this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect())));
         }
-        return this->m_pddl_factories.get_or_create_effect_and(split_effects);
+        return this->m_pddl_repositories.get_or_create_effect_and(split_effects);
     }
     else
     {
-        return this->m_pddl_factories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
     }
 }
 
 loki::Domain SplitDisjunctiveConditionsTranslator::translate_impl(const loki::DomainImpl& domain)
 {
     // Split actions
-    auto translated_actions = split_actions_at_disjunction(this->translate(domain.get_actions()), this->m_pddl_factories);
+    auto translated_actions = split_actions_at_disjunction(this->translate(domain.get_actions()), this->m_pddl_repositories);
 
     // Split axioms
-    auto translated_axioms = split_axioms_at_disjunction(this->translate(domain.get_axioms()), this->m_pddl_factories);
+    auto translated_axioms = split_axioms_at_disjunction(this->translate(domain.get_axioms()), this->m_pddl_repositories);
 
-    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
-                                                       domain.get_name(),
-                                                       this->translate(*domain.get_requirements()),
-                                                       this->translate(domain.get_types()),
-                                                       this->translate(domain.get_constants()),
-                                                       this->translate(domain.get_predicates()),
-                                                       this->translate(domain.get_functions()),
-                                                       translated_actions,
-                                                       translated_axioms);
+    return this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
+                                                          domain.get_name(),
+                                                          this->translate(*domain.get_requirements()),
+                                                          this->translate(domain.get_types()),
+                                                          this->translate(domain.get_constants()),
+                                                          this->translate(domain.get_predicates()),
+                                                          this->translate(domain.get_functions()),
+                                                          translated_actions,
+                                                          translated_axioms);
 }
 
 loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(const loki::ProblemImpl& problem)
 {
     // Split axioms
-    auto translated_axioms = split_axioms_at_disjunction(this->translate(problem.get_axioms()), this->m_pddl_factories);
+    auto translated_axioms = split_axioms_at_disjunction(this->translate(problem.get_axioms()), this->m_pddl_repositories);
 
-    return this->m_pddl_factories.get_or_create_problem(
+    return this->m_pddl_repositories.get_or_create_problem(
         problem.get_filepath(),
         this->translate(*problem.get_domain()),
         problem.get_name(),
@@ -136,8 +136,8 @@ loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(const loki::P
 
 loki::Problem SplitDisjunctiveConditionsTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_factories) :
-    BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_factories)
+SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_repositories) :
+    BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_repositories)
 {
 }
 }

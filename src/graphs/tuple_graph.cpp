@@ -624,8 +624,11 @@ TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpace> state_space, in
     m_state_space(std::move(state_space)),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(
         arity,
-        boost::hana::at_key(m_state_space->get_aag()->get_pddl_repositories()->get_pddl_type_to_factory(), boost::hana::type<GroundAtomImpl<Fluent>> {}).size()
-            + boost::hana::at_key(m_state_space->get_aag()->get_pddl_repositories()->get_pddl_type_to_factory(), boost::hana::type<GroundAtomImpl<Derived>> {})
+        boost::hana::at_key(m_state_space->get_applicable_action_generator()->get_pddl_repositories()->get_pddl_type_to_factory(),
+                            boost::hana::type<GroundAtomImpl<Fluent>> {})
+                .size()
+            + boost::hana::at_key(m_state_space->get_applicable_action_generator()->get_pddl_repositories()->get_pddl_type_to_factory(),
+                                  boost::hana::type<GroundAtomImpl<Derived>> {})
                   .size())),
     m_prune_dominated_tuples(prune_dominated_tuples)
 {
@@ -643,7 +646,7 @@ const std::shared_ptr<TupleIndexMapper>& TupleGraphFactory::get_tuple_index_mapp
 std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
     const auto problem = tuple_graph.get_state_space()->get_problem();
-    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_repositories();
+    const auto& pddl_repositories = *tuple_graph.get_state_space()->get_pddl_repositories();
     auto atom_indices = AtomIndexList {};
 
     out << "digraph {\n"
@@ -666,7 +669,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
             out << "tuple index=" << vertex.get_tuple_index() << "<BR/>";
 
             tuple_graph.get_tuple_index_mapper()->to_atom_indices(vertex.get_tuple_index(), atom_indices);
-            const auto fluent_atoms = pddl_factories.get_ground_atoms_from_indices<Fluent>(atom_indices);
+            const auto fluent_atoms = pddl_repositories.get_ground_atoms_from_indices<Fluent>(atom_indices);
             out << "fluent_atoms=" << fluent_atoms << "<BR/>";
             out << "states=[";
             for (size_t i = 0; i < vertex.get_states().size(); ++i)
@@ -676,7 +679,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
                 {
                     out << "<BR/>";
                 }
-                out << std::make_tuple(problem, state, std::cref(pddl_factories));
+                out << std::make_tuple(problem, state, std::cref(pddl_repositories));
             }
             out << "]>]\n";
         }

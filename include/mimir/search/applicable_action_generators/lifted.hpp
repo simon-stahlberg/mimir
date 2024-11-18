@@ -44,7 +44,7 @@ private:
     Problem m_problem;
 
     // Memory
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     AxiomEvaluator m_axiom_evaluator;
@@ -61,11 +61,11 @@ private:
 
 public:
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> ref_pddl_factories);
+    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> ref_pddl_repositories);
 
     /// @brief Complete construction
     LiftedApplicableActionGenerator(Problem problem,
-                                    std::shared_ptr<PDDLRepositories> ref_pddl_factories,
+                                    std::shared_ptr<PDDLRepositories> ref_pddl_repositories,
                                     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
@@ -108,10 +108,10 @@ public:
 
     size_t get_num_ground_axioms() const override;
 
-    friend std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag);
+    friend std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_applicable_action_generator);
 };
 
-std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag);
+std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_applicable_action_generator);
 
 }  // namespace mimir
 

@@ -391,9 +391,9 @@ bool GroundActionImpl::is_applicable(Problem problem, State state) const
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLRepositories&>& data)
 {
-    const auto [simple_effect, pddl_factories] = data;
+    const auto [simple_effect, pddl_repositories] = data;
 
-    const auto& ground_atom = pddl_factories.get_ground_atom<Fluent>(simple_effect.atom_index);
+    const auto& ground_atom = pddl_repositories.get_ground_atom<Fluent>(simple_effect.atom_index);
 
     if (simple_effect.is_negated)
     {
@@ -413,7 +413,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLRepositories&>& data)
 {
-    const auto [strips_precondition_proxy, pddl_factories] = data;
+    const auto [strips_precondition_proxy, pddl_repositories] = data;
 
     const auto& positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
     const auto& negative_static_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Static>();
@@ -429,12 +429,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
     auto positive_derived_precondition = GroundAtomList<Derived> {};
     auto negative_derived_precondition = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
     os << "positive static precondition=" << positive_static_precondition << ", "
        << "negative static precondition=" << negative_static_precondition << ", "
@@ -449,7 +449,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLRepositories&>& data)
 {
-    const auto [strips_effect_proxy, pddl_factories] = data;
+    const auto [strips_effect_proxy, pddl_repositories] = data;
 
     const auto& positive_effect_bitset = strips_effect_proxy.get_positive_effects();
     const auto& negative_effect_bitset = strips_effect_proxy.get_negative_effects();
@@ -457,8 +457,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
     auto positive_simple_effects = GroundAtomList<Fluent> {};
     auto negative_simple_effects = GroundAtomList<Fluent> {};
 
-    pddl_factories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
-    pddl_factories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
     os << "delete effects=" << negative_simple_effects << ", "
        << "add effects=" << positive_simple_effects;
@@ -469,7 +469,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLRepositories&>& data)
 {
-    const auto [cond_effect_proxy, pddl_factories] = data;
+    const auto [cond_effect_proxy, pddl_repositories] = data;
 
     const auto& positive_static_precondition_bitset = cond_effect_proxy.get_positive_precondition<Static>();
     const auto& negative_static_precondition_bitset = cond_effect_proxy.get_negative_precondition<Static>();
@@ -486,12 +486,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
     auto positive_derived_precondition = GroundAtomList<Derived> {};
     auto negative_derived_precondition = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
-    pddl_factories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
     os << "positive static precondition=" << positive_static_precondition << ", "
        << "negative static precondition=" << negative_static_precondition << ", "
@@ -499,7 +499,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
        << "negative fluent precondition=" << negative_fluent_precondition << ", "
        << "positive derived precondition=" << positive_derived_precondition << ", "
        << "negative derived precondition=" << negative_derived_precondition << ", "
-       << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_factories));
+       << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_repositories));
 
     return os;
 }
@@ -507,29 +507,29 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&>& data)
 {
-    const auto [action, pddl_factories] = data;
+    const auto [action, pddl_repositories] = data;
 
     auto binding = ObjectList {};
     for (const auto object_index : action->get_object_indices())
     {
-        binding.push_back(pddl_factories.get_object(object_index));
+        binding.push_back(pddl_repositories.get_object(object_index));
     }
 
     const auto& strips_precondition = action->get_strips_precondition();
     const auto& strips_effect = action->get_strips_effect();
     const auto& cond_effects = action->get_conditional_effects();
 
-    os << "Action("                                                                             //
-       << "index=" << action->get_index() << ", "                                               //
-       << "name=" << pddl_factories.get_action(action->get_action_index())->get_name() << ", "  //
-       << "binding=" << binding << ", "                                                         //
-       << std::make_tuple(strips_precondition, std::cref(pddl_factories)) << ", "               //
-       << std::make_tuple(strips_effect, std::cref(pddl_factories))                             //
+    os << "Action("                                                                                //
+       << "index=" << action->get_index() << ", "                                                  //
+       << "name=" << pddl_repositories.get_action(action->get_action_index())->get_name() << ", "  //
+       << "binding=" << binding << ", "                                                            //
+       << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "               //
+       << std::make_tuple(strips_effect, std::cref(pddl_repositories))                             //
        << ", "
        << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
     {
-        os << "[" << std::make_tuple(cond_effect, std::cref(pddl_factories)) << "], ";
+        os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";
     }
     os << "])";
 
@@ -539,14 +539,14 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLRepositories&, GroundAction>& data)
 {
-    const auto [pddl_factories, ground_action] = data;
+    const auto [pddl_repositories, ground_action] = data;
 
-    const auto action = pddl_factories.get_action(ground_action->get_action_index());
+    const auto action = pddl_repositories.get_action(ground_action->get_action_index());
     os << "(" << action->get_name();
     // Only take objects w.r.t. to the original action parameters
     for (size_t i = 0; i < action->get_original_arity(); ++i)
     {
-        os << " " << *pddl_factories.get_object(ground_action->get_object_indices()[i]);
+        os << " " << *pddl_repositories.get_object(ground_action->get_object_indices()[i]);
     }
     os << ")";
     return os;

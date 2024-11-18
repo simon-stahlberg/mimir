@@ -75,7 +75,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit ToENFTranslator(loki::PDDLRepositories& pddl_factories);
+    explicit ToENFTranslator(loki::PDDLRepositories& pddl_repositories);
 };
 }
 

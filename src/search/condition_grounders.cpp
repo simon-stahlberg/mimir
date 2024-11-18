@@ -37,7 +37,7 @@ bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals,
 {
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_pddl_factories->ground_literal(literal, binding);
+        auto ground_literal = m_pddl_repositories->ground_literal(literal, binding);
 
         if (!state->literal_holds(ground_literal))
         {
@@ -55,7 +55,7 @@ bool ConditionGrounder::is_valid_static_binding(Problem problem, const LiteralLi
 {
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_pddl_factories->ground_literal(literal, binding);
+        auto ground_literal = m_pddl_repositories->ground_literal(literal, binding);
 
         if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
         {
@@ -74,13 +74,13 @@ bool ConditionGrounder::is_valid_binding(Problem problem, State state, const Obj
 }
 
 template<DynamicPredicateTag P>
-bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_factories)
+bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories)
 {
     for (const auto& literal : literals)
     {
         if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            if (!state->literal_holds(pddl_factories.ground_literal(literal, {})))
+            if (!state->literal_holds(pddl_repositories.ground_literal(literal, {})))
             {
                 return false;
             }
@@ -90,14 +90,14 @@ bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Pr
     return true;
 }
 
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, Problem problem, State state, PDDLRepositories& pddl_factories);
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, Problem problem, State state, PDDLRepositories& pddl_factories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories);
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
 bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
 {
-    return nullary_literals_hold(m_fluent_conditions, problem, state, *m_pddl_factories)
-           && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_factories);
+    return nullary_literals_hold(m_fluent_conditions, problem, state, *m_pddl_repositories)
+           && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_repositories);
 }
 
 void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_bindings)
@@ -111,7 +111,7 @@ void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_b
     }
     else
     {
-        m_event_handler->on_invalid_binding(binding, *m_pddl_factories);
+        m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
     }
 }
 
@@ -125,7 +125,7 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
         if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
             && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
         {
-            auto binding = ObjectList { m_pddl_factories->get_object(vertex.get_object_index()) };
+            auto binding = ObjectList { m_pddl_repositories->get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(m_problem, state, binding))
             {
@@ -133,7 +133,7 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
             }
             else
             {
-                m_event_handler->on_invalid_binding(binding, *m_pddl_factories);
+                m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
             }
         }
     }
@@ -185,7 +185,7 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
             const auto& vertex = vertices[clique[index]];
             const auto parameter_index = vertex.get_parameter_index();
             const auto object_index = vertex.get_object_index();
-            binding[parameter_index] = m_pddl_factories->get_object(object_index);
+            binding[parameter_index] = m_pddl_repositories->get_object(object_index);
         }
 
         if (is_valid_binding(m_problem, state, binding))
@@ -194,7 +194,7 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
         }
         else
         {
-            m_event_handler->on_invalid_binding(binding, *m_pddl_factories);
+            m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
         }
     }
 }
@@ -205,14 +205,14 @@ ConditionGrounder::ConditionGrounder(Problem problem,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
                                      AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<PDDLRepositories> pddl_factories) :
+                                     std::shared_ptr<PDDLRepositories> pddl_repositories) :
     ConditionGrounder(std::move(problem),
                       std::move(variables),
                       std::move(static_conditions),
                       std::move(fluent_conditions),
                       std::move(derived_conditions),
                       std::move(static_assignment_set),
-                      std::move(pddl_factories),
+                      std::move(pddl_repositories),
                       std::make_shared<DefaultConditionGrounderEventHandler>())
 {
 }
@@ -223,7 +223,7 @@ ConditionGrounder::ConditionGrounder(Problem problem,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
                                      AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<PDDLRepositories> pddl_factories,
+                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                      std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
     m_problem(std::move(problem)),
     m_variables(std::move(variables)),
@@ -231,7 +231,7 @@ ConditionGrounder::ConditionGrounder(Problem problem,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_static_assignment_set(std::move(static_assignment_set)),
-    m_pddl_factories(std::move(pddl_factories)),
+    m_pddl_repositories(std::move(pddl_repositories)),
     m_event_handler(std::move(event_handler)),
     m_static_consistency_graph(m_problem, 0, m_variables.size(), m_static_conditions, m_static_assignment_set)
 {
@@ -309,7 +309,7 @@ template const LiteralList<Derived>& ConditionGrounder::get_conditions<Derived>(
 
 const AssignmentSet<Static>& ConditionGrounder::get_static_assignment_set() const { return m_static_assignment_set; }
 
-const std::shared_ptr<PDDLRepositories>& ConditionGrounder::get_pddl_repositories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& ConditionGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
 
 const std::shared_ptr<IConditionGrounderEventHandler>& ConditionGrounder::get_event_handler() const { return m_event_handler; }
 

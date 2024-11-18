@@ -101,7 +101,7 @@ EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effe
         return nullptr;
     }
 
-    return this->m_pddl_factories.get_or_create_simple_effect(literal);
+    return this->m_pddl_repositories.get_or_create_simple_effect(literal);
 }
 
 EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
@@ -117,7 +117,7 @@ EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& ef
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
 
-    return this->m_pddl_factories.get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, simple_effect);
+    return this->m_pddl_repositories.get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, simple_effect);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
@@ -135,15 +135,15 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto derived_conditions = filter_positive_literals(this->transform(action.get_conditions<Derived>()));
     auto cost_expression = this->transform(*action.get_function_expression());
 
-    auto delete_relaxed_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                                             action.get_original_arity(),
-                                                                             parameters,
-                                                                             static_conditions,
-                                                                             fluent_conditions,
-                                                                             derived_conditions,
-                                                                             simple_effects,
-                                                                             complex_effects,
-                                                                             cost_expression);
+    auto delete_relaxed_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                                                action.get_original_arity(),
+                                                                                parameters,
+                                                                                static_conditions,
+                                                                                fluent_conditions,
+                                                                                derived_conditions,
+                                                                                simple_effects,
+                                                                                complex_effects,
+                                                                                cost_expression);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
 
@@ -158,7 +158,7 @@ Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
     auto fluent_conditions = filter_positive_literals(this->transform(axiom.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(axiom.get_conditions<Derived>()));
 
-    auto delete_relaxed_axiom = this->m_pddl_factories.get_or_create_axiom(parameters, literal, static_conditions, fluent_conditions, derived_conditions);
+    auto delete_relaxed_axiom = this->m_pddl_repositories.get_or_create_axiom(parameters, literal, static_conditions, fluent_conditions, derived_conditions);
 
     m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(&axiom);
 
@@ -167,16 +167,16 @@ Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 
 Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
 {
-    auto transformed_domain = this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
-                                                                          domain.get_name(),
-                                                                          this->transform(*domain.get_requirements()),
-                                                                          this->transform(domain.get_constants()),
-                                                                          this->transform(domain.get_predicates<Static>()),
-                                                                          this->transform(domain.get_predicates<Fluent>()),
-                                                                          this->transform(domain.get_predicates<Derived>()),
-                                                                          this->transform(domain.get_functions()),
-                                                                          this->transform(domain.get_actions()),
-                                                                          this->transform(domain.get_axioms()));
+    auto transformed_domain = this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
+                                                                             domain.get_name(),
+                                                                             this->transform(*domain.get_requirements()),
+                                                                             this->transform(domain.get_constants()),
+                                                                             this->transform(domain.get_predicates<Static>()),
+                                                                             this->transform(domain.get_predicates<Fluent>()),
+                                                                             this->transform(domain.get_predicates<Derived>()),
+                                                                             this->transform(domain.get_functions()),
+                                                                             this->transform(domain.get_actions()),
+                                                                             this->transform(domain.get_axioms()));
 
     return transformed_domain;
 }
@@ -187,8 +187,8 @@ Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem)
     return this->transform(problem);
 }
 
-DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLRepositories& pddl_factories, bool remove_useless_actions_and_axioms) :
-    BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories),
+DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLRepositories& pddl_repositories, bool remove_useless_actions_and_axioms) :
+    BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_repositories),
     m_remove_useless_actions_and_axioms(remove_useless_actions_and_axioms)
 {
 }

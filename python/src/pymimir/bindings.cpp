@@ -278,47 +278,53 @@ public:
     using DynamicAStarAlgorithmEventHandlerBase::DynamicAStarAlgorithmEventHandlerBase;
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, problem, std::cref(pddl_repositories));
     }
 
-    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, action, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, action, problem, std::cref(pddl_repositories));
     }
-    void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_relaxed_impl, state, action, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_relaxed_impl, state, action, problem, std::cref(pddl_repositories));
     }
-    void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_not_relaxed_impl, state, action, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void,
+                          DynamicAStarAlgorithmEventHandlerBase,
+                          on_generate_state_not_relaxed_impl,
+                          state,
+                          action,
+                          problem,
+                          std::cref(pddl_repositories));
     }
-    void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_close_state_impl, state, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_close_state_impl, state, problem, std::cref(pddl_repositories));
     }
     void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_state, uint64_t num_generated_states) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_finish_f_layer_impl, f_value, num_expanded_state, num_generated_states);
     }
-    void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_prune_state_impl, state, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_prune_state_impl, state, problem, std::cref(pddl_repositories));
     }
-    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_factories) override
+    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_start_search_impl, start_state, problem, std::cref(pddl_factories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_start_search_impl, start_state, problem, std::cref(pddl_repositories));
     }
     /**
      * Note the trailing commas in the PYBIND11_OVERRIDE calls to name() and bark(). These are needed to portably implement a trampoline for a function that
      * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
      */
     void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
-    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
+    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan, pddl_factories);
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan, pddl_repositories);
     }
     void on_unsolvable_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_unsolvable_impl, ); }
     void on_exhausted_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_exhausted_impl, ); }
@@ -515,8 +521,8 @@ void init_pymimir(py::module_& m)
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
                          .def(
                              "lift",
-                             [](const GroundAtomList<Tag>& ground_atoms, PDDLRepositories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
-                             py::arg("pddl_factories"));
+                             [](const GroundAtomList<Tag>& ground_atoms, PDDLRepositories& pddl_repositories) { return lift(ground_atoms, pddl_repositories); },
+                             py::arg("pddl_repositories"));
     };
     bind_ground_atom("StaticGroundAtom", Static {});
     bind_ground_atom("FluentGroundAtom", Fluent {});
@@ -536,8 +542,8 @@ void init_pymimir(py::module_& m)
             py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
                 .def(
                     "lift",
-                    [](const GroundLiteralList<Tag>& ground_literals, PDDLRepositories& pddl_factories) { return lift(ground_literals, pddl_factories); },
-                    py::arg("pddl_factories"));
+                    [](const GroundLiteralList<Tag>& ground_literals, PDDLRepositories& pddl_repositories) { return lift(ground_literals, pddl_repositories); },
+                    py::arg("pddl_repositories"));
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
     bind_ground_literal("FluentGroundLiteral", Fluent {});
@@ -948,14 +954,14 @@ void init_pymimir(py::module_& m)
         .def("literals_hold", py::overload_cast<const GroundLiteralList<Derived>&>(&StateImpl::literals_hold<Derived>, py::const_), py::arg("literals"))
         .def(
             "to_string",
-            [](const StateImpl& self, Problem problem, const PDDLRepositories& pddl_factories)
+            [](const StateImpl& self, Problem problem, const PDDLRepositories& pddl_repositories)
             {
                 std::stringstream ss;
-                ss << std::make_tuple(problem, State(&self), std::cref(pddl_factories));
+                ss << std::make_tuple(problem, State(&self), std::cref(pddl_repositories));
                 return ss.str();
             },
             py::arg("problem"),
-            py::arg("pddl_factories"))
+            py::arg("pddl_repositories"))
         .def("get_index", py::overload_cast<>(&StateImpl::get_index, py::const_));
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<StateList>(m, "StateList");
@@ -1021,17 +1027,17 @@ void init_pymimir(py::module_& m)
         .def("__hash__", [](const GroundActionImpl& self) { return self.get_index(); })
         .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
         .def("to_string",
-             [](const GroundActionImpl& self, PDDLRepositories& pddl_factories)
+             [](const GroundActionImpl& self, PDDLRepositories& pddl_repositories)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(pddl_factories));
+                 ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories));
                  return ss.str();
              })
         .def("to_string_for_plan",
-             [](const GroundActionImpl& self, PDDLRepositories& pddl_factories)
+             [](const GroundActionImpl& self, PDDLRepositories& pddl_repositories)
              {
                  std::stringstream ss;
-                 ss << std::make_tuple(std::cref(pddl_factories), GroundAction(&self));
+                 ss << std::make_tuple(std::cref(pddl_repositories), GroundAction(&self));
                  return ss.str();
              })
         .def("get_index", py::overload_cast<>(&GroundActionImpl::get_index, py::const_), py::return_value_policy::copy)
@@ -1059,7 +1065,7 @@ void init_pymimir(py::module_& m)
              py::arg("static_literals"),
              py::arg("fluent_literals"),
              py::arg("derived_literals"),
-             py::arg("pddl_factories"))
+             py::arg("pddl_repositories"))
         .def("ground", &LiftedConjunctionGrounder::ground, py::arg("state"));
 
     /* ApplicableActionGenerators */
@@ -1114,10 +1120,10 @@ void init_pymimir(py::module_& m)
     py::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<LiftedApplicableActionGenerator>>(
         m,
         "LiftedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_factories"))
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
         .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
              py::arg("problem"),
-             py::arg("pddl_factories"),
+             py::arg("pddl_repositories"),
              py::arg("event_handler"));
 
     // Grounded
@@ -1137,10 +1143,10 @@ void init_pymimir(py::module_& m)
     py::class_<GroundedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<GroundedApplicableActionGenerator>>(
         m,
         "GroundedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_factories"))
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
         .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
              py::arg("problem"),
-             py::arg("pddl_factories"),
+             py::arg("pddl_repositories"),
              py::arg("event_handler"));
 
     /* StateRepository */
@@ -1384,13 +1390,13 @@ void init_pymimir(py::module_& m)
             "create",
             [](Problem problem,
                std::shared_ptr<PDDLRepositories> factories,
-               std::shared_ptr<IApplicableActionGenerator> aag,
-               std::shared_ptr<StateRepository> ssg,
-               const StateSpaceOptions& options) { return StateSpace::create(problem, factories, aag, ssg, options); },
+               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+               std::shared_ptr<StateRepository> state_repository,
+               const StateSpaceOptions& options) { return StateSpace::create(problem, factories, applicable_action_generator, state_repository, options); },
             py::arg("problem"),
             py::arg("factories"),
-            py::arg("aag"),
-            py::arg("ssg"),
+            py::arg("applicable_action_generator"),
+            py::arg("state_repository"),
             py::arg("options") = StateSpaceOptions())
         .def_static(
             "create",
@@ -1420,8 +1426,8 @@ void init_pymimir(py::module_& m)
         .def("compute_pairwise_shortest_backward_state_distances", &StateSpace::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &StateSpace::get_pddl_repositories)
-        .def("get_aag", &StateSpace::get_aag)
-        .def("get_ssg", &StateSpace::get_ssg)
+        .def("get_applicable_action_generator", &StateSpace::get_applicable_action_generator)
+        .def("get_state_repository", &StateSpace::get_state_repository)
         .def("get_vertex", &StateSpace::get_vertex, py::arg("state_index"))
         .def("get_vertices", &StateSpace::get_vertices, py::return_value_policy::reference_internal)
         .def("get_vertex_index", &StateSpace::get_vertex_index, py::arg("state"))
@@ -1610,13 +1616,14 @@ void init_pymimir(py::module_& m)
             "create",
             [](Problem problem,
                std::shared_ptr<PDDLRepositories> factories,
-               std::shared_ptr<IApplicableActionGenerator> aag,
-               std::shared_ptr<StateRepository> ssg,
-               const FaithfulAbstractionOptions& options) { return FaithfulAbstraction::create(problem, factories, aag, ssg, options); },
+               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+               std::shared_ptr<StateRepository> state_repository,
+               const FaithfulAbstractionOptions& options)
+            { return FaithfulAbstraction::create(problem, factories, applicable_action_generator, state_repository, options); },
             py::arg("problem"),
             py::arg("factories"),
-            py::arg("aag"),
-            py::arg("ssg"),
+            py::arg("applicable_action_generator"),
+            py::arg("state_repository"),
             py::arg("options") = FaithfulAbstractionOptions())
         .def_static(
             "create",
@@ -1646,8 +1653,8 @@ void init_pymimir(py::module_& m)
         .def("compute_pairwise_shortest_backward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &FaithfulAbstraction::get_pddl_repositories)
-        .def("get_aag", &FaithfulAbstraction::get_aag)
-        .def("get_ssg", &FaithfulAbstraction::get_ssg)
+        .def("get_applicable_action_generator", &FaithfulAbstraction::get_applicable_action_generator)
+        .def("get_state_repository", &FaithfulAbstraction::get_state_repository)
         .def("get_vertex_index", &FaithfulAbstraction::get_vertex_index, py::arg("state"))
         .def("get_vertices", &FaithfulAbstraction::get_vertices, py::return_value_policy::reference_internal)
         .def("get_state_to_vertex_index", &FaithfulAbstraction::get_state_to_vertex_index, py::return_value_policy::reference_internal)
@@ -1785,8 +1792,8 @@ void init_pymimir(py::module_& m)
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
         .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &GlobalFaithfulAbstraction::get_pddl_repositories)
-        .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
-        .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
+        .def("get_applicable_action_generator", &GlobalFaithfulAbstraction::get_applicable_action_generator)
+        .def("get_state_repository", &GlobalFaithfulAbstraction::get_state_repository)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
         .def("get_vertex_index", py::overload_cast<State>(&GlobalFaithfulAbstraction::get_vertex_index, py::const_), py::arg("state"))
         .def("get_vertex_index", py::overload_cast<Index>(&GlobalFaithfulAbstraction::get_vertex_index, py::const_), py::arg("global_state_index"))
@@ -1890,8 +1897,8 @@ void init_pymimir(py::module_& m)
         .def(py::init<GlobalFaithfulAbstraction>(), py::arg("global_faithful_abstraction"))
         .def("get_problem", &Abstraction::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &Abstraction::get_pddl_repositories)
-        .def("get_aag", &Abstraction::get_aag)
-        .def("get_ssg", &Abstraction::get_ssg)
+        .def("get_applicable_action_generator", &Abstraction::get_applicable_action_generator)
+        .def("get_state_repository", &Abstraction::get_state_repository)
         .def("get_vertex_index", &Abstraction::get_vertex_index)
         .def("get_initial_vertex_index", &Abstraction::get_initial_vertex_index)
         .def("get_goal_vertex_indices", &Abstraction::get_goal_vertex_indices, py::return_value_policy::reference_internal)
@@ -2284,7 +2291,7 @@ void init_pymimir(py::module_& m)
     m.def("create_object_graph",
           &create_object_graph,
           py::arg("color_function"),
-          py::arg("pddl_factories"),
+          py::arg("pddl_repositories"),
           py::arg("problem"),
           py::arg("state"),
           py::arg("state_index") = 0,

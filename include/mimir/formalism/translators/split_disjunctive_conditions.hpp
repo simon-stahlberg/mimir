@@ -57,7 +57,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_factories);
+    explicit SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_repositories);
 };
 
 }

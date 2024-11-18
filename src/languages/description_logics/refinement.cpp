@@ -26,9 +26,9 @@ namespace mimir::dl
  * RefinementStateListPruningFunction
  */
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(const PDDLRepositories& pddl_factories, Problem problem, StateList states) :
+RefinementStateListPruningFunction::RefinementStateListPruningFunction(const PDDLRepositories& pddl_repositories, Problem problem, StateList states) :
     RefinementPruningFunction(),
-    m_pddl_factories(pddl_factories),
+    m_pddl_repositories(pddl_repositories),
     m_problem(problem),
     m_states(std::move(states)),
     m_denotation_builder(),
@@ -50,7 +50,7 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
 
     for (const auto& state : m_states)
     {
-        auto evaluation_context = EvaluationContext(m_pddl_factories, m_problem, state, m_denotation_builder, m_denotation_repository);
+        auto evaluation_context = EvaluationContext(m_pddl_repositories, m_problem, state, m_denotation_builder, m_denotation_repository);
 
         const auto eval = constructor->evaluate(evaluation_context);
 

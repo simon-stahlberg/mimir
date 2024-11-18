@@ -33,7 +33,7 @@ namespace mimir
 class StateRepository
 {
 private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
     bool m_problem_or_domain_has_axioms;
 
     StateImplSet m_states;
@@ -43,7 +43,7 @@ private:
     FlatBitset m_reached_derived_atoms;
 
 public:
-    explicit StateRepository(std::shared_ptr<IApplicableActionGenerator> aag);
+    explicit StateRepository(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);
 
     StateRepository(const StateRepository& other) = delete;
     StateRepository& operator=(const StateRepository& other) = delete;
@@ -62,7 +62,7 @@ public:
 
     const FlatBitset& get_reached_derived_ground_atoms_bitset() const;
 
-    std::shared_ptr<IApplicableActionGenerator> get_aag() const;
+    std::shared_ptr<IApplicableActionGenerator> get_applicable_action_generator() const;
 };
 
 }

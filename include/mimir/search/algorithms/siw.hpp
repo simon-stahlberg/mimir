@@ -47,10 +47,10 @@ public:
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
 private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
+    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
     size_t m_max_arity;
 
-    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;

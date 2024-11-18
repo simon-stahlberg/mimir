@@ -24,27 +24,30 @@
 
 namespace mimir
 {
-void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) const {}
+void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
-void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) const
+void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
+                                                               GroundAction action,
+                                                               Problem problem,
+                                                               const PDDLRepositories& pddl_repositories) const
 {
 }
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
                                                                        GroundAction action,
                                                                        Problem problem,
-                                                                       const PDDLRepositories& pddl_factories) const
+                                                                       const PDDLRepositories& pddl_repositories) const
 {
 }
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                            GroundAction action,
                                                                            Problem problem,
-                                                                           const PDDLRepositories& pddl_factories) const
+                                                                           const PDDLRepositories& pddl_repositories) const
 {
 }
 
-void DefaultAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) const {}
+void DefaultAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
 void DefaultAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
@@ -52,18 +55,18 @@ void DefaultAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, u
               << " and num generated states " << num_generated_states << " (" << get_statistics().get_current_search_time_ms().count() << " ms)" << std::endl;
 }
 
-void DefaultAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) const {}
+void DefaultAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
-void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_factories) const
+void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
     std::cout << "[AStar] Search started." << std::endl;
 }
 
 void DefaultAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) const
+void DefaultAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) const
 {
-    auto plan = to_plan(ground_action_plan, pddl_factories);
+    auto plan = to_plan(ground_action_plan, pddl_repositories);
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;

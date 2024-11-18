@@ -66,7 +66,7 @@ static void add_ground_atom_graph_structures(const ProblemColorFunction& color_f
 }
 
 static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_function,
-                                              const PDDLRepositories& pddl_factories,
+                                              const PDDLRepositories& pddl_repositories,
                                               Problem problem,
                                               State state,
                                               Index state_index,
@@ -74,21 +74,21 @@ static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                               StaticVertexColoredDigraph& out_digraph)
 {
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Static>(problem->get_static_initial_positive_atoms_bitset()))
+    for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Static>(problem->get_static_initial_positive_atoms_bitset()))
     {
         if (!pruning_strategy.prune(state_index, atom))
         {
             add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
         }
     }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>()))
+    for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>()))
     {
         if (!pruning_strategy.prune(state_index, atom))
         {
             add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
         }
     }
-    for (const auto& atom : pddl_factories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>()))
+    for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>()))
     {
         if (!pruning_strategy.prune(state_index, atom))
         {
@@ -118,7 +118,7 @@ static void add_ground_literal_graph_structures(const ProblemColorFunction& colo
 }
 
 static void add_ground_goal_literals_graph_structures(const ProblemColorFunction& color_function,
-                                                      const PDDLRepositories& pddl_factories,
+                                                      const PDDLRepositories& pddl_repositories,
                                                       bool mark_true_goal_literals,
                                                       Problem problem,
                                                       State state,
@@ -151,7 +151,7 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
 }
 
 StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                               const PDDLRepositories& pddl_factories,
+                                               const PDDLRepositories& pddl_repositories,
                                                Problem problem,
                                                State state,
                                                Index state_index,
@@ -163,7 +163,7 @@ StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color
     const auto object_to_vertex_index = add_objects_graph_structures(color_function, problem, state_index, pruning_strategy, vertex_colored_digraph);
 
     add_ground_atoms_graph_structures(color_function,
-                                      pddl_factories,
+                                      pddl_repositories,
                                       problem,
                                       state,
                                       state_index,
@@ -172,7 +172,7 @@ StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color
                                       vertex_colored_digraph);
 
     add_ground_goal_literals_graph_structures(color_function,
-                                              pddl_factories,
+                                              pddl_repositories,
                                               mark_true_goal_literals,
                                               problem,
                                               state,

@@ -27,9 +27,10 @@
 
 namespace mimir
 {
-StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> aag) :
-    m_aag(std::move(aag)),
-    m_problem_or_domain_has_axioms(!m_aag->get_problem()->get_axioms().empty() || !m_aag->get_problem()->get_domain()->get_axioms().empty()),
+StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
+    m_applicable_action_generator(std::move(applicable_action_generator)),
+    m_problem_or_domain_has_axioms(!m_applicable_action_generator->get_problem()->get_axioms().empty()
+                                   || !m_applicable_action_generator->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
     m_state_builder(),
     m_reached_fluent_atoms(),
@@ -41,7 +42,7 @@ State StateRepository::get_or_create_initial_state()
 {
     auto ground_atoms = GroundAtomList<Fluent> {};
 
-    for (const auto& literal : m_aag->get_problem()->get_fluent_initial_literals())
+    for (const auto& literal : m_applicable_action_generator->get_problem()->get_fluent_initial_literals())
     {
         if (literal->is_negated())
         {
@@ -98,7 +99,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
     /* 4. Construct extended state by evaluating Axioms */
 
-    m_aag->generate_and_apply_axioms(m_state_builder);
+    m_applicable_action_generator->generate_and_apply_axioms(m_state_builder);
     m_reached_derived_atoms |= derived_state_atoms;
 
     /* 5. Cache extended state */
@@ -136,7 +137,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     /* Conditional effects */
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        if (conditional_effect.is_applicable(m_aag->get_problem(), state))
+        if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
         {
             const auto& simple_effect = conditional_effect.get_simple_effect();
 
@@ -175,7 +176,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
     /* 5. Construct extended state by evaluating Axioms */
 
-    m_aag->generate_and_apply_axioms(m_state_builder);
+    m_applicable_action_generator->generate_and_apply_axioms(m_state_builder);
     m_reached_derived_atoms |= derived_state_atoms;
 
     /* 6. Cache extended state */
@@ -193,5 +194,5 @@ const FlatBitset& StateRepository::get_reached_fluent_ground_atoms_bitset() cons
 
 const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
 
-std::shared_ptr<IApplicableActionGenerator> StateRepository::get_aag() const { return m_aag; }
+std::shared_ptr<IApplicableActionGenerator> StateRepository::get_applicable_action_generator() const { return m_applicable_action_generator; }
 }

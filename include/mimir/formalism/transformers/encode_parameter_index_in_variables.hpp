@@ -56,7 +56,7 @@ private:
     Problem run_impl(const ProblemImpl& problem);
 
 public:
-    EncodeParameterIndexInVariables(PDDLRepositories& pddl_factories);
+    EncodeParameterIndexInVariables(PDDLRepositories& pddl_repositories);
 };
 }
 

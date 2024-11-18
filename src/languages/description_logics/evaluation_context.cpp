@@ -19,12 +19,12 @@
 
 namespace mimir::dl
 {
-EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_factories,
+EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_repositories,
                                      Problem problem,
                                      State state,
                                      ConstructorTagToDenotationType& ref_denotation_builder,
                                      ConstructorTagToDenotationRepository& ref_denotation_repository) :
-    m_pddl_factories(pddl_factories),
+    m_pddl_repositories(pddl_repositories),
     m_problem(problem),
     m_state(state),
     m_denotation_builder(ref_denotation_builder),
@@ -32,7 +32,7 @@ EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_factories,
 {
 }
 
-const PDDLRepositories& EvaluationContext::get_pddl_repositories() const { return m_pddl_factories; }
+const PDDLRepositories& EvaluationContext::get_pddl_repositories() const { return m_pddl_repositories; }
 
 Problem EvaluationContext::get_problem() const { return m_problem; }
 

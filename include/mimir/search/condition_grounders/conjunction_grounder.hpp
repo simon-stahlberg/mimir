@@ -30,7 +30,7 @@ class LiftedConjunctionGrounder
 {
 private:
     ConditionGrounder m_condition_grounder;
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
 public:
     LiftedConjunctionGrounder(Problem problem,
@@ -38,7 +38,7 @@ public:
                               LiteralList<Static> static_literals,
                               LiteralList<Fluent> fluent_literals,
                               LiteralList<Derived> derived_literals,
-                              std::shared_ptr<PDDLRepositories> pddl_factories);
+                              std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     std::vector<ObjectList> ground(State state);
 };

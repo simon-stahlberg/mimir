@@ -39,10 +39,10 @@ public:
     virtual ~ISIWAlgorithmEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) = 0;
+    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) = 0;
+    virtual void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on starting a search.
     virtual void on_end_subproblem_search(const IWAlgorithmStatistics& iw_statistics) = 0;
@@ -51,7 +51,7 @@ public:
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) = 0;
+    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -86,7 +86,7 @@ private:
 public:
     explicit SIWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) override
+    void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) override
     {
         m_statistics = SIWAlgorithmStatistics();
 
@@ -94,15 +94,15 @@ public:
 
         if (!m_quiet)
         {
-            self().on_start_search_impl(problem, initial_state, pddl_factories);
+            self().on_start_search_impl(problem, initial_state, pddl_repositories);
         }
     }
 
-    void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) override
+    void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_start_subproblem_search_impl(problem, initial_state, pddl_factories);
+            self().on_start_subproblem_search_impl(problem, initial_state, pddl_repositories);
         }
     }
 
@@ -126,11 +126,11 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
+    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(ground_action_plan, pddl_factories);
+            self().on_solved_impl(ground_action_plan, pddl_repositories);
         }
     }
 

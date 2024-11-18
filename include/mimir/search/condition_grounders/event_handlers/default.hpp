@@ -29,7 +29,7 @@ class DefaultConditionGrounderEventHandler : public IConditionGrounderEventHandl
 public:
     DefaultConditionGrounderEventHandler() : IConditionGrounderEventHandler() {}
 
-    void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_factories) {}
+    void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_repositories) {}
 };
 
 }

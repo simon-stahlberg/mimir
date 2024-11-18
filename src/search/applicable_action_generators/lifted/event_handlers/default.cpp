@@ -42,7 +42,7 @@ void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_
 }
 
 void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions,
-                                                                                                   const PDDLRepositories& pddl_factories) const
+                                                                                                   const PDDLRepositories& pddl_repositories) const
 {
     //
 }
@@ -67,7 +67,7 @@ void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_m
 }
 
 void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms,
-                                                                                                  const PDDLRepositories& pddl_factories) const
+                                                                                                  const PDDLRepositories& pddl_repositories) const
 {
     //
 }

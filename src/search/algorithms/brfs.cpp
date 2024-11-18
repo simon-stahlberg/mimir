@@ -71,13 +71,13 @@ BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applica
 BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                              std::shared_ptr<StateRepository> successor_state_generator,
                              std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
-    m_aag(std::move(applicable_action_generator)),
-    m_ssg(std::move(successor_state_generator)),
+    m_applicable_action_generator(std::move(applicable_action_generator)),
+    m_state_repository(std::move(successor_state_generator)),
     m_event_handler(std::move(event_handler))
 {
 }
 
-SearchStatus BrFSAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_ssg->get_or_create_initial_state(), out_plan); }
+SearchStatus BrFSAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_state_repository->get_or_create_initial_state(), out_plan); }
 
 SearchStatus BrFSAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
 {
@@ -87,7 +87,11 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state, GroundActionList& o
 
 SearchStatus BrFSAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
 {
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), std::make_unique<DuplicateStatePruning>(), out_plan, out_goal_state);
+    return find_solution(start_state,
+                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()),
+                         std::make_unique<DuplicateStatePruning>(),
+                         out_plan,
+                         out_goal_state);
 }
 
 SearchStatus BrFSAlgorithm::find_solution(State start_state,
@@ -101,9 +105,9 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
-    const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_repositories();
-    m_event_handler->on_start_search(start_state, problem, pddl_factories);
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
+    m_event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     set_status(start_search_node, SearchNodeStatus::OPEN);
@@ -138,40 +142,40 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         if (get_g_value(search_node) > g_value)
         {
             g_value = get_g_value(search_node);
-            m_aag->on_finish_search_layer();
+            m_applicable_action_generator->on_finish_search_layer();
             m_event_handler->on_finish_g_layer();
         }
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(search_nodes, m_aag->get_ground_actions(), search_node, out_plan);
+            set_plan(search_nodes, m_applicable_action_generator->get_ground_actions(), search_node, out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
-                m_aag->on_end_search();
+                m_applicable_action_generator->on_end_search();
             }
-            m_event_handler->on_solved(out_plan, pddl_factories);
+            m_event_handler->on_solved(out_plan, pddl_repositories);
 
             return SearchStatus::SOLVED;
         }
 
-        m_event_handler->on_expand_state(state, problem, pddl_factories);
+        m_event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        this->m_aag->generate_applicable_actions(state, applicable_actions);
+        this->m_applicable_action_generator->generate_applicable_actions(state, applicable_actions);
 
         for (const auto& action : applicable_actions)
         {
             /* Open state. */
-            const auto successor_state = this->m_ssg->get_or_create_successor_state(state, action);
+            const auto successor_state = this->m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
-            m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
+            m_event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
 
             const bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
+                m_event_handler->on_prune_state(successor_state, problem, pddl_repositories);
                 continue;
             }
 
@@ -193,6 +197,6 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     return SearchStatus::EXHAUSTED;
 }
 
-const std::shared_ptr<PDDLRepositories>& BrFSAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
+const std::shared_ptr<PDDLRepositories>& BrFSAlgorithm::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
 
 }

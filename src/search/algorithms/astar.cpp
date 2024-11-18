@@ -69,14 +69,14 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
                                std::shared_ptr<StateRepository> successor_state_generator,
                                std::shared_ptr<IHeuristic> heuristic,
                                std::shared_ptr<IAStarAlgorithmEventHandler> event_handler) :
-    m_aag(std::move(applicable_action_generator)),
-    m_ssg(std::move(successor_state_generator)),
+    m_applicable_action_generator(std::move(applicable_action_generator)),
+    m_state_repository(std::move(successor_state_generator)),
     m_heuristic(std::move(heuristic)),
     m_event_handler(std::move(event_handler))
 {
 }
 
-SearchStatus AStarAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_ssg->get_or_create_initial_state(), out_plan); }
+SearchStatus AStarAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_state_repository->get_or_create_initial_state(), out_plan); }
 
 SearchStatus AStarAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
 {
@@ -86,7 +86,11 @@ SearchStatus AStarAlgorithm::find_solution(State start_state, GroundActionList& 
 
 SearchStatus AStarAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
 {
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), std::make_unique<NoStatePruning>(), out_plan, out_goal_state);
+    return find_solution(start_state,
+                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()),
+                         std::make_unique<NoStatePruning>(),
+                         out_plan,
+                         out_goal_state);
 }
 
 SearchStatus AStarAlgorithm::find_solution(State start_state,
@@ -104,9 +108,9 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
     auto openlist = PriorityQueue<State>();
 
-    const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_repositories();
-    m_event_handler->on_start_search(start_state, problem, pddl_factories);
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
+    m_event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     const auto start_g_value = ContinuousCost(0);
     const auto start_h_value = m_heuristic->compute_heuristic(start_state);
@@ -167,7 +171,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         if (search_node_f_value > f_value)
         {
             f_value = search_node_f_value;
-            m_aag->on_finish_search_layer();
+            m_applicable_action_generator->on_finish_search_layer();
             m_event_handler->on_finish_f_layer(f_value);
         }
 
@@ -184,30 +188,30 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(search_nodes, m_aag->get_ground_actions(), search_node, out_plan);
+            set_plan(search_nodes, m_applicable_action_generator->get_ground_actions(), search_node, out_plan);
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
-                m_aag->on_end_search();
+                m_applicable_action_generator->on_end_search();
             }
-            m_event_handler->on_solved(out_plan, pddl_factories);
+            m_event_handler->on_solved(out_plan, pddl_repositories);
 
             return SearchStatus::SOLVED;
         }
 
         /* Expand the successors of the state. */
 
-        m_event_handler->on_expand_state(state, problem, pddl_factories);
+        m_event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        m_aag->generate_applicable_actions(state, applicable_actions);
+        m_applicable_action_generator->generate_applicable_actions(state, applicable_actions);
 
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = m_ssg->get_or_create_successor_state(state, action);
+            const auto successor_state = m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
-            m_event_handler->on_generate_state(successor_state, action, problem, pddl_factories);
+            m_event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
 
             const bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
 
@@ -215,7 +219,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                m_event_handler->on_prune_state(successor_state, problem, pddl_factories);
+                m_event_handler->on_prune_state(successor_state, problem, pddl_repositories);
                 continue;
             }
 
@@ -242,21 +246,21 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                         continue;
                     }
                 }
-                m_event_handler->on_generate_state_relaxed(successor_state, action, problem, pddl_factories);
+                m_event_handler->on_generate_state_relaxed(successor_state, action, problem, pddl_repositories);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
                 openlist.insert(successor_f_value, successor_state);
             }
             else
             {
-                m_event_handler->on_generate_state_not_relaxed(successor_state, action, problem, pddl_factories);
+                m_event_handler->on_generate_state_not_relaxed(successor_state, action, problem, pddl_repositories);
             }
         }
 
         /* Close state. */
 
         set_status(search_node, SearchNodeStatus::CLOSED);
-        m_event_handler->on_close_state(state, problem, pddl_factories);
+        m_event_handler->on_close_state(state, problem, pddl_repositories);
     }
 
     m_event_handler->on_end_search();
@@ -265,6 +269,6 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     return SearchStatus::EXHAUSTED;
 }
 
-const std::shared_ptr<PDDLRepositories>& AStarAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
+const std::shared_ptr<PDDLRepositories>& AStarAlgorithm::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
 
 }

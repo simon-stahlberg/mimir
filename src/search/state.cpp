@@ -142,15 +142,15 @@ template const FlatBitset& StateImpl::get_atoms<Derived>() const;
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLRepositories&>& data)
 {
-    const auto [problem, state, pddl_factories] = data;
+    const auto [problem, state, pddl_repositories] = data;
 
     auto out_fluent_ground_atoms = GroundAtomList<Fluent> {};
     auto out_static_ground_atoms = GroundAtomList<Static> {};
     auto out_derived_ground_atoms = GroundAtomList<Derived> {};
 
-    pddl_factories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), out_fluent_ground_atoms);
-    pddl_factories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
-    pddl_factories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), out_derived_ground_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), out_fluent_ground_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), out_derived_ground_atoms);
 
     os << "State("
        << "index=" << state->get_index() << ", "

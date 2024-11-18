@@ -75,11 +75,12 @@ int main(int argc, char** argv)
 
     if (debug)
     {
-        std::shared_ptr<LiftedApplicableActionGenerator> lifted_aag = std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
+        std::shared_ptr<LiftedApplicableActionGenerator> lifted_applicable_action_generator =
+            std::dynamic_pointer_cast<LiftedApplicableActionGenerator>(applicable_action_generator);
 
-        if (lifted_aag)
+        if (lifted_applicable_action_generator)
         {
-            std::cout << *lifted_aag << std::endl;
+            std::cout << *lifted_applicable_action_generator << std::endl;
         }
     }
 

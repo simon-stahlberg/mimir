@@ -40,20 +40,20 @@ private:
     Problem m_problem;
 
     // Memory
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
-    LiftedApplicableActionGenerator m_lifted_aag;
+    LiftedApplicableActionGenerator m_lifted_applicable_action_generator;
 
     MatchTree<GroundAction> m_action_match_tree;
     MatchTree<GroundAxiom> m_axiom_match_tree;
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_factories);
+    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     /// @brief Complete construction
     GroundedApplicableActionGenerator(Problem problem,
-                                      std::shared_ptr<PDDLRepositories> pddl_factories,
+                                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable

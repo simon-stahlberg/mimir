@@ -24,8 +24,8 @@ namespace mimir
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionImplyImpl& condition)
 {
-    return this->translate(*this->m_pddl_factories.get_or_create_condition_or(
-        loki::ConditionList { this->m_pddl_factories.get_or_create_condition_not(condition.get_condition_left()), condition.get_condition_right() }));
+    return this->translate(*this->m_pddl_repositories.get_or_create_condition_or(
+        loki::ConditionList { this->m_pddl_repositories.get_or_create_condition_not(condition.get_condition_left()), condition.get_condition_right() }));
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& condition)
@@ -34,8 +34,8 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
 
     if (const auto condition_lit = std::get_if<loki::ConditionLiteralImpl>(translated_nested_condition))
     {
-        return this->translate(*this->m_pddl_factories.get_or_create_condition_literal(
-            this->m_pddl_factories.get_or_create_literal(!condition_lit->get_literal()->is_negated(), condition_lit->get_literal()->get_atom())));
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition_literal(
+            this->m_pddl_repositories.get_or_create_literal(!condition_lit->get_literal()->is_negated(), condition_lit->get_literal()->get_atom())));
     }
     else if (const auto condition_not = std::get_if<loki::ConditionNotImpl>(translated_nested_condition))
     {
@@ -43,9 +43,9 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
     }
     else if (const auto condition_imply = std::get_if<loki::ConditionImplyImpl>(translated_nested_condition))
     {
-        return this->translate(*this->m_pddl_factories.get_or_create_condition_and(
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition_and(
             loki::ConditionList { condition_imply->get_condition_left(),
-                                  this->m_pddl_factories.get_or_create_condition_not(condition_imply->get_condition_right()) }));
+                                  this->m_pddl_repositories.get_or_create_condition_not(condition_imply->get_condition_right()) }));
     }
     else if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(translated_nested_condition))
     {
@@ -53,9 +53,9 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
         nested_parts.reserve(condition_and->get_conditions().size());
         for (const auto& nested_condition : condition_and->get_conditions())
         {
-            nested_parts.push_back(this->m_pddl_factories.get_or_create_condition_not(nested_condition));
+            nested_parts.push_back(this->m_pddl_repositories.get_or_create_condition_not(nested_condition));
         }
-        return this->translate(*this->m_pddl_factories.get_or_create_condition_or(nested_parts));
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition_or(nested_parts));
     }
     else if (const auto condition_or = std::get_if<loki::ConditionOrImpl>(translated_nested_condition))
     {
@@ -63,53 +63,53 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
         nested_parts.reserve(condition_or->get_conditions().size());
         for (const auto& nested_condition : condition_or->get_conditions())
         {
-            nested_parts.push_back(this->m_pddl_factories.get_or_create_condition_not(nested_condition));
+            nested_parts.push_back(this->m_pddl_repositories.get_or_create_condition_not(nested_condition));
         }
-        return this->translate(*this->m_pddl_factories.get_or_create_condition_and(nested_parts));
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition_and(nested_parts));
     }
     else if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(translated_nested_condition))
     {
-        return this->translate(
-            *this->m_pddl_factories.get_or_create_condition_forall(condition_exists->get_parameters(),
-                                                                   this->m_pddl_factories.get_or_create_condition_not(condition_exists->get_condition())));
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition_forall(
+            condition_exists->get_parameters(),
+            this->m_pddl_repositories.get_or_create_condition_not(condition_exists->get_condition())));
     }
     else if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(translated_nested_condition))
     {
-        return this->translate(
-            *this->m_pddl_factories.get_or_create_condition_exists(condition_forall->get_parameters(),
-                                                                   this->m_pddl_factories.get_or_create_condition_not(condition_forall->get_condition())));
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition_exists(
+            condition_forall->get_parameters(),
+            this->m_pddl_repositories.get_or_create_condition_not(condition_forall->get_condition())));
     }
     throw std::runtime_error("Missing implementation to push negations inwards.");
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
 {
-    return flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_factories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
-                   this->m_pddl_factories);
+    return flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_repositories.get_or_create_condition_and(this->translate(condition.get_conditions()))),
+                   this->m_pddl_repositories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionOrImpl& condition)
 {
-    return flatten(std::get<loki::ConditionOrImpl>(*this->m_pddl_factories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
-                   this->m_pddl_factories);
+    return flatten(std::get<loki::ConditionOrImpl>(*this->m_pddl_repositories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
+                   this->m_pddl_repositories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                                                              this->translate(*condition.get_condition()))),
-                   this->m_pddl_factories);
+    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
+                                                                                                                 this->translate(*condition.get_condition()))),
+                   this->m_pddl_repositories);
 }
 
 loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionForallImpl& condition)
 {
-    return flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_factories.get_or_create_condition_forall(this->translate(condition.get_parameters()),
-                                                                                                              this->translate(*condition.get_condition()))),
-                   this->m_pddl_factories);
+    return flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_repositories.get_or_create_condition_forall(this->translate(condition.get_parameters()),
+                                                                                                                 this->translate(*condition.get_condition()))),
+                   this->m_pddl_repositories);
 }
 
 loki::Problem ToNNFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-ToNNFTranslator::ToNNFTranslator(loki::PDDLRepositories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
+ToNNFTranslator::ToNNFTranslator(loki::PDDLRepositories& pddl_repositories) : BaseCachedRecurseTranslator(pddl_repositories) {}
 
 }

@@ -93,13 +93,13 @@ private:
                               size_t num_non_isomorphic_states);
 
 public:
-    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
+    /// @brief Convenience function when sharing parsers, applicable_action_generators, state_repositorys is not relevant.
     static std::vector<GlobalFaithfulAbstraction> create(const fs::path& domain_filepath,
                                                          const std::vector<fs::path>& problem_filepaths,
                                                          const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /// @brief Try to create a `GlobalFaithfulAbstractionList` from the given data and the given options.
-    /// @param memories External memory to problem, factories, aags, ssgs.
+    /// @param memories External memory to problem, factories, applicable_action_generators, state_repositorys.
     /// @param options the options.
     /// @return `GlobalFaithfulAbstractionList` contains the `GlobalFaithfulAbstraction`s for which the construction was successful.
     static std::vector<GlobalFaithfulAbstraction>
@@ -143,8 +143,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
-    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
-    const std::shared_ptr<StateRepository>& get_ssg() const;
+    const std::shared_ptr<IApplicableActionGenerator>& get_applicable_action_generator() const;
+    const std::shared_ptr<StateRepository>& get_state_repository() const;
     const FaithfulAbstractionList& get_abstractions() const;
 
     /* Graph */

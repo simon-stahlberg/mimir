@@ -77,7 +77,7 @@ private:
     Domain transform_impl(const DomainImpl& domain);
 
 public:
-    explicit ToPositiveNormalFormTransformer(PDDLRepositories& pddl_factories);
+    explicit ToPositiveNormalFormTransformer(PDDLRepositories& pddl_repositories);
 };
 
 /**
@@ -99,10 +99,10 @@ void ToPositiveNormalFormTransformer::transform_conditions(const LiteralList<P>&
             const auto& negative_transformed_dual = negative_transformed_duals.at(literal);
             assert(!negative_transformed_dual->is_negated());
             // We need to use the term list from the context, i.e., from the literal of the condition.
-            auto transformed_dual = m_pddl_factories.get_or_create_literal<Derived>(
+            auto transformed_dual = m_pddl_repositories.get_or_create_literal<Derived>(
                 false,
-                m_pddl_factories.get_or_create_atom<Derived>(negative_transformed_dual->get_atom()->get_predicate(),
-                                                             transform(literal->get_atom()->get_terms())));
+                m_pddl_repositories.get_or_create_atom<Derived>(negative_transformed_dual->get_atom()->get_predicate(),
+                                                                transform(literal->get_atom()->get_terms())));
             ref_transformed_derived_conditions.push_back(transformed_dual);
         }
         else
@@ -141,16 +141,16 @@ void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
         // that matches the parameters of the introduced derived predicate
         // because we will use the derived predicate parameters as axiom parameters.
         const auto transformed_parameters = predicate->get_parameters();
-        const auto transformed_dual_derived_predicate = m_pddl_factories.get_or_create_predicate<Derived>(dual_predicate_name, transformed_parameters);
+        const auto transformed_dual_derived_predicate = m_pddl_repositories.get_or_create_predicate<Derived>(dual_predicate_name, transformed_parameters);
         ref_transformed_derived_predicates.push_back(transformed_dual_derived_predicate);
         auto transformed_terms = TermList {};
         for (const auto& variable : transformed_parameters)
         {
-            transformed_terms.push_back(m_pddl_factories.get_or_create_term_variable(variable));
+            transformed_terms.push_back(m_pddl_repositories.get_or_create_term_variable(variable));
         }
-        const auto transformed_atom = m_pddl_factories.get_or_create_atom(transformed_dual_derived_predicate, transformed_terms);
+        const auto transformed_atom = m_pddl_repositories.get_or_create_atom(transformed_dual_derived_predicate, transformed_terms);
         // Create dual literal (positive) for negative literal
-        const auto transformed_dual_for_negative_literal = m_pddl_factories.get_or_create_literal(false, transformed_atom);
+        const auto transformed_dual_for_negative_literal = m_pddl_repositories.get_or_create_literal(false, transformed_atom);
         out_negative_transformed_duals.emplace(negative_literal, transformed_dual_for_negative_literal);
     }
 }
@@ -167,9 +167,9 @@ void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unorde
         // transformed_negative_literal must use term list that matches the parameters of derived predicates
         // because we will use the derived predicate parameters as axiom parameters.
         const auto transformed_negative_literal =
-            m_pddl_factories.get_or_create_literal(true,
-                                                   m_pddl_factories.get_or_create_atom(this->transform(*negative_literal->get_atom()->get_predicate()),
-                                                                                       transformed_dual_positive_literal->get_atom()->get_terms()));
+            m_pddl_repositories.get_or_create_literal(true,
+                                                      m_pddl_repositories.get_or_create_atom(this->transform(*negative_literal->get_atom()->get_predicate()),
+                                                                                             transformed_dual_positive_literal->get_atom()->get_terms()));
 
         const auto& transformed_parameters = transformed_dual_positive_literal->get_atom()->get_predicate()->get_parameters();
 
@@ -194,11 +194,11 @@ void ToPositiveNormalFormTransformer::introduce_axiom_for_dual(const std::unorde
             static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
         }
 
-        ref_axioms.push_back(this->m_pddl_factories.get_or_create_axiom(transformed_parameters,
-                                                                        transformed_dual_positive_literal,
-                                                                        transformed_static_conditions,
-                                                                        transformed_fluent_conditions,
-                                                                        transformed_derived_conditions));
+        ref_axioms.push_back(this->m_pddl_repositories.get_or_create_axiom(transformed_parameters,
+                                                                           transformed_dual_positive_literal,
+                                                                           transformed_static_conditions,
+                                                                           transformed_fluent_conditions,
+                                                                           transformed_derived_conditions));
     }
 }
 

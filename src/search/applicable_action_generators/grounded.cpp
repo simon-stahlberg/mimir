@@ -38,7 +38,7 @@ namespace mimir
 /// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
 /// We also consider larger groups first since such mutex variables would result in a very large linear split.
 template<PredicateTag P>
-static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLRepositories& pddl_factories)
+static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLRepositories& pddl_repositories)
 {
     auto ground_atoms_order = std::vector<size_t> {};
     auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<P>, GroundAtomList<P>> {};
@@ -77,35 +77,35 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
     return ground_atoms_order;
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_factories) :
-    GroundedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
+    GroundedApplicableActionGenerator(problem, std::move(pddl_repositories), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
-                                                                     std::shared_ptr<PDDLRepositories> pddl_factories,
+                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
-    m_pddl_factories(std::move(pddl_factories)),
+    m_pddl_repositories(std::move(pddl_repositories)),
     m_event_handler(std::move(event_handler)),
-    m_lifted_aag(m_problem, m_pddl_factories)
+    m_lifted_applicable_action_generator(m_problem, m_pddl_repositories)
 {
     /* 1. Explore delete relaxed task. We explicitly require to keep actions and axioms with empty effects. */
-    auto delete_relax_transformer = DeleteRelaxTransformer(*m_pddl_factories, false);
+    auto delete_relax_transformer = DeleteRelaxTransformer(*m_pddl_repositories, false);
     // TODO: In the case of positive normal form, we want this problem
     // to be modified such that grounded actions have no negative preconditions.
     // We also need access to the dual predicates to set the polarity of the initial literals.
-    // auto to_pnf_grounded_transformer = ToPositiveNormalFormGroundTransformer(m_pddl_factories);
+    // auto to_pnf_grounded_transformer = ToPositiveNormalFormGroundTransformer(m_pddl_repositories);
     // m_problem = to_pnf_grounded_transformer.run(*m_problem);
     const auto delete_free_problem = delete_relax_transformer.run(*m_problem);
-    auto delete_free_lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(delete_free_problem, m_pddl_factories);
-    auto delete_free_ssg = StateRepository(delete_free_lifted_aag);
+    auto delete_free_lifted_applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(delete_free_problem, m_pddl_repositories);
+    auto delete_free_state_repository = StateRepository(delete_free_lifted_applicable_action_generator);
 
     auto state_builder = StateImpl();
     auto state_builder_tmp = StateImpl();
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
     auto& derived_state_atoms = state_builder.get_atoms<Derived>();
-    const auto initial_state = delete_free_ssg.get_or_create_initial_state();
+    const auto initial_state = delete_free_state_repository.get_or_create_initial_state();
     fluent_state_atoms = initial_state->get_atoms<Fluent>();
     derived_state_atoms = initial_state->get_atoms<Derived>();
 
@@ -127,10 +127,10 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        delete_free_lifted_aag->generate_applicable_actions(&state, actions);
+        delete_free_lifted_applicable_action_generator->generate_applicable_actions(&state, actions);
         for (const auto& action : actions)
         {
-            const auto succ_state = delete_free_ssg.get_or_create_successor_state(&state, action);
+            const auto succ_state = delete_free_state_repository.get_or_create_successor_state(&state, action);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())
             {
                 fluent_state_atoms.set(atom_index);
@@ -138,7 +138,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         }
 
         // Create and all applicable axioms and apply them
-        delete_free_lifted_aag->generate_and_apply_axioms(state_builder);
+        delete_free_lifted_applicable_action_generator->generate_and_apply_axioms(state_builder);
 
         auto num_atoms_after = fluent_state_atoms.count();
 
@@ -149,14 +149,15 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_event_handler->on_finish_delete_free_exploration(m_pddl_factories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms),
-                                                       m_pddl_factories->get_ground_atoms_from_indices<Derived>(derived_state_atoms),
-                                                       delete_free_lifted_aag->get_ground_actions(),
-                                                       delete_free_lifted_aag->get_ground_axioms());
+    m_event_handler->on_finish_delete_free_exploration(m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms),
+                                                       m_pddl_repositories->get_ground_atoms_from_indices<Derived>(derived_state_atoms),
+                                                       delete_free_lifted_applicable_action_generator->get_ground_actions(),
+                                                       delete_free_lifted_applicable_action_generator->get_ground_axioms());
 
-    auto fluent_ground_atoms_order = compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms), *m_pddl_factories);
+    auto fluent_ground_atoms_order =
+        compute_ground_atom_order(m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms), *m_pddl_repositories);
     auto derived_ground_atoms_order =
-        compute_ground_atom_order(m_pddl_factories->get_ground_atoms_from_indices<Derived>(derived_state_atoms), *m_pddl_factories);
+        compute_ground_atom_order(m_pddl_repositories->get_ground_atoms_from_indices<Derived>(derived_state_atoms), *m_pddl_repositories);
 
     // 2. Create ground actions
     /* TODO: we want ground actions in PNF and problem with modified initial state.
@@ -164,13 +165,13 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
        We still need modified lifted actions for grounding.
      */
     auto ground_actions = GroundActionList {};
-    for (const auto& action : delete_free_lifted_aag->get_ground_actions())
+    for (const auto& action : delete_free_lifted_applicable_action_generator->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_factories->get_action(action->get_action_index())))
+        for (const auto& unrelaxed_action : delete_relax_transformer.get_unrelaxed_actions(m_pddl_repositories->get_action(action->get_action_index())))
         {
-            auto action_arguments = m_pddl_factories->get_objects_from_indices(action->get_object_indices());
-            auto grounded_action = m_lifted_aag.ground_action(unrelaxed_action, std::move(action_arguments));
+            auto action_arguments = m_pddl_repositories->get_objects_from_indices(action->get_object_indices());
+            auto grounded_action = m_lifted_applicable_action_generator.ground_action(unrelaxed_action, std::move(action_arguments));
             if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
@@ -187,13 +188,13 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
     // 2. Create ground axioms
     auto ground_axioms = GroundAxiomList {};
-    for (const auto& axiom : delete_free_lifted_aag->get_ground_axioms())
+    for (const auto& axiom : delete_free_lifted_applicable_action_generator->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_factories->get_axiom(axiom->get_axiom_index())))
+        for (const auto& unrelaxed_axiom : delete_relax_transformer.get_unrelaxed_axioms(m_pddl_repositories->get_axiom(axiom->get_axiom_index())))
         {
-            auto axiom_arguments = m_pddl_factories->get_objects_from_indices(axiom->get_objects());
-            auto grounded_axiom = m_lifted_aag.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
+            auto axiom_arguments = m_pddl_repositories->get_objects_from_indices(axiom->get_objects());
+            auto grounded_axiom = m_lifted_applicable_action_generator.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
             if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
@@ -218,7 +219,7 @@ void GroundedApplicableActionGenerator::generate_applicable_actions(State state,
 
 void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& unextended_state)
 {
-    for (const auto& lifted_partition : m_lifted_aag.get_axiom_partitioning())
+    for (const auto& lifted_partition : m_lifted_applicable_action_generator.get_axiom_partitioning())
     {
         bool reached_partition_fixed_point;
 
@@ -238,7 +239,7 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& une
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                if (!lifted_partition.get_axioms().count(m_pddl_factories->get_axiom(grounded_axiom->get_axiom_index())))
+                if (!lifted_partition.get_axioms().count(m_pddl_repositories->get_axiom(grounded_axiom->get_axiom_index())))
                 {
                     // axiom not part of same partition
                     continue;
@@ -265,20 +266,26 @@ void GroundedApplicableActionGenerator::on_finish_search_layer() const { m_event
 
 void GroundedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 
-const GroundActionList& GroundedApplicableActionGenerator::get_ground_actions() const { return m_lifted_aag.get_ground_actions(); }
+const GroundActionList& GroundedApplicableActionGenerator::get_ground_actions() const { return m_lifted_applicable_action_generator.get_ground_actions(); }
 
-GroundAction GroundedApplicableActionGenerator::get_ground_action(Index action_index) const { return m_lifted_aag.get_ground_action(action_index); }
+GroundAction GroundedApplicableActionGenerator::get_ground_action(Index action_index) const
+{
+    return m_lifted_applicable_action_generator.get_ground_action(action_index);
+}
 
-const GroundAxiomList& GroundedApplicableActionGenerator::get_ground_axioms() const { return m_lifted_aag.get_ground_axioms(); }
+const GroundAxiomList& GroundedApplicableActionGenerator::get_ground_axioms() const { return m_lifted_applicable_action_generator.get_ground_axioms(); }
 
-GroundAxiom GroundedApplicableActionGenerator::get_ground_axiom(Index axiom_index) const { return m_lifted_aag.get_ground_axiom(axiom_index); }
+GroundAxiom GroundedApplicableActionGenerator::get_ground_axiom(Index axiom_index) const
+{
+    return m_lifted_applicable_action_generator.get_ground_axiom(axiom_index);
+}
 
-size_t GroundedApplicableActionGenerator::get_num_ground_actions() const { return m_lifted_aag.get_num_ground_actions(); }
+size_t GroundedApplicableActionGenerator::get_num_ground_actions() const { return m_lifted_applicable_action_generator.get_num_ground_actions(); }
 
-size_t GroundedApplicableActionGenerator::get_num_ground_axioms() const { return m_lifted_aag.get_num_ground_axioms(); }
+size_t GroundedApplicableActionGenerator::get_num_ground_axioms() const { return m_lifted_applicable_action_generator.get_num_ground_axioms(); }
 
 Problem GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<PDDLRepositories>& GroundedApplicableActionGenerator::get_pddl_repositories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& GroundedApplicableActionGenerator::get_pddl_repositories() const { return m_pddl_repositories; }
 
 }

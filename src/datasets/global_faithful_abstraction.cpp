@@ -111,9 +111,9 @@ GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::ve
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-        auto ssg = std::make_shared<StateRepository>(aag);
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg);
+        auto applicable_action_generator = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+        auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
     }
 
     return GlobalFaithfulAbstraction::create(memories, options);
@@ -254,9 +254,12 @@ const std::shared_ptr<PDDLRepositories>& GlobalFaithfulAbstraction::get_pddl_rep
     return m_abstractions->at(m_index).get_pddl_repositories();
 }
 
-const std::shared_ptr<IApplicableActionGenerator>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_index).get_aag(); }
+const std::shared_ptr<IApplicableActionGenerator>& GlobalFaithfulAbstraction::get_applicable_action_generator() const
+{
+    return m_abstractions->at(m_index).get_applicable_action_generator();
+}
 
-const std::shared_ptr<StateRepository>& GlobalFaithfulAbstraction::get_ssg() const { return m_abstractions->at(m_index).get_ssg(); }
+const std::shared_ptr<StateRepository>& GlobalFaithfulAbstraction::get_state_repository() const { return m_abstractions->at(m_index).get_state_repository(); }
 
 const FaithfulAbstractionList& GlobalFaithfulAbstraction::get_abstractions() const { return *m_abstractions; }
 

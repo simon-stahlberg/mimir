@@ -30,26 +30,27 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
-    auto aag_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
-    auto ssg = std::make_shared<StateRepository>(aag);
+    auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
+    auto applicable_action_generator =
+        std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
+    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    auto brfs = BrFSAlgorithm(aag, ssg, brfs_event_handler);
+    auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
     auto ground_actions = GroundActionList {};
     const auto status = brfs.find_solution(ground_actions);
     EXPECT_EQ(status, SearchStatus::SOLVED);
 
-    const auto& aag_statistics = aag_event_handler->get_statistics();
-    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 20);
+    const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_axioms(), 20);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 12);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 12);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 16);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 12);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axioms(), 16);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 

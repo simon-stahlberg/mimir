@@ -15,10 +15,10 @@ class CustomBlindHeuristic(IHeuristic):
 
 
 class CustomGoalCountHeuristic(IHeuristic):
-    def __init__(self, problem : Problem, pddl_factories: PDDLRepositories):
+    def __init__(self, problem : Problem, pddl_repositories: PDDLRepositories):
         IHeuristic.__init__(self)  # Without this, a TypeError is raised.
         self.problem = problem
-        self.pddl_factories = pddl_factories
+        self.pddl_repositories = pddl_repositories
 
         self.num_goal_literals = len(self.problem.get_fluent_goal_condition()) + len(self.problem.get_derived_goal_condition())
 
@@ -42,34 +42,34 @@ class CustomAStarAlgorithmEventHandler(AStarAlgorithmEventHandlerBase):
         """
         AStarAlgorithmEventHandlerBase.__init__(self, quiet)  # Without this, a TypeError is raised.
 
-    def on_expand_state_impl(self, state : State, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_expand_state_impl(self, state : State, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_generate_state_impl(self, state : State, action : GroundAction, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_generate_state_impl(self, state : State, action : GroundAction, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_generate_state_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_generate_state_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_generate_state_not_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_generate_state_not_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_close_state_impl(self, state : State, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_close_state_impl(self, state : State, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
     def on_finish_f_layer_impl(self, f_value: float, num_expanded_states : int, num_generated_states : int):
         pass
 
-    def on_prune_state_impl(self, state : State, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_prune_state_impl(self, state : State, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_start_search_impl(self, start_state : State, problem : Problem, pddl_factories : PDDLRepositories):
+    def on_start_search_impl(self, start_state : State, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
     def on_end_search_impl(self):
         pass
 
-    def on_solved_impl(self, ground_action_plan: List[GroundAction], pddl_factories: PDDLRepositories):
+    def on_solved_impl(self, ground_action_plan: List[GroundAction], pddl_repositories: PDDLRepositories):
         pass
 
     def on_unsolvable_impl(self):

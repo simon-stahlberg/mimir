@@ -74,7 +74,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     m_scopes.open_scope(condition.get_parameters());
 
     auto result =
-        this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
+        this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
 
     m_scopes.close_scope();
     return result;
@@ -95,13 +95,13 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     auto head_parameters = loki::ParameterList {};
     auto terms = loki::TermList {};
     for (const auto free_variable :
-         collect_free_variables(*this->m_pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition())))
+         collect_free_variables(*this->m_pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition())))
     {
         const auto optional_parameter = scope.get_parameter(free_variable);
         assert(optional_parameter.has_value());
-        const auto parameter = this->m_pddl_factories.get_or_create_parameter(free_variable, optional_parameter.value()->get_bases());
+        const auto parameter = this->m_pddl_repositories.get_or_create_parameter(free_variable, optional_parameter.value()->get_bases());
         head_parameters.push_back(parameter);
-        terms.push_back(this->m_pddl_factories.get_or_create_term_variable(free_variable));
+        terms.push_back(this->m_pddl_repositories.get_or_create_term_variable(free_variable));
     }
     // Important: all other parameters are appended to the axiom parameters
     auto axiom_parameters = head_parameters;
@@ -112,16 +112,16 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     head_parameters.shrink_to_fit();
     axiom_parameters.shrink_to_fit();
 
-    const auto axiom_condition = this->translate(*this->m_pddl_factories.get_or_create_condition_exists(
+    const auto axiom_condition = this->translate(*this->m_pddl_repositories.get_or_create_condition_exists(
         axiom_parameters,
-        m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
+        m_to_nnf_translator.translate(*this->m_pddl_repositories.get_or_create_condition_not(condition.get_condition()))));
 
     const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_index, this->m_simple_and_derived_predicate_names);
-    const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, head_parameters);
+    const auto predicate = this->m_pddl_repositories.get_or_create_predicate(axiom_name, head_parameters);
     m_derived_predicates.insert(predicate);
-    const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
-    const auto substituted_condition = this->m_pddl_factories.get_or_create_condition_literal(this->m_pddl_factories.get_or_create_literal(true, atom));
-    const auto axiom = this->m_pddl_factories.get_or_create_axiom(axiom_name, axiom_parameters, axiom_condition, head_parameters.size());
+    const auto atom = this->m_pddl_repositories.get_or_create_atom(predicate, terms);
+    const auto substituted_condition = this->m_pddl_repositories.get_or_create_condition_literal(this->m_pddl_repositories.get_or_create_literal(true, atom));
+    const auto axiom = this->m_pddl_repositories.get_or_create_axiom(axiom_name, axiom_parameters, axiom_condition, head_parameters.size());
 
     m_axioms.insert(axiom);
 
@@ -144,11 +144,11 @@ loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Ac
     // Turn free variables into parameters
     auto translated_parameters = this->translate(action.get_parameters());
 
-    auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                                         action.get_original_arity(),
-                                                                         translated_parameters,
-                                                                         translated_condition,
-                                                                         translated_effect);
+    auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                                            action.get_original_arity(),
+                                                                            translated_parameters,
+                                                                            translated_condition,
+                                                                            translated_effect);
 
     this->m_scopes.close_scope();
 
@@ -165,10 +165,10 @@ loki::Axiom RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Axi
     // Turn free variables into parameters
     auto translated_parameters = this->translate(axiom.get_parameters());
 
-    auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(),
-                                                                       translated_parameters,
-                                                                       translated_condition,
-                                                                       axiom.get_num_parameters_to_ground_head());
+    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+                                                                          translated_parameters,
+                                                                          translated_condition,
+                                                                          axiom.get_num_parameters_to_ground_head());
 
     this->m_scopes.close_scope();
 
@@ -194,15 +194,15 @@ loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Do
     auto translated_predicates = this->translate(domain.get_predicates());
     translated_predicates.insert(translated_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
 
-    return this->m_pddl_factories.get_or_create_domain(domain.get_filepath(),
-                                                       domain.get_name(),
-                                                       this->translate(*domain.get_requirements()),
-                                                       this->translate(domain.get_types()),
-                                                       this->translate(domain.get_constants()),
-                                                       translated_predicates,
-                                                       this->translate(domain.get_functions()),
-                                                       translated_actions,
-                                                       translated_axioms);
+    return this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
+                                                          domain.get_name(),
+                                                          this->translate(*domain.get_requirements()),
+                                                          this->translate(domain.get_types()),
+                                                          this->translate(domain.get_constants()),
+                                                          translated_predicates,
+                                                          this->translate(domain.get_functions()),
+                                                          translated_actions,
+                                                          translated_axioms);
 }
 
 loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ProblemImpl& problem)
@@ -228,7 +228,7 @@ loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::P
     translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
     translated_axioms = uniquify_elements(translated_axioms);
 
-    return this->m_pddl_factories.get_or_create_problem(
+    return this->m_pddl_repositories.get_or_create_problem(
         problem.get_filepath(),
         translated_domain,
         problem.get_name(),
@@ -249,8 +249,8 @@ loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::Problem
     return this->translate(*this->m_to_nnf_translator.run(problem));
 }
 
-RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
-    BaseCachedRecurseTranslator(pddl_factories),
+RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_repositories, ToNNFTranslator& to_nnf_translator) :
+    BaseCachedRecurseTranslator(pddl_repositories),
     m_to_nnf_translator(to_nnf_translator),
     m_next_axiom_index(0)
 {

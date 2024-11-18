@@ -87,9 +87,9 @@ private:
     /// the code base to operate on the invariants in the implementation.
     StateSpace(Problem problem,
                bool use_unit_cost_one,
-               std::shared_ptr<PDDLRepositories> pddl_factories,
-               std::shared_ptr<IApplicableActionGenerator> aag,
-               std::shared_ptr<StateRepository> ssg,
+               std::shared_ptr<PDDLRepositories> pddl_repositories,
+               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+               std::shared_ptr<StateRepository> state_repository,
                typename StateSpace::GraphType graph,
                StateMap<Index> state_to_vertex_index,
                Index initial_vertex_index,
@@ -101,26 +101,26 @@ public:
     /// @brief Try to create a `StateSpace` from the given input files with the given options.
     /// @param problem The problem from which to create the state space.
     /// @param parser External memory to PDDLRepositories.
-    /// @param aag External memory to aag.
-    /// @param ssg External memory to ssg.
+    /// @param applicable_action_generator External memory to applicable_action_generator.
+    /// @param state_repository External memory to state_repository.
     /// @param options the options.
     /// @return StateSpace if construction is within the given options, and otherwise nullptr.
     static std::optional<StateSpace> create(Problem problem,
                                             std::shared_ptr<PDDLRepositories> factories,
-                                            std::shared_ptr<IApplicableActionGenerator> aag,
-                                            std::shared_ptr<StateRepository> ssg,
+                                            std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                            std::shared_ptr<StateRepository> state_repository,
                                             const StateSpaceOptions& options = StateSpaceOptions());
 
-    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
+    /// @brief Convenience function when sharing parsers, applicable_action_generators, state_repositorys is not relevant.
     static std::optional<StateSpace>
     create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options = StateSpaceOptions());
 
-    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
+    /// @brief Convenience function when sharing parsers, applicable_action_generators, state_repositorys is not relevant.
     static std::vector<StateSpace>
     create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options = StateSpacesOptions());
 
     /// @brief Try to create a `StateSpaceList` from the given data and the given options.
-    /// @param memories External memory to problems, parsers, aags, ssgs.
+    /// @param memories External memory to problems, parsers, applicable_action_generators, state_repositorys.
     /// @param options the options.
     /// @return `StateSpaceList` contains the `StateSpace`s for which the construction was successful.
     static std::vector<StateSpace>
@@ -155,8 +155,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
-    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
-    const std::shared_ptr<StateRepository>& get_ssg() const;
+    const std::shared_ptr<IApplicableActionGenerator>& get_applicable_action_generator() const;
+    const std::shared_ptr<StateRepository>& get_state_repository() const;
 
     /* Graph */
     const GraphType& get_graph() const;
@@ -204,9 +204,9 @@ private:
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<StateRepository> m_state_repository;
 
     /* States */
     GraphType m_graph;

@@ -116,8 +116,8 @@ private:
                         bool mark_true_goal_literals,
                         bool use_unit_cost_one,
                         std::shared_ptr<PDDLRepositories> factories,
-                        std::shared_ptr<IApplicableActionGenerator> aag,
-                        std::shared_ptr<StateRepository> ssg,
+                        std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                        std::shared_ptr<StateRepository> state_repository,
                         typename FaithfulAbstraction::GraphType graph,
                         std::shared_ptr<const StateList> states_by_abstract_state,
                         StateMap<Index> state_to_vertex_index,
@@ -134,23 +134,23 @@ public:
     /// @brief Try to create a `FaithfulAbstraction` from the given input files with the given options.
     /// @param problem is the problem.
     /// @param factories is the external PDDL factories.
-    /// @param aag is the external applicable action generator.
-    /// @param ssg is the external successor state generator.
+    /// @param applicable_action_generator is the external applicable action generator.
+    /// @param state_repository is the external successor state generator.
     /// @param options the options.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(Problem problem,
                                                      std::shared_ptr<PDDLRepositories> factories,
-                                                     std::shared_ptr<IApplicableActionGenerator> aag,
-                                                     std::shared_ptr<StateRepository> ssg,
+                                                     std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                                     std::shared_ptr<StateRepository> state_repository,
                                                      const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
-    /// @brief Convenience function when sharing parsers, aags, ssgs is not relevant.
+    /// @brief Convenience function when sharing parsers, applicable_action_generators, state_repositorys is not relevant.
     static std::vector<FaithfulAbstraction> create(const fs::path& domain_filepath,
                                                    const std::vector<fs::path>& problem_filepaths,
                                                    const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /// @brief Try to create a FaithfulAbstractionList from the given data and the given options.
-    /// @param memories External memory to problem, factories, aags, ssgs.
+    /// @param memories External memory to problem, factories, applicable_action_generators, state_repositorys.
     /// @param options the options.
     /// @return `FaithfulAbstractionList` contains the `FaithfulAbstraction`s for which the construction was successful.
     static std::vector<FaithfulAbstraction>
@@ -192,8 +192,8 @@ public:
 
     /* Memory */
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
-    const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
-    const std::shared_ptr<StateRepository>& get_ssg() const;
+    const std::shared_ptr<IApplicableActionGenerator>& get_applicable_action_generator() const;
+    const std::shared_ptr<StateRepository>& get_state_repository() const;
 
     /* Graph */
     const GraphType& get_graph() const;
@@ -239,9 +239,9 @@ private:
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<StateRepository> m_state_repository;
 
     /* States */
     GraphType m_graph;

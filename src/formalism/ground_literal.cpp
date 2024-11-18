@@ -56,9 +56,9 @@ const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
 }
 
 template<PredicateTag P>
-Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_factories) const
+Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
 {
-    return pddl_factories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_factories));
+    return pddl_repositories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_repositories));
 }
 
 template class GroundLiteralImpl<Static>;
@@ -66,7 +66,7 @@ template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
 
 template<PredicateTag P>
-std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_factories)
+std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_repositories)
 {
     VariableList variables;
     LiteralList<P> literals;
@@ -80,15 +80,15 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
             {
                 const auto parameter_index = to_variable.size();
                 const auto variable_name = "x" + std::to_string(parameter_index);
-                const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+                const auto variable = pddl_repositories.get_or_create_variable(variable_name, parameter_index);
                 variables.emplace_back(variable);
                 to_variable.emplace(object, variable);
             }
             const auto variable = to_variable.at(object);
-            const auto term = pddl_factories.get_or_create_term_variable(variable);
+            const auto term = pddl_repositories.get_or_create_term_variable(variable);
             terms.emplace_back(term);
         }
-        literals.emplace_back(ground_literal->lift(terms, pddl_factories));
+        literals.emplace_back(ground_literal->lift(terms, pddl_repositories));
     }
     return std::make_pair(variables, literals);
 }

@@ -111,12 +111,12 @@ namespace mimir
 template<>
 std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLRepositories&>& data)
 {
-    const auto& [graph, pddl_factories] = data;
+    const auto& [graph, pddl_repositories] = data;
 
-    const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLRepositories& pddl_factories, std::ostream& out)
+    const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLRepositories& pddl_repositories, std::ostream& out)
     {
         out << "  \"" << vertex.get_index() << "\" [label=\"#" << vertex.get_parameter_index() << " <- "
-            << *pddl_factories.get_object(vertex.get_object_index()) << "\"];\n";
+            << *pddl_repositories.get_object(vertex.get_object_index()) << "\"];\n";
     };
 
     const auto create_edge = [](const consistency_graph::Edge& edge, std::ostream& out)
@@ -127,7 +127,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_g
     // Define the nodes
     for (const auto& vertex : graph.get_vertices())
     {
-        create_node(vertex, pddl_factories, out);
+        create_node(vertex, pddl_repositories, out);
     }
     // Define the edges
     for (const auto& edge : graph.get_edges())

@@ -202,11 +202,12 @@ void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitset& re
     }
 }
 
-std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningStrategy::create(Problem problem,
-                                                                                               std::shared_ptr<PDDLRepositories> factories,
-                                                                                               std::shared_ptr<IApplicableActionGenerator> aag,
-                                                                                               std::shared_ptr<StateRepository> ssg,
-                                                                                               const StateSpaceOptions& options)
+std::optional<ObjectGraphStaticSccPruningStrategy>
+ObjectGraphStaticSccPruningStrategy::create(Problem problem,
+                                            std::shared_ptr<PDDLRepositories> factories,
+                                            std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                            std::shared_ptr<StateRepository> state_repository,
+                                            const StateSpaceOptions& options)
 {
     // TODO: check assumptions
     /* Check assumptions:
@@ -214,7 +215,7 @@ std::optional<ObjectGraphStaticSccPruningStrategy> ObjectGraphStaticSccPruningSt
          2. No unsatisfiable goal, e.g., x and not x
     */
 
-    auto state_space = StateSpace::create(problem, factories, aag, ssg, options);
+    auto state_space = StateSpace::create(problem, factories, applicable_action_generator, state_repository, options);
     if (!state_space.has_value())
     {
         return std::nullopt;

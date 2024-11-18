@@ -32,21 +32,21 @@ TEST(MimirTests, SearchStateRepositoryTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
-    auto lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_repositories());
-    auto ssg = StateRepository(lifted_aag);
-    auto initial_state = ssg.get_or_create_initial_state();
+    auto lifted_applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_repositories());
+    auto state_repository = StateRepository(lifted_applicable_action_generator);
+    auto initial_state = state_repository.get_or_create_initial_state();
     auto applicable_actions = GroundActionList {};
-    lifted_aag->generate_applicable_actions(initial_state, applicable_actions);
+    lifted_applicable_action_generator->generate_applicable_actions(initial_state, applicable_actions);
 
     for (const auto& action : applicable_actions)
     {
-        const auto successor_state = ssg.get_or_create_successor_state(initial_state, action);
+        const auto successor_state = state_repository.get_or_create_successor_state(initial_state, action);
 
         auto applicable_actions2 = GroundActionList {};
-        lifted_aag->generate_applicable_actions(successor_state, applicable_actions2);
+        lifted_applicable_action_generator->generate_applicable_actions(successor_state, applicable_actions2);
         for (const auto& action2 : applicable_actions2)
         {
-            [[maybe_unused]] const auto successor_state2 = ssg.get_or_create_successor_state(successor_state, action2);
+            [[maybe_unused]] const auto successor_state2 = state_repository.get_or_create_successor_state(successor_state, action2);
         }
     }
 }

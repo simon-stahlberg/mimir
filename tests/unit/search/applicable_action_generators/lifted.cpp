@@ -30,22 +30,23 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
-    auto aag_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
-    auto ssg = std::make_shared<StateRepository>(aag);
+    auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
+    auto applicable_action_generator =
+        std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
+    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    auto brfs = BrFSAlgorithm(aag, ssg, brfs_event_handler);
+    auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
     auto ground_actions = GroundActionList {};
     const auto status = brfs.find_solution(ground_actions);
     EXPECT_EQ(status, SearchStatus::SOLVED);
 
-    const auto& aag_statistics = aag_event_handler->get_statistics();
+    const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 95);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 95);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 

@@ -35,14 +35,14 @@ namespace mimir
 
 /// @brief Create an object graph as a vertex colored graph for a given state.
 /// @param color_function is the function used to color the vertices in the object graph.
-/// @param pddl_factories is the PDDLFactory.
+/// @param pddl_repositories is the PDDLFactory.
 /// @param problem is the Problem.
 /// @param state is the state.
 /// @param mark_true_goal_literals represents whether literals that are true should have a special color.
 /// @param pruning_strategy is the strategy used for pruning information from the object graph.
 /// @return a vertex colored graph that represents the object graph.
 extern StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                                      const PDDLRepositories& pddl_factories,
+                                                      const PDDLRepositories& pddl_repositories,
                                                       Problem problem,
                                                       State state,
                                                       Index state_index = 0,

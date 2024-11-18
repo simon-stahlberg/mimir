@@ -830,12 +830,12 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
                                                  std::shared_ptr<StateRepository> successor_state_generator,
                                                  std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                  std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
-    m_aag(applicable_action_generator),
+    m_applicable_action_generator(applicable_action_generator),
     m_max_arity(max_arity),
-    m_ssg(successor_state_generator),
+    m_state_repository(successor_state_generator),
     m_brfs_event_handler(brfs_event_handler),
     m_iw_event_handler(iw_event_handler),
-    m_initial_state(m_ssg->get_or_create_initial_state()),
+    m_initial_state(m_state_repository->get_or_create_initial_state()),
     m_brfs(applicable_action_generator, successor_state_generator, brfs_event_handler)
 {
     if (max_arity >= MAX_ARITY)
@@ -850,12 +850,12 @@ SearchStatus IterativeWidthAlgorithm::find_solution(GroundActionList& out_plan) 
 SearchStatus IterativeWidthAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
 {
     std::optional<State> unused_out_state = std::nullopt;
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), out_plan, unused_out_state);
+    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()), out_plan, unused_out_state);
 }
 
 SearchStatus IterativeWidthAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
 {
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_aag->get_problem()), out_plan, out_goal_state);
+    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()), out_plan, out_goal_state);
 }
 
 SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
@@ -863,14 +863,14 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
                                                     GroundActionList& out_plan,
                                                     std::optional<State>& out_goal_state)
 {
-    const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_repositories();
-    m_iw_event_handler->on_start_search(problem, start_state, pddl_factories);
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
+    m_iw_event_handler->on_start_search(problem, start_state, pddl_repositories);
 
     size_t cur_arity = 0;
     while (cur_arity <= m_max_arity)
     {
-        m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_factories, cur_arity);
+        m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_repositories, cur_arity);
 
         const auto search_status =
             (cur_arity > 0) ?
@@ -888,9 +888,9 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
             m_iw_event_handler->on_end_search();
             if (!m_iw_event_handler->is_quiet())
             {
-                m_aag->on_end_search();
+                m_applicable_action_generator->on_end_search();
             }
-            m_iw_event_handler->on_solved(out_plan, *m_aag->get_pddl_repositories());
+            m_iw_event_handler->on_solved(out_plan, *m_applicable_action_generator->get_pddl_repositories());
             return SearchStatus::SOLVED;
         }
         else if (search_status == SearchStatus::UNSOLVABLE)
@@ -904,5 +904,8 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     return SearchStatus::FAILED;
 }
 
-const std::shared_ptr<PDDLRepositories>& IterativeWidthAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
+const std::shared_ptr<PDDLRepositories>& IterativeWidthAlgorithm::get_pddl_repositories() const
+{
+    return m_applicable_action_generator->get_pddl_repositories();
+}
 }

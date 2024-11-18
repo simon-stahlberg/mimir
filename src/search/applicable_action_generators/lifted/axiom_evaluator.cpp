@@ -40,11 +40,11 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem,
                                                              m_problem->get_domain()->get_predicates<Fluent>(),
-                                                             m_pddl_factories->get_ground_atoms_from_indices<Fluent>(unextended_state.get_atoms<Fluent>()));
+                                                             m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(unextended_state.get_atoms<Fluent>()));
 
     auto derived_assignment_set = AssignmentSet<Derived>(m_problem,
                                                          m_problem->get_problem_and_domain_derived_predicates(),
-                                                         m_pddl_factories->get_ground_atoms_from_indices<Derived>(unextended_state.get_atoms<Derived>()));
+                                                         m_pddl_repositories->get_ground_atoms_from_indices<Derived>(unextended_state.get_atoms<Derived>()));
 
     /* 2. Fixed point computation */
 
@@ -100,7 +100,7 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
                 if (!unextended_state.get_atoms<Derived>().get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_pddl_factories->get_ground_atom<Derived>(grounded_atom_index);
+                    const auto new_ground_atom = m_pddl_repositories->get_ground_atom<Derived>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
                     // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,
@@ -120,14 +120,14 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
         } while (!reached_partition_fixed_point);
     }
 
-    m_event_handler->on_end_generating_applicable_axioms(applicable_axioms, *m_pddl_factories);
+    m_event_handler->on_end_generating_applicable_axioms(applicable_axioms, *m_pddl_repositories);
 }
 
 AxiomEvaluator::AxiomEvaluator(Problem problem,
-                               std::shared_ptr<PDDLRepositories> pddl_factories,
+                               std::shared_ptr<PDDLRepositories> pddl_repositories,
                                std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
-    m_pddl_factories(std::move(pddl_factories)),
+    m_pddl_repositories(std::move(pddl_repositories)),
     m_event_handler(std::move(event_handler)),
     m_partitioning(),
     m_flat_axioms(),
@@ -188,7 +188,7 @@ AxiomEvaluator::AxiomEvaluator(Problem problem,
                                                         axiom->get_conditions<Fluent>(),
                                                         axiom->get_conditions<Derived>(),
                                                         static_assignment_set,
-                                                        m_pddl_factories));
+                                                        m_pddl_repositories));
     }
 }
 
@@ -238,9 +238,9 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_pddl_factories->ground_and_fill_bitset(axiom->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_pddl_factories->ground_and_fill_bitset(axiom->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
-    m_pddl_factories->ground_and_fill_bitset(axiom->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_pddl_repositories->ground_and_fill_bitset(axiom->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_pddl_repositories->ground_and_fill_bitset(axiom->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
+    m_pddl_repositories->ground_and_fill_bitset(axiom->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Effect */
 
@@ -251,8 +251,8 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
     const auto is_complete_binding_relevant_for_head = (binding.size() == effect_literal_arity);
     const auto grounded_literal =
         is_complete_binding_relevant_for_head ?
-            m_pddl_factories->ground_literal(axiom->get_literal(), binding) :
-            m_pddl_factories->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
+            m_pddl_repositories->ground_literal(axiom->get_literal(), binding) :
+            m_pddl_repositories->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_derived_effect().is_negated = false;
     m_axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();

@@ -22,35 +22,35 @@
 
 namespace mimir
 {
-void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
     std::cout << "[AStar] ----------------------------------------\n"
-              << "[AStar] State: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << std::endl
+              << "[AStar] State: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << std::endl
               << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_factories)) << "\n"
-              << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_factories)) << "\n"
+    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories)) << "\n"
+              << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
               << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
                                                                      GroundAction action,
                                                                      Problem problem,
-                                                                     const PDDLRepositories& pddl_factories) const
+                                                                     const PDDLRepositories& pddl_repositories) const
 {
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                          GroundAction action,
                                                                          Problem problem,
-                                                                         const PDDLRepositories& pddl_factories) const
+                                                                         const PDDLRepositories& pddl_repositories) const
 {
 }
 
-void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) const {}
+void DebugAStarAlgorithmEventHandler::on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
 void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) const
 {
@@ -58,19 +58,19 @@ void DebugAStarAlgorithmEventHandler::on_finish_f_layer_impl(double f_value, uin
               << " and num generated states " << num_generated_states << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) const {}
+void DebugAStarAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
-void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
     std::cout << "[AStar] Search started.\n"
-              << "[AStar] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_factories)) << std::endl;
+              << "[AStar] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_repositories)) << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }
 
-void DebugAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) const
+void DebugAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) const
 {
-    auto plan = to_plan(ground_action_plan, pddl_factories);
+    auto plan = to_plan(ground_action_plan, pddl_repositories);
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;

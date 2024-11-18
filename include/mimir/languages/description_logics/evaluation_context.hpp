@@ -35,14 +35,14 @@ class EvaluationContext
 {
 private:
     /* Memory */
-    const PDDLRepositories& m_pddl_factories;
+    const PDDLRepositories& m_pddl_repositories;
     Problem m_problem;
     State m_state;
     ConstructorTagToDenotationType& m_denotation_builder;
     ConstructorTagToDenotationRepository& m_denotation_repository;
 
 public:
-    EvaluationContext(const PDDLRepositories& pddl_factories,
+    EvaluationContext(const PDDLRepositories& pddl_repositories,
                       Problem problem,
                       State state,
                       ConstructorTagToDenotationType& ref_denotation_builder,

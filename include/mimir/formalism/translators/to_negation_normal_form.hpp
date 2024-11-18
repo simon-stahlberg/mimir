@@ -100,7 +100,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit ToNNFTranslator(loki::PDDLRepositories& pddl_factories);
+    explicit ToNNFTranslator(loki::PDDLRepositories& pddl_repositories);
 };
 
 }

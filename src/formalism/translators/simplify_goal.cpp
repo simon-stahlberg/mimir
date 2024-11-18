@@ -26,7 +26,7 @@ namespace mimir
 {
 
 static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_condition,
-                                               loki::PDDLRepositories& pddl_factories,
+                                               loki::PDDLRepositories& pddl_repositories,
                                                std::unordered_set<loki::Predicate>& derived_predicates,
                                                std::unordered_set<loki::Axiom>& axioms,
                                                Index& next_axiom_index,
@@ -42,18 +42,18 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
         parts.reserve(condition_and->get_conditions().size());
         for (const auto& part : condition_and->get_conditions())
         {
-            parts.push_back(simplify_goal_condition(*part, pddl_factories, derived_predicates, axioms, next_axiom_index, simple_and_derived_predicates));
+            parts.push_back(simplify_goal_condition(*part, pddl_repositories, derived_predicates, axioms, next_axiom_index, simple_and_derived_predicates));
         }
-        return pddl_factories.get_or_create_condition_and(parts);
+        return pddl_repositories.get_or_create_condition_and(parts);
     }
 
     const auto axiom_name = create_unique_axiom_name(next_axiom_index, simple_and_derived_predicates);
-    const auto predicate = pddl_factories.get_or_create_predicate(axiom_name, loki::ParameterList {});
+    const auto predicate = pddl_repositories.get_or_create_predicate(axiom_name, loki::ParameterList {});
     derived_predicates.insert(predicate);
-    const auto atom = pddl_factories.get_or_create_atom(predicate, loki::TermList {});
-    const auto literal = pddl_factories.get_or_create_literal(false, atom);
-    const auto substituted_condition = pddl_factories.get_or_create_condition_literal(literal);
-    const auto axiom = pddl_factories.get_or_create_axiom(axiom_name, loki::ParameterList {}, &goal_condition, 0);
+    const auto atom = pddl_repositories.get_or_create_atom(predicate, loki::TermList {});
+    const auto literal = pddl_repositories.get_or_create_literal(false, atom);
+    const auto substituted_condition = pddl_repositories.get_or_create_condition_literal(literal);
+    const auto axiom = pddl_repositories.get_or_create_axiom(axiom_name, loki::ParameterList {}, &goal_condition, 0);
     axioms.insert(axiom);
 
     return substituted_condition;
@@ -73,7 +73,7 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
     auto next_axiom_index = Index { 0 };
     auto translated_goal =
         (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(simplify_goal_condition(*problem.get_goal_condition().value(),
-                                                                                                           this->m_pddl_factories,
+                                                                                                           this->m_pddl_repositories,
                                                                                                            derived_predicates,
                                                                                                            axioms,
                                                                                                            next_axiom_index,
@@ -86,7 +86,7 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
     translated_axioms.insert(translated_axioms.end(), axioms.begin(), axioms.end());
     translated_axioms = uniquify_elements(translated_axioms);
 
-    return this->m_pddl_factories.get_or_create_problem(
+    return this->m_pddl_repositories.get_or_create_problem(
         problem.get_filepath(),
         this->translate(*problem.get_domain()),
         problem.get_name(),
@@ -101,8 +101,8 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
         translated_axioms);
 }
 
-SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLRepositories& pddl_factories) :
-    BaseCachedRecurseTranslator<SimplifyGoalTranslator>(pddl_factories),
+SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLRepositories& pddl_repositories) :
+    BaseCachedRecurseTranslator<SimplifyGoalTranslator>(pddl_repositories),
     m_simple_and_derived_predicate_names()
 {
 }

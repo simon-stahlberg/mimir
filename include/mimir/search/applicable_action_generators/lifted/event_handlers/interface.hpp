@@ -44,7 +44,7 @@ public:
 
     virtual void on_ground_action_cache_miss(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_factories) = 0;
+    virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) = 0;
 
     virtual void on_start_generating_applicable_axioms() = 0;
 
@@ -54,7 +54,7 @@ public:
 
     virtual void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) = 0;
 
-    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_factories) = 0;
+    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) = 0;
 
     virtual void on_end_search() = 0;
 
@@ -122,11 +122,11 @@ public:
         }
     }
 
-    void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_factories) override
+    void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_end_generating_applicable_actions_impl(ground_actions, pddl_factories);
+            self().on_end_generating_applicable_actions_impl(ground_actions, pddl_repositories);
         }
     }
 
@@ -166,11 +166,11 @@ public:
         }
     }
 
-    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_factories) override
+    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_factories);
+            self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_repositories);
         }
     }
 

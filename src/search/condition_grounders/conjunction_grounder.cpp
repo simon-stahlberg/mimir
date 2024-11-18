@@ -31,7 +31,7 @@ LiftedConjunctionGrounder::LiftedConjunctionGrounder(Problem problem,
                                                      LiteralList<Static> static_literals,
                                                      LiteralList<Fluent> fluent_literals,
                                                      LiteralList<Derived> derived_literals,
-                                                     std::shared_ptr<PDDLRepositories> pddl_factories) :
+                                                     std::shared_ptr<PDDLRepositories> pddl_repositories) :
     m_condition_grounder(std::move(problem),
                          std::move(variables),
                          std::move(static_literals),
@@ -40,8 +40,8 @@ LiftedConjunctionGrounder::LiftedConjunctionGrounder(Problem problem,
                          AssignmentSet<Static>(problem,  //
                                                problem->get_domain()->get_predicates<Static>(),
                                                to_ground_atoms(problem->get_static_initial_literals())),
-                         pddl_factories),
-    m_pddl_factories(pddl_factories)
+                         pddl_repositories),
+    m_pddl_repositories(pddl_repositories)
 {
 }
 
@@ -50,11 +50,11 @@ std::vector<ObjectList> LiftedConjunctionGrounder::ground(State state)
     auto problem = m_condition_grounder.get_problem();
 
     auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
-    auto fluent_atoms = m_pddl_factories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
+    auto fluent_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
     auto fluent_assignment_set = AssignmentSet<Fluent>(problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
-    auto derived_atoms = m_pddl_factories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
+    auto derived_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(problem, derived_predicates, derived_atoms);
 
     std::vector<ObjectList> bindings;

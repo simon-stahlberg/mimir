@@ -59,8 +59,8 @@ public:
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
 private:
-    std::shared_ptr<IApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IHeuristic> m_heuristic;
     std::shared_ptr<IAStarAlgorithmEventHandler> m_event_handler;
 };

@@ -39,9 +39,9 @@ class LiftedSIWPlanner
 private:
     PDDLParser m_parser;
 
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_aag_event_handler;
-    std::shared_ptr<LiftedApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
@@ -50,13 +50,20 @@ private:
 public:
     LiftedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_aag_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_aag(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_aag_event_handler)),
-        m_ssg(std::make_shared<StateRepository>(m_aag)),
+        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(),
+                                                                                        m_parser.get_pddl_repositories(),
+                                                                                        m_applicable_action_generator_event_handler)),
+        m_state_repository(std::make_shared<StateRepository>(m_applicable_action_generator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
         m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<SIWAlgorithm>(m_aag, arity, m_ssg, m_brfs_event_handler, m_iw_event_handler, m_siw_event_handler))
+        m_algorithm(std::make_unique<SIWAlgorithm>(m_applicable_action_generator,
+                                                   arity,
+                                                   m_state_repository,
+                                                   m_brfs_event_handler,
+                                                   m_iw_event_handler,
+                                                   m_siw_event_handler))
     {
     }
 
@@ -64,11 +71,14 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_repositories()));
+        return std::make_tuple(status, to_plan(action_view_list, *m_applicable_action_generator->get_pddl_repositories()));
     }
 
     const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
-    const LiftedApplicableActionGeneratorStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
+    const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    {
+        return m_applicable_action_generator_event_handler->get_statistics();
+    }
 };
 
 /// @brief Instantiate a grounded SIW search
@@ -77,9 +87,9 @@ class GroundedSIWPlanner
 private:
     PDDLParser m_parser;
 
-    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_aag_event_handler;
-    std::shared_ptr<GroundedApplicableActionGenerator> m_aag;
-    std::shared_ptr<StateRepository> m_ssg;
+    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
@@ -88,13 +98,20 @@ private:
 public:
     GroundedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_aag_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
-        m_aag(std::make_shared<GroundedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_aag_event_handler)),
-        m_ssg(std::make_shared<StateRepository>(m_aag)),
+        m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
+        m_applicable_action_generator(std::make_shared<GroundedApplicableActionGenerator>(m_parser.get_problem(),
+                                                                                          m_parser.get_pddl_repositories(),
+                                                                                          m_applicable_action_generator_event_handler)),
+        m_state_repository(std::make_shared<StateRepository>(m_applicable_action_generator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
         m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<SIWAlgorithm>(m_aag, arity, m_ssg, m_brfs_event_handler, m_iw_event_handler, m_siw_event_handler))
+        m_algorithm(std::make_unique<SIWAlgorithm>(m_applicable_action_generator,
+                                                   arity,
+                                                   m_state_repository,
+                                                   m_brfs_event_handler,
+                                                   m_iw_event_handler,
+                                                   m_siw_event_handler))
     {
     }
 
@@ -102,11 +119,14 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_repositories()));
+        return std::make_tuple(status, to_plan(action_view_list, *m_applicable_action_generator->get_pddl_repositories()));
     }
 
     const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
-    const GroundedApplicableActionGeneratorStatistics& get_aag_statistics() const { return m_aag_event_handler->get_statistics(); }
+    const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    {
+        return m_applicable_action_generator_event_handler->get_statistics();
+    }
 };
 
 /**
@@ -120,18 +140,18 @@ TEST(MimirTests, SearchAlgorithmsSIWGroundedGripperTest)
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 7);
 
-    const auto& aag_statistics = siw.get_aag_statistics();
+    const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_actions(), 20);
-    EXPECT_EQ(aag_statistics.get_num_delete_free_axioms(), 0);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 20);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_axioms(), 0);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_actions(), 20);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_action_match_tree(), 48);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 20);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 48);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(aag_statistics.get_num_nodes_in_axiom_match_tree(), 1);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axioms(), 0);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& siw_statistics = siw.get_iw_statistics();
 
@@ -149,13 +169,13 @@ TEST(MimirTests, SearchAlgorithmsSIWLiftedGripperTest)
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.get_actions().size(), 7);
 
-    const auto& aag_statistics = siw.get_aag_statistics();
+    const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
 
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 158);
-    EXPECT_EQ(aag_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 18);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 158);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 18);
 
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
-    EXPECT_EQ(aag_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 0);
 
     const auto& siw_statistics = siw.get_iw_statistics();
 

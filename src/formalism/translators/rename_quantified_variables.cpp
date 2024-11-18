@@ -185,9 +185,9 @@ void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::AxiomImpl& ax
 
 loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
 {
-    return (m_renaming_enabled) ? m_pddl_factories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_index()) + "_"
-                                                                          + std::to_string(m_num_quantifications.at(&variable))) :
-                                  m_pddl_factories.get_or_create_variable(variable.get_name());
+    return (m_renaming_enabled) ? m_pddl_repositories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_index()) + "_"
+                                                                             + std::to_string(m_num_quantifications.at(&variable))) :
+                                  m_pddl_repositories.get_or_create_variable(variable.get_name());
 }
 
 loki::Predicate RenameQuantifiedVariablesTranslator::translate_impl(const loki::PredicateImpl& predicate)
@@ -195,7 +195,7 @@ loki::Predicate RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     // Disallow renaming of nested variables
     m_renaming_enabled = false;
 
-    auto result = this->m_pddl_factories.get_or_create_predicate(predicate.get_name(), this->translate(predicate.get_parameters()));
+    auto result = this->m_pddl_repositories.get_or_create_predicate(predicate.get_name(), this->translate(predicate.get_parameters()));
 
     // Allow renaming again
     m_renaming_enabled = true;
@@ -208,9 +208,9 @@ loki::FunctionSkeleton RenameQuantifiedVariablesTranslator::translate_impl(const
     // Disallow renaming of nested variables
     m_renaming_enabled = false;
 
-    auto result = this->m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(),
-                                                                         this->translate(function_skeleton.get_parameters()),
-                                                                         this->translate(*function_skeleton.get_type()));
+    auto result = this->m_pddl_repositories.get_or_create_function_skeleton(function_skeleton.get_name(),
+                                                                            this->translate(function_skeleton.get_parameters()),
+                                                                            this->translate(*function_skeleton.get_type()));
 
     // Allow renaming again
     m_renaming_enabled = true;
@@ -228,11 +228,11 @@ loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::Act
     const auto translated_effect =
         (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt);
 
-    auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                                         action.get_original_arity(),
-                                                                         translated_parameters,
-                                                                         translated_conditions,
-                                                                         translated_effect);
+    auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                                            action.get_original_arity(),
+                                                                            translated_parameters,
+                                                                            translated_conditions,
+                                                                            translated_effect);
 
     decrement_num_quantifications(action.get_parameters());
 
@@ -246,10 +246,10 @@ loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(const loki::Axio
     const auto translated_parameters = this->translate(axiom.get_parameters());
     const auto translated_conditions = this->translate(*axiom.get_condition());
 
-    auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(),
-                                                                       translated_parameters,
-                                                                       translated_conditions,
-                                                                       axiom.get_num_parameters_to_ground_head());
+    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+                                                                          translated_parameters,
+                                                                          translated_conditions,
+                                                                          axiom.get_num_parameters_to_ground_head());
 
     decrement_num_quantifications(axiom.get_parameters());
 
@@ -263,7 +263,7 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_nested_condition = this->translate(*condition.get_condition());
 
-    auto translated_condition = this->m_pddl_factories.get_or_create_condition_exists(translated_parameters, translated_nested_condition);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, translated_nested_condition);
 
     decrement_num_quantifications(condition.get_parameters());
 
@@ -277,7 +277,7 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_nested_condition = this->translate(*condition.get_condition());
 
-    auto translated_condition = this->m_pddl_factories.get_or_create_condition_forall(translated_parameters, translated_nested_condition);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_nested_condition);
 
     decrement_num_quantifications(condition.get_parameters());
 
@@ -291,7 +291,7 @@ loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::Eff
     const auto translated_parameters = this->translate(effect.get_parameters());
     const auto translated_nested_effect = this->translate(*effect.get_effect());
 
-    auto translated_effect = this->m_pddl_factories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect);
+    auto translated_effect = this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect);
 
     decrement_num_quantifications(effect.get_parameters());
 
@@ -320,8 +320,8 @@ loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemI
     return &problem;
 }
 
-RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLRepositories& pddl_factories) :
-    BaseRecurseTranslator(pddl_factories),
+RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLRepositories& pddl_repositories) :
+    BaseRecurseTranslator(pddl_repositories),
     m_num_quantifications(),
     m_renaming_enabled(true)
 {

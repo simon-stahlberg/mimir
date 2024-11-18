@@ -67,9 +67,9 @@ size_t GroundAtomImpl<P>::get_arity() const
 }
 
 template<PredicateTag P>
-Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_factories) const
+Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
 {
-    return pddl_factories.get_or_create_atom(m_predicate, terms);
+    return pddl_repositories.get_or_create_atom(m_predicate, terms);
 }
 
 template class GroundAtomImpl<Static>;
@@ -77,7 +77,7 @@ template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
 
 template<PredicateTag P>
-std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_factories)
+std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories)
 {
     VariableList variables;
     AtomList<P> atoms;
@@ -91,15 +91,15 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
             {
                 const auto parameter_index = to_variable.size();
                 const auto variable_name = "x" + std::to_string(parameter_index);
-                const auto variable = pddl_factories.get_or_create_variable(variable_name, parameter_index);
+                const auto variable = pddl_repositories.get_or_create_variable(variable_name, parameter_index);
                 variables.emplace_back(variable);
                 to_variable.emplace(object, variable);
             }
             const auto variable = to_variable.at(object);
-            const auto term = pddl_factories.get_or_create_term_variable(variable);
+            const auto term = pddl_repositories.get_or_create_term_variable(variable);
             terms.emplace_back(term);
         }
-        atoms.emplace_back(ground_atom->lift(terms, pddl_factories));
+        atoms.emplace_back(ground_atom->lift(terms, pddl_repositories));
     }
     return std::make_pair(variables, atoms);
 }

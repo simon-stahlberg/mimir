@@ -45,7 +45,7 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
     }
 
     const auto parts_conjunction =
-        flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_factories.get_or_create_condition_and(parts)), this->m_pddl_factories);
+        flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_repositories.get_or_create_condition_and(parts)), this->m_pddl_repositories);
 
     if (parameters.empty())
     {
@@ -53,14 +53,14 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
     }
 
     return this->translate(
-        *this->m_pddl_factories.get_or_create_condition_exists(loki::ParameterList { parameters.begin(), parameters.end() }, parts_conjunction));
+        *this->m_pddl_repositories.get_or_create_condition_exists(loki::ParameterList { parameters.begin(), parameters.end() }, parts_conjunction));
 }
 
 loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_factories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                                                              this->translate(*condition.get_condition()))),
-                   this->m_pddl_factories);
+    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
+                                                                                                                 this->translate(*condition.get_condition()))),
+                   this->m_pddl_repositories);
 }
 
 loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)
@@ -85,7 +85,7 @@ loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::Ac
         }
     }
 
-    return this->m_pddl_factories.get_or_create_action(
+    return this->m_pddl_repositories.get_or_create_action(
         action.get_name(),
         action.get_original_arity(),
         parameters,
@@ -112,11 +112,14 @@ loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(const loki::Axi
         condition = condition_exists->get_condition();
     }
 
-    return this->m_pddl_factories.get_or_create_axiom(axiom.get_derived_predicate_name(), parameters, condition, axiom.get_num_parameters_to_ground_head());
+    return this->m_pddl_repositories.get_or_create_axiom(axiom.get_derived_predicate_name(), parameters, condition, axiom.get_num_parameters_to_ground_head());
 }
 
 loki::Problem MoveExistentialQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-MoveExistentialQuantifiersTranslator::MoveExistentialQuantifiersTranslator(loki::PDDLRepositories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
+MoveExistentialQuantifiersTranslator::MoveExistentialQuantifiersTranslator(loki::PDDLRepositories& pddl_repositories) :
+    BaseCachedRecurseTranslator(pddl_repositories)
+{
+}
 
 }

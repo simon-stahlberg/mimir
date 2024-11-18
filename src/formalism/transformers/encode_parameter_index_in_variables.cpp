@@ -29,16 +29,17 @@ Variable EncodeParameterIndexInVariables::transform_impl(const VariableImpl& var
     {
         const auto parameter_index = it->second;
 
-        return m_pddl_factories.get_or_create_variable(variable.get_name() + "_" + std::to_string(parameter_index), parameter_index);
+        return m_pddl_repositories.get_or_create_variable(variable.get_name() + "_" + std::to_string(parameter_index), parameter_index);
     }
-    return m_pddl_factories.get_or_create_variable(variable.get_name(), 0);
+    return m_pddl_repositories.get_or_create_variable(variable.get_name(), 0);
 }
 
 Predicate<Static> EncodeParameterIndexInVariables::transform_impl(const PredicateImpl<Static>& predicate)
 {
     m_enable_encoding = false;
 
-    const auto translated_predicate = this->m_pddl_factories.get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
+    const auto translated_predicate =
+        this->m_pddl_repositories.get_or_create_predicate<Static>(predicate.get_name(), this->transform(predicate.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -48,7 +49,8 @@ Predicate<Fluent> EncodeParameterIndexInVariables::transform_impl(const Predicat
 {
     m_enable_encoding = false;
 
-    const auto translated_predicate = this->m_pddl_factories.get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
+    const auto translated_predicate =
+        this->m_pddl_repositories.get_or_create_predicate<Fluent>(predicate.get_name(), this->transform(predicate.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -59,7 +61,7 @@ Predicate<Derived> EncodeParameterIndexInVariables::transform_impl(const Predica
     m_enable_encoding = false;
 
     const auto translated_predicate =
-        this->m_pddl_factories.get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
+        this->m_pddl_repositories.get_or_create_predicate<Derived>(predicate.get_name(), this->transform(predicate.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -71,7 +73,7 @@ FunctionSkeleton EncodeParameterIndexInVariables::transform_impl(const FunctionS
     m_enable_encoding = false;
 
     const auto translated_function_skeleton =
-        this->m_pddl_factories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
+        this->m_pddl_repositories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
 
     m_enable_encoding = true;
 
@@ -87,11 +89,11 @@ EffectComplex EncodeParameterIndexInVariables::transform_impl(const EffectComple
         m_variable_to_parameter_index[effect.get_parameters()[i]] = start_index + i;
     }
 
-    const auto translated_complex_effect = this->m_pddl_factories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
-                                                                                               this->transform(effect.get_conditions<Static>()),
-                                                                                               this->transform(effect.get_conditions<Fluent>()),
-                                                                                               this->transform(effect.get_conditions<Derived>()),
-                                                                                               this->transform(*effect.get_effect()));
+    const auto translated_complex_effect = this->m_pddl_repositories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
+                                                                                                  this->transform(effect.get_conditions<Static>()),
+                                                                                                  this->transform(effect.get_conditions<Fluent>()),
+                                                                                                  this->transform(effect.get_conditions<Derived>()),
+                                                                                                  this->transform(*effect.get_effect()));
 
     // Erase for next universal effect
     for (size_t i = 0; i < effect.get_arity(); ++i)
@@ -114,11 +116,11 @@ Axiom EncodeParameterIndexInVariables::transform_impl(const AxiomImpl& axiom)
 
     const auto translated_parameters = this->transform(axiom.get_parameters());
 
-    const auto translated_axiom = this->m_pddl_factories.get_or_create_axiom(translated_parameters,
-                                                                             this->transform(*axiom.get_literal()),
-                                                                             this->transform(axiom.get_conditions<Static>()),
-                                                                             this->transform(axiom.get_conditions<Fluent>()),
-                                                                             this->transform(axiom.get_conditions<Derived>()));
+    const auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(translated_parameters,
+                                                                                this->transform(*axiom.get_literal()),
+                                                                                this->transform(axiom.get_conditions<Static>()),
+                                                                                this->transform(axiom.get_conditions<Fluent>()),
+                                                                                this->transform(axiom.get_conditions<Derived>()));
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();
@@ -140,15 +142,15 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
 
     const auto translated_complex_effects = this->transform(action.get_complex_effects());
 
-    const auto translated_action = this->m_pddl_factories.get_or_create_action(action.get_name(),
-                                                                               action.get_original_arity(),
-                                                                               translated_parameters,
-                                                                               this->transform(action.get_conditions<Static>()),
-                                                                               this->transform(action.get_conditions<Fluent>()),
-                                                                               this->transform(action.get_conditions<Derived>()),
-                                                                               this->transform(action.get_simple_effects()),
-                                                                               translated_complex_effects,
-                                                                               this->transform(*action.get_function_expression()));
+    const auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                                                  action.get_original_arity(),
+                                                                                  translated_parameters,
+                                                                                  this->transform(action.get_conditions<Static>()),
+                                                                                  this->transform(action.get_conditions<Fluent>()),
+                                                                                  this->transform(action.get_conditions<Derived>()),
+                                                                                  this->transform(action.get_simple_effects()),
+                                                                                  translated_complex_effects,
+                                                                                  this->transform(*action.get_function_expression()));
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();
@@ -158,8 +160,8 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
 
 Problem EncodeParameterIndexInVariables::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
 
-EncodeParameterIndexInVariables::EncodeParameterIndexInVariables(PDDLRepositories& pddl_factories) :
-    BaseRecurseTransformer<EncodeParameterIndexInVariables>(pddl_factories)
+EncodeParameterIndexInVariables::EncodeParameterIndexInVariables(PDDLRepositories& pddl_repositories) :
+    BaseRecurseTransformer<EncodeParameterIndexInVariables>(pddl_repositories)
 {
 }
 }

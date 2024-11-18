@@ -42,7 +42,7 @@ class AxiomEvaluator
 {
 private:
     Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
@@ -55,9 +55,9 @@ private:
     std::unordered_map<Axiom, ConditionGrounder> m_condition_grounders;
 
 public:
-    /// @brief Simplest construction, expects the event handler from the lifted aag.
+    /// @brief Simplest construction, expects the event handler from the lifted applicable_action_generator.
     AxiomEvaluator(Problem problem,
-                   std::shared_ptr<PDDLRepositories> pddl_factories,
+                   std::shared_ptr<PDDLRepositories> pddl_repositories,
                    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
