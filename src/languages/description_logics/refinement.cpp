@@ -26,7 +26,7 @@ namespace mimir::dl
  * RefinementStateListPruningFunction
  */
 
-RefinementStateListPruningFunction::RefinementStateListPruningFunction(const PDDLFactories& pddl_factories, Problem problem, StateList states) :
+RefinementStateListPruningFunction::RefinementStateListPruningFunction(const PDDLRepositories& pddl_factories, Problem problem, StateList states) :
     RefinementPruningFunction(),
     m_pddl_factories(pddl_factories),
     m_problem(problem),

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"

@@ -46,7 +46,7 @@ public:
     SearchStatus
     find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, GroundActionList& out_plan, std::optional<State>& out_goal_state);
 
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;

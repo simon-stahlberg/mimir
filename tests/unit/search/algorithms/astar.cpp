@@ -42,10 +42,10 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories(), aag_event_handler);
+    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
     auto ssg = std::make_shared<StateRepository>(aag);
     auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    auto hstar = std::make_shared<HStarHeuristic>(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
+    auto hstar = std::make_shared<HStarHeuristic>(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg);
     auto astar = std::make_shared<AStarAlgorithm>(aag, ssg, hstar, astar_event_handler);
     auto planner = SinglePlanner(astar);
     auto [search_status, plan] = planner.find_solution();
@@ -66,10 +66,10 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories(), aag_event_handler);
+    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
     auto ssg = std::make_shared<StateRepository>(aag);
     auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    auto hstar = std::make_shared<HStarHeuristic>(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
+    auto hstar = std::make_shared<HStarHeuristic>(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg);
     auto astar = std::make_shared<AStarAlgorithm>(aag, ssg, hstar, astar_event_handler);
     auto planner = SinglePlanner(astar);
 
@@ -91,7 +91,7 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories(), aag_event_handler);
+    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
     auto ssg = std::make_shared<StateRepository>(aag);
     auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
     auto blind = std::make_shared<BlindHeuristic>();
@@ -115,7 +115,7 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories(), aag_event_handler);
+    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
     auto ssg = std::make_shared<StateRepository>(aag);
     auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
     auto blind = std::make_shared<BlindHeuristic>();

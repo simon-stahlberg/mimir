@@ -32,7 +32,7 @@ TEST(MimirTests, SearchStateRepositoryTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     const auto problem = parser.get_problem();
-    auto lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_factories());
+    auto lifted_aag = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_repositories());
     auto ssg = StateRepository(lifted_aag);
     auto initial_state = ssg.get_or_create_initial_state();
     auto applicable_actions = GroundActionList {};

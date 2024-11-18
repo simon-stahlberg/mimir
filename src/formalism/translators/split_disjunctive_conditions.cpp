@@ -25,7 +25,7 @@ using namespace std::string_literals;
 namespace mimir
 {
 
-static loki::ActionList split_actions_at_disjunction(const loki::ActionList& actions, loki::PDDLFactories& pddl_factories)
+static loki::ActionList split_actions_at_disjunction(const loki::ActionList& actions, loki::PDDLRepositories& pddl_factories)
 {
     auto split_actions = loki::ActionList {};
 
@@ -51,7 +51,7 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
     return uniquify_elements(split_actions);
 }
 
-static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms, loki::PDDLFactories& pddl_factories)
+static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms, loki::PDDLRepositories& pddl_factories)
 {
     auto split_axioms = loki::AxiomList {};
 
@@ -136,7 +136,7 @@ loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(const loki::P
 
 loki::Problem SplitDisjunctiveConditionsTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki::PDDLFactories& pddl_factories) :
+SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_factories) :
     BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_factories)
 {
 }

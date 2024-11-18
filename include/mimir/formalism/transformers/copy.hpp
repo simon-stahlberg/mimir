@@ -37,7 +37,7 @@ private:
     using BaseCachedRecurseTransformer::transform_impl;
 
 public:
-    explicit CopyTransformer(PDDLFactories& pddl_factories) : BaseCachedRecurseTransformer<CopyTransformer>(pddl_factories) {}
+    explicit CopyTransformer(PDDLRepositories& pddl_factories) : BaseCachedRecurseTransformer<CopyTransformer>(pddl_factories) {}
 };
 }
 

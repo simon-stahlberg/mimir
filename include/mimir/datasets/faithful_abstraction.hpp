@@ -115,7 +115,7 @@ private:
     FaithfulAbstraction(Problem problem,
                         bool mark_true_goal_literals,
                         bool use_unit_cost_one,
-                        std::shared_ptr<PDDLFactories> factories,
+                        std::shared_ptr<PDDLRepositories> factories,
                         std::shared_ptr<IApplicableActionGenerator> aag,
                         std::shared_ptr<StateRepository> ssg,
                         typename FaithfulAbstraction::GraphType graph,
@@ -139,7 +139,7 @@ public:
     /// @param options the options.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(Problem problem,
-                                                     std::shared_ptr<PDDLFactories> factories,
+                                                     std::shared_ptr<PDDLRepositories> factories,
                                                      std::shared_ptr<IApplicableActionGenerator> aag,
                                                      std::shared_ptr<StateRepository> ssg,
                                                      const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
@@ -153,10 +153,10 @@ public:
     /// @param memories External memory to problem, factories, aags, ssgs.
     /// @param options the options.
     /// @return `FaithfulAbstractionList` contains the `FaithfulAbstraction`s for which the construction was successful.
-    static std::vector<FaithfulAbstraction> create(
-        const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-            memories,
-        const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
+    static std::vector<FaithfulAbstraction>
+    create(const std::vector<
+               std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+           const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**
      * Abstraction functionality
@@ -191,7 +191,7 @@ public:
     bool get_use_unit_cost_one() const;
 
     /* Memory */
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
     const std::shared_ptr<StateRepository>& get_ssg() const;
 
@@ -239,7 +239,7 @@ private:
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_factories;
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
 

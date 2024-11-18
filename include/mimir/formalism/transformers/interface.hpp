@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_INTERFACE_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_INTERFACE_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 #include <algorithm>
 #include <boost/container/small_vector.hpp>

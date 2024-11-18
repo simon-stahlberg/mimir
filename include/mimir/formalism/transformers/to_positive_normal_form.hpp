@@ -77,7 +77,7 @@ private:
     Domain transform_impl(const DomainImpl& domain);
 
 public:
-    explicit ToPositiveNormalFormTransformer(PDDLFactories& pddl_factories);
+    explicit ToPositiveNormalFormTransformer(PDDLRepositories& pddl_factories);
 };
 
 /**

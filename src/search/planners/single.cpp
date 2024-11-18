@@ -28,7 +28,7 @@ std::tuple<SearchStatus, Plan> SinglePlanner::find_solution()
 {
     auto action_view_list = GroundActionList {};
     const auto status = m_algorithm->find_solution(action_view_list);
-    return std::make_tuple(status, to_plan(action_view_list, *m_algorithm->get_pddl_factories()));
+    return std::make_tuple(status, to_plan(action_view_list, *m_algorithm->get_pddl_repositories()));
 }
 
 }

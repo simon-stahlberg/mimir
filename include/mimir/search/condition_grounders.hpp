@@ -42,7 +42,7 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     AssignmentSet<Static> m_static_assignment_set;
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_factories;
     std::shared_ptr<IConditionGrounderEventHandler> m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
@@ -55,7 +55,7 @@ private:
     bool is_valid_binding(Problem problem, State state, const ObjectList& binding);
 
     template<DynamicPredicateTag P>
-    bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
+    bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_factories);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(Problem problem, State state);
@@ -79,7 +79,7 @@ public:
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
                       AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<PDDLFactories> pddl_factories);
+                      std::shared_ptr<PDDLRepositories> pddl_factories);
 
     ConditionGrounder(Problem problem,
                       VariableList variables,
@@ -87,7 +87,7 @@ public:
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
                       AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<PDDLFactories> pddl_factories,
+                      std::shared_ptr<PDDLRepositories> pddl_factories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
     void compute_bindings(State state,
@@ -104,7 +104,7 @@ public:
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const AssignmentSet<Static>& get_static_assignment_set() const;
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<IConditionGrounderEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };

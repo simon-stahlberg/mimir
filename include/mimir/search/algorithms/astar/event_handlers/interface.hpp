@@ -43,35 +43,35 @@ public:
 
     /// @brief React on expanding a state.
     /// This is happens immediately before on_generate_state for successors of `state`.
-    virtual void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
-    virtual void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
-    virtual void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
-    virtual void on_close_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_f_layer(double f_value) = 0;
 
     /// @brief React on pruning a state.
-    virtual void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -110,7 +110,7 @@ private:
 public:
     explicit StaticAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
@@ -120,7 +120,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
@@ -130,7 +130,7 @@ public:
         }
     }
 
-    void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -138,7 +138,7 @@ public:
         }
     }
 
-    void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -146,7 +146,7 @@ public:
         }
     }
 
-    void on_close_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -165,7 +165,7 @@ public:
         }
     }
 
-    void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_pruned();
 
@@ -175,7 +175,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics = AStarAlgorithmStatistics();
 
@@ -197,7 +197,7 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
+    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -243,31 +243,31 @@ protected:
 public:
     explicit DynamicAStarAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    virtual void on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) {}
 
-    virtual void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) {}
 
-    virtual void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) {}
 
-    virtual void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) {}
 
-    virtual void on_close_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) {}
 
     virtual void on_finish_f_layer_impl(double f_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    virtual void on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) {}
 
-    virtual void on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) {}
+    virtual void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_factories) {}
 
     virtual void on_end_search_impl() {}
 
-    virtual void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) {}
+    virtual void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) {}
 
     virtual void on_unsolvable_impl() {}
 
     virtual void on_exhausted_impl() {}
 
-    void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
@@ -277,7 +277,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
@@ -287,7 +287,7 @@ public:
         }
     }
 
-    void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_relaxed(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -295,7 +295,7 @@ public:
         }
     }
 
-    void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_relaxed(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -303,7 +303,7 @@ public:
         }
     }
 
-    void on_close_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -322,7 +322,7 @@ public:
         }
     }
 
-    void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_pruned();
 
@@ -332,7 +332,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics = AStarAlgorithmStatistics();
 
@@ -354,7 +354,7 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
+    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {

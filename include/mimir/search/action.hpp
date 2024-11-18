@@ -199,22 +199,22 @@ using GroundActionImplSet = cista::storage::UnorderedSet<GroundActionImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&, GroundAction>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLRepositories&, GroundAction>& data);
 
 }
 

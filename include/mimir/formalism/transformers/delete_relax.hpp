@@ -63,7 +63,7 @@ public:
     /// and axioms with empty effects should be kept.
     /// We need those in the grounded successor generator.
     /// However, we do not need them when computing relaxed plans.
-    DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool remove_useless_actions_and_axioms = true);
+    DeleteRelaxTransformer(PDDLRepositories& pddl_factories, bool remove_useless_actions_and_axioms = true);
 
     const ActionList& get_unrelaxed_actions(Action action) const;
 

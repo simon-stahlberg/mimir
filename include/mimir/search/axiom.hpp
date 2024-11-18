@@ -99,10 +99,10 @@ using GroundAxiomImplSet = cista::storage::UnorderedSet<GroundAxiomImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLRepositories&>& data);
 }
 
 #endif

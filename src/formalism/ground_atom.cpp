@@ -18,9 +18,9 @@
 #include "mimir/formalism/ground_atom.hpp"
 
 #include "formatter.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 #include <map>
 
@@ -67,7 +67,7 @@ size_t GroundAtomImpl<P>::get_arity() const
 }
 
 template<PredicateTag P>
-Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLFactories& pddl_factories) const
+Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_factories) const
 {
     return pddl_factories.get_or_create_atom(m_predicate, terms);
 }
@@ -77,7 +77,7 @@ template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
 
 template<PredicateTag P>
-std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories)
+std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_factories)
 {
     VariableList variables;
     AtomList<P> atoms;
@@ -104,9 +104,9 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
     return std::make_pair(variables, atoms);
 }
 
-template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Static>&, PDDLFactories&);
-template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLFactories&);
-template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLFactories&);
+template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Static>&, PDDLRepositories&);
+template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLRepositories&);
+template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLRepositories&);
 
 template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)

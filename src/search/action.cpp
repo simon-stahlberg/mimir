@@ -19,7 +19,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -389,7 +389,7 @@ bool GroundActionImpl::is_applicable(Problem problem, State state) const
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLRepositories&>& data)
 {
     const auto [simple_effect, pddl_factories] = data;
 
@@ -411,7 +411,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLRepositories&>& data)
 {
     const auto [strips_precondition_proxy, pddl_factories] = data;
 
@@ -447,7 +447,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLRepositories&>& data)
 {
     const auto [strips_effect_proxy, pddl_factories] = data;
 
@@ -467,7 +467,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLRepositories&>& data)
 {
     const auto [cond_effect_proxy, pddl_factories] = data;
 
@@ -505,7 +505,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&>& data)
 {
     const auto [action, pddl_factories] = data;
 
@@ -537,7 +537,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLFactories&, GroundAction>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLRepositories&, GroundAction>& data)
 {
     const auto [pddl_factories, ground_action] = data;
 

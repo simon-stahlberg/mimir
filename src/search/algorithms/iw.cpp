@@ -864,7 +864,7 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
                                                     std::optional<State>& out_goal_state)
 {
     const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_factories();
+    const auto& pddl_factories = *m_aag->get_pddl_repositories();
     m_iw_event_handler->on_start_search(problem, start_state, pddl_factories);
 
     size_t cur_arity = 0;
@@ -890,7 +890,7 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
             {
                 m_aag->on_end_search();
             }
-            m_iw_event_handler->on_solved(out_plan, *m_aag->get_pddl_factories());
+            m_iw_event_handler->on_solved(out_plan, *m_aag->get_pddl_repositories());
             return SearchStatus::SOLVED;
         }
         else if (search_status == SearchStatus::UNSOLVABLE)
@@ -904,5 +904,5 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     return SearchStatus::FAILED;
 }
 
-const std::shared_ptr<PDDLFactories>& IterativeWidthAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
+const std::shared_ptr<PDDLRepositories>& IterativeWidthAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
 }

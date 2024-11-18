@@ -42,7 +42,7 @@ TEST(MimirTests, FormalismTransformersToPositiveNormalForm)
 
     const auto problem = parser.get_problem();
 
-    auto pnf_factories = std::make_shared<PDDLFactories>();
+    auto pnf_factories = std::make_shared<PDDLRepositories>();
     auto pnf_problem = ToPositiveNormalFormTransformer(*pnf_factories).run(*problem);
     pnf_problem = EncodeParameterIndexInVariables(*pnf_factories).run(*pnf_problem);
 

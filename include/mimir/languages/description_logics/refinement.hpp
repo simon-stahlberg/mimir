@@ -54,7 +54,7 @@ public:
 class RefinementStateListPruningFunction : public RefinementPruningFunction
 {
 public:
-    RefinementStateListPruningFunction(const PDDLFactories& pddl_factories, Problem problem, StateList states);
+    RefinementStateListPruningFunction(const PDDLRepositories& pddl_factories, Problem problem, StateList states);
 
     /// @brief Tests whether a concept should be pruned.
     /// @param concept_ The concept to evaluate.
@@ -70,7 +70,7 @@ private:
     template<ConstructorTag D>
     bool should_prune_impl(Constructor<D> constructor);
 
-    const PDDLFactories& m_pddl_factories;                 ///< The pddl factories.
+    const PDDLRepositories& m_pddl_factories;              ///< The pddl factories.
     Problem m_problem;                                     ///< The problem definition used for evaluating features.
     StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
     DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation.

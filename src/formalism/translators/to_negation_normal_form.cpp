@@ -110,6 +110,6 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionForallImpl&
 
 loki::Problem ToNNFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-ToNNFTranslator::ToNNFTranslator(loki::PDDLFactories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
+ToNNFTranslator::ToNNFTranslator(loki::PDDLRepositories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
 
 }

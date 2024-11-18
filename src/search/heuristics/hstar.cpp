@@ -23,7 +23,7 @@ namespace mimir
 {
 
 HStarHeuristic::HStarHeuristic(Problem problem,
-                               std::shared_ptr<PDDLFactories> pddl_factories,
+                               std::shared_ptr<PDDLRepositories> pddl_factories,
                                std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                std::shared_ptr<StateRepository> state_repository) :
     m_estimates()

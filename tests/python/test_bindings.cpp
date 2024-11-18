@@ -11,7 +11,7 @@ TEST_F(PymimirFixture, get_ground_atoms)
 {
     auto parser =
         pymimir().attr("PDDLParser")(std::string(project_dir) + "data/blocks_4/domain.pddl", std::string(project_dir) + "data/blocks_4/test_problem.pddl");
-    auto factory = parser.attr("get_pddl_factories")();
+    auto factory = parser.attr("get_pddl_repositories")();
     auto static_atoms = factory.attr("get_static_ground_atoms")();
     EXPECT_EQ(py::len(static_atoms), 0);
     auto derived_atoms = factory.attr("get_derived_ground_atoms")();
@@ -58,7 +58,7 @@ TEST_F(PymimirFixture, parser_factory_atom_lifetime)
 {
     auto parser =
         pymimir().attr("PDDLParser")(std::string(project_dir) + "data/blocks_4/domain.pddl", std::string(project_dir) + "data/blocks_4/test_problem.pddl");
-    auto factory = parser.attr("get_pddl_factories")();
+    auto factory = parser.attr("get_pddl_repositories")();
     auto atoms = factory.attr("get_ground_atoms")();
     auto& internals = py::detail::get_internals();
     for (auto atom : py::cast<py::list>(atoms))
@@ -72,7 +72,7 @@ TEST_F(PymimirFixture, test_list_repr)
 {
     auto parser =
         pymimir().attr("PDDLParser")(std::string(project_dir) + "data/blocks_4/domain.pddl", std::string(project_dir) + "data/blocks_4/test_problem.pddl");
-    auto factory = parser.attr("get_pddl_factories")();
+    auto factory = parser.attr("get_pddl_repositories")();
     auto atoms = factory.attr("get_fluent_ground_atoms")();
     auto str = py::str(atoms).cast<std::string>();
 

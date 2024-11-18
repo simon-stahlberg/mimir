@@ -249,7 +249,7 @@ loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::Problem
     return this->translate(*this->m_to_nnf_translator.run(problem));
 }
 
-RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
+RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseCachedRecurseTranslator(pddl_factories),
     m_to_nnf_translator(to_nnf_translator),
     m_next_axiom_id(0)

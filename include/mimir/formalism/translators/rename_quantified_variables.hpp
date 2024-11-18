@@ -125,7 +125,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit RenameQuantifiedVariablesTranslator(loki::PDDLFactories& pddl_factories);
+    explicit RenameQuantifiedVariablesTranslator(loki::PDDLRepositories& pddl_factories);
 };
 }
 

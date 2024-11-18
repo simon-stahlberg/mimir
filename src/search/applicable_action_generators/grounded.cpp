@@ -38,7 +38,7 @@ namespace mimir
 /// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
 /// We also consider larger groups first since such mutex variables would result in a very large linear split.
 template<PredicateTag P>
-static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLFactories& pddl_factories)
+static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLRepositories& pddl_factories)
 {
     auto ground_atoms_order = std::vector<size_t> {};
     auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<P>, GroundAtomList<P>> {};
@@ -77,13 +77,13 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
     return ground_atoms_order;
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories) :
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_factories) :
     GroundedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
-                                                                     std::shared_ptr<PDDLFactories> pddl_factories,
+                                                                     std::shared_ptr<PDDLRepositories> pddl_factories,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),
@@ -279,6 +279,6 @@ size_t GroundedApplicableActionGenerator::get_num_ground_axioms() const { return
 
 Problem GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<PDDLFactories>& GroundedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& GroundedApplicableActionGenerator::get_pddl_repositories() const { return m_pddl_factories; }
 
 }

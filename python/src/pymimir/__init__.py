@@ -73,7 +73,7 @@ from _pymimir import (
     ObjectList,
     OptimizationMetric,
     OptimizationMetricEnum,
-    PDDLFactories,
+    PDDLRepositories,
     PDDLParser,
     Problem,
     ProblemList,

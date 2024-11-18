@@ -63,9 +63,9 @@ private:
     std::unordered_map<loki::Problem, loki::Problem> m_translated_problems;
 
 protected:
-    loki::PDDLFactories& m_pddl_factories;
+    loki::PDDLRepositories& m_pddl_factories;
 
-    explicit BaseCachedRecurseTranslator(loki::PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseCachedRecurseTranslator(loki::PDDLRepositories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */

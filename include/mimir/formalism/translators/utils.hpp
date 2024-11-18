@@ -34,49 +34,49 @@ namespace mimir
  *
  * A and (B and C)  =>  A and B and C
  */
-extern loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Flatten conjunctions.
  *
  * e1 and (e2 and e3)  =>  e1 and e2 and e3
  */
-extern loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories);
+extern loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Flatten disjunctions.
  *
  * A or (B or C)  =>  A or B or C
  */
-extern loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Flatten existential quantifiers.
  *
  * exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
  */
-extern loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Flatten universal quantifiers.
  *
  * forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
  */
-extern loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFactories& pddl_factories);
+extern loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Flatten conditional when
  *
  * A > (B > e)    =>  (A and B) > e
  */
-extern loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLFactories& pddl_factories);
+extern loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Flatten conditional forall
  *
  * forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
  */
-extern loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLFactories& pddl_factories);
+extern loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRepositories& pddl_factories);
 
 /**
  * Axioms

@@ -50,40 +50,45 @@
 namespace mimir
 {
 
-using RequirementsRepository = loki::UniqueFactory<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
-using VariableRepository = loki::UniqueFactory<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
-using TermRepository = loki::UniqueFactory<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
-using ObjectRepository = loki::UniqueFactory<ObjectImpl, UniquePDDLHasher<const ObjectImpl*>, UniquePDDLEqualTo<const ObjectImpl*>>;
+using RequirementsRepository =
+    loki::SegmentedRepository<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
+using VariableRepository = loki::SegmentedRepository<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
+using TermRepository = loki::SegmentedRepository<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
+using ObjectRepository = loki::SegmentedRepository<ObjectImpl, UniquePDDLHasher<const ObjectImpl*>, UniquePDDLEqualTo<const ObjectImpl*>>;
 template<PredicateTag P>
-using AtomRepository = loki::UniqueFactory<AtomImpl<P>, UniquePDDLHasher<const AtomImpl<P>*>, UniquePDDLEqualTo<const AtomImpl<P>*>>;
+using AtomRepository = loki::SegmentedRepository<AtomImpl<P>, UniquePDDLHasher<const AtomImpl<P>*>, UniquePDDLEqualTo<const AtomImpl<P>*>>;
 template<PredicateTag P>
-using GroundAtomRepository = loki::UniqueFactory<GroundAtomImpl<P>, UniquePDDLHasher<const GroundAtomImpl<P>*>, UniquePDDLEqualTo<const GroundAtomImpl<P>*>>;
+using GroundAtomRepository =
+    loki::SegmentedRepository<GroundAtomImpl<P>, UniquePDDLHasher<const GroundAtomImpl<P>*>, UniquePDDLEqualTo<const GroundAtomImpl<P>*>>;
 template<PredicateTag P>
-using LiteralRepository = loki::UniqueFactory<LiteralImpl<P>, UniquePDDLHasher<const LiteralImpl<P>*>, UniquePDDLEqualTo<const LiteralImpl<P>*>>;
+using LiteralRepository = loki::SegmentedRepository<LiteralImpl<P>, UniquePDDLHasher<const LiteralImpl<P>*>, UniquePDDLEqualTo<const LiteralImpl<P>*>>;
 template<PredicateTag P>
 using GroundLiteralRepository =
-    loki::UniqueFactory<GroundLiteralImpl<P>, UniquePDDLHasher<const GroundLiteralImpl<P>*>, UniquePDDLEqualTo<const GroundLiteralImpl<P>*>>;
+    loki::SegmentedRepository<GroundLiteralImpl<P>, UniquePDDLHasher<const GroundLiteralImpl<P>*>, UniquePDDLEqualTo<const GroundLiteralImpl<P>*>>;
 template<PredicateTag P>
-using PredicateRepository = loki::UniqueFactory<PredicateImpl<P>, UniquePDDLHasher<const PredicateImpl<P>*>, UniquePDDLEqualTo<const PredicateImpl<P>*>>;
+using PredicateRepository = loki::SegmentedRepository<PredicateImpl<P>, UniquePDDLHasher<const PredicateImpl<P>*>, UniquePDDLEqualTo<const PredicateImpl<P>*>>;
 using FunctionExpressionRepository =
-    loki::UniqueFactory<FunctionExpressionImpl, UniquePDDLHasher<const FunctionExpressionImpl*>, UniquePDDLEqualTo<const FunctionExpressionImpl*>>;
-using GroundFunctionExpressionRepository = loki::
-    UniqueFactory<GroundFunctionExpressionImpl, UniquePDDLHasher<const GroundFunctionExpressionImpl*>, UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>>;
-using FunctionRepository = loki::UniqueFactory<FunctionImpl, UniquePDDLHasher<const FunctionImpl*>, UniquePDDLEqualTo<const FunctionImpl*>>;
+    loki::SegmentedRepository<FunctionExpressionImpl, UniquePDDLHasher<const FunctionExpressionImpl*>, UniquePDDLEqualTo<const FunctionExpressionImpl*>>;
+using GroundFunctionExpressionRepository = loki::SegmentedRepository<GroundFunctionExpressionImpl,
+                                                                     UniquePDDLHasher<const GroundFunctionExpressionImpl*>,
+                                                                     UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>>;
+using FunctionRepository = loki::SegmentedRepository<FunctionImpl, UniquePDDLHasher<const FunctionImpl*>, UniquePDDLEqualTo<const FunctionImpl*>>;
 using GroundFunctionRepository =
-    loki::UniqueFactory<GroundFunctionImpl, UniquePDDLHasher<const GroundFunctionImpl*>, UniquePDDLEqualTo<const GroundFunctionImpl*>>;
+    loki::SegmentedRepository<GroundFunctionImpl, UniquePDDLHasher<const GroundFunctionImpl*>, UniquePDDLEqualTo<const GroundFunctionImpl*>>;
 using FunctionSkeletonRepository =
-    loki::UniqueFactory<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
-using EffectSimpleRepository = loki::UniqueFactory<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
+    loki::SegmentedRepository<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
+using EffectSimpleRepository =
+    loki::SegmentedRepository<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
 using EffectUniversalRepository =
-    loki::UniqueFactory<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
-using ActionRepository = loki::UniqueFactory<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
-using AxiomRepository = loki::UniqueFactory<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
+    loki::SegmentedRepository<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
+using ActionRepository = loki::SegmentedRepository<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
+using AxiomRepository = loki::SegmentedRepository<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
 using OptimizationMetricRepository =
-    loki::UniqueFactory<OptimizationMetricImpl, UniquePDDLHasher<const OptimizationMetricImpl*>, UniquePDDLEqualTo<const OptimizationMetricImpl*>>;
-using NumericFluentRepository = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHasher<const NumericFluentImpl*>, UniquePDDLEqualTo<const NumericFluentImpl*>>;
-using DomainRepository = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
-using ProblemRepository = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
+    loki::SegmentedRepository<OptimizationMetricImpl, UniquePDDLHasher<const OptimizationMetricImpl*>, UniquePDDLEqualTo<const OptimizationMetricImpl*>>;
+using NumericFluentRepository =
+    loki::SegmentedRepository<NumericFluentImpl, UniquePDDLHasher<const NumericFluentImpl*>, UniquePDDLEqualTo<const NumericFluentImpl*>>;
+using DomainRepository = loki::SegmentedRepository<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
+using ProblemRepository = loki::SegmentedRepository<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
 
 using PDDLTypeToRepository = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
                                               boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
@@ -121,7 +126,7 @@ using PDDLTypeToRepository = boost::hana::map<boost::hana::pair<boost::hana::typ
 extern PDDLTypeToRepository create_default_pddl_type_to_repository();
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
-class PDDLFactories
+class PDDLRepositories
 {
 private:
     PDDLTypeToRepository m_repositories;
@@ -129,13 +134,13 @@ private:
     VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
 
 public:
-    PDDLFactories();
+    PDDLRepositories();
 
     // delete copy and allow move
-    PDDLFactories(const PDDLFactories& other) = delete;
-    PDDLFactories& operator=(const PDDLFactories& other) = delete;
-    PDDLFactories(PDDLFactories&& other);
-    PDDLFactories& operator=(PDDLFactories&& other);
+    PDDLRepositories(const PDDLRepositories& other) = delete;
+    PDDLRepositories& operator=(const PDDLRepositories& other) = delete;
+    PDDLRepositories(PDDLRepositories&& other);
+    PDDLRepositories& operator=(PDDLRepositories&& other);
 
     /// @brief Get or create requriements for the given parameters.
     Requirements get_or_create_requirements(loki::RequirementEnumSet requirement_set);
@@ -334,7 +339,7 @@ public:
  */
 
 template<PredicateTag P, std::ranges::forward_range Iterable>
-void PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
+void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
 
@@ -345,7 +350,7 @@ void PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids, Grou
 }
 
 template<PredicateTag P, std::ranges::forward_range Iterable>
-GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& atom_ids) const
+GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_ids) const
 {
     auto result = GroundAtomList<P> {};
     get_ground_atoms_from_indices(atom_ids, result);
@@ -353,7 +358,7 @@ GroundAtomList<P> PDDLFactories::get_ground_atoms_from_indices(const Iterable& a
 }
 
 template<PredicateTag P>
-void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
+void PDDLRepositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
     for (const auto& atom : boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}))
@@ -363,14 +368,14 @@ void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 }
 
 template<PredicateTag P>
-auto PDDLFactories::get_ground_atoms() const
+auto PDDLRepositories::get_ground_atoms() const
 {
     const auto& factory = boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {});
     return std::ranges::subrange(factory.begin(), factory.end());
 }
 
 template<std::ranges::forward_range Iterable>
-void PDDLFactories::get_objects_from_indices(const Iterable& object_ids, ObjectList& out_objects) const
+void PDDLRepositories::get_objects_from_indices(const Iterable& object_ids, ObjectList& out_objects) const
 {
     out_objects.clear();
     for (const auto& object_id : object_ids)
@@ -380,7 +385,7 @@ void PDDLFactories::get_objects_from_indices(const Iterable& object_ids, ObjectL
 }
 
 template<std::ranges::forward_range Iterable>
-ObjectList PDDLFactories::get_objects_from_indices(const Iterable& object_ids) const
+ObjectList PDDLRepositories::get_objects_from_indices(const Iterable& object_ids) const
 {
     auto objects = ObjectList {};
     get_objects_from_indices(object_ids, objects);

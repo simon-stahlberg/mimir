@@ -32,7 +32,7 @@ namespace mimir
  */
 StateSpace::StateSpace(Problem problem,
                        bool use_unit_cost_one,
-                       std::shared_ptr<PDDLFactories> pddl_factories,
+                       std::shared_ptr<PDDLRepositories> pddl_factories,
                        std::shared_ptr<IApplicableActionGenerator> aag,
                        std::shared_ptr<StateRepository> ssg,
                        typename StateSpace::GraphType graph,
@@ -63,13 +63,13 @@ StateSpace::StateSpace(Problem problem,
 std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
     auto ssg = std::make_shared<StateRepository>(aag);
-    return StateSpace::create(parser.get_problem(), parser.get_pddl_factories(), aag, ssg, options);
+    return StateSpace::create(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg, options);
 }
 
 std::optional<StateSpace> StateSpace::create(Problem problem,
-                                             std::shared_ptr<PDDLFactories> factories,
+                                             std::shared_ptr<PDDLRepositories> factories,
                                              std::shared_ptr<IApplicableActionGenerator> aag,
                                              std::shared_ptr<StateRepository> ssg,
                                              const StateSpaceOptions& options)
@@ -197,20 +197,20 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
 StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options)
 {
     auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
         auto ssg = std::make_shared<StateRepository>(aag);
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
+        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg);
     }
 
     return StateSpace::create(memories, options);
 }
 
 std::vector<StateSpace> StateSpace::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
         memories,
     const StateSpacesOptions& options)
 {
@@ -306,7 +306,7 @@ Problem StateSpace::get_problem() const { return m_problem; }
 bool StateSpace::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLFactories>& StateSpace::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& StateSpace::get_pddl_repositories() const { return m_pddl_factories; }
 
 const std::shared_ptr<IApplicableActionGenerator>& StateSpace::get_aag() const { return m_aag; }
 
@@ -435,7 +435,7 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
         out << "label=\""
             << std::make_tuple(state_space.get_problem(),
                                mimir::get_state(state_space.get_graph().get_vertices().at(vertex)),
-                               std::cref(*state_space.get_pddl_factories()))
+                               std::cref(*state_space.get_pddl_repositories()))
             << "\"";
 
         out << "]\n";
@@ -469,7 +469,7 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
             << "s" << transition.get_target() << " [";
 
         // label
-        out << "label=\"" << std::make_tuple(std::cref(*state_space.get_pddl_factories()), get_creating_action(transition)) << "\"";
+        out << "label=\"" << std::make_tuple(std::cref(*state_space.get_pddl_repositories()), get_creating_action(transition)) << "\"";
 
         out << "]\n";
     }

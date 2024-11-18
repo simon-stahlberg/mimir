@@ -17,9 +17,9 @@
 
 #include "mimir/search/condition_grounders/conjunction_grounder.hpp"
 
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 
@@ -31,7 +31,7 @@ LiftedConjunctionGrounder::LiftedConjunctionGrounder(Problem problem,
                                                      LiteralList<Static> static_literals,
                                                      LiteralList<Fluent> fluent_literals,
                                                      LiteralList<Derived> derived_literals,
-                                                     std::shared_ptr<PDDLFactories> pddl_factories) :
+                                                     std::shared_ptr<PDDLRepositories> pddl_factories) :
     m_condition_grounder(std::move(problem),
                          std::move(variables),
                          std::move(static_literals),

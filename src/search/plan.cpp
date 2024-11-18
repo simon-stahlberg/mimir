@@ -32,7 +32,7 @@ ContinuousCost Plan::get_cost() const { return m_cost; }
 
 /* Utility */
 
-Plan to_plan(const GroundActionList& action_view_list, const PDDLFactories& factories)
+Plan to_plan(const GroundActionList& action_view_list, const PDDLRepositories& factories)
 {
     auto actions = std::vector<std::string> {};
     auto cost = ContinuousCost(0);

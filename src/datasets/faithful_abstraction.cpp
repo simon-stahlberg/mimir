@@ -39,7 +39,7 @@ namespace mimir
 FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          bool mark_true_goal_literals,
                                          bool use_unit_cost_one,
-                                         std::shared_ptr<PDDLFactories> factories,
+                                         std::shared_ptr<PDDLRepositories> factories,
                                          std::shared_ptr<IApplicableActionGenerator> aag,
                                          std::shared_ptr<StateRepository> ssg,
                                          typename FaithfulAbstraction::GraphType graph,
@@ -91,14 +91,14 @@ std::optional<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+    auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
     auto ssg = std::make_shared<StateRepository>(aag);
 
-    return FaithfulAbstraction::create(parser.get_problem(), parser.get_pddl_factories(), aag, ssg, options);
+    return FaithfulAbstraction::create(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg, options);
 }
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
-                                                               std::shared_ptr<PDDLFactories> factories,
+                                                               std::shared_ptr<PDDLRepositories> factories,
                                                                std::shared_ptr<IApplicableActionGenerator> aag,
                                                                std::shared_ptr<StateRepository> ssg,
                                                                const FaithfulAbstractionOptions& options)
@@ -401,20 +401,20 @@ std::vector<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
     auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
         auto ssg = std::make_shared<StateRepository>(aag);
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
+        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg);
     }
 
     return FaithfulAbstraction::create(memories, options);
 }
 
 std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
         memories,
     const FaithfulAbstractionsOptions& options)
 {
@@ -526,7 +526,7 @@ bool FaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_tr
 bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLFactories>& FaithfulAbstraction::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& FaithfulAbstraction::get_pddl_repositories() const { return m_pddl_factories; }
 
 const std::shared_ptr<IApplicableActionGenerator>& FaithfulAbstraction::get_aag() const { return m_aag; }
 
@@ -653,7 +653,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         out << "vertex_index=" << vertex << "\n";
         for (const auto& state : mimir::get_states(abstraction.get_graph().get_vertices().at(vertex)))
         {
-            out << std::make_tuple(abstraction.get_problem(), state, std::cref(*abstraction.get_pddl_factories())) << "\n";
+            out << std::make_tuple(abstraction.get_problem(), state, std::cref(*abstraction.get_pddl_repositories())) << "\n";
         }
         out << "\"";  // end label
 
@@ -691,7 +691,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         out << "label=\"";
         for (const auto& action : get_actions(transition))
         {
-            out << std::make_tuple(std::cref(*abstraction.get_pddl_factories()), action) << "\n";
+            out << std::make_tuple(std::cref(*abstraction.get_pddl_repositories()), action) << "\n";
         }
         out << "\"";  // end label
 

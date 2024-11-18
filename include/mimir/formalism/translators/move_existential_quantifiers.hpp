@@ -65,7 +65,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit MoveExistentialQuantifiersTranslator(loki::PDDLFactories& pddl_factories);
+    explicit MoveExistentialQuantifiersTranslator(loki::PDDLRepositories& pddl_factories);
 };
 }
 

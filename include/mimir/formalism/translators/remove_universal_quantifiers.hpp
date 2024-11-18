@@ -94,7 +94,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    RemoveUniversalQuantifiersTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
+    RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_factories, ToNNFTranslator& to_nnf_translator);
 };
 }
 

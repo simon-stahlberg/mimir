@@ -1,6 +1,6 @@
 #include "mimir/formalism/parser.hpp"
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/transformers.hpp"
 #include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
 #include "mimir/formalism/transformers/to_positive_normal_form.hpp"
@@ -13,7 +13,7 @@ namespace mimir
 PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_filepath) :
     m_loki_domain_parser(loki::DomainParser(domain_filepath)),
     m_loki_problem_parser(loki::ProblemParser(problem_filepath, m_loki_domain_parser)),
-    m_factories(std::make_shared<PDDLFactories>())
+    m_factories(std::make_shared<PDDLRepositories>())
 {
     // Parse the loki domain and problem structures using a separate parser to free intermediate results after translation
     auto domain_parser = loki::DomainParser(domain_filepath);
@@ -57,7 +57,7 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     problem = to_enf_translator.run(*problem);
 
     // To mimir structures
-    auto tmp_mimir_pddl_factories = PDDLFactories();
+    auto tmp_mimir_pddl_factories = PDDLRepositories();
     auto to_mimir_structures_translator = ToMimirStructures(tmp_mimir_pddl_factories);
     m_problem = to_mimir_structures_translator.run(*problem);
     m_domain = m_problem->get_domain();
@@ -77,7 +77,7 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_domain = m_problem->get_domain();
 }
 
-const std::shared_ptr<PDDLFactories>& PDDLParser::get_pddl_factories() const { return m_factories; }
+const std::shared_ptr<PDDLRepositories>& PDDLParser::get_pddl_repositories() const { return m_factories; }
 
 const loki::Domain PDDLParser::get_original_domain() const { return m_loki_domain_parser.get_domain(); }
 

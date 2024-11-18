@@ -17,11 +17,11 @@
 
 #include "mimir/search/applicable_action_generators/lifted/axiom_evaluator.hpp"
 
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/condition_grounders.hpp"
 
@@ -124,7 +124,7 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
 }
 
 AxiomEvaluator::AxiomEvaluator(Problem problem,
-                               std::shared_ptr<PDDLFactories> pddl_factories,
+                               std::shared_ptr<PDDLRepositories> pddl_factories,
                                std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),

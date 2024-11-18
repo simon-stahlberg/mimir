@@ -21,8 +21,8 @@
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/ground_action_edge.hpp"
 #include "mimir/datasets/state_vertex.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
@@ -87,7 +87,7 @@ private:
     /// the code base to operate on the invariants in the implementation.
     StateSpace(Problem problem,
                bool use_unit_cost_one,
-               std::shared_ptr<PDDLFactories> pddl_factories,
+               std::shared_ptr<PDDLRepositories> pddl_factories,
                std::shared_ptr<IApplicableActionGenerator> aag,
                std::shared_ptr<StateRepository> ssg,
                typename StateSpace::GraphType graph,
@@ -100,13 +100,13 @@ private:
 public:
     /// @brief Try to create a `StateSpace` from the given input files with the given options.
     /// @param problem The problem from which to create the state space.
-    /// @param parser External memory to PDDLFactories.
+    /// @param parser External memory to PDDLRepositories.
     /// @param aag External memory to aag.
     /// @param ssg External memory to ssg.
     /// @param options the options.
     /// @return StateSpace if construction is within the given options, and otherwise nullptr.
     static std::optional<StateSpace> create(Problem problem,
-                                            std::shared_ptr<PDDLFactories> factories,
+                                            std::shared_ptr<PDDLRepositories> factories,
                                             std::shared_ptr<IApplicableActionGenerator> aag,
                                             std::shared_ptr<StateRepository> ssg,
                                             const StateSpaceOptions& options = StateSpaceOptions());
@@ -123,10 +123,10 @@ public:
     /// @param memories External memory to problems, parsers, aags, ssgs.
     /// @param options the options.
     /// @return `StateSpaceList` contains the `StateSpace`s for which the construction was successful.
-    static std::vector<StateSpace> create(
-        const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-            memories,
-        const StateSpacesOptions& options = StateSpacesOptions());
+    static std::vector<StateSpace>
+    create(const std::vector<
+               std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+           const StateSpacesOptions& options = StateSpacesOptions());
 
     /**
      * Extended functionality
@@ -154,7 +154,7 @@ public:
     bool get_use_unit_cost_one() const;
 
     /* Memory */
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<IApplicableActionGenerator>& get_aag() const;
     const std::shared_ptr<StateRepository>& get_ssg() const;
 
@@ -204,7 +204,7 @@ private:
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_factories;
     std::shared_ptr<IApplicableActionGenerator> m_aag;
     std::shared_ptr<StateRepository> m_ssg;
 

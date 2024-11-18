@@ -34,63 +34,66 @@ namespace mimir::dl::grammar
  */
 
 template<ConstructorTag D>
-using NonTerminalFactory = loki::UniqueFactory<NonTerminalImpl<D>, UniqueDLHasher<const NonTerminalImpl<D>*>, UniqueDLEqualTo<const NonTerminalImpl<D>*>>;
+using NonTerminalFactory = loki::SegmentedRepository<NonTerminalImpl<D>, UniqueDLHasher<const NonTerminalImpl<D>*>, UniqueDLEqualTo<const NonTerminalImpl<D>*>>;
 
 template<ConstructorTag D>
-using ChoiceFactory = loki::UniqueFactory<ChoiceImpl<D>, UniqueDLHasher<const ChoiceImpl<D>*>, UniqueDLEqualTo<const ChoiceImpl<D>*>>;
+using ChoiceFactory = loki::SegmentedRepository<ChoiceImpl<D>, UniqueDLHasher<const ChoiceImpl<D>*>, UniqueDLEqualTo<const ChoiceImpl<D>*>>;
 
 template<ConstructorTag D>
 using DerivationRuleFactory =
-    loki::UniqueFactory<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
+    loki::SegmentedRepository<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
 
-using ConceptBotRepository = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
-using ConceptTopRepository = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
+using ConceptBotRepository = loki::SegmentedRepository<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
+using ConceptTopRepository = loki::SegmentedRepository<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
 template<PredicateTag P>
 using ConceptAtomicStateRepository =
-    loki::UniqueFactory<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
+    loki::SegmentedRepository<ConceptAtomicStateImpl<P>, UniqueDLHasher<const ConceptAtomicStateImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>>;
 template<PredicateTag P>
 using ConceptAtomicGoalRepository =
-    loki::UniqueFactory<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
+    loki::SegmentedRepository<ConceptAtomicGoalImpl<P>, UniqueDLHasher<const ConceptAtomicGoalImpl<P>*>, UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>>;
 using ConceptIntersectionRepository =
-    loki::UniqueFactory<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
-using ConceptUnionRepository = loki::UniqueFactory<ConceptUnionImpl, UniqueDLHasher<const ConceptUnionImpl*>, UniqueDLEqualTo<const ConceptUnionImpl*>>;
+    loki::SegmentedRepository<ConceptIntersectionImpl, UniqueDLHasher<const ConceptIntersectionImpl*>, UniqueDLEqualTo<const ConceptIntersectionImpl*>>;
+using ConceptUnionRepository = loki::SegmentedRepository<ConceptUnionImpl, UniqueDLHasher<const ConceptUnionImpl*>, UniqueDLEqualTo<const ConceptUnionImpl*>>;
 using ConceptNegationRepository =
-    loki::UniqueFactory<ConceptNegationImpl, UniqueDLHasher<const ConceptNegationImpl*>, UniqueDLEqualTo<const ConceptNegationImpl*>>;
-using ConceptValueRestrictionRepository =
-    loki::UniqueFactory<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestrictionImpl*>, UniqueDLEqualTo<const ConceptValueRestrictionImpl*>>;
-using ConceptExistentialQuantificationRepository = loki::UniqueFactory<ConceptExistentialQuantificationImpl,
-                                                                       UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
-                                                                       UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;
-using ConceptRoleValueMapContainmentRepository = loki::UniqueFactory<ConceptRoleValueMapContainmentImpl,
-                                                                     UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>,
-                                                                     UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>>;
-using ConceptRoleValueMapEqualityRepository = loki::UniqueFactory<ConceptRoleValueMapEqualityImpl,
-                                                                  UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>,
-                                                                  UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>>;
-using ConceptNominalRepository = loki::UniqueFactory<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
+    loki::SegmentedRepository<ConceptNegationImpl, UniqueDLHasher<const ConceptNegationImpl*>, UniqueDLEqualTo<const ConceptNegationImpl*>>;
+using ConceptValueRestrictionRepository = loki::
+    SegmentedRepository<ConceptValueRestrictionImpl, UniqueDLHasher<const ConceptValueRestrictionImpl*>, UniqueDLEqualTo<const ConceptValueRestrictionImpl*>>;
+using ConceptExistentialQuantificationRepository = loki::SegmentedRepository<ConceptExistentialQuantificationImpl,
+                                                                             UniqueDLHasher<const ConceptExistentialQuantificationImpl*>,
+                                                                             UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>>;
+using ConceptRoleValueMapContainmentRepository = loki::SegmentedRepository<ConceptRoleValueMapContainmentImpl,
+                                                                           UniqueDLHasher<const ConceptRoleValueMapContainmentImpl*>,
+                                                                           UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>>;
+using ConceptRoleValueMapEqualityRepository = loki::SegmentedRepository<ConceptRoleValueMapEqualityImpl,
+                                                                        UniqueDLHasher<const ConceptRoleValueMapEqualityImpl*>,
+                                                                        UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>>;
+using ConceptNominalRepository =
+    loki::SegmentedRepository<ConceptNominalImpl, UniqueDLHasher<const ConceptNominalImpl*>, UniqueDLEqualTo<const ConceptNominalImpl*>>;
 
-using RoleUniversalRepository = loki::UniqueFactory<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
+using RoleUniversalRepository =
+    loki::SegmentedRepository<RoleUniversalImpl, UniqueDLHasher<const RoleUniversalImpl*>, UniqueDLEqualTo<const RoleUniversalImpl*>>;
 template<PredicateTag P>
 using RoleAtomicStateRepository =
-    loki::UniqueFactory<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
+    loki::SegmentedRepository<RoleAtomicStateImpl<P>, UniqueDLHasher<const RoleAtomicStateImpl<P>*>, UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>>;
 template<PredicateTag P>
 using RoleAtomicGoalRepository =
-    loki::UniqueFactory<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
+    loki::SegmentedRepository<RoleAtomicGoalImpl<P>, UniqueDLHasher<const RoleAtomicGoalImpl<P>*>, UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>>;
 using RoleIntersectionRepository =
-    loki::UniqueFactory<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
-using RoleUnionRepository = loki::UniqueFactory<RoleUnionImpl, UniqueDLHasher<const RoleUnionImpl*>, UniqueDLEqualTo<const RoleUnionImpl*>>;
-using RoleComplementRepository = loki::UniqueFactory<RoleComplementImpl, UniqueDLHasher<const RoleComplementImpl*>, UniqueDLEqualTo<const RoleComplementImpl*>>;
-using RoleInverseRepository = loki::UniqueFactory<RoleInverseImpl, UniqueDLHasher<const RoleInverseImpl*>, UniqueDLEqualTo<const RoleInverseImpl*>>;
+    loki::SegmentedRepository<RoleIntersectionImpl, UniqueDLHasher<const RoleIntersectionImpl*>, UniqueDLEqualTo<const RoleIntersectionImpl*>>;
+using RoleUnionRepository = loki::SegmentedRepository<RoleUnionImpl, UniqueDLHasher<const RoleUnionImpl*>, UniqueDLEqualTo<const RoleUnionImpl*>>;
+using RoleComplementRepository =
+    loki::SegmentedRepository<RoleComplementImpl, UniqueDLHasher<const RoleComplementImpl*>, UniqueDLEqualTo<const RoleComplementImpl*>>;
+using RoleInverseRepository = loki::SegmentedRepository<RoleInverseImpl, UniqueDLHasher<const RoleInverseImpl*>, UniqueDLEqualTo<const RoleInverseImpl*>>;
 using RoleCompositionRepository =
-    loki::UniqueFactory<RoleCompositionImpl, UniqueDLHasher<const RoleCompositionImpl*>, UniqueDLEqualTo<const RoleCompositionImpl*>>;
+    loki::SegmentedRepository<RoleCompositionImpl, UniqueDLHasher<const RoleCompositionImpl*>, UniqueDLEqualTo<const RoleCompositionImpl*>>;
 using RoleTransitiveClosureRepository =
-    loki::UniqueFactory<RoleTransitiveClosureImpl, UniqueDLHasher<const RoleTransitiveClosureImpl*>, UniqueDLEqualTo<const RoleTransitiveClosureImpl*>>;
-using RoleReflexiveTransitiveClosureRepository = loki::UniqueFactory<RoleReflexiveTransitiveClosureImpl,
-                                                                     UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>,
-                                                                     UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>>;
+    loki::SegmentedRepository<RoleTransitiveClosureImpl, UniqueDLHasher<const RoleTransitiveClosureImpl*>, UniqueDLEqualTo<const RoleTransitiveClosureImpl*>>;
+using RoleReflexiveTransitiveClosureRepository = loki::SegmentedRepository<RoleReflexiveTransitiveClosureImpl,
+                                                                           UniqueDLHasher<const RoleReflexiveTransitiveClosureImpl*>,
+                                                                           UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>>;
 using RoleRestrictionRepository =
-    loki::UniqueFactory<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
-using RoleIdentityFactory = loki::UniqueFactory<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
+    loki::SegmentedRepository<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
+using RoleIdentityFactory = loki::SegmentedRepository<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
 using ConstructorTypeToRepository =
     boost::hana::map<boost::hana::pair<boost::hana::type<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept>>,

@@ -126,7 +126,7 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionForallImpl&
 
 loki::Problem ToDNFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(*m_to_nnf_translator.translate(problem)); }
 
-ToDNFTranslator::ToDNFTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
+ToDNFTranslator::ToDNFTranslator(loki::PDDLRepositories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseCachedRecurseTranslator(pddl_factories),
     m_to_nnf_translator(to_nnf_translator)
 {

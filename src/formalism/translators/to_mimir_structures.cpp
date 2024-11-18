@@ -994,5 +994,5 @@ Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
     return translate_grounded(problem);
 }
 
-ToMimirStructures::ToMimirStructures(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories), m_fluent_predicates(), m_equal_predicate(nullptr) {}
+ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_factories) : m_pddl_factories(pddl_factories), m_fluent_predicates(), m_equal_predicate(nullptr) {}
 }

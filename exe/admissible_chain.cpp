@@ -34,11 +34,11 @@ int main(int argc, char** argv)
     const auto problem_file_path = fs::path { argv[2] };
 
     auto parser = PDDLParser(domain_file_path, problem_file_path);
-    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
     auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
 
     const auto state_space = std::make_shared<StateSpace>(
-        std::move(StateSpace::create(parser.get_problem(), parser.get_pddl_factories(), applicable_action_generator, state_repository).value()));
+        std::move(StateSpace::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository).value()));
 
     auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<Fluent>());
 

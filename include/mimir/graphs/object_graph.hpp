@@ -42,7 +42,7 @@ namespace mimir
 /// @param pruning_strategy is the strategy used for pruning information from the object graph.
 /// @return a vertex colored graph that represents the object graph.
 extern StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                                      const PDDLFactories& pddl_factories,
+                                                      const PDDLRepositories& pddl_factories,
                                                       Problem problem,
                                                       State state,
                                                       Index state_index = 0,

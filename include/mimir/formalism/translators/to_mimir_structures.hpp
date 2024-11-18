@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 #include <loki/loki.hpp>
 #include <unordered_map>
@@ -37,7 +37,7 @@ using StaticOrFluentOrDerivedGroundLiteral = std::variant<GroundLiteral<Static>,
 class ToMimirStructures
 {
 private:
-    PDDLFactories& m_pddl_factories;
+    PDDLRepositories& m_pddl_factories;
 
     /* Computed in prepare step */
 
@@ -174,7 +174,7 @@ private:
     Problem translate_grounded(const loki::ProblemImpl& problem);
 
 public:
-    explicit ToMimirStructures(PDDLFactories& pddl_factories);
+    explicit ToMimirStructures(PDDLRepositories& pddl_factories);
 
     Problem run(const loki::ProblemImpl& problem);
 };

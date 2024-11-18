@@ -278,24 +278,24 @@ public:
     using DynamicAStarAlgorithmEventHandlerBase::DynamicAStarAlgorithmEventHandlerBase;
 
     /* Trampoline (need one for each virtual function) */
-    void on_expand_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, problem, std::cref(pddl_factories));
     }
 
-    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, action, problem, std::cref(pddl_factories));
     }
-    void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_relaxed_impl, state, action, problem, std::cref(pddl_factories));
     }
-    void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_not_relaxed_impl, state, action, problem, std::cref(pddl_factories));
     }
-    void on_close_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_close_state_impl, state, problem, std::cref(pddl_factories));
     }
@@ -303,11 +303,11 @@ public:
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_finish_f_layer_impl, f_value, num_expanded_state, num_generated_states);
     }
-    void on_prune_state_impl(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_prune_state_impl, state, problem, std::cref(pddl_factories));
     }
-    void on_start_search_impl(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_start_search_impl, start_state, problem, std::cref(pddl_factories));
     }
@@ -316,7 +316,7 @@ public:
      * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
      */
     void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
-    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
+    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan, pddl_factories);
     }
@@ -515,7 +515,7 @@ void init_pymimir(py::module_& m)
         list_class = py::bind_vector<GroundAtomList<Tag>>(m, class_name + "List")
                          .def(
                              "lift",
-                             [](const GroundAtomList<Tag>& ground_atoms, PDDLFactories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
+                             [](const GroundAtomList<Tag>& ground_atoms, PDDLRepositories& pddl_factories) { return lift(ground_atoms, pddl_factories); },
                              py::arg("pddl_factories"));
     };
     bind_ground_atom("StaticGroundAtom", Static {});
@@ -532,11 +532,12 @@ void init_pymimir(py::module_& m)
             .def("is_negated", &GroundLiteralImpl<Tag>::is_negated);
 
         static_assert(!py::detail::vector_needs_copy<GroundLiteralList<Tag>>::value);
-        auto list = py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
-                        .def(
-                            "lift",
-                            [](const GroundLiteralList<Tag>& ground_literals, PDDLFactories& pddl_factories) { return lift(ground_literals, pddl_factories); },
-                            py::arg("pddl_factories"));
+        auto list =
+            py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
+                .def(
+                    "lift",
+                    [](const GroundLiteralList<Tag>& ground_literals, PDDLRepositories& pddl_factories) { return lift(ground_literals, pddl_factories); },
+                    py::arg("pddl_factories"));
     };
     bind_ground_literal("StaticGroundLiteral", Static {});
     bind_ground_literal("FluentGroundLiteral", Fluent {});
@@ -868,38 +869,39 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<ProblemList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
 
-    py::class_<PDDLFactories, std::shared_ptr<PDDLFactories>>(m, "PDDLFactories")  //
+    py::class_<PDDLRepositories, std::shared_ptr<PDDLRepositories>>(m, "PDDLRepositories")  //
         .def(
             "get_static_ground_atoms",
-            [](const PDDLFactories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
+            [](const PDDLRepositories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
             py::keep_alive<0, 1>())
-        .def("get_static_ground_atom", &PDDLFactories::get_ground_atom<Static>, py::return_value_policy::reference_internal)
+        .def("get_static_ground_atom", &PDDLRepositories::get_ground_atom<Static>, py::return_value_policy::reference_internal)
         .def(
             "get_static_ground_atoms",
-            [](const PDDLFactories& self) { return GroundAtomList<Fluent>(self.get_ground_atoms<Fluent>().begin(), self.get_ground_atoms<Fluent>().end()); },
+            [](const PDDLRepositories& self) { return GroundAtomList<Fluent>(self.get_ground_atoms<Fluent>().begin(), self.get_ground_atoms<Fluent>().end()); },
             py::keep_alive<0, 1>())
-        .def("get_fluent_ground_atom", &PDDLFactories::get_ground_atom<Fluent>, py::return_value_policy::reference_internal)
+        .def("get_fluent_ground_atom", &PDDLRepositories::get_ground_atom<Fluent>, py::return_value_policy::reference_internal)
         .def(
             "get_static_ground_atoms",
-            [](const PDDLFactories& self) { return GroundAtomList<Derived>(self.get_ground_atoms<Derived>().begin(), self.get_ground_atoms<Derived>().end()); },
+            [](const PDDLRepositories& self)
+            { return GroundAtomList<Derived>(self.get_ground_atoms<Derived>().begin(), self.get_ground_atoms<Derived>().end()); },
             py::keep_alive<0, 1>())
-        .def("get_derived_ground_atom", &PDDLFactories::get_ground_atom<Derived>, py::return_value_policy::reference_internal)
+        .def("get_derived_ground_atom", &PDDLRepositories::get_ground_atom<Derived>, py::return_value_policy::reference_internal)
         .def("get_static_ground_atoms_from_indices",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, py::const_),
+             py::overload_cast<const std::vector<size_t>&>(&PDDLRepositories::get_ground_atoms_from_indices<Static, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
         .def("get_fluent_ground_atoms_from_indices",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Fluent, std::vector<size_t>>, py::const_),
+             py::overload_cast<const std::vector<size_t>&>(&PDDLRepositories::get_ground_atoms_from_indices<Fluent, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
         .def("get_derived_ground_atoms_from_indices",
-             py::overload_cast<const std::vector<size_t>&>(&PDDLFactories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, py::const_),
+             py::overload_cast<const std::vector<size_t>&>(&PDDLRepositories::get_ground_atoms_from_indices<Derived, std::vector<size_t>>, py::const_),
              py::keep_alive<0, 1>())
-        .def("get_object", &PDDLFactories::get_object, py::return_value_policy::reference_internal);
+        .def("get_object", &PDDLRepositories::get_object, py::return_value_policy::reference_internal);
 
     py::class_<PDDLParser>(m, "PDDLParser")  //
         .def(py::init<std::string, std::string>(), py::arg("domain_path"), py::arg("problem_path"))
         .def("get_domain", &PDDLParser::get_domain, py::return_value_policy::reference_internal)
         .def("get_problem", &PDDLParser::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &PDDLParser::get_pddl_factories);
+        .def("get_pddl_repositories", &PDDLParser::get_pddl_repositories);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // Search
@@ -946,7 +948,7 @@ void init_pymimir(py::module_& m)
         .def("literals_hold", py::overload_cast<const GroundLiteralList<Derived>&>(&StateImpl::literals_hold<Derived>, py::const_), py::arg("literals"))
         .def(
             "to_string",
-            [](const StateImpl& self, Problem problem, const PDDLFactories& pddl_factories)
+            [](const StateImpl& self, Problem problem, const PDDLRepositories& pddl_factories)
             {
                 std::stringstream ss;
                 ss << std::make_tuple(problem, State(&self), std::cref(pddl_factories));
@@ -1019,14 +1021,14 @@ void init_pymimir(py::module_& m)
         .def("__hash__", [](const GroundActionImpl& self) { return self.get_index(); })
         .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
         .def("to_string",
-             [](const GroundActionImpl& self, PDDLFactories& pddl_factories)
+             [](const GroundActionImpl& self, PDDLRepositories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(GroundAction(&self), std::cref(pddl_factories));
                  return ss.str();
              })
         .def("to_string_for_plan",
-             [](const GroundActionImpl& self, PDDLFactories& pddl_factories)
+             [](const GroundActionImpl& self, PDDLRepositories& pddl_factories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(std::cref(pddl_factories), GroundAction(&self));
@@ -1051,7 +1053,7 @@ void init_pymimir(py::module_& m)
 
     py::class_<LiftedConjunctionGrounder, std::shared_ptr<LiftedConjunctionGrounder>>(m,
                                                                                       "LiftedConjunctionGrounder")  //
-        .def(py::init<Problem, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, std::shared_ptr<PDDLFactories>>(),
+        .def(py::init<Problem, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, std::shared_ptr<PDDLRepositories>>(),
              py::arg("problem"),
              py::arg("variables"),
              py::arg("static_literals"),
@@ -1093,7 +1095,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>())
         .def("get_ground_axiom", &IApplicableActionGenerator::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
         .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &IApplicableActionGenerator::get_pddl_factories);
+        .def("get_pddl_repositories", &IApplicableActionGenerator::get_pddl_repositories);
 
     // Lifted
     py::class_<ILiftedApplicableActionGeneratorEventHandler, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(
@@ -1112,8 +1114,8 @@ void init_pymimir(py::module_& m)
     py::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<LiftedApplicableActionGenerator>>(
         m,
         "LiftedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_factories"))
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
              py::arg("problem"),
              py::arg("pddl_factories"),
              py::arg("event_handler"));
@@ -1135,8 +1137,8 @@ void init_pymimir(py::module_& m)
     py::class_<GroundedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<GroundedApplicableActionGenerator>>(
         m,
         "GroundedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>>(), py::arg("problem"), py::arg("pddl_factories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_factories"))
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
              py::arg("problem"),
              py::arg("pddl_factories"),
              py::arg("event_handler"));
@@ -1381,7 +1383,7 @@ void init_pymimir(py::module_& m)
         .def_static(
             "create",
             [](Problem problem,
-               std::shared_ptr<PDDLFactories> factories,
+               std::shared_ptr<PDDLRepositories> factories,
                std::shared_ptr<IApplicableActionGenerator> aag,
                std::shared_ptr<StateRepository> ssg,
                const StateSpaceOptions& options) { return StateSpace::create(problem, factories, aag, ssg, options); },
@@ -1403,7 +1405,7 @@ void init_pymimir(py::module_& m)
         .def_static(
             "create",
             [](const std::vector<
-                   std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+                   std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
                    memories,
                const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
             py::arg("memories"),
@@ -1417,7 +1419,7 @@ void init_pymimir(py::module_& m)
         .def("compute_pairwise_shortest_forward_state_distances", &StateSpace::compute_pairwise_shortest_vertex_distances<ForwardTraversal>)
         .def("compute_pairwise_shortest_backward_state_distances", &StateSpace::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_problem", &StateSpace::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &StateSpace::get_pddl_factories)
+        .def("get_pddl_repositories", &StateSpace::get_pddl_repositories)
         .def("get_aag", &StateSpace::get_aag)
         .def("get_ssg", &StateSpace::get_ssg)
         .def("get_vertex", &StateSpace::get_vertex, py::arg("state_index"))
@@ -1607,7 +1609,7 @@ void init_pymimir(py::module_& m)
         .def_static(
             "create",
             [](Problem problem,
-               std::shared_ptr<PDDLFactories> factories,
+               std::shared_ptr<PDDLRepositories> factories,
                std::shared_ptr<IApplicableActionGenerator> aag,
                std::shared_ptr<StateRepository> ssg,
                const FaithfulAbstractionOptions& options) { return FaithfulAbstraction::create(problem, factories, aag, ssg, options); },
@@ -1629,7 +1631,7 @@ void init_pymimir(py::module_& m)
         .def_static(
             "create",
             [](const std::vector<
-                   std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+                   std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
                    memories,
                const FaithfulAbstractionsOptions& options) { return FaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
@@ -1643,7 +1645,7 @@ void init_pymimir(py::module_& m)
         .def("compute_pairwise_shortest_forward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_vertex_distances<ForwardTraversal>)
         .def("compute_pairwise_shortest_backward_state_distances", &FaithfulAbstraction::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_problem", &FaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &FaithfulAbstraction::get_pddl_factories)
+        .def("get_pddl_repositories", &FaithfulAbstraction::get_pddl_repositories)
         .def("get_aag", &FaithfulAbstraction::get_aag)
         .def("get_ssg", &FaithfulAbstraction::get_ssg)
         .def("get_vertex_index", &FaithfulAbstraction::get_vertex_index, py::arg("state"))
@@ -1767,7 +1769,7 @@ void init_pymimir(py::module_& m)
         .def_static(
             "create",
             [](const std::vector<
-                   std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+                   std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
                    memories,
                const FaithfulAbstractionsOptions& options) { return GlobalFaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
@@ -1782,7 +1784,7 @@ void init_pymimir(py::module_& m)
         .def("compute_pairwise_shortest_backward_state_distances", &GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances<BackwardTraversal>)
         .def("get_index", &GlobalFaithfulAbstraction::get_index)
         .def("get_problem", &GlobalFaithfulAbstraction::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &GlobalFaithfulAbstraction::get_pddl_factories)
+        .def("get_pddl_repositories", &GlobalFaithfulAbstraction::get_pddl_repositories)
         .def("get_aag", &GlobalFaithfulAbstraction::get_aag)
         .def("get_ssg", &GlobalFaithfulAbstraction::get_ssg)
         .def("get_abstractions", &GlobalFaithfulAbstraction::get_abstractions, py::return_value_policy::reference_internal)
@@ -1887,7 +1889,7 @@ void init_pymimir(py::module_& m)
         .def(py::init<FaithfulAbstraction>(), py::arg("faithful_abstraction"))
         .def(py::init<GlobalFaithfulAbstraction>(), py::arg("global_faithful_abstraction"))
         .def("get_problem", &Abstraction::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_factories", &Abstraction::get_pddl_factories)
+        .def("get_pddl_repositories", &Abstraction::get_pddl_repositories)
         .def("get_aag", &Abstraction::get_aag)
         .def("get_ssg", &Abstraction::get_ssg)
         .def("get_vertex_index", &Abstraction::get_vertex_index)

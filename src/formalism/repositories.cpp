@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 namespace mimir
 {
@@ -56,98 +56,98 @@ PDDLTypeToRepository create_default_pddl_type_to_repository()
                                  boost::hana::make_pair(boost::hana::type_c<ProblemImpl>, ProblemRepository {}));
 }
 
-PDDLFactories::PDDLFactories() : m_repositories(create_default_pddl_type_to_repository()) {}
+PDDLRepositories::PDDLRepositories() : m_repositories(create_default_pddl_type_to_repository()) {}
 
-PDDLFactories::PDDLFactories(PDDLFactories&& other) = default;
+PDDLRepositories::PDDLRepositories(PDDLRepositories&& other) = default;
 
-PDDLFactories& PDDLFactories::operator=(PDDLFactories&& other) = default;
+PDDLRepositories& PDDLRepositories::operator=(PDDLRepositories&& other) = default;
 
-Requirements PDDLFactories::get_or_create_requirements(loki::RequirementEnumSet requirement_set)
+Requirements PDDLRepositories::get_or_create_requirements(loki::RequirementEnumSet requirement_set)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<RequirementsImpl> {}).template get_or_create<RequirementsImpl>(std::move(requirement_set));
 }
 
-Variable PDDLFactories::get_or_create_variable(std::string name, size_t parameter_index)
+Variable PDDLRepositories::get_or_create_variable(std::string name, size_t parameter_index)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<VariableImpl> {})
         .template get_or_create<VariableImpl>(std::move(name), std::move(parameter_index));
 }
 
-Term PDDLFactories::get_or_create_term_variable(Variable variable)
+Term PDDLRepositories::get_or_create_term_variable(Variable variable)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<TermImpl> {}).template get_or_create<TermVariableImpl>(std::move(variable));
 }
 
-Term PDDLFactories::get_or_create_term_object(Object object)
+Term PDDLRepositories::get_or_create_term_object(Object object)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<TermImpl> {}).template get_or_create<TermObjectImpl>(std::move(object));
 }
 
-Object PDDLFactories::get_or_create_object(std::string name)
+Object PDDLRepositories::get_or_create_object(std::string name)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).template get_or_create<ObjectImpl>(std::move(name));
 }
 
 template<PredicateTag P>
-Atom<P> PDDLFactories::get_or_create_atom(Predicate<P> predicate, TermList terms)
+Atom<P> PDDLRepositories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AtomImpl<P>> {}).template get_or_create<AtomImpl<P>>(std::move(predicate), std::move(terms));
 }
 
-template Atom<Static> PDDLFactories::get_or_create_atom(Predicate<Static> predicate, TermList terms);
-template Atom<Fluent> PDDLFactories::get_or_create_atom(Predicate<Fluent> predicate, TermList terms);
-template Atom<Derived> PDDLFactories::get_or_create_atom(Predicate<Derived> predicate, TermList terms);
+template Atom<Static> PDDLRepositories::get_or_create_atom(Predicate<Static> predicate, TermList terms);
+template Atom<Fluent> PDDLRepositories::get_or_create_atom(Predicate<Fluent> predicate, TermList terms);
+template Atom<Derived> PDDLRepositories::get_or_create_atom(Predicate<Derived> predicate, TermList terms);
 
 template<PredicateTag P>
-GroundAtom<P> PDDLFactories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
+GroundAtom<P> PDDLRepositories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {})
         .template get_or_create<GroundAtomImpl<P>>(std::move(predicate), std::move(objects));
 }
 
-template GroundAtom<Static> PDDLFactories::get_or_create_ground_atom(Predicate<Static> predicate, ObjectList ObjectList);
-template GroundAtom<Fluent> PDDLFactories::get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList ObjectList);
-template GroundAtom<Derived> PDDLFactories::get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList ObjectList);
+template GroundAtom<Static> PDDLRepositories::get_or_create_ground_atom(Predicate<Static> predicate, ObjectList ObjectList);
+template GroundAtom<Fluent> PDDLRepositories::get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList ObjectList);
+template GroundAtom<Derived> PDDLRepositories::get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList ObjectList);
 
 template<PredicateTag P>
-Literal<P> PDDLFactories::get_or_create_literal(bool is_negated, Atom<P> atom)
+Literal<P> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).template get_or_create<LiteralImpl<P>>(is_negated, std::move(atom));
 }
 
-template Literal<Static> PDDLFactories::get_or_create_literal(bool is_negated, Atom<Static> atom);
-template Literal<Fluent> PDDLFactories::get_or_create_literal(bool is_negated, Atom<Fluent> atom);
-template Literal<Derived> PDDLFactories::get_or_create_literal(bool is_negated, Atom<Derived> atom);
+template Literal<Static> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<Static> atom);
+template Literal<Fluent> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<Fluent> atom);
+template Literal<Derived> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<Derived> atom);
 
 template<PredicateTag P>
-GroundLiteral<P> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
+GroundLiteral<P> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {})
         .template get_or_create<GroundLiteralImpl<P>>(is_negated, std::move(atom));
 }
 
-template GroundLiteral<Static> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<Static> atom);
-template GroundLiteral<Fluent> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<Fluent> atom);
-template GroundLiteral<Derived> PDDLFactories::get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom);
+template GroundLiteral<Static> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Static> atom);
+template GroundLiteral<Fluent> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Fluent> atom);
+template GroundLiteral<Derived> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom);
 
 template<PredicateTag P>
-Predicate<P> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters)
+Predicate<P> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PredicateImpl<P>> {}).template get_or_create<PredicateImpl<P>>(name, std::move(parameters));
 }
 
-template Predicate<Static> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters);
-template Predicate<Fluent> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters);
-template Predicate<Derived> PDDLFactories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<Static> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<Fluent> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters);
+template Predicate<Derived> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters);
 
-FunctionExpression PDDLFactories::get_or_create_function_expression_number(double number)
+FunctionExpression PDDLRepositories::get_or_create_function_expression_number(double number)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).template get_or_create<FunctionExpressionNumberImpl>(number);
 }
 
-FunctionExpression PDDLFactories::get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
-                                                                                    FunctionExpression left_function_expression,
-                                                                                    FunctionExpression right_function_expression)
+FunctionExpression PDDLRepositories::get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                       FunctionExpression left_function_expression,
+                                                                                       FunctionExpression right_function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
         .template get_or_create<FunctionExpressionBinaryOperatorImpl>(binary_operator,
@@ -155,8 +155,8 @@ FunctionExpression PDDLFactories::get_or_create_function_expression_binary_opera
                                                                       std::move(right_function_expression));
 }
 
-FunctionExpression PDDLFactories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                   FunctionExpressionList function_expressions)
+FunctionExpression PDDLRepositories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                      FunctionExpressionList function_expressions)
 {
     /* Canonize before uniqueness test. */
     std::sort(function_expressions.begin(),
@@ -168,27 +168,27 @@ FunctionExpression PDDLFactories::get_or_create_function_expression_multi_operat
         .template get_or_create<FunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions));
 }
 
-FunctionExpression PDDLFactories::get_or_create_function_expression_minus(FunctionExpression function_expression)
+FunctionExpression PDDLRepositories::get_or_create_function_expression_minus(FunctionExpression function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
         .template get_or_create<FunctionExpressionMinusImpl>(std::move(function_expression));
 }
 
-FunctionExpression PDDLFactories::get_or_create_function_expression_function(Function function)
+FunctionExpression PDDLRepositories::get_or_create_function_expression_function(Function function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
         .template get_or_create<FunctionExpressionFunctionImpl>(std::move(function));
 }
 
-GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_number(double number)
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_number(double number)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
         .template get_or_create<GroundFunctionExpressionNumberImpl>(number);
 }
 
-GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
-                                                                                                 GroundFunctionExpression left_function_expression,
-                                                                                                 GroundFunctionExpression right_function_expression)
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                                    GroundFunctionExpression left_function_expression,
+                                                                                                    GroundFunctionExpression right_function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
         .template get_or_create<GroundFunctionExpressionBinaryOperatorImpl>(binary_operator,
@@ -196,8 +196,8 @@ GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression
                                                                             std::move(right_function_expression));
 }
 
-GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                                GroundFunctionExpressionList function_expressions)
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                                   GroundFunctionExpressionList function_expressions)
 {
     std::sort(function_expressions.begin(),
               function_expressions.end(),
@@ -208,46 +208,46 @@ GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression
         .template get_or_create<GroundFunctionExpressionMultiOperatorImpl>(multi_operator, std::move(function_expressions));
 }
 
-GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
         .template get_or_create<GroundFunctionExpressionMinusImpl>(std::move(function_expression));
 }
 
-GroundFunctionExpression PDDLFactories::get_or_create_ground_function_expression_function(GroundFunction function)
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
         .template get_or_create<GroundFunctionExpressionFunctionImpl>(std::move(function));
 }
 
-Function PDDLFactories::get_or_create_function(FunctionSkeleton function_skeleton, TermList terms)
+Function PDDLRepositories::get_or_create_function(FunctionSkeleton function_skeleton, TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl> {})
         .template get_or_create<FunctionImpl>(std::move(function_skeleton), std::move(terms));
 }
 
-GroundFunction PDDLFactories::get_or_create_ground_function(FunctionSkeleton function_skeleton, ObjectList objects)
+GroundFunction PDDLRepositories::get_or_create_ground_function(FunctionSkeleton function_skeleton, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl> {})
         .template get_or_create<GroundFunctionImpl>(std::move(function_skeleton), std::move(objects));
 }
 
-FunctionSkeleton PDDLFactories::get_or_create_function_skeleton(std::string name, VariableList parameters)
+FunctionSkeleton PDDLRepositories::get_or_create_function_skeleton(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl> {})
         .template get_or_create<FunctionSkeletonImpl>(std::move(name), std::move(parameters));
 }
 
-EffectSimple PDDLFactories::get_or_create_simple_effect(Literal<Fluent> effect)
+EffectSimple PDDLRepositories::get_or_create_simple_effect(Literal<Fluent> effect)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).template get_or_create<EffectSimpleImpl>(std::move(effect));
 }
 
-EffectComplex PDDLFactories::get_or_create_complex_effect(VariableList parameters,
-                                                          LiteralList<Static> static_conditions,
-                                                          LiteralList<Fluent> fluent_conditions,
-                                                          LiteralList<Derived> derived_conditions,
-                                                          Literal<Fluent> effect)
+EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parameters,
+                                                             LiteralList<Static> static_conditions,
+                                                             LiteralList<Fluent> fluent_conditions,
+                                                             LiteralList<Derived> derived_conditions,
+                                                             Literal<Fluent> effect)
 {
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -261,15 +261,15 @@ EffectComplex PDDLFactories::get_or_create_complex_effect(VariableList parameter
                                                    std::move(effect));
 }
 
-Action PDDLFactories::get_or_create_action(std::string name,
-                                           size_t original_arity,
-                                           VariableList parameters,
-                                           LiteralList<Static> static_conditions,
-                                           LiteralList<Fluent> fluent_conditions,
-                                           LiteralList<Derived> derived_conditions,
-                                           EffectSimpleList simple_effects,
-                                           EffectComplexList complex_effects,
-                                           FunctionExpression function_expression)
+Action PDDLRepositories::get_or_create_action(std::string name,
+                                              size_t original_arity,
+                                              VariableList parameters,
+                                              LiteralList<Static> static_conditions,
+                                              LiteralList<Fluent> fluent_conditions,
+                                              LiteralList<Derived> derived_conditions,
+                                              EffectSimpleList simple_effects,
+                                              EffectComplexList complex_effects,
+                                              FunctionExpression function_expression)
 {
     /* Canonize before uniqueness test */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -300,11 +300,11 @@ Action PDDLFactories::get_or_create_action(std::string name,
                                             std::move(function_expression));
 }
 
-Axiom PDDLFactories::get_or_create_axiom(VariableList parameters,
-                                         Literal<Derived> literal,
-                                         LiteralList<Static> static_conditions,
-                                         LiteralList<Fluent> fluent_conditions,
-                                         LiteralList<Derived> derived_conditions)
+Axiom PDDLRepositories::get_or_create_axiom(VariableList parameters,
+                                            Literal<Derived> literal,
+                                            LiteralList<Static> static_conditions,
+                                            LiteralList<Fluent> fluent_conditions,
+                                            LiteralList<Derived> derived_conditions)
 {
     /* Canonize before uniqueness test. */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -319,28 +319,28 @@ Axiom PDDLFactories::get_or_create_axiom(VariableList parameters,
                                            std::move(derived_conditions));
 }
 
-OptimizationMetric PDDLFactories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)
+OptimizationMetric PDDLRepositories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<OptimizationMetricImpl> {})
         .template get_or_create<OptimizationMetricImpl>(std::move(metric), std::move(function_expression));
 }
 
-NumericFluent PDDLFactories::get_or_create_numeric_fluent(GroundFunction function, double number)
+NumericFluent PDDLRepositories::get_or_create_numeric_fluent(GroundFunction function, double number)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NumericFluentImpl> {})
         .template get_or_create<NumericFluentImpl>(std::move(function), std::move(number));
 }
 
-Domain PDDLFactories::get_or_create_domain(std::optional<fs::path> filepath,
-                                           std::string name,
-                                           Requirements requirements,
-                                           ObjectList constants,
-                                           PredicateList<Static> static_predicates,
-                                           PredicateList<Fluent> fluent_predicates,
-                                           PredicateList<Derived> derived_predicates,
-                                           FunctionSkeletonList functions,
-                                           ActionList actions,
-                                           AxiomList axioms)
+Domain PDDLRepositories::get_or_create_domain(std::optional<fs::path> filepath,
+                                              std::string name,
+                                              Requirements requirements,
+                                              ObjectList constants,
+                                              PredicateList<Static> static_predicates,
+                                              PredicateList<Fluent> fluent_predicates,
+                                              PredicateList<Derived> derived_predicates,
+                                              FunctionSkeletonList functions,
+                                              ActionList actions,
+                                              AxiomList axioms)
 {
     /* Canonize before uniqueness test. */
     std::sort(constants.begin(), constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -364,20 +364,20 @@ Domain PDDLFactories::get_or_create_domain(std::optional<fs::path> filepath,
                                             std::move(axioms));
 }
 
-Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
-                                             Domain domain,
-                                             std::string name,
-                                             Requirements requirements,
-                                             ObjectList objects,
-                                             PredicateList<Derived> derived_predicates,
-                                             GroundLiteralList<Static> static_initial_literals,
-                                             GroundLiteralList<Fluent> fluent_initial_literals,
-                                             NumericFluentList numeric_fluents,
-                                             GroundLiteralList<Static> static_goal_condition,
-                                             GroundLiteralList<Fluent> fluent_goal_condition,
-                                             GroundLiteralList<Derived> derived_goal_condition,
-                                             std::optional<OptimizationMetric> optimization_metric,
-                                             AxiomList axioms)
+Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath,
+                                                Domain domain,
+                                                std::string name,
+                                                Requirements requirements,
+                                                ObjectList objects,
+                                                PredicateList<Derived> derived_predicates,
+                                                GroundLiteralList<Static> static_initial_literals,
+                                                GroundLiteralList<Fluent> fluent_initial_literals,
+                                                NumericFluentList numeric_fluents,
+                                                GroundLiteralList<Static> static_goal_condition,
+                                                GroundLiteralList<Fluent> fluent_goal_condition,
+                                                GroundLiteralList<Derived> derived_goal_condition,
+                                                std::optional<OptimizationMetric> optimization_metric,
+                                                AxiomList axioms)
 {
     /* Canonize before uniqueness test. */
     std::sort(objects.begin(), objects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -408,31 +408,34 @@ Problem PDDLFactories::get_or_create_problem(std::optional<fs::path> filepath,
 }
 
 // Factory
-const PDDLTypeToRepository& PDDLFactories::get_pddl_type_to_factory() const { return m_repositories; }
+const PDDLTypeToRepository& PDDLRepositories::get_pddl_type_to_factory() const { return m_repositories; }
 
 // GroundAtom
 template<PredicateTag P>
-GroundAtom<P> PDDLFactories::get_ground_atom(size_t atom_id) const
+GroundAtom<P> PDDLRepositories::get_ground_atom(size_t atom_id) const
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).at(atom_id);
 }
 
-template GroundAtom<Static> PDDLFactories::get_ground_atom<Static>(size_t atom_id) const;
-template GroundAtom<Fluent> PDDLFactories::get_ground_atom<Fluent>(size_t atom_id) const;
-template GroundAtom<Derived> PDDLFactories::get_ground_atom<Derived>(size_t atom_id) const;
+template GroundAtom<Static> PDDLRepositories::get_ground_atom<Static>(size_t atom_id) const;
+template GroundAtom<Fluent> PDDLRepositories::get_ground_atom<Fluent>(size_t atom_id) const;
+template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t atom_id) const;
 
 // Object
-Object PDDLFactories::get_object(size_t object_id) const { return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).at(object_id); }
+Object PDDLRepositories::get_object(size_t object_id) const { return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).at(object_id); }
 
 // Action
-Action PDDLFactories::get_action(size_t action_index) const { return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {}).at(action_index); }
+Action PDDLRepositories::get_action(size_t action_index) const
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {}).at(action_index);
+}
 
 // Axiom
-Axiom PDDLFactories::get_axiom(size_t axiom_index) const { return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).at(axiom_index); }
+Axiom PDDLRepositories::get_axiom(size_t axiom_index) const { return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).at(axiom_index); }
 
 /* Grounding */
 
-void PDDLFactories::ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
+void PDDLRepositories::ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
 {
     out_terms.clear();
 
@@ -457,7 +460,7 @@ void PDDLFactories::ground_variables(const TermList& terms, const ObjectList& bi
 }
 
 template<PredicateTag P>
-GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const ObjectList& binding)
+GroundLiteral<P> PDDLRepositories::ground_literal(const Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = m_grounding_tables.get<GroundLiteral<P>>();
@@ -495,10 +498,10 @@ GroundLiteral<P> PDDLFactories::ground_literal(const Literal<P> literal, const O
 }
 
 template<PredicateTag P>
-void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
-                                           FlatBitset& ref_positive_bitset,
-                                           FlatBitset& ref_negative_bitset,
-                                           const ObjectList& binding)
+void PDDLRepositories::ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
+                                              FlatBitset& ref_positive_bitset,
+                                              FlatBitset& ref_negative_bitset,
+                                              const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -515,24 +518,24 @@ void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<P>>& litera
     }
 }
 
-template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<Static>>& literals,
-                                                    FlatBitset& ref_positive_bitset,
-                                                    FlatBitset& ref_negative_bitset,
-                                                    const ObjectList& binding);
-template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<Fluent>>& literals,
-                                                    FlatBitset& ref_positive_bitset,
-                                                    FlatBitset& ref_negative_bitset,
-                                                    const ObjectList& binding);
-template void PDDLFactories::ground_and_fill_bitset(const std::vector<Literal<Derived>>& literals,
-                                                    FlatBitset& ref_positive_bitset,
-                                                    FlatBitset& ref_negative_bitset,
-                                                    const ObjectList& binding);
+template void PDDLRepositories::ground_and_fill_bitset(const std::vector<Literal<Static>>& literals,
+                                                       FlatBitset& ref_positive_bitset,
+                                                       FlatBitset& ref_negative_bitset,
+                                                       const ObjectList& binding);
+template void PDDLRepositories::ground_and_fill_bitset(const std::vector<Literal<Fluent>>& literals,
+                                                       FlatBitset& ref_positive_bitset,
+                                                       FlatBitset& ref_negative_bitset,
+                                                       const ObjectList& binding);
+template void PDDLRepositories::ground_and_fill_bitset(const std::vector<Literal<Derived>>& literals,
+                                                       FlatBitset& ref_positive_bitset,
+                                                       FlatBitset& ref_negative_bitset,
+                                                       const ObjectList& binding);
 
 template<PredicateTag P>
-void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& literals,
-                                           FlatIndexList& ref_positive_indices,
-                                           FlatIndexList& ref_negative_indices,
-                                           const ObjectList& binding)
+void PDDLRepositories::ground_and_fill_vector(const std::vector<Literal<P>>& literals,
+                                              FlatIndexList& ref_positive_indices,
+                                              FlatIndexList& ref_negative_indices,
+                                              const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -551,16 +554,16 @@ void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<P>>& litera
     std::sort(ref_negative_indices.begin(), ref_negative_indices.end());
 }
 
-template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Static>>& literals,
-                                                    FlatIndexList& ref_positive_indices,
-                                                    FlatIndexList& ref_negative_indices,
-                                                    const ObjectList& binding);
-template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Fluent>>& literals,
-                                                    FlatIndexList& ref_positive_indices,
-                                                    FlatIndexList& ref_negative_indices,
-                                                    const ObjectList& binding);
-template void PDDLFactories::ground_and_fill_vector(const std::vector<Literal<Derived>>& literals,
-                                                    FlatIndexList& ref_positive_indices,
-                                                    FlatIndexList& ref_negative_indices,
-                                                    const ObjectList& binding);
+template void PDDLRepositories::ground_and_fill_vector(const std::vector<Literal<Static>>& literals,
+                                                       FlatIndexList& ref_positive_indices,
+                                                       FlatIndexList& ref_negative_indices,
+                                                       const ObjectList& binding);
+template void PDDLRepositories::ground_and_fill_vector(const std::vector<Literal<Fluent>>& literals,
+                                                       FlatIndexList& ref_positive_indices,
+                                                       FlatIndexList& ref_negative_indices,
+                                                       const ObjectList& binding);
+template void PDDLRepositories::ground_and_fill_vector(const std::vector<Literal<Derived>>& literals,
+                                                       FlatIndexList& ref_positive_indices,
+                                                       FlatIndexList& ref_negative_indices,
+                                                       const ObjectList& binding);
 }

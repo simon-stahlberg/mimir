@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_RECURSE_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_BASE_RECURSE_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/transformers/interface.hpp"
 
 #include <deque>
@@ -43,9 +43,9 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    PDDLFactories& m_pddl_factories;
+    PDDLRepositories& m_pddl_factories;
 
-    explicit BaseRecurseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseRecurseTransformer(PDDLRepositories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */

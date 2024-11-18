@@ -32,7 +32,7 @@ TEST(MimirTests, SearchPlannersSingleTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
-    auto successor_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+    auto successor_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
     auto blind_heuristic = std::make_shared<BlindHeuristic>();
     auto lifted_astar = std::make_shared<AStarAlgorithm>(successor_generator, blind_heuristic);
     auto planner = SinglePlanner(lifted_astar);

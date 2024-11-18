@@ -19,11 +19,11 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/condition_grounders/event_handlers/default.hpp"
 
@@ -74,7 +74,7 @@ bool ConditionGrounder::is_valid_binding(Problem problem, State state, const Obj
 }
 
 template<DynamicPredicateTag P>
-bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLFactories& pddl_factories)
+bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_factories)
 {
     for (const auto& literal : literals)
     {
@@ -90,8 +90,8 @@ bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Pr
     return true;
 }
 
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, Problem problem, State state, PDDLFactories& pddl_factories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, Problem problem, State state, PDDLRepositories& pddl_factories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, Problem problem, State state, PDDLRepositories& pddl_factories);
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
 bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
@@ -205,7 +205,7 @@ ConditionGrounder::ConditionGrounder(Problem problem,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
                                      AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<PDDLFactories> pddl_factories) :
+                                     std::shared_ptr<PDDLRepositories> pddl_factories) :
     ConditionGrounder(std::move(problem),
                       std::move(variables),
                       std::move(static_conditions),
@@ -223,7 +223,7 @@ ConditionGrounder::ConditionGrounder(Problem problem,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
                                      AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<PDDLFactories> pddl_factories,
+                                     std::shared_ptr<PDDLRepositories> pddl_factories,
                                      std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
     m_problem(std::move(problem)),
     m_variables(std::move(variables)),
@@ -309,7 +309,7 @@ template const LiteralList<Derived>& ConditionGrounder::get_conditions<Derived>(
 
 const AssignmentSet<Static>& ConditionGrounder::get_static_assignment_set() const { return m_static_assignment_set; }
 
-const std::shared_ptr<PDDLFactories>& ConditionGrounder::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& ConditionGrounder::get_pddl_repositories() const { return m_pddl_factories; }
 
 const std::shared_ptr<IConditionGrounderEventHandler>& ConditionGrounder::get_event_handler() const { return m_event_handler; }
 
@@ -323,7 +323,7 @@ std::ostream& operator<<(std::ostream& out, const ConditionGrounder& condition_g
     out << " - Fluent Conditions: " << condition_grounder.get_conditions<Fluent>() << std::endl;
     out << " - Derived Conditions: " << condition_grounder.get_conditions<Derived>() << std::endl;
     // TODO: There are some issues with the printers, perhaps move them in a single compilation unit.
-    // out << " - Static Consistency Graph: " << std::tie(condition_grounder.get_static_consistency_graph(), *condition_grounder.get_pddl_factories())
+    // out << " - Static Consistency Graph: " << std::tie(condition_grounder.get_static_consistency_graph(), *condition_grounder.get_pddl_repositories())
     //     << std::endl;
     return out;
 }

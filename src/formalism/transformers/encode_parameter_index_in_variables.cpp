@@ -158,7 +158,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
 
 Problem EncodeParameterIndexInVariables::run_impl(const ProblemImpl& problem) { return this->transform(problem); }
 
-EncodeParameterIndexInVariables::EncodeParameterIndexInVariables(PDDLFactories& pddl_factories) :
+EncodeParameterIndexInVariables::EncodeParameterIndexInVariables(PDDLRepositories& pddl_factories) :
     BaseRecurseTransformer<EncodeParameterIndexInVariables>(pddl_factories)
 {
 }

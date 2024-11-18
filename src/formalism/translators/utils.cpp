@@ -33,7 +33,7 @@ namespace mimir
  * Conditions
  */
 
-loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFactories& pddl_factories)
+loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLRepositories& pddl_factories)
 {
     auto parts = loki::ConditionList {};
     for (const auto& part : condition.get_conditions())
@@ -52,7 +52,7 @@ loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLFacto
     return pddl_factories.get_or_create_condition_and(uniquify_elements(parts));
 }
 
-loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pddl_factories)
+loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& pddl_factories)
 {
     // std::cout << "flatten: " << effect << std::endl;
     auto parts = loki::EffectList {};
@@ -76,7 +76,7 @@ loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLFactories& pdd
     return pddl_factories.get_or_create_effect_and(uniquify_elements(parts));
 }
 
-loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLFactories& pddl_factories)
+loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLRepositories& pddl_factories)
 {
     auto parts = loki::ConditionList {};
     for (const auto& part : condition.get_conditions())
@@ -95,7 +95,7 @@ loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLFactor
     return pddl_factories.get_or_create_condition_or(uniquify_elements(parts));
 }
 
-loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLFactories& pddl_factories)
+loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLRepositories& pddl_factories)
 {
     if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.get_condition()))
     {
@@ -108,7 +108,7 @@ loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLFa
     return pddl_factories.get_or_create_condition_exists(condition.get_parameters(), condition.get_condition());
 }
 
-loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFactories& pddl_factories)
+loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRepositories& pddl_factories)
 {
     if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(condition.get_condition()))
     {
@@ -121,7 +121,7 @@ loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLFa
     return pddl_factories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition());
 }
 
-loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLFactories& pddl_factories)
+loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepositories& pddl_factories)
 {
     if (const auto effect_when = std::get_if<loki::EffectCompositeWhenImpl>(effect.get_effect()))
     {
@@ -136,7 +136,7 @@ loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLFact
     return pddl_factories.get_or_create_effect_composite_when(effect.get_condition(), effect.get_effect());
 }
 
-loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLFactories& pddl_factories)
+loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRepositories& pddl_factories)
 {
     if (const auto effect_forall = std::get_if<loki::EffectCompositeForallImpl>(effect.get_effect()))
     {

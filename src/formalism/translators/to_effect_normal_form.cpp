@@ -160,6 +160,6 @@ loki::Condition ToENFTranslator::translate_impl(const loki::ConditionAndImpl& co
 
 loki::Problem ToENFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
-ToENFTranslator::ToENFTranslator(loki::PDDLFactories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
+ToENFTranslator::ToENFTranslator(loki::PDDLRepositories& pddl_factories) : BaseCachedRecurseTranslator(pddl_factories) {}
 
 }

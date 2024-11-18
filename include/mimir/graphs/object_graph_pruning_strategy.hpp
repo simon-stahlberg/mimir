@@ -87,7 +87,7 @@ public:
     };
 
     static std::optional<ObjectGraphStaticSccPruningStrategy> create(Problem problem,
-                                                                     std::shared_ptr<PDDLFactories> factories,
+                                                                     std::shared_ptr<PDDLRepositories> factories,
                                                                      std::shared_ptr<IApplicableActionGenerator> aag,
                                                                      std::shared_ptr<StateRepository> ssg,
                                                                      const StateSpaceOptions& options = StateSpaceOptions());
@@ -107,7 +107,7 @@ private:
  */
 
 extern std::ostream& operator<<(std::ostream& out,
-                                const std::tuple<const ObjectGraphStaticSccPruningStrategy::SccPruningComponent&, Problem, const PDDLFactories&>& data);
+                                const std::tuple<const ObjectGraphStaticSccPruningStrategy::SccPruningComponent&, Problem, const PDDLRepositories&>& data);
 
 }
 

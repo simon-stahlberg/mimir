@@ -13,10 +13,10 @@ def test_lifted_conjunction_grounder():
     pddl_parser = PDDLParser(domain_filepath, problem_filepath)
 
     problem = pddl_parser.get_problem()
-    factories = pddl_parser.get_pddl_factories()
+    factories = pddl_parser.get_pddl_repositories()
     goal_variables, goal_lifted = problem.get_fluent_goal_condition().lift(factories)
     conjunction_grounder = LiftedConjunctionGrounder(problem, goal_variables, StaticLiteralList(), goal_lifted, DerivedLiteralList(), factories)
-    applicable_action_generator = LiftedApplicableActionGenerator(pddl_parser.get_problem(), pddl_parser.get_pddl_factories())
+    applicable_action_generator = LiftedApplicableActionGenerator(pddl_parser.get_problem(), pddl_parser.get_pddl_repositories())
     state_repository = StateRepository(applicable_action_generator)
     initial_state = state_repository.get_or_create_initial_state()
     goal_bindings = conjunction_grounder.ground(initial_state)

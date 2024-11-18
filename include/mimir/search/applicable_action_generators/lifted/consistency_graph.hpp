@@ -148,7 +148,7 @@ namespace mimir
  * Print the graph nicely as dot format
  */
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLRepositories&>& data);
 }
 
 #endif

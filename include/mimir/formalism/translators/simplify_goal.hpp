@@ -47,7 +47,7 @@ private:
     loki::Problem translate_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories);
+    explicit SimplifyGoalTranslator(loki::PDDLRepositories& pddl_factories);
 };
 }
 

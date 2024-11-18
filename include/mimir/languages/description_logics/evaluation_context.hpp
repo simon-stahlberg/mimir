@@ -36,7 +36,7 @@ class EvaluationContext
 {
 private:
     /* Memory */
-    const PDDLFactories& m_pddl_factories;
+    const PDDLRepositories& m_pddl_factories;
     Problem m_problem;
     State m_state;
     DenotationImpl<Concept>& m_concept_denotation_builder;
@@ -45,7 +45,7 @@ private:
     DenotationRepository<Role>& m_role_denotation_repository;
 
 public:
-    EvaluationContext(const PDDLFactories& pddl_factories,
+    EvaluationContext(const PDDLRepositories& pddl_factories,
                       Problem problem,
                       State state,
                       DenotationImpl<Concept>& ref_concept_denotation_builder,
@@ -57,7 +57,7 @@ public:
      * Getters
      */
 
-    const PDDLFactories& get_pddl_factories() const;
+    const PDDLRepositories& get_pddl_repositories() const;
 
     Problem get_problem() const;
 

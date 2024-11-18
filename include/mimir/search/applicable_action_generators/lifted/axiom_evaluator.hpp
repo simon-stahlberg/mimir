@@ -41,7 +41,7 @@ class AxiomEvaluator
 {
 private:
     Problem m_problem;
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_factories;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
@@ -55,7 +55,9 @@ private:
 
 public:
     /// @brief Simplest construction, expects the event handler from the lifted aag.
-    AxiomEvaluator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
+    AxiomEvaluator(Problem problem,
+                   std::shared_ptr<PDDLRepositories> pddl_factories,
+                   std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     AxiomEvaluator(const AxiomEvaluator& other) = delete;

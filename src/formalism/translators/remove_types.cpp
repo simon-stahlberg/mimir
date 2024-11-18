@@ -47,7 +47,7 @@ static loki::TypeList collect_types_from_type_hierarchy(const loki::TypeList& ty
 }
 
 static loki::Predicate
-type_to_predicate(const loki::TypeImpl& type, loki::PDDLFactories& pddl_factories, std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
+type_to_predicate(const loki::TypeImpl& type, loki::PDDLRepositories& pddl_factories, std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
     auto it = type_to_predicate_mapper.find(&type);
     if (it != type_to_predicate_mapper.end())
@@ -64,13 +64,13 @@ type_to_predicate(const loki::TypeImpl& type, loki::PDDLFactories& pddl_factorie
     return predicate;
 }
 
-static loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& object, loki::PDDLFactories& pddl_factories)
+static loki::Object typed_object_to_untyped_object(const loki::ObjectImpl& object, loki::PDDLRepositories& pddl_factories)
 {
     return pddl_factories.get_or_create_object(object.get_name(), loki::TypeList {});
 }
 
 static loki::LiteralList typed_object_to_literals(const loki::ObjectImpl& object,
-                                                  loki::PDDLFactories& pddl_factories,
+                                                  loki::PDDLRepositories& pddl_factories,
                                                   std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
     auto additional_literals = loki::LiteralList {};
@@ -86,14 +86,14 @@ static loki::LiteralList typed_object_to_literals(const loki::ObjectImpl& object
     return additional_literals;
 }
 
-static loki::Parameter typed_parameter_to_untyped_parameter(const loki::ParameterImpl& parameter, loki::PDDLFactories& pddl_factories)
+static loki::Parameter typed_parameter_to_untyped_parameter(const loki::ParameterImpl& parameter, loki::PDDLRepositories& pddl_factories)
 {
     auto translated_parameter = pddl_factories.get_or_create_parameter(parameter.get_variable(), loki::TypeList {});
     return translated_parameter;
 }
 
 static loki::ConditionList typed_parameter_to_condition_literals(const loki::ParameterImpl& parameter,
-                                                                 loki::PDDLFactories& pddl_factories,
+                                                                 loki::PDDLRepositories& pddl_factories,
                                                                  std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
     auto conditions = loki::ConditionList {};
@@ -316,6 +316,6 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
 
 loki::Problem RemoveTypesTranslator::run_impl(const loki::ProblemImpl& problem) { return self().translate(problem); }
 
-RemoveTypesTranslator::RemoveTypesTranslator(loki::PDDLFactories& pddl_factories) : BaseCachedRecurseTranslator<RemoveTypesTranslator>(pddl_factories) {}
+RemoveTypesTranslator::RemoveTypesTranslator(loki::PDDLRepositories& pddl_factories) : BaseCachedRecurseTranslator<RemoveTypesTranslator>(pddl_factories) {}
 
 }

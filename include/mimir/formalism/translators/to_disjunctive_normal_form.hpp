@@ -72,7 +72,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    ToDNFTranslator(loki::PDDLFactories& pddl_factories, ToNNFTranslator& to_nnf_translator);
+    ToDNFTranslator(loki::PDDLRepositories& pddl_factories, ToNNFTranslator& to_nnf_translator);
 };
 
 }

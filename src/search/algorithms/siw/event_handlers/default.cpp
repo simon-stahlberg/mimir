@@ -21,11 +21,11 @@
 
 namespace mimir
 {
-void DefaultSIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const {}
+void DefaultSIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) const {}
 
 void DefaultSIWAlgorithmEventHandler::on_start_subproblem_search_impl(const Problem problem,
                                                                       const State initial_state,
-                                                                      const PDDLFactories& pddl_factories) const
+                                                                      const PDDLRepositories& pddl_factories) const
 {
     std::cout << "[SIW] Started search." << std::endl;
 }
@@ -34,7 +34,7 @@ void DefaultSIWAlgorithmEventHandler::on_end_subproblem_search_impl(const IWAlgo
 
 void DefaultSIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultSIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) const
+void DefaultSIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) const
 {
     auto plan = to_plan(ground_action_plan, pddl_factories);
     std::cout << "[SIW] Plan found.\n"

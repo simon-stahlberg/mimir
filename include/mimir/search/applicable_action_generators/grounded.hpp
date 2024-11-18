@@ -40,7 +40,7 @@ private:
     Problem m_problem;
 
     // Memory
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_factories;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
     LiftedApplicableActionGenerator m_lifted_aag;
 
@@ -49,11 +49,11 @@ private:
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories);
+    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_factories);
 
     /// @brief Complete construction
     GroundedApplicableActionGenerator(Problem problem,
-                                      std::shared_ptr<PDDLFactories> pddl_factories,
+                                      std::shared_ptr<PDDLRepositories> pddl_factories,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
@@ -73,7 +73,7 @@ public:
 
     Problem get_problem() const override;
 
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
     const GroundActionList& get_ground_actions() const override;
 

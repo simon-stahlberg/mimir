@@ -187,7 +187,7 @@ Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem)
     return this->transform(problem);
 }
 
-DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLFactories& pddl_factories, bool remove_useless_actions_and_axioms) :
+DeleteRelaxTransformer::DeleteRelaxTransformer(PDDLRepositories& pddl_factories, bool remove_useless_actions_and_axioms) :
     BaseCachedRecurseTransformer<DeleteRelaxTransformer>(pddl_factories),
     m_remove_useless_actions_and_axioms(remove_useless_actions_and_axioms)
 {

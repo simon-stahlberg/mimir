@@ -36,7 +36,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
+    friend class loki::SegmentedRepository;
 
 public:
     // moveable but not copyable
@@ -69,7 +69,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
+    friend class loki::SegmentedRepository;
 
 public:
     // moveable but not copyable
@@ -100,7 +100,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
+    friend class loki::SegmentedRepository;
 
 public:
     // moveable but not copyable
@@ -129,7 +129,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
+    friend class loki::SegmentedRepository;
 
 public:
     // moveable but not copyable
@@ -157,7 +157,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
+    friend class loki::SegmentedRepository;
 
 public:
     // moveable but not copyable

@@ -26,7 +26,7 @@ namespace mimir
 {
 
 static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_condition,
-                                               loki::PDDLFactories& pddl_factories,
+                                               loki::PDDLRepositories& pddl_factories,
                                                std::unordered_set<loki::Predicate>& derived_predicates,
                                                std::unordered_set<loki::Axiom>& axioms,
                                                uint64_t& next_axiom_id,
@@ -101,7 +101,7 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
         translated_axioms);
 }
 
-SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLFactories& pddl_factories) :
+SimplifyGoalTranslator::SimplifyGoalTranslator(loki::PDDLRepositories& pddl_factories) :
     BaseCachedRecurseTranslator<SimplifyGoalTranslator>(pddl_factories),
     m_simple_and_derived_predicate_names()
 {

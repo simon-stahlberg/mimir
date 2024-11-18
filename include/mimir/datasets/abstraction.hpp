@@ -36,11 +36,10 @@ namespace mimir
  */
 
 template<typename T>
-concept IsAbstraction = requires(T a, State state)
-{
+concept IsAbstraction = requires(T a, State state) {
     {
         a.get_vertex_index(state)
-        } -> std::same_as<Index>;
+    } -> std::same_as<Index>;
 };
 
 /**
@@ -66,7 +65,7 @@ private:
         virtual Problem get_problem() const = 0;
 
         /* Memory */
-        virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
+        virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
         virtual const std::shared_ptr<IApplicableActionGenerator>& get_aag() const = 0;
         virtual const std::shared_ptr<StateRepository>& get_ssg() const = 0;
 
@@ -121,7 +120,7 @@ private:
         Problem get_problem() const override { return m_abstraction.get_problem(); }
 
         /* Memory */
-        const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override { return m_abstraction.get_pddl_factories(); }
+        const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override { return m_abstraction.get_pddl_repositories(); }
         const std::shared_ptr<IApplicableActionGenerator>& get_aag() const override { return m_abstraction.get_aag(); }
         const std::shared_ptr<StateRepository>& get_ssg() const override { return m_abstraction.get_ssg(); }
 
@@ -182,8 +181,10 @@ private:
 
 public:
     template<IsAbstraction A>
-    requires IsStaticGraph<typename A::GraphType>
-    explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction))) {}
+        requires IsStaticGraph<typename A::GraphType>
+    explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction)))
+    {
+    }
 
     // Copy operations
     Abstraction(const Abstraction& other) : m_pimpl { other.m_pimpl->clone() } {}
@@ -206,7 +207,7 @@ public:
     Problem get_problem() const { return m_pimpl->get_problem(); }
 
     /* Memory */
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const { return m_pimpl->get_pddl_factories(); }
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const { return m_pimpl->get_pddl_repositories(); }
     const std::shared_ptr<IApplicableActionGenerator>& get_aag() const { return m_pimpl->get_aag(); }
     const std::shared_ptr<StateRepository>& get_ssg() const { return m_pimpl->get_ssg(); }
 

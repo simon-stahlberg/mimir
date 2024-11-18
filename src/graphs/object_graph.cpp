@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/object_graph.hpp"
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 namespace mimir
 {
@@ -66,7 +66,7 @@ static void add_ground_atom_graph_structures(const ProblemColorFunction& color_f
 }
 
 static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_function,
-                                              const PDDLFactories& pddl_factories,
+                                              const PDDLRepositories& pddl_factories,
                                               Problem problem,
                                               State state,
                                               Index state_index,
@@ -118,7 +118,7 @@ static void add_ground_literal_graph_structures(const ProblemColorFunction& colo
 }
 
 static void add_ground_goal_literals_graph_structures(const ProblemColorFunction& color_function,
-                                                      const PDDLFactories& pddl_factories,
+                                                      const PDDLRepositories& pddl_factories,
                                                       bool mark_true_goal_literals,
                                                       Problem problem,
                                                       State state,
@@ -151,7 +151,7 @@ static void add_ground_goal_literals_graph_structures(const ProblemColorFunction
 }
 
 StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                               const PDDLFactories& pddl_factories,
+                                               const PDDLRepositories& pddl_factories,
                                                Problem problem,
                                                State state,
                                                Index state_index,

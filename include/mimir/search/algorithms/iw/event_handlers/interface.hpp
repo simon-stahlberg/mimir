@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
@@ -38,10 +38,10 @@ public:
     virtual ~IIWAlgorithmEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_arity_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories, int arity) = 0;
+    virtual void on_start_arity_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories, int arity) = 0;
 
     /// @brief React on starting a search.
     virtual void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) = 0;
@@ -50,7 +50,7 @@ public:
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -85,7 +85,7 @@ private:
 public:
     explicit IWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_start_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) override
+    void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) override
     {
         m_statistics = IWAlgorithmStatistics();
 
@@ -97,7 +97,7 @@ public:
         }
     }
 
-    void on_start_arity_search(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories, int arity) override
+    void on_start_arity_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories, int arity) override
     {
         if (!m_quiet)
         {
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
+    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {

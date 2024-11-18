@@ -41,9 +41,9 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     {
         const auto state = get_state(vertex);
 
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
+        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_repositories())) << std::endl;
 
-        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
+        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state);
 
         // std::cout << object_graph << std::endl;
 
@@ -69,9 +69,9 @@ TEST(MimirTests, GraphsObjectGraphSparseTest)
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
         const auto state = get_state(vertex);
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
+        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_repositories())) << std::endl;
 
-        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state);
+        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state);
 
         // std::cout << object_graph << std::endl;
 
@@ -108,10 +108,10 @@ TEST(MimirTests, GraphsObjectGraphPruningTest)
     for (const auto& vertex : state_space.get_graph().get_vertices())
     {
         const auto state = get_state(vertex);
-        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_factories())) << std::endl;
+        // std::cout << std::make_tuple(state_space->get_aag()->get_problem(), state, std::cref(state_space->get_aag()->get_pddl_repositories())) << std::endl;
 
         const auto object_graph =
-            create_object_graph(color_function, *state_space.get_pddl_factories(), state_space.get_problem(), state, 0, true, PruneAllObjects());
+            create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state, 0, true, PruneAllObjects());
 
         // std::cout << object_graph << std::endl;
 

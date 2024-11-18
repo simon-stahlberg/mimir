@@ -32,15 +32,15 @@ private:
     /* Implement SIWAlgorithmEventHandlerBase interface */
     friend class SIWAlgorithmEventHandlerBase<DefaultSIWAlgorithmEventHandler>;
 
-    void on_start_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const;
+    void on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) const;
 
-    void on_start_subproblem_search_impl(const Problem problem, const State initial_state, const PDDLFactories& pddl_factories) const;
+    void on_start_subproblem_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_factories) const;
 
     void on_end_subproblem_search_impl(const IWAlgorithmStatistics& iw_statistics) const;
 
     void on_end_search_impl() const;
 
-    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) const;
+    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) const;
 
     void on_unsolvable_impl() const;
 

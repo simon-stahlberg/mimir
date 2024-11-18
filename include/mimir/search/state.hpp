@@ -94,7 +94,7 @@ using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLFactories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLRepositories&>& data);
 }
 
 #endif

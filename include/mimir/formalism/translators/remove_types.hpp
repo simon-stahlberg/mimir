@@ -54,7 +54,7 @@ private:
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
-    explicit RemoveTypesTranslator(loki::PDDLFactories& pddl_factories);
+    explicit RemoveTypesTranslator(loki::PDDLRepositories& pddl_factories);
 };
 
 }

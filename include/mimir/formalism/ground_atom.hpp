@@ -37,7 +37,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::UniqueFactory;
+    friend class loki::SegmentedRepository;
 
 public:
     using Category = P;
@@ -54,11 +54,11 @@ public:
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;
     size_t get_arity() const;
-    Atom<P> lift(const TermList& terms, PDDLFactories& pddl_factories) const;
+    Atom<P> lift(const TermList& terms, PDDLRepositories& pddl_factories) const;
 };
 
 template<PredicateTag P>
-extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLFactories& pddl_factories);
+extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_factories);
 
 template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);

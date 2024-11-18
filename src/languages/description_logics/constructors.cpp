@@ -23,7 +23,6 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -37,6 +36,7 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
@@ -108,7 +108,7 @@ void ConceptAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
-        const auto atom = context.get_pddl_factories().get_ground_atom<P>(atom_index);
+        const auto atom = context.get_pddl_repositories().get_ground_atom<P>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -130,7 +130,7 @@ void ConceptAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) c
     // Compute result
     for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
     {
-        const auto atom = context.get_pddl_factories().get_ground_atom<Static>(atom_index);
+        const auto atom = context.get_pddl_repositories().get_ground_atom<Static>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -593,7 +593,7 @@ void RoleAtomicStateImpl<P>::evaluate_impl(EvaluationContext& context) const
     // Compute result
     for (const auto& atom_index : context.get_state()->get_atoms<P>())
     {
-        const auto atom = context.get_pddl_factories().get_ground_atom<P>(atom_index);
+        const auto atom = context.get_pddl_repositories().get_ground_atom<P>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {
@@ -624,7 +624,7 @@ void RoleAtomicStateImpl<Static>::evaluate_impl(EvaluationContext& context) cons
     // Compute result
     for (const auto& atom_index : context.get_problem()->get_static_initial_positive_atoms_bitset())
     {
-        const auto atom = context.get_pddl_factories().get_ground_atom<Static>(atom_index);
+        const auto atom = context.get_pddl_repositories().get_ground_atom<Static>(atom_index);
 
         if (atom->get_predicate() == m_predicate)
         {

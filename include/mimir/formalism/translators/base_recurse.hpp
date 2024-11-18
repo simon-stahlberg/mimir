@@ -42,9 +42,9 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    loki::PDDLFactories& m_pddl_factories;
+    loki::PDDLRepositories& m_pddl_factories;
 
-    explicit BaseRecurseTranslator(loki::PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseRecurseTranslator(loki::PDDLRepositories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */

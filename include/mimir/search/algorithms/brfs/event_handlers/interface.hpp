@@ -38,31 +38,31 @@ public:
     virtual ~IBrFSAlgorithmEventHandler() = default;
 
     /// @brief React on expanding a state.
-    virtual void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on generating a state by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on generating a state in the search tree by applying an action.
-    virtual void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on generating a state not in the search tree by applying an action.
-    virtual void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer() = 0;
 
     /// @brief React on pruning a state.
-    virtual void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on ending a search.
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -97,7 +97,7 @@ private:
 public:
     explicit BrFSAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_expand_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_expanded();
 
@@ -107,7 +107,7 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_generated();
 
@@ -117,7 +117,7 @@ public:
         }
     }
 
-    void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -125,7 +125,7 @@ public:
         }
     }
 
-    void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -146,7 +146,7 @@ public:
         }
     }
 
-    void on_prune_state(State state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics.increment_num_pruned();
 
@@ -156,7 +156,7 @@ public:
         }
     }
 
-    void on_start_search(State start_state, Problem problem, const PDDLFactories& pddl_factories) override
+    void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_factories) override
     {
         m_statistics = BrFSAlgorithmStatistics();
 
@@ -178,7 +178,7 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLFactories& pddl_factories) override
+    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {

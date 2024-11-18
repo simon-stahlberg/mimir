@@ -56,7 +56,7 @@ public:
                                GroundActionList& out_plan,
                                std::optional<State>& out_goal_state);
 
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
 private:
     std::shared_ptr<IApplicableActionGenerator> m_aag;

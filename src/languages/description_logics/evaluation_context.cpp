@@ -19,7 +19,7 @@
 
 namespace mimir::dl
 {
-EvaluationContext::EvaluationContext(const PDDLFactories& pddl_factories,
+EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_factories,
                                      Problem problem,
                                      State state,
                                      DenotationImpl<Concept>& ref_concept_denotation_builder,
@@ -36,7 +36,7 @@ EvaluationContext::EvaluationContext(const PDDLFactories& pddl_factories,
 {
 }
 
-const PDDLFactories& EvaluationContext::get_pddl_factories() const { return m_pddl_factories; }
+const PDDLRepositories& EvaluationContext::get_pddl_repositories() const { return m_pddl_factories; }
 
 Problem EvaluationContext::get_problem() const { return m_problem; }
 

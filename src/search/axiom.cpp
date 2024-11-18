@@ -18,7 +18,7 @@
 #include "mimir/search/axiom.hpp"
 
 #include "mimir/common/hash.hpp"
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -78,7 +78,7 @@ bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLRepositories&>& data)
 {
     const auto [derived_effect, pddl_factories] = data;
 
@@ -99,7 +99,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect,
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLRepositories&>& data)
 {
     const auto [axiom, pddl_factories] = data;
 

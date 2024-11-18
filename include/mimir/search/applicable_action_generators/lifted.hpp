@@ -43,7 +43,7 @@ private:
     Problem m_problem;
 
     // Memory
-    std::shared_ptr<PDDLFactories> m_pddl_factories;
+    std::shared_ptr<PDDLRepositories> m_pddl_factories;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     AxiomEvaluator m_axiom_evaluator;
@@ -63,11 +63,11 @@ private:
 
 public:
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> ref_pddl_factories);
+    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> ref_pddl_factories);
 
     /// @brief Complete construction
     LiftedApplicableActionGenerator(Problem problem,
-                                    std::shared_ptr<PDDLFactories> ref_pddl_factories,
+                                    std::shared_ptr<PDDLRepositories> ref_pddl_factories,
                                     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
@@ -87,7 +87,7 @@ public:
 
     Problem get_problem() const override;
 
-    const std::shared_ptr<PDDLFactories>& get_pddl_factories() const override;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
     /// @brief Return the axiom partitioning.
     const std::vector<AxiomPartition>& get_axiom_partitioning() const;

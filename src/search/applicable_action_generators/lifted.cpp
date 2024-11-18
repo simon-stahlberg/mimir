@@ -19,10 +19,10 @@
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/action.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"
@@ -43,7 +43,7 @@ class GroundAndEvaluateFunctionExpressionVisitor
 private:
     const GroundFunctionToValue& m_ground_function_value_costs;
     const ObjectList& m_binding;
-    PDDLFactories& m_pddl_factories;
+    PDDLRepositories& m_pddl_factories;
 
     GroundFunction ground_function(const Function& function)
     {
@@ -55,7 +55,7 @@ private:
 public:
     GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionToValue& ground_function_value_costs,
                                                const ObjectList& binding,
-                                               PDDLFactories& ref_pddl_factories) :
+                                               PDDLRepositories& ref_pddl_factories) :
 
         m_ground_function_value_costs(ground_function_value_costs),
         m_binding(binding),
@@ -357,13 +357,13 @@ void LiftedApplicableActionGenerator::on_finish_search_layer() const { m_event_h
 
 void LiftedApplicableActionGenerator::on_end_search() const { m_event_handler->on_end_search(); }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLFactories> pddl_factories) :
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_factories) :
     LiftedApplicableActionGenerator(problem, std::move(pddl_factories), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
 {
 }
 
 LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem,
-                                                                 std::shared_ptr<PDDLFactories> pddl_factories,
+                                                                 std::shared_ptr<PDDLRepositories> pddl_factories,
                                                                  std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_problem(problem),
     m_pddl_factories(std::move(pddl_factories)),
@@ -425,7 +425,7 @@ size_t LiftedApplicableActionGenerator::get_num_ground_axioms() const { return m
 
 Problem LiftedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<PDDLFactories>& LiftedApplicableActionGenerator::get_pddl_factories() const { return m_pddl_factories; }
+const std::shared_ptr<PDDLRepositories>& LiftedApplicableActionGenerator::get_pddl_repositories() const { return m_pddl_factories; }
 
 std::ostream& operator<<(std::ostream& out, const LiftedApplicableActionGenerator& lifted_aag)
 {

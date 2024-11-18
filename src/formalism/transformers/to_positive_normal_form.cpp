@@ -155,7 +155,7 @@ Domain ToPositiveNormalFormTransformer::transform_impl(const DomainImpl& domain)
                                                        uniquify_elements(transformed_axioms));
 }
 
-ToPositiveNormalFormTransformer::ToPositiveNormalFormTransformer(PDDLFactories& pddl_factories) :
+ToPositiveNormalFormTransformer::ToPositiveNormalFormTransformer(PDDLRepositories& pddl_factories) :
     BaseCachedRecurseTransformer<ToPositiveNormalFormTransformer>(pddl_factories)
 {
 }

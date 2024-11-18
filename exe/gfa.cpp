@@ -65,10 +65,10 @@ int main(int argc, char** argv)
     std::cout << "Num ss ground axioms: " << num_ss_ground_axioms << std::endl;
 
     auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& state_space : state_spaces)
     {
-        memories.emplace_back(state_space.get_problem(), state_space.get_pddl_factories(), state_space.get_aag(), state_space.get_ssg());
+        memories.emplace_back(state_space.get_problem(), state_space.get_pddl_repositories(), state_space.get_aag(), state_space.get_ssg());
     }
 
     /* Gfas */
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
                                                 .get_states()
                                                 .at(gfa_state.get_faithful_abstract_state_index())
                                                 .get_representative_state(),
-                                            std::cref(*gfa.get_pddl_factories()))
+                                            std::cref(*gfa.get_pddl_repositories()))
                         << std::endl;
         }
         */

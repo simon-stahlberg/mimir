@@ -61,7 +61,7 @@ public:
 
     /* Getters */
     virtual Problem get_problem() const = 0;
-    virtual const std::shared_ptr<PDDLFactories>& get_pddl_factories() const = 0;
+    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
 };
 
 }

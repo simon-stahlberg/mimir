@@ -105,7 +105,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     auto openlist = PriorityQueue<State>();
 
     const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_factories();
+    const auto& pddl_factories = *m_aag->get_pddl_repositories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
     const auto start_g_value = ContinuousCost(0);
@@ -265,6 +265,6 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     return SearchStatus::EXHAUSTED;
 }
 
-const std::shared_ptr<PDDLFactories>& AStarAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
+const std::shared_ptr<PDDLRepositories>& AStarAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
 
 }

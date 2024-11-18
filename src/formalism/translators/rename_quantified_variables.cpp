@@ -320,7 +320,7 @@ loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemI
     return &problem;
 }
 
-RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLFactories& pddl_factories) :
+RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLRepositories& pddl_factories) :
     BaseRecurseTranslator(pddl_factories),
     m_num_quantifications(),
     m_renaming_enabled(true)

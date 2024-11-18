@@ -17,7 +17,7 @@
 
 #include "mimir/search/algorithms/brfs.hpp"
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -102,7 +102,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     auto queue = std::deque<State>();
 
     const auto problem = m_aag->get_problem();
-    const auto& pddl_factories = *m_aag->get_pddl_factories();
+    const auto& pddl_factories = *m_aag->get_pddl_repositories();
     m_event_handler->on_start_search(start_state, problem, pddl_factories);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
@@ -193,6 +193,6 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     return SearchStatus::EXHAUSTED;
 }
 
-const std::shared_ptr<PDDLFactories>& BrFSAlgorithm::get_pddl_factories() const { return m_aag->get_pddl_factories(); }
+const std::shared_ptr<PDDLRepositories>& BrFSAlgorithm::get_pddl_repositories() const { return m_aag->get_pddl_repositories(); }
 
 }

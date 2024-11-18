@@ -51,7 +51,7 @@ public:
     LiftedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
         m_aag_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_aag(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_factories(), m_aag_event_handler)),
+        m_aag(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_aag_event_handler)),
         m_ssg(std::make_shared<StateRepository>(m_aag)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
@@ -64,7 +64,7 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_factories()));
+        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_repositories()));
     }
 
     const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
@@ -89,7 +89,7 @@ public:
     GroundedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
         m_aag_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
-        m_aag(std::make_shared<GroundedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_factories(), m_aag_event_handler)),
+        m_aag(std::make_shared<GroundedApplicableActionGenerator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_aag_event_handler)),
         m_ssg(std::make_shared<StateRepository>(m_aag)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
@@ -102,7 +102,7 @@ public:
     {
         auto action_view_list = GroundActionList {};
         const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_factories()));
+        return std::make_tuple(status, to_plan(action_view_list, *m_aag->get_pddl_repositories()));
     }
 
     const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }

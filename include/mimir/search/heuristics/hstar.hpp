@@ -30,7 +30,7 @@ class HStarHeuristic : public IHeuristic
 {
 public:
     HStarHeuristic(Problem problem,
-                   std::shared_ptr<PDDLFactories> factories,
+                   std::shared_ptr<PDDLRepositories> factories,
                    std::shared_ptr<IApplicableActionGenerator> aag,
                    std::shared_ptr<StateRepository> ssg);
 

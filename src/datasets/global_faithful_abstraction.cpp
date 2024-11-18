@@ -107,20 +107,20 @@ std::vector<GlobalFaithfulAbstraction>
 GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
     auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories());
+        auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
         auto ssg = std::make_shared<StateRepository>(aag);
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_factories(), aag, ssg);
+        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), aag, ssg);
     }
 
     return GlobalFaithfulAbstraction::create(memories, options);
 }
 
 std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLFactories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
+    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
         memories,
     const FaithfulAbstractionsOptions& options)
 {
@@ -249,7 +249,10 @@ bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_uni
 Index GlobalFaithfulAbstraction::get_index() const { return m_index; }
 
 /* Memory */
-const std::shared_ptr<PDDLFactories>& GlobalFaithfulAbstraction::get_pddl_factories() const { return m_abstractions->at(m_index).get_pddl_factories(); }
+const std::shared_ptr<PDDLRepositories>& GlobalFaithfulAbstraction::get_pddl_repositories() const
+{
+    return m_abstractions->at(m_index).get_pddl_repositories();
+}
 
 const std::shared_ptr<IApplicableActionGenerator>& GlobalFaithfulAbstraction::get_aag() const { return m_abstractions->at(m_index).get_aag(); }
 
@@ -399,7 +402,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
         for (const auto& state : mimir::get_states(fa_abstraction.get_graph().get_vertices().at(gfa_state.get_faithful_abstract_state_index())))
         {
-            out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_factories())) << "\n";
+            out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_repositories())) << "\n";
         }
         out << "\"";  // end label
 
@@ -437,7 +440,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         out << "label=\"";
         for (const auto& action : get_actions(transition))
         {
-            out << std::make_tuple(std::cref(*abstraction.get_pddl_factories()), action) << "\n";
+            out << std::make_tuple(std::cref(*abstraction.get_pddl_repositories()), action) << "\n";
         }
         out << "\"";  // end label
 

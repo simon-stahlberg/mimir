@@ -46,7 +46,7 @@ public:
 
     virtual void on_ground_action_cache_miss(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_factories) = 0;
 
     virtual void on_start_generating_applicable_axioms() = 0;
 
@@ -56,7 +56,7 @@ public:
 
     virtual void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) = 0;
 
-    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) = 0;
+    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_factories) = 0;
 
     virtual void on_end_search() = 0;
 
@@ -124,7 +124,7 @@ public:
         }
     }
 
-    void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLFactories& pddl_factories) override
+    void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {
@@ -168,7 +168,7 @@ public:
         }
     }
 
-    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLFactories& pddl_factories) override
+    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_factories) override
     {
         if (!m_quiet)
         {

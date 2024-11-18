@@ -20,9 +20,9 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 
 #include <cstdint>
@@ -109,11 +109,11 @@ const std::vector<StaticConsistencyGraph>& Graphs::get_complex_effect_graphs() c
 namespace mimir
 {
 template<>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_graph::StaticConsistencyGraph&, const PDDLRepositories&>& data)
 {
     const auto& [graph, pddl_factories] = data;
 
-    const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLFactories& pddl_factories, std::ostream& out)
+    const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLRepositories& pddl_factories, std::ostream& out)
     {
         out << "  \"" << vertex.get_id() << "\" [label=\"#" << vertex.get_parameter_index() << " <- " << *pddl_factories.get_object(vertex.get_object_id())
             << "\"];\n";

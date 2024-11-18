@@ -19,7 +19,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -140,7 +140,7 @@ template const FlatBitset& StateImpl::get_atoms<Derived>() const;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLFactories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, const PDDLRepositories&>& data)
 {
     const auto [problem, state, pddl_factories] = data;
 

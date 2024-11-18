@@ -624,8 +624,8 @@ TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpace> state_space, in
     m_state_space(std::move(state_space)),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(
         arity,
-        boost::hana::at_key(m_state_space->get_aag()->get_pddl_factories()->get_pddl_type_to_factory(), boost::hana::type<GroundAtomImpl<Fluent>> {}).size()
-            + boost::hana::at_key(m_state_space->get_aag()->get_pddl_factories()->get_pddl_type_to_factory(), boost::hana::type<GroundAtomImpl<Derived>> {})
+        boost::hana::at_key(m_state_space->get_aag()->get_pddl_repositories()->get_pddl_type_to_factory(), boost::hana::type<GroundAtomImpl<Fluent>> {}).size()
+            + boost::hana::at_key(m_state_space->get_aag()->get_pddl_repositories()->get_pddl_type_to_factory(), boost::hana::type<GroundAtomImpl<Derived>> {})
                   .size())),
     m_prune_dominated_tuples(prune_dominated_tuples)
 {
@@ -643,7 +643,7 @@ const std::shared_ptr<TupleIndexMapper>& TupleGraphFactory::get_tuple_index_mapp
 std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
 {
     const auto problem = tuple_graph.get_state_space()->get_problem();
-    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_factories();
+    const auto& pddl_factories = *tuple_graph.get_state_space()->get_pddl_repositories();
     auto atom_indices = AtomIndexList {};
 
     out << "digraph {\n"

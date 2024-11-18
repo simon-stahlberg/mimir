@@ -31,7 +31,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
     auto aag_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_factories(), aag_event_handler);
+    auto aag = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), aag_event_handler);
     auto ssg = std::make_shared<StateRepository>(aag);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(aag, ssg, brfs_event_handler);

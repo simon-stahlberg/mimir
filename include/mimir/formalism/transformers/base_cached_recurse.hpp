@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
 #define MIMIR_FORMALISM_TRANSFORMERS_BASE_CACHED_RECURSE_HPP_
 
-#include "mimir/formalism/factories.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/transformers/interface.hpp"
 
 #include <deque>
@@ -43,7 +43,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    PDDLFactories& m_pddl_factories;
+    PDDLRepositories& m_pddl_factories;
 
     std::unordered_map<Requirements, Requirements> m_transformed_requirements;
     std::unordered_map<Object, Object> m_transformed_objects;
@@ -78,7 +78,7 @@ protected:
     std::unordered_map<OptimizationMetric, OptimizationMetric> m_transformed_optimization_metrics;
     std::unordered_map<Problem, Problem> m_transformed_problems;
 
-    explicit BaseCachedRecurseTransformer(PDDLFactories& pddl_factories) : m_pddl_factories(pddl_factories) {}
+    explicit BaseCachedRecurseTransformer(PDDLRepositories& pddl_factories) : m_pddl_factories(pddl_factories) {}
 
 protected:
     /* Implement ITranslator interface */

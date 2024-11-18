@@ -18,9 +18,9 @@
 #include "mimir/formalism/ground_literal.hpp"
 
 #include "formatter.hpp"
-#include "mimir/formalism/factories.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/repositories.hpp"
 
 namespace mimir
 {
@@ -56,7 +56,7 @@ const GroundAtom<P>& GroundLiteralImpl<P>::get_atom() const
 }
 
 template<PredicateTag P>
-Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLFactories& pddl_factories) const
+Literal<P> GroundLiteralImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_factories) const
 {
     return pddl_factories.get_or_create_literal(is_negated(), m_atom->lift(terms, pddl_factories));
 }
@@ -66,7 +66,7 @@ template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
 
 template<PredicateTag P>
-std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLFactories& pddl_factories)
+std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_factories)
 {
     VariableList variables;
     LiteralList<P> literals;
@@ -93,9 +93,9 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
     return std::make_pair(variables, literals);
 }
 
-template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralList<Static>&, PDDLFactories&);
-template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, PDDLFactories&);
-template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, PDDLFactories&);
+template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralList<Static>&, PDDLRepositories&);
+template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, PDDLRepositories&);
+template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, PDDLRepositories&);
 
 template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
