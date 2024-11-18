@@ -693,7 +693,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
         out << "label=\"";
         for (const auto& action : get_actions(transition))
         {
-            out << std::make_tuple(std::cref(*abstraction.get_pddl_repositories()), action) << "\n";
+            out << std::make_tuple(action, std::cref(*abstraction.get_pddl_repositories()), PlanActionFormatterTag {}) << "\n";
         }
         out << "\"";  // end label
 

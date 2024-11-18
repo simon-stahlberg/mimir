@@ -210,11 +210,18 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLRepositories&>& data);
 
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&>& data);
+struct FullActionFormatterTag
+{
+};
+struct PlanActionFormatterTag
+{
+};
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLRepositories&, GroundAction>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, FullActionFormatterTag>& data);
+
+template<>
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, PlanActionFormatterTag>& data);
 
 }
 

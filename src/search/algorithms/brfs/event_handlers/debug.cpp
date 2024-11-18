@@ -31,7 +31,7 @@ void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem p
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
-    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_repositories)) << "\n"
+    std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << "\n"
               << "[BrFS] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
               << std::endl;
 }

@@ -39,7 +39,7 @@ Plan to_plan(const GroundActionList& action_view_list, const PDDLRepositories& f
     for (const auto action : action_view_list)
     {
         std::stringstream ss;
-        ss << std::make_tuple(std::cref(factories), action);
+        ss << std::make_tuple(action, std::cref(factories), PlanActionFormatterTag {});
         actions.push_back(ss.str());
         cost += action->get_cost();
     }

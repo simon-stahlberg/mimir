@@ -31,7 +31,7 @@ void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem 
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories)) << "\n"
+    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << "\n"
               << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
               << std::endl;
 }

@@ -380,7 +380,7 @@ bool GroundActionImpl::is_applicable(Problem problem, State state) const
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLRepositories&>& data)
 {
-    const auto [simple_effect, pddl_repositories] = data;
+    const auto& [simple_effect, pddl_repositories] = data;
 
     const auto& ground_atom = pddl_repositories.get_ground_atom<Fluent>(simple_effect.atom_index);
 
@@ -402,7 +402,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLRepositories&>& data)
 {
-    const auto [strips_precondition_proxy, pddl_repositories] = data;
+    const auto& [strips_precondition_proxy, pddl_repositories] = data;
 
     const auto& positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
     const auto& negative_static_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Static>();
@@ -438,7 +438,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondi
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLRepositories&>& data)
 {
-    const auto [strips_effect_proxy, pddl_repositories] = data;
+    const auto& [strips_effect_proxy, pddl_repositories] = data;
 
     const auto& positive_effect_bitset = strips_effect_proxy.get_positive_effects();
     const auto& negative_effect_bitset = strips_effect_proxy.get_negative_effects();
@@ -458,7 +458,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLRepositories&>& data)
 {
-    const auto [cond_effect_proxy, pddl_repositories] = data;
+    const auto& [cond_effect_proxy, pddl_repositories] = data;
 
     const auto& positive_static_precondition_bitset = cond_effect_proxy.get_positive_precondition<Static>();
     const auto& negative_static_precondition_bitset = cond_effect_proxy.get_negative_precondition<Static>();
@@ -494,9 +494,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, c
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, FullActionFormatterTag>& data)
 {
-    const auto [action, pddl_repositories] = data;
+    const auto& [action, pddl_repositories, tag] = data;
 
     auto binding = ObjectList {};
     for (const auto object_index : action->get_object_indices())
@@ -526,9 +526,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<const PDDLRepositories&, GroundAction>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const PDDLRepositories&, PlanActionFormatterTag>& data)
 {
-    const auto [pddl_repositories, ground_action] = data;
+    const auto& [ground_action, pddl_repositories, tag] = data;
 
     const auto action = pddl_repositories.get_action(ground_action->get_action_index());
     os << "(" << action->get_name();
