@@ -15,18 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
+#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTOR_REPOSITORIES_HPP_
+#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_CONSTRUCTOR_REPOSITORIES_HPP_
 
-#include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/equal_to.hpp"
+#include "mimir/languages/description_logics/grammar_constructors.hpp"
 #include "mimir/languages/description_logics/hash.hpp"
 
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
+
+/**
+ * Grammar
+ */
+
+template<IsConceptOrRole D>
+using NonTerminalFactory = loki::UniqueFactory<NonTerminalImpl<D>, UniqueDLHasher<const NonTerminalImpl<D>*>, UniqueDLEqualTo<const NonTerminalImpl<D>*>>;
+
+template<IsConceptOrRole D>
+using ChoiceFactory = loki::UniqueFactory<ChoiceImpl<D>, UniqueDLHasher<const ChoiceImpl<D>*>, UniqueDLEqualTo<const ChoiceImpl<D>*>>;
+
+template<IsConceptOrRole D>
+using DerivationRuleFactory =
+    loki::UniqueFactory<DerivationRuleImpl<D>, UniqueDLHasher<const DerivationRuleImpl<D>*>, UniqueDLEqualTo<const DerivationRuleImpl<D>*>>;
 
 using ConceptBotFactory = loki::UniqueFactory<ConceptBotImpl, UniqueDLHasher<const ConceptBotImpl*>, UniqueDLEqualTo<const ConceptBotImpl*>>;
 using ConceptTopFactory = loki::UniqueFactory<ConceptTopImpl, UniqueDLHasher<const ConceptTopImpl*>, UniqueDLEqualTo<const ConceptTopImpl*>>;
@@ -78,7 +93,10 @@ using RoleRestrictionFactory =
 using RoleIdentityFactory = loki::UniqueFactory<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
 using ConstructorRepositories =
-    boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotFactory>,  //
+    boost::hana::map<boost::hana::pair<boost::hana::type<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept>>,
+                     boost::hana::pair<boost::hana::type<ChoiceImpl<Concept>>, ChoiceFactory<Concept>>,
+                     boost::hana::pair<boost::hana::type<DerivationRuleImpl<Concept>>, DerivationRuleFactory<Concept>>,
+                     boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotFactory>,
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopFactory>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateFactory<Static>>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Fluent>>, ConceptAtomicStateFactory<Fluent>>,
@@ -94,6 +112,9 @@ using ConstructorRepositories =
                      boost::hana::pair<boost::hana::type<ConceptRoleValueMapContainmentImpl>, ConceptRoleValueMapContainmentFactory>,
                      boost::hana::pair<boost::hana::type<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityFactory>,
                      boost::hana::pair<boost::hana::type<ConceptNominalImpl>, ConceptNominalFactory>,
+                     boost::hana::pair<boost::hana::type<NonTerminalImpl<Role>>, NonTerminalFactory<Role>>,
+                     boost::hana::pair<boost::hana::type<ChoiceImpl<Role>>, ChoiceFactory<Role>>,
+                     boost::hana::pair<boost::hana::type<DerivationRuleImpl<Role>>, DerivationRuleFactory<Role>>,
                      boost::hana::pair<boost::hana::type<RoleUniversalImpl>, RoleUniversalFactory>,
                      boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Static>>, RoleAtomicStateFactory<Static>>,
                      boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Fluent>>, RoleAtomicStateFactory<Fluent>>,

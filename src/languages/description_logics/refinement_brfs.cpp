@@ -47,7 +47,7 @@ template<PredicateCategory P>
 static bool refine_concept_atomic_state(Problem problem,
                                         const grammar::Grammar& grammar,
                                         const Options& options,
-                                        VariadicConstructorFactory& ref_constructor_repos,
+                                        ConstructorRepositories& ref_constructor_repos,
                                         RefinementPruningFunction& ref_pruning_function,
                                         SearchSpace& ref_search_space)
 {
@@ -56,7 +56,8 @@ static bool refine_concept_atomic_state(Problem problem,
         if (predicate->get_arity() != 1)
             continue;
 
-        const auto concept_ = ref_constructor_repos.template get<ConceptAtomicStateFactory<P>>().template get_or_create<ConceptAtomicStateImpl<P>>(predicate);
+        const auto concept_ = boost::hana::at_key(ref_constructor_repos, boost::hana::type<ConceptAtomicStateImpl<P>> {})
+                                  .template get_or_create<ConceptAtomicStateImpl<P>>(predicate);
 
         if (grammar.test_match(concept_) && !ref_pruning_function.should_prune(concept_))
         {
@@ -288,7 +289,7 @@ template<typename ConstructorImplType>
 static bool refine_composite_constructor(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         VariadicConstructorFactory& ref_constructor_repos,
+                                         ConstructorRepositories& ref_constructor_repos,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics,
@@ -296,7 +297,6 @@ static bool refine_composite_constructor(Problem problem,
 {
     /* Extract properties using ConstructorProperties */
     using ConstructorType = typename ConstructorProperties<ConstructorImplType>::ConstructorType;
-    using FactoryType = typename ConstructorProperties<ConstructorImplType>::FactoryType;
     using ArgumentTypes = typename ConstructorProperties<ConstructorImplType>::ArgumentTypes;
 
     /* Create the tuple of constructors by complexity based on argument types */
@@ -310,8 +310,8 @@ static bool refine_composite_constructor(Problem problem,
         const auto constructor = std::apply(
             [&](auto&&... unpacked_args)
             {
-                return ref_constructor_repos.template get<FactoryType>().template get_or_create<ConstructorImplType>(
-                    std::forward<decltype(unpacked_args)>(unpacked_args)...);
+                return boost::hana::at_key(ref_constructor_repos, boost::hana::type<ConstructorImplType> {})
+                    .template get_or_create<ConstructorImplType>(std::forward<decltype(unpacked_args)>(unpacked_args)...);
             },
             args);
 
@@ -355,7 +355,7 @@ static bool refine_composite_constructor(Problem problem,
 static bool refine_primitives(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              VariadicConstructorFactory& ref_constructor_repos,
+                              ConstructorRepositories& ref_constructor_repos,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -368,7 +368,7 @@ static bool refine_primitives(Problem problem,
 static bool refine_composites(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              VariadicConstructorFactory& ref_constructor_repos,
+                              ConstructorRepositories& ref_constructor_repos,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -427,7 +427,7 @@ static void fetch_results(const SearchSpace& search_space, Result& result)
 void refine_helper(Problem problem,
                    const grammar::Grammar& grammar,
                    const Options& options,
-                   VariadicConstructorFactory& ref_constructor_repos,
+                   ConstructorRepositories& ref_constructor_repos,
                    RefinementPruningFunction& ref_pruning_function,
                    SearchSpace& ref_search_space,
                    Statistics& ref_statistics)
@@ -445,7 +445,7 @@ void refine_helper(Problem problem,
 Result refine(Problem problem,
               const grammar::Grammar& grammar,
               const Options& options,
-              VariadicConstructorFactory& ref_constructor_repos,
+              ConstructorRepositories& ref_constructor_repos,
               RefinementPruningFunction& ref_pruning_function)
 {
     auto result = Result();

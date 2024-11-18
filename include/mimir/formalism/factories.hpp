@@ -43,6 +43,7 @@
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
 
+#include <boost/hana.hpp>
 #include <loki/loki.hpp>
 #include <ranges>
 
@@ -83,45 +84,46 @@ using NumericFluentFactory = loki::UniqueFactory<NumericFluentImpl, UniquePDDLHa
 using DomainFactory = loki::UniqueFactory<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
 using ProblemFactory = loki::UniqueFactory<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
 
-// TODO: use boost::hana::map
-using VariadicPDDLConstructorFactory = loki::VariadicContainer<RequirementsFactory,
-                                                               VariableFactory,
-                                                               TermFactory,
-                                                               ObjectFactory,
-                                                               AtomFactory<Static>,
-                                                               AtomFactory<Fluent>,
-                                                               AtomFactory<Derived>,
-                                                               GroundAtomFactory<Static>,
-                                                               GroundAtomFactory<Fluent>,
-                                                               GroundAtomFactory<Derived>,
-                                                               LiteralFactory<Static>,
-                                                               LiteralFactory<Fluent>,
-                                                               LiteralFactory<Derived>,
-                                                               GroundLiteralFactory<Static>,
-                                                               GroundLiteralFactory<Fluent>,
-                                                               GroundLiteralFactory<Derived>,
-                                                               PredicateFactory<Static>,
-                                                               PredicateFactory<Fluent>,
-                                                               PredicateFactory<Derived>,
-                                                               FunctionExpressionFactory,
-                                                               GroundFunctionExpressionFactory,
-                                                               FunctionFactory,
-                                                               GroundFunctionFactory,
-                                                               FunctionSkeletonFactory,
-                                                               EffectSimpleFactory,
-                                                               EffectUniversalFactory,
-                                                               ActionFactory,
-                                                               AxiomFactory,
-                                                               OptimizationMetricFactory,
-                                                               NumericFluentFactory,
-                                                               DomainFactory,
-                                                               ProblemFactory>;
+using PDDLRepositories = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsFactory>,
+                                          boost::hana::pair<boost::hana::type<VariableImpl>, VariableFactory>,
+                                          boost::hana::pair<boost::hana::type<TermImpl>, TermFactory>,
+                                          boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectFactory>,
+                                          boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomFactory<Static>>,
+                                          boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomFactory<Fluent>>,
+                                          boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomFactory<Derived>>,
+                                          boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomFactory<Static>>,
+                                          boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomFactory<Fluent>>,
+                                          boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomFactory<Derived>>,
+                                          boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralFactory<Static>>,
+                                          boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralFactory<Fluent>>,
+                                          boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralFactory<Derived>>,
+                                          boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralFactory<Static>>,
+                                          boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralFactory<Fluent>>,
+                                          boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralFactory<Derived>>,
+                                          boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateFactory<Static>>,
+                                          boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateFactory<Fluent>>,
+                                          boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateFactory<Derived>>,
+                                          boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionFactory>,
+                                          boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionFactory>,
+                                          boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionFactory>,
+                                          boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionFactory>,
+                                          boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonFactory>,
+                                          boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleFactory>,
+                                          boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalFactory>,
+                                          boost::hana::pair<boost::hana::type<ActionImpl>, ActionFactory>,
+                                          boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomFactory>,
+                                          boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricFactory>,
+                                          boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentFactory>,
+                                          boost::hana::pair<boost::hana::type<DomainImpl>, DomainFactory>,
+                                          boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemFactory>>;
+
+extern PDDLRepositories create_default_pddl_repositories();
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLFactories
 {
 private:
-    VariadicPDDLConstructorFactory m_factories;
+    PDDLRepositories m_repositories;
 
     VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
 
@@ -273,8 +275,7 @@ public:
     /* Accessors */
 
     // Factory
-    template<typename T>
-    const T& get_factory() const;
+    const PDDLRepositories& get_repositories() const;
 
     // GroundAtom
     template<PredicateCategory P>
@@ -354,7 +355,7 @@ template<PredicateCategory P>
 void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
-    for (const auto& atom : get_factory<GroundAtomFactory<P>>())
+    for (const auto& atom : boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}))
     {
         out_ground_atoms.push_back(atom);
     }
@@ -363,7 +364,7 @@ void PDDLFactories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 template<PredicateCategory P>
 auto PDDLFactories::get_ground_atoms() const
 {
-    const auto& factory = get_factory<GroundAtomFactory<P>>();
+    const auto& factory = boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {});
     return std::ranges::subrange(factory.begin(), factory.end());
 }
 

@@ -15,14 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
 
 ConstructorRepositories create_default_constructor_repositories()
 {
-    return boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<ConceptBotImpl>, ConceptBotFactory {}),
+    return boost::hana::make_map(boost::hana::make_pair(boost::hana::type_c<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<ChoiceImpl<Concept>>, ChoiceFactory<Concept> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<DerivationRuleImpl<Concept>>, DerivationRuleFactory<Concept> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<ConceptBotImpl>, ConceptBotFactory {}),
                                  boost::hana::make_pair(boost::hana::type_c<ConceptTopImpl>, ConceptTopFactory {}),
                                  boost::hana::make_pair(boost::hana::type_c<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateFactory<Static> {}),
                                  boost::hana::make_pair(boost::hana::type_c<ConceptAtomicStateImpl<Fluent>>, ConceptAtomicStateFactory<Fluent> {}),
@@ -38,6 +41,9 @@ ConstructorRepositories create_default_constructor_repositories()
                                  boost::hana::make_pair(boost::hana::type_c<ConceptRoleValueMapContainmentImpl>, ConceptRoleValueMapContainmentFactory {}),
                                  boost::hana::make_pair(boost::hana::type_c<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityFactory {}),
                                  boost::hana::make_pair(boost::hana::type_c<ConceptNominalImpl>, ConceptNominalFactory {}),
+                                 boost::hana::make_pair(boost::hana::type_c<NonTerminalImpl<Role>>, NonTerminalFactory<Role> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<ChoiceImpl<Role>>, ChoiceFactory<Role> {}),
+                                 boost::hana::make_pair(boost::hana::type_c<DerivationRuleImpl<Role>>, DerivationRuleFactory<Role> {}),
                                  boost::hana::make_pair(boost::hana::type_c<RoleUniversalImpl>, RoleUniversalFactory {}),
                                  boost::hana::make_pair(boost::hana::type_c<RoleAtomicStateImpl<Static>>, RoleAtomicStateFactory<Static> {}),
                                  boost::hana::make_pair(boost::hana::type_c<RoleAtomicStateImpl<Fluent>>, RoleAtomicStateFactory<Fluent> {}),

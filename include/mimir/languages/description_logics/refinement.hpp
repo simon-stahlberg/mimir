@@ -76,6 +76,9 @@ private:
     DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation.
     DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation.
 
+    // just to test:
+    ConstructorRepositories m_fac;
+
     /// @brief Repository for managing concept denotations.
     /// This stores the computed denotations for each concept feature across all states.
     DenotationRepository<Concept> m_concept_denotation_repository;
@@ -141,7 +144,7 @@ struct Result
 extern Result refine(Problem problem,
                      const grammar::Grammar& grammar,
                      const Options& options,
-                     VariadicConstructorFactory& ref_constructor_repos,
+                     ConstructorRepositories& ref_constructor_repos,
                      RefinementPruningFunction& ref_pruning_function);
 
 }

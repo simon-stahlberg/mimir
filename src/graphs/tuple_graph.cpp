@@ -622,10 +622,10 @@ TupleGraph TupleGraphFactory::create_for_arity_k(State root_state)
 
 TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpace> state_space, int arity, bool prune_dominated_tuples) :
     m_state_space(std::move(state_space)),
-    m_tuple_index_mapper(
-        std::make_shared<TupleIndexMapper>(arity,
-                                           m_state_space->get_aag()->get_pddl_factories()->get_factory<GroundAtomFactory<Fluent>>().size()
-                                               + m_state_space->get_aag()->get_pddl_factories()->get_factory<GroundAtomFactory<Derived>>().size())),
+    m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(
+        arity,
+        boost::hana::at_key(m_state_space->get_aag()->get_pddl_factories()->get_repositories(), boost::hana::type<GroundAtomImpl<Fluent>> {}).size()
+            + boost::hana::at_key(m_state_space->get_aag()->get_pddl_factories()->get_repositories(), boost::hana::type<GroundAtomImpl<Derived>> {}).size())),
     m_prune_dominated_tuples(prune_dominated_tuples)
 {
 }

@@ -35,32 +35,32 @@ struct Context
     std::unordered_map<std::string, NonTerminal<Role>> m_role_non_terminal_by_name;
 };
 
-static Choice<Concept> parse(const dl::ast::Concept& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::Concept& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Concept> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static Choice<Role> parse(const dl::ast::Role& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::Role& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static const Choice<Concept>
-parse(const dl::ast::ConceptBot& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static const Choice<Concept> parse(const dl::ast::ConceptBot& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptBotFactory>().template get_or_create<ConceptBotImpl>());
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptBotImpl> {}).template get_or_create<ConceptBotImpl>());
+}
+
+static const Choice<Concept> parse(const dl::ast::ConceptTop& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+{
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptTopImpl> {}).template get_or_create<ConceptTopImpl>());
 }
 
 static const Choice<Concept>
-parse(const dl::ast::ConceptTop& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
-{
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptTopFactory>().template get_or_create<ConceptTopImpl>());
-}
-
-static const Choice<Concept>
-parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -69,8 +69,10 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarCon
         {
             throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicStateFactory<Static>>().template get_or_create<ConceptAtomicStateImpl<Static>>(predicate));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+            .template get_or_create<ChoiceImpl<Concept>>(
+                boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptAtomicStateImpl<Static>> {})
+                    .template get_or_create<ConceptAtomicStateImpl<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -79,8 +81,10 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarCon
         {
             throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicStateFactory<Fluent>>().template get_or_create<ConceptAtomicStateImpl<Fluent>>(predicate));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+            .template get_or_create<ChoiceImpl<Concept>>(
+                boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptAtomicStateImpl<Fluent>> {})
+                    .template get_or_create<ConceptAtomicStateImpl<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -89,9 +93,10 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarCon
         {
             throw std::runtime_error("Cannot construct ConceptAtomicState from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicStateFactory<Derived>>().template get_or_create<ConceptAtomicStateImpl<Derived>>(
-                predicate));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+            .template get_or_create<ChoiceImpl<Concept>>(
+                boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptAtomicStateImpl<Derived>> {})
+                    .template get_or_create<ConceptAtomicStateImpl<Derived>>(predicate));
     }
     else
     {
@@ -99,8 +104,7 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, VariadicGrammarCon
     }
 }
 
-static Choice<Concept>
-parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -109,10 +113,9 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Static>>().template get_or_create<ConceptAtomicGoalImpl<Static>>(
-                predicate,
-                node.is_negated));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+            .template get_or_create<ChoiceImpl<Concept>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptAtomicGoalImpl<Static>> {})
+                                                             .template get_or_create<ConceptAtomicGoalImpl<Static>>(predicate, node.is_negated));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -121,10 +124,9 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Fluent>>().template get_or_create<ConceptAtomicGoalImpl<Fluent>>(
-                predicate,
-                node.is_negated));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+            .template get_or_create<ChoiceImpl<Concept>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptAtomicGoalImpl<Fluent>> {})
+                                                             .template get_or_create<ConceptAtomicGoalImpl<Fluent>>(predicate, node.is_negated));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -133,10 +135,10 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
         {
             throw std::runtime_error("Cannot construct ConceptAtomicGoal from predicates with arity != 1.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-            ref_grammar_constructor_repos.template get<ConceptAtomicGoalFactory<Derived>>().template get_or_create<ConceptAtomicGoalImpl<Derived>>(
-                predicate,
-                node.is_negated));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+            .template get_or_create<ChoiceImpl<Concept>>(
+                boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptAtomicGoalImpl<Derived>> {})
+                    .template get_or_create<ConceptAtomicGoalImpl<Derived>>(predicate, node.is_negated));
     }
     else
     {
@@ -144,104 +146,106 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, VariadicGrammarCons
     }
 }
 
-static Choice<Concept>
-parse(const dl::ast::ConceptIntersection& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptIntersection& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptIntersectionFactory>().template get_or_create<ConceptIntersectionImpl>(
-            parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptIntersectionImpl> {})
+                .template get_or_create<ConceptIntersectionImpl>(parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
+                                                                 parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept> parse(const dl::ast::ConceptUnion& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+{
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptUnionImpl> {})
+                .template get_or_create<ConceptUnionImpl>(parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
+                                                          parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Concept> parse(const dl::ast::ConceptNegation& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+{
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptNegationImpl> {})
+                .template get_or_create<ConceptNegationImpl>(parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptUnion& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptUnionFactory>().template get_or_create<ConceptUnionImpl>(
-            parse(node.concept_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptValueRestrictionImpl> {})
+                .template get_or_create<ConceptValueRestrictionImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context),
+                                                                     parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptNegation& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptNegationFactory>().template get_or_create<ConceptNegationImpl>(
-            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptExistentialQuantificationImpl> {})
+                .template get_or_create<ConceptExistentialQuantificationImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context),
+                                                                              parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptValueRestriction& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptValueRestrictionFactory>().template get_or_create<ConceptValueRestrictionImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context),
-            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptRoleValueMapContainmentImpl> {})
+                .template get_or_create<ConceptRoleValueMapContainmentImpl>(parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+                                                                            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptExistentialQuantificationFactory>().template get_or_create<ConceptExistentialQuantificationImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context),
-            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptRoleValueMapEqualityImpl> {})
+                .template get_or_create<ConceptRoleValueMapEqualityImpl>(parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+                                                                         parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Concept>
-parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
-{
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptRoleValueMapContainmentFactory>().template get_or_create<ConceptRoleValueMapContainmentImpl>(
-            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
-}
-
-static Choice<Concept>
-parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
-{
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptRoleValueMapEqualityFactory>().template get_or_create<ConceptRoleValueMapEqualityImpl>(
-            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
-}
-
-static Choice<Concept>
-parse(const dl::ast::ConceptNominal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptNominal& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (!domain->get_name_to_constants().contains(node.object_name))
     {
         throw std::runtime_error("Domain has no constant with name \"" + node.object_name + "\".");
     }
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(
-        ref_grammar_constructor_repos.template get<ConceptNominalFactory>().template get_or_create<ConceptNominalImpl>(
-            domain->get_name_to_constants().at(node.object_name)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptNominalImpl> {})
+                                                         .template get_or_create<ConceptNominalImpl>(domain->get_name_to_constants().at(node.object_name)));
 }
 
-static Choice<Concept>
-parse(const dl::ast::ConceptNonTerminal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptNonTerminal& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    const auto& non_terminal =
-        ref_grammar_constructor_repos.template get<NonTerminalFactory<Concept>>().template get_or_create<NonTerminalImpl<Concept>>(node.name);
+    const auto& non_terminal = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<NonTerminalImpl<Concept>> {})
+                                   .template get_or_create<NonTerminalImpl<Concept>>(node.name);
     context.m_concept_non_terminal_by_name.emplace(node.name, non_terminal);
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Concept>>().template get_or_create<ChoiceImpl<Concept>>(non_terminal);
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
+        .template get_or_create<ChoiceImpl<Concept>>(non_terminal);
 }
 
-static Choice<Concept>
-parse(const dl::ast::ConceptChoice& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptChoice& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Concept> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
 static DerivationRule<Concept>
-parse(const dl::ast::ConceptDerivationRule& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptDerivationRule& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     auto choices = ChoiceList<Concept> {};
     std::for_each(node.choices.begin(),
                   node.choices.end(),
                   [&](const auto& choice) { choices.push_back(parse(choice, domain, ref_grammar_constructor_repos, context)); });
-    const auto& rule =
-        ref_grammar_constructor_repos.template get<DerivationRuleFactory<Concept>>().template get_or_create<DerivationRuleImpl<Concept>>(choices);
+    const auto& rule = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<DerivationRuleImpl<Concept>> {})
+                           .template get_or_create<DerivationRuleImpl<Concept>>(choices);
     if (context.m_concept_rules_by_name.count(node.non_terminal.name))
     {
         throw std::runtime_error("Got multiple concept rule definitions for non terminal \"" + node.non_terminal.name + "\". Use choice rules instead.");
@@ -250,15 +254,14 @@ parse(const dl::ast::ConceptDerivationRule& node, Domain domain, VariadicGrammar
     return rule;
 }
 
-static const Choice<Role>
-parse(const dl::ast::RoleUniversal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static const Choice<Role> parse(const dl::ast::RoleUniversal& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleUniversalFactory>().template get_or_create<RoleUniversalImpl>());
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleUniversalImpl> {}).template get_or_create<RoleUniversalImpl>());
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleAtomicState& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleAtomicState& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -267,8 +270,9 @@ parse(const dl::ast::RoleAtomicState& node, Domain domain, VariadicGrammarConstr
         {
             throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Static>>().template get_or_create<RoleAtomicStateImpl<Static>>(predicate));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+            .template get_or_create<ChoiceImpl<Role>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleAtomicStateImpl<Static>> {})
+                                                          .template get_or_create<RoleAtomicStateImpl<Static>>(predicate));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -277,8 +281,9 @@ parse(const dl::ast::RoleAtomicState& node, Domain domain, VariadicGrammarConstr
         {
             throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Fluent>>().template get_or_create<RoleAtomicStateImpl<Fluent>>(predicate));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+            .template get_or_create<ChoiceImpl<Role>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleAtomicStateImpl<Fluent>> {})
+                                                          .template get_or_create<RoleAtomicStateImpl<Fluent>>(predicate));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -287,8 +292,9 @@ parse(const dl::ast::RoleAtomicState& node, Domain domain, VariadicGrammarConstr
         {
             throw std::runtime_error("Cannot construct RoleAtomicState from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateStateFactory<Derived>>().template get_or_create<RoleAtomicStateImpl<Derived>>(predicate));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+            .template get_or_create<ChoiceImpl<Role>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleAtomicStateImpl<Derived>> {})
+                                                          .template get_or_create<RoleAtomicStateImpl<Derived>>(predicate));
     }
     else
     {
@@ -296,8 +302,7 @@ parse(const dl::ast::RoleAtomicState& node, Domain domain, VariadicGrammarConstr
     }
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -306,9 +311,9 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Static>>().template get_or_create<RoleAtomicGoalImpl<Static>>(predicate,
-                                                                                                                                              node.is_negated));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+            .template get_or_create<ChoiceImpl<Role>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleAtomicGoalImpl<Static>> {})
+                                                          .template get_or_create<RoleAtomicGoalImpl<Static>>(predicate, node.is_negated));
     }
     else if (domain->get_name_to_predicate<Fluent>().count(node.predicate_name))
     {
@@ -317,9 +322,9 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Fluent>>().template get_or_create<RoleAtomicGoalImpl<Fluent>>(predicate,
-                                                                                                                                              node.is_negated));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+            .template get_or_create<ChoiceImpl<Role>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleAtomicGoalImpl<Fluent>> {})
+                                                          .template get_or_create<RoleAtomicGoalImpl<Fluent>>(predicate, node.is_negated));
     }
     else if (domain->get_name_to_predicate<Derived>().count(node.predicate_name))
     {
@@ -328,10 +333,9 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
         {
             throw std::runtime_error("Cannot construct RoleAtomicGoal from predicates with arity != 2.");
         }
-        return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-            ref_grammar_constructor_repos.template get<RolePredicateGoalFactory<Derived>>().template get_or_create<RoleAtomicGoalImpl<Derived>>(
-                predicate,
-                node.is_negated));
+        return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+            .template get_or_create<ChoiceImpl<Role>>(boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleAtomicGoalImpl<Derived>> {})
+                                                          .template get_or_create<RoleAtomicGoalImpl<Derived>>(predicate, node.is_negated));
     }
     else
     {
@@ -339,100 +343,105 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, VariadicGrammarConstru
     }
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleIntersection& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleIntersection& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleIntersectionFactory>().template get_or_create<RoleIntersectionImpl>(
-            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleIntersectionImpl> {})
+                .template get_or_create<RoleIntersectionImpl>(parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+                                                              parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleUnion& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleUnion& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleUnionFactory>().template get_or_create<RoleUnionImpl>(
-            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleUnionImpl> {})
+                .template get_or_create<RoleUnionImpl>(parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+                                                       parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleComplement& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleComplement& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleComplementFactory>().template get_or_create<RoleComplementImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleComplementImpl> {})
+                .template get_or_create<RoleComplementImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleInverse& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleInverse& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleInverseFactory>().template get_or_create<RoleInverseImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleInverseImpl> {})
+                .template get_or_create<RoleInverseImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleComposition& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleComposition& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleCompositionFactory>().template get_or_create<RoleCompositionImpl>(
-            parse(node.role_left, domain, ref_grammar_constructor_repos, context),
-            parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleCompositionImpl> {})
+                .template get_or_create<RoleCompositionImpl>(parse(node.role_left, domain, ref_grammar_constructor_repos, context),
+                                                             parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleTransitiveClosureFactory>().template get_or_create<RoleTransitiveClosureImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
-}
-
-static Choice<Role>
-parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
-{
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleReflexiveTransitiveClosureFactory>().template get_or_create<RoleReflexiveTransitiveClosureImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleTransitiveClosureImpl> {})
+                .template get_or_create<RoleTransitiveClosureImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
 static Choice<Role>
-parse(const dl::ast::RoleRestriction& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleRestrictionFactory>().template get_or_create<RoleRestrictionImpl>(
-            parse(node.role_, domain, ref_grammar_constructor_repos, context),
-            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleReflexiveTransitiveClosureImpl> {})
+                .template get_or_create<RoleReflexiveTransitiveClosureImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleIdentity& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleRestriction& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(
-        ref_grammar_constructor_repos.template get<RoleIdentityFactory>().template get_or_create<RoleIdentityImpl>(
-            parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleRestrictionImpl> {})
+                .template get_or_create<RoleRestrictionImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context),
+                                                             parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role>
-parse(const dl::ast::RoleNonTerminal& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleIdentity& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
-    const auto& non_terminal = ref_grammar_constructor_repos.template get<NonTerminalFactory<Role>>().template get_or_create<NonTerminalImpl<Role>>(node.name);
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
+        .template get_or_create<ChoiceImpl<Role>>(
+            boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleIdentityImpl> {})
+                .template get_or_create<RoleIdentityImpl>(parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
+}
+
+static Choice<Role> parse(const dl::ast::RoleNonTerminal& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
+{
+    const auto& non_terminal = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<NonTerminalImpl<Role>> {})
+                                   .template get_or_create<NonTerminalImpl<Role>>(node.name);
     context.m_role_non_terminal_by_name.emplace(node.name, non_terminal);
-    return ref_grammar_constructor_repos.template get<ChoiceFactory<Role>>().template get_or_create<ChoiceImpl<Role>>(non_terminal);
+    return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {}).template get_or_create<ChoiceImpl<Role>>(non_terminal);
 }
 
-static Choice<Role> parse(const dl::ast::RoleChoice& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleChoice& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
 static DerivationRule<Role>
-parse(const dl::ast::RoleDerivationRule& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleDerivationRule& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     auto choices = ChoiceList<Role> {};
     std::for_each(node.choices.begin(),
                   node.choices.end(),
                   [&](const auto& choice) { choices.push_back(parse(choice, domain, ref_grammar_constructor_repos, context)); });
-    const auto& rule = ref_grammar_constructor_repos.template get<DerivationRuleFactory<Role>>().template get_or_create<DerivationRuleImpl<Role>>(choices);
+    const auto& rule = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<DerivationRuleImpl<Role>> {})
+                           .template get_or_create<DerivationRuleImpl<Role>>(choices);
     if (context.m_role_rules_by_name.count(node.non_terminal.name))
     {
         throw std::runtime_error("Got multiple role rule definitions for non terminal \"" + node.non_terminal.name + "\". Use choice rules instead.");
@@ -442,7 +451,7 @@ parse(const dl::ast::RoleDerivationRule& node, Domain domain, VariadicGrammarCon
 }
 
 static std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
-parse(const dl::ast::Grammar& node, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::Grammar& node, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     auto concept_rules = DerivationRuleList<Concept> {};
     auto role_rules = DerivationRuleList<Role> {};
@@ -495,7 +504,7 @@ parse(const dl::ast::Grammar& node, Domain domain, VariadicGrammarConstructorFac
 }
 
 std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
-parse(const std::string& bnf_grammar_description, Domain domain, VariadicGrammarConstructorFactory& ref_grammar_constructor_repos)
+parse(const std::string& bnf_grammar_description, Domain domain, ConstructorRepositories& ref_grammar_constructor_repos)
 {
     auto ast = dl::ast::Grammar();
     dl::parse_ast(bnf_grammar_description, dl::grammar_parser(), ast);

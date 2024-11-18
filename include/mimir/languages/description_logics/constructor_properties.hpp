@@ -19,7 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_PROPERTIES_HPP_
 
 #include "mimir/languages/description_logics/constructor_category.hpp"
-#include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 
 namespace mimir::dl
@@ -33,7 +32,6 @@ template<>
 struct ConstructorProperties<ConceptIntersectionImpl>
 {
     using ConstructorType = Concept;
-    using FactoryType = ConceptIntersectionFactory;
     using ArgumentTypes = std::tuple<Concept, Concept>;
 };
 
@@ -41,7 +39,6 @@ template<>
 struct ConstructorProperties<ConceptUnionImpl>
 {
     using ConstructorType = Concept;
-    using FactoryType = ConceptUnionFactory;
     using ArgumentTypes = std::tuple<Concept, Concept>;
 };
 }

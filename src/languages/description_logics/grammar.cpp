@@ -17,60 +17,12 @@
 
 #include "mimir/languages/description_logics/grammar.hpp"
 
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/predicate.hpp"
 #include "parser.hpp"
 
 namespace mimir::dl::grammar
 {
 
-VariadicGrammarConstructorFactory create_default_variadic_grammar_constructor_factory()
-{
-    return VariadicGrammarConstructorFactory(NonTerminalFactory<Concept>(),
-                                             ChoiceFactory<Concept>(),
-                                             DerivationRuleFactory<Concept>(),
-                                             ConceptBotFactory(),
-                                             ConceptTopFactory(),
-                                             ConceptAtomicStateFactory<Static>(),
-                                             ConceptAtomicStateFactory<Fluent>(),
-                                             ConceptAtomicStateFactory<Derived>(),
-                                             ConceptAtomicGoalFactory<Static>(),
-                                             ConceptAtomicGoalFactory<Fluent>(),
-                                             ConceptAtomicGoalFactory<Derived>(),
-                                             ConceptIntersectionFactory(),
-                                             ConceptUnionFactory(),
-                                             ConceptNegationFactory(),
-                                             ConceptValueRestrictionFactory(),
-                                             ConceptExistentialQuantificationFactory(),
-                                             ConceptRoleValueMapContainmentFactory(),
-                                             ConceptRoleValueMapEqualityFactory(),
-                                             ConceptNominalFactory(),
-                                             NonTerminalFactory<Role>(),
-                                             ChoiceFactory<Role>(),
-                                             DerivationRuleFactory<Role>(),
-                                             RoleUniversalFactory(),
-                                             RolePredicateStateFactory<Static>(),
-                                             RolePredicateStateFactory<Fluent>(),
-                                             RolePredicateStateFactory<Derived>(),
-                                             RolePredicateGoalFactory<Static>(),
-                                             RolePredicateGoalFactory<Fluent>(),
-                                             RolePredicateGoalFactory<Derived>(),
-                                             RoleIntersectionFactory(),
-                                             RoleUnionFactory(),
-                                             RoleComplementFactory(),
-                                             RoleInverseFactory(),
-                                             RoleCompositionFactory(),
-                                             RoleTransitiveClosureFactory(),
-                                             RoleReflexiveTransitiveClosureFactory(),
-                                             RoleRestrictionFactory(),
-                                             RoleIdentityFactory());
-}
-
-/**
- * Grammar
- */
-
-Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos(create_default_variadic_grammar_constructor_factory())
+Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos(create_default_constructor_repositories())
 {
     const auto [concept_rules, role_rules] = parse(bnf_description, domain, m_grammar_constructor_repos);
     m_concept_rules = std::move(concept_rules);
