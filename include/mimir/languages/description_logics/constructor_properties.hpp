@@ -23,24 +23,119 @@
 
 namespace mimir::dl
 {
+
+/// @brief `ConstructorProperties` is a type trait to provide additional information related to dl constructors.
+/// It is currently used only for generating composite constructors in the refinement process.
+/// @tparam T
 template<typename T>
 struct ConstructorProperties
 {
 };
 
+/**
+ * Composite concepts
+ */
+
 template<>
 struct ConstructorProperties<ConceptIntersectionImpl>
 {
-    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Concept, Concept>;
 };
 
 template<>
 struct ConstructorProperties<ConceptUnionImpl>
 {
-    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Concept, Concept>;
 };
+
+template<>
+struct ConstructorProperties<ConceptNegationImpl>
+{
+    using ArgumentTypes = std::tuple<Concept>;
+};
+
+template<>
+struct ConstructorProperties<ConceptValueRestrictionImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Concept>;
+};
+
+template<>
+struct ConstructorProperties<ConceptExistentialQuantificationImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Concept>;
+};
+
+template<>
+struct ConstructorProperties<ConceptRoleValueMapContainmentImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Role>;
+};
+
+template<>
+struct ConstructorProperties<ConceptRoleValueMapEqualityImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Role>;
+};
+
+/**
+ * Composite roles
+ */
+
+template<>
+struct ConstructorProperties<RoleIntersectionImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleUnionImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleComplementImpl>
+{
+    using ArgumentTypes = std::tuple<Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleInverseImpl>
+{
+    using ArgumentTypes = std::tuple<Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleCompositionImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleTransitiveClosureImpl>
+{
+    using ArgumentTypes = std::tuple<Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleReflexiveTransitiveClosureImpl>
+{
+    using ArgumentTypes = std::tuple<Role>;
+};
+
+template<>
+struct ConstructorProperties<RoleRestrictionImpl>
+{
+    using ArgumentTypes = std::tuple<Role, Concept>;
+};
+
+template<>
+struct ConstructorProperties<RoleIdentityImpl>
+{
+    using ArgumentTypes = std::tuple<Concept>;
+};
+
 }
 
 #endif

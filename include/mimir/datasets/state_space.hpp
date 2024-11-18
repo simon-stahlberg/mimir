@@ -100,13 +100,13 @@ private:
 public:
     /// @brief Try to create a `StateSpace` from the given input files with the given options.
     /// @param problem The problem from which to create the state space.
-    /// @param parser External memory to PDDLRepositories.
+    /// @param pddl_repositories External memory to PDDLRepositories.
     /// @param applicable_action_generator External memory to applicable_action_generator.
     /// @param state_repository External memory to state_repository.
     /// @param options the options.
     /// @return StateSpace if construction is within the given options, and otherwise nullptr.
     static std::optional<StateSpace> create(Problem problem,
-                                            std::shared_ptr<PDDLRepositories> factories,
+                                            std::shared_ptr<PDDLRepositories> pddl_repositories,
                                             std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                             std::shared_ptr<StateRepository> state_repository,
                                             const StateSpaceOptions& options = StateSpaceOptions());

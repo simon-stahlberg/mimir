@@ -135,7 +135,7 @@ struct Result
 extern Result refine(Problem problem,
                      const grammar::Grammar& grammar,
                      const Options& options,
-                     ConstructorTagToRepository& ref_constructor_repos,
+                     ConstructorTagToRepository& ref_constructor_repositories,
                      RefinementPruningFunction& ref_pruning_function);
 
 }

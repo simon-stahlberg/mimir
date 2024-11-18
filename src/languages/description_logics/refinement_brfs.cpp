@@ -40,32 +40,53 @@ struct SearchSpace
 };
 
 /**
- * Refinement of constructors that accept predicates.
+ * Post construction refinement
  */
 
-template<PredicateTag P>
-static bool refine_concept_atomic_state(Problem problem,
-                                        const grammar::Grammar& grammar,
-                                        const Options& options,
-                                        ConstructorTagToRepository& ref_constructor_repos,
-                                        RefinementPruningFunction& ref_pruning_function,
-                                        SearchSpace& ref_search_space)
+template<ConstructorTag D>
+static bool try_insert_into_search_space(Problem problem,
+                                         const grammar::Grammar& grammar,
+                                         const Options& options,
+                                         Constructor<D> constructor,
+                                         size_t complexity,
+                                         RefinementPruningFunction& ref_pruning_function,
+                                         SearchSpace& ref_search_space,
+                                         Statistics& ref_statistics)
 {
-    for (const auto& predicate : problem->get_domain()->get_predicates<P>())
+    /* Test rejection by grammar. */
+
+    if (!grammar.test_match(constructor))
     {
-        if (predicate->get_arity() != 1)
-            continue;
+        ++boost::hana::at_key(ref_statistics.num_rejected_by_grammar, boost::hana::type<D> {});
 
-        const auto concept_ = boost::hana::at_key(ref_constructor_repos, boost::hana::type<ConceptAtomicStateImpl<P>> {})
-                                  .template get_or_create<ConceptAtomicStateImpl<P>>(predicate);
+        return false;
+    }
 
-        if (grammar.test_match(concept_) && !ref_pruning_function.should_prune(concept_))
-        {
-            if (boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<Concept> {}).size() < 2)
-                boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<Concept> {}).resize(2);
+    /* Test pruning. */
 
-            boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<Concept> {})[1].push_back(concept_);
-        }
+    if (!ref_pruning_function.should_prune(constructor))
+    {
+        ++boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<D> {});
+
+        if (boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {}).size() < complexity)
+            boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {}).resize(complexity + 2);
+
+        boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {})[complexity + 1].push_back(constructor);
+    }
+    else
+    {
+        ++boost::hana::at_key(ref_statistics.num_pruned, boost::hana::type<D> {});
+
+        return false;
+    }
+
+    /* Check whether resource limits were reached; TODO: time and memory limit. */
+
+    if (boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<D> {}) >= boost::hana::at_key(options.max_constructors, boost::hana::type<D> {}))
+    {
+        std::cout << "Reached resource limits during refinement!" << std::endl;
+
+        return true;
     }
 
     return false;
@@ -289,14 +310,13 @@ template<typename ConstructorImplType>
 static bool refine_composite_constructor(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         ConstructorTagToRepository& ref_constructor_repos,
+                                         ConstructorTagToRepository& ref_constructor_repositories,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics,
                                          size_t complexity)
 {
     /* Extract properties using ConstructorProperties */
-    using ConstructorType = typename ConstructorProperties<ConstructorImplType>::ConstructorType;
     using ArgumentTypes = typename ConstructorProperties<ConstructorImplType>::ArgumentTypes;
 
     /* Create the tuple of constructors by complexity based on argument types */
@@ -307,45 +327,152 @@ static bool refine_composite_constructor(Problem problem,
                                                  ConstructorArgumentConstIterator(constructors_by_complexity, complexity, false)))
     {
         /* Create constructor. */
+
         const auto constructor = std::apply(
             [&](auto&&... unpacked_args)
             {
-                return boost::hana::at_key(ref_constructor_repos, boost::hana::type<ConstructorImplType> {})
+                return boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConstructorImplType> {})
                     .template get_or_create<ConstructorImplType>(std::forward<decltype(unpacked_args)>(unpacked_args)...);
             },
             args);
 
-        /* Test rejection by grammar. */
+        /* Check grammar, prune, insert. */
 
-        if (!grammar.test_match(constructor))
+        try_insert_into_search_space(problem, grammar, options, constructor, complexity, ref_pruning_function, ref_search_space, ref_statistics);
+    }
+
+    return false;
+}
+
+/**
+ * Refinement of concept bot.
+ */
+
+static bool refine_primitive_concept_bot(Problem problem,
+                                         const grammar::Grammar& grammar,
+                                         const Options& options,
+                                         ConstructorTagToRepository& ref_constructor_repositories,
+                                         RefinementPruningFunction& ref_pruning_function,
+                                         SearchSpace& ref_search_space,
+                                         Statistics& ref_statistics)
+{
+    const auto concept_bot = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptBotImpl> {}).template get_or_create<ConceptBotImpl>();
+
+    return try_insert_into_search_space(problem, grammar, options, concept_bot, 1, ref_pruning_function, ref_search_space, ref_statistics);
+}
+
+/**
+ * Refinement of concept top.
+ */
+
+static bool refine_primitive_concept_top(Problem problem,
+                                         const grammar::Grammar& grammar,
+                                         const Options& options,
+                                         ConstructorTagToRepository& ref_constructor_repositories,
+                                         RefinementPruningFunction& ref_pruning_function,
+                                         SearchSpace& ref_search_space,
+                                         Statistics& ref_statistics)
+{
+    const auto concept_top = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptTopImpl> {}).template get_or_create<ConceptTopImpl>();
+
+    return try_insert_into_search_space(problem, grammar, options, concept_top, 1, ref_pruning_function, ref_search_space, ref_statistics);
+}
+
+/**
+ * Refinement of role universal.
+ */
+
+static bool refine_primitive_role_universal(Problem problem,
+                                            const grammar::Grammar& grammar,
+                                            const Options& options,
+                                            ConstructorTagToRepository& ref_constructor_repositories,
+                                            RefinementPruningFunction& ref_pruning_function,
+                                            SearchSpace& ref_search_space,
+                                            Statistics& ref_statistics)
+{
+    const auto role_universal =
+        boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleUniversalImpl> {}).template get_or_create<RoleUniversalImpl>();
+
+    return try_insert_into_search_space(problem, grammar, options, role_universal, 1, ref_pruning_function, ref_search_space, ref_statistics);
+}
+
+/**
+ * Refinement of concept nominal.
+ */
+
+static bool refine_primitive_concept_nominal(Problem problem,
+                                             const grammar::Grammar& grammar,
+                                             const Options& options,
+                                             ConstructorTagToRepository& ref_constructor_repositories,
+                                             RefinementPruningFunction& ref_pruning_function,
+                                             SearchSpace& ref_search_space,
+                                             Statistics& ref_statistics)
+{
+    for (const auto& object : problem->get_domain()->get_constants())
+    {
+        const auto concept_nominal =
+            boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptNominalImpl> {}).template get_or_create<ConceptNominalImpl>(object);
+
+        return try_insert_into_search_space(problem, grammar, options, concept_nominal, 1, ref_pruning_function, ref_search_space, ref_statistics);
+    }
+
+    return false;
+}
+
+/**
+ * Refinement of atomic constructors that accept predicates.
+ */
+
+template<PredicateTag P>
+static bool refine_primitive_constructor_atomic(Problem problem,
+                                                const grammar::Grammar& grammar,
+                                                const Options& options,
+                                                ConstructorTagToRepository& ref_constructor_repositories,
+                                                RefinementPruningFunction& ref_pruning_function,
+                                                SearchSpace& ref_search_space,
+                                                Statistics& ref_statistics)
+{
+    for (const auto& predicate : problem->get_domain()->get_predicates<P>())
+    {
+        if (predicate->get_arity() == 1)
         {
-            ++boost::hana::at_key(ref_statistics.num_rejected_by_grammar, boost::hana::type<ConstructorType> {});
+            const auto concept_state = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicStateImpl<P>> {})
+                                           .template get_or_create<ConceptAtomicStateImpl<P>>(predicate);
 
-            continue;
+            if (try_insert_into_search_space(problem, grammar, options, concept_state, 1, ref_pruning_function, ref_search_space, ref_statistics))
+                return true;
+
+            const auto concept_goal_true = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {})
+                                               .template get_or_create<ConceptAtomicGoalImpl<P>>(predicate, true);
+
+            if (try_insert_into_search_space(problem, grammar, options, concept_goal_true, 1, ref_pruning_function, ref_search_space, ref_statistics))
+                return true;
+
+            const auto concept_goal_false = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {})
+                                                .template get_or_create<ConceptAtomicGoalImpl<P>>(predicate, false);
+
+            if (try_insert_into_search_space(problem, grammar, options, concept_goal_false, 1, ref_pruning_function, ref_search_space, ref_statistics))
+                return true;
         }
-
-        /* Test pruning. */
-
-        if (!ref_pruning_function.should_prune(constructor))
+        else if (predicate->get_arity() == 2)
         {
-            ++boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<ConstructorType> {});
+            const auto role_state = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicStateImpl<P>> {})
+                                        .template get_or_create<RoleAtomicStateImpl<P>>(predicate);
 
-            if (boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<ConstructorType> {}).size() < complexity)
-                boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<ConstructorType> {}).resize(complexity + 2);
+            if (try_insert_into_search_space(problem, grammar, options, role_state, 1, ref_pruning_function, ref_search_space, ref_statistics))
+                return true;
 
-            boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<ConstructorType> {})[complexity + 1].push_back(constructor);
-        }
-        else
-        {
-            ++boost::hana::at_key(ref_statistics.num_pruned, boost::hana::type<ConstructorType> {});
-        }
+            const auto role_goal_true = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {})
+                                            .template get_or_create<RoleAtomicGoalImpl<P>>(predicate, true);
 
-        /* Check whether resource limits were reached; TODO: time and memory limit. */
+            if (try_insert_into_search_space(problem, grammar, options, role_goal_true, 1, ref_pruning_function, ref_search_space, ref_statistics))
+                return true;
 
-        if (boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<ConstructorType> {})
-            >= boost::hana::at_key(options.max_constructors, boost::hana::type<ConstructorType> {}))
-        {
-            return true;
+            const auto role_goal_false = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {})
+                                             .template get_or_create<RoleAtomicGoalImpl<P>>(predicate, false);
+
+            if (try_insert_into_search_space(problem, grammar, options, role_goal_false, 1, ref_pruning_function, ref_search_space, ref_statistics))
+                return true;
         }
     }
 
@@ -355,20 +482,42 @@ static bool refine_composite_constructor(Problem problem,
 static bool refine_primitives(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorTagToRepository& ref_constructor_repos,
+                              ConstructorTagToRepository& ref_constructor_repositories,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
 {
-    return refine_concept_atomic_state<Static>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space)
-           || refine_concept_atomic_state<Fluent>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space)
-           || refine_concept_atomic_state<Derived>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space);
+    return refine_primitive_concept_bot(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
+           || refine_primitive_concept_top(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
+           || refine_primitive_role_universal(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
+           || refine_primitive_concept_nominal(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
+           || refine_primitive_constructor_atomic<Static>(problem,
+                                                          grammar,
+                                                          options,
+                                                          ref_constructor_repositories,
+                                                          ref_pruning_function,
+                                                          ref_search_space,
+                                                          ref_statistics)
+           || refine_primitive_constructor_atomic<Fluent>(problem,
+                                                          grammar,
+                                                          options,
+                                                          ref_constructor_repositories,
+                                                          ref_pruning_function,
+                                                          ref_search_space,
+                                                          ref_statistics)
+           || refine_primitive_constructor_atomic<Derived>(problem,
+                                                           grammar,
+                                                           options,
+                                                           ref_constructor_repositories,
+                                                           ref_pruning_function,
+                                                           ref_search_space,
+                                                           ref_statistics);
 }
 
 static bool refine_composites(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorTagToRepository& ref_constructor_repos,
+                              ConstructorTagToRepository& ref_constructor_repositories,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -377,25 +526,161 @@ static bool refine_composites(Problem problem,
     {
         if (complexity >= 1)  // unary composites need at least complexity 1.
         {
-            // TODO: add refinements later
+            if (refine_composite_constructor<ConceptNegationImpl>(problem,
+                                                                  grammar,
+                                                                  options,
+                                                                  ref_constructor_repositories,
+                                                                  ref_pruning_function,
+                                                                  ref_search_space,
+                                                                  ref_statistics,
+                                                                  complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleComplementImpl>(problem,
+                                                                 grammar,
+                                                                 options,
+                                                                 ref_constructor_repositories,
+                                                                 ref_pruning_function,
+                                                                 ref_search_space,
+                                                                 ref_statistics,
+                                                                 complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleInverseImpl>(problem,
+                                                              grammar,
+                                                              options,
+                                                              ref_constructor_repositories,
+                                                              ref_pruning_function,
+                                                              ref_search_space,
+                                                              ref_statistics,
+                                                              complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleTransitiveClosureImpl>(problem,
+                                                                        grammar,
+                                                                        options,
+                                                                        ref_constructor_repositories,
+                                                                        ref_pruning_function,
+                                                                        ref_search_space,
+                                                                        ref_statistics,
+                                                                        complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleReflexiveTransitiveClosureImpl>(problem,
+                                                                                 grammar,
+                                                                                 options,
+                                                                                 ref_constructor_repositories,
+                                                                                 ref_pruning_function,
+                                                                                 ref_search_space,
+                                                                                 ref_statistics,
+                                                                                 complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleIdentityImpl>(problem,
+                                                               grammar,
+                                                               options,
+                                                               ref_constructor_repositories,
+                                                               ref_pruning_function,
+                                                               ref_search_space,
+                                                               ref_statistics,
+                                                               complexity))
+                return true;
         }
         if (complexity >= 2)  // binary composites need at least complexity 2.
         {
             if (refine_composite_constructor<ConceptIntersectionImpl>(problem,
                                                                       grammar,
                                                                       options,
-                                                                      ref_constructor_repos,
+                                                                      ref_constructor_repositories,
                                                                       ref_pruning_function,
                                                                       ref_search_space,
                                                                       ref_statistics,
                                                                       complexity))
                 return true;
 
-            if (refine_composite_constructor<
-                    ConceptUnionImpl>(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics, complexity))
+            if (refine_composite_constructor<ConceptUnionImpl>(problem,
+                                                               grammar,
+                                                               options,
+                                                               ref_constructor_repositories,
+                                                               ref_pruning_function,
+                                                               ref_search_space,
+                                                               ref_statistics,
+                                                               complexity))
                 return true;
 
-            // TODO: add more refinements later
+            if (refine_composite_constructor<ConceptValueRestrictionImpl>(problem,
+                                                                          grammar,
+                                                                          options,
+                                                                          ref_constructor_repositories,
+                                                                          ref_pruning_function,
+                                                                          ref_search_space,
+                                                                          ref_statistics,
+                                                                          complexity))
+                return true;
+
+            if (refine_composite_constructor<ConceptExistentialQuantificationImpl>(problem,
+                                                                                   grammar,
+                                                                                   options,
+                                                                                   ref_constructor_repositories,
+                                                                                   ref_pruning_function,
+                                                                                   ref_search_space,
+                                                                                   ref_statistics,
+                                                                                   complexity))
+                return true;
+
+            if (refine_composite_constructor<ConceptRoleValueMapContainmentImpl>(problem,
+                                                                                 grammar,
+                                                                                 options,
+                                                                                 ref_constructor_repositories,
+                                                                                 ref_pruning_function,
+                                                                                 ref_search_space,
+                                                                                 ref_statistics,
+                                                                                 complexity))
+                return true;
+
+            if (refine_composite_constructor<ConceptRoleValueMapEqualityImpl>(problem,
+                                                                              grammar,
+                                                                              options,
+                                                                              ref_constructor_repositories,
+                                                                              ref_pruning_function,
+                                                                              ref_search_space,
+                                                                              ref_statistics,
+                                                                              complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleIntersectionImpl>(problem,
+                                                                   grammar,
+                                                                   options,
+                                                                   ref_constructor_repositories,
+                                                                   ref_pruning_function,
+                                                                   ref_search_space,
+                                                                   ref_statistics,
+                                                                   complexity))
+                return true;
+
+            if (refine_composite_constructor<
+                    RoleUnionImpl>(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics, complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleCompositionImpl>(problem,
+                                                                  grammar,
+                                                                  options,
+                                                                  ref_constructor_repositories,
+                                                                  ref_pruning_function,
+                                                                  ref_search_space,
+                                                                  ref_statistics,
+                                                                  complexity))
+                return true;
+
+            if (refine_composite_constructor<RoleRestrictionImpl>(problem,
+                                                                  grammar,
+                                                                  options,
+                                                                  ref_constructor_repositories,
+                                                                  ref_pruning_function,
+                                                                  ref_search_space,
+                                                                  ref_statistics,
+                                                                  complexity))
+                return true;
         }
         if (complexity >= 3)  // ternary composites need at least complexity 3.
         {
@@ -427,17 +712,17 @@ static void fetch_results(const SearchSpace& search_space, Result& result)
 void refine_helper(Problem problem,
                    const grammar::Grammar& grammar,
                    const Options& options,
-                   ConstructorTagToRepository& ref_constructor_repos,
+                   ConstructorTagToRepository& ref_constructor_repositories,
                    RefinementPruningFunction& ref_pruning_function,
                    SearchSpace& ref_search_space,
                    Statistics& ref_statistics)
 {
     if (options.max_complexity > 0)
     {
-        if (refine_primitives(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics))
+        if (refine_primitives(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics))
             return;
 
-        if (refine_composites(problem, grammar, options, ref_constructor_repos, ref_pruning_function, ref_search_space, ref_statistics))
+        if (refine_composites(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics))
             return;
     }
 }
@@ -445,13 +730,13 @@ void refine_helper(Problem problem,
 Result refine(Problem problem,
               const grammar::Grammar& grammar,
               const Options& options,
-              ConstructorTagToRepository& ref_constructor_repos,
+              ConstructorTagToRepository& ref_constructor_repositories,
               RefinementPruningFunction& ref_pruning_function)
 {
     auto result = Result();
     auto search_space = SearchSpace();
 
-    refine_helper(problem, grammar, options, ref_constructor_repos, ref_pruning_function, search_space, result.statistics);
+    refine_helper(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, search_space, result.statistics);
 
     fetch_results(search_space, result);
 
