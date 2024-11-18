@@ -43,19 +43,19 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
     for (uint32_t parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
     {
-        VertexIDs vertex_partition;
-        ObjectIDs object_partition;
+        VertexIndexList vertex_partition;
+        ObjectIndexList object_partition;
 
         for (const auto& object : m_problem->get_objects())
         {
-            const auto object_id = object->get_index();
-            const auto vertex_id = VertexID { m_vertices.size() };
-            auto vertex = Vertex(vertex_id, parameter_index, object_id);
+            const auto object_index = object->get_index();
+            const auto vertex_index = VertexIndex { m_vertices.size() };
+            auto vertex = Vertex(vertex_index, parameter_index, object_index);
 
             if (static_assignment_set.consistent_literals(static_conditions, vertex))
             {
-                vertex_partition.push_back(vertex_id);
-                object_partition.push_back(object_id);
+                vertex_partition.push_back(vertex_index);
+                object_partition.push_back(object_index);
                 m_vertices.push_back(std::move(vertex));
             }
         }
@@ -65,18 +65,18 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
     /* 2. Compute edges */
 
-    for (size_t first_vertex_id = 0; first_vertex_id < m_vertices.size(); ++first_vertex_id)
+    for (size_t first_vertex_index = 0; first_vertex_index < m_vertices.size(); ++first_vertex_index)
     {
-        for (size_t second_vertex_id = (first_vertex_id + 1); second_vertex_id < m_vertices.size(); ++second_vertex_id)
+        for (size_t second_vertex_index = (first_vertex_index + 1); second_vertex_index < m_vertices.size(); ++second_vertex_index)
         {
-            const auto& first_vertex = m_vertices.at(first_vertex_id);
-            const auto& second_vertex = m_vertices.at(second_vertex_id);
+            const auto& first_vertex = m_vertices.at(first_vertex_index);
+            const auto& second_vertex = m_vertices.at(second_vertex_index);
 
             // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
             if (first_vertex.get_parameter_index() != second_vertex.get_parameter_index())
             {
-                auto edge = Edge(Vertex(first_vertex_id, first_vertex.get_parameter_index(), first_vertex.get_object_id()),
-                                 Vertex(second_vertex_id, second_vertex.get_parameter_index(), second_vertex.get_object_id()));
+                auto edge = Edge(Vertex(first_vertex_index, first_vertex.get_parameter_index(), first_vertex.get_object_index()),
+                                 Vertex(second_vertex_index, second_vertex.get_parameter_index(), second_vertex.get_object_index()));
 
                 if (static_assignment_set.consistent_literals(static_conditions, edge))
                 {
@@ -115,12 +115,12 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const consistency_g
 
     const auto create_node = [](const consistency_graph::Vertex& vertex, const PDDLRepositories& pddl_factories, std::ostream& out)
     {
-        out << "  \"" << vertex.get_id() << "\" [label=\"#" << vertex.get_parameter_index() << " <- " << *pddl_factories.get_object(vertex.get_object_id())
-            << "\"];\n";
+        out << "  \"" << vertex.get_index() << "\" [label=\"#" << vertex.get_parameter_index() << " <- "
+            << *pddl_factories.get_object(vertex.get_object_index()) << "\"];\n";
     };
 
     const auto create_edge = [](const consistency_graph::Edge& edge, std::ostream& out)
-    { out << "  \"" << edge.get_src().get_id() << "\" -- \"" << edge.get_dst().get_id() << "\";\n"; };
+    { out << "  \"" << edge.get_src().get_index() << "\" -- \"" << edge.get_dst().get_index() << "\";\n"; };
 
     // Define the undirected graph
     out << "graph myGraph {\n";

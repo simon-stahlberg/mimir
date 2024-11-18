@@ -21,6 +21,7 @@
 #include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
+#include <boost/hana.hpp>
 #include <variant>
 #include <vector>
 
@@ -30,6 +31,13 @@ template<typename T>
 class ConstructorRepository;
 
 class EvaluationContext;
+
+/**
+ * Common
+ */
+
+using ConstructorTagToSizeT =
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
 
 /**
  * Denotations

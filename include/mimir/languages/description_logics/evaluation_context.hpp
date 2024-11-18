@@ -18,7 +18,6 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_EVALUATION_CONTEXT_HPP_
 
-#include "mimir/common/concepts.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/constructor_interface.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
@@ -39,19 +38,15 @@ private:
     const PDDLRepositories& m_pddl_factories;
     Problem m_problem;
     State m_state;
-    DenotationImpl<Concept>& m_concept_denotation_builder;
-    DenotationImpl<Role>& m_role_denotation_builder;
-    DenotationRepository<Concept>& m_concept_denotation_repository;
-    DenotationRepository<Role>& m_role_denotation_repository;
+    ConstructorTagToDenotationType& m_denotation_builder;
+    ConstructorTagToDenotationRepository& m_denotation_repository;
 
 public:
     EvaluationContext(const PDDLRepositories& pddl_factories,
                       Problem problem,
                       State state,
-                      DenotationImpl<Concept>& ref_concept_denotation_builder,
-                      DenotationImpl<Role>& ref_role_denotation_builder,
-                      DenotationRepository<Concept>& ref_concept_denotation_repository,
-                      DenotationRepository<Role>& ref_role_denotation_repository);
+                      ConstructorTagToDenotationType& ref_denotation_builder,
+                      ConstructorTagToDenotationRepository& ref_denotation_repository);
 
     /**
      * Getters

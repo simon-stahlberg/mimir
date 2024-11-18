@@ -131,7 +131,12 @@ class PDDLRepositories
 private:
     PDDLTypeToRepository m_repositories;
 
-    VariadicGroundingTableList<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>> m_grounding_tables;
+    using GroundedTypeToGroundingTableList =
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, GroundingTableList<GroundLiteral<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, GroundingTableList<GroundLiteral<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, GroundingTableList<GroundLiteral<Derived>>>>;
+
+    GroundedTypeToGroundingTableList m_grounding_tables;
 
 public:
     PDDLRepositories();
@@ -285,13 +290,13 @@ public:
 
     // GroundAtom
     template<PredicateTag P>
-    GroundAtom<P> get_ground_atom(size_t atom_id) const;
+    GroundAtom<P> get_ground_atom(size_t atom_index) const;
 
     template<PredicateTag P, std::ranges::forward_range Iterable>
-    void get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const;
+    void get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const;
 
     template<PredicateTag P, std::ranges::forward_range Iterable>
-    GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_ids) const;
+    GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_indices) const;
 
     template<PredicateTag P>
     void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
@@ -300,13 +305,13 @@ public:
     auto get_ground_atoms() const;
 
     // Object
-    Object get_object(size_t object_id) const;
+    Object get_object(size_t object_index) const;
 
     template<std::ranges::forward_range Iterable>
-    void get_objects_from_indices(const Iterable& object_ids, ObjectList& out_objects) const;
+    void get_objects_from_indices(const Iterable& object_indices, ObjectList& out_objects) const;
 
     template<std::ranges::forward_range Iterable>
-    ObjectList get_objects_from_indices(const Iterable& object_ids) const;
+    ObjectList get_objects_from_indices(const Iterable& object_indices) const;
 
     // Action
     Action get_action(size_t action_index) const;
@@ -339,21 +344,21 @@ public:
  */
 
 template<PredicateTag P, std::ranges::forward_range Iterable>
-void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_ids, GroundAtomList<P>& out_ground_atoms) const
+void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
 
-    for (const auto& atom_id : atom_ids)
+    for (const auto& atom_index : atom_indices)
     {
-        out_ground_atoms.push_back(get_ground_atom<P>(atom_id));
+        out_ground_atoms.push_back(get_ground_atom<P>(atom_index));
     }
 }
 
 template<PredicateTag P, std::ranges::forward_range Iterable>
-GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_ids) const
+GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices) const
 {
     auto result = GroundAtomList<P> {};
-    get_ground_atoms_from_indices(atom_ids, result);
+    get_ground_atoms_from_indices(atom_indices, result);
     return result;
 }
 
@@ -375,20 +380,20 @@ auto PDDLRepositories::get_ground_atoms() const
 }
 
 template<std::ranges::forward_range Iterable>
-void PDDLRepositories::get_objects_from_indices(const Iterable& object_ids, ObjectList& out_objects) const
+void PDDLRepositories::get_objects_from_indices(const Iterable& object_indices, ObjectList& out_objects) const
 {
     out_objects.clear();
-    for (const auto& object_id : object_ids)
+    for (const auto& object_index : object_indices)
     {
-        out_objects.push_back(get_object(object_id));
+        out_objects.push_back(get_object(object_index));
     }
 }
 
 template<std::ranges::forward_range Iterable>
-ObjectList PDDLRepositories::get_objects_from_indices(const Iterable& object_ids) const
+ObjectList PDDLRepositories::get_objects_from_indices(const Iterable& object_indices) const
 {
     auto objects = ObjectList {};
-    get_objects_from_indices(object_ids, objects);
+    get_objects_from_indices(object_indices, objects);
     return objects;
 }
 

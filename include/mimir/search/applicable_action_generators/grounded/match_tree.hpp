@@ -39,7 +39,7 @@ template<typename T>
 class MatchTree
 {
 private:
-    using NodeID = size_t;
+    using NodeIndex = size_t;
     using ActionIter = size_t;
 
     enum class NodeType
@@ -68,8 +68,8 @@ private:
 
         /// @brief Partial instantiation of a selector node.
         /// Initialization of true_succ, false_succ, and dont_care are postponed
-        explicit GeneratorOrSelectorNode(size_t ground_atom_id, NodeType type) :
-            first_data(ground_atom_id),
+        explicit GeneratorOrSelectorNode(size_t ground_atom_index, NodeType type) :
+            first_data(ground_atom_index),
             second_data(MAX_VALUE),
             third_data(MAX_VALUE),
             fourth_data(MAX_VALUE),
@@ -80,19 +80,19 @@ private:
 
         bool is_selector_node() const noexcept { return first_data != MAX_VALUE; }
 
-        size_t get_ground_atom_id() const noexcept { return first_data; }
+        size_t get_ground_atom_index() const noexcept { return first_data; }
 
         bool has_true_succ() const noexcept { return second_data != MAX_VALUE; }
-        NodeID get_true_succ() const noexcept { return second_data; }
-        void set_true_succ(NodeID true_succ) noexcept { second_data = true_succ; }
+        NodeIndex get_true_succ() const noexcept { return second_data; }
+        void set_true_succ(NodeIndex true_succ) noexcept { second_data = true_succ; }
 
         bool has_false_succ() const noexcept { return third_data != MAX_VALUE; }
-        NodeID get_false_succ() const noexcept { return third_data; }
-        void set_false_succ(NodeID false_succ) noexcept { third_data = false_succ; }
+        NodeIndex get_false_succ() const noexcept { return third_data; }
+        void set_false_succ(NodeIndex false_succ) noexcept { third_data = false_succ; }
 
         bool has_dontcare_succ() const noexcept { return fourth_data != MAX_VALUE; }
-        NodeID get_dontcare_succ() const noexcept { return fourth_data; }
-        void set_dontcare_succ(NodeID dontcare_succ) noexcept { fourth_data = dontcare_succ; }
+        NodeIndex get_dontcare_succ() const noexcept { return fourth_data; }
+        void set_dontcare_succ(NodeIndex dontcare_succ) noexcept { fourth_data = dontcare_succ; }
 
         /* Generator specific accessors */
 
@@ -118,12 +118,12 @@ private:
     std::vector<GeneratorOrSelectorNode> m_nodes;
     std::vector<T> m_elements;
 
-    NodeID build_recursively(const size_t order_pos,
-                             const std::vector<T>& elements,
-                             const std::vector<size_t>& fluent_ground_atoms_order,
-                             const std::vector<size_t>& derived_ground_atoms_order);
+    NodeIndex build_recursively(const size_t order_pos,
+                                const std::vector<T>& elements,
+                                const std::vector<size_t>& fluent_ground_atoms_order,
+                                const std::vector<size_t>& derived_ground_atoms_order);
 
-    void get_applicable_elements_recursively(size_t node_id,
+    void get_applicable_elements_recursively(size_t node_index,
                                              const FlatBitset& fluent_ground_atoms,
                                              const FlatBitset& derived_ground_atoms,
                                              std::vector<T>& out_applicable_elements);
@@ -140,10 +140,10 @@ public:
 };
 
 template<typename T>
-MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t order_pos,
-                                                                const std::vector<T>& elements,
-                                                                const std::vector<size_t>& fluent_ground_atoms_order,
-                                                                const std::vector<size_t>& derived_ground_atoms_order)
+MatchTree<T>::NodeIndex MatchTree<T>::MatchTree::build_recursively(const size_t order_pos,
+                                                                   const std::vector<T>& elements,
+                                                                   const std::vector<size_t>& fluent_ground_atoms_order,
+                                                                   const std::vector<size_t>& derived_ground_atoms_order)
 {
     const auto num_fluent_atoms = fluent_ground_atoms_order.size();
     const auto num_derived_atoms = derived_ground_atoms_order.size();
@@ -155,26 +155,26 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
     // 1.2. there are no elements.
     if ((order_pos == end_pos) || (elements.empty()))
     {
-        const auto node_id = MatchTree::NodeID { m_nodes.size() };
+        const auto node_index = MatchTree::NodeIndex { m_nodes.size() };
         m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(m_elements.size(), m_elements.size() + elements.size(), NodeType::GENERATOR));
         m_elements.insert(m_elements.end(), elements.begin(), elements.end());
-        return node_id;
+        return node_index;
     }
 
     // 2. Conquer:
 
     bool is_fluent = (order_pos < num_fluent_atoms);
-    const auto atom_id = (is_fluent) ? fluent_ground_atoms_order[order_pos] : derived_ground_atoms_order[order_pos - num_fluent_atoms];
-    // Partition elements into positive, negative and dontcare depending on how atom_id occurs in precondition
+    const auto atom_index = (is_fluent) ? fluent_ground_atoms_order[order_pos] : derived_ground_atoms_order[order_pos - num_fluent_atoms];
+    // Partition elements into positive, negative and dontcare depending on how atom_index occurs in precondition
     auto positive_elements = std::vector<T> {};
     auto negative_elements = std::vector<T> {};
     auto dontcare_elements = std::vector<T> {};
     for (const auto& element : elements)
     {
-        const bool positive_condition = (is_fluent) ? element->get_strips_precondition().template get_positive_precondition<Fluent>().get(atom_id) :
-                                                      element->get_strips_precondition().template get_positive_precondition<Derived>().get(atom_id);
-        const bool negative_condition = (is_fluent) ? element->get_strips_precondition().template get_negative_precondition<Fluent>().get(atom_id) :
-                                                      element->get_strips_precondition().template get_negative_precondition<Derived>().get(atom_id);
+        const bool positive_condition = (is_fluent) ? element->get_strips_precondition().template get_positive_precondition<Fluent>().get(atom_index) :
+                                                      element->get_strips_precondition().template get_positive_precondition<Derived>().get(atom_index);
+        const bool negative_condition = (is_fluent) ? element->get_strips_precondition().template get_negative_precondition<Fluent>().get(atom_index) :
+                                                      element->get_strips_precondition().template get_negative_precondition<Derived>().get(atom_index);
 
         if (positive_condition && negative_condition)
         {
@@ -202,9 +202,9 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
     if (must_split)
     {
         // Top-down creation of nodes to ensure in order evaluation, update information after recursion.
-        const auto node_id = MatchTree::NodeID { m_nodes.size() };
+        const auto node_index = MatchTree::NodeIndex { m_nodes.size() };
 
-        m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(atom_id, (is_fluent) ? NodeType::FLUENT_SELECTOR : NodeType::DERIVED_SELECTOR));
+        m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(atom_index, (is_fluent) ? NodeType::FLUENT_SELECTOR : NodeType::DERIVED_SELECTOR));
 
         const auto true_succ = (!positive_elements.empty()) ?
                                    build_recursively(order_pos + 1, positive_elements, fluent_ground_atoms_order, derived_ground_atoms_order) :
@@ -217,12 +217,12 @@ MatchTree<T>::NodeID MatchTree<T>::MatchTree::build_recursively(const size_t ord
                                        MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
 
         // Update node with computed information
-        auto& node = m_nodes[node_id];
+        auto& node = m_nodes[node_index];
         node.set_true_succ(true_succ);
         node.set_false_succ(false_succ);
         node.set_dontcare_succ(dontcare_succ);
 
-        return node_id;
+        return node_index;
     }
     else if (dontcare_elements.size() == 0)
     {
@@ -262,20 +262,20 @@ MatchTree<T>::MatchTree(const std::vector<T>& elements,
                         const std::vector<size_t>& fluent_ground_atoms_order,
                         const std::vector<size_t>& derived_ground_atoms_order)
 {
-    const auto root_node_id = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
+    const auto root_node_index = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
 
-    assert(root_node_id == 0);
+    assert(root_node_index == 0);
     // Prevent unused variable warning when not in debug mode
-    (void) root_node_id;
+    (void) root_node_index;
 }
 
 template<typename T>
-void MatchTree<T>::get_applicable_elements_recursively(size_t node_id,
+void MatchTree<T>::get_applicable_elements_recursively(size_t node_index,
                                                        const FlatBitset& fluent_ground_atoms,
                                                        const FlatBitset& derived_ground_atoms,
                                                        std::vector<T>& out_applicable_elements)
 {
-    auto& node = m_nodes[node_id];
+    auto& node = m_nodes[node_index];
 
     if (node.is_selector_node())
     {
@@ -284,8 +284,8 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_id,
             get_applicable_elements_recursively(node.get_dontcare_succ(), fluent_ground_atoms, derived_ground_atoms, out_applicable_elements);
         }
 
-        const bool is_atom_true = (node.get_node_type() == NodeType::FLUENT_SELECTOR) ? fluent_ground_atoms.get(node.get_ground_atom_id()) :
-                                                                                        derived_ground_atoms.get(node.get_ground_atom_id());
+        const bool is_atom_true = (node.get_node_type() == NodeType::FLUENT_SELECTOR) ? fluent_ground_atoms.get(node.get_ground_atom_index()) :
+                                                                                        derived_ground_atoms.get(node.get_ground_atom_index());
 
         if (is_atom_true)
         {

@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_REMOVE_UNIVERSAL_QUANTIFIERS_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_REMOVE_UNIVERSAL_QUANTIFIERS_HPP_
 
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/translators/base_cached_recurse.hpp"
 #include "mimir/formalism/translators/to_negation_normal_form.hpp"
 
@@ -72,7 +73,7 @@ private:
 
     // Track simple and derived predicate names to give unique names
     std::unordered_set<std::string> m_simple_and_derived_predicate_names;
-    uint64_t m_next_axiom_id;
+    Index m_next_axiom_index;
 
     // Translation might introduce additional derived predicates and axioms.
     std::unordered_set<loki::Predicate> m_derived_predicates;

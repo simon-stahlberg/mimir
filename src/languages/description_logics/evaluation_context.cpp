@@ -22,17 +22,13 @@ namespace mimir::dl
 EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_factories,
                                      Problem problem,
                                      State state,
-                                     DenotationImpl<Concept>& ref_concept_denotation_builder,
-                                     DenotationImpl<Role>& ref_role_denotation_builder,
-                                     DenotationRepository<Concept>& ref_concept_denotation_repository,
-                                     DenotationRepository<Role>& ref_role_denotation_repository) :
+                                     ConstructorTagToDenotationType& ref_denotation_builder,
+                                     ConstructorTagToDenotationRepository& ref_denotation_repository) :
     m_pddl_factories(pddl_factories),
     m_problem(problem),
     m_state(state),
-    m_concept_denotation_builder(ref_concept_denotation_builder),
-    m_role_denotation_builder(ref_role_denotation_builder),
-    m_concept_denotation_repository(ref_concept_denotation_repository),
-    m_role_denotation_repository(ref_role_denotation_repository)
+    m_denotation_builder(ref_denotation_builder),
+    m_denotation_repository(ref_denotation_repository)
 {
 }
 
@@ -45,18 +41,7 @@ State EvaluationContext::get_state() const { return m_state; }
 template<ConstructorTag D>
 DenotationImpl<D>& EvaluationContext::get_denotation_builder()
 {
-    if constexpr (std::is_same_v<D, Concept>)
-    {
-        return m_concept_denotation_builder;
-    }
-    else if constexpr (std::is_same_v<D, Role>)
-    {
-        return m_role_denotation_builder;
-    }
-    else
-    {
-        static_assert(dependent_false<D>::value, "Missing implementation for ConstructorTag.");
-    }
+    return boost::hana::at_key(m_denotation_builder, boost::hana::type<D> {});
 }
 
 template DenotationImpl<Concept>& EvaluationContext::get_denotation_builder<Concept>();
@@ -65,18 +50,7 @@ template DenotationImpl<Role>& EvaluationContext::get_denotation_builder<Role>()
 template<ConstructorTag D>
 DenotationRepository<D>& EvaluationContext::get_denotation_repository()
 {
-    if constexpr (std::is_same_v<D, Concept>)
-    {
-        return m_concept_denotation_repository;
-    }
-    else if constexpr (std::is_same_v<D, Role>)
-    {
-        return m_role_denotation_repository;
-    }
-    else
-    {
-        static_assert(dependent_false<D>::value, "Missing implementation for ConstructorTag.");
-    }
+    return boost::hana::at_key(m_denotation_repository, boost::hana::type<D> {});
 }
 
 template DenotationRepository<Concept>& EvaluationContext::get_denotation_repository<Concept>();

@@ -82,7 +82,7 @@ extern loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki:
  * Axioms
  */
 
-extern std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set<std::string>& simple_and_derived_predicate_names);
+extern std::string create_unique_axiom_name(Index& next_axiom_index, std::unordered_set<std::string>& simple_and_derived_predicate_names);
 
 }
 

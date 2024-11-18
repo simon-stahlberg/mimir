@@ -35,24 +35,24 @@ struct Context
     std::unordered_map<std::string, NonTerminal<Role>> m_role_non_terminal_by_name;
 };
 
-static Choice<Concept> parse(const dl::ast::Concept& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::Concept& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Concept> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static Choice<Role> parse(const dl::ast::Role& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::Role& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
-static const Choice<Concept> parse(const dl::ast::ConceptBot& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static const Choice<Concept> parse(const dl::ast::ConceptBot& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
             boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptBotImpl> {}).template get_or_create<ConceptBotImpl>());
 }
 
-static const Choice<Concept> parse(const dl::ast::ConceptTop& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static const Choice<Concept> parse(const dl::ast::ConceptTop& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -60,7 +60,7 @@ static const Choice<Concept> parse(const dl::ast::ConceptTop& node, Domain domai
 }
 
 static const Choice<Concept>
-parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -104,8 +104,7 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConstructorTypeToR
     }
 }
 
-static Choice<Concept>
-parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -148,7 +147,7 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConstructorTypeToRe
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptIntersection& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptIntersection& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -157,7 +156,7 @@ parse(const dl::ast::ConceptIntersection& node, Domain domain, ConstructorTypeTo
                                                                  parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Concept> parse(const dl::ast::ConceptUnion& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptUnion& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -166,7 +165,7 @@ static Choice<Concept> parse(const dl::ast::ConceptUnion& node, Domain domain, C
                                                           parse(node.concept_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Concept> parse(const dl::ast::ConceptNegation& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptNegation& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -175,7 +174,7 @@ static Choice<Concept> parse(const dl::ast::ConceptNegation& node, Domain domain
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -185,7 +184,7 @@ parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConstructorTy
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -195,7 +194,7 @@ parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, Cons
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -205,7 +204,7 @@ parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, Constr
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Concept>> {})
         .template get_or_create<ChoiceImpl<Concept>>(
@@ -214,7 +213,7 @@ parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, Construct
                                                                          parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Concept> parse(const dl::ast::ConceptNominal& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptNominal& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     if (!domain->get_name_to_constants().contains(node.object_name))
     {
@@ -226,7 +225,7 @@ static Choice<Concept> parse(const dl::ast::ConceptNominal& node, Domain domain,
 }
 
 static Choice<Concept>
-parse(const dl::ast::ConceptNonTerminal& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptNonTerminal& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     const auto& non_terminal = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<NonTerminalImpl<Concept>> {})
                                    .template get_or_create<NonTerminalImpl<Concept>>(node.name);
@@ -235,13 +234,13 @@ parse(const dl::ast::ConceptNonTerminal& node, Domain domain, ConstructorTypeToR
         .template get_or_create<ChoiceImpl<Concept>>(non_terminal);
 }
 
-static Choice<Concept> parse(const dl::ast::ConceptChoice& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Concept> parse(const dl::ast::ConceptChoice& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Concept> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
 static DerivationRule<Concept>
-parse(const dl::ast::ConceptDerivationRule& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptDerivationRule& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     auto choices = ChoiceList<Concept> {};
     std::for_each(node.choices.begin(),
@@ -257,14 +256,14 @@ parse(const dl::ast::ConceptDerivationRule& node, Domain domain, ConstructorType
     return rule;
 }
 
-static const Choice<Role> parse(const dl::ast::RoleUniversal& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static const Choice<Role> parse(const dl::ast::RoleUniversal& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
             boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleUniversalImpl> {}).template get_or_create<RoleUniversalImpl>());
 }
 
-static Choice<Role> parse(const dl::ast::RoleAtomicState& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleAtomicState& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -305,7 +304,7 @@ static Choice<Role> parse(const dl::ast::RoleAtomicState& node, Domain domain, C
     }
 }
 
-static Choice<Role> parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -346,7 +345,7 @@ static Choice<Role> parse(const dl::ast::RoleAtomicGoal& node, Domain domain, Co
     }
 }
 
-static Choice<Role> parse(const dl::ast::RoleIntersection& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleIntersection& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -355,7 +354,7 @@ static Choice<Role> parse(const dl::ast::RoleIntersection& node, Domain domain, 
                                                               parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleUnion& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleUnion& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -364,7 +363,7 @@ static Choice<Role> parse(const dl::ast::RoleUnion& node, Domain domain, Constru
                                                        parse(node.role_right, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleComplement& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleComplement& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -372,7 +371,7 @@ static Choice<Role> parse(const dl::ast::RoleComplement& node, Domain domain, Co
                 .template get_or_create<RoleComplementImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleInverse& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleInverse& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -380,7 +379,7 @@ static Choice<Role> parse(const dl::ast::RoleInverse& node, Domain domain, Const
                 .template get_or_create<RoleInverseImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleComposition& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleComposition& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -390,7 +389,7 @@ static Choice<Role> parse(const dl::ast::RoleComposition& node, Domain domain, C
 }
 
 static Choice<Role>
-parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -399,7 +398,7 @@ parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, ConstructorType
 }
 
 static Choice<Role>
-parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -407,7 +406,7 @@ parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, Constr
                 .template get_or_create<RoleReflexiveTransitiveClosureImpl>(parse(node.role_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleRestriction& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleRestriction& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -416,7 +415,7 @@ static Choice<Role> parse(const dl::ast::RoleRestriction& node, Domain domain, C
                                                              parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleIdentity& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleIdentity& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {})
         .template get_or_create<ChoiceImpl<Role>>(
@@ -424,7 +423,7 @@ static Choice<Role> parse(const dl::ast::RoleIdentity& node, Domain domain, Cons
                 .template get_or_create<RoleIdentityImpl>(parse(node.concept_, domain, ref_grammar_constructor_repos, context)));
 }
 
-static Choice<Role> parse(const dl::ast::RoleNonTerminal& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleNonTerminal& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     const auto& non_terminal = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<NonTerminalImpl<Role>> {})
                                    .template get_or_create<NonTerminalImpl<Role>>(node.name);
@@ -432,13 +431,13 @@ static Choice<Role> parse(const dl::ast::RoleNonTerminal& node, Domain domain, C
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ChoiceImpl<Role>> {}).template get_or_create<ChoiceImpl<Role>>(non_terminal);
 }
 
-static Choice<Role> parse(const dl::ast::RoleChoice& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+static Choice<Role> parse(const dl::ast::RoleChoice& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor([&](const auto& arg) -> Choice<Role> { return parse(arg, domain, ref_grammar_constructor_repos, context); }, node);
 }
 
 static DerivationRule<Role>
-parse(const dl::ast::RoleDerivationRule& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleDerivationRule& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     auto choices = ChoiceList<Role> {};
     std::for_each(node.choices.begin(),
@@ -455,7 +454,7 @@ parse(const dl::ast::RoleDerivationRule& node, Domain domain, ConstructorTypeToR
 }
 
 static std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
-parse(const dl::ast::Grammar& node, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::Grammar& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
     auto concept_rules = DerivationRuleList<Concept> {};
     auto role_rules = DerivationRuleList<Role> {};
@@ -508,7 +507,7 @@ parse(const dl::ast::Grammar& node, Domain domain, ConstructorTypeToRepository& 
 }
 
 std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
-parse(const std::string& bnf_grammar_description, Domain domain, ConstructorTypeToRepository& ref_grammar_constructor_repos)
+parse(const std::string& bnf_grammar_description, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos)
 {
     auto ast = dl::ast::Grammar();
     dl::parse_ast(bnf_grammar_description, dl::grammar_parser(), ast);

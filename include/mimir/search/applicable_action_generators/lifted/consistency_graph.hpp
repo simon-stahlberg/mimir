@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_CONSISTENCY_GRAPH_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <optional>
@@ -34,26 +35,33 @@ class AssignmentSet;
 namespace mimir::consistency_graph
 {
 
-using VertexID = size_t;
-using ParameterID = size_t;
-using ObjectID = size_t;
+using ParameterIndex = size_t;
+using VertexIndex = size_t;
+using ObjectIndex = size_t;
+using VertexIndexList = std::vector<VertexIndex>;
+using ObjectIndexList = std::vector<ObjectIndex>;
 
-/// @brief A vertex [param/object] in the consistency graph.
+/// @brief A vertex [parameter_index/object_index] in the consistency graph.
 class Vertex
 {
 private:
-    VertexID m_id;
-    ParameterID m_param;
-    ObjectID m_object;
+    VertexIndex m_index;
+    ParameterIndex m_parameter_index;
+    ObjectIndex m_object_index;
 
 public:
-    Vertex(VertexID id, ParameterID param, ObjectID object) : m_id(id), m_param(param), m_object(object) {}
+    Vertex(VertexIndex index, ParameterIndex parameter_index, ObjectIndex object_index) :
+        m_index(index),
+        m_parameter_index(parameter_index),
+        m_object_index(object_index)
+    {
+    }
 
-    bool operator==(const Vertex& other) const { return m_id == other.m_id; }
+    bool operator==(const Vertex& other) const { return m_index == other.m_index; }
 
-    VertexID get_id() const { return m_id; }
-    ParameterID get_parameter_index() const { return m_param; }
-    ObjectID get_object_id() const { return m_object; }
+    VertexIndex get_index() const { return m_index; }
+    ParameterIndex get_parameter_index() const { return m_parameter_index; }
+    ObjectIndex get_object_index() const { return m_object_index; }
 };
 
 /// @brief An undirected edge {src,dst} in the consistency graph.
@@ -74,8 +82,6 @@ public:
 
 using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
-using VertexIDs = std::vector<VertexID>;
-using ObjectIDs = std::vector<ObjectID>;
 
 /// @brief The StaticConsistencyGraph encodes the assignments to static conditions,
 /// and hence, it is an overapproximation of the actual consistency graph.
@@ -88,16 +94,16 @@ private:
     Vertices m_vertices;
     Edges m_edges;
 
-    std::vector<VertexIDs> m_vertices_by_parameter_index;
-    std::vector<ObjectIDs> m_objects_by_parameter_index;
+    std::vector<VertexIndexList> m_vertices_by_parameter_index;
+    std::vector<ObjectIndexList> m_objects_by_parameter_index;
 
 public:
     /// @brief Construct a static consistency graph
-    /// @param problem The problem context.
-    /// @param begin_parameter_index The first parameter index for which consistent assignments are represented.
-    /// @param end_parameter_index The last parameter index plus one for which consistent assignments are represented.
-    /// @param static_conditions The static literals for which a bindings must be found.
-    /// @param static_assignment_set The assignment set of static initial literals.
+    /// @parameter_index problem The problem context.
+    /// @parameter_index begin_parameter_index The first parameter index for which consistent assignments are represented.
+    /// @parameter_index end_parameter_index The last parameter index plus one for which consistent assignments are represented.
+    /// @parameter_index static_conditions The static literals for which a bindings must be found.
+    /// @parameter_index static_assignment_set The assignment set of static initial literals.
     ///
     /// For universal effects, we can set first and last parameter indices respectively
     /// to find consistent assignments irrespective of the action parameter bindings.
@@ -117,10 +123,10 @@ public:
     const Edges& get_edges() const { return m_edges; }
 
     /// @brief Get the vertex indices partitioned by the parameter index.
-    const std::vector<VertexIDs>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+    const std::vector<VertexIndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
 
-    /// @brief Get the object indices partitioned by the parameter index.
-    const std::vector<ObjectIDs>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
+    /// @brief Get the object_index indices partitioned by the parameter index.
+    const std::vector<ObjectIndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
 };
 
 /// @brief The Graphs is a collection of StaticConsistenctGraphs:

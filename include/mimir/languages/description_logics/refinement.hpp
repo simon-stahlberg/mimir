@@ -70,22 +70,13 @@ private:
     template<ConstructorTag D>
     bool should_prune_impl(Constructor<D> constructor);
 
-    const PDDLRepositories& m_pddl_factories;              ///< The pddl factories.
-    Problem m_problem;                                     ///< The problem definition used for evaluating features.
-    StateList m_states;                                    ///< The list of states used for evaluating features and pruning.
-    DenotationImpl<Concept> m_concept_denotation_builder;  ///< Temporary denotation used during evaluation.
-    DenotationImpl<Role> m_role_denotation_builder;        ///< Temporary denotation used during evaluation.
+    const PDDLRepositories& m_pddl_factories;  ///< The pddl factories.
+    Problem m_problem;                         ///< The problem definition used for evaluating features.
+    StateList m_states;                        ///< The list of states used for evaluating features and pruning.
 
-    // just to test:
-    ConstructorTypeToRepository m_fac;
+    ConstructorTagToDenotationType m_denotation_builder;
 
-    /// @brief Repository for managing concept denotations.
-    /// This stores the computed denotations for each concept feature across all states.
-    DenotationRepository<Concept> m_concept_denotation_repository;
-
-    /// @brief Repository for managing role denotations.
-    /// This stores the computed denotations for each role feature across all states.
-    DenotationRepository<Role> m_role_denotation_repository;
+    ConstructorTagToDenotationRepository m_denotation_repository;
 
     /// @brief Uniquely store feature denotations among all states.
     /// Each state feature denotation is uniquely identified by its memory address.
@@ -112,10 +103,10 @@ struct Options
     size_t max_memory_usage_in_kb = 0;
     size_t max_execution_time_in_ms = 0;
 
-    using CategoryToSizeT =
+    using ConstructorTagToSizeT =
         boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
 
-    CategoryToSizeT max_constructors = CategoryToSizeT();
+    ConstructorTagToSizeT max_constructors = ConstructorTagToSizeT();
 };
 
 struct Statistics
@@ -123,20 +114,20 @@ struct Statistics
     size_t memory_usage_in_kb = 0;
     size_t execution_time_ms = 0;
 
-    using CategoryToSizeT =
+    using ConstructorTagToSizeT =
         boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
 
-    CategoryToSizeT num_generated = CategoryToSizeT();
-    CategoryToSizeT num_pruned = CategoryToSizeT();
-    CategoryToSizeT num_rejected_by_grammar = CategoryToSizeT();
+    ConstructorTagToSizeT num_generated = ConstructorTagToSizeT();
+    ConstructorTagToSizeT num_pruned = ConstructorTagToSizeT();
+    ConstructorTagToSizeT num_rejected_by_grammar = ConstructorTagToSizeT();
 };
 
 struct Result
 {
-    using CategoryToConstructorList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ConstructorList<Concept>>,
-                                                       boost::hana::pair<boost::hana::type<Role>, ConstructorList<Role>>>;
+    using ConstructorTagToConstructorList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ConstructorList<Concept>>,
+                                                             boost::hana::pair<boost::hana::type<Role>, ConstructorList<Role>>>;
 
-    CategoryToConstructorList constructors = CategoryToConstructorList();
+    ConstructorTagToConstructorList constructors = ConstructorTagToConstructorList();
 
     Statistics statistics = Statistics();
 };
@@ -144,7 +135,7 @@ struct Result
 extern Result refine(Problem problem,
                      const grammar::Grammar& grammar,
                      const Options& options,
-                     ConstructorTypeToRepository& ref_constructor_repos,
+                     ConstructorTagToRepository& ref_constructor_repos,
                      RefinementPruningFunction& ref_pruning_function);
 
 }

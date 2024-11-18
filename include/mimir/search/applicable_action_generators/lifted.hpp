@@ -98,11 +98,11 @@ public:
 
     const GroundActionList& get_ground_actions() const override;
 
-    GroundAction get_ground_action(size_t action_index) const override;
+    GroundAction get_ground_action(Index action_index) const override;
 
     const GroundAxiomList& get_ground_axioms() const override;
 
-    GroundAxiom get_ground_axiom(size_t axiom_index) const override;
+    GroundAxiom get_ground_axiom(Index axiom_index) const override;
 
     size_t get_num_ground_actions() const override;
 

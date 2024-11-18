@@ -80,7 +80,7 @@ using RoleRestrictionRepository =
     loki::SegmentedRepository<RoleRestrictionImpl, UniqueDLHasher<const RoleRestrictionImpl*>, UniqueDLEqualTo<const RoleRestrictionImpl*>>;
 using RoleIdentityFactory = loki::SegmentedRepository<RoleIdentityImpl, UniqueDLHasher<const RoleIdentityImpl*>, UniqueDLEqualTo<const RoleIdentityImpl*>>;
 
-using ConstructorTypeToRepository =
+using ConstructorTagToRepository =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepository<Static>>,
@@ -114,7 +114,7 @@ using ConstructorTypeToRepository =
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
 
-extern ConstructorTypeToRepository create_default_constructor_type_to_repository();
+extern ConstructorTagToRepository create_default_constructor_type_to_repository();
 
 }
 

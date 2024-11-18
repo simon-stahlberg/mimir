@@ -276,7 +276,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(simple_effects.begin(), simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    // Sort negative conditional effects to the beginning to process them first, additionally sort then by identifier.
+    // Sort negative conditional effects to the beginning to process them first, additionally sort then by index.
     std::sort(complex_effects.begin(),
               complex_effects.end(),
               [](const auto& l, const auto& r)
@@ -412,17 +412,20 @@ const PDDLTypeToRepository& PDDLRepositories::get_pddl_type_to_factory() const {
 
 // GroundAtom
 template<PredicateTag P>
-GroundAtom<P> PDDLRepositories::get_ground_atom(size_t atom_id) const
+GroundAtom<P> PDDLRepositories::get_ground_atom(size_t atom_index) const
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).at(atom_id);
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).at(atom_index);
 }
 
-template GroundAtom<Static> PDDLRepositories::get_ground_atom<Static>(size_t atom_id) const;
-template GroundAtom<Fluent> PDDLRepositories::get_ground_atom<Fluent>(size_t atom_id) const;
-template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t atom_id) const;
+template GroundAtom<Static> PDDLRepositories::get_ground_atom<Static>(size_t atom_index) const;
+template GroundAtom<Fluent> PDDLRepositories::get_ground_atom<Fluent>(size_t atom_index) const;
+template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t atom_index) const;
 
 // Object
-Object PDDLRepositories::get_object(size_t object_id) const { return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).at(object_id); }
+Object PDDLRepositories::get_object(size_t object_index) const
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).at(object_index);
+}
 
 // Action
 Action PDDLRepositories::get_action(size_t action_index) const
@@ -463,16 +466,16 @@ template<PredicateTag P>
 GroundLiteral<P> PDDLRepositories::ground_literal(const Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
-    auto& grounding_tables = m_grounding_tables.get<GroundLiteral<P>>();
+    auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundLiteral<P>> {});
 
     /* 2. Access the literal specific grounding table */
-    const auto literal_id = literal->get_index();
-    if (literal_id >= grounding_tables.size())
+    const auto literal_index = literal->get_index();
+    if (literal_index >= grounding_tables.size())
     {
-        grounding_tables.resize(literal_id + 1);
+        grounding_tables.resize(literal_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(literal_id);
+    auto& grounding_table = grounding_tables.at(literal_index);
 
     /* 3. Check if grounding is cached */
     const auto it = grounding_table.find(binding);

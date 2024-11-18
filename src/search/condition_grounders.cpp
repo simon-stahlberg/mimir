@@ -125,7 +125,7 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
         if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
             && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
         {
-            auto binding = ObjectList { m_pddl_factories->get_object(vertex.get_object_id()) };
+            auto binding = ObjectList { m_pddl_factories->get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(m_problem, state, binding))
             {
@@ -159,12 +159,12 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
     {
         if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, edge) && derived_assignment_sets.consistent_literals(m_derived_conditions, edge))
         {
-            const auto first_id = edge.get_src().get_id();
-            const auto second_id = edge.get_dst().get_id();
-            auto& first_row = full_consistency_graph[first_id];
-            auto& second_row = full_consistency_graph[second_id];
-            first_row[second_id] = 1;
-            second_row[first_id] = 1;
+            const auto first_index = edge.get_src().get_index();
+            const auto second_index = edge.get_dst().get_index();
+            auto& first_row = full_consistency_graph[first_index];
+            auto& second_row = full_consistency_graph[second_index];
+            first_row[second_index] = 1;
+            second_row[first_index] = 1;
         }
     }
 
@@ -183,9 +183,9 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
         for (std::size_t index = 0; index < clique.size(); ++index)
         {
             const auto& vertex = vertices[clique[index]];
-            const auto param_index = vertex.get_parameter_index();
-            const auto object_id = vertex.get_object_id();
-            binding[param_index] = m_pddl_factories->get_object(object_id);
+            const auto parameter_index = vertex.get_parameter_index();
+            const auto object_index = vertex.get_object_index();
+            binding[parameter_index] = m_pddl_factories->get_object(object_index);
         }
 
         if (is_valid_binding(m_problem, state, binding))

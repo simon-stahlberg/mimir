@@ -95,12 +95,12 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
                                                      unextended_state.get_atoms<Derived>(),
                                                      m_problem->get_static_initial_positive_atoms_bitset()));
 
-                const auto grounded_atom_id = grounded_axiom->get_derived_effect().atom_index;
+                const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
-                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_id))
+                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_pddl_factories->get_ground_atom<Derived>(grounded_atom_id);
+                    const auto new_ground_atom = m_pddl_factories->get_ground_atom<Derived>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
                     // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,
@@ -114,7 +114,7 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
                 }
 
-                unextended_state.get_atoms<Derived>().set(grounded_atom_id);
+                unextended_state.get_atoms<Derived>().set(grounded_atom_index);
             }
 
         } while (!reached_partition_fixed_point);
@@ -276,7 +276,7 @@ GroundAxiom AxiomEvaluator::ground_axiom(Axiom axiom, ObjectList&& binding)
 
 const GroundAxiomList& AxiomEvaluator::get_ground_axioms() const { return m_axioms_by_index; }
 
-GroundAxiom AxiomEvaluator::get_ground_axiom(size_t axiom_index) const { return m_axioms_by_index.at(axiom_index); }
+GroundAxiom AxiomEvaluator::get_ground_axiom(Index axiom_index) const { return m_axioms_by_index.at(axiom_index); }
 
 size_t AxiomEvaluator::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
 

@@ -29,7 +29,7 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
                                                loki::PDDLRepositories& pddl_factories,
                                                std::unordered_set<loki::Predicate>& derived_predicates,
                                                std::unordered_set<loki::Axiom>& axioms,
-                                               uint64_t& next_axiom_id,
+                                               Index& next_axiom_index,
                                                std::unordered_set<std::string>& simple_and_derived_predicates)
 {
     if (std::get_if<loki::ConditionLiteralImpl>(&goal_condition))
@@ -42,12 +42,12 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
         parts.reserve(condition_and->get_conditions().size());
         for (const auto& part : condition_and->get_conditions())
         {
-            parts.push_back(simplify_goal_condition(*part, pddl_factories, derived_predicates, axioms, next_axiom_id, simple_and_derived_predicates));
+            parts.push_back(simplify_goal_condition(*part, pddl_factories, derived_predicates, axioms, next_axiom_index, simple_and_derived_predicates));
         }
         return pddl_factories.get_or_create_condition_and(parts);
     }
 
-    const auto axiom_name = create_unique_axiom_name(next_axiom_id, simple_and_derived_predicates);
+    const auto axiom_name = create_unique_axiom_name(next_axiom_index, simple_and_derived_predicates);
     const auto predicate = pddl_factories.get_or_create_predicate(axiom_name, loki::ParameterList {});
     derived_predicates.insert(predicate);
     const auto atom = pddl_factories.get_or_create_atom(predicate, loki::TermList {});
@@ -70,13 +70,13 @@ loki::Problem SimplifyGoalTranslator::translate_impl(const loki::ProblemImpl& pr
     // Translate the goal condition which might introduce additional derived predicates and axioms.
     auto derived_predicates = std::unordered_set<loki::Predicate> {};
     auto axioms = std::unordered_set<loki::Axiom> {};
-    auto next_axiom_id = uint64_t { 0 };
+    auto next_axiom_index = Index { 0 };
     auto translated_goal =
         (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(simplify_goal_condition(*problem.get_goal_condition().value(),
                                                                                                            this->m_pddl_factories,
                                                                                                            derived_predicates,
                                                                                                            axioms,
-                                                                                                           next_axiom_id,
+                                                                                                           next_axiom_index,
                                                                                                            this->m_simple_and_derived_predicate_names)) :
                                                     std::nullopt);
 

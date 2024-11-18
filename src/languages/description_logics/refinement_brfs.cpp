@@ -33,10 +33,10 @@ namespace mimir::dl::refinement_brfs
 
 struct SearchSpace
 {
-    using CategoryToConstructorsByComplexity = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::vector<ConstructorList<Concept>>>,
-                                                                boost::hana::pair<boost::hana::type<Role>, std::vector<ConstructorList<Role>>>>;
+    using ConstructorTagToConstructorsByComplexity = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::vector<ConstructorList<Concept>>>,
+                                                                      boost::hana::pair<boost::hana::type<Role>, std::vector<ConstructorList<Role>>>>;
 
-    CategoryToConstructorsByComplexity constructors_by_complexity = CategoryToConstructorsByComplexity();
+    ConstructorTagToConstructorsByComplexity constructors_by_complexity = ConstructorTagToConstructorsByComplexity();
 };
 
 /**
@@ -47,7 +47,7 @@ template<PredicateTag P>
 static bool refine_concept_atomic_state(Problem problem,
                                         const grammar::Grammar& grammar,
                                         const Options& options,
-                                        ConstructorTypeToRepository& ref_constructor_repos,
+                                        ConstructorTagToRepository& ref_constructor_repos,
                                         RefinementPruningFunction& ref_pruning_function,
                                         SearchSpace& ref_search_space)
 {
@@ -259,7 +259,8 @@ public:
             ((std::get<Indices>(m_values) =
                   std::get<Indices>(m_constructors_by_complexity)->at((*m_complexity_distribution_iter)[Indices]).at(m_indices[Indices])),
              ...);
-        }(std::make_index_sequence<num_elements> {});
+        }
+        (std::make_index_sequence<num_elements> {});
 
         return m_values;
     }
@@ -288,7 +289,7 @@ template<typename ConstructorImplType>
 static bool refine_composite_constructor(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         ConstructorTypeToRepository& ref_constructor_repos,
+                                         ConstructorTagToRepository& ref_constructor_repos,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics,
@@ -354,7 +355,7 @@ static bool refine_composite_constructor(Problem problem,
 static bool refine_primitives(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorTypeToRepository& ref_constructor_repos,
+                              ConstructorTagToRepository& ref_constructor_repos,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -367,7 +368,7 @@ static bool refine_primitives(Problem problem,
 static bool refine_composites(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorTypeToRepository& ref_constructor_repos,
+                              ConstructorTagToRepository& ref_constructor_repos,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -426,7 +427,7 @@ static void fetch_results(const SearchSpace& search_space, Result& result)
 void refine_helper(Problem problem,
                    const grammar::Grammar& grammar,
                    const Options& options,
-                   ConstructorTypeToRepository& ref_constructor_repos,
+                   ConstructorTagToRepository& ref_constructor_repos,
                    RefinementPruningFunction& ref_pruning_function,
                    SearchSpace& ref_search_space,
                    Statistics& ref_statistics)
@@ -444,7 +445,7 @@ void refine_helper(Problem problem,
 Result refine(Problem problem,
               const grammar::Grammar& grammar,
               const Options& options,
-              ConstructorTypeToRepository& ref_constructor_repos,
+              ConstructorTagToRepository& ref_constructor_repos,
               RefinementPruningFunction& ref_pruning_function)
 {
     auto result = Result();

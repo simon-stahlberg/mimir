@@ -131,9 +131,9 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         for (const auto& action : actions)
         {
             const auto succ_state = delete_free_ssg.get_or_create_successor_state(&state, action);
-            for (const auto atom_id : succ_state->get_atoms<Fluent>())
+            for (const auto atom_index : succ_state->get_atoms<Fluent>())
             {
-                fluent_state_atoms.set(atom_id);
+                fluent_state_atoms.set(atom_index);
             }
         }
 
@@ -246,15 +246,15 @@ void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& une
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 
-                const auto grounded_atom_id = grounded_axiom->get_derived_effect().atom_index;
+                const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
-                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_id))
+                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     reached_partition_fixed_point = false;
                 }
 
-                unextended_state.get_atoms<Derived>().set(grounded_atom_id);
+                unextended_state.get_atoms<Derived>().set(grounded_atom_index);
             }
 
         } while (!reached_partition_fixed_point);
@@ -267,11 +267,11 @@ void GroundedApplicableActionGenerator::on_end_search() const { m_event_handler-
 
 const GroundActionList& GroundedApplicableActionGenerator::get_ground_actions() const { return m_lifted_aag.get_ground_actions(); }
 
-GroundAction GroundedApplicableActionGenerator::get_ground_action(size_t action_index) const { return m_lifted_aag.get_ground_action(action_index); }
+GroundAction GroundedApplicableActionGenerator::get_ground_action(Index action_index) const { return m_lifted_aag.get_ground_action(action_index); }
 
 const GroundAxiomList& GroundedApplicableActionGenerator::get_ground_axioms() const { return m_lifted_aag.get_ground_axioms(); }
 
-GroundAxiom GroundedApplicableActionGenerator::get_ground_axiom(size_t axiom_index) const { return m_lifted_aag.get_ground_axiom(axiom_index); }
+GroundAxiom GroundedApplicableActionGenerator::get_ground_axiom(Index axiom_index) const { return m_lifted_aag.get_ground_axiom(axiom_index); }
 
 size_t GroundedApplicableActionGenerator::get_num_ground_actions() const { return m_lifted_aag.get_num_ground_actions(); }
 

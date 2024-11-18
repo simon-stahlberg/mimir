@@ -59,6 +59,11 @@ struct DenotationImpl<Role>
     const DenotationType& get_data() const { return m_data; }
 };
 
+/// @brief Denotation for temporary construction.
+/// This stores a computed denotation for a single state.
+using ConstructorTagToDenotationType =
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationImpl<Concept>>, boost::hana::pair<boost::hana::type<Role>, DenotationImpl<Role>>>;
+
 }
 
 template<mimir::dl::ConstructorTag D>

@@ -79,7 +79,7 @@ public:
     /// @brief Return all axioms.
     const GroundAxiomList& get_ground_axioms() const;
 
-    GroundAxiom get_ground_axiom(size_t axiom_index) const;
+    GroundAxiom get_ground_axiom(Index axiom_index) const;
 
     size_t get_num_ground_axioms() const;
 };

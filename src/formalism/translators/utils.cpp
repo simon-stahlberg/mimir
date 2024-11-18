@@ -149,13 +149,13 @@ loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRe
     return pddl_factories.get_or_create_effect_composite_forall(effect.get_parameters(), effect.get_effect());
 }
 
-std::string create_unique_axiom_name(uint64_t& next_axiom_id, std::unordered_set<std::string>& simple_and_derived_predicate_names)
+std::string create_unique_axiom_name(Index& next_axiom_index, std::unordered_set<std::string>& simple_and_derived_predicate_names)
 {
     auto axiom_name = std::string {};
 
     do
     {
-        axiom_name = "axiom_"s + std::to_string(next_axiom_id++);
+        axiom_name = "axiom_"s + std::to_string(next_axiom_index++);
     } while (simple_and_derived_predicate_names.count(axiom_name));
     simple_and_derived_predicate_names.insert(axiom_name);
 

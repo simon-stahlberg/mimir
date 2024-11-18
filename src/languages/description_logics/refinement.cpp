@@ -31,13 +31,11 @@ RefinementStateListPruningFunction::RefinementStateListPruningFunction(const PDD
     m_pddl_factories(pddl_factories),
     m_problem(problem),
     m_states(std::move(states)),
-    m_concept_denotation_builder(),
-    m_role_denotation_builder(),
-    m_concept_denotation_repository(),
-    m_role_denotation_repository()
+    m_denotation_builder(),
+    m_denotation_repository()
 {
     // Resize role denotation.
-    m_role_denotation_builder.get_data().resize(m_problem->get_objects().size());
+    boost::hana::at_key(m_denotation_builder, boost::hana::type<Role> {}).get_data().resize(m_problem->get_objects().size());
 }
 
 bool RefinementStateListPruningFunction::should_prune(Constructor<Concept> concept_) { return should_prune_impl(concept_); }
@@ -52,13 +50,7 @@ bool RefinementStateListPruningFunction::should_prune_impl(Constructor<D> constr
 
     for (const auto& state : m_states)
     {
-        auto evaluation_context = EvaluationContext(m_pddl_factories,
-                                                    m_problem,
-                                                    state,
-                                                    m_concept_denotation_builder,
-                                                    m_role_denotation_builder,
-                                                    m_concept_denotation_repository,
-                                                    m_role_denotation_repository);
+        auto evaluation_context = EvaluationContext(m_pddl_factories, m_problem, state, m_denotation_builder, m_denotation_repository);
 
         const auto eval = constructor->evaluate(evaluation_context);
 

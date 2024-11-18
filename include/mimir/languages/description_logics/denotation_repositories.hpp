@@ -61,6 +61,11 @@ public:
     std::optional<Denotation<D>> get_if(Constructor<D> constructor, size_t state_index) const;
 };
 
+/// @brief Repository for managing denotations.
+/// This stores the computed denotation of each state.
+using ConstructorTagToDenotationRepository = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationRepository<Concept>>,
+                                                              boost::hana::pair<boost::hana::type<Role>, DenotationRepository<Role>>>;
+
 }
 
 #endif

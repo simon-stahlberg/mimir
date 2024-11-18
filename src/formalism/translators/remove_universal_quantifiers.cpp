@@ -116,7 +116,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
         axiom_parameters,
         m_to_nnf_translator.translate(*this->m_pddl_factories.get_or_create_condition_not(condition.get_condition()))));
 
-    const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_id, this->m_simple_and_derived_predicate_names);
+    const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_index, this->m_simple_and_derived_predicate_names);
     const auto predicate = this->m_pddl_factories.get_or_create_predicate(axiom_name, head_parameters);
     m_derived_predicates.insert(predicate);
     const auto atom = this->m_pddl_factories.get_or_create_atom(predicate, terms);
@@ -252,7 +252,7 @@ loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::Problem
 RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_factories, ToNNFTranslator& to_nnf_translator) :
     BaseCachedRecurseTranslator(pddl_factories),
     m_to_nnf_translator(to_nnf_translator),
-    m_next_axiom_id(0)
+    m_next_axiom_index(0)
 {
 }
 }

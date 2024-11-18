@@ -55,7 +55,7 @@ Index VertexAssignmentIterator::get_object_if_overlap(const Term& term)
     {
         if (m_vertex.get_parameter_index() == term_variable->get_variable()->get_parameter_index())
         {
-            return m_vertex.get_object_id();
+            return m_vertex.get_object_index();
         }
     }
 
@@ -128,11 +128,11 @@ Index EdgeAssignmentIterator::get_object_if_overlap(const Term& term)
 
         if (m_edge.get_src().get_parameter_index() == parameter_index)
         {
-            return m_edge.get_src().get_object_id();
+            return m_edge.get_src().get_object_index();
         }
         else if (m_edge.get_dst().get_parameter_index() == parameter_index)
         {
-            return m_edge.get_dst().get_object_id();
+            return m_edge.get_dst().get_object_index();
         }
     }
 

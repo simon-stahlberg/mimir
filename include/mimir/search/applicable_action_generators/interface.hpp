@@ -48,13 +48,13 @@ public:
     virtual const GroundActionList& get_ground_actions() const = 0;
 
     /// @brief Return the ground action with the given index.
-    virtual GroundAction get_ground_action(size_t action_index) const = 0;
+    virtual GroundAction get_ground_action(Index action_index) const = 0;
 
     /// @brief Return the ground axioms.
     virtual const GroundAxiomList& get_ground_axioms() const = 0;
 
     /// @brief Return the ground axiom with the given index.
-    virtual GroundAxiom get_ground_axiom(size_t action_index) const = 0;
+    virtual GroundAxiom get_ground_axiom(Index action_index) const = 0;
 
     virtual size_t get_num_ground_actions() const = 0;
     virtual size_t get_num_ground_axioms() const = 0;

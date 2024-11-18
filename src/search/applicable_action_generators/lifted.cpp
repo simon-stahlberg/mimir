@@ -224,8 +224,8 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                     // Create binding
                     for (size_t pos = 0; pos < complex_effect->get_arity(); ++pos)
                     {
-                        const auto object_id = *combination[pos];
-                        binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_id);
+                        const auto object_index = *combination[pos];
+                        binding_ext[binding_ext_size + pos] = m_pddl_factories->get_object(object_index);
                     }
 
                     auto& cond_effect_j = conditional_effects[j];
@@ -413,11 +413,11 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
 
 const GroundActionList& LiftedApplicableActionGenerator::get_ground_actions() const { return m_actions_by_index; }
 
-GroundAction LiftedApplicableActionGenerator::get_ground_action(size_t action_id) const { return m_actions_by_index.at(action_id); }
+GroundAction LiftedApplicableActionGenerator::get_ground_action(Index action_index) const { return m_actions_by_index.at(action_index); }
 
 const GroundAxiomList& LiftedApplicableActionGenerator::get_ground_axioms() const { return m_axiom_evaluator.get_ground_axioms(); }
 
-GroundAxiom LiftedApplicableActionGenerator::get_ground_axiom(size_t axiom_index) const { return m_axiom_evaluator.get_ground_axiom(axiom_index); }
+GroundAxiom LiftedApplicableActionGenerator::get_ground_axiom(Index axiom_index) const { return m_axiom_evaluator.get_ground_axiom(axiom_index); }
 
 size_t LiftedApplicableActionGenerator::get_num_ground_actions() const { return m_actions_by_index.size(); }
 
