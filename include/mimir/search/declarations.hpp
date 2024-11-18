@@ -31,7 +31,7 @@ namespace mimir
 // StateRepository
 class StateRepository;
 
-// GroundACtion
+// GroundAction
 struct GroundActionImpl;
 using GroundAction = const GroundActionImpl*;
 using GroundActionList = std::vector<GroundAction>;
@@ -55,6 +55,10 @@ using StateMap = std::unordered_map<State, T>;
 class IApplicableActionGenerator;
 class GroundedApplicableActionGenerator;
 class LiftedApplicableActionGenerator;
+
+// MatchTree
+template<typename T>
+class MatchTree;
 
 /* Heuristics */
 class IHeuristic;

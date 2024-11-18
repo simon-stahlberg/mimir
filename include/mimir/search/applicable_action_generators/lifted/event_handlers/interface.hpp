@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers/statistics.hpp"
 #include "mimir/search/condition_grounders/event_handlers/interface.hpp"
+#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {
