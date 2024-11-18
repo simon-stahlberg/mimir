@@ -21,39 +21,39 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     auto problem = problem_parser.get_problem();
 
     // Negation normal form translator
-    auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
+    auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
     problem = to_nnf_translator.run(*problem);
 
     // Rename quantified variables
-    auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_factories());
+    auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_repositories());
     problem = rename_quantifed_variables_translator.run(*problem);
 
     // Simplify goal
-    auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_factories());
+    auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_repositories());
     problem = simplify_goal_translator.run(*problem);
 
     // Remove universal quantifiers
-    auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_factories(), to_nnf_translator);
+    auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_repositories(), to_nnf_translator);
     problem = remove_universal_quantifiers_translator.run(*problem);
 
     // To disjunctive normal form
-    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_factories(), to_nnf_translator);
+    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_repositories(), to_nnf_translator);
     problem = to_dnf_translator.run(*problem);
 
     // Split disjunctive conditions
-    auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_factories());
+    auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_repositories());
     problem = split_disjunctive_conditions.run(*problem);
 
     // Remove types
-    auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_factories());
+    auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_repositories());
     problem = remove_types_translator.run(*problem);
 
     // Move existential quantifers
-    auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_factories());
+    auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_repositories());
     problem = move_existential_quantifiers_translator.run(*problem);
 
     // To effect normal form
-    auto to_enf_translator = ToENFTranslator(domain_parser.get_factories());
+    auto to_enf_translator = ToENFTranslator(domain_parser.get_repositories());
     problem = to_enf_translator.run(*problem);
 
     // To mimir structures

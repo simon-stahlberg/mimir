@@ -58,9 +58,9 @@ public:
 
     size_t get_state_count() const;
 
-    const FlatBitset& get_reached_fluent_ground_atoms() const;
+    const FlatBitset& get_reached_fluent_ground_atoms_bitset() const;
 
-    const FlatBitset& get_reached_derived_ground_atoms() const;
+    const FlatBitset& get_reached_derived_ground_atoms_bitset() const;
 
     std::shared_ptr<IApplicableActionGenerator> get_aag() const;
 };

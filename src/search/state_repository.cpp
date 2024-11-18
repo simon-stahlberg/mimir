@@ -189,9 +189,9 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }
 
-const FlatBitset& StateRepository::get_reached_fluent_ground_atoms() const { return m_reached_fluent_atoms; }
+const FlatBitset& StateRepository::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }
 
-const FlatBitset& StateRepository::get_reached_derived_ground_atoms() const { return m_reached_derived_atoms; }
+const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
 
 std::shared_ptr<IApplicableActionGenerator> StateRepository::get_aag() const { return m_aag; }
 }

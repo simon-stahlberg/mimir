@@ -1154,8 +1154,8 @@ void init_pymimir(py::module_& m)
              py::arg("state"),
              py::arg("action"))
         .def("get_state_count", &StateRepository::get_state_count)
-        .def("get_reached_fluent_ground_atoms", &StateRepository::get_reached_fluent_ground_atoms, py::return_value_policy::copy)
-        .def("get_reached_derived_ground_atoms", &StateRepository::get_reached_derived_ground_atoms, py::return_value_policy::copy);
+        .def("get_reached_fluent_ground_atoms_bitset", &StateRepository::get_reached_fluent_ground_atoms_bitset, py::return_value_policy::copy)
+        .def("get_reached_derived_ground_atoms_bitset", &StateRepository::get_reached_derived_ground_atoms_bitset, py::return_value_policy::copy);
 
     /* Heuristics */
     py::class_<IHeuristic, IPyHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic").def(py::init<>());

@@ -39,8 +39,8 @@ TEST(MimirTests, FormalismTranslatorsToDisjunctiveNormalForm)
     // std::cout << *domain << std::endl;
     // std::cout << *problem << std::endl;
 
-    auto to_nnf_translator = ToNNFTranslator(domain_parser.get_factories());
-    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_factories(), to_nnf_translator);
+    auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
+    auto to_dnf_translator = ToDNFTranslator(domain_parser.get_repositories(), to_nnf_translator);
     auto translated_problem = to_dnf_translator.run(*problem);
     auto translated_domain = translated_problem->get_domain();
 
