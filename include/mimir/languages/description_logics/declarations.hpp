@@ -120,6 +120,12 @@ using RoleRestriction = const RoleRestrictionImpl*;
 class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
 
+/**
+ * Visitors
+ */
+
+class Visitor;
+
 namespace grammar
 {
 /**
@@ -217,13 +223,6 @@ class RoleRestrictionImpl;
 using RoleRestriction = const RoleRestrictionImpl*;
 class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
-
-/**
- * Visitors
- */
-
-template<dl::ConstructorTag D>
-class Visitor;
 
 }
 }

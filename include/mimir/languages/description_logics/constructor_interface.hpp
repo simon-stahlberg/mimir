@@ -51,7 +51,7 @@ public:
 
     /// @brief Return true iff the symbols match the data in the dl constructor.
     /// Uses double dispatch.
-    virtual bool accept(const grammar::Visitor<D>& visitor) const = 0;
+    virtual void accept(Visitor& visitor) const = 0;
 };
 
 }

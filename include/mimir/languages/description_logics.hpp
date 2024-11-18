@@ -19,14 +19,24 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_HPP_
 
 #include "mimir/languages/description_logics/constructor_interface.hpp"
+#include "mimir/languages/description_logics/constructor_keywords.hpp"
+#include "mimir/languages/description_logics/constructor_properties.hpp"
+#include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/description_logics/constructor_tag.hpp"
+#include "mimir/languages/description_logics/constructor_visitor_interface.hpp"
+#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
+#include "mimir/languages/description_logics/constructor_visitors_grammar.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotation_repositories.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
+#include "mimir/languages/description_logics/equal_to.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_interface.hpp"
+#include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
-#include "mimir/languages/description_logics/grammar_visitors.hpp"
-#include "mimir/languages/description_logics/grammar_visitors_interface.hpp"
+#include "mimir/languages/description_logics/hash.hpp"
+#include "mimir/languages/description_logics/refinement.hpp"
 
 #endif

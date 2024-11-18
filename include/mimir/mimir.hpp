@@ -54,6 +54,16 @@
 #include "mimir/formalism/variable.hpp"
 
 /**
+ * Graphs
+ */
+
+/**
+ * Languages
+ */
+
+#include "mimir/languages/description_logics.hpp"
+
+/**
  * Search
  */
 

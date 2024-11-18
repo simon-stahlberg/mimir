@@ -22,6 +22,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
+#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 
@@ -97,6 +98,16 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
 
     EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 6);
     EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 4);
+
+    for (const auto& concept_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Concept> {}))
+    {
+        std::cout << std::make_tuple(concept_, dl::BNFFormatterVisitorTag {}) << std::endl;
+    }
+
+    for (const auto& role_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Role> {}))
+    {
+        std::cout << std::make_tuple(role_, dl::BNFFormatterVisitorTag {}) << std::endl;
+    }
 }
 
 }

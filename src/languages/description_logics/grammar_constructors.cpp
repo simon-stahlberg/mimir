@@ -18,7 +18,7 @@
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 
 #include "mimir/common/hash.hpp"
-#include "mimir/languages/description_logics/grammar_visitors.hpp"
+#include "mimir/languages/description_logics/constructor_visitors_grammar.hpp"
 
 namespace mimir::dl::grammar
 {
@@ -135,7 +135,12 @@ template class DerivationRuleImpl<Role>;
 
 ConceptBotImpl::ConceptBotImpl(Index index) : m_index(index) {}
 
-bool ConceptBotImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(grammar::ConceptBotVisitor(this)); }
+bool ConceptBotImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptBotGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptBotImpl::get_index() const { return m_index; }
 
@@ -145,7 +150,12 @@ Index ConceptBotImpl::get_index() const { return m_index; }
 
 ConceptTopImpl::ConceptTopImpl(Index index) : m_index(index) {}
 
-bool ConceptTopImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(grammar::ConceptTopVisitor(this)); }
+bool ConceptTopImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptTopGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptTopImpl::get_index() const { return m_index; }
 
@@ -161,7 +171,9 @@ ConceptAtomicStateImpl<P>::ConceptAtomicStateImpl(Index index, Predicate<P> pred
 template<PredicateTag P>
 bool ConceptAtomicStateImpl<P>::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(grammar::ConceptAtomicStateVisitor<P>(this));
+    auto visitor = ConceptAtomicStateGrammarVisitor<P>(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 template<PredicateTag P>
@@ -195,7 +207,9 @@ ConceptAtomicGoalImpl<P>::ConceptAtomicGoalImpl(Index index, Predicate<P> predic
 template<PredicateTag P>
 bool ConceptAtomicGoalImpl<P>::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(ConceptAtomicGoalVisitor<P>(this));
+    auto visitor = ConceptAtomicGoalGrammarVisitor<P>(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 template<PredicateTag P>
@@ -230,7 +244,12 @@ ConceptIntersectionImpl::ConceptIntersectionImpl(Index index, Choice<Concept> co
 {
 }
 
-bool ConceptIntersectionImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptIntersectionVisitor(this)); }
+bool ConceptIntersectionImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptIntersectionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptIntersectionImpl::get_index() const { return m_index; }
 
@@ -249,7 +268,12 @@ ConceptUnionImpl::ConceptUnionImpl(Index index, Choice<Concept> concept_left, Ch
 {
 }
 
-bool ConceptUnionImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptUnionVisitor(this)); }
+bool ConceptUnionImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptUnionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptUnionImpl::get_index() const { return m_index; }
 
@@ -263,7 +287,12 @@ Choice<Concept> ConceptUnionImpl::get_concept_right() const { return m_concept_r
 
 ConceptNegationImpl::ConceptNegationImpl(Index index, Choice<Concept> concept_) : m_index(index), m_concept(concept_) {}
 
-bool ConceptNegationImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptNegationVisitor(this)); }
+bool ConceptNegationImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptNegationGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptNegationImpl::get_index() const { return m_index; }
 
@@ -280,7 +309,12 @@ ConceptValueRestrictionImpl::ConceptValueRestrictionImpl(Index index, Choice<Rol
 {
 }
 
-bool ConceptValueRestrictionImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptValueRestrictionVisitor(this)); }
+bool ConceptValueRestrictionImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptValueRestrictionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptValueRestrictionImpl::get_index() const { return m_index; }
 
@@ -301,7 +335,9 @@ ConceptExistentialQuantificationImpl::ConceptExistentialQuantificationImpl(Index
 
 bool ConceptExistentialQuantificationImpl::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(ConceptExistentialQuantificationVisitor(this));
+    auto visitor = ConceptExistentialQuantificationGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 Index ConceptExistentialQuantificationImpl::get_index() const { return m_index; }
@@ -323,7 +359,9 @@ ConceptRoleValueMapContainmentImpl::ConceptRoleValueMapContainmentImpl(Index ind
 
 bool ConceptRoleValueMapContainmentImpl::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(ConceptRoleValueMapContainmentVisitor(this));
+    auto visitor = ConceptRoleValueMapContainmentGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 Index ConceptRoleValueMapContainmentImpl::get_index() const { return m_index; }
@@ -345,7 +383,9 @@ ConceptRoleValueMapEqualityImpl::ConceptRoleValueMapEqualityImpl(Index index, Ch
 
 bool ConceptRoleValueMapEqualityImpl::test_match(dl::Constructor<Concept> constructor) const
 {
-    return constructor->accept(ConceptRoleValueMapEqualityVisitor(this));
+    auto visitor = ConceptRoleValueMapEqualityGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 Index ConceptRoleValueMapEqualityImpl::get_index() const { return m_index; }
@@ -360,7 +400,12 @@ Choice<Role> ConceptRoleValueMapEqualityImpl::get_role_right() const { return m_
 
 ConceptNominalImpl::ConceptNominalImpl(Index index, Object object) : m_index(index), m_object(object) {}
 
-bool ConceptNominalImpl::test_match(dl::Constructor<Concept> constructor) const { return constructor->accept(ConceptNominalVisitor(this)); }
+bool ConceptNominalImpl::test_match(dl::Constructor<Concept> constructor) const
+{
+    auto visitor = ConceptNominalGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index ConceptNominalImpl::get_index() const { return m_index; }
 
@@ -372,7 +417,12 @@ Object ConceptNominalImpl::get_object() const { return m_object; }
 
 RoleUniversalImpl::RoleUniversalImpl(Index index) : m_index(index) {}
 
-bool RoleUniversalImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleUniversalVisitor(this)); }
+bool RoleUniversalImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleUniversalGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleUniversalImpl::get_index() const { return m_index; }
 
@@ -388,7 +438,9 @@ RoleAtomicStateImpl<P>::RoleAtomicStateImpl(Index index, Predicate<P> predicate)
 template<PredicateTag P>
 bool RoleAtomicStateImpl<P>::test_match(dl::Constructor<Role> constructor) const
 {
-    return constructor->accept(RoleAtomicStateVisitor<P>(this));
+    auto visitor = RoleAtomicStateGrammarVisitor<P>(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 template<PredicateTag P>
@@ -422,7 +474,9 @@ RoleAtomicGoalImpl<P>::RoleAtomicGoalImpl(Index index, Predicate<P> predicate, b
 template<PredicateTag P>
 bool RoleAtomicGoalImpl<P>::test_match(dl::Constructor<Role> constructor) const
 {
-    return constructor->accept(RoleAtomicGoalVisitor<P>(this));
+    auto visitor = RoleAtomicGoalGrammarVisitor<P>(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 template<PredicateTag P>
@@ -458,7 +512,12 @@ RoleIntersectionImpl::RoleIntersectionImpl(Index index, Choice<Role> role_left, 
 {
 }
 
-bool RoleIntersectionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleIntersectionVisitor(this)); }
+bool RoleIntersectionImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleIntersectionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleIntersectionImpl::get_index() const { return m_index; }
 
@@ -472,7 +531,12 @@ Choice<Role> RoleIntersectionImpl::get_role_right() const { return m_role_right;
 
 RoleUnionImpl::RoleUnionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right) : m_index(index), m_role_left(role_left), m_role_right(role_right) {}
 
-bool RoleUnionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleUnionVisitor(this)); }
+bool RoleUnionImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleUnionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleUnionImpl::get_index() const { return m_index; }
 
@@ -486,7 +550,12 @@ Choice<Role> RoleUnionImpl::get_role_right() const { return m_role_right; }
 
 RoleComplementImpl::RoleComplementImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
 
-bool RoleComplementImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleComplementVisitor(this)); }
+bool RoleComplementImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleComplementGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleComplementImpl::get_index() const { return m_index; }
 
@@ -498,7 +567,12 @@ Choice<Role> RoleComplementImpl::get_role() const { return m_role; }
 
 RoleInverseImpl::RoleInverseImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
 
-bool RoleInverseImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleInverseVisitor(this)); }
+bool RoleInverseImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleInverseGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleInverseImpl::get_index() const { return m_index; }
 
@@ -515,7 +589,12 @@ RoleCompositionImpl::RoleCompositionImpl(Index index, Choice<Role> role_left, Ch
 {
 }
 
-bool RoleCompositionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleCompositionVisitor(this)); }
+bool RoleCompositionImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleCompositionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleCompositionImpl::get_index() const { return m_index; }
 
@@ -529,7 +608,12 @@ Choice<Role> RoleCompositionImpl::get_role_right() const { return m_role_right; 
 
 RoleTransitiveClosureImpl::RoleTransitiveClosureImpl(Index index, Choice<Role> role_) : m_index(index), m_role(role_) {}
 
-bool RoleTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleTransitiveClosureVisitor(this)); }
+bool RoleTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleTransitiveClosureGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleTransitiveClosureImpl::get_index() const { return m_index; }
 
@@ -543,7 +627,9 @@ RoleReflexiveTransitiveClosureImpl::RoleReflexiveTransitiveClosureImpl(Index ind
 
 bool RoleReflexiveTransitiveClosureImpl::test_match(dl::Constructor<Role> constructor) const
 {
-    return constructor->accept(RoleReflexiveTransitiveClosureVisitor(this));
+    auto visitor = RoleReflexiveTransitiveClosureGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
 }
 
 Index RoleReflexiveTransitiveClosureImpl::get_index() const { return m_index; }
@@ -556,7 +642,12 @@ Choice<Role> RoleReflexiveTransitiveClosureImpl::get_role() const { return m_rol
 
 RoleRestrictionImpl::RoleRestrictionImpl(Index index, Choice<Role> role_, Choice<Concept> concept_) : m_index(index), m_role(role_), m_concept(concept_) {}
 
-bool RoleRestrictionImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleRestrictionVisitor(this)); }
+bool RoleRestrictionImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleRestrictionGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleRestrictionImpl::get_index() const { return m_index; }
 
@@ -570,7 +661,12 @@ Choice<Concept> RoleRestrictionImpl::get_concept() const { return m_concept; }
 
 RoleIdentityImpl::RoleIdentityImpl(Index index, Choice<Concept> concept_) : m_index(index), m_concept(concept_) {}
 
-bool RoleIdentityImpl::test_match(dl::Constructor<Role> constructor) const { return constructor->accept(RoleIdentityVisitor(this)); }
+bool RoleIdentityImpl::test_match(dl::Constructor<Role> constructor) const
+{
+    auto visitor = RoleIdentityGrammarVisitor(this);
+    constructor->accept(visitor);
+    return visitor.get_result();
+}
 
 Index RoleIdentityImpl::get_index() const { return m_index; }
 
