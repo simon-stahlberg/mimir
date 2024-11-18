@@ -27,6 +27,7 @@
 #include "mimir/search/applicable_action_generators/lifted/axiom_stratification.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
+#include "mimir/search/axiom.hpp"
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/declarations.hpp"
 

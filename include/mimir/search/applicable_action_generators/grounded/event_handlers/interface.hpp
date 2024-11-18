@@ -19,11 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/statistics.hpp"
-#include "mimir/search/applicable_action_generators/grounded/match_tree.hpp"
-#include "mimir/search/axiom.hpp"
-#include "mimir/search/state.hpp"
 
 namespace mimir
 {

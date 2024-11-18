@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
+#include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/axiom_evaluator.hpp"
 #include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
@@ -57,9 +58,6 @@ private:
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;
 
     GroundFunctionToValue m_ground_function_value_costs;
-
-    /// @brief Ground the precondition of an action and return a view onto it.
-    GroundAction ground_action_precondition(Action action, const ObjectList& binding);
 
 public:
     /// @brief Simplest construction
