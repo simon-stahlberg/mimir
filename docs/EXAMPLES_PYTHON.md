@@ -12,8 +12,8 @@ If the instance is solvable, `status` will say so, and `plan` will contain a lis
 import pymimir as mm
 
 parser = mm.PDDLParser("domain.pddl", "problem.pddl")
-aag = mm.LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
-brfs = mm.BrFSAlgorithm(aag)
+applicable_action_generator = mm.LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
+brfs = mm.BrFSAlgorithm(applicable_action_generator)
 status, plan = brfs.find_solution()
 ```
 

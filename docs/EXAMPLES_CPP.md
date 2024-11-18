@@ -13,7 +13,7 @@ If the instance is solvable, `status` will say so, and `plan` will contain a lis
 #include  <mimir/mimir.hpp>
 
 const auto parser = PDDLParser("domain.pddl", "problem.pddl")
-const auto aag = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories())
-const auto brfs = BrFSAlgorithm(aag)
+const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories())
+const auto brfs = BrFSAlgorithm(applicable_action_generator)
 const auto [status, plan] = brfs.find_solution()
 ```
