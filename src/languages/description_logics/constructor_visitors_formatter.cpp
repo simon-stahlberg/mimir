@@ -32,27 +32,27 @@ void BNFFormatterVisitor::visit(ConceptBot constructor) { m_out << keywords::con
 void BNFFormatterVisitor::visit(ConceptTop constructor) { m_out << keywords::concept_top; }
 void BNFFormatterVisitor::visit(ConceptAtomicState<Static> constructor)
 {
-    m_out << keywords::concept_atomic_state << " " << constructor->get_predicate()->get_name();
+    m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void BNFFormatterVisitor::visit(ConceptAtomicState<Fluent> constructor)
 {
-    m_out << keywords::concept_atomic_state << " " << constructor->get_predicate()->get_name();
+    m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void BNFFormatterVisitor::visit(ConceptAtomicState<Derived> constructor)
 {
-    m_out << keywords::concept_atomic_state << " " << constructor->get_predicate()->get_name();
+    m_out << keywords::concept_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void BNFFormatterVisitor::visit(ConceptAtomicGoal<Static> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " " << constructor->get_predicate()->get_name() << " " << constructor->is_negated();
+    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 void BNFFormatterVisitor::visit(ConceptAtomicGoal<Fluent> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " " << constructor->get_predicate()->get_name() << " " << constructor->is_negated();
+    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 void BNFFormatterVisitor::visit(ConceptAtomicGoal<Derived> constructor)
 {
-    m_out << keywords::concept_atomic_goal << " " << constructor->get_predicate()->get_name() << " " << constructor->is_negated();
+    m_out << keywords::concept_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 void BNFFormatterVisitor::visit(ConceptIntersection constructor)
 {
@@ -107,27 +107,27 @@ void BNFFormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords:
 void BNFFormatterVisitor::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }
 void BNFFormatterVisitor::visit(RoleAtomicState<Static> constructor)
 {
-    m_out << keywords::role_atomic_state << " " << constructor->get_predicate()->get_name();
+    m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void BNFFormatterVisitor::visit(RoleAtomicState<Fluent> constructor)
 {
-    m_out << keywords::role_atomic_state << " " << constructor->get_predicate()->get_name();
+    m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void BNFFormatterVisitor::visit(RoleAtomicState<Derived> constructor)
 {
-    m_out << keywords::role_atomic_state << " " << constructor->get_predicate()->get_name();
+    m_out << keywords::role_atomic_state << " \"" << constructor->get_predicate()->get_name() << "\"";
 }
 void BNFFormatterVisitor::visit(RoleAtomicGoal<Static> constructor)
 {
-    m_out << keywords::role_atomic_goal << " " << constructor->get_predicate()->get_name() << " " << constructor->is_negated();
+    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 void BNFFormatterVisitor::visit(RoleAtomicGoal<Fluent> constructor)
 {
-    m_out << keywords::role_atomic_goal << " " << constructor->get_predicate()->get_name() << " " << constructor->is_negated();
+    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 void BNFFormatterVisitor::visit(RoleAtomicGoal<Derived> constructor)
 {
-    m_out << keywords::role_atomic_goal << " " << constructor->get_predicate()->get_name() << " " << constructor->is_negated();
+    m_out << keywords::role_atomic_goal << " \"" << constructor->get_predicate()->get_name() << "\" " << (constructor->is_negated() ? "false" : "true");
 }
 void BNFFormatterVisitor::visit(RoleIntersection constructor)
 {
