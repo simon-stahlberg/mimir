@@ -77,7 +77,8 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
     auto grammar = dl::grammar::Grammar(bnf_description, parser.get_domain());
 
     auto options = dl::refinement_brfs::Options();
-    options.max_complexity = 10;
+    options.verbosity = 2;
+    options.max_complexity = 5;
     boost::hana::at_key(options.max_constructors, boost::hana::type<dl::Concept> {}) = std::numeric_limits<size_t>::max();
     boost::hana::at_key(options.max_constructors, boost::hana::type<dl::Role> {}) = std::numeric_limits<size_t>::max();
 
@@ -96,9 +97,6 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
 
     auto result = dl::refinement_brfs::refine(parser.get_problem(), grammar, options, constructor_repositories, pruning_function);
 
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 6);
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 4);
-
     for (const auto& concept_ : boost::hana::at_key(result.constructors, boost::hana::type<dl::Concept> {}))
     {
         std::cout << std::make_tuple(concept_, dl::BNFFormatterVisitorTag {}) << std::endl;
@@ -108,6 +106,13 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
     {
         std::cout << std::make_tuple(role_, dl::BNFFormatterVisitorTag {}) << std::endl;
     }
+
+    EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 28);
+    EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 5);
+    EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Concept> {}), 634);
+    EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Role> {}), 41);
+    EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Concept> {}), 84);
+    EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Role> {}), 229);
 }
 
 }

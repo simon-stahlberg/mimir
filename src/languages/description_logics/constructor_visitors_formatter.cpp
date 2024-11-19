@@ -63,14 +63,14 @@ void BNFFormatterVisitor::visit(ConceptIntersection constructor)
 }
 void BNFFormatterVisitor::visit(ConceptUnion constructor)
 {
-    m_out << keywords::concept_intersection << " ";
+    m_out << keywords::concept_union << " ";
     constructor->get_concept_left()->accept(*this);
     m_out << " ";
     constructor->get_concept_right()->accept(*this);
 }
 void BNFFormatterVisitor::visit(ConceptNegation constructor)
 {
-    m_out << keywords::concept_union << " ";
+    m_out << keywords::concept_negation << " ";
     constructor->get_concept()->accept(*this);
 }
 void BNFFormatterVisitor::visit(ConceptValueRestriction constructor)
@@ -101,7 +101,7 @@ void BNFFormatterVisitor::visit(ConceptRoleValueMapEquality constructor)
     m_out << " ";
     constructor->get_role_right()->accept(*this);
 }
-void BNFFormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords::concept_intersection << " " << constructor->get_object()->get_name(); }
+void BNFFormatterVisitor::visit(ConceptNominal constructor) { m_out << keywords::concept_nominal << " " << constructor->get_object()->get_name(); }
 
 /* Roles */
 void BNFFormatterVisitor::visit(RoleUniversal constructor) { m_out << keywords::role_universal; }

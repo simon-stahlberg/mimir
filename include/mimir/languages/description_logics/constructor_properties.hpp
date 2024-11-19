@@ -39,42 +39,49 @@ struct ConstructorProperties
 template<>
 struct ConstructorProperties<ConceptIntersectionImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Concept, Concept>;
 };
 
 template<>
 struct ConstructorProperties<ConceptUnionImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Concept, Concept>;
 };
 
 template<>
 struct ConstructorProperties<ConceptNegationImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Concept>;
 };
 
 template<>
 struct ConstructorProperties<ConceptValueRestrictionImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Role, Concept>;
 };
 
 template<>
 struct ConstructorProperties<ConceptExistentialQuantificationImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Role, Concept>;
 };
 
 template<>
 struct ConstructorProperties<ConceptRoleValueMapContainmentImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Role, Role>;
 };
 
 template<>
 struct ConstructorProperties<ConceptRoleValueMapEqualityImpl>
 {
+    using ConstructorType = Concept;
     using ArgumentTypes = std::tuple<Role, Role>;
 };
 
@@ -85,54 +92,63 @@ struct ConstructorProperties<ConceptRoleValueMapEqualityImpl>
 template<>
 struct ConstructorProperties<RoleIntersectionImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role, Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleUnionImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role, Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleComplementImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleInverseImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleCompositionImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role, Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleTransitiveClosureImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleReflexiveTransitiveClosureImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role>;
 };
 
 template<>
 struct ConstructorProperties<RoleRestrictionImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Role, Concept>;
 };
 
 template<>
 struct ConstructorProperties<RoleIdentityImpl>
 {
+    using ConstructorType = Role;
     using ArgumentTypes = std::tuple<Concept>;
 };
 

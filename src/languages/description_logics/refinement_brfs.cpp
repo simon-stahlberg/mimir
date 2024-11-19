@@ -16,9 +16,11 @@
  */
 
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/languages/description_logics/constructor_properties.hpp"
+#include "mimir/languages/description_logics/constructor_visitors_formatter.hpp"
 #include "mimir/languages/description_logics/refinement.hpp"
 #include "mimir/search/state.hpp"
 
@@ -59,6 +61,9 @@ static bool try_insert_into_search_space(Problem problem,
     {
         ++boost::hana::at_key(ref_statistics.num_rejected_by_grammar, boost::hana::type<D> {});
 
+        if (options.verbosity >= 2)
+            std::cout << "rejected constructor: " << std::make_tuple(Constructor<D>(constructor), BNFFormatterVisitorTag {}) << std::endl;
+
         return false;
     }
 
@@ -68,14 +73,17 @@ static bool try_insert_into_search_space(Problem problem,
     {
         ++boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<D> {});
 
-        if (boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {}).size() < complexity)
-            boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {}).resize(complexity + 2);
+        boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {}).at(complexity).push_back(constructor);
 
-        boost::hana::at_key(ref_search_space.constructors_by_complexity, boost::hana::type<D> {})[complexity + 1].push_back(constructor);
+        if (options.verbosity >= 2)
+            std::cout << "generated constructor: " << std::make_tuple(Constructor<D>(constructor), BNFFormatterVisitorTag {}) << std::endl;
     }
     else
     {
         ++boost::hana::at_key(ref_statistics.num_pruned, boost::hana::type<D> {});
+
+        if (options.verbosity >= 2)
+            std::cout << "pruned constructor: " << std::make_tuple(Constructor<D>(constructor), BNFFormatterVisitorTag {}) << std::endl;
 
         return false;
     }
@@ -84,7 +92,8 @@ static bool try_insert_into_search_space(Problem problem,
 
     if (boost::hana::at_key(ref_statistics.num_generated, boost::hana::type<D> {}) >= boost::hana::at_key(options.max_constructors, boost::hana::type<D> {}))
     {
-        std::cout << "Reached resource limits during refinement!" << std::endl;
+        if (options.verbosity >= 2)
+            std::cout << "Reached resource limits during refinement!" << std::endl;
 
         return true;
     }
@@ -197,14 +206,57 @@ class ConstructorArgumentConstIterator
 private:
     /* Inputs */
     std::tuple<std::vector<ConstructorList<Ds>>*...> m_constructors_by_complexity;
-    std::array<size_t, sizeof...(Ds)> m_sizes;
 
     /* Internal state */
     SumPartitionConstIterator<sizeof...(Ds)> m_complexity_distribution_iter;
     SumPartitionConstIterator<sizeof...(Ds)> m_complexity_distribution_end;
-    std::array<size_t, sizeof...(Ds) + 1> m_indices;
+    std::array<size_t, sizeof...(Ds)> m_sizes;
+    std::array<size_t, sizeof...(Ds)> m_indices;
     std::tuple<Constructor<Ds>...> m_values;
     size_t m_pos;
+
+    bool try_initialize_sizes()
+    {
+        bool success = true;
+        constexpr std::size_t num_elements = sizeof...(Ds);
+
+        [&]<std::size_t... Indices>(std::index_sequence<Indices...>)
+        {
+            ((
+                 [&]
+                 {
+                     m_sizes[Indices] = std::get<Indices>(m_constructors_by_complexity)->at((*m_complexity_distribution_iter)[Indices]).size();
+                     if (m_sizes[Indices] == 0)
+                     {
+                         success = false;
+                     }
+                 }()),
+             ...);
+        }
+        (std::make_index_sequence<num_elements> {});
+
+        return success;
+    }
+
+    void initialize()
+    {
+        while (m_complexity_distribution_iter != m_complexity_distribution_end)
+        {
+            if (try_initialize_sizes())
+            {
+                return;
+            }
+
+            ++m_complexity_distribution_iter;
+
+            m_indices.fill(0);
+        }
+
+        if (m_complexity_distribution_iter == m_complexity_distribution_end)
+        {
+            m_pos = std::numeric_limits<size_t>::max();
+        }
+    }
 
     bool increment_indices()
     {
@@ -221,8 +273,17 @@ private:
 
     bool increment_distribution()
     {
-        ++m_complexity_distribution_iter;
-        m_indices.fill(0);
+        while (m_complexity_distribution_iter != m_complexity_distribution_end)
+        {
+            ++m_complexity_distribution_iter;
+
+            if (try_initialize_sizes())
+            {
+                return true;
+            }
+
+            m_indices.fill(0);
+        }
 
         return (m_complexity_distribution_iter != m_complexity_distribution_end);
     }
@@ -250,9 +311,9 @@ public:
 
     ConstructorArgumentConstIterator() :
         m_constructors_by_complexity(),
-        m_sizes(),
         m_complexity_distribution_iter(SumPartitionConstIterator<sizeof...(Ds)>(std::numeric_limits<size_t>::max(), true)),
         m_complexity_distribution_end(SumPartitionConstIterator<sizeof...(Ds)>(std::numeric_limits<size_t>::max(), false)),
+        m_sizes(),
         m_indices(),
         m_values(),
         m_pos(0)
@@ -262,13 +323,17 @@ public:
                                      size_t complexity,
                                      bool begin) :
         m_constructors_by_complexity(std::apply([](auto&... refs) { return std::make_tuple(&refs.get()...); }, constructors_by_complexity)),
-        m_sizes(std::apply([](auto&... refs) { return std::array<size_t, sizeof...(Ds)> { refs.get().size()... }; }, constructors_by_complexity)),
         m_complexity_distribution_iter(SumPartitionConstIterator<sizeof...(Ds)>(complexity, true)),
         m_complexity_distribution_end(SumPartitionConstIterator<sizeof...(Ds)>(complexity, false)),
+        m_sizes(),
         m_indices(),
         m_values(),
-        m_pos(0)
+        m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
     {
+        if (begin)
+        {
+            initialize();
+        }
     }
     value_type operator*()
     {
@@ -338,7 +403,7 @@ static bool refine_composite_constructor(Problem problem,
 
         /* Check grammar, prune, insert. */
 
-        try_insert_into_search_space(problem, grammar, options, constructor, complexity, ref_pruning_function, ref_search_space, ref_statistics);
+        try_insert_into_search_space(problem, grammar, options, constructor, complexity + 1, ref_pruning_function, ref_search_space, ref_statistics);
     }
 
     return false;
@@ -487,6 +552,9 @@ static bool refine_primitives(Problem problem,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
 {
+    if (options.verbosity >= 1)
+        std::cout << "Refine primitive constructors." << std::endl;
+
     return refine_primitive_concept_bot(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
            || refine_primitive_concept_top(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
            || refine_primitive_role_universal(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, ref_search_space, ref_statistics)
@@ -524,6 +592,9 @@ static bool refine_composites(Problem problem,
 {
     for (size_t complexity = 1; complexity < options.max_complexity; ++complexity)
     {
+        if (options.verbosity >= 1)
+            std::cout << "Refine composite constructors with complexity " << complexity << "." << std::endl;
+
         if (complexity >= 1)  // unary composites need at least complexity 1.
         {
             if (refine_composite_constructor<ConceptNegationImpl>(problem,
@@ -735,6 +806,9 @@ Result refine(Problem problem,
 {
     auto result = Result();
     auto search_space = SearchSpace();
+
+    boost::hana::at_key(search_space.constructors_by_complexity, boost::hana::type<Concept> {}).resize(options.max_complexity + 1);
+    boost::hana::at_key(search_space.constructors_by_complexity, boost::hana::type<Role> {}).resize(options.max_complexity + 1);
 
     refine_helper(problem, grammar, options, ref_constructor_repositories, ref_pruning_function, search_space, result.statistics);
 

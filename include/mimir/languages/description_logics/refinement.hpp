@@ -97,7 +97,7 @@ namespace refinement_brfs
 
 struct Options
 {
-    bool debug = false;
+    size_t verbosity = 0;  ///< 0=quiet, 1=normal, 2=debug
 
     size_t max_complexity = 0;
     size_t max_memory_usage_in_kb = 0;

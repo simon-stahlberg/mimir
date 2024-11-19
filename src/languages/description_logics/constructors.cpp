@@ -749,7 +749,7 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     // Evaluate children
     const auto num_objects = context.get_problem()->get_objects().size();
     const auto eval_left = m_role_left->evaluate(context);
-    const auto eval_right = m_role_left->evaluate(context);
+    const auto eval_right = m_role_right->evaluate(context);
 
     // Fetch data
     auto& bitsets = context.get_denotation_builder<Role>().get_data();
@@ -760,7 +760,7 @@ void RoleIntersectionImpl::evaluate_impl(EvaluationContext& context) const
     }
 
     // Compute result
-    for (size_t i = 0; i < eval_left->get_data().size(); ++i)
+    for (size_t i = 0; i < num_objects; ++i)
     {
         auto& bitset = bitsets.at(i);
         bitset |= eval_left->get_data().at(i);
@@ -803,7 +803,7 @@ void RoleUnionImpl::evaluate_impl(EvaluationContext& context) const
     }
 
     // Compute result
-    for (size_t i = 0; i < eval_left->get_data().size(); ++i)
+    for (size_t i = 0; i < num_objects; ++i)
     {
         auto& bitset = bitsets.at(i);
         bitset |= eval_left->get_data().at(i);
