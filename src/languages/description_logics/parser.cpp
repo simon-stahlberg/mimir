@@ -453,35 +453,35 @@ parse(const dl::ast::RoleDerivationRule& node, Domain domain, ConstructorTagToRe
     return rule;
 }
 
-static std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
+static ConstructorTagToDerivationRuleList
 parse(const dl::ast::Grammar& node, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos, Context& context)
 {
-    auto concept_rules = DerivationRuleList<Concept> {};
-    auto role_rules = DerivationRuleList<Role> {};
+    auto rules = ConstructorTagToDerivationRuleList {};
 
-    std::for_each(node.rules.begin(),
-                  node.rules.end(),
-                  [&](const dl::ast::DerivationRule& rule_node)
-                  {
-                      boost::apply_visitor(
-                          [&](const auto& arg)
-                          {
-                              using T = std::decay_t<decltype(arg)>;
-                              if constexpr (std::is_same_v<T, dl::ast::ConceptDerivationRule>)
-                              {
-                                  concept_rules.push_back(parse(arg, domain, ref_grammar_constructor_repos, context));
-                              }
-                              else if constexpr (std::is_same_v<T, dl::ast::RoleDerivationRule>)
-                              {
-                                  role_rules.push_back(parse(arg, domain, ref_grammar_constructor_repos, context));
-                              }
-                              else
-                              {
-                                  throw std::runtime_error("Unknown rule type.");
-                              }
-                          },
-                          rule_node);
-                  });
+    std::for_each(
+        node.rules.begin(),
+        node.rules.end(),
+        [&](const dl::ast::DerivationRule& rule_node)
+        {
+            boost::apply_visitor(
+                [&](const auto& arg)
+                {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, dl::ast::ConceptDerivationRule>)
+                    {
+                        boost::hana::at_key(rules, boost::hana::type<Concept> {}).push_back(parse(arg, domain, ref_grammar_constructor_repos, context));
+                    }
+                    else if constexpr (std::is_same_v<T, dl::ast::RoleDerivationRule>)
+                    {
+                        boost::hana::at_key(rules, boost::hana::type<Role> {}).push_back(parse(arg, domain, ref_grammar_constructor_repos, context));
+                    }
+                    else
+                    {
+                        throw std::runtime_error("Unknown rule type.");
+                    }
+                },
+                rule_node);
+        });
 
     /* Deferred initialization step */
     for (auto& [non_terminal_name, non_terminal] : context.m_concept_non_terminal_by_name)
@@ -503,16 +503,14 @@ parse(const dl::ast::Grammar& node, Domain domain, ConstructorTagToRepository& r
         non_terminal->set_rule(rule);
     }
 
-    return std::make_tuple(concept_rules, role_rules);
+    return rules;
 }
 
-std::tuple<DerivationRuleList<Concept>, DerivationRuleList<Role>>
-parse(const std::string& bnf_grammar_description, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos)
+ConstructorTagToDerivationRuleList parse(const std::string& bnf_grammar_description, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos)
 {
     auto ast = dl::ast::Grammar();
     dl::parse_ast(bnf_grammar_description, dl::grammar_parser(), ast);
     auto context = Context();
-    const auto [concept_rules, role_rules] = parse(ast, domain, ref_grammar_constructor_repos, context);
-    return std::make_tuple(std::move(concept_rules), std::move(role_rules));
+    return parse(ast, domain, ref_grammar_constructor_repos, context);
 }
 }

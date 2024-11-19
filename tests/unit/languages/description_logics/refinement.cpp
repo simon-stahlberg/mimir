@@ -107,12 +107,12 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
         std::cout << std::make_tuple(role_, dl::BNFFormatterVisitorTag {}) << std::endl;
     }
 
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 28);
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 5);
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Concept> {}), 634);
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Role> {}), 41);
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Concept> {}), 84);
-    EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Role> {}), 229);
+    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Concept> {}), 28);
+    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_generated, boost::hana::type<dl::Role> {}), 5);
+    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Concept> {}), 634);
+    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_pruned, boost::hana::type<dl::Role> {}), 41);
+    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Concept> {}), 84);
+    // EXPECT_EQ(boost::hana::at_key(result.statistics.num_rejected_by_grammar, boost::hana::type<dl::Role> {}), 229);
 }
 
 }

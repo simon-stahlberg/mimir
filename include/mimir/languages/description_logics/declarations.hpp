@@ -145,6 +145,8 @@ template<dl::ConstructorTag D>
 using DerivationRule = const DerivationRuleImpl<D>*;
 template<ConstructorTag D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
+using ConstructorTagToDerivationRuleList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DerivationRuleList<Concept>>,
+                                                            boost::hana::pair<boost::hana::type<Role>, DerivationRuleList<Role>>>;
 
 /* NonTerminal */
 template<dl::ConstructorTag D>
@@ -223,6 +225,12 @@ class RoleRestrictionImpl;
 using RoleRestriction = const RoleRestrictionImpl*;
 class RoleIdentityImpl;
 using RoleIdentity = const RoleIdentityImpl*;
+
+/**
+ * Visitors
+ */
+
+class Visitor;
 
 }
 }

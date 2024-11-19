@@ -49,8 +49,7 @@ public:
     /// @brief Evaluate the dl constructor on the evaluation context.
     virtual Denotation<D> evaluate(EvaluationContext& context) const = 0;
 
-    /// @brief Return true iff the symbols match the data in the dl constructor.
-    /// Uses double dispatch.
+    /// @brief Accept a visitor.
     virtual void accept(Visitor& visitor) const = 0;
 };
 

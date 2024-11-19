@@ -47,6 +47,9 @@ public:
     virtual ~ConstructorImpl() = default;
 
     virtual bool test_match(dl::Constructor<D> constructor) const = 0;
+
+    /// @brief Accept a visitor.
+    virtual void accept(Visitor& visitor) const = 0;
 };
 }
 

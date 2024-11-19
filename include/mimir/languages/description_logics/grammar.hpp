@@ -33,28 +33,32 @@ private:
     ConstructorTagToRepository m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
-    DerivationRuleList<Concept> m_concept_rules;
-    DerivationRuleList<Role> m_role_rules;
+    ConstructorTagToDerivationRuleList m_primitive_production_rules;
+    ConstructorTagToDerivationRuleList m_composite_production_rules;
+    ConstructorTagToDerivationRuleList m_alternative_rules;
 
 public:
     /// @brief Create a grammar from a BNF description.
     Grammar(std::string bnf_description, Domain domain);
 
-    /// @brief Tests whether a dl concept constructor satisfies the grammar specification.
-    /// @param constructor is the dl concept constructor to test.
-    /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(dl::Constructor<Concept> constructor) const;
-
-    /// @brief Tests whether a dl role constructor satisfies the grammar specfication.
-    /// @param constructor is the dl role constructor to test.
-    /// @return true iff the dl concept constructor satisfies the grammar specification, and false otherwise.
-    bool test_match(dl::Constructor<Role> constructor) const;
+    /// @brief Tests whether a dl constructor satisfies the grammar specification.
+    /// @param constructor is the dl constructor to test.
+    /// @return true iff the dl constructor satisfies the grammar specification, and false otherwise.
+    template<ConstructorTag D>
+    bool test_match(dl::Constructor<D> constructor) const;
 
     /**
      * Getters
      */
-    const DerivationRuleList<Concept>& get_concept_rules() const;
-    const DerivationRuleList<Role>& get_role_rules() const;
+
+    template<ConstructorTag D>
+    const DerivationRuleList<D>& get_primitive_production_rules() const;
+
+    template<ConstructorTag D>
+    const DerivationRuleList<D>& get_composite_production_rules() const;
+
+    template<ConstructorTag D>
+    const DerivationRuleList<D>& get_alternative_rules() const;
 };
 }
 

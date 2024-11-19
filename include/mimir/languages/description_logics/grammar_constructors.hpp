@@ -61,6 +61,8 @@ public:
 
     bool test_match(dl::Constructor<D> constructor) const;
 
+    void accept(Visitor& visitor) const;
+
     Index get_index() const;
     const std::string& get_name() const;
     DerivationRule<D> get_rule() const;
@@ -95,6 +97,8 @@ public:
 
     bool test_match(dl::Constructor<D> constructor) const;
 
+    void accept(Visitor& visitor) const;
+
     Index get_index() const;
     const ConstructorOrNonTerminalChoice<D>& get_choice() const;
 };
@@ -125,6 +129,8 @@ public:
 
     bool test_match(dl::Constructor<D> constructor) const;
 
+    void accept(Visitor& visitor) const;
+
     Index get_index() const;
     const ChoiceList<D>& get_choices() const;
 };
@@ -153,6 +159,8 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
 };
 
@@ -175,6 +183,8 @@ public:
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
 };
@@ -200,6 +210,8 @@ public:
     ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
@@ -228,6 +240,8 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
@@ -254,6 +268,8 @@ public:
     ConceptIntersectionImpl& operator=(ConceptIntersectionImpl&& other) = default;
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Concept> get_concept_left() const;
@@ -282,6 +298,8 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Concept> get_concept_left() const;
     Choice<Concept> get_concept_right() const;
@@ -308,6 +326,8 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Concept> get_concept() const;
 };
@@ -333,6 +353,8 @@ public:
     ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Role> get_role() const;
@@ -361,6 +383,8 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role() const;
     Choice<Concept> get_concept() const;
@@ -387,6 +411,8 @@ public:
     ConceptRoleValueMapContainmentImpl& operator=(ConceptRoleValueMapContainmentImpl&& other) = default;
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Role> get_role_left() const;
@@ -415,6 +441,8 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role_left() const;
     Choice<Role> get_role_right() const;
@@ -440,6 +468,8 @@ public:
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
     bool test_match(dl::Constructor<Concept> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Object get_object() const;
@@ -469,6 +499,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
 };
 
@@ -493,6 +525,8 @@ public:
     RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
     bool test_match(dl::Constructor<Role> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
@@ -521,6 +555,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
@@ -547,6 +583,8 @@ public:
     RoleIntersectionImpl& operator=(RoleIntersectionImpl&& other) = default;
 
     bool test_match(dl::Constructor<Role> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Role> get_role_left() const;
@@ -575,6 +613,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role_left() const;
     Choice<Role> get_role_right() const;
@@ -601,6 +641,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role() const;
 };
@@ -625,6 +667,8 @@ public:
     RoleInverseImpl& operator=(RoleInverseImpl&& other) = default;
 
     bool test_match(dl::Constructor<Role> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Role> get_role() const;
@@ -652,6 +696,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role_left() const;
     Choice<Role> get_role_right() const;
@@ -678,6 +724,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role() const;
 };
@@ -702,6 +750,8 @@ public:
     RoleReflexiveTransitiveClosureImpl& operator=(RoleReflexiveTransitiveClosureImpl&& other) = default;
 
     bool test_match(dl::Constructor<Role> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Role> get_role() const;
@@ -729,6 +779,8 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor) const override;
 
+    void accept(Visitor& visitor) const override;
+
     Index get_index() const;
     Choice<Role> get_role() const;
     Choice<Concept> get_concept() const;
@@ -754,6 +806,8 @@ public:
     RoleIdentityImpl& operator=(RoleIdentityImpl&& other) = default;
 
     bool test_match(dl::Constructor<Role> constructor) const override;
+
+    void accept(Visitor& visitor) const override;
 
     Index get_index() const;
     Choice<Concept> get_concept() const;
