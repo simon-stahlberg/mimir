@@ -1,10 +1,5 @@
 # Import all classes for better IDE support
 
-# Common
-from _pymimir import (
-    FlatBitset,
-)
-
 # Algorithms
 from _pymimir import (
     NautyCertificate,

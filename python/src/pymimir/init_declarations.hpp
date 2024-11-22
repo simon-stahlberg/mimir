@@ -3,6 +3,7 @@
 #define MIMIR_INIT_DECLARATIONS_HPP
 
 #include "mimir/mimir.hpp"
+#include "mimir/common/types_cista.hpp"
 
 #include <pybind11/detail/common.h>
 #include <pybind11/pybind11.h>

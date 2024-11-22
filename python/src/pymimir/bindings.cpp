@@ -8,6 +8,44 @@ using namespace mimir;
 namespace py = pybind11;
 
 /**
+ * Type casters
+ */
+
+template<>
+struct py::detail::type_caster<FlatIndexList>
+{
+public:
+    PYBIND11_TYPE_CASTER(FlatIndexList, _("FlatIndexList"));
+
+    static py::handle cast(const FlatIndexList& cpp_list, py::return_value_policy, py::handle)
+    {
+        py::list py_list;
+        for (const auto& cpp_item : cpp_list)
+        {
+            py_list.append(py::cast(cpp_item));
+        }
+        return py_list.release();
+    }
+};
+
+template<>
+struct py::detail::type_caster<FlatBitset>
+{
+public:
+    PYBIND11_TYPE_CASTER(FlatBitset, _("FlatBitset"));
+
+    static py::handle cast(const FlatBitset& cpp_bitset, py::return_value_policy, py::handle)
+    {
+        py::list py_list;
+        for (const auto& cpp_item : cpp_bitset)
+        {
+            py_list.append(py::cast(cpp_item));
+        }
+        return py_list.release();
+    }
+};
+
+/**
  * We cannot expose the variant types directly because they are not default constructible.
  */
 
@@ -929,14 +967,6 @@ void init_pymimir(py::module_& m)
         .value("SOLVED", SearchStatus::SOLVED)
         .value("UNSOLVABLE", SearchStatus::UNSOLVABLE)
         .export_values();
-
-    /* Bitset */
-    py::class_<FlatBitset>(m, "FlatBitset")  //
-        .def("get", &FlatBitset::get)
-        .def(
-            "__iter__",
-            [](const FlatBitset& self) { return py::make_iterator(self.begin(), self.end()); },
-            py::keep_alive<0, 1>());
 
     /* State */
     py::class_<StateImpl>(m, "State")  //
