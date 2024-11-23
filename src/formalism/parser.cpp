@@ -56,6 +56,9 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     auto to_enf_translator = ToENFTranslator(domain_parser.get_repositories());
     problem = to_enf_translator.run(*problem);
 
+    // std::cout << *problem->get_domain() << std::endl;
+    // std::cout << *problem << std::endl;
+
     // To mimir structures
     auto tmp_mimir_pddl_repositories = PDDLRepositories();
     auto to_mimir_structures_translator = ToMimirStructures(tmp_mimir_pddl_repositories);

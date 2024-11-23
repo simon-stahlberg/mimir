@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/translators/interface.hpp"
 
+#include <boost/hana.hpp>
 #include <deque>
 #include <loki/loki.hpp>
 #include <unordered_map>
@@ -41,26 +42,29 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
-    std::unordered_map<loki::Requirements, loki::Requirements> m_translated_requirements;
-    std::unordered_map<loki::Type, loki::Type> m_translated_types;
-    std::unordered_map<loki::Object, loki::Object> m_translated_objects;
-    std::unordered_map<loki::Variable, loki::Variable> m_translated_variables;
-    std::unordered_map<loki::Term, loki::Term> m_translated_terms;
-    std::unordered_map<loki::Parameter, loki::Parameter> m_translated_parameters;
-    std::unordered_map<loki::Predicate, loki::Predicate> m_translated_predicates;
-    std::unordered_map<loki::Atom, loki::Atom> m_translated_atoms;
-    std::unordered_map<loki::Literal, loki::Literal> m_translated_literals;
-    std::unordered_map<loki::NumericFluent, loki::NumericFluent> m_translated_numeric_fluents;
-    std::unordered_map<loki::Condition, loki::Condition> m_translated_conditions;
-    std::unordered_map<loki::Effect, loki::Effect> m_translated_effects;
-    std::unordered_map<loki::FunctionExpression, loki::FunctionExpression> m_translated_function_expressions;
-    std::unordered_map<loki::FunctionSkeleton, loki::FunctionSkeleton> m_translated_function_skeletons;
-    std::unordered_map<loki::Function, loki::Function> m_translated_functions;
-    std::unordered_map<loki::Action, loki::Action> m_translated_actions;
-    std::unordered_map<loki::Axiom, loki::Axiom> m_translated_axioms;
-    std::unordered_map<loki::Domain, loki::Domain> m_translated_domains;
-    std::unordered_map<loki::OptimizationMetric, loki::OptimizationMetric> m_translated_optimization_metrics;
-    std::unordered_map<loki::Problem, loki::Problem> m_translated_problems;
+    using PDDLElementToTranslatedPDDLElement =
+        boost::hana::map<boost::hana::pair<boost::hana::type<loki::Requirements>, std::unordered_map<loki::Requirements, loki::Requirements>>,  //
+                         boost::hana::pair<boost::hana::type<loki::Type>, std::unordered_map<loki::Type, loki::Type>>,
+                         boost::hana::pair<boost::hana::type<loki::Object>, std::unordered_map<loki::Object, loki::Object>>,
+                         boost::hana::pair<boost::hana::type<loki::Variable>, std::unordered_map<loki::Variable, loki::Variable>>,
+                         boost::hana::pair<boost::hana::type<loki::Term>, std::unordered_map<loki::Term, loki::Term>>,
+                         boost::hana::pair<boost::hana::type<loki::Parameter>, std::unordered_map<loki::Parameter, loki::Parameter>>,
+                         boost::hana::pair<boost::hana::type<loki::Predicate>, std::unordered_map<loki::Predicate, loki::Predicate>>,
+                         boost::hana::pair<boost::hana::type<loki::Atom>, std::unordered_map<loki::Atom, loki::Atom>>,
+                         boost::hana::pair<boost::hana::type<loki::Literal>, std::unordered_map<loki::Literal, loki::Literal>>,
+                         boost::hana::pair<boost::hana::type<loki::NumericFluent>, std::unordered_map<loki::NumericFluent, loki::NumericFluent>>,
+                         boost::hana::pair<boost::hana::type<loki::Condition>, std::unordered_map<loki::Condition, loki::Condition>>,
+                         boost::hana::pair<boost::hana::type<loki::Effect>, std::unordered_map<loki::Effect, loki::Effect>>,
+                         boost::hana::pair<boost::hana::type<loki::FunctionExpression>, std::unordered_map<loki::FunctionExpression, loki::FunctionExpression>>,
+                         boost::hana::pair<boost::hana::type<loki::FunctionSkeleton>, std::unordered_map<loki::FunctionSkeleton, loki::FunctionSkeleton>>,
+                         boost::hana::pair<boost::hana::type<loki::Function>, std::unordered_map<loki::Function, loki::Function>>,
+                         boost::hana::pair<boost::hana::type<loki::Action>, std::unordered_map<loki::Action, loki::Action>>,
+                         boost::hana::pair<boost::hana::type<loki::Axiom>, std::unordered_map<loki::Axiom, loki::Axiom>>,
+                         boost::hana::pair<boost::hana::type<loki::Domain>, std::unordered_map<loki::Domain, loki::Domain>>,
+                         boost::hana::pair<boost::hana::type<loki::OptimizationMetric>, std::unordered_map<loki::OptimizationMetric, loki::OptimizationMetric>>,
+                         boost::hana::pair<boost::hana::type<loki::Problem>, std::unordered_map<loki::Problem, loki::Problem>>>;
+
+    PDDLElementToTranslatedPDDLElement m_translated_elements;
 
 protected:
     loki::PDDLRepositories& m_pddl_repositories;
@@ -75,46 +79,11 @@ protected:
      * Collect information.
      * Default implementation recursively calls prepare.
      */
-    void prepare_base(const loki::RequirementsImpl& requirements) { self().prepare_impl(requirements); }
-    void prepare_base(const loki::TypeImpl& type) { self().prepare_impl(type); }
-    void prepare_base(const loki::ObjectImpl& object) { self().prepare_impl(object); }
-    void prepare_base(const loki::VariableImpl& variable) { self().prepare_impl(variable); }
-    void prepare_base(const loki::TermObjectImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const loki::TermVariableImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const loki::TermImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const loki::ParameterImpl& parameter) { self().prepare_impl(parameter); }
-    void prepare_base(const loki::PredicateImpl& predicate) { self().prepare_impl(predicate); }
-    void prepare_base(const loki::AtomImpl& atom) { self().prepare_impl(atom); }
-    void prepare_base(const loki::LiteralImpl& literal) { self().prepare_impl(literal); }
-    void prepare_base(const loki::NumericFluentImpl& numeric_fluent) { self().prepare_impl(numeric_fluent); }
-    void prepare_base(const loki::ConditionLiteralImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionAndImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionOrImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionNotImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionImplyImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionExistsImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionForallImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::ConditionImpl& condition) { self().prepare_impl(condition); }
-    void prepare_base(const loki::EffectLiteralImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectAndImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectNumericImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectCompositeForallImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectCompositeWhenImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectCompositeOneofImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::EffectImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const loki::FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const loki::FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const loki::FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const loki::FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-    void prepare_base(const loki::FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
-    void prepare_base(const loki::FunctionExpressionImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const loki::FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
-    void prepare_base(const loki::FunctionImpl& function) { self().prepare_impl(function); }
-    void prepare_base(const loki::ActionImpl& action) { self().prepare_impl(action); }
-    void prepare_base(const loki::AxiomImpl& axiom) { self().prepare_impl(axiom); }
-    void prepare_base(const loki::DomainImpl& domain) { self().prepare_impl(domain); }
-    void prepare_base(const loki::OptimizationMetricImpl& metric) { self().prepare_impl(metric); }
-    void prepare_base(const loki::ProblemImpl& problem) { self().prepare_impl(problem); }
+    template<typename T>
+    void prepare_base(const T& element)
+    {
+        self().prepare_impl(element);
+    }
 
     void prepare_impl(const loki::RequirementsImpl& requirements) {}
     void prepare_impl(const loki::TypeImpl& type) { this->prepare(type.get_bases()); }
@@ -274,119 +243,36 @@ protected:
 
         return translated;
     }
-    loki::Requirements translate_base(const loki::RequirementsImpl& requirements)
+    /// @brief Cache the variant translation, but not its nested element.
+    /// @tparam ...Ts
+    /// @param element
+    /// @return
+    template<typename... Ts>
+    auto translate_base(const std::variant<Ts...>& element)
     {
-        return cached_translate_impl(requirements, m_translated_requirements, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(element,
+                                     boost::hana::at_key(m_translated_elements, boost::hana::type<const std::variant<Ts...>*> {}),
+                                     [this](auto&& arg) { return std::visit([this](auto&& arg2) { return this->translate_base_variant_helper(arg2); }, arg); });
     }
-    loki::Type translate_base(const loki::TypeImpl& type)
+    /// @brief Helper to not cache the nested element in the variant.
+    /// @tparam T
+    /// @param element
+    /// @return
+    template<typename T>
+    auto translate_base_variant_helper(const T& element)
     {
-        return cached_translate_impl(type, m_translated_types, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return this->self().translate_impl(element);
     }
-    loki::Object translate_base(const loki::ObjectImpl& object)
+    /// @brief Cache the translation.
+    /// @tparam T
+    /// @param element
+    /// @return
+    template<typename T>
+    auto translate_base(const T& element)
     {
-        return cached_translate_impl(object, m_translated_objects, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Variable translate_base(const loki::VariableImpl& variable)
-    {
-        return cached_translate_impl(variable, m_translated_variables, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Term translate_base(const loki::TermObjectImpl& term) { return self().translate_impl(term); }
-    loki::Term translate_base(const loki::TermVariableImpl& term) { return self().translate_impl(term); }
-    loki::Term translate_base(const loki::TermImpl& term)
-    {
-        return cached_translate_impl(term, m_translated_terms, [this, &term](const auto& arg) { return this->self().translate_impl(term); });
-    }
-    loki::Parameter translate_base(const loki::ParameterImpl& parameter)
-    {
-        return cached_translate_impl(parameter, m_translated_parameters, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Predicate translate_base(const loki::PredicateImpl& predicate)
-    {
-        return cached_translate_impl(predicate, m_translated_predicates, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Atom translate_base(const loki::AtomImpl& atom)
-    {
-        return cached_translate_impl(atom, m_translated_atoms, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Literal translate_base(const loki::LiteralImpl& literal)
-    {
-        return cached_translate_impl(literal, m_translated_literals, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::NumericFluent translate_base(const loki::NumericFluentImpl& numeric_fluent)
-    {
-        return cached_translate_impl(numeric_fluent, m_translated_numeric_fluents, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Condition translate_base(const loki::ConditionLiteralImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionAndImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionOrImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionNotImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionImplyImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionExistsImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionForallImpl& condition) { return self().translate_impl(condition); }
-    loki::Condition translate_base(const loki::ConditionImpl& condition)
-    {
-        return cached_translate_impl(condition, m_translated_conditions, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Effect translate_base(const loki::EffectLiteralImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectAndImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectNumericImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectCompositeForallImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectCompositeWhenImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectCompositeOneofImpl& effect) { return self().translate_impl(effect); }
-    loki::Effect translate_base(const loki::EffectImpl& effect)
-    {
-        return cached_translate_impl(effect, m_translated_effects, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionNumberImpl& function_expression)
-    {
-        return self().translate_impl(function_expression);
-    }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
-    {
-        return self().translate_impl(function_expression);
-    }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
-    {
-        return self().translate_impl(function_expression);
-    }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionMinusImpl& function_expression) { return self().translate_impl(function_expression); }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionFunctionImpl& function_expression)
-    {
-        return self().translate_impl(function_expression);
-    }
-    loki::FunctionExpression translate_base(const loki::FunctionExpressionImpl& function_expression)
-    {
-        return cached_translate_impl(function_expression,
-                                     m_translated_function_expressions,
-                                     [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::FunctionSkeleton translate_base(const loki::FunctionSkeletonImpl& function_skeleton)
-    {
-        return cached_translate_impl(function_skeleton, m_translated_function_skeletons, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Function translate_base(const loki::FunctionImpl& function)
-    {
-        return cached_translate_impl(function, m_translated_functions, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Action translate_base(const loki::ActionImpl& action)
-    {
-        return cached_translate_impl(action, m_translated_actions, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Axiom translate_base(const loki::AxiomImpl& axiom)
-    {
-        return cached_translate_impl(axiom, m_translated_axioms, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Domain translate_base(const loki::DomainImpl& domain)
-    {
-        return cached_translate_impl(domain, m_translated_domains, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::OptimizationMetric translate_base(const loki::OptimizationMetricImpl& metric)
-    {
-        return cached_translate_impl(metric, m_translated_optimization_metrics, [this](const auto& arg) { return this->self().translate_impl(arg); });
-    }
-    loki::Problem translate_base(const loki::ProblemImpl& problem)
-    {
-        return cached_translate_impl(problem, m_translated_problems, [this](const auto& arg) { return this->self().translate_impl(arg); });
+        return cached_translate_impl(element,
+                                     boost::hana::at_key(m_translated_elements, boost::hana::type<const T*> {}),
+                                     [this](auto&& arg) { return this->self().translate_impl(arg); });
     }
 
     loki::Requirements translate_impl(const loki::RequirementsImpl& requirements)

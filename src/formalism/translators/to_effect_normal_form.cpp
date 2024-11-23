@@ -63,16 +63,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
     }
 
     // 3. e1 and (e2 and e3)  =>  e1 and e2 and e3
-    auto result =
-        flatten(std::get<loki::EffectAndImpl>(*this->m_pddl_repositories.get_or_create_effect_and(translated_nested_effects)), this->m_pddl_repositories);
-
-    // Stabilize
-    if (&effect != &std::get<loki::EffectAndImpl>(*result))
-    {
-        result = this->translate(*result);
-    }
-
-    return result;
+    return flatten(std::get<loki::EffectAndImpl>(*this->m_pddl_repositories.get_or_create_effect_and(translated_nested_effects)), this->m_pddl_repositories);
 }
 
 loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeForallImpl& effect)
@@ -91,17 +82,9 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeForallIm
         return this->translate(*this->m_pddl_repositories.get_or_create_effect_and(result_parts));
     }
     // 5. forall(vars1, forall(vars2, e))  =>  forall(vars1+vars2, e)
-    auto result = flatten(std::get<loki::EffectCompositeForallImpl>(
-                              *this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect)),
-                          this->m_pddl_repositories);
-
-    // Stabilize
-    if (&effect != &std::get<loki::EffectCompositeForallImpl>(*result))
-    {
-        result = this->translate(*result);
-    }
-
-    return result;
+    return flatten(std::get<loki::EffectCompositeForallImpl>(
+                       *this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect)),
+                   this->m_pddl_repositories);
 }
 
 loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl& effect)
@@ -116,7 +99,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl
             this->m_pddl_repositories.get_or_create_condition_and(loki::ConditionList { translated_condition, translated_nested_effect_when->get_condition() }),
             translated_nested_effect_when->get_effect()));
     }
-    else if (const auto translated_nested_effect_and = std::get_if<loki::EffectAndImpl>(effect.get_effect()))
+    else if (const auto translated_nested_effect_and = std::get_if<loki::EffectAndImpl>(translated_nested_effect))
     {
         // 7. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
         auto parts = loki::EffectList {};
@@ -126,7 +109,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl
         }
         return this->translate(*this->m_pddl_repositories.get_or_create_effect_and(parts));
     }
-    else if (const auto translated_nested_effect_forall = std::get_if<loki::EffectCompositeForallImpl>(effect.get_effect()))
+    else if (const auto translated_nested_effect_forall = std::get_if<loki::EffectCompositeForallImpl>(translated_nested_effect))
     {
         // 8. phi > forall(vars, e)  => forall(vars, phi > e)
         return this->translate(*this->m_pddl_repositories.get_or_create_effect_composite_forall(
@@ -141,15 +124,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl
             this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition_exists->get_condition(), translated_nested_effect)));
     }
 
-    auto result = this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, translated_nested_effect);
-
-    // Stabilize
-    if (&effect != &std::get<loki::EffectCompositeWhenImpl>(*result))
-    {
-        result = this->translate(*result);
-    }
-
-    return result;
+    return this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, translated_nested_effect);
 }
 
 loki::Condition ToENFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
