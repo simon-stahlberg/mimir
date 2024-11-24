@@ -45,6 +45,15 @@ concept IsUnsignedIntegral = std::is_integral_v<T> && std::is_unsigned_v<T>;
 template<typename T, typename Value>
 concept IsRangeOver = std::ranges::range<T> && std::same_as<std::ranges::range_value_t<T>, Value>;
 
+template<typename T>
+concept IsBackInsertibleRange = std::ranges::forward_range<T> &&  // Must be a forward range
+    std::default_initializable<std::remove_cvref_t<T>> &&         // Must be default-constructible
+    requires(std::remove_cvref_t<T> container, std::ranges::range_value_t<T> value)
+{
+    std::back_inserter(container);           // Must support std::back_inserter
+    *std::back_inserter(container) = value;  // Must support inserting values
+};
+
 }
 
 #endif

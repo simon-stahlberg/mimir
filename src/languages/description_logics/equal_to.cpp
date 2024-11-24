@@ -287,7 +287,7 @@ bool UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>::operator()(const gr
 {
     if (&l != &r)
     {
-        return (l->get_choices() == r->get_choices());
+        return (l->get_non_terminal() == r->get_non_terminal()) && (l->get_choices() == r->get_choices());
     }
     return true;
 }

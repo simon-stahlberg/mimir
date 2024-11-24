@@ -18,6 +18,8 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_INTERFACE_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_INTERFACE_HPP_
 
+#include "mimir/common/concepts.hpp"
+
 #include <algorithm>
 #include <boost/container/small_vector.hpp>
 #include <loki/loki.hpp>
@@ -44,7 +46,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    template<std::ranges::forward_range Range>
+    template<IsBackInsertibleRange Range>
     void prepare(const Range& input)
     {
         std::ranges::for_each(input, [this](auto&& arg) { this->prepare(*arg); });
@@ -56,7 +58,7 @@ public:
     }
 
     /// @brief Translate a container of elements into a container of elements.
-    template<std::ranges::forward_range Range>
+    template<IsBackInsertibleRange Range>
     auto translate(const Range& input)
     {
         std::remove_cvref_t<Range> output;

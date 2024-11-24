@@ -92,7 +92,7 @@ role_non_terminal_type const role_non_terminal = "role_non_terminal";
 role_choice_type const role_choice = "role_choice";
 role_derivation_rule_type const role_derivation_rule = "role_derivation_rule";
 
-derivation_rule_type const derivation_rule = "derivation_rule";
+concept_or_role_derivation_rule_type const concept_or_role_derivation_rule = "concept_or_role_derivation_rule";
 grammar_type const grammar = "grammar";
 
 ///////////////////////////////////////////////////////////////////////////
@@ -110,47 +110,47 @@ inline auto bool_parser()
                       | (x3::lit("0") >> x3::attr(false))];
 }
 
-const auto concept__def = concept_non_terminal | concept_bot | concept_top | concept_atomic_state | concept_atomic_goal | concept_intersection | concept_union
-                          | concept_negation | concept_value_restriction | concept_existential_quantification | concept_role_value_map_containment
+const auto concept__def = concept_bot | concept_top | concept_atomic_state | concept_atomic_goal | concept_intersection | concept_union | concept_negation
+                          | concept_value_restriction | concept_existential_quantification | concept_role_value_map_containment
                           | concept_role_value_map_equality | concept_nominal;
 
 const auto concept_bot_def = lit(keywords::concept_bot) >> x3::attr(ast::ConceptBot {});
 const auto concept_top_def = lit(keywords::concept_top) >> x3::attr(ast::ConceptTop {});
 const auto concept_atomic_state_def = lit(keywords::concept_atomic_state) > predicate_name_parser();
 const auto concept_atomic_goal_def = lit(keywords::concept_atomic_goal) > predicate_name_parser() > bool_parser();
-const auto concept_intersection_def = lit(keywords::concept_intersection) > concept_ > concept_;
-const auto concept_union_def = lit(keywords::concept_union) > concept_ > concept_;
-const auto concept_negation_def = lit(keywords::concept_negation) > concept_;
-const auto concept_value_restriction_def = lit(keywords::concept_value_restriction) > role > concept_;
-const auto concept_existential_quantification_def = lit(keywords::concept_existential_quantification) > role > concept_;
-const auto concept_role_value_map_containment_def = lit(keywords::concept_role_value_map_containment) > role > role;
-const auto concept_role_value_map_equality_def = lit(keywords::concept_role_value_map_equality) > role > role;
+const auto concept_intersection_def = lit(keywords::concept_intersection) > concept_choice > concept_choice;
+const auto concept_union_def = lit(keywords::concept_union) > concept_choice > concept_choice;
+const auto concept_negation_def = lit(keywords::concept_negation) > concept_choice;
+const auto concept_value_restriction_def = lit(keywords::concept_value_restriction) > role_choice > concept_choice;
+const auto concept_existential_quantification_def = lit(keywords::concept_existential_quantification) > role_choice > concept_choice;
+const auto concept_role_value_map_containment_def = lit(keywords::concept_role_value_map_containment) > role_choice > role_choice;
+const auto concept_role_value_map_equality_def = lit(keywords::concept_role_value_map_equality) > role_choice > role_choice;
 const auto concept_nominal_def = lit(keywords::concept_nominal) > object_name_parser();
 const auto concept_non_terminal_def = concept_non_terminal_parser();
 const auto concept_choice_def = concept_non_terminal | concept_;
 const auto concept_derivation_rule_def = concept_non_terminal > "::=" > (concept_choice % lit("|"));
 
-const auto role_def = role_non_terminal | role_universal | role_atomic_state | role_atomic_goal | role_intersection | role_union | role_complement
-                      | role_inverse | role_composition | role_transitive_closure | role_reflexive_transitive_closure | role_restriction | role_identity;
+const auto role_def = role_universal | role_atomic_state | role_atomic_goal | role_intersection | role_union | role_complement | role_inverse | role_composition
+                      | role_transitive_closure | role_reflexive_transitive_closure | role_restriction | role_identity;
 
 const auto role_universal_def = lit(keywords::role_universal) >> x3::attr(ast::RoleUniversal {});
 const auto role_atomic_state_def = lit(keywords::role_atomic_state) > predicate_name_parser();
 const auto role_atomic_goal_def = lit(keywords::role_atomic_goal) > predicate_name_parser() > bool_parser();
-const auto role_intersection_def = lit(keywords::role_intersection) > role > role;
-const auto role_union_def = lit(keywords::role_union) > role > role;
-const auto role_complement_def = lit(keywords::role_complement) > role;
-const auto role_inverse_def = lit(keywords::role_inverse) > role;
-const auto role_composition_def = lit(keywords::role_composition) > role > role;
-const auto role_transitive_closure_def = lit(keywords::role_transitive_closure) > role;
-const auto role_reflexive_transitive_closure_def = lit(keywords::role_reflexive_transitive_closure) > role;
-const auto role_restriction_def = lit(keywords::role_restriction) > role > concept_;
-const auto role_identity_def = lit(keywords::role_identity) > concept_;
+const auto role_intersection_def = lit(keywords::role_intersection) > role_choice > role_choice;
+const auto role_union_def = lit(keywords::role_union) > role_choice > role_choice;
+const auto role_complement_def = lit(keywords::role_complement) > role_choice;
+const auto role_inverse_def = lit(keywords::role_inverse) > role_choice;
+const auto role_composition_def = lit(keywords::role_composition) > role_choice > role_choice;
+const auto role_transitive_closure_def = lit(keywords::role_transitive_closure) > role_choice;
+const auto role_reflexive_transitive_closure_def = lit(keywords::role_reflexive_transitive_closure) > role_choice;
+const auto role_restriction_def = lit(keywords::role_restriction) > role_choice > concept_choice;
+const auto role_identity_def = lit(keywords::role_identity) > concept_choice;
 const auto role_non_terminal_def = role_non_terminal_parser();
 const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
 
-const auto derivation_rule_def = (concept_derivation_rule | role_derivation_rule);
-const auto grammar_def = *derivation_rule;
+const auto concept_or_role_derivation_rule_def = (concept_derivation_rule | role_derivation_rule);
+const auto grammar_def = *concept_or_role_derivation_rule;
 
 BOOST_SPIRIT_DEFINE(concept_,
                     concept_bot,
@@ -186,15 +186,46 @@ BOOST_SPIRIT_DEFINE(role,
                     role_choice,
                     role_derivation_rule)
 
-BOOST_SPIRIT_DEFINE(derivation_rule, grammar)
+BOOST_SPIRIT_DEFINE(concept_or_role_derivation_rule, grammar)
 
 ///////////////////////////////////////////////////////////////////////////
 // Annotation and Error handling
 ///////////////////////////////////////////////////////////////////////////
 
-struct ConceptClass : x3::annotate_on_success
+template<>
+struct ConstructorClass<Concept> : x3::annotate_on_success
 {
 };
+template<>
+struct ConstructorClass<Role> : x3::annotate_on_success
+{
+};
+
+template<>
+struct NonTerminalClass<Concept> : x3::annotate_on_success
+{
+};
+template<>
+struct NonTerminalClass<Role> : x3::annotate_on_success
+{
+};
+template<>
+struct ChoiceClass<Concept> : x3::annotate_on_success
+{
+};
+template<>
+struct ChoiceClass<Role> : x3::annotate_on_success
+{
+};
+template<>
+struct DerivationRuleClass<Concept> : x3::annotate_on_success
+{
+};
+template<>
+struct DerivationRuleClass<Role> : x3::annotate_on_success
+{
+};
+
 struct ConceptBotClass : x3::annotate_on_success
 {
 };
@@ -231,19 +262,7 @@ struct ConceptRoleValueMapEqualityClass : x3::annotate_on_success
 struct ConceptNominalClass : x3::annotate_on_success
 {
 };
-struct ConceptNonTerminalClass : x3::annotate_on_success
-{
-};
-struct ConceptChoiceClass : x3::annotate_on_success
-{
-};
-struct ConceptDerivationRuleClass : x3::annotate_on_success
-{
-};
 
-struct RoleClass : x3::annotate_on_success
-{
-};
 struct RoleUniversalClass : x3::annotate_on_success
 {
 };
@@ -280,17 +299,8 @@ struct RoleRestrictionClass : x3::annotate_on_success
 struct RoleIdentityClass : x3::annotate_on_success
 {
 };
-struct RoleNonTerminalClass : x3::annotate_on_success
-{
-};
-struct RoleChoiceClass : x3::annotate_on_success
-{
-};
-struct RoleDerivationRuleClass : x3::annotate_on_success
-{
-};
 
-struct DerivationRuleClass : x3::annotate_on_success
+struct ConceptOrRoleDerivationRuleClass : x3::annotate_on_success
 {
 };
 struct GrammarClass : x3::annotate_on_success, error_handler_base
@@ -334,7 +344,7 @@ parser::role_non_terminal_type const& role_non_terminal() { return parser::role_
 parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
 
-parser::derivation_rule_type const& derivation_rule() { return parser::derivation_rule; }
+parser::concept_or_role_derivation_rule_type const& concept_or_role_derivation_rule() { return parser::concept_or_role_derivation_rule; }
 parser::grammar_type const& grammar_parser() { return parser::grammar; }
 }
 

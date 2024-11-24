@@ -112,9 +112,10 @@ class DerivationRuleImpl
 {
 protected:
     Index m_index;
+    NonTerminal<D> m_non_terminal;
     ChoiceList<D> m_choices;
 
-    DerivationRuleImpl(Index index, ChoiceList<D> choices);
+    DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ChoiceList<D> choices);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -132,6 +133,7 @@ public:
     void accept(Visitor& visitor) const;
 
     Index get_index() const;
+    NonTerminal<D> get_non_terminal() const;
     const ChoiceList<D>& get_choices() const;
 };
 

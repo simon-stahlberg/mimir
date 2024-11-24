@@ -18,11 +18,17 @@
 #ifndef SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_ADAPTED_HPP_
 #define SRC_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_ADAPTED_HPP_
 
+#include "mimir/languages/description_logics/parser/ast.hpp"
+
 #include <boost/fusion/include/adapt_struct.hpp>
-#include <mimir/languages/description_logics/parser/ast.hpp>
 
 // We need to tell fusion about our rexpr and rexpr_key_value
 // to make them a first-class fusion citizens
+
+BOOST_FUSION_ADAPT_TPL_STRUCT((D), (mimir::dl::ast::NonTerminal)(D), (std::string, name))
+BOOST_FUSION_ADAPT_TPL_STRUCT((D),
+                              (mimir::dl::ast::DerivationRule)(D),
+                              (mimir::dl::ast::NonTerminal<D>, non_terminal)(std::vector<mimir::dl::ast::Choice<D>>, choices))
 
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptBot)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptTop)
@@ -36,8 +42,6 @@ BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptExistentialQuantification, role
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptRoleValueMapContainment, role_left, role_right)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptRoleValueMapEquality, role_left, role_right)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptNominal, object_name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptNonTerminal, name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::ConceptDerivationRule, non_terminal, choices)
 
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleUniversal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleAtomicState, predicate_name)
@@ -51,8 +55,6 @@ BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleTransitiveClosure, role_)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleReflexiveTransitiveClosure, role_)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleRestriction, role_, concept_)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleIdentity, concept_)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleNonTerminal, name)
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleDerivationRule, non_terminal, choices)
 
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::Grammar, rules)
 

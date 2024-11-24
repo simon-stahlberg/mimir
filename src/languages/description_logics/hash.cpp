@@ -149,7 +149,7 @@ size_t UniqueDLHasher<const RoleIdentityImpl*>::operator()(const RoleIdentityImp
 template<ConstructorTag D>
 size_t UniqueDLHasher<const grammar::DerivationRuleImpl<D>*>::operator()(const grammar::DerivationRuleImpl<D>* e) const
 {
-    return mimir::hash_combine(e->get_choices());
+    return mimir::hash_combine(e->get_non_terminal(), e->get_choices());
 }
 
 template size_t UniqueDLHasher<const grammar::DerivationRuleImpl<Concept>*>::operator()(const grammar::DerivationRuleImpl<Concept>* e) const;

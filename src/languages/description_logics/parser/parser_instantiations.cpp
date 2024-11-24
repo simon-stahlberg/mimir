@@ -59,7 +59,7 @@ BOOST_SPIRIT_INSTANTIATE(role_non_terminal_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_choice_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(role_derivation_rule_type, iterator_type, context_type)
 
-BOOST_SPIRIT_INSTANTIATE(derivation_rule_type, iterator_type, context_type)
+BOOST_SPIRIT_INSTANTIATE(concept_or_role_derivation_rule_type, iterator_type, context_type)
 BOOST_SPIRIT_INSTANTIATE(grammar_type, iterator_type, context_type)
 
 }

@@ -115,7 +115,10 @@ template class ChoiceImpl<Role>;
  */
 
 template<dl::ConstructorTag D>
-DerivationRuleImpl<D>::DerivationRuleImpl(Index index, ChoiceList<D> choices) : m_index(index), m_choices(std::move(choices))
+DerivationRuleImpl<D>::DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ChoiceList<D> choices) :
+    m_index(index),
+    m_non_terminal(non_terminal),
+    m_choices(std::move(choices))
 {
     /* Canonize */
     std::sort(m_choices.begin(), m_choices.end(), [](const auto& lhs, const auto& rhs) { return lhs->get_index() < rhs->get_index(); });
@@ -137,6 +140,12 @@ template<dl::ConstructorTag D>
 Index DerivationRuleImpl<D>::get_index() const
 {
     return m_index;
+}
+
+template<dl::ConstructorTag D>
+NonTerminal<D> DerivationRuleImpl<D>::get_non_terminal() const
+{
+    return m_non_terminal;
 }
 
 template<dl::ConstructorTag D>

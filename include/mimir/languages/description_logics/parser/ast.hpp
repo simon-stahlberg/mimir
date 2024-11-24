@@ -18,6 +18,8 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTORS_PARSER_AST_HPP_
 
+#include "mimir/languages/description_logics/declarations.hpp"
+
 #include <boost/optional.hpp>
 #include <boost/spirit/home/x3/support/ast/position_tagged.hpp>
 #include <boost/spirit/home/x3/support/ast/variant.hpp>
@@ -32,21 +34,6 @@ namespace mimir::dl::ast
 ///////////////////////////////////////////////////////////////////////////
 namespace x3 = boost::spirit::x3;
 
-/// Example BNF grammar DL fragment with restriction on role-value map (equal)
-/// <concept_predicate1_state> ::= @concept_atomic_state "predicate1"
-/// <concept_predicate1_goal> ::= @concept_atomic_goal "predicate1"
-/// <concept_all> ::= "@concept_all" <role> <concept>
-/// <concept_equal> ::= "@concept_equal" <concept_predicate1_state> <concept_predicate1_goal>
-/// <concept_bot> ::= "@concept_bot"
-/// <concept_top> ::= "@concept_top"
-/// <concept> ::= <concept_predicate1_state> | <concept_predicate1_goal> | <concept_bot> | <concept_top> | <concept_all> | <concept_equal>
-/// <role_predicate2_state> ::= @role_atomic_state "predicate2"
-/// <role_predicate2_goal> ::= @role_atomic_goal "predicate2"
-/// <role_bot> ::= "@role_bot"
-/// <role_top> ::= "@role_top"
-/// <role> ::= <role_predicate2_state> | <role_predicate2_goal> | <role_bot> | <role_top>
-
-struct ConceptNonTerminal;
 struct ConceptBot;
 struct ConceptTop;
 struct ConceptAtomicState;
@@ -60,7 +47,6 @@ struct ConceptRoleValueMapContainment;
 struct ConceptRoleValueMapEquality;
 struct ConceptNominal;
 
-struct RoleNonTerminal;
 struct RoleUniversal;
 struct RoleAtomicState;
 struct RoleAtomicGoal;
@@ -74,10 +60,15 @@ struct RoleReflexiveTransitiveClosure;
 struct RoleRestriction;
 struct RoleIdentity;
 
-struct Concept :
+template<ConstructorTag D>
+struct Constructor
+{
+};
+
+template<>
+struct Constructor<Concept> :
     x3::position_tagged,
-    x3::variant<x3::forward_ast<ConceptNonTerminal>,  //
-                x3::forward_ast<ConceptBot>,
+    x3::variant<x3::forward_ast<ConceptBot>,
                 x3::forward_ast<ConceptTop>,
                 x3::forward_ast<ConceptAtomicState>,
                 x3::forward_ast<ConceptAtomicGoal>,
@@ -94,10 +85,10 @@ struct Concept :
     using base_type::operator=;
 };
 
-struct Role :
+template<>
+struct Constructor<Role> :
     x3::position_tagged,
-    x3::variant<x3::forward_ast<RoleNonTerminal>,  //
-                x3::forward_ast<RoleUniversal>,
+    x3::variant<x3::forward_ast<RoleUniversal>,
                 x3::forward_ast<RoleAtomicState>,
                 x3::forward_ast<RoleAtomicGoal>,
                 x3::forward_ast<RoleIntersection>,
@@ -112,6 +103,27 @@ struct Role :
 {
     using base_type::base_type;
     using base_type::operator=;
+};
+
+template<ConstructorTag D>
+struct NonTerminal : x3::position_tagged
+{
+    std::string name;
+};
+
+template<ConstructorTag D>
+struct Choice : x3::position_tagged, x3::variant<NonTerminal<D>, Constructor<D>>
+{
+    using typename x3::variant<NonTerminal<D>, Constructor<D>>::base_type;
+    using base_type::base_type;
+    using base_type::operator=;
+};
+
+template<ConstructorTag D>
+struct DerivationRule : x3::position_tagged
+{
+    NonTerminal<D> non_terminal;
+    std::vector<Choice<D>> choices;
 };
 
 /**
@@ -139,65 +151,48 @@ struct ConceptAtomicGoal : x3::position_tagged
 
 struct ConceptIntersection : x3::position_tagged
 {
-    Concept concept_left;
-    Concept concept_right;
+    Choice<Concept> concept_left;
+    Choice<Concept> concept_right;
 };
 
 struct ConceptUnion : x3::position_tagged
 {
-    Concept concept_left;
-    Concept concept_right;
+    Choice<Concept> concept_left;
+    Choice<Concept> concept_right;
 };
 
 struct ConceptNegation : x3::position_tagged
 {
-    Concept concept_;
+    Choice<Concept> concept_;
 };
 
 struct ConceptValueRestriction : x3::position_tagged
 {
-    Role role_;
-    Concept concept_;
+    Choice<Role> role_;
+    Choice<Concept> concept_;
 };
 
 struct ConceptExistentialQuantification : x3::position_tagged
 {
-    Role role_;
-    Concept concept_;
+    Choice<Role> role_;
+    Choice<Concept> concept_;
 };
 
 struct ConceptRoleValueMapContainment : x3::position_tagged
 {
-    Role role_left;
-    Role role_right;
+    Choice<Role> role_left;
+    Choice<Role> role_right;
 };
 
 struct ConceptRoleValueMapEquality : x3::position_tagged
 {
-    Role role_left;
-    Role role_right;
+    Choice<Role> role_left;
+    Choice<Role> role_right;
 };
 
 struct ConceptNominal : x3::position_tagged
 {
     std::string object_name;
-};
-
-struct ConceptNonTerminal : x3::position_tagged
-{
-    std::string name;
-};
-
-struct ConceptChoice : x3::position_tagged, x3::variant<ConceptNonTerminal, Concept>
-{
-    using base_type::base_type;
-    using base_type::operator=;
-};
-
-struct ConceptDerivationRule : x3::position_tagged
-{
-    ConceptNonTerminal non_terminal;
-    std::vector<ConceptChoice> choices;
 };
 
 /**
@@ -221,75 +216,58 @@ struct RoleAtomicGoal : x3::position_tagged
 
 struct RoleIntersection : x3::position_tagged
 {
-    Role role_left;
-    Role role_right;
+    Choice<Role> role_left;
+    Choice<Role> role_right;
 };
 
 struct RoleUnion : x3::position_tagged
 {
-    Role role_left;
-    Role role_right;
+    Choice<Role> role_left;
+    Choice<Role> role_right;
 };
 
 struct RoleComplement : x3::position_tagged
 {
-    Role role_;
+    Choice<Role> role_;
 };
 
 struct RoleInverse : x3::position_tagged
 {
-    Role role_;
+    Choice<Role> role_;
 };
 
 struct RoleComposition : x3::position_tagged
 {
-    Role role_left;
-    Role role_right;
+    Choice<Role> role_left;
+    Choice<Role> role_right;
 };
 
 struct RoleTransitiveClosure : x3::position_tagged
 {
-    Role role_;
+    Choice<Role> role_;
 };
 
 struct RoleReflexiveTransitiveClosure : x3::position_tagged
 {
-    Role role_;
+    Choice<Role> role_;
 };
 
 struct RoleRestriction : x3::position_tagged
 {
-    Role role_;
-    Concept concept_;
+    Choice<Role> role_;
+    Choice<Concept> concept_;
 };
 
 struct RoleIdentity : x3::position_tagged
 {
-    Concept concept_;
-};
-
-struct RoleNonTerminal : x3::position_tagged
-{
-    std::string name;
-};
-
-struct RoleChoice : x3::position_tagged, x3::variant<RoleNonTerminal, Role>
-{
-    using base_type::base_type;
-    using base_type::operator=;
-};
-
-struct RoleDerivationRule : x3::position_tagged
-{
-    RoleNonTerminal non_terminal;
-    std::vector<RoleChoice> choices;
+    Choice<Concept> concept_;
 };
 
 /**
  * Grammar
  */
 
-struct DerivationRule : x3::position_tagged, x3::variant<ConceptDerivationRule, RoleDerivationRule>
+struct ConceptOrRoleDerivationRule : x3::position_tagged, x3::variant<DerivationRule<Concept>, DerivationRule<Role>>
 {
     using base_type::base_type;
     using base_type::operator=;
@@ -297,7 +275,7 @@ struct DerivationRule : x3::position_tagged, x3::variant<ConceptDerivationRule, 
 
 struct Grammar : x3::position_tagged
 {
-    std::vector<DerivationRule> rules;
+    std::vector<ConceptOrRoleDerivationRule> rules;
 };
 
 }

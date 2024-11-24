@@ -35,6 +35,7 @@ private:
     friend class BaseRecurseTranslator<RenameQuantifiedVariablesTranslator>;
 
     // Provide default implementations
+    // Note: for context dependent translations, we cannot use the BaseCachedRecurseTranslator.
     using BaseRecurseTranslator::prepare_impl;
     using BaseRecurseTranslator::translate_impl;
 

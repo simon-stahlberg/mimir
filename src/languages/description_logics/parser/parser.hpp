@@ -40,7 +40,20 @@ using ascii::space;
 ///////////////////////////////////////////////////////////////////////////
 namespace parser
 {
-struct ConceptClass;
+template<ConstructorTag D>
+struct ConstructorClass;
+
+template<ConstructorTag D>
+struct NonTerminalClass;
+
+template<ConstructorTag D>
+struct ChoiceClass;
+
+template<ConstructorTag D>
+struct DerivationRuleClass;
+
+struct ConceptOrRoleDerivationRuleClass;
+
 struct ConceptBotClass;
 struct ConceptTopClass;
 struct ConceptAtomicStateClass;
@@ -53,11 +66,7 @@ struct ConceptExistentialQuantificationClass;
 struct ConceptRoleValueMapContainmentClass;
 struct ConceptRoleValueMapEqualityClass;
 struct ConceptNominalClass;
-struct ConceptNonTerminalClass;
-struct ConceptChoiceClass;
-struct ConceptDerivationRuleClass;
 
-struct RoleClass;
 struct RoleUniversalClass;
 struct RoleAtomicStateClass;
 struct RoleAtomicGoalClass;
@@ -70,13 +79,8 @@ struct RoleTransitiveClosureClass;
 struct RoleReflexiveTransitiveClosureClass;
 struct RoleRestrictionClass;
 struct RoleIdentityClass;
-struct RoleNonTerminalClass;
-struct RoleChoiceClass;
-struct RoleDerivationRuleClass;
 
-struct DerivationRuleClass;
-
-typedef x3::rule<ConceptClass, ast::Concept> concept_type;
+typedef x3::rule<ConstructorClass<Concept>, ast::Constructor<Concept>> concept_type;
 typedef x3::rule<ConceptBotClass, ast::ConceptBot> concept_bot_type;
 typedef x3::rule<ConceptTopClass, ast::ConceptTop> concept_top_type;
 typedef x3::rule<ConceptAtomicStateClass, ast::ConceptAtomicState> concept_atomic_state_type;
@@ -89,11 +93,11 @@ typedef x3::rule<ConceptExistentialQuantificationClass, ast::ConceptExistentialQ
 typedef x3::rule<ConceptRoleValueMapContainmentClass, ast::ConceptRoleValueMapContainment> concept_role_value_map_containment_type;
 typedef x3::rule<ConceptRoleValueMapEqualityClass, ast::ConceptRoleValueMapEquality> concept_role_value_map_equality_type;
 typedef x3::rule<ConceptNominalClass, ast::ConceptNominal> concept_nominal_type;
-typedef x3::rule<ConceptNonTerminalClass, ast::ConceptNonTerminal> concept_non_terminal_type;
-typedef x3::rule<ConceptChoiceClass, ast::ConceptChoice> concept_choice_type;
-typedef x3::rule<ConceptDerivationRuleClass, ast::ConceptDerivationRule> concept_derivation_rule_type;
+typedef x3::rule<NonTerminalClass<Concept>, ast::NonTerminal<Concept>> concept_non_terminal_type;
+typedef x3::rule<ChoiceClass<Concept>, ast::Choice<Concept>> concept_choice_type;
+typedef x3::rule<DerivationRuleClass<Concept>, ast::DerivationRule<Concept>> concept_derivation_rule_type;
 
-typedef x3::rule<RoleClass, ast::Role> role_type;
+typedef x3::rule<ConstructorClass<Role>, ast::Constructor<Role>> role_type;
 typedef x3::rule<RoleUniversalClass, ast::RoleUniversal> role_universal_type;
 typedef x3::rule<RoleAtomicStateClass, ast::RoleAtomicState> role_atomic_state_type;
 typedef x3::rule<RoleAtomicGoalClass, ast::RoleAtomicGoal> role_atomic_goal_type;
@@ -106,11 +110,11 @@ typedef x3::rule<RoleTransitiveClosureClass, ast::RoleTransitiveClosure> role_tr
 typedef x3::rule<RoleReflexiveTransitiveClosureClass, ast::RoleReflexiveTransitiveClosure> role_reflexive_transitive_closure_type;
 typedef x3::rule<RoleRestrictionClass, ast::RoleRestriction> role_restriction_type;
 typedef x3::rule<RoleIdentityClass, ast::RoleIdentity> role_identity_type;
-typedef x3::rule<RoleNonTerminalClass, ast::RoleNonTerminal> role_non_terminal_type;
-typedef x3::rule<RoleChoiceClass, ast::RoleChoice> role_choice_type;
-typedef x3::rule<RoleDerivationRuleClass, ast::RoleDerivationRule> role_derivation_rule_type;
+typedef x3::rule<NonTerminalClass<Role>, ast::NonTerminal<Role>> role_non_terminal_type;
+typedef x3::rule<ChoiceClass<Role>, ast::Choice<Role>> role_choice_type;
+typedef x3::rule<DerivationRuleClass<Role>, ast::DerivationRule<Role>> role_derivation_rule_type;
 
-typedef x3::rule<DerivationRuleClass, ast::DerivationRule> derivation_rule_type;
+typedef x3::rule<ConceptOrRoleDerivationRuleClass, ast::ConceptOrRoleDerivationRule> concept_or_role_derivation_rule_type;
 
 BOOST_SPIRIT_DECLARE(concept_type,
                      concept_bot_type,
@@ -146,7 +150,7 @@ BOOST_SPIRIT_DECLARE(role_type,
                      role_choice_type,
                      role_derivation_rule_type)
 
-BOOST_SPIRIT_DECLARE(derivation_rule_type)
+BOOST_SPIRIT_DECLARE(concept_or_role_derivation_rule_type)
 
 }
 
@@ -184,7 +188,7 @@ parser::role_non_terminal_type const& role_non_terminal();
 parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();
 
-parser::derivation_rule_type const& derivation_rule();
+parser::concept_or_role_derivation_rule_type const& concept_or_role_derivation_rule();
 }
 
 #endif
