@@ -162,8 +162,8 @@ PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Static>);
 PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Fluent>);
 PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Derived>);
 PYBIND11_MAKE_OPAQUE(ProblemList);
-PYBIND11_MAKE_OPAQUE(TermList);
 PYBIND11_MAKE_OPAQUE(VariableList);
+PYBIND11_MAKE_OPAQUE(TermVariantList);
 
 /* Search */
 PYBIND11_MAKE_OPAQUE(StateList);
@@ -496,7 +496,7 @@ void init_pymimir(py::module_& m)
             .def("__repr__", &AtomImpl<Tag>::str)
             .def("get_index", &AtomImpl<Tag>::get_index)
             .def("get_predicate", &AtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
-            .def("get_terms", [](const AtomImpl<Tag>& atom) { return to_term_variant_list(atom.get_terms()); })
+            .def("get_terms", [](const AtomImpl<Tag>& atom) { return to_term_variant_list(atom.get_terms()); }, py::keep_alive<0, 1>())
             .def("get_variables", &AtomImpl<Tag>::get_variables);
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);
