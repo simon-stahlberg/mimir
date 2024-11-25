@@ -172,6 +172,45 @@ public:
     const GroundFunction& get_function() const;
 };
 
+/* GroundFunctionExpression */
+class GroundFunctionExpressionImpl
+{
+private:
+    size_t m_index;
+    std::variant<GroundFunctionExpressionNumber,
+                 GroundFunctionExpressionBinaryOperator,
+                 GroundFunctionExpressionMultiOperator,
+                 GroundFunctionExpressionMinus,
+                 GroundFunctionExpressionFunction>
+        m_ground_function_expression;
+
+    GroundFunctionExpressionImpl(size_t index,
+                                 std::variant<GroundFunctionExpressionNumber,
+                                              GroundFunctionExpressionBinaryOperator,
+                                              GroundFunctionExpressionMultiOperator,
+                                              GroundFunctionExpressionMinus,
+                                              GroundFunctionExpressionFunction> ground_function_expression);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    GroundFunctionExpressionImpl(const GroundFunctionExpressionImpl& other) = delete;
+    GroundFunctionExpressionImpl& operator=(const GroundFunctionExpressionImpl& other) = delete;
+    GroundFunctionExpressionImpl(GroundFunctionExpressionImpl&& other) = default;
+    GroundFunctionExpressionImpl& operator=(GroundFunctionExpressionImpl&& other) = default;
+
+    size_t get_index() const;
+    const std::variant<GroundFunctionExpressionNumber,
+                       GroundFunctionExpressionBinaryOperator,
+                       GroundFunctionExpressionMultiOperator,
+                       GroundFunctionExpressionMinus,
+                       GroundFunctionExpressionFunction>&
+    get_ground_function_expression() const;
+};
+
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);

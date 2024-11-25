@@ -60,7 +60,7 @@ public:
 
 /// Spezialization for std::ranges::forward_range.
 template<typename ForwardRange>
-    requires std::ranges::forward_range<ForwardRange>
+requires std::ranges::forward_range<ForwardRange>
 struct UniquePDDLHasher<ForwardRange>
 {
     size_t operator()(const ForwardRange& range) const
@@ -80,7 +80,13 @@ struct UniquePDDLHasher<std::variant<Ts...>>
 {
     size_t operator()(const std::variant<Ts...>& variant) const
     {
-        return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, variant);
+        return std::visit(
+            [](const auto& arg)
+            {
+                using DecayedType = std::decay_t<decltype(arg)>;
+                return UniquePDDLHasher<DecayedType>()(arg);
+            },
+            variant);
     }
 };
 
@@ -262,18 +268,6 @@ template<>
 struct UniquePDDLHasher<const RequirementsImpl*>
 {
     size_t operator()(const RequirementsImpl* e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const TermObjectImpl&>
-{
-    size_t operator()(const TermObjectImpl& e) const;
-};
-
-template<>
-struct UniquePDDLHasher<const TermVariableImpl&>
-{
-    size_t operator()(const TermVariableImpl& e) const;
 };
 
 template<>

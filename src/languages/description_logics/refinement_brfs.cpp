@@ -397,7 +397,7 @@ static bool refine_composite_constructor(Problem problem,
             [&](auto&&... unpacked_args)
             {
                 return boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConstructorImplType> {})
-                    .template get_or_create<ConstructorImplType>(std::forward<decltype(unpacked_args)>(unpacked_args)...);
+                    .get_or_create(std::forward<decltype(unpacked_args)>(unpacked_args)...);
             },
             args);
 
@@ -421,7 +421,7 @@ static bool refine_primitive_concept_bot(Problem problem,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics)
 {
-    const auto concept_bot = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptBotImpl> {}).template get_or_create<ConceptBotImpl>();
+    const auto concept_bot = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptBotImpl> {}).get_or_create();
 
     return try_insert_into_search_space(problem, grammar, options, concept_bot, 1, ref_pruning_function, ref_search_space, ref_statistics);
 }
@@ -438,7 +438,7 @@ static bool refine_primitive_concept_top(Problem problem,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics)
 {
-    const auto concept_top = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptTopImpl> {}).template get_or_create<ConceptTopImpl>();
+    const auto concept_top = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptTopImpl> {}).get_or_create();
 
     return try_insert_into_search_space(problem, grammar, options, concept_top, 1, ref_pruning_function, ref_search_space, ref_statistics);
 }
@@ -455,8 +455,7 @@ static bool refine_primitive_role_universal(Problem problem,
                                             SearchSpace& ref_search_space,
                                             Statistics& ref_statistics)
 {
-    const auto role_universal =
-        boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleUniversalImpl> {}).template get_or_create<RoleUniversalImpl>();
+    const auto role_universal = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleUniversalImpl> {}).get_or_create();
 
     return try_insert_into_search_space(problem, grammar, options, role_universal, 1, ref_pruning_function, ref_search_space, ref_statistics);
 }
@@ -475,8 +474,7 @@ static bool refine_primitive_concept_nominal(Problem problem,
 {
     for (const auto& object : problem->get_domain()->get_constants())
     {
-        const auto concept_nominal =
-            boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptNominalImpl> {}).template get_or_create<ConceptNominalImpl>(object);
+        const auto concept_nominal = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptNominalImpl> {}).get_or_create(object);
 
         return try_insert_into_search_space(problem, grammar, options, concept_nominal, 1, ref_pruning_function, ref_search_space, ref_statistics);
     }
@@ -501,40 +499,39 @@ static bool refine_primitive_constructor_atomic(Problem problem,
     {
         if (predicate->get_arity() == 1)
         {
-            const auto concept_state = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicStateImpl<P>> {})
-                                           .template get_or_create<ConceptAtomicStateImpl<P>>(predicate);
+            const auto concept_state =
+                boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicStateImpl<P>> {}).get_or_create(predicate);
 
             if (try_insert_into_search_space(problem, grammar, options, concept_state, 1, ref_pruning_function, ref_search_space, ref_statistics))
                 return true;
 
-            const auto concept_goal_true = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {})
-                                               .template get_or_create<ConceptAtomicGoalImpl<P>>(predicate, true);
+            const auto concept_goal_true =
+                boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {}).get_or_create(predicate, true);
 
             if (try_insert_into_search_space(problem, grammar, options, concept_goal_true, 1, ref_pruning_function, ref_search_space, ref_statistics))
                 return true;
 
-            const auto concept_goal_false = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {})
-                                                .template get_or_create<ConceptAtomicGoalImpl<P>>(predicate, false);
+            const auto concept_goal_false =
+                boost::hana::at_key(ref_constructor_repositories, boost::hana::type<ConceptAtomicGoalImpl<P>> {}).get_or_create(predicate, false);
 
             if (try_insert_into_search_space(problem, grammar, options, concept_goal_false, 1, ref_pruning_function, ref_search_space, ref_statistics))
                 return true;
         }
         else if (predicate->get_arity() == 2)
         {
-            const auto role_state = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicStateImpl<P>> {})
-                                        .template get_or_create<RoleAtomicStateImpl<P>>(predicate);
+            const auto role_state = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicStateImpl<P>> {}).get_or_create(predicate);
 
             if (try_insert_into_search_space(problem, grammar, options, role_state, 1, ref_pruning_function, ref_search_space, ref_statistics))
                 return true;
 
-            const auto role_goal_true = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {})
-                                            .template get_or_create<RoleAtomicGoalImpl<P>>(predicate, true);
+            const auto role_goal_true =
+                boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {}).get_or_create(predicate, true);
 
             if (try_insert_into_search_space(problem, grammar, options, role_goal_true, 1, ref_pruning_function, ref_search_space, ref_statistics))
                 return true;
 
-            const auto role_goal_false = boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {})
-                                             .template get_or_create<RoleAtomicGoalImpl<P>>(predicate, false);
+            const auto role_goal_false =
+                boost::hana::at_key(ref_constructor_repositories, boost::hana::type<RoleAtomicGoalImpl<P>> {}).get_or_create(predicate, false);
 
             if (try_insert_into_search_space(problem, grammar, options, role_goal_false, 1, ref_pruning_function, ref_search_space, ref_statistics))
                 return true;

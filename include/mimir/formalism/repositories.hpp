@@ -50,78 +50,90 @@
 namespace mimir
 {
 
-using RequirementsRepository =
-    loki::SegmentedRepository<RequirementsImpl, UniquePDDLHasher<const RequirementsImpl*>, UniquePDDLEqualTo<const RequirementsImpl*>>;
-using VariableRepository = loki::SegmentedRepository<VariableImpl, UniquePDDLHasher<const VariableImpl*>, UniquePDDLEqualTo<const VariableImpl*>>;
-using TermRepository = loki::SegmentedRepository<TermImpl, UniquePDDLHasher<const TermImpl*>, UniquePDDLEqualTo<const TermImpl*>>;
-using ObjectRepository = loki::SegmentedRepository<ObjectImpl, UniquePDDLHasher<const ObjectImpl*>, UniquePDDLEqualTo<const ObjectImpl*>>;
-template<PredicateTag P>
-using AtomRepository = loki::SegmentedRepository<AtomImpl<P>, UniquePDDLHasher<const AtomImpl<P>*>, UniquePDDLEqualTo<const AtomImpl<P>*>>;
-template<PredicateTag P>
-using GroundAtomRepository =
-    loki::SegmentedRepository<GroundAtomImpl<P>, UniquePDDLHasher<const GroundAtomImpl<P>*>, UniquePDDLEqualTo<const GroundAtomImpl<P>*>>;
-template<PredicateTag P>
-using LiteralRepository = loki::SegmentedRepository<LiteralImpl<P>, UniquePDDLHasher<const LiteralImpl<P>*>, UniquePDDLEqualTo<const LiteralImpl<P>*>>;
-template<PredicateTag P>
-using GroundLiteralRepository =
-    loki::SegmentedRepository<GroundLiteralImpl<P>, UniquePDDLHasher<const GroundLiteralImpl<P>*>, UniquePDDLEqualTo<const GroundLiteralImpl<P>*>>;
-template<PredicateTag P>
-using PredicateRepository = loki::SegmentedRepository<PredicateImpl<P>, UniquePDDLHasher<const PredicateImpl<P>*>, UniquePDDLEqualTo<const PredicateImpl<P>*>>;
-using FunctionExpressionRepository =
-    loki::SegmentedRepository<FunctionExpressionImpl, UniquePDDLHasher<const FunctionExpressionImpl*>, UniquePDDLEqualTo<const FunctionExpressionImpl*>>;
-using GroundFunctionExpressionRepository = loki::SegmentedRepository<GroundFunctionExpressionImpl,
-                                                                     UniquePDDLHasher<const GroundFunctionExpressionImpl*>,
-                                                                     UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>>;
-using FunctionRepository = loki::SegmentedRepository<FunctionImpl, UniquePDDLHasher<const FunctionImpl*>, UniquePDDLEqualTo<const FunctionImpl*>>;
-using GroundFunctionRepository =
-    loki::SegmentedRepository<GroundFunctionImpl, UniquePDDLHasher<const GroundFunctionImpl*>, UniquePDDLEqualTo<const GroundFunctionImpl*>>;
-using FunctionSkeletonRepository =
-    loki::SegmentedRepository<FunctionSkeletonImpl, UniquePDDLHasher<const FunctionSkeletonImpl*>, UniquePDDLEqualTo<const FunctionSkeletonImpl*>>;
-using EffectSimpleRepository =
-    loki::SegmentedRepository<EffectSimpleImpl, UniquePDDLHasher<const EffectSimpleImpl*>, UniquePDDLEqualTo<const EffectSimpleImpl*>>;
-using EffectUniversalRepository =
-    loki::SegmentedRepository<EffectComplexImpl, UniquePDDLHasher<const EffectComplexImpl*>, UniquePDDLEqualTo<const EffectComplexImpl*>>;
-using ActionRepository = loki::SegmentedRepository<ActionImpl, UniquePDDLHasher<const ActionImpl*>, UniquePDDLEqualTo<const ActionImpl*>>;
-using AxiomRepository = loki::SegmentedRepository<AxiomImpl, UniquePDDLHasher<const AxiomImpl*>, UniquePDDLEqualTo<const AxiomImpl*>>;
-using OptimizationMetricRepository =
-    loki::SegmentedRepository<OptimizationMetricImpl, UniquePDDLHasher<const OptimizationMetricImpl*>, UniquePDDLEqualTo<const OptimizationMetricImpl*>>;
-using NumericFluentRepository =
-    loki::SegmentedRepository<NumericFluentImpl, UniquePDDLHasher<const NumericFluentImpl*>, UniquePDDLEqualTo<const NumericFluentImpl*>>;
-using DomainRepository = loki::SegmentedRepository<DomainImpl, UniquePDDLHasher<const DomainImpl*>, UniquePDDLEqualTo<const DomainImpl*>>;
-using ProblemRepository = loki::SegmentedRepository<ProblemImpl, UniquePDDLHasher<const ProblemImpl*>, UniquePDDLEqualTo<const ProblemImpl*>>;
+template<typename T>
+using SegmentedPDDLRepository = loki::SegmentedRepository<T, UniquePDDLHasher<const T*>, UniquePDDLEqualTo<const T*>>;
 
-using PDDLTypeToRepository = boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
-                                              boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
-                                              boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
-                                              boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
-                                              boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomRepository<Static>>,
-                                              boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomRepository<Fluent>>,
-                                              boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomRepository<Derived>>,
-                                              boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomRepository<Static>>,
-                                              boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent>>,
-                                              boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived>>,
-                                              boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralRepository<Static>>,
-                                              boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralRepository<Fluent>>,
-                                              boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralRepository<Derived>>,
-                                              boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static>>,
-                                              boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent>>,
-                                              boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived>>,
-                                              boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateRepository<Static>>,
-                                              boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateRepository<Fluent>>,
-                                              boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateRepository<Derived>>,
-                                              boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionRepository>,
-                                              boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository>,
-                                              boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionRepository>,
-                                              boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionRepository>,
-                                              boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
-                                              boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleRepository>,
-                                              boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalRepository>,
-                                              boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
-                                              boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
-                                              boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
-                                              boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentRepository>,
-                                              boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
-                                              boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
+using RequirementsRepository = SegmentedPDDLRepository<RequirementsImpl>;
+using VariableRepository = SegmentedPDDLRepository<VariableImpl>;
+using TermRepository = SegmentedPDDLRepository<TermImpl>;
+using ObjectRepository = SegmentedPDDLRepository<ObjectImpl>;
+template<PredicateTag P>
+using AtomRepository = SegmentedPDDLRepository<AtomImpl<P>>;
+template<PredicateTag P>
+using GroundAtomRepository = SegmentedPDDLRepository<GroundAtomImpl<P>>;
+template<PredicateTag P>
+using LiteralRepository = SegmentedPDDLRepository<LiteralImpl<P>>;
+template<PredicateTag P>
+using GroundLiteralRepository = SegmentedPDDLRepository<GroundLiteralImpl<P>>;
+template<PredicateTag P>
+using PredicateRepository = SegmentedPDDLRepository<PredicateImpl<P>>;
+using FunctionExpressionNumberRepository = SegmentedPDDLRepository<FunctionExpressionNumberImpl>;
+using FunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<FunctionExpressionBinaryOperatorImpl>;
+using FunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<FunctionExpressionMultiOperatorImpl>;
+using FunctionExpressionMinusRepository = SegmentedPDDLRepository<FunctionExpressionMinusImpl>;
+using FunctionExpressionFunctionRepository = SegmentedPDDLRepository<FunctionExpressionFunctionImpl>;
+using FunctionExpressionRepository = SegmentedPDDLRepository<FunctionExpressionImpl>;
+using GroundFunctionExpressionNumberRepository = SegmentedPDDLRepository<GroundFunctionExpressionNumberImpl>;
+using GroundFunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionBinaryOperatorImpl>;
+using GroundFunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionMultiOperatorImpl>;
+using GroundFunctionExpressionMinusRepository = SegmentedPDDLRepository<GroundFunctionExpressionMinusImpl>;
+using GroundFunctionExpressionFunctionRepository = SegmentedPDDLRepository<GroundFunctionExpressionFunctionImpl>;
+using GroundFunctionExpressionRepository = SegmentedPDDLRepository<GroundFunctionExpressionImpl>;
+using FunctionRepository = SegmentedPDDLRepository<FunctionImpl>;
+using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl>;
+using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl>;
+using EffectSimpleRepository = SegmentedPDDLRepository<EffectSimpleImpl>;
+using EffectUniversalRepository = SegmentedPDDLRepository<EffectComplexImpl>;
+using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
+using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
+using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
+using NumericFluentRepository = SegmentedPDDLRepository<NumericFluentImpl>;
+using DomainRepository = SegmentedPDDLRepository<DomainImpl>;
+using ProblemRepository = SegmentedPDDLRepository<ProblemImpl>;
+
+using PDDLTypeToRepository =
+    boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
+                     boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
+                     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
+                     boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
+                     boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateRepository<Static>>,
+                     boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateRepository<Fluent>>,
+                     boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateRepository<Derived>>,
+                     boost::hana::pair<boost::hana::type<FunctionExpressionNumberImpl>, FunctionExpressionNumberRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionExpressionBinaryOperatorImpl>, FunctionExpressionBinaryOperatorRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionExpressionMultiOperatorImpl>, FunctionExpressionMultiOperatorRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionExpressionMinusImpl>, FunctionExpressionMinusRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl>, FunctionExpressionFunctionRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionNumberImpl>, GroundFunctionExpressionNumberRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionBinaryOperatorImpl>, GroundFunctionExpressionBinaryOperatorRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionMultiOperatorImpl>, GroundFunctionExpressionMultiOperatorRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionMinusImpl>, GroundFunctionExpressionMinusRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl>, GroundFunctionExpressionFunctionRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionRepository>,
+                     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
+                     boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleRepository>,
+                     boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalRepository>,
+                     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
+                     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
+                     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
+                     boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentRepository>,
+                     boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
+                     boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
 
 extern PDDLTypeToRepository create_default_pddl_type_to_repository();
 

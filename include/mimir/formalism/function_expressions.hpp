@@ -172,6 +172,45 @@ public:
     const Function& get_function() const;
 };
 
+/* FunctionExpression */
+class FunctionExpressionImpl
+{
+private:
+    size_t m_index;
+    std::variant<FunctionExpressionNumber,
+                 FunctionExpressionBinaryOperator,
+                 FunctionExpressionMultiOperator,
+                 FunctionExpressionMinus,
+                 FunctionExpressionFunction>
+        m_function_expression;
+
+    FunctionExpressionImpl(size_t index,
+                           std::variant<FunctionExpressionNumber,
+                                        FunctionExpressionBinaryOperator,
+                                        FunctionExpressionMultiOperator,
+                                        FunctionExpressionMinus,
+                                        FunctionExpressionFunction> function_expression);
+
+    // Give access to the constructor.
+    template<typename HolderType, typename Hash, typename EqualTo>
+    friend class SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    FunctionExpressionImpl(const FunctionExpressionImpl& other) = delete;
+    FunctionExpressionImpl& operator=(const FunctionExpressionImpl& other) = delete;
+    FunctionExpressionImpl(FunctionExpressionImpl&& other) = default;
+    FunctionExpressionImpl& operator=(FunctionExpressionImpl&& other) = default;
+
+    size_t get_index() const;
+    const std::variant<FunctionExpressionNumber,
+                       FunctionExpressionBinaryOperator,
+                       FunctionExpressionMultiOperator,
+                       FunctionExpressionMinus,
+                       FunctionExpressionFunction>&
+    get_function_expression() const;
+};
+
 /**
  * Arithmetic operations
  */

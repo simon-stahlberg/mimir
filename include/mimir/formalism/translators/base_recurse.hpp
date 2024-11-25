@@ -62,11 +62,9 @@ protected:
     void prepare_impl(const loki::TypeImpl& type) { this->prepare(type.get_bases()); }
     void prepare_impl(const loki::ObjectImpl& object) { this->prepare(object.get_bases()); }
     void prepare_impl(const loki::VariableImpl& variable) {}
-    void prepare_impl(const loki::TermObjectImpl& term) { this->prepare(*term.get_object()); }
-    void prepare_impl(const loki::TermVariableImpl& term) { this->prepare(*term.get_variable()); }
     void prepare_impl(const loki::TermImpl& term)
     {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
+        std::visit([this](auto&& arg) { return this->prepare(*arg); }, term.get_object_or_variable());
     }
     void prepare_impl(const loki::ParameterImpl& parameter) { this->prepare(*parameter.get_variable()); }
     void prepare_impl(const loki::PredicateImpl& predicate) { this->prepare(predicate.get_parameters()); }
@@ -98,7 +96,7 @@ protected:
     }
     void prepare_impl(const loki::ConditionImpl& condition)
     {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, condition);
+        std::visit([this](auto&& arg) { return this->prepare(*arg); }, condition.get_condition());
     }
     void prepare_impl(const loki::EffectLiteralImpl& effect) { this->prepare(*effect.get_literal()); }
     void prepare_impl(const loki::EffectAndImpl& effect) { this->prepare(effect.get_effects()); }
@@ -120,7 +118,7 @@ protected:
     void prepare_impl(const loki::EffectCompositeOneofImpl& effect) { this->prepare(effect.get_effects()); }
     void prepare_impl(const loki::EffectImpl& effect)
     {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, effect);
+        std::visit([this](auto&& arg) { return this->prepare(*arg); }, effect.get_effect());
     }
     void prepare_impl(const loki::FunctionExpressionNumberImpl& function_expression) {}
     void prepare_impl(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
@@ -133,7 +131,7 @@ protected:
     void prepare_impl(const loki::FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
     void prepare_impl(const loki::FunctionExpressionImpl& function_expression)
     {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression);
+        std::visit([this](auto&& arg) { return this->prepare(*arg); }, function_expression.get_function_expression());
     }
     void prepare_impl(const loki::FunctionSkeletonImpl& function_skeleton)
     {
@@ -213,17 +211,27 @@ protected:
         return this->m_pddl_repositories.get_or_create_object(object.get_name(), this->translate(object.get_bases()));
     }
     loki::Variable translate_impl(const loki::VariableImpl& variable) { return this->m_pddl_repositories.get_or_create_variable(variable.get_name()); }
-    loki::Term translate_impl(const loki::TermObjectImpl& term)
-    {
-        return this->m_pddl_repositories.get_or_create_term_object(this->translate(*term.get_object()));
-    }
-    loki::Term translate_impl(const loki::TermVariableImpl& term)
-    {
-        return this->m_pddl_repositories.get_or_create_term_variable(this->translate(*term.get_variable()));
-    }
     loki::Term translate_impl(const loki::TermImpl& term)
     {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, term);
+        return std::visit(
+            [this](auto&& arg) -> loki::Term
+            {
+                using ArgType = std::decay_t<decltype(arg)>;
+
+                if constexpr (std::is_same_v<ArgType, loki::Variable>)
+                {
+                    return this->m_pddl_repositories.get_or_create_term_variable(this->translate(*arg));
+                }
+                else if constexpr (std::is_same_v<ArgType, loki::Object>)
+                {
+                    return this->m_pddl_repositories.get_or_create_term_object(this->translate(*arg));
+                }
+                else
+                {
+                    static_assert(dependent_false<ArgType>::value, "Missing implementation for ArgType.");
+                }
+            },
+            term.get_object_or_variable());
     }
     loki::Parameter translate_impl(const loki::ParameterImpl& parameter)
     {
@@ -278,7 +286,7 @@ protected:
     }
     loki::Condition translate_impl(const loki::ConditionImpl& condition)
     {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, condition);
+        return std::visit([this](auto&& arg) -> loki::Condition { return this->translate(*arg); }, condition.get_condition());
     }
     loki::Effect translate_impl(const loki::EffectLiteralImpl& effect)
     {
@@ -308,7 +316,7 @@ protected:
     }
     loki::Effect translate_impl(const loki::EffectImpl& effect)
     {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, effect);
+        return std::visit([this](auto&& arg) -> loki::Effect { return this->translate(*arg); }, effect.get_effect());
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionNumberImpl& function_expression)
     {
@@ -336,7 +344,7 @@ protected:
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->translate(arg); }, function_expression);
+        return std::visit([this](auto&& arg) -> loki::FunctionExpression { return this->translate(*arg); }, function_expression.get_function_expression());
     }
     loki::FunctionSkeleton translate_impl(const loki::FunctionSkeletonImpl& function_skeleton)
     {

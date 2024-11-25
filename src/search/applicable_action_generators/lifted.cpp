@@ -101,6 +101,8 @@ public:
 
         return cost;
     }
+
+    double operator()(const FunctionExpressionImpl& expr) { return std::visit(*this, expr.get_function_expression()); }
 };
 
 const std::vector<AxiomPartition>& LiftedApplicableActionGenerator::get_axiom_partitioning() const { return m_axiom_evaluator.get_axiom_partitioning(); }

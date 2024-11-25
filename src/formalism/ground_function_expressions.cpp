@@ -77,9 +77,10 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
     assert(is_all_unique(m_function_expressions));
     assert(std::is_sorted(m_function_expressions.begin(),
                           m_function_expressions.end(),
-                          [](const auto& l, const auto& r) {
-                              return std::visit([](const auto& arg) { return arg.get_index(); }, *l)
-                                     < std::visit([](const auto& arg) { return arg.get_index(); }, *r);
+                          [](const auto& l, const auto& r)
+                          {
+                              return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_ground_function_expression())
+                                     < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_ground_function_expression());
                           }));
 }
 
@@ -132,6 +133,30 @@ Index GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; 
 
 const GroundFunction& GroundFunctionExpressionFunctionImpl::get_function() const { return m_function; }
 
+/* GroundFunctionExpression */
+GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(size_t index,
+                                                           std::variant<GroundFunctionExpressionNumber,
+                                                                        GroundFunctionExpressionBinaryOperator,
+                                                                        GroundFunctionExpressionMultiOperator,
+                                                                        GroundFunctionExpressionMinus,
+                                                                        GroundFunctionExpressionFunction> ground_function_expression) :
+    m_index(index),
+    m_ground_function_expression(ground_function_expression)
+{
+}
+
+size_t GroundFunctionExpressionImpl::get_index() const { return m_index; }
+
+const std::variant<GroundFunctionExpressionNumber,
+                   GroundFunctionExpressionBinaryOperator,
+                   GroundFunctionExpressionMultiOperator,
+                   GroundFunctionExpressionMinus,
+                   GroundFunctionExpressionFunction>&
+GroundFunctionExpressionImpl::get_ground_function_expression() const
+{
+    return m_ground_function_expression;
+}
+
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
 {
     auto formatter = PDDLFormatter();
@@ -176,7 +201,7 @@ std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& 
 
 std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element)
 {
-    std::visit([&](const auto& arg) { out << arg; }, *element);
+    std::visit([&](const auto& arg) { out << arg; }, element->get_ground_function_expression());
     return out;
 }
 }

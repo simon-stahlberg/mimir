@@ -79,11 +79,7 @@ class FunctionExpressionMinusImpl;
 using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
 class FunctionExpressionFunctionImpl;
 using FunctionExpressionFunction = const FunctionExpressionFunctionImpl*;
-using FunctionExpressionImpl = std::variant<FunctionExpressionNumberImpl,
-                                            FunctionExpressionBinaryOperatorImpl,
-                                            FunctionExpressionMultiOperatorImpl,
-                                            FunctionExpressionMinusImpl,
-                                            FunctionExpressionFunctionImpl>;
+class FunctionExpressionImpl;
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
 
@@ -114,11 +110,7 @@ class GroundFunctionExpressionMinusImpl;
 using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
 class GroundFunctionExpressionFunctionImpl;
 using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl*;
-using GroundFunctionExpressionImpl = std::variant<GroundFunctionExpressionNumberImpl,
-                                                  GroundFunctionExpressionBinaryOperatorImpl,
-                                                  GroundFunctionExpressionMultiOperatorImpl,
-                                                  GroundFunctionExpressionMinusImpl,
-                                                  GroundFunctionExpressionFunctionImpl>;
+class GroundFunctionExpressionImpl;
 using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
 using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 
@@ -177,18 +169,14 @@ using ProblemList = std::vector<Problem>;
 class RequirementsImpl;
 using Requirements = const RequirementsImpl*;
 
-class TermObjectImpl;
-using TermObject = const TermObjectImpl*;
-class TermVariableImpl;
-using TermVariable = const TermVariableImpl*;
-using TermImpl = std::variant<TermObjectImpl, TermVariableImpl>;
-using Term = const TermImpl*;
-using TermList = std::vector<Term>;
-
 class VariableImpl;
 using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
+
+class TermImpl;
+using Term = const TermImpl*;
+using TermList = std::vector<Term>;
 
 }
 

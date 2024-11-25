@@ -30,11 +30,9 @@ void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) { m_
 void ToMimirStructures::prepare(const loki::TypeImpl& type) { prepare(type.get_bases()); }
 void ToMimirStructures::prepare(const loki::ObjectImpl& object) { prepare(object.get_bases()); }
 void ToMimirStructures::prepare(const loki::VariableImpl& variable) {}
-void ToMimirStructures::prepare(const loki::TermObjectImpl& term) { prepare(*term.get_object()); }
-void ToMimirStructures::prepare(const loki::TermVariableImpl& term) { prepare(*term.get_variable()); }
 void ToMimirStructures::prepare(const loki::TermImpl& term)
 {
-    std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
+    std::visit([this](auto&& arg) { return this->prepare(*arg); }, term.get_object_or_variable());
 }
 void ToMimirStructures::prepare(const loki::ParameterImpl& parameter) { prepare(*parameter.get_variable()); }
 void ToMimirStructures::prepare(const loki::PredicateImpl& predicate) { prepare(predicate.get_parameters()); }
@@ -315,19 +313,10 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki:
  * Lifted
  */
 
-Term ToMimirStructures::translate_lifted(const loki::TermVariableImpl& term)
-{
-    return m_pddl_repositories.get_or_create_term_variable(translate_common(*term.get_variable()));
-}
-
-Term ToMimirStructures::translate_lifted(const loki::TermObjectImpl& term)
-{
-    return m_pddl_repositories.get_or_create_term_object(translate_common(*term.get_object()));
-}
-
 Term ToMimirStructures::translate_lifted(const loki::TermImpl& term)
 {
-    return std::visit([this](auto&& arg) { return this->translate_lifted(arg); }, term);
+    return std::visit([this](auto&& arg) -> Term { return this->m_pddl_repositories.get_or_create_term_object(this->translate_common(*arg)); },
+                      term.get_object_or_variable());
 }
 
 StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(const loki::AtomImpl& atom)

@@ -77,9 +77,10 @@ FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(Index i
     assert(is_all_unique(m_function_expressions));
     assert(std::is_sorted(m_function_expressions.begin(),
                           m_function_expressions.end(),
-                          [](const auto& l, const auto& r) {
-                              return std::visit([](const auto& arg) { return arg.get_index(); }, *l)
-                                     < std::visit([](const auto& arg) { return arg.get_index(); }, *r);
+                          [](const auto& l, const auto& r)
+                          {
+                              return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_function_expression())
+                                     < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_function_expression());
                           }));
 }
 
@@ -128,6 +129,27 @@ Index FunctionExpressionFunctionImpl::get_index() const { return m_index; }
 
 const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
 
+/* FunctionExpression */
+FunctionExpressionImpl::FunctionExpressionImpl(size_t index,
+                                               std::variant<FunctionExpressionNumber,
+                                                            FunctionExpressionBinaryOperator,
+                                                            FunctionExpressionMultiOperator,
+                                                            FunctionExpressionMinus,
+                                                            FunctionExpressionFunction> function_expression) :
+    m_index(index),
+    m_function_expression(function_expression)
+{
+}
+
+size_t FunctionExpressionImpl::get_index() const { return m_index; }
+
+const std::
+    variant<FunctionExpressionNumber, FunctionExpressionBinaryOperator, FunctionExpressionMultiOperator, FunctionExpressionMinus, FunctionExpressionFunction>&
+    FunctionExpressionImpl::get_function_expression() const
+{
+    return m_function_expression;
+}
+
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
 {
     auto formatter = PDDLFormatter();
@@ -172,7 +194,7 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& elemen
 
 std::ostream& operator<<(std::ostream& out, FunctionExpression element)
 {
-    std::visit([&](const auto& arg) { out << arg; }, *element);
+    std::visit([&](const auto& arg) { out << *arg; }, element->get_function_expression());
     return out;
 }
 

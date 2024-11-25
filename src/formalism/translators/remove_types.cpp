@@ -104,7 +104,7 @@ static loki::ConditionList typed_parameter_to_condition_literals(const loki::Par
         auto condition = pddl_repositories.get_or_create_condition_literal(pddl_repositories.get_or_create_literal(
             false,
             pddl_repositories.get_or_create_atom(type_to_predicate(*type, pddl_repositories, type_to_predicate_mapper),
-                                                 loki::TermList { pddl_repositories.get_or_create_term_variable(parameter.get_variable()) })));
+                                                 loki::TermList { pddl_repositories.get_or_create_term_object(parameter.get_variable()) })));
         conditions.push_back(condition);
     }
     return conditions;

@@ -23,60 +23,30 @@
 namespace mimir
 {
 
-class TermObjectImpl
+class TermImpl
 {
 private:
-    Index m_index;
-    Object m_object;
+    size_t m_index;
+    std::variant<Object, Variable> m_object_or_variable;
 
-    // Below: add additional members if needed and initialize them in the constructor
-
-    TermObjectImpl(Index index, Object object);
+    TermImpl(size_t index, std::variant<Object, Variable> object_or_variable);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
+    friend class SegmentedRepository;
 
 public:
     // moveable but not copyable
-    TermObjectImpl(const TermObjectImpl& other) = delete;
-    TermObjectImpl& operator=(const TermObjectImpl& other) = delete;
-    TermObjectImpl(TermObjectImpl&& other) = default;
-    TermObjectImpl& operator=(TermObjectImpl&& other) = default;
+    TermImpl(const TermImpl& other) = delete;
+    TermImpl& operator=(const TermImpl& other) = delete;
+    TermImpl(TermImpl&& other) = default;
+    TermImpl& operator=(TermImpl&& other) = default;
 
-    std::string str() const;
-
-    Index get_index() const;
-    const Object& get_object() const;
+    size_t get_index() const;
+    const std::variant<Object, Variable>& get_object_or_variable() const;
 };
 
-class TermVariableImpl
-{
-private:
-    Index m_index;
-    Variable m_variable;
-
-    TermVariableImpl(Index index, Variable variable);
-
-    // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
-    friend class loki::SegmentedRepository;
-
-public:
-    // moveable but not copyable
-    TermVariableImpl(const TermVariableImpl& other) = delete;
-    TermVariableImpl& operator=(const TermVariableImpl& other) = delete;
-    TermVariableImpl(TermVariableImpl&& other) = default;
-    TermVariableImpl& operator=(TermVariableImpl&& other) = default;
-
-    std::string str() const;
-
-    Index get_index() const;
-    const Variable& get_variable() const;
-};
-
-extern std::ostream& operator<<(std::ostream& out, const TermObjectImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const TermVariableImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const TermImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, Term element);
 

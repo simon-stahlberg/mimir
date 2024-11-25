@@ -63,8 +63,6 @@ private:
     void prepare(const loki::TypeImpl& type);
     void prepare(const loki::ObjectImpl& object);
     void prepare(const loki::VariableImpl& variable);
-    void prepare(const loki::TermObjectImpl& term);
-    void prepare(const loki::TermVariableImpl& term);
     void prepare(const loki::TermImpl& term);
     void prepare(const loki::ParameterImpl& parameter);
     void prepare(const loki::PredicateImpl& predicate);
@@ -126,8 +124,6 @@ private:
         std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_lifted(*arg); });
         return output;
     }
-    Term translate_lifted(const loki::TermVariableImpl& term);
-    Term translate_lifted(const loki::TermObjectImpl& term);
     Term translate_lifted(const loki::TermImpl& term);
     StaticOrFluentOrDerivedAtom translate_lifted(const loki::AtomImpl& atom);
     StaticOrFluentOrDerivedLiteral translate_lifted(const loki::LiteralImpl& literal);

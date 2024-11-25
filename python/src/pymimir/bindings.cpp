@@ -1,4 +1,5 @@
 #include "init_declarations.hpp"
+
 #include <pybind11/attr.h>
 #include <pybind11/detail/common.h>
 
@@ -124,6 +125,33 @@ struct ReprVisitor
         return element.str();
     }
 };
+
+/*
+template<typename... Ts>
+py::object variant_to_unpacked_py_object(const std::variant<Ts...>& variant)
+{
+    return std::visit([](const auto& value) { return py::cast(value); }, variant);
+}
+
+template<typename... Ts>
+py::list variant_list_to_unpacked_py_list(const std::vector<const std::variant<Ts...>*>& term_variants)
+{
+    py::list result;
+    for (const auto& term_variant : term_variants)
+    {
+        try
+        {
+            result.append(std::visit(ExtractorVisitor {}, term_variant));
+        }
+        catch (const std::runtime_error& e)
+        {
+            // Optionally, handle unsupported types or simply skip them
+            continue;
+        }
+    }
+    return result;
+}
+*/
 
 /**
  * Opaque types
@@ -496,7 +524,10 @@ void init_pymimir(py::module_& m)
             .def("__repr__", &AtomImpl<Tag>::str)
             .def("get_index", &AtomImpl<Tag>::get_index)
             .def("get_predicate", &AtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
-            .def("get_terms", [](const AtomImpl<Tag>& atom) { return to_term_variant_list(atom.get_terms()); }, py::keep_alive<0, 1>())
+            .def(
+                "get_terms",
+                [](const AtomImpl<Tag>& atom) { return to_term_variant_list(atom.get_terms()); },
+                py::keep_alive<0, 1>())
             .def("get_variables", &AtomImpl<Tag>::get_variables);
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);

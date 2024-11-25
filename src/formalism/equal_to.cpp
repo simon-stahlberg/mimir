@@ -161,7 +161,7 @@ bool UniquePDDLEqualTo<const FunctionExpressionFunctionImpl&>::operator()(const 
 
 bool UniquePDDLEqualTo<const FunctionExpressionImpl*>::operator()(const FunctionExpressionImpl* l, const FunctionExpressionImpl* r) const
 {
-    return UniquePDDLEqualTo<FunctionExpressionImpl>()(*l, *r);
+    return l->get_function_expression() == r->get_function_expression();
 }
 
 bool UniquePDDLEqualTo<const FunctionSkeletonImpl*>::operator()(const FunctionSkeletonImpl* l, const FunctionSkeletonImpl* r) const
@@ -249,7 +249,7 @@ bool UniquePDDLEqualTo<const GroundFunctionExpressionFunctionImpl&>::operator()(
 
 bool UniquePDDLEqualTo<const GroundFunctionExpressionImpl*>::operator()(const GroundFunctionExpressionImpl* l, const GroundFunctionExpressionImpl* r) const
 {
-    return UniquePDDLEqualTo<GroundFunctionExpressionImpl>()(*l, *r);
+    return l->get_ground_function_expression() == r->get_ground_function_expression();
 }
 
 bool UniquePDDLEqualTo<const GroundFunctionImpl*>::operator()(const GroundFunctionImpl* l, const GroundFunctionImpl* r) const
@@ -354,25 +354,10 @@ bool UniquePDDLEqualTo<const RequirementsImpl*>::operator()(const RequirementsIm
     return true;
 }
 
-bool UniquePDDLEqualTo<const TermObjectImpl&>::operator()(const TermObjectImpl& l, const TermObjectImpl& r) const
+bool UniquePDDLEqualTo<const TermImpl*>::operator()(const TermImpl* l, const TermImpl* r) const
 {
-    if (&l != &r)
-    {
-        return (l.get_object() == r.get_object());
-    }
-    return true;
+    return l->get_object_or_variable() == r->get_object_or_variable();
 }
-
-bool UniquePDDLEqualTo<const TermVariableImpl&>::operator()(const TermVariableImpl& l, const TermVariableImpl& r) const
-{
-    if (&l != &r)
-    {
-        return (l.get_variable() == r.get_variable());
-    }
-    return true;
-}
-
-bool UniquePDDLEqualTo<const TermImpl*>::operator()(const TermImpl* l, const TermImpl* r) const { return UniquePDDLEqualTo<TermImpl>()(*l, *r); }
 
 bool UniquePDDLEqualTo<const VariableImpl*>::operator()(const VariableImpl* l, const VariableImpl* r) const
 {

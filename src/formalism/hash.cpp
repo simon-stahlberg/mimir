@@ -123,7 +123,7 @@ size_t UniquePDDLHasher<const FunctionExpressionFunctionImpl&>::operator()(const
 
 size_t UniquePDDLHasher<const FunctionExpressionImpl*>::operator()(const FunctionExpressionImpl* e) const
 {
-    return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, *e);
+    return UniquePDDLHashCombiner()(e->get_function_expression());
 }
 
 size_t UniquePDDLHasher<const FunctionSkeletonImpl*>::operator()(const FunctionSkeletonImpl* e) const
@@ -173,7 +173,7 @@ size_t UniquePDDLHasher<const GroundFunctionExpressionFunctionImpl&>::operator()
 
 size_t UniquePDDLHasher<const GroundFunctionExpressionImpl*>::operator()(const GroundFunctionExpressionImpl* e) const
 {
-    return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, *e);
+    return UniquePDDLHashCombiner()(e->get_ground_function_expression());
 }
 
 size_t UniquePDDLHasher<const GroundFunctionImpl*>::operator()(const GroundFunctionImpl* e) const
@@ -242,14 +242,7 @@ size_t UniquePDDLHasher<const ProblemImpl*>::operator()(const ProblemImpl* e) co
 
 size_t UniquePDDLHasher<const RequirementsImpl*>::operator()(const RequirementsImpl* e) const { return UniquePDDLHashCombiner()(e->get_requirements()); }
 
-size_t UniquePDDLHasher<const TermObjectImpl&>::operator()(const TermObjectImpl& e) const { return UniquePDDLHashCombiner()(e.get_object()); }
-
-size_t UniquePDDLHasher<const TermVariableImpl&>::operator()(const TermVariableImpl& e) const { return UniquePDDLHashCombiner()(e.get_variable()); }
-
-size_t UniquePDDLHasher<const TermImpl*>::operator()(const TermImpl* e) const
-{
-    return std::visit([](const auto& arg) { return UniquePDDLHasher<decltype(arg)>()(arg); }, *e);
-}
+size_t UniquePDDLHasher<const TermImpl*>::operator()(const TermImpl* e) const { return UniquePDDLHashCombiner()(e->get_object_or_variable()); }
 
 size_t UniquePDDLHasher<const VariableImpl*>::operator()(const VariableImpl* e) const
 {

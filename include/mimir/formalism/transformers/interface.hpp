@@ -52,8 +52,6 @@ public:
     void prepare(const RequirementsImpl& requirements) { self().prepare_base(requirements); }
     void prepare(const ObjectImpl& object) { self().prepare_base(object); }
     void prepare(const VariableImpl& variable) { self().prepare_base(variable); }
-    void prepare(const TermObjectImpl& term) { self().prepare_base(term); }
-    void prepare(const TermVariableImpl& term) { self().prepare_base(term); }
     void prepare(const TermImpl& term) { self().prepare_base(term); }
     template<PredicateTag P>
     void prepare(const PredicateImpl<P>& predicate)
@@ -112,8 +110,6 @@ public:
     Requirements transform(const RequirementsImpl& requirements) { return self().transform_base(requirements); }
     Object transform(const ObjectImpl& object) { return self().transform_base(object); }
     Variable transform(const VariableImpl& variable) { return self().transform_base(variable); }
-    Term transform(const TermObjectImpl& term) { return self().transform_base(term); }
-    Term transform(const TermVariableImpl& term) { return self().transform_base(term); }
     Term transform(const TermImpl& term) { return self().transform_base(term); }
     template<PredicateTag P>
     Predicate<P> transform(const PredicateImpl<P>& predicate)

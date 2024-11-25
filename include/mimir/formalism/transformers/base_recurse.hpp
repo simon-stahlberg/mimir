@@ -61,8 +61,6 @@ protected:
     void prepare_base(const RequirementsImpl& requirements) { self().prepare_impl(requirements); }
     void prepare_base(const ObjectImpl& object) { self().prepare_impl(object); }
     void prepare_base(const VariableImpl& variable) { self().prepare_impl(variable); }
-    void prepare_base(const TermObjectImpl& term) { self().prepare_impl(term); }
-    void prepare_base(const TermVariableImpl& term) { self().prepare_impl(term); }
     void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
     template<PredicateTag P>
     void prepare_base(const PredicateImpl<P>& predicate)
@@ -121,11 +119,9 @@ protected:
     void prepare_impl(const RequirementsImpl& requirements) {}
     void prepare_impl(const ObjectImpl& object) {}
     void prepare_impl(const VariableImpl& variable) {}
-    void prepare_impl(const TermObjectImpl& term) { this->prepare(*term.get_object()); }
-    void prepare_impl(const TermVariableImpl& term) { this->prepare(*term.get_variable()); }
     void prepare_impl(const TermImpl& term)
     {
-        std::visit([this](auto&& arg) { return this->prepare(arg); }, term);
+        std::visit([this](auto&& arg) { return this->prepare(*arg); }, term.get_object_or_variable());
     }
     template<PredicateTag P>
     void prepare_impl(const PredicateImpl<P>& predicate)
@@ -260,12 +256,7 @@ protected:
     Requirements transform_base(const RequirementsImpl& requirements) { return this->self().transform_impl(requirements); }
     Object transform_base(const ObjectImpl& object) { return this->self().transform_impl(object); }
     Variable transform_base(const VariableImpl& variable) { return this->self().transform_impl(variable); }
-    Term transform_base(const TermObjectImpl& term) { return this->self().transform_impl(term); }
-    Term transform_base(const TermVariableImpl& term) { return this->self().transform_impl(term); }
-    Term transform_base(const TermImpl& term)
-    {
-        return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, term);
-    }
+    Term transform_base(const TermImpl& term) { return this->self().transform_impl(term); }
     template<PredicateTag P>
     Predicate<P> transform_base(const PredicateImpl<P>& predicate)
     {
@@ -301,7 +292,7 @@ protected:
     FunctionExpression transform_base(const FunctionExpressionFunctionImpl& function_expression) { return self().transform_impl(function_expression); }
     FunctionExpression transform_base(const FunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, function_expression);
+        return std::visit([this](auto&& arg) -> FunctionExpression { return this->transform_impl(*arg); }, function_expression.get_function_expression());
     }
     GroundFunctionExpression transform_base(const GroundFunctionExpressionNumberImpl& function_expression)
     {
@@ -322,7 +313,8 @@ protected:
     }
     GroundFunctionExpression transform_base(const GroundFunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->transform_impl(arg); }, function_expression);
+        return std::visit([this](auto&& arg) -> GroundFunctionExpression { return this->transform_impl(*arg); },
+                          function_expression.get_ground_function_expression());
     }
     FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton) { return this->self().transform_impl(function_skeleton); }
     Function transform_base(const FunctionImpl& function) { return this->self().transform_impl(function); }
@@ -350,11 +342,27 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_variable(variable.get_name(), variable.get_parameter_index());
     }
-    Term transform_impl(const TermObjectImpl& term) { return this->m_pddl_repositories.get_or_create_term_object(this->transform(*term.get_object())); }
-    Term transform_impl(const TermVariableImpl& term) { return this->m_pddl_repositories.get_or_create_term_variable(this->transform(*term.get_variable())); }
     Term transform_impl(const TermImpl& term)
     {
-        return std::visit([this](auto&& arg) { return this->transform(arg); }, term);
+        return std::visit(
+            [this](auto&& arg) -> Term
+            {
+                using ArgType = std::decay_t<decltype(arg)>;
+
+                if constexpr (std::is_same_v<ArgType, Variable>)
+                {
+                    return this->m_pddl_repositories.get_or_create_term_variable(this->transform(*arg));
+                }
+                else if constexpr (std::is_same_v<ArgType, Object>)
+                {
+                    return this->m_pddl_repositories.get_or_create_term_object(this->transform(*arg));
+                }
+                else
+                {
+                    static_assert(dependent_false<ArgType>::value, "Missing implementation for ArgType.");
+                }
+            },
+            term.get_object_or_variable());
     }
     Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate)
     {

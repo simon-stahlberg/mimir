@@ -61,12 +61,11 @@ VariableList AtomImpl<P>::get_variables() const
     VariableList variables;
     for (const auto& term : get_terms())
     {
-        if (const auto variable_term = std::get_if<TermVariableImpl>(term))
+        if (const auto variable = std::get_if<Variable>(&term->get_object_or_variable()))
         {
-            const auto variable = variable_term->get_variable();
-            if (!std::count(variables.begin(), variables.end(), variable))
+            if (!std::count(variables.begin(), variables.end(), *variable))
             {
-                variables.emplace_back(variable);
+                variables.emplace_back(*variable);
             }
         }
     }
