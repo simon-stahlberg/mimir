@@ -23,6 +23,9 @@
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 
+#include <tuple>
+#include <utility>
+
 namespace mimir
 {
 
@@ -45,7 +48,7 @@ LiftedConjunctionGrounder::LiftedConjunctionGrounder(Problem problem,
 {
 }
 
-std::vector<ObjectList> LiftedConjunctionGrounder::ground(State state)
+std::pair<std::vector<ObjectList>, std::tuple<std::vector<GroundLiteralList<Static>>, std::vector<GroundLiteralList<Fluent>>, std::vector<GroundLiteralList<Derived>>>> LiftedConjunctionGrounder::ground(State state)
 {
     auto problem = m_condition_grounder.get_problem();
 
@@ -58,8 +61,37 @@ std::vector<ObjectList> LiftedConjunctionGrounder::ground(State state)
     auto derived_assignment_set = AssignmentSet<Derived>(problem, derived_predicates, derived_atoms);
 
     std::vector<ObjectList> bindings;
+    std::vector<GroundLiteralList<Static>> static_grounded_literal_list;
+    std::vector<GroundLiteralList<Fluent>> fluent_grounded_literal_list;
+    std::vector<GroundLiteralList<Derived>> derived_grounded_literal_list;
+
     m_condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings);
-    return bindings;
+
+    for (const auto& binding : bindings)
+    {
+        GroundLiteralList<Static> static_grounded_literals;
+        for (const auto& static_literal : m_condition_grounder.get_conditions<Static>())
+        {
+            static_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(static_literal, binding));
+        }
+        static_grounded_literal_list.emplace_back(static_grounded_literals);
+
+        GroundLiteralList<Fluent> fluent_grounded_literals;
+        for (const auto& fluent_literal : m_condition_grounder.get_conditions<Fluent>())
+        {
+            fluent_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(fluent_literal, binding));
+        }
+        fluent_grounded_literal_list.emplace_back(fluent_grounded_literals);
+
+        GroundLiteralList<Derived> derived_grounded_literals;
+        for (const auto& derived_literal : m_condition_grounder.get_conditions<Derived>())
+        {
+            derived_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(derived_literal, binding));
+        }
+        derived_grounded_literal_list.emplace_back(derived_grounded_literals);
+    }
+
+    return std::make_pair(bindings, std::make_tuple(static_grounded_literal_list, fluent_grounded_literal_list, derived_grounded_literal_list));
 }
 
 }

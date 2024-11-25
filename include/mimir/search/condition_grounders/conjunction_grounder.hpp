@@ -40,7 +40,7 @@ public:
                               LiteralList<Derived> derived_literals,
                               std::shared_ptr<PDDLRepositories> pddl_repositories);
 
-    std::vector<ObjectList> ground(State state);
+    std::pair<std::vector<ObjectList>, std::tuple<std::vector<GroundLiteralList<Static>>, std::vector<GroundLiteralList<Fluent>>, std::vector<GroundLiteralList<Derived>>>> ground(State state);
 };
 
 }
