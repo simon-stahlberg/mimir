@@ -231,15 +231,9 @@ struct UniqueDLEqualTo<const grammar::NonTerminalImpl<D>*>
 };
 
 template<ConstructorTag D>
-struct UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalChoice<D>*>
+struct UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<D>*>
 {
-    bool operator()(const grammar::ConstructorOrNonTerminalChoice<D>* l, const grammar::ConstructorOrNonTerminalChoice<D>* r) const;
-};
-
-template<ConstructorTag D>
-struct UniqueDLEqualTo<const grammar::ChoiceImpl<D>*>
-{
-    bool operator()(const grammar::ChoiceImpl<D>* l, const grammar::ChoiceImpl<D>* r) const;
+    bool operator()(const grammar::ConstructorOrNonTerminalImpl<D>* l, const grammar::ConstructorOrNonTerminalImpl<D>* r) const;
 };
 
 /* Concepts */

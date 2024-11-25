@@ -46,7 +46,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    template<IsBackInsertibleRange Range>
+    template<std::ranges::forward_range Range>
     void prepare(const Range& input)
     {
         std::ranges::for_each(input, [this](auto&& arg) { this->prepare(*arg); });

@@ -210,11 +210,11 @@ struct NonTerminalClass<Role> : x3::annotate_on_success
 {
 };
 template<>
-struct ChoiceClass<Concept> : x3::annotate_on_success
+struct ConstructorOrNonTerminalClass<Concept> : x3::annotate_on_success
 {
 };
 template<>
-struct ChoiceClass<Role> : x3::annotate_on_success
+struct ConstructorOrNonTerminalClass<Role> : x3::annotate_on_success
 {
 };
 template<>

@@ -90,8 +90,8 @@ ConceptIntersectionGrammarVisitor::ConceptIntersectionGrammarVisitor(grammar::Co
 
 void ConceptIntersectionGrammarVisitor::visit(ConceptIntersection constructor)
 {
-    m_result = m_grammar_constructor->get_concept_left()->test_match(constructor->get_concept_left())  //
-               && m_grammar_constructor->get_concept_right()->test_match(constructor->get_concept_right());
+    m_result = m_grammar_constructor->get_concept_or_non_terminal_left()->test_match(constructor->get_concept_left())  //
+               && m_grammar_constructor->get_concept_or_non_terminal_right()->test_match(constructor->get_concept_right());
 }
 
 /**
@@ -102,8 +102,8 @@ ConceptUnionGrammarVisitor::ConceptUnionGrammarVisitor(grammar::ConceptUnion gra
 
 void ConceptUnionGrammarVisitor::visit(ConceptUnion constructor)
 {
-    m_result = m_grammar_constructor->get_concept_left()->test_match(constructor->get_concept_left())  //
-               && m_grammar_constructor->get_concept_right()->test_match(constructor->get_concept_right());
+    m_result = m_grammar_constructor->get_concept_or_non_terminal_left()->test_match(constructor->get_concept_left())  //
+               && m_grammar_constructor->get_concept_or_non_terminal_right()->test_match(constructor->get_concept_right());
 }
 
 /**
@@ -114,7 +114,7 @@ ConceptNegationGrammarVisitor::ConceptNegationGrammarVisitor(grammar::ConceptNeg
 
 void ConceptNegationGrammarVisitor::visit(ConceptNegation constructor)
 {
-    m_result = m_grammar_constructor->get_concept()->test_match(constructor->get_concept());
+    m_result = m_grammar_constructor->get_concept_or_non_terminal()->test_match(constructor->get_concept());
 }
 
 /**
@@ -128,8 +128,8 @@ ConceptValueRestrictionGrammarVisitor::ConceptValueRestrictionGrammarVisitor(gra
 
 void ConceptValueRestrictionGrammarVisitor::visit(ConceptValueRestriction constructor)
 {
-    m_result = m_grammar_constructor->get_role()->test_match(constructor->get_role())  //
-               && m_grammar_constructor->get_concept()->test_match(constructor->get_concept());
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role())  //
+               && m_grammar_constructor->get_concept_or_non_terminal()->test_match(constructor->get_concept());
 }
 
 /**
@@ -143,8 +143,8 @@ ConceptExistentialQuantificationGrammarVisitor::ConceptExistentialQuantification
 
 void ConceptExistentialQuantificationGrammarVisitor::visit(ConceptExistentialQuantification constructor)
 {
-    m_result = m_grammar_constructor->get_role()->test_match(constructor->get_role())  //
-               && m_grammar_constructor->get_concept()->test_match(constructor->get_concept());
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role())  //
+               && m_grammar_constructor->get_concept_or_non_terminal()->test_match(constructor->get_concept());
 }
 
 /**
@@ -158,8 +158,8 @@ ConceptRoleValueMapContainmentGrammarVisitor::ConceptRoleValueMapContainmentGram
 
 void ConceptRoleValueMapContainmentGrammarVisitor::visit(ConceptRoleValueMapContainment constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left())  //
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right());
+    m_result = m_grammar_constructor->get_role_or_non_terminal_left()->test_match(constructor->get_role_left())  //
+               && m_grammar_constructor->get_role_or_non_terminal_right()->test_match(constructor->get_role_right());
 }
 
 /**
@@ -173,8 +173,8 @@ ConceptRoleValueMapEqualityGrammarVisitor::ConceptRoleValueMapEqualityGrammarVis
 
 void ConceptRoleValueMapEqualityGrammarVisitor::visit(ConceptRoleValueMapEquality constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left())  //
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right());
+    m_result = m_grammar_constructor->get_role_or_non_terminal_left()->test_match(constructor->get_role_left())  //
+               && m_grammar_constructor->get_role_or_non_terminal_right()->test_match(constructor->get_role_right());
 }
 
 /**
@@ -239,8 +239,8 @@ RoleIntersectionGrammarVisitor::RoleIntersectionGrammarVisitor(grammar::RoleInte
 
 void RoleIntersectionGrammarVisitor::visit(RoleIntersection constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left())
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right());
+    m_result = m_grammar_constructor->get_role_or_non_terminal_left()->test_match(constructor->get_role_left())
+               && m_grammar_constructor->get_role_or_non_terminal_right()->test_match(constructor->get_role_right());
 }
 
 /**
@@ -251,8 +251,8 @@ RoleUnionGrammarVisitor::RoleUnionGrammarVisitor(grammar::RoleUnion grammar_cons
 
 void RoleUnionGrammarVisitor::visit(RoleUnion constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left())
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right());
+    m_result = m_grammar_constructor->get_role_or_non_terminal_left()->test_match(constructor->get_role_left())
+               && m_grammar_constructor->get_role_or_non_terminal_right()->test_match(constructor->get_role_right());
 }
 
 /**
@@ -261,7 +261,10 @@ void RoleUnionGrammarVisitor::visit(RoleUnion constructor)
 
 RoleComplementGrammarVisitor::RoleComplementGrammarVisitor(grammar::RoleComplement grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
 
-void RoleComplementGrammarVisitor::visit(RoleComplement constructor) { m_result = m_grammar_constructor->get_role()->test_match(constructor->get_role()); }
+void RoleComplementGrammarVisitor::visit(RoleComplement constructor)
+{
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role());
+}
 
 /**
  * RoleInverseGrammarVisitor
@@ -269,7 +272,10 @@ void RoleComplementGrammarVisitor::visit(RoleComplement constructor) { m_result 
 
 RoleInverseGrammarVisitor::RoleInverseGrammarVisitor(grammar::RoleInverse grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
 
-void RoleInverseGrammarVisitor::visit(RoleInverse constructor) { m_result = m_grammar_constructor->get_role()->test_match(constructor->get_role()); }
+void RoleInverseGrammarVisitor::visit(RoleInverse constructor)
+{
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role());
+}
 
 /**
  * RoleCompositionGrammarVisitor
@@ -279,8 +285,8 @@ RoleCompositionGrammarVisitor::RoleCompositionGrammarVisitor(grammar::RoleCompos
 
 void RoleCompositionGrammarVisitor::visit(RoleComposition constructor)
 {
-    m_result = m_grammar_constructor->get_role_left()->test_match(constructor->get_role_left())
-               && m_grammar_constructor->get_role_right()->test_match(constructor->get_role_right());
+    m_result = m_grammar_constructor->get_role_or_non_terminal_left()->test_match(constructor->get_role_left())
+               && m_grammar_constructor->get_role_or_non_terminal_right()->test_match(constructor->get_role_right());
 }
 
 /**
@@ -294,7 +300,7 @@ RoleTransitiveClosureGrammarVisitor::RoleTransitiveClosureGrammarVisitor(grammar
 
 void RoleTransitiveClosureGrammarVisitor::visit(RoleTransitiveClosure constructor)
 {
-    m_result = m_grammar_constructor->get_role()->test_match(constructor->get_role());
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role());
 }
 
 /**
@@ -308,7 +314,7 @@ RoleReflexiveTransitiveClosureGrammarVisitor::RoleReflexiveTransitiveClosureGram
 
 void RoleReflexiveTransitiveClosureGrammarVisitor::visit(RoleReflexiveTransitiveClosure constructor)
 {
-    m_result = m_grammar_constructor->get_role()->test_match(constructor->get_role());
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role());
 }
 
 /**
@@ -319,8 +325,8 @@ RoleRestrictionGrammarVisitor::RoleRestrictionGrammarVisitor(grammar::RoleRestri
 
 void RoleRestrictionGrammarVisitor::visit(RoleRestriction constructor)
 {
-    m_result =
-        m_grammar_constructor->get_role()->test_match(constructor->get_role()) && m_grammar_constructor->get_concept()->test_match(constructor->get_concept());
+    m_result = m_grammar_constructor->get_role_or_non_terminal()->test_match(constructor->get_role())
+               && m_grammar_constructor->get_concept_or_non_terminal()->test_match(constructor->get_concept());
 }
 
 /**
@@ -329,6 +335,9 @@ void RoleRestrictionGrammarVisitor::visit(RoleRestriction constructor)
 
 RoleIdentityGrammarVisitor::RoleIdentityGrammarVisitor(grammar::RoleIdentity grammar_constructor) : m_grammar_constructor(grammar_constructor) {}
 
-void RoleIdentityGrammarVisitor::visit(RoleIdentity constructor) { m_result = m_grammar_constructor->get_concept()->test_match(constructor->get_concept()); }
+void RoleIdentityGrammarVisitor::visit(RoleIdentity constructor)
+{
+    m_result = m_grammar_constructor->get_concept_or_non_terminal()->test_match(constructor->get_concept());
+}
 
 }

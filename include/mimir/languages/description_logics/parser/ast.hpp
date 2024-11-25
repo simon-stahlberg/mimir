@@ -112,7 +112,7 @@ struct NonTerminal : x3::position_tagged
 };
 
 template<ConstructorTag D>
-struct Choice : x3::position_tagged, x3::variant<NonTerminal<D>, Constructor<D>>
+struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D>, Constructor<D>>
 {
     using typename x3::variant<NonTerminal<D>, Constructor<D>>::base_type;
     using base_type::base_type;
@@ -123,7 +123,7 @@ template<ConstructorTag D>
 struct DerivationRule : x3::position_tagged
 {
     NonTerminal<D> non_terminal;
-    std::vector<Choice<D>> choices;
+    std::vector<ConstructorOrNonTerminal<D>> constructor_or_non_terminals;
 };
 
 /**
@@ -151,43 +151,43 @@ struct ConceptAtomicGoal : x3::position_tagged
 
 struct ConceptIntersection : x3::position_tagged
 {
-    Choice<Concept> concept_left;
-    Choice<Concept> concept_right;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right;
 };
 
 struct ConceptUnion : x3::position_tagged
 {
-    Choice<Concept> concept_left;
-    Choice<Concept> concept_right;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right;
 };
 
 struct ConceptNegation : x3::position_tagged
 {
-    Choice<Concept> concept_;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
 };
 
 struct ConceptValueRestriction : x3::position_tagged
 {
-    Choice<Role> role_;
-    Choice<Concept> concept_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
 };
 
 struct ConceptExistentialQuantification : x3::position_tagged
 {
-    Choice<Role> role_;
-    Choice<Concept> concept_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
 };
 
 struct ConceptRoleValueMapContainment : x3::position_tagged
 {
-    Choice<Role> role_left;
-    Choice<Role> role_right;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
 };
 
 struct ConceptRoleValueMapEquality : x3::position_tagged
 {
-    Choice<Role> role_left;
-    Choice<Role> role_right;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
 };
 
 struct ConceptNominal : x3::position_tagged
@@ -216,51 +216,51 @@ struct RoleAtomicGoal : x3::position_tagged
 
 struct RoleIntersection : x3::position_tagged
 {
-    Choice<Role> role_left;
-    Choice<Role> role_right;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
 };
 
 struct RoleUnion : x3::position_tagged
 {
-    Choice<Role> role_left;
-    Choice<Role> role_right;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
 };
 
 struct RoleComplement : x3::position_tagged
 {
-    Choice<Role> role_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
 };
 
 struct RoleInverse : x3::position_tagged
 {
-    Choice<Role> role_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
 };
 
 struct RoleComposition : x3::position_tagged
 {
-    Choice<Role> role_left;
-    Choice<Role> role_right;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal_right;
 };
 
 struct RoleTransitiveClosure : x3::position_tagged
 {
-    Choice<Role> role_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
 };
 
 struct RoleReflexiveTransitiveClosure : x3::position_tagged
 {
-    Choice<Role> role_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
 };
 
 struct RoleRestriction : x3::position_tagged
 {
-    Choice<Role> role_;
-    Choice<Concept> concept_;
+    ConstructorOrNonTerminal<Role> role_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
 };
 
 struct RoleIdentity : x3::position_tagged
 {
-    Choice<Concept> concept_;
+    ConstructorOrNonTerminal<Concept> concept_or_non_terminal;
 };
 
 /**

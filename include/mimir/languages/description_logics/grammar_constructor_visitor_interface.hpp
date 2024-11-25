@@ -31,7 +31,7 @@ public:
     /* Concepts */
     virtual void visit(DerivationRule<Concept> constructor) = 0;
     virtual void visit(NonTerminal<Concept> constructor) = 0;
-    virtual void visit(Choice<Concept> constructor) = 0;
+    virtual void visit(ConstructorOrNonTerminal<Concept> constructor) = 0;
     virtual void visit(ConceptBot constructor) = 0;
     virtual void visit(ConceptTop constructor) = 0;
     virtual void visit(ConceptAtomicState<Static> constructor) = 0;
@@ -52,7 +52,7 @@ public:
     /* Roles */
     virtual void visit(DerivationRule<Role> constructor) = 0;
     virtual void visit(NonTerminal<Role> constructor) = 0;
-    virtual void visit(Choice<Role> constructor) = 0;
+    virtual void visit(ConstructorOrNonTerminal<Role> constructor) = 0;
     virtual void visit(RoleUniversal constructor) = 0;
     virtual void visit(RoleAtomicState<Static> constructor) = 0;
     virtual void visit(RoleAtomicState<Fluent> constructor) = 0;

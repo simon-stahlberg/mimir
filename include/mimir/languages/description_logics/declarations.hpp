@@ -138,6 +138,20 @@ class ConstructorImpl;
 template<dl::ConstructorTag D>
 using Constructor = const ConstructorImpl<D>*;
 
+/* NonTerminal */
+template<dl::ConstructorTag D>
+class NonTerminalImpl;
+template<dl::ConstructorTag D>
+using NonTerminal = const NonTerminalImpl<D>*;
+
+/* ConstructorOrNonTerminal */
+template<dl::ConstructorTag D>
+class ConstructorOrNonTerminalImpl;
+template<dl::ConstructorTag D>
+using ConstructorOrNonTerminal = const ConstructorOrNonTerminalImpl<D>*;
+template<dl::ConstructorTag D>
+using ConstructorOrNonTerminalList = std::vector<ConstructorOrNonTerminal<D>>;
+
 /* DerivationRule */
 template<dl::ConstructorTag D>
 class DerivationRuleImpl;
@@ -147,24 +161,6 @@ template<ConstructorTag D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
 using ConstructorTagToDerivationRuleList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DerivationRuleList<Concept>>,
                                                             boost::hana::pair<boost::hana::type<Role>, DerivationRuleList<Role>>>;
-
-/* NonTerminal */
-template<dl::ConstructorTag D>
-class NonTerminalImpl;
-template<dl::ConstructorTag D>
-using NonTerminal = const NonTerminalImpl<D>*;
-
-/* ConstructorOrNonTerminalChoice */
-template<ConstructorTag D>
-using ConstructorOrNonTerminalChoice = std::variant<Constructor<D>, NonTerminal<D>>;
-
-/* Choice */
-template<dl::ConstructorTag D>
-class ChoiceImpl;
-template<dl::ConstructorTag D>
-using Choice = const ChoiceImpl<D>*;
-template<dl::ConstructorTag D>
-using ChoiceList = std::vector<Choice<D>>;
 
 /* Concrete concepts */
 class ConceptTopImpl;

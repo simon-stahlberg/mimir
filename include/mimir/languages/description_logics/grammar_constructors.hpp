@@ -72,17 +72,17 @@ public:
 };
 
 /**
- * Choice
+ * ConstructorOrNonTerminal
  */
 
 template<dl::ConstructorTag D>
-class ChoiceImpl
+class ConstructorOrNonTerminalImpl
 {
 private:
     Index m_index;
-    ConstructorOrNonTerminalChoice<D> m_choice;
+    std::variant<Constructor<D>, NonTerminal<D>> m_choice;
 
-    ChoiceImpl(Index index, ConstructorOrNonTerminalChoice<D> choice);
+    ConstructorOrNonTerminalImpl(Index index, std::variant<Constructor<D>, NonTerminal<D>> choice);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -90,17 +90,17 @@ private:
 
 public:
     // moveable but not copyable
-    ChoiceImpl(const ChoiceImpl& other) = delete;
-    ChoiceImpl& operator=(const ChoiceImpl& other) = delete;
-    ChoiceImpl(ChoiceImpl&& other) = default;
-    ChoiceImpl& operator=(ChoiceImpl&& other) = default;
+    ConstructorOrNonTerminalImpl(const ConstructorOrNonTerminalImpl& other) = delete;
+    ConstructorOrNonTerminalImpl& operator=(const ConstructorOrNonTerminalImpl& other) = delete;
+    ConstructorOrNonTerminalImpl(ConstructorOrNonTerminalImpl&& other) = default;
+    ConstructorOrNonTerminalImpl& operator=(ConstructorOrNonTerminalImpl&& other) = default;
 
     bool test_match(dl::Constructor<D> constructor) const;
 
     void accept(Visitor& visitor) const;
 
     Index get_index() const;
-    const ConstructorOrNonTerminalChoice<D>& get_choice() const;
+    const std::variant<Constructor<D>, NonTerminal<D>>& get_constructor_or_non_terminal() const;
 };
 
 /**
@@ -113,9 +113,9 @@ class DerivationRuleImpl
 protected:
     Index m_index;
     NonTerminal<D> m_non_terminal;
-    ChoiceList<D> m_choices;
+    ConstructorOrNonTerminalList<D> m_constructor_or_non_terminals;
 
-    DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ChoiceList<D> choices);
+    DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -134,7 +134,7 @@ public:
 
     Index get_index() const;
     NonTerminal<D> get_non_terminal() const;
-    const ChoiceList<D>& get_choices() const;
+    const ConstructorOrNonTerminalList<D>& get_constructor_or_non_terminals() const;
 };
 
 /**
@@ -253,10 +253,12 @@ class ConceptIntersectionImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Concept> m_concept_left;
-    Choice<Concept> m_concept_right;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal_left;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal_right;
 
-    ConceptIntersectionImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right);
+    ConceptIntersectionImpl(Index index,
+                            ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left,
+                            ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -274,18 +276,20 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Concept> get_concept_left() const;
-    Choice<Concept> get_concept_right() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_right() const;
 };
 
 class ConceptUnionImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Concept> m_concept_left;
-    Choice<Concept> m_concept_right;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal_left;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal_right;
 
-    ConceptUnionImpl(Index index, Choice<Concept> concept_left, Choice<Concept> concept_right);
+    ConceptUnionImpl(Index index,
+                     ConstructorOrNonTerminal<Concept> concept_or_non_terminal_left,
+                     ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -303,17 +307,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Concept> get_concept_left() const;
-    Choice<Concept> get_concept_right() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_right() const;
 };
 
 class ConceptNegationImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Concept> m_concept;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal;
 
-    ConceptNegationImpl(Index index, Choice<Concept> concept_);
+    ConceptNegationImpl(Index index, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -331,17 +335,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Concept> get_concept() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 };
 
 class ConceptValueRestrictionImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
-    Choice<Concept> m_concept;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal;
 
-    ConceptValueRestrictionImpl(Index index, Choice<Role> role_, Choice<Concept> concept_);
+    ConceptValueRestrictionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -359,18 +363,20 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
-    Choice<Concept> get_concept() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 };
 
 class ConceptExistentialQuantificationImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
-    Choice<Concept> m_concept;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal;
 
-    ConceptExistentialQuantificationImpl(Index index, Choice<Role> role_, Choice<Concept> concept_);
+    ConceptExistentialQuantificationImpl(Index index,
+                                         ConstructorOrNonTerminal<Role> role_or_non_terminal,
+                                         ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -388,18 +394,20 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
-    Choice<Concept> get_concept() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 };
 
 class ConceptRoleValueMapContainmentImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Role> m_role_left;
-    Choice<Role> m_role_right;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_right;
 
-    ConceptRoleValueMapContainmentImpl(Index index, Choice<Role> role_left, Choice<Role> role_right);
+    ConceptRoleValueMapContainmentImpl(Index index,
+                                       ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
+                                       ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -417,18 +425,20 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role_left() const;
-    Choice<Role> get_role_right() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 };
 
 class ConceptRoleValueMapEqualityImpl : public ConstructorImpl<Concept>
 {
 private:
     Index m_index;
-    Choice<Role> m_role_left;
-    Choice<Role> m_role_right;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_right;
 
-    ConceptRoleValueMapEqualityImpl(Index index, Choice<Role> role_left, Choice<Role> role_right);
+    ConceptRoleValueMapEqualityImpl(Index index,
+                                    ConstructorOrNonTerminal<Role> role_or_non_terminal_left,
+                                    ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -446,8 +456,8 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role_left() const;
-    Choice<Role> get_role_right() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 };
 
 class ConceptNominalImpl : public ConstructorImpl<Concept>
@@ -568,10 +578,10 @@ class RoleIntersectionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role_left;
-    Choice<Role> m_role_right;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_right;
 
-    RoleIntersectionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right);
+    RoleIntersectionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -589,18 +599,18 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role_left() const;
-    Choice<Role> get_role_right() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 };
 
 class RoleUnionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role_left;
-    Choice<Role> m_role_right;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_right;
 
-    RoleUnionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right);
+    RoleUnionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -618,17 +628,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role_left() const;
-    Choice<Role> get_role_right() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 };
 
 class RoleComplementImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
 
-    RoleComplementImpl(Index index, Choice<Role> role_);
+    RoleComplementImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -646,16 +656,16 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 };
 
 class RoleInverseImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
 
-    RoleInverseImpl(Index index, Choice<Role> role_);
+    RoleInverseImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -673,17 +683,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 };
 
 class RoleCompositionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role_left;
-    Choice<Role> m_role_right;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_left;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal_right;
 
-    RoleCompositionImpl(Index index, Choice<Role> role_left, Choice<Role> role_right);
+    RoleCompositionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -701,17 +711,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role_left() const;
-    Choice<Role> get_role_right() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 };
 
 class RoleTransitiveClosureImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
 
-    RoleTransitiveClosureImpl(Index index, Choice<Role> role_);
+    RoleTransitiveClosureImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -729,16 +739,16 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 };
 
 class RoleReflexiveTransitiveClosureImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
 
-    RoleReflexiveTransitiveClosureImpl(Index index, Choice<Role> role_);
+    RoleReflexiveTransitiveClosureImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -756,17 +766,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 };
 
 class RoleRestrictionImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Role> m_role;
-    Choice<Concept> m_concept;
+    ConstructorOrNonTerminal<Role> m_role_or_non_terminal;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal;
 
-    RoleRestrictionImpl(Index index, Choice<Role> role_, Choice<Concept> concept_);
+    RoleRestrictionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -784,17 +794,17 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Role> get_role() const;
-    Choice<Concept> get_concept() const;
+    ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 };
 
 class RoleIdentityImpl : public ConstructorImpl<Role>
 {
 private:
     Index m_index;
-    Choice<Concept> m_concept;
+    ConstructorOrNonTerminal<Concept> m_concept_or_non_terminal;
 
-    RoleIdentityImpl(Index index, Choice<Concept> concept_);
+    RoleIdentityImpl(Index index, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -812,7 +822,7 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
-    Choice<Concept> get_concept() const;
+    ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 };
 }
 

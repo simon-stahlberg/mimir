@@ -29,7 +29,7 @@ public:
     /* Concepts */
     void visit(DerivationRule<Concept> constructor) override;
     void visit(NonTerminal<Concept> constructor) override;
-    void visit(Choice<Concept> constructor) override;
+    void visit(ConstructorOrNonTerminal<Concept> constructor) override;
     void visit(ConceptBot constructor) override;
     void visit(ConceptTop constructor) override;
     void visit(ConceptAtomicState<Static> constructor) override;
@@ -50,7 +50,7 @@ public:
     /* Roles */
     void visit(DerivationRule<Role> constructor) override;
     void visit(NonTerminal<Role> constructor) override;
-    void visit(Choice<Role> constructor) override;
+    void visit(ConstructorOrNonTerminal<Role> constructor) override;
     void visit(RoleUniversal constructor) override;
     void visit(RoleAtomicState<Static> constructor) override;
     void visit(RoleAtomicState<Fluent> constructor) override;

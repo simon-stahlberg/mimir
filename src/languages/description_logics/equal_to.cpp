@@ -287,7 +287,7 @@ bool UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>::operator()(const gr
 {
     if (&l != &r)
     {
-        return (l->get_non_terminal() == r->get_non_terminal()) && (l->get_choices() == r->get_choices());
+        return (l->get_non_terminal() == r->get_non_terminal()) && (l->get_constructor_or_non_terminals() == r->get_constructor_or_non_terminals());
     }
     return true;
 }
@@ -313,35 +313,20 @@ template bool UniqueDLEqualTo<const grammar::NonTerminalImpl<Role>*>::operator()
                                                                                  const grammar::NonTerminalImpl<Role>* r) const;
 
 template<ConstructorTag D>
-bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalChoice<D>*>::operator()(const grammar::ConstructorOrNonTerminalChoice<D>* l,
-                                                                                    const grammar::ConstructorOrNonTerminalChoice<D>* r) const
+bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<D>*>::operator()(const grammar::ConstructorOrNonTerminalImpl<D>* l,
+                                                                                  const grammar::ConstructorOrNonTerminalImpl<D>* r) const
 {
     if (&l != &r)
     {
-        return (*l == *r);
+        return (l->get_constructor_or_non_terminal() == r->get_constructor_or_non_terminal());
     }
     return true;
 }
 
-template bool
-UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalChoice<Concept>*>::operator()(const grammar::ConstructorOrNonTerminalChoice<Concept>* l,
-                                                                                     const grammar::ConstructorOrNonTerminalChoice<Concept>* r) const;
-template bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalChoice<Role>*>::operator()(const grammar::ConstructorOrNonTerminalChoice<Role>* l,
-                                                                                                const grammar::ConstructorOrNonTerminalChoice<Role>* r) const;
-
-template<ConstructorTag D>
-bool UniqueDLEqualTo<const grammar::ChoiceImpl<D>*>::operator()(const grammar::ChoiceImpl<D>* l, const grammar::ChoiceImpl<D>* r) const
-{
-    if (&l != &r)
-    {
-        return (l->get_choice() == r->get_choice());
-    }
-    return true;
-}
-
-template bool UniqueDLEqualTo<const grammar::ChoiceImpl<Concept>*>::operator()(const grammar::ChoiceImpl<Concept>* l,
-                                                                               const grammar::ChoiceImpl<Concept>* r) const;
-template bool UniqueDLEqualTo<const grammar::ChoiceImpl<Role>*>::operator()(const grammar::ChoiceImpl<Role>* l, const grammar::ChoiceImpl<Role>* r) const;
+template bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<Concept>*>::operator()(const grammar::ConstructorOrNonTerminalImpl<Concept>* l,
+                                                                                                 const grammar::ConstructorOrNonTerminalImpl<Concept>* r) const;
+template bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<Role>*>::operator()(const grammar::ConstructorOrNonTerminalImpl<Role>* l,
+                                                                                              const grammar::ConstructorOrNonTerminalImpl<Role>* r) const;
 
 /* Concepts */
 
@@ -404,7 +389,8 @@ bool UniqueDLEqualTo<const grammar::ConceptIntersectionImpl*>::operator()(const 
 {
     if (&l != &r)
     {
-        return (l->get_concept_left() == r->get_concept_left()) && (l->get_concept_right() == r->get_concept_right());
+        return (l->get_concept_or_non_terminal_left() == r->get_concept_or_non_terminal_left())
+               && (l->get_concept_or_non_terminal_right() == r->get_concept_or_non_terminal_right());
     }
     return true;
 }
@@ -413,7 +399,8 @@ bool UniqueDLEqualTo<const grammar::ConceptUnionImpl*>::operator()(const grammar
 {
     if (&l != &r)
     {
-        return (l->get_concept_left() == r->get_concept_left()) && (l->get_concept_right() == r->get_concept_right());
+        return (l->get_concept_or_non_terminal_left() == r->get_concept_or_non_terminal_left())
+               && (l->get_concept_or_non_terminal_right() == r->get_concept_or_non_terminal_right());
     }
     return true;
 }
@@ -422,7 +409,7 @@ bool UniqueDLEqualTo<const grammar::ConceptNegationImpl*>::operator()(const gram
 {
     if (&l != &r)
     {
-        return (l->get_concept() == r->get_concept());
+        return (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
     }
     return true;
 }
@@ -432,7 +419,7 @@ bool UniqueDLEqualTo<const grammar::ConceptValueRestrictionImpl*>::operator()(co
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal()) && (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
     }
     return true;
 }
@@ -442,7 +429,7 @@ bool UniqueDLEqualTo<const grammar::ConceptExistentialQuantificationImpl*>::oper
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal()) && (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
     }
     return true;
 }
@@ -452,7 +439,8 @@ bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapContainmentImpl*>::operat
 {
     if (&l != &r)
     {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
+               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
     }
     return true;
 }
@@ -462,7 +450,8 @@ bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapEqualityImpl*>::operator(
 {
     if (&l != &r)
     {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
+               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
     }
     return true;
 }
@@ -526,7 +515,8 @@ bool UniqueDLEqualTo<const grammar::RoleIntersectionImpl*>::operator()(const gra
 {
     if (&l != &r)
     {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
+               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
     }
     return true;
 }
@@ -535,7 +525,8 @@ bool UniqueDLEqualTo<const grammar::RoleUnionImpl*>::operator()(const grammar::R
 {
     if (&l != &r)
     {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
+               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
     }
     return true;
 }
@@ -544,7 +535,7 @@ bool UniqueDLEqualTo<const grammar::RoleComplementImpl*>::operator()(const gramm
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
     }
     return true;
 }
@@ -553,7 +544,7 @@ bool UniqueDLEqualTo<const grammar::RoleInverseImpl*>::operator()(const grammar:
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
     }
     return true;
 }
@@ -562,7 +553,8 @@ bool UniqueDLEqualTo<const grammar::RoleCompositionImpl*>::operator()(const gram
 {
     if (&l != &r)
     {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
+        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
+               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
     }
     return true;
 }
@@ -572,7 +564,7 @@ bool UniqueDLEqualTo<const grammar::RoleTransitiveClosureImpl*>::operator()(cons
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
     }
     return true;
 }
@@ -582,7 +574,7 @@ bool UniqueDLEqualTo<const grammar::RoleReflexiveTransitiveClosureImpl*>::operat
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
     }
     return true;
 }
@@ -591,7 +583,7 @@ bool UniqueDLEqualTo<const grammar::RoleRestrictionImpl*>::operator()(const gram
 {
     if (&l != &r)
     {
-        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
+        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal()) && (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
     }
     return true;
 }
@@ -600,7 +592,7 @@ bool UniqueDLEqualTo<const grammar::RoleIdentityImpl*>::operator()(const grammar
 {
     if (&l != &r)
     {
-        return (l->get_concept() == r->get_concept());
+        return (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
     }
     return true;
 }

@@ -37,7 +37,9 @@ template<ConstructorTag D>
 using NonTerminalFactory = loki::SegmentedRepository<NonTerminalImpl<D>, UniqueDLHasher<const NonTerminalImpl<D>*>, UniqueDLEqualTo<const NonTerminalImpl<D>*>>;
 
 template<ConstructorTag D>
-using ChoiceFactory = loki::SegmentedRepository<ChoiceImpl<D>, UniqueDLHasher<const ChoiceImpl<D>*>, UniqueDLEqualTo<const ChoiceImpl<D>*>>;
+using ChoiceFactory = loki::SegmentedRepository<ConstructorOrNonTerminalImpl<D>,
+                                                UniqueDLHasher<const ConstructorOrNonTerminalImpl<D>*>,
+                                                UniqueDLEqualTo<const ConstructorOrNonTerminalImpl<D>*>>;
 
 template<ConstructorTag D>
 using DerivationRuleFactory =
@@ -97,7 +99,7 @@ using RoleIdentityFactory = loki::SegmentedRepository<RoleIdentityImpl, UniqueDL
 
 using ConstructorTagToRepository =
     boost::hana::map<boost::hana::pair<boost::hana::type<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept>>,
-                     boost::hana::pair<boost::hana::type<ChoiceImpl<Concept>>, ChoiceFactory<Concept>>,
+                     boost::hana::pair<boost::hana::type<ConstructorOrNonTerminalImpl<Concept>>, ChoiceFactory<Concept>>,
                      boost::hana::pair<boost::hana::type<DerivationRuleImpl<Concept>>, DerivationRuleFactory<Concept>>,
                      boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
@@ -116,7 +118,7 @@ using ConstructorTagToRepository =
                      boost::hana::pair<boost::hana::type<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityRepository>,
                      boost::hana::pair<boost::hana::type<ConceptNominalImpl>, ConceptNominalRepository>,
                      boost::hana::pair<boost::hana::type<NonTerminalImpl<Role>>, NonTerminalFactory<Role>>,
-                     boost::hana::pair<boost::hana::type<ChoiceImpl<Role>>, ChoiceFactory<Role>>,
+                     boost::hana::pair<boost::hana::type<ConstructorOrNonTerminalImpl<Role>>, ChoiceFactory<Role>>,
                      boost::hana::pair<boost::hana::type<DerivationRuleImpl<Role>>, DerivationRuleFactory<Role>>,
                      boost::hana::pair<boost::hana::type<RoleUniversalImpl>, RoleUniversalRepository>,
                      boost::hana::pair<boost::hana::type<RoleAtomicStateImpl<Static>>, RoleAtomicStateRepository<Static>>,

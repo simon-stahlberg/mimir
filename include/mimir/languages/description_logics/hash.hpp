@@ -253,15 +253,9 @@ struct UniqueDLHasher<const grammar::NonTerminalImpl<D>*>
 };
 
 template<ConstructorTag D>
-struct UniqueDLHasher<const grammar::ConstructorOrNonTerminalChoice<D>*>
+struct UniqueDLHasher<const grammar::ConstructorOrNonTerminalImpl<D>*>
 {
-    size_t operator()(const grammar::ConstructorOrNonTerminalChoice<D>* e) const;
-};
-
-template<ConstructorTag D>
-struct UniqueDLHasher<const grammar::ChoiceImpl<D>*>
-{
-    size_t operator()(const grammar::ChoiceImpl<D>* e) const;
+    size_t operator()(const grammar::ConstructorOrNonTerminalImpl<D>* e) const;
 };
 
 /* Concepts */

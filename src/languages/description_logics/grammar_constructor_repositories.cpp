@@ -24,7 +24,7 @@ ConstructorTagToRepository create_default_constructor_type_to_repository()
 {
     return boost::hana::make_map(
         boost::hana::make_pair(boost::hana::type_c<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept> {}),
-        boost::hana::make_pair(boost::hana::type_c<ChoiceImpl<Concept>>, ChoiceFactory<Concept> {}),
+        boost::hana::make_pair(boost::hana::type_c<ConstructorOrNonTerminalImpl<Concept>>, ChoiceFactory<Concept> {}),
         boost::hana::make_pair(boost::hana::type_c<DerivationRuleImpl<Concept>>, DerivationRuleFactory<Concept> {}),
         boost::hana::make_pair(boost::hana::type_c<ConceptBotImpl>, ConceptBotRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ConceptTopImpl>, ConceptTopRepository {}),
@@ -43,7 +43,7 @@ ConstructorTagToRepository create_default_constructor_type_to_repository()
         boost::hana::make_pair(boost::hana::type_c<ConceptRoleValueMapEqualityImpl>, ConceptRoleValueMapEqualityRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ConceptNominalImpl>, ConceptNominalRepository {}),
         boost::hana::make_pair(boost::hana::type_c<NonTerminalImpl<Role>>, NonTerminalFactory<Role> {}),
-        boost::hana::make_pair(boost::hana::type_c<ChoiceImpl<Role>>, ChoiceFactory<Role> {}),
+        boost::hana::make_pair(boost::hana::type_c<ConstructorOrNonTerminalImpl<Role>>, ChoiceFactory<Role> {}),
         boost::hana::make_pair(boost::hana::type_c<DerivationRuleImpl<Role>>, DerivationRuleFactory<Role> {}),
         boost::hana::make_pair(boost::hana::type_c<RoleUniversalImpl>, RoleUniversalRepository {}),
         boost::hana::make_pair(boost::hana::type_c<RoleAtomicStateImpl<Static>>, RoleAtomicStateRepository<Static> {}),

@@ -47,7 +47,7 @@ template<ConstructorTag D>
 struct NonTerminalClass;
 
 template<ConstructorTag D>
-struct ChoiceClass;
+struct ConstructorOrNonTerminalClass;
 
 template<ConstructorTag D>
 struct DerivationRuleClass;
@@ -94,7 +94,7 @@ typedef x3::rule<ConceptRoleValueMapContainmentClass, ast::ConceptRoleValueMapCo
 typedef x3::rule<ConceptRoleValueMapEqualityClass, ast::ConceptRoleValueMapEquality> concept_role_value_map_equality_type;
 typedef x3::rule<ConceptNominalClass, ast::ConceptNominal> concept_nominal_type;
 typedef x3::rule<NonTerminalClass<Concept>, ast::NonTerminal<Concept>> concept_non_terminal_type;
-typedef x3::rule<ChoiceClass<Concept>, ast::Choice<Concept>> concept_choice_type;
+typedef x3::rule<ConstructorOrNonTerminalClass<Concept>, ast::ConstructorOrNonTerminal<Concept>> concept_choice_type;
 typedef x3::rule<DerivationRuleClass<Concept>, ast::DerivationRule<Concept>> concept_derivation_rule_type;
 
 typedef x3::rule<ConstructorClass<Role>, ast::Constructor<Role>> role_type;
@@ -111,7 +111,7 @@ typedef x3::rule<RoleReflexiveTransitiveClosureClass, ast::RoleReflexiveTransiti
 typedef x3::rule<RoleRestrictionClass, ast::RoleRestriction> role_restriction_type;
 typedef x3::rule<RoleIdentityClass, ast::RoleIdentity> role_identity_type;
 typedef x3::rule<NonTerminalClass<Role>, ast::NonTerminal<Role>> role_non_terminal_type;
-typedef x3::rule<ChoiceClass<Role>, ast::Choice<Role>> role_choice_type;
+typedef x3::rule<ConstructorOrNonTerminalClass<Role>, ast::ConstructorOrNonTerminal<Role>> role_choice_type;
 typedef x3::rule<DerivationRuleClass<Role>, ast::DerivationRule<Role>> role_derivation_rule_type;
 
 typedef x3::rule<ConceptOrRoleDerivationRuleClass, ast::ConceptOrRoleDerivationRule> concept_or_role_derivation_rule_type;
