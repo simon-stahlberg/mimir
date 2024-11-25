@@ -56,6 +56,24 @@ const TermList& AtomImpl<P>::get_terms() const
 }
 
 template<PredicateTag P>
+VariableList AtomImpl<P>::get_variables() const
+{
+    VariableList variables;
+    for (const auto& term : get_terms())
+    {
+        if (const auto variable_term = std::get_if<TermVariableImpl>(term))
+        {
+            const auto variable = variable_term->get_variable();
+            if (!std::count(variables.begin(), variables.end(), variable))
+            {
+                variables.emplace_back(variable);
+            }
+        }
+    }
+    return variables;
+}
+
+template<PredicateTag P>
 size_t AtomImpl<P>::get_arity() const
 {
     return m_terms.size();

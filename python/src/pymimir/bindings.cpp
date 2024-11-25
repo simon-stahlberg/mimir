@@ -497,7 +497,8 @@ void init_pymimir(py::module_& m)
             .def(
                 "get_terms",
                 [](const AtomImpl<Tag>& atom) { return atom.get_terms(); },
-                py::keep_alive<0, 1>());
+                py::keep_alive<0, 1>())
+            .def("get_variables", &AtomImpl<Tag>::get_variables, py::return_value_policy::reference_internal);
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);
         auto list_cls = py::bind_vector<AtomList<Tag>>(m, class_name + "List");
