@@ -1,4 +1,6 @@
 #include "init_declarations.hpp"
+#include <pybind11/attr.h>
+#include <pybind11/detail/common.h>
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
@@ -494,11 +496,8 @@ void init_pymimir(py::module_& m)
             .def("__repr__", &AtomImpl<Tag>::str)
             .def("get_index", &AtomImpl<Tag>::get_index)
             .def("get_predicate", &AtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
-            .def(
-                "get_terms",
-                [](const AtomImpl<Tag>& atom) { return atom.get_terms(); },
-                py::keep_alive<0, 1>())
-            .def("get_variables", &AtomImpl<Tag>::get_variables, py::return_value_policy::reference_internal);
+            .def("get_terms", [](const AtomImpl<Tag>& atom) { return to_term_variant_list(atom.get_terms()); })
+            .def("get_variables", &AtomImpl<Tag>::get_variables);
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);
         auto list_cls = py::bind_vector<AtomList<Tag>>(m, class_name + "List");
