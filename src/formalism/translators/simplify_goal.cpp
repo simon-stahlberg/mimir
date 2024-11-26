@@ -44,7 +44,7 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
         {
             parts.push_back(simplify_goal_condition(*part, pddl_repositories, derived_predicates, axioms, next_axiom_index, simple_and_derived_predicates));
         }
-        return pddl_repositories.get_or_create_condition_and(parts);
+        return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_and(parts));
     }
 
     const auto axiom_name = create_unique_axiom_name(next_axiom_index, simple_and_derived_predicates);
@@ -52,7 +52,7 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
     derived_predicates.insert(predicate);
     const auto atom = pddl_repositories.get_or_create_atom(predicate, loki::TermList {});
     const auto literal = pddl_repositories.get_or_create_literal(false, atom);
-    const auto substituted_condition = pddl_repositories.get_or_create_condition_literal(literal);
+    const auto substituted_condition = pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_literal(literal));
     const auto axiom = pddl_repositories.get_or_create_axiom(axiom_name, loki::ParameterList {}, &goal_condition, 0);
     axioms.insert(axiom);
 

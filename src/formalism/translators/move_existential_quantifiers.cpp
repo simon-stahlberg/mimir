@@ -17,6 +17,8 @@
 
 #include "mimir/formalism/translators/move_existential_quantifiers.hpp"
 
+#include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 #include <algorithm>
@@ -57,9 +59,9 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
 
 loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten(*this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                             this->translate(condition.get_condition()->get_condition())->get_condition()),
-                   this->m_pddl_repositories);
+    return flatten(
+        *this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())),
+        this->m_pddl_repositories);
 }
 
 loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)

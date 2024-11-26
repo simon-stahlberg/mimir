@@ -82,16 +82,17 @@ loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::Ef
     if (condition && std::holds_alternative<loki::ConditionOr>(condition->get_condition()))
     {
         auto split_effects = loki::EffectList {};
-        for (const auto& part : std::get<loki::ConditionOr>(condition->get_condition())->get_conditions())
+        for (const auto part : std::get<loki::ConditionOr>(condition->get_condition())->get_conditions())
         {
-            split_effects.push_back(
-                this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect())));
+            split_effects.push_back(this->m_pddl_repositories.get_or_create_effect(
+                this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect()))));
         }
-        return this->m_pddl_repositories.get_or_create_effect_and(split_effects);
+        return this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_and(split_effects));
     }
     else
     {
-        return this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_effect(
+            this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect())));
     }
 }
 

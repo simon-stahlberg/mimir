@@ -263,7 +263,8 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_nested_condition = this->translate(*condition.get_condition());
 
-    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, translated_nested_condition);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, translated_nested_condition));
 
     decrement_num_quantifications(condition.get_parameters());
 
@@ -277,7 +278,8 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_nested_condition = this->translate(*condition.get_condition());
 
-    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_nested_condition);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_nested_condition));
 
     decrement_num_quantifications(condition.get_parameters());
 
@@ -291,7 +293,8 @@ loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::Eff
     const auto translated_parameters = this->translate(effect.get_parameters());
     const auto translated_nested_effect = this->translate(*effect.get_effect());
 
-    auto translated_effect = this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect);
+    auto translated_effect = this->m_pddl_repositories.get_or_create_effect(
+        this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect));
 
     decrement_num_quantifications(effect.get_parameters());
 

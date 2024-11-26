@@ -73,8 +73,8 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
 {
     m_scopes.open_scope(condition.get_parameters());
 
-    auto result =
-        this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition()));
+    auto result = this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())));
 
     m_scopes.close_scope();
     return result;
@@ -94,8 +94,8 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
     auto head_parameters = loki::ParameterList {};
     auto terms = loki::TermList {};
-    for (const auto free_variable :
-         collect_free_variables(*this->m_pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition())))
+    for (const auto free_variable : collect_free_variables(*this->m_pddl_repositories.get_or_create_condition(
+             this->m_pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition()))))
     {
         const auto optional_parameter = scope.get_parameter(free_variable);
         assert(optional_parameter.has_value());
@@ -112,15 +112,17 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     head_parameters.shrink_to_fit();
     axiom_parameters.shrink_to_fit();
 
-    const auto axiom_condition = this->translate(*this->m_pddl_repositories.get_or_create_condition_exists(
-        axiom_parameters,
-        m_to_nnf_translator.translate(*this->m_pddl_repositories.get_or_create_condition_not(condition.get_condition()))));
+    const auto axiom_condition = this->translate(*this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_exists(axiom_parameters,
+                                                                 m_to_nnf_translator.translate(*this->m_pddl_repositories.get_or_create_condition(
+                                                                     this->m_pddl_repositories.get_or_create_condition_not(condition.get_condition()))))));
 
     const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_index, this->m_simple_and_derived_predicate_names);
     const auto predicate = this->m_pddl_repositories.get_or_create_predicate(axiom_name, head_parameters);
     m_derived_predicates.insert(predicate);
     const auto atom = this->m_pddl_repositories.get_or_create_atom(predicate, terms);
-    const auto substituted_condition = this->m_pddl_repositories.get_or_create_condition_literal(this->m_pddl_repositories.get_or_create_literal(true, atom));
+    const auto substituted_condition = this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_literal(this->m_pddl_repositories.get_or_create_literal(true, atom)));
     const auto axiom = this->m_pddl_repositories.get_or_create_axiom(axiom_name, axiom_parameters, axiom_condition, head_parameters.size());
 
     m_axioms.insert(axiom);

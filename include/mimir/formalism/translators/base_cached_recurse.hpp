@@ -243,8 +243,8 @@ protected:
      */
 
     /// @brief Retrieve or create cache entry of translation to avoid recomputations.
-    template<typename Impl, typename TranslateFunc>
-    auto cached_translate_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& translateFunc)
+    template<typename Impl, typename Impl2, typename TranslateFunc>
+    auto cached_translate_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl2*>& cache, const TranslateFunc& translateFunc)
     {
         // Access from cache
         auto it = cache.find(&impl);
