@@ -45,7 +45,7 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
     }
 
     const auto parts_conjunction =
-        flatten(*std::get<loki::ConditionAndImpl>(this->m_pddl_repositories.get_or_create_condition_and(parts)->get_condition()), this->m_pddl_repositories);
+        flatten(*std::get<loki::ConditionAnd>(this->m_pddl_repositories.get_or_create_condition_and(parts)->get_condition()), this->m_pddl_repositories);
 
     if (parameters.empty())
     {
@@ -58,9 +58,10 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
 
 loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                                                                 this->translate(*condition.get_condition()))),
-                   this->m_pddl_repositories);
+    return flatten(
+        *std::get<loki::ConditionExists>(this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
+                                                                                                  this->translate(condition.get_condition()->get_condition()))),
+        this->m_pddl_repositories);
 }
 
 loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)

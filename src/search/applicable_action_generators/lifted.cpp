@@ -63,13 +63,16 @@ public:
     {
     }
 
+    double operator()(const FunctionExpressionImpl& expr)
+    {
+        return std::visit([this](auto&& arg) -> double { return (*this)(*arg); }, expr.get_function_expression());
+    }
+
     double operator()(const FunctionExpressionNumberImpl& expr) { return expr.get_number(); }
 
     double operator()(const FunctionExpressionBinaryOperatorImpl& expr)
     {
-        return evaluate_binary(expr.get_binary_operator(),
-                               std::visit(*this, *expr.get_left_function_expression()),
-                               std::visit(*this, *expr.get_right_function_expression()));
+        return evaluate_binary(expr.get_binary_operator(), (*this)(*expr.get_left_function_expression()), (*this)(*expr.get_right_function_expression()));
     }
 
     double operator()(const FunctionExpressionMultiOperatorImpl& expr)
@@ -77,16 +80,16 @@ public:
         assert(!expr.get_function_expressions().empty());
 
         auto it = expr.get_function_expressions().begin();
-        auto result = std::visit(*this, **it);
+        auto result = (*this)(**it);
         for (; it != expr.get_function_expressions().end(); ++it)
         {
-            result = evaluate_multi(expr.get_multi_operator(), result, std::visit(*this, **it));
+            result = evaluate_multi(expr.get_multi_operator(), result, (*this)(**it));
         }
 
         return result;
     }
 
-    double operator()(const FunctionExpressionMinusImpl& expr) { return -std::visit(*this, *expr.get_function_expression()); }
+    double operator()(const FunctionExpressionMinusImpl& expr) { return -(*this)(*expr.get_function_expression()); }
 
     double operator()(const FunctionExpressionFunctionImpl& expr)
     {
@@ -101,8 +104,6 @@ public:
 
         return cost;
     }
-
-    double operator()(const FunctionExpressionImpl& expr) { return std::visit(*this, expr.get_function_expression()); }
 };
 
 const std::vector<AxiomPartition>& LiftedApplicableActionGenerator::get_axiom_partitioning() const { return m_axiom_evaluator.get_axiom_partitioning(); }
@@ -141,8 +142,8 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     /* Header */
 
     m_action_builder.get_index() = m_flat_actions.size();
-    m_action_builder.get_cost() = std::visit(GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories),
-                                             *action->get_function_expression());
+    m_action_builder.get_cost() =
+        GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(*action->get_function_expression());
     m_action_builder.get_action_index() = action->get_index();
     auto& objects = m_action_builder.get_objects();
     objects.clear();

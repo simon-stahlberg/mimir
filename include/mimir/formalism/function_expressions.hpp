@@ -193,7 +193,7 @@ private:
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
-    friend class SegmentedRepository;
+    friend class loki::SegmentedRepository;
 
 public:
     // moveable but not copyable

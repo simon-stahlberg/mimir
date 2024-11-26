@@ -38,9 +38,9 @@ loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLRepos
     auto parts = loki::ConditionList {};
     for (const auto& part : condition.get_conditions())
     {
-        if (const auto and_condition = std::get_if<loki::ConditionAndImpl>(part))
+        if (const auto and_condition = std::get_if<loki::ConditionAnd>(&part->get_condition()))
         {
-            const auto& nested_parts = std::get<loki::ConditionAndImpl>(*flatten(*and_condition, pddl_repositories));
+            const auto& nested_parts = *std::get<loki::ConditionAnd>(flatten(**and_condition, pddl_repositories)->get_condition());
 
             parts.insert(parts.end(), nested_parts.get_conditions().begin(), nested_parts.get_conditions().end());
         }
@@ -57,9 +57,9 @@ loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& 
     auto parts = loki::EffectList {};
     for (const auto& part : effect.get_effects())
     {
-        if (const auto and_effect = std::get_if<loki::EffectAndImpl>(part))
+        if (const auto and_effect = std::get_if<loki::EffectAnd>(&part->get_effect()))
         {
-            const auto& nested_parts = std::get<loki::EffectAndImpl>(*flatten(*and_effect, pddl_repositories));
+            const auto& nested_parts = *std::get<loki::EffectAnd>(flatten(**and_effect, pddl_repositories)->get_effect());
 
             parts.insert(parts.end(), nested_parts.get_effects().begin(), nested_parts.get_effects().end());
         }
@@ -76,9 +76,9 @@ loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLReposi
     auto parts = loki::ConditionList {};
     for (const auto& part : condition.get_conditions())
     {
-        if (const auto or_condition = std::get_if<loki::ConditionOrImpl>(part))
+        if (const auto or_condition = std::get_if<loki::ConditionOr>(&part->get_condition()))
         {
-            const auto& nested_parts = std::get<loki::ConditionOrImpl>(*flatten(*or_condition, pddl_repositories));
+            const auto& nested_parts = *std::get<loki::ConditionOr>(flatten(**or_condition, pddl_repositories)->get_condition());
 
             parts.insert(parts.end(), nested_parts.get_conditions().begin(), nested_parts.get_conditions().end());
         }
@@ -92,9 +92,9 @@ loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLReposi
 
 loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLRepositories& pddl_repositories)
 {
-    if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.get_condition()))
+    if (const auto condition_exists = std::get_if<loki::ConditionExists>(&condition.get_condition()->get_condition()))
     {
-        const auto& nested_condition = std::get<loki::ConditionExistsImpl>(*flatten(*condition_exists, pddl_repositories));
+        const auto& nested_condition = *std::get<loki::ConditionExists>(flatten(**condition_exists, pddl_repositories)->get_condition());
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
@@ -105,9 +105,9 @@ loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLRe
 
 loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRepositories& pddl_repositories)
 {
-    if (const auto condition_forall = std::get_if<loki::ConditionForallImpl>(condition.get_condition()))
+    if (const auto condition_forall = std::get_if<loki::ConditionForall>(&condition.get_condition()->get_condition()))
     {
-        const auto& nested_condition = std::get<loki::ConditionForallImpl>(*flatten(*condition_forall, pddl_repositories));
+        const auto& nested_condition = *std::get<loki::ConditionForall>(flatten(**condition_forall, pddl_repositories)->get_condition());
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
@@ -118,13 +118,15 @@ loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRe
 
 loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepositories& pddl_repositories)
 {
-    if (const auto effect_when = std::get_if<loki::EffectCompositeWhenImpl>(effect.get_effect()))
+    if (const auto effect_when = std::get_if<loki::EffectCompositeWhen>(&effect.get_effect()->get_effect()))
     {
-        const auto& nested_effect = std::get<loki::EffectCompositeWhenImpl>(*flatten(*effect_when, pddl_repositories));
+        const auto& nested_effect = *std::get<loki::EffectCompositeWhen>(flatten(**effect_when, pddl_repositories)->get_effect());
 
         return pddl_repositories.get_or_create_effect_composite_when(
-            flatten(*std::get_if<loki::ConditionAndImpl>(pddl_repositories.get_or_create_condition_and(
-                        uniquify_elements(loki::ConditionList { effect.get_condition(), nested_effect.get_condition() }))),
+            flatten(*std::get<loki::ConditionAnd>(
+                        pddl_repositories
+                            .get_or_create_condition_and(uniquify_elements(loki::ConditionList { effect.get_condition(), nested_effect.get_condition() }))
+                            ->get_condition()),
                     pddl_repositories),
             nested_effect.get_effect());
     }
@@ -133,9 +135,9 @@ loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepo
 
 loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRepositories& pddl_repositories)
 {
-    if (const auto effect_forall = std::get_if<loki::EffectCompositeForallImpl>(effect.get_effect()))
+    if (const auto effect_forall = std::get_if<loki::EffectCompositeForall>(&effect.get_effect()->get_effect()))
     {
-        const auto& nested_effect = std::get<loki::EffectCompositeForallImpl>(*flatten(*effect_forall, pddl_repositories));
+        const auto& nested_effect = *std::get<loki::EffectCompositeForall>(flatten(**effect_forall, pddl_repositories)->get_effect());
         auto parameters = effect.get_parameters();
         const auto additional_parameters = nested_effect.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());

@@ -55,23 +55,23 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
     auto constructor_repositories = dl::create_default_constructor_type_to_repository();
 
     const auto predicate_at_robby = parser.get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
-    const auto concept_at_robby = boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Fluent>> {})
-                                      .get_or_create<dl::ConceptAtomicStateImpl<Fluent>>(predicate_at_robby);
+    const auto concept_at_robby =
+        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Fluent>> {}).get_or_create(predicate_at_robby);
     // EXPECT_TRUE(grammar.test_match(concept_at_robby));
 
     const auto predicate_ball = parser.get_domain()->get_name_to_predicate<Static>().at("ball");
-    const auto concept_ball = boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Static>> {})
-                                  .get_or_create<dl::ConceptAtomicStateImpl<Static>>(predicate_ball);
+    const auto concept_ball =
+        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicStateImpl<Static>> {}).get_or_create(predicate_ball);
     // EXPECT_FALSE(grammar.test_match(concept_ball));
 
-    const auto concept_goal_at_robby = boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicGoalImpl<Fluent>> {})
-                                           .get_or_create<dl::ConceptAtomicGoalImpl<Fluent>>(predicate_at_robby, false);
-    const auto concept_at_robby_intersect_goal_at_robby = boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptIntersectionImpl> {})
-                                                              .get_or_create<dl::ConceptIntersectionImpl>(concept_at_robby, concept_goal_at_robby);
+    const auto concept_goal_at_robby =
+        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptAtomicGoalImpl<Fluent>> {}).get_or_create(predicate_at_robby, false);
+    const auto concept_at_robby_intersect_goal_at_robby =
+        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptIntersectionImpl> {}).get_or_create(concept_at_robby, concept_goal_at_robby);
     // EXPECT_TRUE(grammar.test_match(concept_at_robby_intersect_goal_at_robby));
 
-    const auto concept_goal_at_robby_intersect_at_robby = boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptIntersectionImpl> {})
-                                                              .get_or_create<dl::ConceptIntersectionImpl>(concept_goal_at_robby, concept_at_robby);
+    const auto concept_goal_at_robby_intersect_at_robby =
+        boost::hana::at_key(constructor_repositories, boost::hana::type<dl::ConceptIntersectionImpl> {}).get_or_create(concept_goal_at_robby, concept_at_robby);
     // EXPECT_FALSE(grammar.test_match(concept_goal_at_robby_intersect_at_robby));
 }
 
