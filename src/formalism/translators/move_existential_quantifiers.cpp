@@ -17,8 +17,6 @@
 
 #include "mimir/formalism/translators/move_existential_quantifiers.hpp"
 
-#include "mimir/common/collections.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 #include <algorithm>
