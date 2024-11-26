@@ -31,7 +31,7 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionAndImpl& co
     auto other_parts = loki::ConditionList {};
     for (const auto translated_part : translated_nested_conditions)
     {
-        if (const auto disjunctive_part = std::get_if<loki::ConditionOrImpl>(translated_part))
+        if (const auto disjunctive_part = std::get_if<loki::ConditionOr>(&translated_part->get_condition()))
         {
             disjunctive_parts.push_back(translated_part);
         }
@@ -67,14 +67,14 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionAndImpl& co
         result_parts = loki::ConditionList {};
         const auto it = disjunctive_parts.begin();
         disjunctive_parts.erase(it);
-        const auto& current_parts = std::get<loki::ConditionOrImpl>(**it).get_conditions();
+        const auto& current_parts = std::get<loki::ConditionOr>((**it).get_condition())->get_conditions();
         for (const auto& part1 : previous_result_parts)
         {
             for (const auto& part2 : current_parts)
             {
-                result_parts.push_back(
-                    flatten(std::get<loki::ConditionAndImpl>(*this->m_pddl_repositories.get_or_create_condition_and(loki::ConditionList { part1, part2 })),
-                            this->m_pddl_repositories));
+                result_parts.push_back(flatten(
+                    *std::get<loki::ConditionAnd>(this->m_pddl_repositories.get_or_create_condition_and(loki::ConditionList { part1, part2 })->get_condition()),
+                    this->m_pddl_repositories));
             }
         }
     }
@@ -84,8 +84,9 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionAndImpl& co
 
 loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionOrImpl& condition)
 {
-    return flatten(std::get<loki::ConditionOrImpl>(*this->m_pddl_repositories.get_or_create_condition_or(this->translate(condition.get_conditions()))),
-                   this->m_pddl_repositories);
+    return flatten(
+        *std::get<loki::ConditionOr>(this->m_pddl_repositories.get_or_create_condition_or(this->translate(condition.get_conditions()))->get_condition()),
+        this->m_pddl_repositories);
 }
 
 loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
@@ -93,16 +94,17 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionExistsImpl&
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_condition = this->translate(*condition.get_condition());
 
-    if (const auto translated_disjunctive_condition = std::get_if<loki::ConditionOrImpl>(translated_condition))
+    if (const auto translated_disjunctive_condition = std::get_if<loki::ConditionOr>(&translated_condition->get_condition()))
     {
         auto result_parts = loki::ConditionList {};
-        for (const auto& part : translated_disjunctive_condition->get_conditions())
+        for (const auto& part : (*translated_disjunctive_condition)->get_conditions())
         {
             result_parts.push_back(this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, part));
         }
         return this->translate(*this->m_pddl_repositories.get_or_create_condition_or(result_parts));
     }
-    return flatten(std::get<loki::ConditionExistsImpl>(*this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, translated_condition)),
+    return flatten(*std::get<loki::ConditionExists>(
+                       this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, translated_condition)->get_condition()),
                    this->m_pddl_repositories);
 }
 
@@ -111,16 +113,17 @@ loki::Condition ToDNFTranslator::translate_impl(const loki::ConditionForallImpl&
     const auto translated_parameters = this->translate(condition.get_parameters());
     const auto translated_condition = this->translate(*condition.get_condition());
 
-    if (const auto translated_disjunctive_condition = std::get_if<loki::ConditionOrImpl>(translated_condition))
+    if (const auto translated_disjunctive_condition = std::get_if<loki::ConditionOr>(&translated_condition->get_condition()))
     {
         auto result_parts = loki::ConditionList {};
-        for (const auto& part : translated_disjunctive_condition->get_conditions())
+        for (const auto& part : (*translated_disjunctive_condition)->get_conditions())
         {
             result_parts.push_back(this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, part));
         }
         return this->translate(*this->m_pddl_repositories.get_or_create_condition_or(result_parts));
     }
-    return flatten(std::get<loki::ConditionForallImpl>(*this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_condition)),
+    return flatten(*std::get<loki::ConditionForall>(
+                       this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_condition)->get_condition()),
                    this->m_pddl_repositories);
 }
 

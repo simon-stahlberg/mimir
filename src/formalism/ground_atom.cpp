@@ -96,7 +96,7 @@ std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms,
                 to_variable.emplace(object, variable);
             }
             const auto variable = to_variable.at(object);
-            const auto term = pddl_repositories.get_or_create_term_variable(variable);
+            const auto term = pddl_repositories.get_or_create_term(variable);
             terms.emplace_back(term);
         }
         atoms.emplace_back(ground_atom->lift(terms, pddl_repositories));

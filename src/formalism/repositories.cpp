@@ -83,12 +83,12 @@ Variable PDDLRepositories::get_or_create_variable(std::string name, size_t param
     return boost::hana::at_key(m_repositories, boost::hana::type<VariableImpl> {}).get_or_create(std::move(name), std::move(parameter_index));
 }
 
-Term PDDLRepositories::get_or_create_term_variable(Variable variable)
+Term PDDLRepositories::get_or_create_term(Variable variable)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<TermImpl> {}).get_or_create(std::move(variable));
 }
 
-Term PDDLRepositories::get_or_create_term_object(Object object)
+Term PDDLRepositories::get_or_create_term(Object object)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<TermImpl> {}).get_or_create(std::move(object));
 }
@@ -148,23 +148,21 @@ template Predicate<Static> PDDLRepositories::get_or_create_predicate(std::string
 template Predicate<Fluent> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters);
 template Predicate<Derived> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters);
 
-FunctionExpression PDDLRepositories::get_or_create_function_expression_number(double number)
+FunctionExpressionNumber PDDLRepositories::get_or_create_function_expression_number(double number)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionNumberImpl> {}).get_or_create(number));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionNumberImpl> {}).get_or_create(number);
 }
 
-FunctionExpression PDDLRepositories::get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
-                                                                                       FunctionExpression left_function_expression,
-                                                                                       FunctionExpression right_function_expression)
+FunctionExpressionBinaryOperator PDDLRepositories::get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                                     FunctionExpression left_function_expression,
+                                                                                                     FunctionExpression right_function_expression)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionBinaryOperatorImpl> {})
-                           .get_or_create(binary_operator, std::move(left_function_expression), std::move(right_function_expression)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionBinaryOperatorImpl> {})
+        .get_or_create(binary_operator, std::move(left_function_expression), std::move(right_function_expression));
 }
 
-FunctionExpression PDDLRepositories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                      FunctionExpressionList function_expressions)
+FunctionExpressionMultiOperator PDDLRepositories::get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                                   FunctionExpressionList function_expressions)
 {
     /* Canonize before uniqueness test. */
     std::sort(function_expressions.begin(),
@@ -175,40 +173,62 @@ FunctionExpression PDDLRepositories::get_or_create_function_expression_multi_ope
                          < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_function_expression());
               });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMultiOperatorImpl> {})
-                           .get_or_create(multi_operator, std::move(function_expressions)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMultiOperatorImpl> {})
+        .get_or_create(multi_operator, std::move(function_expressions));
 }
 
-FunctionExpression PDDLRepositories::get_or_create_function_expression_minus(FunctionExpression function_expression)
+FunctionExpressionMinus PDDLRepositories::get_or_create_function_expression_minus(FunctionExpression function_expression)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-FunctionExpression PDDLRepositories::get_or_create_function_expression_function(Function function)
+FunctionExpressionFunction PDDLRepositories::get_or_create_function_expression_function(Function function)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionFunctionImpl> {}).get_or_create(std::move(function)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionFunctionImpl> {}).get_or_create(std::move(function));
 }
 
-GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_number(double number)
+FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionNumber fexpr)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionNumberImpl> {}).get_or_create(number));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
-                                                                                                    GroundFunctionExpression left_function_expression,
-                                                                                                    GroundFunctionExpression right_function_expression)
+FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionBinaryOperatorImpl> {})
-                           .get_or_create(binary_operator, std::move(left_function_expression), std::move(right_function_expression)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                                   GroundFunctionExpressionList function_expressions)
+FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionMultiOperator fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionMinus fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionFunction fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+GroundFunctionExpressionNumber PDDLRepositories::get_or_create_ground_function_expression_number(double number)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionNumberImpl> {}).get_or_create(number);
+}
+
+GroundFunctionExpressionBinaryOperator
+PDDLRepositories::get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                           GroundFunctionExpression left_function_expression,
+                                                                           GroundFunctionExpression right_function_expression)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionBinaryOperatorImpl> {})
+        .get_or_create(binary_operator, std::move(left_function_expression), std::move(right_function_expression));
+}
+
+GroundFunctionExpressionMultiOperator
+PDDLRepositories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                          GroundFunctionExpressionList function_expressions)
 {
     std::sort(function_expressions.begin(),
               function_expressions.end(),
@@ -218,22 +238,43 @@ GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_express
                          < std::visit([](const auto& arg) { return arg->get_index(); }, r->get_ground_function_expression());
               });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMultiOperatorImpl> {})
-                           .get_or_create(multi_operator, std::move(function_expressions)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMultiOperatorImpl> {})
+        .get_or_create(multi_operator, std::move(function_expressions));
 }
 
-GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
+GroundFunctionExpressionMinus PDDLRepositories::get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
-        .get_or_create(
-            boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction function)
+GroundFunctionExpressionFunction PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction function)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {})
-        .get_or_create(boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionFunctionImpl> {}).get_or_create(std::move(function)));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionFunctionImpl> {}).get_or_create(std::move(function));
+}
+
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionNumber fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
+}
+
+GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction fexpr)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
 Function PDDLRepositories::get_or_create_function(FunctionSkeleton function_skeleton, TermList terms)

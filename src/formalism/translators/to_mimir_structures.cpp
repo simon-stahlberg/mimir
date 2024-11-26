@@ -64,7 +64,7 @@ void ToMimirStructures::prepare(const loki::ConditionForallImpl& condition)
 }
 void ToMimirStructures::prepare(const loki::ConditionImpl& condition)
 {
-    std::visit([this](auto&& arg) { return this->prepare(arg); }, condition);
+    std::visit([this](auto&& arg) { return this->prepare(*arg); }, condition.get_condition());
 }
 void ToMimirStructures::prepare(const loki::EffectImpl& effect)
 {
@@ -315,7 +315,7 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki:
 
 Term ToMimirStructures::translate_lifted(const loki::TermImpl& term)
 {
-    return std::visit([this](auto&& arg) -> Term { return this->m_pddl_repositories.get_or_create_term_object(this->translate_common(*arg)); },
+    return std::visit([this](auto&& arg) -> Term { return this->m_pddl_repositories.get_or_create_term(this->translate_common(*arg)); },
                       term.get_object_or_variable());
 }
 
@@ -643,7 +643,7 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
     auto terms = TermList {};
     for (size_t i = 0; i < axiom.get_num_parameters_to_ground_head(); ++i)
     {
-        terms.push_back(m_pddl_repositories.get_or_create_term_variable(parameters[i]));
+        terms.push_back(m_pddl_repositories.get_or_create_term(parameters[i]));
     }
     assert(terms.size() == derived_predicate->get_arity());
 

@@ -146,7 +146,7 @@ void ToPositiveNormalFormTransformer::compute_duals(const DomainImpl& domain,
         auto transformed_terms = TermList {};
         for (const auto& variable : transformed_parameters)
         {
-            transformed_terms.push_back(m_pddl_repositories.get_or_create_term_variable(variable));
+            transformed_terms.push_back(m_pddl_repositories.get_or_create_term(variable));
         }
         const auto transformed_atom = m_pddl_repositories.get_or_create_atom(transformed_dual_derived_predicate, transformed_terms);
         // Create dual literal (positive) for negative literal

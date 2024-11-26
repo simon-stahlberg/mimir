@@ -49,7 +49,7 @@ loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLRepos
             parts.push_back(part);
         }
     }
-    return pddl_repositories.get_or_create_condition_and(uniquify_elements(parts));
+    return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_and(uniquify_elements(parts)));
 }
 
 loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& pddl_repositories)
@@ -68,7 +68,7 @@ loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& 
             parts.push_back(part);
         }
     }
-    return pddl_repositories.get_or_create_effect_and(uniquify_elements(parts));
+    return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_and(uniquify_elements(parts)));
 }
 
 loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLRepositories& pddl_repositories)
@@ -87,7 +87,7 @@ loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLReposi
             parts.push_back(part);
         }
     }
-    return pddl_repositories.get_or_create_condition_or(uniquify_elements(parts));
+    return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_or(uniquify_elements(parts)));
 }
 
 loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLRepositories& pddl_repositories)
@@ -98,9 +98,9 @@ loki::Condition flatten(const loki::ConditionExistsImpl& condition, loki::PDDLRe
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_repositories.get_or_create_condition_exists(parameters, nested_condition.get_condition());
+        return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_exists(parameters, nested_condition.get_condition()));
     }
-    return pddl_repositories.get_or_create_condition_exists(condition.get_parameters(), condition.get_condition());
+    return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_exists(condition.get_parameters(), condition.get_condition()));
 }
 
 loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRepositories& pddl_repositories)
@@ -111,9 +111,9 @@ loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRe
         auto parameters = condition.get_parameters();
         const auto additional_parameters = nested_condition.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_repositories.get_or_create_condition_forall(parameters, nested_condition.get_condition());
+        return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_forall(parameters, nested_condition.get_condition()));
     }
-    return pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition());
+    return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition()));
 }
 
 loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepositories& pddl_repositories)
@@ -122,15 +122,13 @@ loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepo
     {
         const auto& nested_effect = *std::get<loki::EffectCompositeWhen>(flatten(**effect_when, pddl_repositories)->get_effect());
 
-        return pddl_repositories.get_or_create_effect_composite_when(
-            flatten(*std::get<loki::ConditionAnd>(
-                        pddl_repositories
-                            .get_or_create_condition_and(uniquify_elements(loki::ConditionList { effect.get_condition(), nested_effect.get_condition() }))
-                            ->get_condition()),
-                    pddl_repositories),
-            nested_effect.get_effect());
+        return pddl_repositories.get_or_create_effect(
+            pddl_repositories.get_or_create_effect_composite_when(flatten(*pddl_repositories.get_or_create_condition_and(uniquify_elements(
+                                                                              loki::ConditionList { effect.get_condition(), nested_effect.get_condition() })),
+                                                                          pddl_repositories),
+                                                                  nested_effect.get_effect()));
     }
-    return pddl_repositories.get_or_create_effect_composite_when(effect.get_condition(), effect.get_effect());
+    return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_composite_when(effect.get_condition(), effect.get_effect()));
 }
 
 loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRepositories& pddl_repositories)
@@ -141,9 +139,9 @@ loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRe
         auto parameters = effect.get_parameters();
         const auto additional_parameters = nested_effect.get_parameters();
         parameters.insert(parameters.end(), additional_parameters.begin(), additional_parameters.end());
-        return pddl_repositories.get_or_create_effect_composite_forall(parameters, nested_effect.get_effect());
+        return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_composite_forall(parameters, nested_effect.get_effect()));
     }
-    return pddl_repositories.get_or_create_effect_composite_forall(effect.get_parameters(), effect.get_effect());
+    return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_composite_forall(effect.get_parameters(), effect.get_effect()));
 }
 
 std::string create_unique_axiom_name(Index& next_axiom_index, std::unordered_set<std::string>& simple_and_derived_predicate_names)

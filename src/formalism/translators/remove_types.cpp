@@ -75,7 +75,7 @@ static loki::LiteralList typed_object_to_literals(const loki::ObjectImpl& object
                                                   std::unordered_map<loki::Type, loki::Predicate>& type_to_predicate_mapper)
 {
     auto additional_literals = loki::LiteralList {};
-    auto translated_term = pddl_repositories.get_or_create_term_object(typed_object_to_untyped_object(object, pddl_repositories));
+    auto translated_term = pddl_repositories.get_or_create_term(typed_object_to_untyped_object(object, pddl_repositories));
     auto types = collect_types_from_type_hierarchy(object.get_bases());
     for (const auto& type : types)
     {
@@ -101,10 +101,10 @@ static loki::ConditionList typed_parameter_to_condition_literals(const loki::Par
     auto types = collect_types_from_type_hierarchy(parameter.get_bases());
     for (const auto& type : types)
     {
-        auto condition = pddl_repositories.get_or_create_condition_literal(pddl_repositories.get_or_create_literal(
+        auto condition = pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_literal(pddl_repositories.get_or_create_literal(
             false,
             pddl_repositories.get_or_create_atom(type_to_predicate(*type, pddl_repositories, type_to_predicate_mapper),
-                                                 loki::TermList { pddl_repositories.get_or_create_term_object(parameter.get_variable()) })));
+                                                 loki::TermList { pddl_repositories.get_or_create_term(parameter.get_variable()) }))));
         conditions.push_back(condition);
     }
     return conditions;
@@ -131,7 +131,9 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionExist
     }
     conditions.push_back(this->translate(*condition.get_condition()));
 
-    return this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, this->m_pddl_repositories.get_or_create_condition_and(conditions));
+    return this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_exists(
+        translated_parameters,
+        this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_and(conditions))));
 }
 
 loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionForallImpl& condition)
@@ -148,9 +150,10 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionForal
     }
     conditions.push_back(this->translate(*condition.get_condition()));
 
-    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_and(conditions);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_and(conditions));
 
-    return this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_condition);
+    return this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_condition));
 }
 
 loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectCompositeForallImpl& effect)
@@ -165,14 +168,15 @@ loki::Effect RemoveTypesTranslator::translate_impl(const loki::EffectCompositeFo
         auto additional_conditions = typed_parameter_to_condition_literals(*parameter, this->m_pddl_repositories, this->m_type_to_predicates);
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
-    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_and(conditions);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_and(conditions));
 
     // Translate effect
     auto translated_effect = this->translate(*effect.get_effect());
 
-    return this->m_pddl_repositories.get_or_create_effect_composite_forall(
+    return this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_forall(
         translated_parameters,
-        this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, translated_effect));
+        this->m_pddl_repositories.get_or_create_effect(
+            this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, translated_effect))));
 }
 
 loki::Axiom RemoveTypesTranslator::translate_impl(const loki::AxiomImpl& axiom)
@@ -188,7 +192,7 @@ loki::Axiom RemoveTypesTranslator::translate_impl(const loki::AxiomImpl& axiom)
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     conditions.push_back(this->translate(*axiom.get_condition()));
-    auto translated_condition = this->m_pddl_repositories.get_or_create_condition_and(conditions);
+    auto translated_condition = this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_and(conditions));
 
     return this->m_pddl_repositories.get_or_create_axiom(axiom.get_derived_predicate_name(),
                                                          translated_parameters,
@@ -212,8 +216,9 @@ loki::Action RemoveTypesTranslator::translate_impl(const loki::ActionImpl& actio
     {
         conditions.push_back(this->translate(*action.get_condition().value()));
     }
-    auto translated_condition =
-        conditions.empty() ? std::nullopt : std::optional<loki::Condition>(this->m_pddl_repositories.get_or_create_condition_and(conditions));
+    auto translated_condition = conditions.empty() ? std::nullopt :
+                                                     std::optional<loki::Condition>(this->m_pddl_repositories.get_or_create_condition(
+                                                         this->m_pddl_repositories.get_or_create_condition_and(conditions)));
     auto translated_effect = action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt;
 
     return this->m_pddl_repositories.get_or_create_action(action.get_name(),

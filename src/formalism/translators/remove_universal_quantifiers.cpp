@@ -101,7 +101,7 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
         assert(optional_parameter.has_value());
         const auto parameter = this->m_pddl_repositories.get_or_create_parameter(free_variable, optional_parameter.value()->get_bases());
         head_parameters.push_back(parameter);
-        terms.push_back(this->m_pddl_repositories.get_or_create_term_object(free_variable));
+        terms.push_back(this->m_pddl_repositories.get_or_create_term(free_variable));
     }
     // Important: all other parameters are appended to the axiom parameters
     auto axiom_parameters = head_parameters;

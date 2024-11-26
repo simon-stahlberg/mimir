@@ -44,24 +44,22 @@ loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki:
         }
     }
 
-    const auto parts_conjunction =
-        flatten(*std::get<loki::ConditionAnd>(this->m_pddl_repositories.get_or_create_condition_and(parts)->get_condition()), this->m_pddl_repositories);
+    const auto parts_conjunction = flatten(*this->m_pddl_repositories.get_or_create_condition_and(parts), this->m_pddl_repositories);
 
     if (parameters.empty())
     {
         return parts_conjunction;
     }
 
-    return this->translate(
-        *this->m_pddl_repositories.get_or_create_condition_exists(loki::ParameterList { parameters.begin(), parameters.end() }, parts_conjunction));
+    return this->translate(*this->m_pddl_repositories.get_or_create_condition(
+        this->m_pddl_repositories.get_or_create_condition_exists(loki::ParameterList { parameters.begin(), parameters.end() }, parts_conjunction)));
 }
 
 loki::Condition MoveExistentialQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
 {
-    return flatten(
-        *std::get<loki::ConditionExists>(this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                                                  this->translate(condition.get_condition()->get_condition()))),
-        this->m_pddl_repositories);
+    return flatten(*this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
+                                                                             this->translate(condition.get_condition()->get_condition())->get_condition()),
+                   this->m_pddl_repositories);
 }
 
 loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)
@@ -72,9 +70,9 @@ loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::Ac
 
     if (condition.has_value())
     {
-        if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition.value()))
+        if (const auto condition_exists = std::get_if<loki::ConditionExists>(&condition.value()->get_condition()))
         {
-            for (const auto& parameter : condition_exists->get_parameters())
+            for (const auto& parameter : (*condition_exists)->get_parameters())
             {
                 if (std::find(std::begin(parameters), std::end(parameters), parameter) == parameters.end())
                 {
@@ -82,7 +80,7 @@ loki::Action MoveExistentialQuantifiersTranslator::translate_impl(const loki::Ac
                 }
             }
 
-            condition = condition_exists->get_condition();
+            condition = (*condition_exists)->get_condition();
         }
     }
 
@@ -100,9 +98,9 @@ loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(const loki::Axi
 
     auto condition = this->translate(*axiom.get_condition());
 
-    if (const auto condition_exists = std::get_if<loki::ConditionExistsImpl>(condition))
+    if (const auto condition_exists = std::get_if<loki::ConditionExists>(&condition->get_condition()))
     {
-        for (const auto& parameter : condition_exists->get_parameters())
+        for (const auto& parameter : (*condition_exists)->get_parameters())
         {
             if (std::find(std::begin(parameters), std::end(parameters), parameter) == parameters.end())
             {
@@ -110,7 +108,7 @@ loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(const loki::Axi
             }
         }
 
-        condition = condition_exists->get_condition();
+        condition = (*condition_exists)->get_condition();
     }
 
     return this->m_pddl_repositories.get_or_create_axiom(axiom.get_derived_predicate_name(), parameters, condition, axiom.get_num_parameters_to_ground_head());

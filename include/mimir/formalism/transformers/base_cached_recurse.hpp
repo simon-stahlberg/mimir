@@ -486,11 +486,11 @@ protected:
 
                 if constexpr (std::is_same_v<ArgType, Variable>)
                 {
-                    return this->m_pddl_repositories.get_or_create_term_variable(this->transform(*arg));
+                    return this->m_pddl_repositories.get_or_create_term(this->transform(*arg));
                 }
                 else if constexpr (std::is_same_v<ArgType, Object>)
                 {
-                    return this->m_pddl_repositories.get_or_create_term_object(this->transform(*arg));
+                    return this->m_pddl_repositories.get_or_create_term(this->transform(*arg));
                 }
                 else
                 {

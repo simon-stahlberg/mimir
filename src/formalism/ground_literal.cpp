@@ -85,7 +85,7 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
                 to_variable.emplace(object, variable);
             }
             const auto variable = to_variable.at(object);
-            const auto term = pddl_repositories.get_or_create_term_variable(variable);
+            const auto term = pddl_repositories.get_or_create_term(variable);
             terms.emplace_back(term);
         }
         literals.emplace_back(ground_literal->lift(terms, pddl_repositories));

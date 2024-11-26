@@ -166,10 +166,8 @@ public:
     Variable get_or_create_variable(std::string name, size_t parameter_index);
 
     /// @brief Get or create a variable term for the given parameters.
-    Term get_or_create_term_variable(Variable variable);
-
-    /// @brief Get or create a object term for the given parameters.
-    Term get_or_create_term_object(Object object);
+    Term get_or_create_term(Variable variable);
+    Term get_or_create_term(Object object);
 
     /// @brief Get or create an object for the given parameters.
     Object get_or_create_object(std::string name);
@@ -190,39 +188,54 @@ public:
     Predicate<P> get_or_create_predicate(std::string name, VariableList parameters);
 
     /// @brief Get or create a number function expression for the given parameters.
-    FunctionExpression get_or_create_function_expression_number(double number);
+    FunctionExpressionNumber get_or_create_function_expression_number(double number);
 
     /// @brief Get or create a binary operator function expression for the given parameters.
-    FunctionExpression get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
-                                                                         FunctionExpression left_function_expression,
-                                                                         FunctionExpression right_function_expression);
+    FunctionExpressionBinaryOperator get_or_create_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                       FunctionExpression left_function_expression,
+                                                                                       FunctionExpression right_function_expression);
 
     /// @brief Get or create a multi operator function expression for the given parameters.
-    FunctionExpression get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions_);
+    FunctionExpressionMultiOperator get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                     FunctionExpressionList function_expressions_);
 
     /// @brief Get or create a minus function expression for the given parameters.
-    FunctionExpression get_or_create_function_expression_minus(FunctionExpression function_expression);
+    FunctionExpressionMinus get_or_create_function_expression_minus(FunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    FunctionExpression get_or_create_function_expression_function(Function function);
+    FunctionExpressionFunction get_or_create_function_expression_function(Function function);
+
+    /// @brief Get or create a function expression for the given parameters.
+    FunctionExpression get_or_create_function_expression(FunctionExpressionNumber fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionMultiOperator fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionMinus fexpr);
+    FunctionExpression get_or_create_function_expression(FunctionExpressionFunction fexpr);
 
     /// @brief Get or create a number function expression for the given parameters.
-    GroundFunctionExpression get_or_create_ground_function_expression_number(double number);
+    GroundFunctionExpressionNumber get_or_create_ground_function_expression_number(double number);
 
     /// @brief Get or create a binary operator function expression for the given parameters.
-    GroundFunctionExpression get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
-                                                                                      GroundFunctionExpression left_function_expression,
-                                                                                      GroundFunctionExpression right_function_expression);
+    GroundFunctionExpressionBinaryOperator get_or_create_ground_function_expression_binary_operator(loki::BinaryOperatorEnum binary_operator,
+                                                                                                    GroundFunctionExpression left_function_expression,
+                                                                                                    GroundFunctionExpression right_function_expression);
 
     /// @brief Get or create a multi operator function expression for the given parameters.
-    GroundFunctionExpression get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
-                                                                                     GroundFunctionExpressionList function_expressions_);
+    GroundFunctionExpressionMultiOperator get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
+                                                                                                  GroundFunctionExpressionList function_expressions_);
 
     /// @brief Get or create a minus function expression for the given parameters.
-    GroundFunctionExpression get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
+    GroundFunctionExpressionMinus get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    GroundFunctionExpression get_or_create_ground_function_expression_function(GroundFunction function);
+    GroundFunctionExpressionFunction get_or_create_ground_function_expression_function(GroundFunction function);
+
+    /// @brief Get or create a function expression for the given parameters.
+    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionNumber fexpr);
+    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr);
+    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr);
+    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr);
+    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction fexpr);
 
     /// @brief Get or create a function for the given parameters.
     Function get_or_create_function(FunctionSkeleton function_skeleton, TermList terms);

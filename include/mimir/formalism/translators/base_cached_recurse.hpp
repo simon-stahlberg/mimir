@@ -42,27 +42,47 @@ private:
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
-    using PDDLElementToTranslatedPDDLElement =
-        boost::hana::map<boost::hana::pair<boost::hana::type<loki::Requirements>, std::unordered_map<loki::Requirements, loki::Requirements>>,  //
-                         boost::hana::pair<boost::hana::type<loki::Type>, std::unordered_map<loki::Type, loki::Type>>,
-                         boost::hana::pair<boost::hana::type<loki::Object>, std::unordered_map<loki::Object, loki::Object>>,
-                         boost::hana::pair<boost::hana::type<loki::Variable>, std::unordered_map<loki::Variable, loki::Variable>>,
-                         boost::hana::pair<boost::hana::type<loki::Term>, std::unordered_map<loki::Term, loki::Term>>,
-                         boost::hana::pair<boost::hana::type<loki::Parameter>, std::unordered_map<loki::Parameter, loki::Parameter>>,
-                         boost::hana::pair<boost::hana::type<loki::Predicate>, std::unordered_map<loki::Predicate, loki::Predicate>>,
-                         boost::hana::pair<boost::hana::type<loki::Atom>, std::unordered_map<loki::Atom, loki::Atom>>,
-                         boost::hana::pair<boost::hana::type<loki::Literal>, std::unordered_map<loki::Literal, loki::Literal>>,
-                         boost::hana::pair<boost::hana::type<loki::NumericFluent>, std::unordered_map<loki::NumericFluent, loki::NumericFluent>>,
-                         boost::hana::pair<boost::hana::type<loki::Condition>, std::unordered_map<loki::Condition, loki::Condition>>,
-                         boost::hana::pair<boost::hana::type<loki::Effect>, std::unordered_map<loki::Effect, loki::Effect>>,
-                         boost::hana::pair<boost::hana::type<loki::FunctionExpression>, std::unordered_map<loki::FunctionExpression, loki::FunctionExpression>>,
-                         boost::hana::pair<boost::hana::type<loki::FunctionSkeleton>, std::unordered_map<loki::FunctionSkeleton, loki::FunctionSkeleton>>,
-                         boost::hana::pair<boost::hana::type<loki::Function>, std::unordered_map<loki::Function, loki::Function>>,
-                         boost::hana::pair<boost::hana::type<loki::Action>, std::unordered_map<loki::Action, loki::Action>>,
-                         boost::hana::pair<boost::hana::type<loki::Axiom>, std::unordered_map<loki::Axiom, loki::Axiom>>,
-                         boost::hana::pair<boost::hana::type<loki::Domain>, std::unordered_map<loki::Domain, loki::Domain>>,
-                         boost::hana::pair<boost::hana::type<loki::OptimizationMetric>, std::unordered_map<loki::OptimizationMetric, loki::OptimizationMetric>>,
-                         boost::hana::pair<boost::hana::type<loki::Problem>, std::unordered_map<loki::Problem, loki::Problem>>>;
+    using PDDLElementToTranslatedPDDLElement = boost::hana::map<
+        boost::hana::pair<boost::hana::type<loki::Requirements>, std::unordered_map<loki::Requirements, loki::Requirements>>,  //
+        boost::hana::pair<boost::hana::type<loki::Type>, std::unordered_map<loki::Type, loki::Type>>,
+        boost::hana::pair<boost::hana::type<loki::Object>, std::unordered_map<loki::Object, loki::Object>>,
+        boost::hana::pair<boost::hana::type<loki::Variable>, std::unordered_map<loki::Variable, loki::Variable>>,
+        boost::hana::pair<boost::hana::type<loki::Term>, std::unordered_map<loki::Term, loki::Term>>,
+        boost::hana::pair<boost::hana::type<loki::Parameter>, std::unordered_map<loki::Parameter, loki::Parameter>>,
+        boost::hana::pair<boost::hana::type<loki::Predicate>, std::unordered_map<loki::Predicate, loki::Predicate>>,
+        boost::hana::pair<boost::hana::type<loki::Atom>, std::unordered_map<loki::Atom, loki::Atom>>,
+        boost::hana::pair<boost::hana::type<loki::Literal>, std::unordered_map<loki::Literal, loki::Literal>>,
+        boost::hana::pair<boost::hana::type<loki::NumericFluent>, std::unordered_map<loki::NumericFluent, loki::NumericFluent>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionLiteral>, std::unordered_map<loki::ConditionLiteral, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionAnd>, std::unordered_map<loki::ConditionAnd, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionOr>, std::unordered_map<loki::ConditionOr, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionNot>, std::unordered_map<loki::ConditionNot, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionImply>, std::unordered_map<loki::ConditionImply, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionExists>, std::unordered_map<loki::ConditionExists, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionForall>, std::unordered_map<loki::ConditionForall, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::Condition>, std::unordered_map<loki::Condition, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::EffectLiteral>, std::unordered_map<loki::EffectLiteral, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::EffectAnd>, std::unordered_map<loki::EffectAnd, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::EffectNumeric>, std::unordered_map<loki::EffectNumeric, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::EffectCompositeForall>, std::unordered_map<loki::EffectCompositeForall, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::EffectCompositeWhen>, std::unordered_map<loki::EffectCompositeWhen, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::EffectCompositeOneof>, std::unordered_map<loki::EffectCompositeOneof, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::Effect>, std::unordered_map<loki::Effect, loki::Effect>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionExpressionNumber>, std::unordered_map<loki::FunctionExpressionNumber, loki::FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionExpressionBinaryOperator>,
+                          std::unordered_map<loki::FunctionExpressionBinaryOperator, loki::FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionExpressionMultiOperator>,
+                          std::unordered_map<loki::FunctionExpressionMultiOperator, loki::FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionExpressionMinus>, std::unordered_map<loki::FunctionExpressionMinus, loki::FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionExpressionFunction>, std::unordered_map<loki::FunctionExpressionFunction, loki::FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionExpression>, std::unordered_map<loki::FunctionExpression, loki::FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionSkeleton>, std::unordered_map<loki::FunctionSkeleton, loki::FunctionSkeleton>>,
+        boost::hana::pair<boost::hana::type<loki::Function>, std::unordered_map<loki::Function, loki::Function>>,
+        boost::hana::pair<boost::hana::type<loki::Action>, std::unordered_map<loki::Action, loki::Action>>,
+        boost::hana::pair<boost::hana::type<loki::Axiom>, std::unordered_map<loki::Axiom, loki::Axiom>>,
+        boost::hana::pair<boost::hana::type<loki::Domain>, std::unordered_map<loki::Domain, loki::Domain>>,
+        boost::hana::pair<boost::hana::type<loki::OptimizationMetric>, std::unordered_map<loki::OptimizationMetric, loki::OptimizationMetric>>,
+        boost::hana::pair<boost::hana::type<loki::Problem>, std::unordered_map<loki::Problem, loki::Problem>>>;
 
     PDDLElementToTranslatedPDDLElement m_translated_elements;
 
@@ -241,26 +261,6 @@ protected:
 
         return translated;
     }
-    /// @brief Cache the variant translation, but not its nested element.
-    /// @tparam ...Ts
-    /// @param element
-    /// @return
-    template<typename... Ts>
-    auto translate_base(const std::variant<Ts...>& element)
-    {
-        return cached_translate_impl(element,
-                                     boost::hana::at_key(m_translated_elements, boost::hana::type<const std::variant<Ts...>*> {}),
-                                     [this](auto&& arg) { return std::visit([this](auto&& arg2) { return this->translate_base_variant_helper(arg2); }, arg); });
-    }
-    /// @brief Helper to not cache the nested element in the variant.
-    /// @tparam T
-    /// @param element
-    /// @return
-    template<typename T>
-    auto translate_base_variant_helper(const T& element)
-    {
-        return this->self().translate_impl(element);
-    }
     /// @brief Cache the translation.
     /// @tparam T
     /// @param element
@@ -296,11 +296,11 @@ protected:
 
                 if constexpr (std::is_same_v<ArgType, loki::Variable>)
                 {
-                    return this->m_pddl_repositories.get_or_create_term_variable(this->translate(*arg));
+                    return this->m_pddl_repositories.get_or_create_term(this->translate(*arg));
                 }
                 else if constexpr (std::is_same_v<ArgType, loki::Object>)
                 {
-                    return this->m_pddl_repositories.get_or_create_term_object(this->translate(*arg));
+                    return this->m_pddl_repositories.get_or_create_term(this->translate(*arg));
                 }
                 else
                 {
@@ -331,34 +331,39 @@ protected:
     }
     loki::Condition translate_impl(const loki::ConditionLiteralImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_literal(this->translate(*condition.get_literal()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_literal(this->translate(*condition.get_literal())));
     }
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_and(this->translate(condition.get_conditions()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_and(this->translate(condition.get_conditions())));
     }
     loki::Condition translate_impl(const loki::ConditionOrImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_or(this->translate(condition.get_conditions()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_or(this->translate(condition.get_conditions())));
     }
     loki::Condition translate_impl(const loki::ConditionNotImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_not(this->translate(*condition.get_condition()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_not(this->translate(*condition.get_condition())));
     }
     loki::Condition translate_impl(const loki::ConditionImplyImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_imply(this->translate(*condition.get_condition_left()),
-                                                                       this->translate(*condition.get_condition_right()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_imply(this->translate(*condition.get_condition_left()),
+                                                                    this->translate(*condition.get_condition_right())));
     }
     loki::Condition translate_impl(const loki::ConditionExistsImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()),
-                                                                        this->translate(*condition.get_condition()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())));
     }
     loki::Condition translate_impl(const loki::ConditionForallImpl& condition)
     {
-        return this->m_pddl_repositories.get_or_create_condition_forall(this->translate(condition.get_parameters()),
-                                                                        this->translate(*condition.get_condition()));
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_forall(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())));
     }
     loki::Condition translate_impl(const loki::ConditionImpl& condition)
     {
@@ -366,29 +371,33 @@ protected:
     }
     loki::Effect translate_impl(const loki::EffectLiteralImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_effect_literal(this->translate(*effect.get_literal()));
+        return this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_literal(this->translate(*effect.get_literal())));
     }
     loki::Effect translate_impl(const loki::EffectAndImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_effect_and(this->translate(effect.get_effects()));
+        return this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_and(this->translate(effect.get_effects())));
     }
     loki::Effect translate_impl(const loki::EffectNumericImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_effect_numeric(effect.get_assign_operator(),
-                                                                      this->translate(*effect.get_function()),
-                                                                      this->translate(*effect.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_effect(
+            this->m_pddl_repositories.get_or_create_effect_numeric(effect.get_assign_operator(),
+                                                                   this->translate(*effect.get_function()),
+                                                                   this->translate(*effect.get_function_expression())));
     }
     loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_effect_composite_forall(this->translate(effect.get_parameters()), this->translate(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_effect(
+            this->m_pddl_repositories.get_or_create_effect_composite_forall(this->translate(effect.get_parameters()), this->translate(*effect.get_effect())));
     }
     loki::Effect translate_impl(const loki::EffectCompositeWhenImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_effect(
+            this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect())));
     }
     loki::Effect translate_impl(const loki::EffectCompositeOneofImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_effect_composite_oneof(this->translate(effect.get_effects()));
+        return this->m_pddl_repositories.get_or_create_effect(
+            this->m_pddl_repositories.get_or_create_effect_composite_oneof(this->translate(effect.get_effects())));
     }
     loki::Effect translate_impl(const loki::EffectImpl& effect)
     {
@@ -396,27 +405,31 @@ protected:
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number());
+        return this->m_pddl_repositories.get_or_create_function_expression(
+            this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number()));
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression_binary_operator(
-            function_expression.get_binary_operator(),
-            this->translate(*function_expression.get_left_function_expression()),
-            this->translate(*function_expression.get_right_function_expression()));
+        return this->m_pddl_repositories.get_or_create_function_expression(
+            this->m_pddl_repositories.get_or_create_function_expression_binary_operator(function_expression.get_binary_operator(),
+                                                                                        this->translate(*function_expression.get_left_function_expression()),
+                                                                                        this->translate(*function_expression.get_right_function_expression())));
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                          this->translate(function_expression.get_function_expressions()));
+        return this->m_pddl_repositories.get_or_create_function_expression(
+            this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                       this->translate(function_expression.get_function_expressions())));
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression_minus(this->translate(*function_expression.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_function_expression(
+            this->m_pddl_repositories.get_or_create_function_expression_minus(this->translate(*function_expression.get_function_expression())));
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression_function(this->translate(*function_expression.get_function()));
+        return this->m_pddl_repositories.get_or_create_function_expression(
+            this->m_pddl_repositories.get_or_create_function_expression_function(this->translate(*function_expression.get_function())));
     }
     loki::FunctionExpression translate_impl(const loki::FunctionExpressionImpl& function_expression)
     {

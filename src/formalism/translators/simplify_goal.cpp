@@ -32,15 +32,15 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
                                                Index& next_axiom_index,
                                                std::unordered_set<std::string>& simple_and_derived_predicates)
 {
-    if (std::get_if<loki::ConditionLiteralImpl>(&goal_condition))
+    if (std::get_if<loki::ConditionLiteral>(&goal_condition.get_condition()))
     {
         return &goal_condition;
     }
-    else if (const auto condition_and = std::get_if<loki::ConditionAndImpl>(&goal_condition))
+    else if (const auto condition_and = std::get_if<loki::ConditionAnd>(&goal_condition.get_condition()))
     {
         auto parts = loki::ConditionList {};
-        parts.reserve(condition_and->get_conditions().size());
-        for (const auto& part : condition_and->get_conditions())
+        parts.reserve((*condition_and)->get_conditions().size());
+        for (const auto& part : (*condition_and)->get_conditions())
         {
             parts.push_back(simplify_goal_condition(*part, pddl_repositories, derived_predicates, axioms, next_axiom_index, simple_and_derived_predicates));
         }

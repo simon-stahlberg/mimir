@@ -32,9 +32,9 @@ static loki::ActionList split_actions_at_disjunction(const loki::ActionList& act
     for (const auto& action : actions)
     {
         auto condition = action->get_condition();
-        if (condition.has_value() && std::holds_alternative<loki::ConditionOrImpl>(*condition.value()))
+        if (condition.has_value() && std::holds_alternative<loki::ConditionOr>(condition.value()->get_condition()))
         {
-            for (const auto& part : std::get<loki::ConditionOrImpl>(*condition.value()).get_conditions())
+            for (const auto& part : std::get<loki::ConditionOr>(condition.value()->get_condition())->get_conditions())
             {
                 split_actions.push_back(pddl_repositories.get_or_create_action(action->get_name(),
                                                                                action->get_original_arity(),
@@ -58,9 +58,9 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
     for (const auto& axiom : axioms)
     {
         auto condition = axiom->get_condition();
-        if (condition && std::holds_alternative<loki::ConditionOrImpl>(*condition))
+        if (condition && std::holds_alternative<loki::ConditionOr>(condition->get_condition()))
         {
-            for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
+            for (const auto& part : std::get<loki::ConditionOr>(condition->get_condition())->get_conditions())
             {
                 split_axioms.push_back(pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
                                                                              axiom->get_parameters(),
@@ -79,10 +79,10 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
 loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::EffectCompositeWhenImpl& effect)
 {
     const auto& condition = effect.get_condition();
-    if (condition && std::holds_alternative<loki::ConditionOrImpl>(*condition))
+    if (condition && std::holds_alternative<loki::ConditionOr>(condition->get_condition()))
     {
         auto split_effects = loki::EffectList {};
-        for (const auto& part : std::get<loki::ConditionOrImpl>(*condition).get_conditions())
+        for (const auto& part : std::get<loki::ConditionOr>(condition->get_condition())->get_conditions())
         {
             split_effects.push_back(
                 this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect())));
