@@ -69,149 +69,149 @@ struct UniqueDLEqualTo<std::variant<Ts...>>
 /* Concepts */
 
 template<>
-struct UniqueDLEqualTo<const ConceptBotImpl*>
+struct UniqueDLEqualTo<ConceptBot>
 {
-    bool operator()(const ConceptBotImpl* l, const ConceptBotImpl* r) const;
+    bool operator()(ConceptBot l, ConceptBot r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptTopImpl*>
+struct UniqueDLEqualTo<ConceptTop>
 {
-    bool operator()(const ConceptTopImpl* l, const ConceptTopImpl* r) const;
+    bool operator()(ConceptTop l, ConceptTop r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>
+struct UniqueDLEqualTo<ConceptAtomicState<P>>
 {
-    bool operator()(const ConceptAtomicStateImpl<P>* l, const ConceptAtomicStateImpl<P>* r) const;
+    bool operator()(ConceptAtomicState<P> l, ConceptAtomicState<P> r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>
+struct UniqueDLEqualTo<ConceptAtomicGoal<P>>
 {
-    bool operator()(const ConceptAtomicGoalImpl<P>* l, const ConceptAtomicGoalImpl<P>* r) const;
+    bool operator()(ConceptAtomicGoal<P> l, ConceptAtomicGoal<P> r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptIntersectionImpl*>
+struct UniqueDLEqualTo<ConceptIntersection>
 {
-    bool operator()(const ConceptIntersectionImpl* l, const ConceptIntersectionImpl* r) const;
+    bool operator()(ConceptIntersection l, ConceptIntersection r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptUnionImpl*>
+struct UniqueDLEqualTo<ConceptUnion>
 {
-    bool operator()(const ConceptUnionImpl* l, const ConceptUnionImpl* r) const;
+    bool operator()(ConceptUnion l, ConceptUnion r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptNegationImpl*>
+struct UniqueDLEqualTo<ConceptNegation>
 {
-    bool operator()(const ConceptNegationImpl* l, const ConceptNegationImpl* r) const;
+    bool operator()(ConceptNegation l, ConceptNegation r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptValueRestrictionImpl*>
+struct UniqueDLEqualTo<ConceptValueRestriction>
 {
-    bool operator()(const ConceptValueRestrictionImpl* l, const ConceptValueRestrictionImpl* r) const;
+    bool operator()(ConceptValueRestriction l, ConceptValueRestriction r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>
+struct UniqueDLEqualTo<ConceptExistentialQuantification>
 {
-    bool operator()(const ConceptExistentialQuantificationImpl* l, const ConceptExistentialQuantificationImpl* r) const;
+    bool operator()(ConceptExistentialQuantification l, ConceptExistentialQuantification r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>
+struct UniqueDLEqualTo<ConceptRoleValueMapContainment>
 {
-    bool operator()(const ConceptRoleValueMapContainmentImpl* l, const ConceptRoleValueMapContainmentImpl* r) const;
+    bool operator()(ConceptRoleValueMapContainment l, ConceptRoleValueMapContainment r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>
+struct UniqueDLEqualTo<ConceptRoleValueMapEquality>
 {
-    bool operator()(const ConceptRoleValueMapEqualityImpl* l, const ConceptRoleValueMapEqualityImpl* r) const;
+    bool operator()(ConceptRoleValueMapEquality l, ConceptRoleValueMapEquality r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const ConceptNominalImpl*>
+struct UniqueDLEqualTo<ConceptNominal>
 {
-    bool operator()(const ConceptNominalImpl* l, const ConceptNominalImpl* r) const;
+    bool operator()(ConceptNominal l, ConceptNominal r) const;
 };
 
 /* Roles */
 
 template<>
-struct UniqueDLEqualTo<const RoleUniversalImpl*>
+struct UniqueDLEqualTo<RoleUniversal>
 {
-    bool operator()(const RoleUniversalImpl* l, const RoleUniversalImpl* r) const;
+    bool operator()(RoleUniversal l, RoleUniversal r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>
+struct UniqueDLEqualTo<RoleAtomicState<P>>
 {
-    bool operator()(const RoleAtomicStateImpl<P>* l, const RoleAtomicStateImpl<P>* r) const;
+    bool operator()(RoleAtomicState<P> l, RoleAtomicState<P> r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>
+struct UniqueDLEqualTo<RoleAtomicGoal<P>>
 {
-    bool operator()(const RoleAtomicGoalImpl<P>* l, const RoleAtomicGoalImpl<P>* r) const;
+    bool operator()(RoleAtomicGoal<P> l, RoleAtomicGoal<P> r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleIntersectionImpl*>
+struct UniqueDLEqualTo<RoleIntersection>
 {
-    bool operator()(const RoleIntersectionImpl* l, const RoleIntersectionImpl* r) const;
+    bool operator()(RoleIntersection l, RoleIntersection r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleUnionImpl*>
+struct UniqueDLEqualTo<RoleUnion>
 {
-    bool operator()(const RoleUnionImpl* l, const RoleUnionImpl* r) const;
+    bool operator()(RoleUnion l, RoleUnion r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleComplementImpl*>
+struct UniqueDLEqualTo<RoleComplement>
 {
-    bool operator()(const RoleComplementImpl* l, const RoleComplementImpl* r) const;
+    bool operator()(RoleComplement l, RoleComplement r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleInverseImpl*>
+struct UniqueDLEqualTo<RoleInverse>
 {
-    bool operator()(const RoleInverseImpl* l, const RoleInverseImpl* r) const;
+    bool operator()(RoleInverse l, RoleInverse r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleCompositionImpl*>
+struct UniqueDLEqualTo<RoleComposition>
 {
-    bool operator()(const RoleCompositionImpl* l, const RoleCompositionImpl* r) const;
+    bool operator()(RoleComposition l, RoleComposition r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleTransitiveClosureImpl*>
+struct UniqueDLEqualTo<RoleTransitiveClosure>
 {
-    bool operator()(const RoleTransitiveClosureImpl* l, const RoleTransitiveClosureImpl* r) const;
+    bool operator()(RoleTransitiveClosure l, RoleTransitiveClosure r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>
+struct UniqueDLEqualTo<RoleReflexiveTransitiveClosure>
 {
-    bool operator()(const RoleReflexiveTransitiveClosureImpl* l, const RoleReflexiveTransitiveClosureImpl* r) const;
+    bool operator()(RoleReflexiveTransitiveClosure l, RoleReflexiveTransitiveClosure r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleRestrictionImpl*>
+struct UniqueDLEqualTo<RoleRestriction>
 {
-    bool operator()(const RoleRestrictionImpl* l, const RoleRestrictionImpl* r) const;
+    bool operator()(RoleRestriction l, RoleRestriction r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const RoleIdentityImpl*>
+struct UniqueDLEqualTo<RoleIdentity>
 {
-    bool operator()(const RoleIdentityImpl* l, const RoleIdentityImpl* r) const;
+    bool operator()(RoleIdentity l, RoleIdentity r) const;
 };
 
 /**
@@ -219,169 +219,169 @@ struct UniqueDLEqualTo<const RoleIdentityImpl*>
  */
 
 template<ConstructorTag D>
-struct UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>
+struct UniqueDLEqualTo<grammar::DerivationRule<D>>
 {
-    bool operator()(const grammar::DerivationRuleImpl<D>* l, const grammar::DerivationRuleImpl<D>* r) const;
+    bool operator()(grammar::DerivationRule<D> l, grammar::DerivationRule<D> r) const;
 };
 
 template<ConstructorTag D>
-struct UniqueDLEqualTo<const grammar::NonTerminalImpl<D>*>
+struct UniqueDLEqualTo<grammar::NonTerminal<D>>
 {
-    bool operator()(const grammar::NonTerminalImpl<D>* l, const grammar::NonTerminalImpl<D>* r) const;
+    bool operator()(grammar::NonTerminal<D> l, grammar::NonTerminal<D> r) const;
 };
 
 template<ConstructorTag D>
-struct UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<D>*>
+struct UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<D>>
 {
-    bool operator()(const grammar::ConstructorOrNonTerminalImpl<D>* l, const grammar::ConstructorOrNonTerminalImpl<D>* r) const;
+    bool operator()(grammar::ConstructorOrNonTerminal<D> l, grammar::ConstructorOrNonTerminal<D> r) const;
 };
 
 /* Concepts */
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptBotImpl*>
+struct UniqueDLEqualTo<grammar::ConceptBot>
 {
-    bool operator()(const grammar::ConceptBotImpl* l, const grammar::ConceptBotImpl* r) const;
+    bool operator()(grammar::ConceptBot l, grammar::ConceptBot r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptTopImpl*>
+struct UniqueDLEqualTo<grammar::ConceptTop>
 {
-    bool operator()(const grammar::ConceptTopImpl* l, const grammar::ConceptTopImpl* r) const;
+    bool operator()(grammar::ConceptTop l, grammar::ConceptTop r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<P>*>
+struct UniqueDLEqualTo<grammar::ConceptAtomicState<P>>
 {
-    bool operator()(const grammar::ConceptAtomicStateImpl<P>* l, const grammar::ConceptAtomicStateImpl<P>* r) const;
+    bool operator()(grammar::ConceptAtomicState<P> l, grammar::ConceptAtomicState<P> r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<P>*>
+struct UniqueDLEqualTo<grammar::ConceptAtomicGoal<P>>
 {
-    bool operator()(const grammar::ConceptAtomicGoalImpl<P>* l, const grammar::ConceptAtomicGoalImpl<P>* r) const;
+    bool operator()(grammar::ConceptAtomicGoal<P> l, grammar::ConceptAtomicGoal<P> r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptIntersectionImpl*>
+struct UniqueDLEqualTo<grammar::ConceptIntersection>
 {
-    bool operator()(const grammar::ConceptIntersectionImpl* l, const grammar::ConceptIntersectionImpl* r) const;
+    bool operator()(grammar::ConceptIntersection l, grammar::ConceptIntersection r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptUnionImpl*>
+struct UniqueDLEqualTo<grammar::ConceptUnion>
 {
-    bool operator()(const grammar::ConceptUnionImpl* l, const grammar::ConceptUnionImpl* r) const;
+    bool operator()(grammar::ConceptUnion l, grammar::ConceptUnion r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptNegationImpl*>
+struct UniqueDLEqualTo<grammar::ConceptNegation>
 {
-    bool operator()(const grammar::ConceptNegationImpl* l, const grammar::ConceptNegationImpl* r) const;
+    bool operator()(grammar::ConceptNegation l, grammar::ConceptNegation r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptValueRestrictionImpl*>
+struct UniqueDLEqualTo<grammar::ConceptValueRestriction>
 {
-    bool operator()(const grammar::ConceptValueRestrictionImpl* l, const grammar::ConceptValueRestrictionImpl* r) const;
+    bool operator()(grammar::ConceptValueRestriction l, grammar::ConceptValueRestriction r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptExistentialQuantificationImpl*>
+struct UniqueDLEqualTo<grammar::ConceptExistentialQuantification>
 {
-    bool operator()(const grammar::ConceptExistentialQuantificationImpl* l, const grammar::ConceptExistentialQuantificationImpl* r) const;
+    bool operator()(grammar::ConceptExistentialQuantification l, grammar::ConceptExistentialQuantification r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptRoleValueMapContainmentImpl*>
+struct UniqueDLEqualTo<grammar::ConceptRoleValueMapContainment>
 {
-    bool operator()(const grammar::ConceptRoleValueMapContainmentImpl* l, const grammar::ConceptRoleValueMapContainmentImpl* r) const;
+    bool operator()(grammar::ConceptRoleValueMapContainment l, grammar::ConceptRoleValueMapContainment r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptRoleValueMapEqualityImpl*>
+struct UniqueDLEqualTo<grammar::ConceptRoleValueMapEquality>
 {
-    bool operator()(const grammar::ConceptRoleValueMapEqualityImpl* l, const grammar::ConceptRoleValueMapEqualityImpl* r) const;
+    bool operator()(grammar::ConceptRoleValueMapEquality l, grammar::ConceptRoleValueMapEquality r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::ConceptNominalImpl*>
+struct UniqueDLEqualTo<grammar::ConceptNominal>
 {
-    bool operator()(const grammar::ConceptNominalImpl* l, const grammar::ConceptNominalImpl* r) const;
+    bool operator()(grammar::ConceptNominal l, grammar::ConceptNominal r) const;
 };
 
 /* Roles */
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleUniversalImpl*>
+struct UniqueDLEqualTo<grammar::RoleUniversal>
 {
-    bool operator()(const grammar::RoleUniversalImpl* l, const grammar::RoleUniversalImpl* r) const;
+    bool operator()(grammar::RoleUniversal l, grammar::RoleUniversal r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<P>*>
+struct UniqueDLEqualTo<grammar::RoleAtomicState<P>>
 {
-    bool operator()(const grammar::RoleAtomicStateImpl<P>* l, const grammar::RoleAtomicStateImpl<P>* r) const;
+    bool operator()(grammar::RoleAtomicState<P> l, grammar::RoleAtomicState<P> r) const;
 };
 
 template<PredicateTag P>
-struct UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<P>*>
+struct UniqueDLEqualTo<grammar::RoleAtomicGoal<P>>
 {
-    bool operator()(const grammar::RoleAtomicGoalImpl<P>* l, const grammar::RoleAtomicGoalImpl<P>* r) const;
+    bool operator()(grammar::RoleAtomicGoal<P> l, grammar::RoleAtomicGoal<P> r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleIntersectionImpl*>
+struct UniqueDLEqualTo<grammar::RoleIntersection>
 {
-    bool operator()(const grammar::RoleIntersectionImpl* l, const grammar::RoleIntersectionImpl* r) const;
+    bool operator()(grammar::RoleIntersection l, grammar::RoleIntersection r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleUnionImpl*>
+struct UniqueDLEqualTo<grammar::RoleUnion>
 {
-    bool operator()(const grammar::RoleUnionImpl* l, const grammar::RoleUnionImpl* r) const;
+    bool operator()(grammar::RoleUnion l, grammar::RoleUnion r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleComplementImpl*>
+struct UniqueDLEqualTo<grammar::RoleComplement>
 {
-    bool operator()(const grammar::RoleComplementImpl* l, const grammar::RoleComplementImpl* r) const;
+    bool operator()(grammar::RoleComplement l, grammar::RoleComplement r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleInverseImpl*>
+struct UniqueDLEqualTo<grammar::RoleInverse>
 {
-    bool operator()(const grammar::RoleInverseImpl* l, const grammar::RoleInverseImpl* r) const;
+    bool operator()(grammar::RoleInverse l, grammar::RoleInverse r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleCompositionImpl*>
+struct UniqueDLEqualTo<grammar::RoleComposition>
 {
-    bool operator()(const grammar::RoleCompositionImpl* l, const grammar::RoleCompositionImpl* r) const;
+    bool operator()(grammar::RoleComposition l, grammar::RoleComposition r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleTransitiveClosureImpl*>
+struct UniqueDLEqualTo<grammar::RoleTransitiveClosure>
 {
-    bool operator()(const grammar::RoleTransitiveClosureImpl* l, const grammar::RoleTransitiveClosureImpl* r) const;
+    bool operator()(grammar::RoleTransitiveClosure l, grammar::RoleTransitiveClosure r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleReflexiveTransitiveClosureImpl*>
+struct UniqueDLEqualTo<grammar::RoleReflexiveTransitiveClosure>
 {
-    bool operator()(const grammar::RoleReflexiveTransitiveClosureImpl* l, const grammar::RoleReflexiveTransitiveClosureImpl* r) const;
+    bool operator()(grammar::RoleReflexiveTransitiveClosure l, grammar::RoleReflexiveTransitiveClosure r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleRestrictionImpl*>
+struct UniqueDLEqualTo<grammar::RoleRestriction>
 {
-    bool operator()(const grammar::RoleRestrictionImpl* l, const grammar::RoleRestrictionImpl* r) const;
+    bool operator()(grammar::RoleRestriction l, grammar::RoleRestriction r) const;
 };
 
 template<>
-struct UniqueDLEqualTo<const grammar::RoleIdentityImpl*>
+struct UniqueDLEqualTo<grammar::RoleIdentity>
 {
-    bool operator()(const grammar::RoleIdentityImpl* l, const grammar::RoleIdentityImpl* r) const;
+    bool operator()(grammar::RoleIdentity l, grammar::RoleIdentity r) const;
 };
 
 }

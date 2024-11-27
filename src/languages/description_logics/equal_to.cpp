@@ -29,7 +29,7 @@ namespace mimir::dl
 
 /* Concepts */
 
-bool UniqueDLEqualTo<const ConceptBotImpl*>::operator()(const ConceptBotImpl* l, const ConceptBotImpl* r) const
+bool UniqueDLEqualTo<ConceptBot>::operator()(ConceptBot l, ConceptBot r) const
 {
     if (&l != &r)
     {
@@ -38,7 +38,7 @@ bool UniqueDLEqualTo<const ConceptBotImpl*>::operator()(const ConceptBotImpl* l,
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptTopImpl*>::operator()(const ConceptTopImpl* l, const ConceptTopImpl* r) const
+bool UniqueDLEqualTo<ConceptTop>::operator()(ConceptTop l, ConceptTop r) const
 {
     if (&l != &r)
     {
@@ -48,7 +48,7 @@ bool UniqueDLEqualTo<const ConceptTopImpl*>::operator()(const ConceptTopImpl* l,
 }
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>::operator()(const ConceptAtomicStateImpl<P>* l, const ConceptAtomicStateImpl<P>* r) const
+bool UniqueDLEqualTo<ConceptAtomicState<P>>::operator()(ConceptAtomicState<P> l, ConceptAtomicState<P> r) const
 {
     if (&l != &r)
     {
@@ -57,15 +57,12 @@ bool UniqueDLEqualTo<const ConceptAtomicStateImpl<P>*>::operator()(const Concept
     return true;
 }
 
-template bool UniqueDLEqualTo<const ConceptAtomicStateImpl<Static>*>::operator()(const ConceptAtomicStateImpl<Static>* l,
-                                                                                 const ConceptAtomicStateImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const ConceptAtomicStateImpl<Fluent>*>::operator()(const ConceptAtomicStateImpl<Fluent>* l,
-                                                                                 const ConceptAtomicStateImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const ConceptAtomicStateImpl<Derived>*>::operator()(const ConceptAtomicStateImpl<Derived>* l,
-                                                                                  const ConceptAtomicStateImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<ConceptAtomicState<Static>>::operator()(ConceptAtomicState<Static> l, ConceptAtomicState<Static> r) const;
+template bool UniqueDLEqualTo<ConceptAtomicState<Fluent>>::operator()(ConceptAtomicState<Fluent> l, ConceptAtomicState<Fluent> r) const;
+template bool UniqueDLEqualTo<ConceptAtomicState<Derived>>::operator()(ConceptAtomicState<Derived> l, ConceptAtomicState<Derived> r) const;
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>::operator()(const ConceptAtomicGoalImpl<P>* l, const ConceptAtomicGoalImpl<P>* r) const
+bool UniqueDLEqualTo<ConceptAtomicGoal<P>>::operator()(ConceptAtomicGoal<P> l, ConceptAtomicGoal<P> r) const
 {
     if (&l != &r)
     {
@@ -74,14 +71,11 @@ bool UniqueDLEqualTo<const ConceptAtomicGoalImpl<P>*>::operator()(const ConceptA
     return true;
 }
 
-template bool UniqueDLEqualTo<const ConceptAtomicGoalImpl<Static>*>::operator()(const ConceptAtomicGoalImpl<Static>* l,
-                                                                                const ConceptAtomicGoalImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const ConceptAtomicGoalImpl<Fluent>*>::operator()(const ConceptAtomicGoalImpl<Fluent>* l,
-                                                                                const ConceptAtomicGoalImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const ConceptAtomicGoalImpl<Derived>*>::operator()(const ConceptAtomicGoalImpl<Derived>* l,
-                                                                                 const ConceptAtomicGoalImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<ConceptAtomicGoal<Static>>::operator()(ConceptAtomicGoal<Static> l, ConceptAtomicGoal<Static> r) const;
+template bool UniqueDLEqualTo<ConceptAtomicGoal<Fluent>>::operator()(ConceptAtomicGoal<Fluent> l, ConceptAtomicGoal<Fluent> r) const;
+template bool UniqueDLEqualTo<ConceptAtomicGoal<Derived>>::operator()(ConceptAtomicGoal<Derived> l, ConceptAtomicGoal<Derived> r) const;
 
-bool UniqueDLEqualTo<const ConceptIntersectionImpl*>::operator()(const ConceptIntersectionImpl* l, const ConceptIntersectionImpl* r) const
+bool UniqueDLEqualTo<ConceptIntersection>::operator()(ConceptIntersection l, ConceptIntersection r) const
 {
     if (&l != &r)
     {
@@ -90,7 +84,7 @@ bool UniqueDLEqualTo<const ConceptIntersectionImpl*>::operator()(const ConceptIn
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptUnionImpl*>::operator()(const ConceptUnionImpl* l, const ConceptUnionImpl* r) const
+bool UniqueDLEqualTo<ConceptUnion>::operator()(ConceptUnion l, ConceptUnion r) const
 {
     if (&l != &r)
     {
@@ -99,7 +93,7 @@ bool UniqueDLEqualTo<const ConceptUnionImpl*>::operator()(const ConceptUnionImpl
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptNegationImpl*>::operator()(const ConceptNegationImpl* l, const ConceptNegationImpl* r) const
+bool UniqueDLEqualTo<ConceptNegation>::operator()(ConceptNegation l, ConceptNegation r) const
 {
     if (&l != &r)
     {
@@ -108,7 +102,7 @@ bool UniqueDLEqualTo<const ConceptNegationImpl*>::operator()(const ConceptNegati
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptValueRestrictionImpl*>::operator()(const ConceptValueRestrictionImpl* l, const ConceptValueRestrictionImpl* r) const
+bool UniqueDLEqualTo<ConceptValueRestriction>::operator()(ConceptValueRestriction l, ConceptValueRestriction r) const
 {
     if (&l != &r)
     {
@@ -117,8 +111,7 @@ bool UniqueDLEqualTo<const ConceptValueRestrictionImpl*>::operator()(const Conce
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>::operator()(const ConceptExistentialQuantificationImpl* l,
-                                                                              const ConceptExistentialQuantificationImpl* r) const
+bool UniqueDLEqualTo<ConceptExistentialQuantification>::operator()(ConceptExistentialQuantification l, ConceptExistentialQuantification r) const
 {
     if (&l != &r)
     {
@@ -127,8 +120,7 @@ bool UniqueDLEqualTo<const ConceptExistentialQuantificationImpl*>::operator()(co
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>::operator()(const ConceptRoleValueMapContainmentImpl* l,
-                                                                            const ConceptRoleValueMapContainmentImpl* r) const
+bool UniqueDLEqualTo<ConceptRoleValueMapContainment>::operator()(ConceptRoleValueMapContainment l, ConceptRoleValueMapContainment r) const
 {
     if (&l != &r)
     {
@@ -137,8 +129,7 @@ bool UniqueDLEqualTo<const ConceptRoleValueMapContainmentImpl*>::operator()(cons
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>::operator()(const ConceptRoleValueMapEqualityImpl* l,
-                                                                         const ConceptRoleValueMapEqualityImpl* r) const
+bool UniqueDLEqualTo<ConceptRoleValueMapEquality>::operator()(ConceptRoleValueMapEquality l, ConceptRoleValueMapEquality r) const
 {
     if (&l != &r)
     {
@@ -147,7 +138,7 @@ bool UniqueDLEqualTo<const ConceptRoleValueMapEqualityImpl*>::operator()(const C
     return true;
 }
 
-bool UniqueDLEqualTo<const ConceptNominalImpl*>::operator()(const ConceptNominalImpl* l, const ConceptNominalImpl* r) const
+bool UniqueDLEqualTo<ConceptNominal>::operator()(ConceptNominal l, ConceptNominal r) const
 {
     if (&l != &r)
     {
@@ -158,7 +149,7 @@ bool UniqueDLEqualTo<const ConceptNominalImpl*>::operator()(const ConceptNominal
 
 /* Roles */
 
-bool UniqueDLEqualTo<const RoleUniversalImpl*>::operator()(const RoleUniversalImpl* l, const RoleUniversalImpl* r) const
+bool UniqueDLEqualTo<RoleUniversal>::operator()(RoleUniversal l, RoleUniversal r) const
 {
     if (&l != &r)
     {
@@ -168,7 +159,7 @@ bool UniqueDLEqualTo<const RoleUniversalImpl*>::operator()(const RoleUniversalIm
 }
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>::operator()(const RoleAtomicStateImpl<P>* l, const RoleAtomicStateImpl<P>* r) const
+bool UniqueDLEqualTo<RoleAtomicState<P>>::operator()(RoleAtomicState<P> l, RoleAtomicState<P> r) const
 {
     if (&l != &r)
     {
@@ -177,13 +168,12 @@ bool UniqueDLEqualTo<const RoleAtomicStateImpl<P>*>::operator()(const RoleAtomic
     return true;
 }
 
-template bool UniqueDLEqualTo<const RoleAtomicStateImpl<Static>*>::operator()(const RoleAtomicStateImpl<Static>* l, const RoleAtomicStateImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const RoleAtomicStateImpl<Fluent>*>::operator()(const RoleAtomicStateImpl<Fluent>* l, const RoleAtomicStateImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const RoleAtomicStateImpl<Derived>*>::operator()(const RoleAtomicStateImpl<Derived>* l,
-                                                                               const RoleAtomicStateImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<RoleAtomicState<Static>>::operator()(RoleAtomicState<Static> l, RoleAtomicState<Static> r) const;
+template bool UniqueDLEqualTo<RoleAtomicState<Fluent>>::operator()(RoleAtomicState<Fluent> l, RoleAtomicState<Fluent> r) const;
+template bool UniqueDLEqualTo<RoleAtomicState<Derived>>::operator()(RoleAtomicState<Derived> l, RoleAtomicState<Derived> r) const;
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>::operator()(const RoleAtomicGoalImpl<P>* l, const RoleAtomicGoalImpl<P>* r) const
+bool UniqueDLEqualTo<RoleAtomicGoal<P>>::operator()(RoleAtomicGoal<P> l, RoleAtomicGoal<P> r) const
 {
     if (&l != &r)
     {
@@ -192,11 +182,11 @@ bool UniqueDLEqualTo<const RoleAtomicGoalImpl<P>*>::operator()(const RoleAtomicG
     return true;
 }
 
-template bool UniqueDLEqualTo<const RoleAtomicGoalImpl<Static>*>::operator()(const RoleAtomicGoalImpl<Static>* l, const RoleAtomicGoalImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const RoleAtomicGoalImpl<Fluent>*>::operator()(const RoleAtomicGoalImpl<Fluent>* l, const RoleAtomicGoalImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const RoleAtomicGoalImpl<Derived>*>::operator()(const RoleAtomicGoalImpl<Derived>* l, const RoleAtomicGoalImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<RoleAtomicGoal<Static>>::operator()(RoleAtomicGoal<Static> l, RoleAtomicGoal<Static> r) const;
+template bool UniqueDLEqualTo<RoleAtomicGoal<Fluent>>::operator()(RoleAtomicGoal<Fluent> l, RoleAtomicGoal<Fluent> r) const;
+template bool UniqueDLEqualTo<RoleAtomicGoal<Derived>>::operator()(RoleAtomicGoal<Derived> l, RoleAtomicGoal<Derived> r) const;
 
-bool UniqueDLEqualTo<const RoleIntersectionImpl*>::operator()(const RoleIntersectionImpl* l, const RoleIntersectionImpl* r) const
+bool UniqueDLEqualTo<RoleIntersection>::operator()(RoleIntersection l, RoleIntersection r) const
 {
     if (&l != &r)
     {
@@ -205,7 +195,7 @@ bool UniqueDLEqualTo<const RoleIntersectionImpl*>::operator()(const RoleIntersec
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleUnionImpl*>::operator()(const RoleUnionImpl* l, const RoleUnionImpl* r) const
+bool UniqueDLEqualTo<RoleUnion>::operator()(RoleUnion l, RoleUnion r) const
 {
     if (&l != &r)
     {
@@ -214,7 +204,7 @@ bool UniqueDLEqualTo<const RoleUnionImpl*>::operator()(const RoleUnionImpl* l, c
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleComplementImpl*>::operator()(const RoleComplementImpl* l, const RoleComplementImpl* r) const
+bool UniqueDLEqualTo<RoleComplement>::operator()(RoleComplement l, RoleComplement r) const
 {
     if (&l != &r)
     {
@@ -223,7 +213,7 @@ bool UniqueDLEqualTo<const RoleComplementImpl*>::operator()(const RoleComplement
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleInverseImpl*>::operator()(const RoleInverseImpl* l, const RoleInverseImpl* r) const
+bool UniqueDLEqualTo<RoleInverse>::operator()(RoleInverse l, RoleInverse r) const
 {
     if (&l != &r)
     {
@@ -232,7 +222,7 @@ bool UniqueDLEqualTo<const RoleInverseImpl*>::operator()(const RoleInverseImpl* 
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleCompositionImpl*>::operator()(const RoleCompositionImpl* l, const RoleCompositionImpl* r) const
+bool UniqueDLEqualTo<RoleComposition>::operator()(RoleComposition l, RoleComposition r) const
 {
     if (&l != &r)
     {
@@ -241,7 +231,7 @@ bool UniqueDLEqualTo<const RoleCompositionImpl*>::operator()(const RoleCompositi
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleTransitiveClosureImpl*>::operator()(const RoleTransitiveClosureImpl* l, const RoleTransitiveClosureImpl* r) const
+bool UniqueDLEqualTo<RoleTransitiveClosure>::operator()(RoleTransitiveClosure l, RoleTransitiveClosure r) const
 {
     if (&l != &r)
     {
@@ -250,8 +240,7 @@ bool UniqueDLEqualTo<const RoleTransitiveClosureImpl*>::operator()(const RoleTra
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>::operator()(const RoleReflexiveTransitiveClosureImpl* l,
-                                                                            const RoleReflexiveTransitiveClosureImpl* r) const
+bool UniqueDLEqualTo<RoleReflexiveTransitiveClosure>::operator()(RoleReflexiveTransitiveClosure l, RoleReflexiveTransitiveClosure r) const
 {
     if (&l != &r)
     {
@@ -260,7 +249,7 @@ bool UniqueDLEqualTo<const RoleReflexiveTransitiveClosureImpl*>::operator()(cons
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleRestrictionImpl*>::operator()(const RoleRestrictionImpl* l, const RoleRestrictionImpl* r) const
+bool UniqueDLEqualTo<RoleRestriction>::operator()(RoleRestriction l, RoleRestriction r) const
 {
     if (&l != &r)
     {
@@ -269,7 +258,7 @@ bool UniqueDLEqualTo<const RoleRestrictionImpl*>::operator()(const RoleRestricti
     return true;
 }
 
-bool UniqueDLEqualTo<const RoleIdentityImpl*>::operator()(const RoleIdentityImpl* l, const RoleIdentityImpl* r) const
+bool UniqueDLEqualTo<RoleIdentity>::operator()(RoleIdentity l, RoleIdentity r) const
 {
     if (&l != &r)
     {
@@ -283,7 +272,7 @@ bool UniqueDLEqualTo<const RoleIdentityImpl*>::operator()(const RoleIdentityImpl
  */
 
 template<ConstructorTag D>
-bool UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>::operator()(const grammar::DerivationRuleImpl<D>* l, const grammar::DerivationRuleImpl<D>* r) const
+bool UniqueDLEqualTo<grammar::DerivationRule<D>>::operator()(grammar::DerivationRule<D> l, grammar::DerivationRule<D> r) const
 {
     if (&l != &r)
     {
@@ -292,13 +281,11 @@ bool UniqueDLEqualTo<const grammar::DerivationRuleImpl<D>*>::operator()(const gr
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::DerivationRuleImpl<Concept>*>::operator()(const grammar::DerivationRuleImpl<Concept>* l,
-                                                                                       const grammar::DerivationRuleImpl<Concept>* r) const;
-template bool UniqueDLEqualTo<const grammar::DerivationRuleImpl<Role>*>::operator()(const grammar::DerivationRuleImpl<Role>* l,
-                                                                                    const grammar::DerivationRuleImpl<Role>* r) const;
+template bool UniqueDLEqualTo<grammar::DerivationRule<Concept>>::operator()(grammar::DerivationRule<Concept> l, grammar::DerivationRule<Concept> r) const;
+template bool UniqueDLEqualTo<grammar::DerivationRule<Role>>::operator()(grammar::DerivationRule<Role> l, grammar::DerivationRule<Role> r) const;
 
 template<ConstructorTag D>
-bool UniqueDLEqualTo<const grammar::NonTerminalImpl<D>*>::operator()(const grammar::NonTerminalImpl<D>* l, const grammar::NonTerminalImpl<D>* r) const
+bool UniqueDLEqualTo<grammar::NonTerminal<D>>::operator()(grammar::NonTerminal<D> l, grammar::NonTerminal<D> r) const
 {
     if (&l != &r)
     {
@@ -307,14 +294,11 @@ bool UniqueDLEqualTo<const grammar::NonTerminalImpl<D>*>::operator()(const gramm
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::NonTerminalImpl<Concept>*>::operator()(const grammar::NonTerminalImpl<Concept>* l,
-                                                                                    const grammar::NonTerminalImpl<Concept>* r) const;
-template bool UniqueDLEqualTo<const grammar::NonTerminalImpl<Role>*>::operator()(const grammar::NonTerminalImpl<Role>* l,
-                                                                                 const grammar::NonTerminalImpl<Role>* r) const;
+template bool UniqueDLEqualTo<grammar::NonTerminal<Concept>>::operator()(grammar::NonTerminal<Concept> l, grammar::NonTerminal<Concept> r) const;
+template bool UniqueDLEqualTo<grammar::NonTerminal<Role>>::operator()(grammar::NonTerminal<Role> l, grammar::NonTerminal<Role> r) const;
 
 template<ConstructorTag D>
-bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<D>*>::operator()(const grammar::ConstructorOrNonTerminalImpl<D>* l,
-                                                                                  const grammar::ConstructorOrNonTerminalImpl<D>* r) const
+bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<D>>::operator()(grammar::ConstructorOrNonTerminal<D> l, grammar::ConstructorOrNonTerminal<D> r) const
 {
     if (&l != &r)
     {
@@ -323,14 +307,14 @@ bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<D>*>::operator(
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<Concept>*>::operator()(const grammar::ConstructorOrNonTerminalImpl<Concept>* l,
-                                                                                                 const grammar::ConstructorOrNonTerminalImpl<Concept>* r) const;
-template bool UniqueDLEqualTo<const grammar::ConstructorOrNonTerminalImpl<Role>*>::operator()(const grammar::ConstructorOrNonTerminalImpl<Role>* l,
-                                                                                              const grammar::ConstructorOrNonTerminalImpl<Role>* r) const;
+template bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<Concept>>::operator()(grammar::ConstructorOrNonTerminal<Concept> l,
+                                                                                      grammar::ConstructorOrNonTerminal<Concept> r) const;
+template bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<Role>>::operator()(grammar::ConstructorOrNonTerminal<Role> l,
+                                                                                   grammar::ConstructorOrNonTerminal<Role> r) const;
 
 /* Concepts */
 
-bool UniqueDLEqualTo<const grammar::ConceptBotImpl*>::operator()(const grammar::ConceptBotImpl* l, const grammar::ConceptBotImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptBot>::operator()(grammar::ConceptBot l, grammar::ConceptBot r) const
 {
     if (&l != &r)
     {
@@ -339,7 +323,7 @@ bool UniqueDLEqualTo<const grammar::ConceptBotImpl*>::operator()(const grammar::
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptTopImpl*>::operator()(const grammar::ConceptTopImpl* l, const grammar::ConceptTopImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptTop>::operator()(grammar::ConceptTop l, grammar::ConceptTop r) const
 {
     if (&l != &r)
     {
@@ -349,8 +333,7 @@ bool UniqueDLEqualTo<const grammar::ConceptTopImpl*>::operator()(const grammar::
 }
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<P>*>::operator()(const grammar::ConceptAtomicStateImpl<P>* l,
-                                                                            const grammar::ConceptAtomicStateImpl<P>* r) const
+bool UniqueDLEqualTo<grammar::ConceptAtomicState<P>>::operator()(grammar::ConceptAtomicState<P> l, grammar::ConceptAtomicState<P> r) const
 {
     if (&l != &r)
     {
@@ -359,16 +342,15 @@ bool UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<P>*>::operator()(cons
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<Static>*>::operator()(const grammar::ConceptAtomicStateImpl<Static>* l,
-                                                                                          const grammar::ConceptAtomicStateImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<Fluent>*>::operator()(const grammar::ConceptAtomicStateImpl<Fluent>* l,
-                                                                                          const grammar::ConceptAtomicStateImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const grammar::ConceptAtomicStateImpl<Derived>*>::operator()(const grammar::ConceptAtomicStateImpl<Derived>* l,
-                                                                                           const grammar::ConceptAtomicStateImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<grammar::ConceptAtomicState<Static>>::operator()(grammar::ConceptAtomicState<Static> l,
+                                                                               grammar::ConceptAtomicState<Static> r) const;
+template bool UniqueDLEqualTo<grammar::ConceptAtomicState<Fluent>>::operator()(grammar::ConceptAtomicState<Fluent> l,
+                                                                               grammar::ConceptAtomicState<Fluent> r) const;
+template bool UniqueDLEqualTo<grammar::ConceptAtomicState<Derived>>::operator()(grammar::ConceptAtomicState<Derived> l,
+                                                                                grammar::ConceptAtomicState<Derived> r) const;
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<P>*>::operator()(const grammar::ConceptAtomicGoalImpl<P>* l,
-                                                                           const grammar::ConceptAtomicGoalImpl<P>* r) const
+bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<P>>::operator()(grammar::ConceptAtomicGoal<P> l, grammar::ConceptAtomicGoal<P> r) const
 {
     if (&l != &r)
     {
@@ -377,15 +359,12 @@ bool UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<P>*>::operator()(const
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<Static>*>::operator()(const grammar::ConceptAtomicGoalImpl<Static>* l,
-                                                                                         const grammar::ConceptAtomicGoalImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<Fluent>*>::operator()(const grammar::ConceptAtomicGoalImpl<Fluent>* l,
-                                                                                         const grammar::ConceptAtomicGoalImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const grammar::ConceptAtomicGoalImpl<Derived>*>::operator()(const grammar::ConceptAtomicGoalImpl<Derived>* l,
-                                                                                          const grammar::ConceptAtomicGoalImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<Static>>::operator()(grammar::ConceptAtomicGoal<Static> l, grammar::ConceptAtomicGoal<Static> r) const;
+template bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<Fluent>>::operator()(grammar::ConceptAtomicGoal<Fluent> l, grammar::ConceptAtomicGoal<Fluent> r) const;
+template bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<Derived>>::operator()(grammar::ConceptAtomicGoal<Derived> l,
+                                                                               grammar::ConceptAtomicGoal<Derived> r) const;
 
-bool UniqueDLEqualTo<const grammar::ConceptIntersectionImpl*>::operator()(const grammar::ConceptIntersectionImpl* l,
-                                                                          const grammar::ConceptIntersectionImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptIntersection>::operator()(grammar::ConceptIntersection l, grammar::ConceptIntersection r) const
 {
     if (&l != &r)
     {
@@ -395,7 +374,7 @@ bool UniqueDLEqualTo<const grammar::ConceptIntersectionImpl*>::operator()(const 
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptUnionImpl*>::operator()(const grammar::ConceptUnionImpl* l, const grammar::ConceptUnionImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptUnion>::operator()(grammar::ConceptUnion l, grammar::ConceptUnion r) const
 {
     if (&l != &r)
     {
@@ -405,7 +384,7 @@ bool UniqueDLEqualTo<const grammar::ConceptUnionImpl*>::operator()(const grammar
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptNegationImpl*>::operator()(const grammar::ConceptNegationImpl* l, const grammar::ConceptNegationImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptNegation>::operator()(grammar::ConceptNegation l, grammar::ConceptNegation r) const
 {
     if (&l != &r)
     {
@@ -414,8 +393,7 @@ bool UniqueDLEqualTo<const grammar::ConceptNegationImpl*>::operator()(const gram
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptValueRestrictionImpl*>::operator()(const grammar::ConceptValueRestrictionImpl* l,
-                                                                              const grammar::ConceptValueRestrictionImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptValueRestriction>::operator()(grammar::ConceptValueRestriction l, grammar::ConceptValueRestriction r) const
 {
     if (&l != &r)
     {
@@ -424,8 +402,8 @@ bool UniqueDLEqualTo<const grammar::ConceptValueRestrictionImpl*>::operator()(co
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptExistentialQuantificationImpl*>::operator()(const grammar::ConceptExistentialQuantificationImpl* l,
-                                                                                       const grammar::ConceptExistentialQuantificationImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptExistentialQuantification>::operator()(grammar::ConceptExistentialQuantification l,
+                                                                            grammar::ConceptExistentialQuantification r) const
 {
     if (&l != &r)
     {
@@ -434,8 +412,8 @@ bool UniqueDLEqualTo<const grammar::ConceptExistentialQuantificationImpl*>::oper
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapContainmentImpl*>::operator()(const grammar::ConceptRoleValueMapContainmentImpl* l,
-                                                                                     const grammar::ConceptRoleValueMapContainmentImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptRoleValueMapContainment>::operator()(grammar::ConceptRoleValueMapContainment l,
+                                                                          grammar::ConceptRoleValueMapContainment r) const
 {
     if (&l != &r)
     {
@@ -445,8 +423,7 @@ bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapContainmentImpl*>::operat
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapEqualityImpl*>::operator()(const grammar::ConceptRoleValueMapEqualityImpl* l,
-                                                                                  const grammar::ConceptRoleValueMapEqualityImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptRoleValueMapEquality>::operator()(grammar::ConceptRoleValueMapEquality l, grammar::ConceptRoleValueMapEquality r) const
 {
     if (&l != &r)
     {
@@ -456,7 +433,7 @@ bool UniqueDLEqualTo<const grammar::ConceptRoleValueMapEqualityImpl*>::operator(
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::ConceptNominalImpl*>::operator()(const grammar::ConceptNominalImpl* l, const grammar::ConceptNominalImpl* r) const
+bool UniqueDLEqualTo<grammar::ConceptNominal>::operator()(grammar::ConceptNominal l, grammar::ConceptNominal r) const
 {
     if (&l != &r)
     {
@@ -467,7 +444,7 @@ bool UniqueDLEqualTo<const grammar::ConceptNominalImpl*>::operator()(const gramm
 
 /* Roles */
 
-bool UniqueDLEqualTo<const grammar::RoleUniversalImpl*>::operator()(const grammar::RoleUniversalImpl* l, const grammar::RoleUniversalImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleUniversal>::operator()(grammar::RoleUniversal l, grammar::RoleUniversal r) const
 {
     if (&l != &r)
     {
@@ -477,8 +454,7 @@ bool UniqueDLEqualTo<const grammar::RoleUniversalImpl*>::operator()(const gramma
 }
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<P>*>::operator()(const grammar::RoleAtomicStateImpl<P>* l,
-                                                                         const grammar::RoleAtomicStateImpl<P>* r) const
+bool UniqueDLEqualTo<grammar::RoleAtomicState<P>>::operator()(grammar::RoleAtomicState<P> l, grammar::RoleAtomicState<P> r) const
 {
     if (&l != &r)
     {
@@ -487,15 +463,12 @@ bool UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<P>*>::operator()(const g
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<Static>*>::operator()(const grammar::RoleAtomicStateImpl<Static>* l,
-                                                                                       const grammar::RoleAtomicStateImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<Fluent>*>::operator()(const grammar::RoleAtomicStateImpl<Fluent>* l,
-                                                                                       const grammar::RoleAtomicStateImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const grammar::RoleAtomicStateImpl<Derived>*>::operator()(const grammar::RoleAtomicStateImpl<Derived>* l,
-                                                                                        const grammar::RoleAtomicStateImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<grammar::RoleAtomicState<Static>>::operator()(grammar::RoleAtomicState<Static> l, grammar::RoleAtomicState<Static> r) const;
+template bool UniqueDLEqualTo<grammar::RoleAtomicState<Fluent>>::operator()(grammar::RoleAtomicState<Fluent> l, grammar::RoleAtomicState<Fluent> r) const;
+template bool UniqueDLEqualTo<grammar::RoleAtomicState<Derived>>::operator()(grammar::RoleAtomicState<Derived> l, grammar::RoleAtomicState<Derived> r) const;
 
 template<PredicateTag P>
-bool UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<P>*>::operator()(const grammar::RoleAtomicGoalImpl<P>* l, const grammar::RoleAtomicGoalImpl<P>* r) const
+bool UniqueDLEqualTo<grammar::RoleAtomicGoal<P>>::operator()(grammar::RoleAtomicGoal<P> l, grammar::RoleAtomicGoal<P> r) const
 {
     if (&l != &r)
     {
@@ -504,14 +477,11 @@ bool UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<P>*>::operator()(const gr
     return true;
 }
 
-template bool UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<Static>*>::operator()(const grammar::RoleAtomicGoalImpl<Static>* l,
-                                                                                      const grammar::RoleAtomicGoalImpl<Static>* r) const;
-template bool UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<Fluent>*>::operator()(const grammar::RoleAtomicGoalImpl<Fluent>* l,
-                                                                                      const grammar::RoleAtomicGoalImpl<Fluent>* r) const;
-template bool UniqueDLEqualTo<const grammar::RoleAtomicGoalImpl<Derived>*>::operator()(const grammar::RoleAtomicGoalImpl<Derived>* l,
-                                                                                       const grammar::RoleAtomicGoalImpl<Derived>* r) const;
+template bool UniqueDLEqualTo<grammar::RoleAtomicGoal<Static>>::operator()(grammar::RoleAtomicGoal<Static> l, grammar::RoleAtomicGoal<Static> r) const;
+template bool UniqueDLEqualTo<grammar::RoleAtomicGoal<Fluent>>::operator()(grammar::RoleAtomicGoal<Fluent> l, grammar::RoleAtomicGoal<Fluent> r) const;
+template bool UniqueDLEqualTo<grammar::RoleAtomicGoal<Derived>>::operator()(grammar::RoleAtomicGoal<Derived> l, grammar::RoleAtomicGoal<Derived> r) const;
 
-bool UniqueDLEqualTo<const grammar::RoleIntersectionImpl*>::operator()(const grammar::RoleIntersectionImpl* l, const grammar::RoleIntersectionImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleIntersection>::operator()(grammar::RoleIntersection l, grammar::RoleIntersection r) const
 {
     if (&l != &r)
     {
@@ -521,7 +491,7 @@ bool UniqueDLEqualTo<const grammar::RoleIntersectionImpl*>::operator()(const gra
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleUnionImpl*>::operator()(const grammar::RoleUnionImpl* l, const grammar::RoleUnionImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleUnion>::operator()(grammar::RoleUnion l, grammar::RoleUnion r) const
 {
     if (&l != &r)
     {
@@ -531,7 +501,7 @@ bool UniqueDLEqualTo<const grammar::RoleUnionImpl*>::operator()(const grammar::R
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleComplementImpl*>::operator()(const grammar::RoleComplementImpl* l, const grammar::RoleComplementImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleComplement>::operator()(grammar::RoleComplement l, grammar::RoleComplement r) const
 {
     if (&l != &r)
     {
@@ -540,7 +510,7 @@ bool UniqueDLEqualTo<const grammar::RoleComplementImpl*>::operator()(const gramm
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleInverseImpl*>::operator()(const grammar::RoleInverseImpl* l, const grammar::RoleInverseImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleInverse>::operator()(grammar::RoleInverse l, grammar::RoleInverse r) const
 {
     if (&l != &r)
     {
@@ -549,7 +519,7 @@ bool UniqueDLEqualTo<const grammar::RoleInverseImpl*>::operator()(const grammar:
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleCompositionImpl*>::operator()(const grammar::RoleCompositionImpl* l, const grammar::RoleCompositionImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleComposition>::operator()(grammar::RoleComposition l, grammar::RoleComposition r) const
 {
     if (&l != &r)
     {
@@ -559,8 +529,7 @@ bool UniqueDLEqualTo<const grammar::RoleCompositionImpl*>::operator()(const gram
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleTransitiveClosureImpl*>::operator()(const grammar::RoleTransitiveClosureImpl* l,
-                                                                            const grammar::RoleTransitiveClosureImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleTransitiveClosure>::operator()(grammar::RoleTransitiveClosure l, grammar::RoleTransitiveClosure r) const
 {
     if (&l != &r)
     {
@@ -569,8 +538,8 @@ bool UniqueDLEqualTo<const grammar::RoleTransitiveClosureImpl*>::operator()(cons
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleReflexiveTransitiveClosureImpl*>::operator()(const grammar::RoleReflexiveTransitiveClosureImpl* l,
-                                                                                     const grammar::RoleReflexiveTransitiveClosureImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleReflexiveTransitiveClosure>::operator()(grammar::RoleReflexiveTransitiveClosure l,
+                                                                          grammar::RoleReflexiveTransitiveClosure r) const
 {
     if (&l != &r)
     {
@@ -579,7 +548,7 @@ bool UniqueDLEqualTo<const grammar::RoleReflexiveTransitiveClosureImpl*>::operat
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleRestrictionImpl*>::operator()(const grammar::RoleRestrictionImpl* l, const grammar::RoleRestrictionImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleRestriction>::operator()(grammar::RoleRestriction l, grammar::RoleRestriction r) const
 {
     if (&l != &r)
     {
@@ -588,7 +557,7 @@ bool UniqueDLEqualTo<const grammar::RoleRestrictionImpl*>::operator()(const gram
     return true;
 }
 
-bool UniqueDLEqualTo<const grammar::RoleIdentityImpl*>::operator()(const grammar::RoleIdentityImpl* l, const grammar::RoleIdentityImpl* r) const
+bool UniqueDLEqualTo<grammar::RoleIdentity>::operator()(grammar::RoleIdentity l, grammar::RoleIdentity r) const
 {
     if (&l != &r)
     {
