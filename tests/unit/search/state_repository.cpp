@@ -17,6 +17,7 @@
 
 #include "mimir/search/state_repository.hpp"
 
+#include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 
