@@ -208,7 +208,7 @@ public:
                        GroundFunctionExpressionMultiOperator,
                        GroundFunctionExpressionMinus,
                        GroundFunctionExpressionFunction>&
-    get_ground_function_expression() const;
+    get_variant() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);

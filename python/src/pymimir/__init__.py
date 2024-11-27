@@ -44,7 +44,7 @@ from _pymimir import (
     Function,
     FunctionList,
     FunctionExpression,
-    FunctionExpressionVariantList,
+    FunctionExpressionList,
     FunctionExpressionBinaryOperator,
     FunctionExpressionFunction,
     FunctionExpressionMinus,
@@ -55,7 +55,7 @@ from _pymimir import (
     GroundFunction,
     GroundFunctionList,
     GroundFunctionExpression,
-    GroundFunctionExpressionVariantList,
+    GroundFunctionExpressionList,
     GroundFunctionExpressionBinaryOperator,
     GroundFunctionExpressionFunction,
     GroundFunctionExpressionMinus,
@@ -85,9 +85,6 @@ from _pymimir import (
     StaticPredicate,
     StaticPredicateList,
     Term,
-    TermVariantList,
-    TermObject,
-    TermVariable,
     Variable,
     VariableList
 )

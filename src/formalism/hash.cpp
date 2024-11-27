@@ -112,7 +112,7 @@ size_t UniquePDDLHasher<FunctionExpressionMinus>::operator()(FunctionExpressionM
 
 size_t UniquePDDLHasher<FunctionExpressionFunction>::operator()(FunctionExpressionFunction e) const { return UniquePDDLHashCombiner()(e->get_function()); }
 
-size_t UniquePDDLHasher<FunctionExpression>::operator()(FunctionExpression e) const { return UniquePDDLHashCombiner()(e->get_function_expression()); }
+size_t UniquePDDLHasher<FunctionExpression>::operator()(FunctionExpression e) const { return UniquePDDLHashCombiner()(e->get_variant()); }
 
 size_t UniquePDDLHasher<FunctionSkeleton>::operator()(FunctionSkeleton e) const { return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters()); }
 
@@ -153,10 +153,7 @@ size_t UniquePDDLHasher<GroundFunctionExpressionFunction>::operator()(GroundFunc
     return UniquePDDLHashCombiner()(e->get_function());
 }
 
-size_t UniquePDDLHasher<GroundFunctionExpression>::operator()(GroundFunctionExpression e) const
-{
-    return UniquePDDLHashCombiner()(e->get_ground_function_expression());
-}
+size_t UniquePDDLHasher<GroundFunctionExpression>::operator()(GroundFunctionExpression e) const { return UniquePDDLHashCombiner()(e->get_variant()); }
 
 size_t UniquePDDLHasher<GroundFunction>::operator()(GroundFunction e) const { return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_objects()); }
 
@@ -218,7 +215,7 @@ size_t UniquePDDLHasher<Problem>::operator()(Problem e) const
 
 size_t UniquePDDLHasher<Requirements>::operator()(Requirements e) const { return UniquePDDLHashCombiner()(e->get_requirements()); }
 
-size_t UniquePDDLHasher<Term>::operator()(Term e) const { return UniquePDDLHashCombiner()(e->get_object_or_variable()); }
+size_t UniquePDDLHasher<Term>::operator()(Term e) const { return UniquePDDLHashCombiner()(e->get_variant()); }
 
 size_t UniquePDDLHasher<Variable>::operator()(Variable e) const { return UniquePDDLHashCombiner()(e->get_name(), e->get_parameter_index()); }
 

@@ -65,7 +65,7 @@ public:
 
     double operator()(const FunctionExpressionImpl& expr)
     {
-        return std::visit([this](auto&& arg) -> double { return (*this)(*arg); }, expr.get_function_expression());
+        return std::visit([this](auto&& arg) -> double { return (*this)(*arg); }, expr.get_variant());
     }
 
     double operator()(const FunctionExpressionNumberImpl& expr) { return expr.get_number(); }

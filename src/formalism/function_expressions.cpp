@@ -79,8 +79,8 @@ FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(Index i
                           m_function_expressions.end(),
                           [](const auto& l, const auto& r)
                           {
-                              return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_function_expression())
-                                     < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_function_expression());
+                              return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_variant())
+                                     < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_variant());
                           }));
 }
 
@@ -145,7 +145,7 @@ size_t FunctionExpressionImpl::get_index() const { return m_index; }
 
 const std::
     variant<FunctionExpressionNumber, FunctionExpressionBinaryOperator, FunctionExpressionMultiOperator, FunctionExpressionMinus, FunctionExpressionFunction>&
-    FunctionExpressionImpl::get_function_expression() const
+    FunctionExpressionImpl::get_variant() const
 {
     return m_function_expression;
 }
@@ -194,7 +194,7 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& elemen
 
 std::ostream& operator<<(std::ostream& out, FunctionExpression element)
 {
-    std::visit([&](const auto& arg) { out << *arg; }, element->get_function_expression());
+    std::visit([&](const auto& arg) { out << *arg; }, element->get_variant());
     return out;
 }
 

@@ -208,7 +208,7 @@ public:
                        FunctionExpressionMultiOperator,
                        FunctionExpressionMinus,
                        FunctionExpressionFunction>&
-    get_function_expression() const;
+    get_variant() const;
 };
 
 /**

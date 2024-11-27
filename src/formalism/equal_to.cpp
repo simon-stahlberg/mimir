@@ -156,10 +156,7 @@ bool UniquePDDLEqualTo<FunctionExpressionFunction>::operator()(FunctionExpressio
     return true;
 }
 
-bool UniquePDDLEqualTo<FunctionExpression>::operator()(FunctionExpression l, FunctionExpression r) const
-{
-    return l->get_function_expression() == r->get_function_expression();
-}
+bool UniquePDDLEqualTo<FunctionExpression>::operator()(FunctionExpression l, FunctionExpression r) const { return l->get_variant() == r->get_variant(); }
 
 bool UniquePDDLEqualTo<FunctionSkeleton>::operator()(FunctionSkeleton l, FunctionSkeleton r) const
 {
@@ -243,7 +240,7 @@ bool UniquePDDLEqualTo<GroundFunctionExpressionFunction>::operator()(GroundFunct
 
 bool UniquePDDLEqualTo<GroundFunctionExpression>::operator()(GroundFunctionExpression l, GroundFunctionExpression r) const
 {
-    return l->get_ground_function_expression() == r->get_ground_function_expression();
+    return l->get_variant() == r->get_variant();
 }
 
 bool UniquePDDLEqualTo<GroundFunction>::operator()(GroundFunction l, GroundFunction r) const
@@ -348,7 +345,7 @@ bool UniquePDDLEqualTo<Requirements>::operator()(Requirements l, Requirements r)
     return true;
 }
 
-bool UniquePDDLEqualTo<Term>::operator()(Term l, Term r) const { return l->get_object_or_variable() == r->get_object_or_variable(); }
+bool UniquePDDLEqualTo<Term>::operator()(Term l, Term r) const { return l->get_variant() == r->get_variant(); }
 
 bool UniquePDDLEqualTo<Variable>::operator()(Variable l, Variable r) const
 {

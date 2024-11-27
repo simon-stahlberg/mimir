@@ -308,7 +308,7 @@ void PDDLFormatter::write(const FunctionExpressionFunctionImpl& element, std::os
 
 void PDDLFormatter::write(const FunctionExpressionImpl& element, std::ostream& out)
 {
-    std::visit([this, &out](const auto& arg) { this->write(*arg, out); }, element.get_function_expression());
+    std::visit([this, &out](const auto& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
 void PDDLFormatter::write(const FunctionSkeletonImpl& element, std::ostream& out)
@@ -390,7 +390,7 @@ void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl& element, s
 
 void PDDLFormatter::write(const GroundFunctionExpressionImpl& element, std::ostream& out)
 {
-    std::visit([this, &out](auto&& arg) { this->write(*arg, out); }, element.get_ground_function_expression());
+    std::visit([this, &out](auto&& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
 void PDDLFormatter::write(const GroundFunctionImpl& element, std::ostream& out)
@@ -597,7 +597,7 @@ void PDDLFormatter::write(const RequirementsImpl& element, std::ostream& out)
 
 void PDDLFormatter::write(const TermImpl& element, std::ostream& out)
 {
-    std::visit([this, &out](auto&& arg) { this->write(*arg, out); }, element.get_object_or_variable());
+    std::visit([this, &out](auto&& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
 void PDDLFormatter::write(const VariableImpl& element, std::ostream& out) { out << element.get_name(); }

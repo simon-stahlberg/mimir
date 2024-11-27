@@ -49,111 +49,6 @@ public:
 };
 
 /**
- * We cannot expose the variant types directly because they are not default constructible.
- */
-
-struct TermVariant
-{
-    Term term;
-    explicit TermVariant(const Term& t) : term(t) {}
-};
-
-using TermVariantList = std::vector<TermVariant>;
-
-struct FunctionExpressionVariant
-{
-    FunctionExpression function_expression;
-    explicit FunctionExpressionVariant(const FunctionExpression& e) : function_expression(e) {}
-};
-
-using FunctionExpressionVariantList = std::vector<FunctionExpressionVariant>;
-
-struct GroundFunctionExpressionVariant
-{
-    GroundFunctionExpression function_expression;
-    explicit GroundFunctionExpressionVariant(const GroundFunctionExpression& e) : function_expression(e) {}
-};
-
-using GroundFunctionExpressionVariantList = std::vector<GroundFunctionExpressionVariant>;
-
-TermVariantList to_term_variant_list(const TermList& terms)
-{
-    auto result = TermVariantList {};
-    result.reserve(terms.size());
-    for (const auto& term : terms)
-    {
-        result.push_back(TermVariant(term));
-    }
-    return result;
-}
-
-FunctionExpressionVariantList to_function_expression_variant_list(const FunctionExpressionList& function_expressions)
-{
-    auto result = FunctionExpressionVariantList {};
-    result.reserve(function_expressions.size());
-    for (const auto& function_expression : function_expressions)
-    {
-        result.push_back(FunctionExpressionVariant(function_expression));
-    }
-    return result;
-}
-
-GroundFunctionExpressionVariantList to_ground_function_expression_variant_list(const GroundFunctionExpressionList& ground_function_expressions)
-{
-    auto result = GroundFunctionExpressionVariantList {};
-    result.reserve(ground_function_expressions.size());
-    for (const auto& function_expression : ground_function_expressions)
-    {
-        result.push_back(GroundFunctionExpressionVariant(function_expression));
-    }
-    return result;
-}
-
-struct CastVisitor
-{
-    template<typename T>
-    py::object operator()(const T& element) const
-    {
-        return py::cast(element);
-    }
-};
-struct ReprVisitor
-{
-    template<typename T>
-    std::string operator()(const T& element) const
-    {
-        return element.str();
-    }
-};
-
-/*
-template<typename... Ts>
-py::object variant_to_unpacked_py_object(const std::variant<Ts...>& variant)
-{
-    return std::visit([](const auto& value) { return py::cast(value); }, variant);
-}
-
-template<typename... Ts>
-py::list variant_list_to_unpacked_py_list(const std::vector<const std::variant<Ts...>*>& term_variants)
-{
-    py::list result;
-    for (const auto& term_variant : term_variants)
-    {
-        try
-        {
-            result.append(std::visit(ExtractorVisitor {}, term_variant));
-        }
-        catch (const std::runtime_error& e)
-        {
-            // Optionally, handle unsupported types or simply skip them
-            continue;
-        }
-    }
-    return result;
-}
-*/
-
-/**
  * Opaque types
  */
 
@@ -168,13 +63,13 @@ PYBIND11_MAKE_OPAQUE(AxiomList);
 PYBIND11_MAKE_OPAQUE(DomainList);
 PYBIND11_MAKE_OPAQUE(EffectSimpleList);
 PYBIND11_MAKE_OPAQUE(EffectComplexList);
-PYBIND11_MAKE_OPAQUE(FunctionExpressionVariantList);
+PYBIND11_MAKE_OPAQUE(FunctionExpressionList);
 PYBIND11_MAKE_OPAQUE(FunctionSkeletonList);
 PYBIND11_MAKE_OPAQUE(FunctionList);
 PYBIND11_MAKE_OPAQUE(GroundAtomList<Static>);
 PYBIND11_MAKE_OPAQUE(GroundAtomList<Fluent>);
 PYBIND11_MAKE_OPAQUE(GroundAtomList<Derived>);
-PYBIND11_MAKE_OPAQUE(GroundFunctionExpressionVariantList);
+PYBIND11_MAKE_OPAQUE(GroundFunctionExpressionList);
 PYBIND11_MAKE_OPAQUE(GroundLiteralList<Static>);
 PYBIND11_MAKE_OPAQUE(GroundLiteralList<Fluent>);
 PYBIND11_MAKE_OPAQUE(GroundLiteralList<Derived>);
@@ -191,7 +86,7 @@ PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Fluent>);
 PYBIND11_MAKE_OPAQUE(ToPredicateMap<std::string, Derived>);
 PYBIND11_MAKE_OPAQUE(ProblemList);
 PYBIND11_MAKE_OPAQUE(VariableList);
-PYBIND11_MAKE_OPAQUE(TermVariantList);
+PYBIND11_MAKE_OPAQUE(TermList);
 
 /* Search */
 PYBIND11_MAKE_OPAQUE(StateList);
@@ -476,25 +371,13 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<VariableList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<VariableList>(m, "VariableList");
 
-    py::class_<TermObjectImpl>(m, "TermObject")  //
-        .def("__str__", &TermObjectImpl::str)
-        .def("__repr__", &TermObjectImpl::str)
-        .def("get_index", &TermObjectImpl::get_index)
-        .def("get_object", &TermObjectImpl::get_object, py::return_value_policy::reference_internal);
-
-    py::class_<TermVariableImpl>(m, "TermVariable")  //
-        .def("__str__", &TermVariableImpl::str)
-        .def("__repr__", &TermVariableImpl::str)
-        .def("get_index", &TermVariableImpl::get_index)
-        .def("get_variable", &TermVariableImpl::get_variable, py::return_value_policy::reference_internal);
-
-    py::class_<TermVariant>(m, "Term")  //
+    py::class_<TermImpl>(m, "Term")  //
         .def(
             "get",
-            [](const TermVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.term); },
-            py::keep_alive<0, 1>());
-    static_assert(!py::detail::vector_needs_copy<TermVariantList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<TermVariantList>(m, "TermVariantList");
+            [](const TermImpl& term) -> py::object { return std::visit([](auto&& arg) { return py::cast(arg); }, term.get_variant()); },
+            py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<TermList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<TermList>(m, "TermList");
 
     auto bind_predicate = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -524,10 +407,7 @@ void init_pymimir(py::module_& m)
             .def("__repr__", &AtomImpl<Tag>::str)
             .def("get_index", &AtomImpl<Tag>::get_index)
             .def("get_predicate", &AtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
-            .def(
-                "get_terms",
-                [](const AtomImpl<Tag>& atom) { return to_term_variant_list(atom.get_terms()); },
-                py::keep_alive<0, 1>())
+            .def("get_terms", &AtomImpl<Tag>::get_terms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
             .def("get_variables", &AtomImpl<Tag>::get_variables);
 
         static_assert(!py::detail::vector_needs_copy<AtomList<Tag>>::value);
@@ -554,10 +434,7 @@ void init_pymimir(py::module_& m)
         .def("__repr__", &FunctionImpl::str)
         .def("get_index", &FunctionImpl::get_index)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def(
-            "get_terms",
-            [](const FunctionImpl& self) { return to_term_variant_list(self.get_terms()); },
-            py::keep_alive<0, 1>());
+        .def("get_terms", &FunctionImpl::get_terms, py::keep_alive<0, 1>(), py::return_value_policy::copy);
     static_assert(!py::detail::vector_needs_copy<FunctionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionList>(m, "FunctionList");
 
@@ -651,14 +528,13 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<EffectSimpleList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<EffectSimpleList>(m, "EffectSimpleList");
 
-    py::class_<FunctionExpressionVariant>(m, "FunctionExpression")  //
+    py::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
         .def(
             "get",
-            [](const FunctionExpressionVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.function_expression); },
-            py::keep_alive<0, 1>());
-    ;
-    static_assert(!py::detail::vector_needs_copy<FunctionExpressionVariantList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<FunctionExpressionVariantList>(m, "FunctionExpressionVariantList");
+            [](const FunctionExpressionImpl& fexpr) -> py::object { return std::visit([](auto&& arg) { return py::cast(arg); }, fexpr.get_variant()); },
+            py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<FunctionExpressionList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<FunctionExpressionList>(m, "FunctionExpressionList");
 
     py::class_<EffectComplexImpl>(m, "EffectComplex")  //
         .def("__str__", &EffectComplexImpl::str)
@@ -695,36 +571,23 @@ void init_pymimir(py::module_& m)
         .def("__repr__", &FunctionExpressionBinaryOperatorImpl::str)
         .def("get_index", &FunctionExpressionBinaryOperatorImpl::get_index)
         .def("get_binary_operator", &FunctionExpressionBinaryOperatorImpl::get_binary_operator)
-        .def(
-            "get_left_function_expression",
-            [](const FunctionExpressionBinaryOperatorImpl& function_expression)
-            { return FunctionExpressionVariant(function_expression.get_left_function_expression()); },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_right_function_expression",
-            [](const FunctionExpressionBinaryOperatorImpl& function_expression)
-            { return FunctionExpressionVariant(function_expression.get_right_function_expression()); },
-            py::keep_alive<0, 1>());
+        .def("get_left_function_expression", &FunctionExpressionBinaryOperatorImpl::get_left_function_expression, py::return_value_policy::reference_internal)
+        .def("get_right_function_expression",
+             &FunctionExpressionBinaryOperatorImpl::get_right_function_expression,
+             py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionMultiOperatorImpl>(m, "FunctionExpressionMultiOperator")  //
         .def("__str__", &FunctionExpressionMultiOperatorImpl::str)
         .def("__repr__", &FunctionExpressionMultiOperatorImpl::str)
         .def("get_index", &FunctionExpressionMultiOperatorImpl::get_index)
         .def("get_multi_operator", &FunctionExpressionMultiOperatorImpl::get_multi_operator)
-        .def(
-            "get_function_expressions",
-            [](const FunctionExpressionMultiOperatorImpl& function_expression)
-            { return to_function_expression_variant_list(function_expression.get_function_expressions()); },
-            py::keep_alive<0, 1>());
+        .def("get_function_expressions", &FunctionExpressionMultiOperatorImpl::get_function_expressions, py::keep_alive<0, 1>(), py::return_value_policy::copy);
 
     py::class_<FunctionExpressionMinusImpl>(m, "FunctionExpressionMinus")  //
         .def("__str__", &FunctionExpressionMinusImpl::str)
         .def("__repr__", &FunctionExpressionMinusImpl::str)
         .def("get_index", &FunctionExpressionMinusImpl::get_index)
-        .def(
-            "get_function_expression",
-            [](const FunctionExpressionMinusImpl& function_expression) { return FunctionExpressionVariant(function_expression.get_function_expression()); },
-            py::keep_alive<0, 1>());
+        .def("get_function_expression", &FunctionExpressionMinusImpl::get_function_expression, py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionFunctionImpl>(m, "FunctionExpressionFunction")  //
         .def("__str__", &FunctionExpressionFunctionImpl::str)
@@ -732,14 +595,13 @@ void init_pymimir(py::module_& m)
         .def("get_index", &FunctionExpressionFunctionImpl::get_index)
         .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
-    py::class_<GroundFunctionExpressionVariant>(m, "GroundFunctionExpression")  //
+    py::class_<GroundFunctionExpressionImpl>(m, "GroundFunctionExpression")  //
         .def(
             "get",
-            [](const GroundFunctionExpressionVariant& arg) -> py::object { return std::visit(CastVisitor(), *arg.function_expression); },
-            py::keep_alive<0, 1>());
-    ;
-    static_assert(!py::detail::vector_needs_copy<GroundFunctionExpressionVariantList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<GroundFunctionExpressionVariantList>(m, "GroundFunctionExpressionVariantList");
+            [](const GroundFunctionExpressionImpl& fexpr) -> py::object { return std::visit([](auto&& arg) { return py::cast(arg); }, fexpr.get_variant()); },
+            py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<GroundFunctionExpressionList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<GroundFunctionExpressionList>(m, "GroundFunctionExpressionList");
 
     py::class_<GroundFunctionExpressionNumberImpl>(m, "GroundFunctionExpressionNumber")  //
         .def("__str__", &GroundFunctionExpressionNumberImpl::str)
@@ -752,37 +614,28 @@ void init_pymimir(py::module_& m)
         .def("__repr__", &GroundFunctionExpressionBinaryOperatorImpl::str)
         .def("get_index", &GroundFunctionExpressionBinaryOperatorImpl::get_index)
         .def("get_binary_operator", &GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator)
-        .def(
-            "get_left_function_expression",
-            [](const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
-            { return GroundFunctionExpressionVariant(function_expression.get_left_function_expression()); },
-            py::keep_alive<0, 1>())
-        .def(
-            "get_right_function_expression",
-            [](const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
-            { return GroundFunctionExpressionVariant(function_expression.get_right_function_expression()); },
-            py::keep_alive<0, 1>());
+        .def("get_left_function_expression",
+             &GroundFunctionExpressionBinaryOperatorImpl::get_left_function_expression,
+             py::return_value_policy::reference_internal)
+        .def("get_right_function_expression",
+             &GroundFunctionExpressionBinaryOperatorImpl::get_right_function_expression,
+             py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionMultiOperatorImpl>(m, "GroundFunctionExpressionMultiOperator")  //
         .def("__str__", &GroundFunctionExpressionMultiOperatorImpl::str)
         .def("__repr__", &GroundFunctionExpressionMultiOperatorImpl::str)
         .def("get_index", &GroundFunctionExpressionMultiOperatorImpl::get_index)
         .def("get_multi_operator", &GroundFunctionExpressionMultiOperatorImpl::get_multi_operator)
-        .def(
-            "get_function_expressions",
-            [](const GroundFunctionExpressionMultiOperatorImpl& function_expression)
-            { return to_ground_function_expression_variant_list(function_expression.get_function_expressions()); },
-            py::keep_alive<0, 1>());
+        .def("get_function_expressions",
+             &GroundFunctionExpressionMultiOperatorImpl::get_function_expressions,
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy);
 
     py::class_<GroundFunctionExpressionMinusImpl>(m, "GroundFunctionExpressionMinus")  //
         .def("__str__", &GroundFunctionExpressionMinusImpl::str)
         .def("__repr__", &GroundFunctionExpressionMinusImpl::str)
         .def("get_index", &GroundFunctionExpressionMinusImpl::get_index)
-        .def(
-            "get_function_expression",
-            [](const GroundFunctionExpressionMinusImpl& function_expression)
-            { return GroundFunctionExpressionVariant(function_expression.get_function_expression()); },
-            py::keep_alive<0, 1>());
+        .def("get_function_expression", &GroundFunctionExpressionMinusImpl::get_function_expression, py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionFunctionImpl>(m, "GroundFunctionExpressionFunction")  //
         .def("__str__", &GroundFunctionExpressionFunctionImpl::str)
@@ -794,7 +647,7 @@ void init_pymimir(py::module_& m)
         .def("__str__", &OptimizationMetricImpl::str)
         .def("__repr__", &OptimizationMetricImpl::str)
         .def("get_index", &OptimizationMetricImpl::get_index)
-        .def("get_function_expression", [](const OptimizationMetricImpl& metric) { return GroundFunctionExpressionVariant(metric.get_function_expression()); })
+        .def("get_function_expression", &OptimizationMetricImpl::get_function_expression, py::return_value_policy::reference_internal)
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
     py::class_<ActionImpl>(m, "Action")  //

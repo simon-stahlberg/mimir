@@ -169,8 +169,8 @@ FunctionExpressionMultiOperator PDDLRepositories::get_or_create_function_express
               function_expressions.end(),
               [](auto&& l, auto&& r)
               {
-                  return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_function_expression())
-                         < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_function_expression());
+                  return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_variant())
+                         < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_variant());
               });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMultiOperatorImpl> {})
@@ -234,8 +234,8 @@ PDDLRepositories::get_or_create_ground_function_expression_multi_operator(loki::
               function_expressions.end(),
               [](auto&& l, auto&& r)
               {
-                  return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_ground_function_expression())
-                         < std::visit([](const auto& arg) { return arg->get_index(); }, r->get_ground_function_expression());
+                  return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_variant())
+                         < std::visit([](const auto& arg) { return arg->get_index(); }, r->get_variant());
               });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMultiOperatorImpl> {})
@@ -502,7 +502,7 @@ void PDDLRepositories::ground_variables(const TermList& terms, const ObjectList&
                     out_terms.emplace_back(binding[arg->get_parameter_index()]);
                 }
             },
-            term->get_object_or_variable());
+            term->get_variant());
     }
 }
 

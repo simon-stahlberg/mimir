@@ -46,12 +46,12 @@ size_t Assignment::size() const { return (first_object != MAX_VALUE ? 1 : 0) + (
 
 Index VertexAssignmentIterator::get_object_if_overlap(const Term& term)
 {
-    if (const auto object = std::get_if<Object>(&term->get_object_or_variable()))
+    if (const auto object = std::get_if<Object>(&term->get_variant()))
     {
         return (*object)->get_index();
     }
 
-    if (const auto variable = std::get_if<Variable>(&term->get_object_or_variable()))
+    if (const auto variable = std::get_if<Variable>(&term->get_variant()))
     {
         if (m_vertex.get_parameter_index() == (*variable)->get_parameter_index())
         {
@@ -117,12 +117,12 @@ Assignment VertexAssignmentIterator::next()
 
 Index EdgeAssignmentIterator::get_object_if_overlap(const Term& term)
 {
-    if (const auto object = std::get_if<Object>(&term->get_object_or_variable()))
+    if (const auto object = std::get_if<Object>(&term->get_variant()))
     {
         return (*object)->get_index();
     }
 
-    if (const auto variable = std::get_if<Variable>(&term->get_object_or_variable()))
+    if (const auto variable = std::get_if<Variable>(&term->get_variant()))
     {
         const auto parameter_index = (*variable)->get_parameter_index();
 

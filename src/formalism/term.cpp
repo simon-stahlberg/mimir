@@ -29,7 +29,7 @@ TermImpl::TermImpl(size_t index, std::variant<Object, Variable> object_or_variab
 
 size_t TermImpl::get_index() const { return m_index; }
 
-const std::variant<Object, Variable>& TermImpl::get_object_or_variable() const { return m_object_or_variable; }
+const std::variant<Object, Variable>& TermImpl::get_variant() const { return m_object_or_variable; }
 
 std::ostream& operator<<(std::ostream& out, const TermImpl& element)
 {
