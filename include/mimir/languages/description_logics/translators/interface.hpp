@@ -18,6 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_TRANSLATORS_INTERFACE_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_TRANSLATORS_INTERFACE_HPP_
 
+#include "mimir/common/concepts.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 
 #include <algorithm>
@@ -57,7 +58,7 @@ public:
     }
 
     /// @brief Translate a container of elements into a container of elements.
-    template<std::ranges::forward_range Range>
+    template<IsBackInsertibleRange Range>
     auto translate(const Range& input)
     {
         std::remove_cvref_t<Range> output;

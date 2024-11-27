@@ -213,25 +213,8 @@ protected:
     loki::Variable translate_impl(const loki::VariableImpl& variable) { return this->m_pddl_repositories.get_or_create_variable(variable.get_name()); }
     loki::Term translate_impl(const loki::TermImpl& term)
     {
-        return std::visit(
-            [this](auto&& arg) -> loki::Term
-            {
-                using ArgType = std::decay_t<decltype(arg)>;
-
-                if constexpr (std::is_same_v<ArgType, loki::Variable>)
-                {
-                    return this->m_pddl_repositories.get_or_create_term(this->translate(*arg));
-                }
-                else if constexpr (std::is_same_v<ArgType, loki::Object>)
-                {
-                    return this->m_pddl_repositories.get_or_create_term(this->translate(*arg));
-                }
-                else
-                {
-                    static_assert(dependent_false<ArgType>::value, "Missing implementation for ArgType.");
-                }
-            },
-            term.get_object_or_variable());
+        return std::visit([this](auto&& arg) -> loki::Term { return this->m_pddl_repositories.get_or_create_term(this->translate(*arg)); },
+                          term.get_object_or_variable());
     }
     loki::Parameter translate_impl(const loki::ParameterImpl& parameter)
     {
