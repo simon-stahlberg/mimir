@@ -60,7 +60,6 @@ class CMakeBuild(build_ext):
         # 2. Build mimir
 
         cmake_args = [
-            "-G", "Ninja",
             "-DBUILD_PYMIMIR=On",
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
