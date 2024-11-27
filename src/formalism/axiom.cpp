@@ -42,13 +42,6 @@ AxiomImpl::AxiomImpl(Index index,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions))
 {
-    std::cout << m_static_conditions << std::endl;
-    auto ptrs = std::vector<uintptr_t> {};
-    for (const auto& condition : m_static_conditions)
-    {
-        ptrs.push_back(reinterpret_cast<uintptr_t>(condition));
-    }
-    std::cout << ptrs << std::endl;
     assert(!literal->is_negated());
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));

@@ -107,19 +107,6 @@ static loki::ConditionList typed_parameter_to_condition_literals(const loki::Par
             false,
             pddl_repositories.get_or_create_atom(type_to_predicate(*type, pddl_repositories, type_to_predicate_mapper),
                                                  loki::TermList { pddl_repositories.get_or_create_term(parameter.get_variable()) }))));
-
-        const auto literal = pddl_repositories.get_or_create_literal(
-            false,
-            pddl_repositories.get_or_create_atom(type_to_predicate(*type, pddl_repositories, type_to_predicate_mapper),
-                                                 loki::TermList { pddl_repositories.get_or_create_term(parameter.get_variable()) }));
-        const auto condition_literal = pddl_repositories.get_or_create_condition_literal(pddl_repositories.get_or_create_literal(
-            false,
-            pddl_repositories.get_or_create_atom(type_to_predicate(*type, pddl_repositories, type_to_predicate_mapper),
-                                                 loki::TermList { pddl_repositories.get_or_create_term(parameter.get_variable()) })));
-
-        std::cout << "(" << *literal << "," << reinterpret_cast<uintptr_t>(literal) << ")" << std::endl;
-        std::cout << "{" << *condition_literal << "," << reinterpret_cast<uintptr_t>(condition_literal) << "}" << std::endl;
-
         conditions.push_back(condition);
     }
     return conditions;
@@ -145,12 +132,6 @@ loki::Condition RemoveTypesTranslator::translate_impl(const loki::ConditionExist
         conditions.insert(conditions.end(), additional_conditions.begin(), additional_conditions.end());
     }
     conditions.push_back(this->translate(*condition.get_condition()));
-
-    for (const auto& condition : conditions)
-    {
-        std::cout << "<" << *condition << "," << reinterpret_cast<uintptr_t>(condition) << ">" << std::endl;
-    }
-    std::cout << std::endl;
 
     return this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_exists(
         translated_parameters,
