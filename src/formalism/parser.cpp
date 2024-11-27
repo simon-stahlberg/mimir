@@ -36,10 +36,6 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_repositories(), to_nnf_translator);
     problem = remove_universal_quantifiers_translator.run(*problem);
 
-    // std::cout << "Step 1" << std::endl;
-    // std::cout << *problem->get_domain() << std::endl;
-    //  std::cout << *problem << std::endl;
-
     // To disjunctive normal form
     auto to_dnf_translator = ToDNFTranslator(domain_parser.get_repositories(), to_nnf_translator);
     problem = to_dnf_translator.run(*problem);
@@ -52,9 +48,6 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_repositories());
     problem = remove_types_translator.run(*problem);
 
-    std::cout << "Step 1" << std::endl;
-    std::cout << *problem->get_domain() << std::endl;
-
     // Move existential quantifers
     auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_repositories());
     problem = move_existential_quantifiers_translator.run(*problem);
@@ -62,10 +55,6 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     // To effect normal form
     auto to_enf_translator = ToENFTranslator(domain_parser.get_repositories());
     problem = to_enf_translator.run(*problem);
-
-    // std::cout << "Step " << std::endl;
-    // std::cout << *problem->get_domain() << std::endl;
-    //  std::cout << *problem << std::endl;
 
     // To mimir structures
     auto tmp_mimir_pddl_repositories = PDDLRepositories();
