@@ -372,10 +372,9 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<VariableList>(m, "VariableList");
 
     py::class_<TermImpl>(m, "Term")  //
-        .def(
-            "get",
-            [](const TermImpl& term) -> py::object { return std::visit([](auto&& arg) { return py::cast(arg); }, term.get_variant()); },
-            py::return_value_policy::reference_internal);
+        .def("get",
+             [](const TermImpl& term) -> py::object
+             { return std::visit([](auto&& arg) { return py::cast(arg, py::return_value_policy::reference_internal); }, term.get_variant()); });
     static_assert(!py::detail::vector_needs_copy<TermList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<TermList>(m, "TermList");
 
@@ -529,10 +528,9 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<EffectSimpleList>(m, "EffectSimpleList");
 
     py::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
-        .def(
-            "get",
-            [](const FunctionExpressionImpl& fexpr) -> py::object { return std::visit([](auto&& arg) { return py::cast(arg); }, fexpr.get_variant()); },
-            py::return_value_policy::reference_internal);
+        .def("get",
+             [](const FunctionExpressionImpl& fexpr) -> py::object
+             { return std::visit([](auto&& arg) { return py::cast(arg, py::return_value_policy::reference_internal); }, fexpr.get_variant()); });
     static_assert(!py::detail::vector_needs_copy<FunctionExpressionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionExpressionList>(m, "FunctionExpressionList");
 
@@ -596,10 +594,9 @@ void init_pymimir(py::module_& m)
         .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionImpl>(m, "GroundFunctionExpression")  //
-        .def(
-            "get",
-            [](const GroundFunctionExpressionImpl& fexpr) -> py::object { return std::visit([](auto&& arg) { return py::cast(arg); }, fexpr.get_variant()); },
-            py::return_value_policy::reference_internal);
+        .def("get",
+             [](const GroundFunctionExpressionImpl& fexpr) -> py::object
+             { return std::visit([](auto&& arg) { return py::cast(arg, py::return_value_policy::reference_internal); }, fexpr.get_variant()); });
     static_assert(!py::detail::vector_needs_copy<GroundFunctionExpressionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<GroundFunctionExpressionList>(m, "GroundFunctionExpressionList");
 
