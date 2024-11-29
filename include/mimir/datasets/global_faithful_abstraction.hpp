@@ -39,27 +39,27 @@ namespace mimir
 {
 
 /// @brief `GlobalFaithfulAbstractState` encapsulates data to access
-/// the representative abstract state of a faithful abstraction.
+/// the representative abstract vertex of a faithful abstraction.
 class GlobalFaithfulAbstractState
 {
 private:
     // The index within a `GlobalFaithfulAbstraction`.
-    Index m_index;
+    Index m_vertex_index;
     // The index within a `GlobalFaithfulAbstractionList`.
     Index m_global_index;
     // The indices to access the corresponding `FaithfulAbstractStateVertex`.
     Index m_faithful_abstraction_index;
-    Index m_faithful_abstract_state_index;
+    Index m_faithful_abstraction_vertex_index;
 
 public:
-    GlobalFaithfulAbstractState(Index index, Index global_index, Index faithful_abstraction_index, Index faithful_abstract_state_index);
+    GlobalFaithfulAbstractState(Index vertex_index, Index global_index, Index faithful_abstraction_index, Index faithful_abstraction_vertex_index);
 
     bool operator==(const GlobalFaithfulAbstractState& other) const;
 
-    Index get_index() const;
+    Index get_vertex_index() const;
     Index get_global_index() const;
     Index get_faithful_abstraction_index() const;
-    Index get_faithful_abstract_state_index() const;
+    Index get_faithful_abstraction_vertex_index() const;
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
@@ -112,7 +112,7 @@ public:
      */
 
     Index get_vertex_index(State state) const;
-    Index get_vertex_index(Index global_vertex_index) const;
+    Index get_vertex_index(Index global_index) const;
 
     /**
      * Extended functionality

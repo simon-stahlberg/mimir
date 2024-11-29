@@ -1551,10 +1551,10 @@ void init_pymimir(py::module_& m)
     py::class_<GlobalFaithfulAbstractState>(m, "GlobalFaithfulAbstractState")
         .def("__eq__", &GlobalFaithfulAbstractState::operator==)
         .def("__hash__", [](const GlobalFaithfulAbstractState& self) { return std::hash<GlobalFaithfulAbstractState>()(self); })
-        .def("get_index", &GlobalFaithfulAbstractState::get_index)
+        .def("get_vertex_index", &GlobalFaithfulAbstractState::get_vertex_index)
         .def("get_global_index", &GlobalFaithfulAbstractState::get_global_index)
         .def("get_faithful_abstraction_index", &GlobalFaithfulAbstractState::get_faithful_abstraction_index)
-        .def("get_faithful_abstract_state_index", &GlobalFaithfulAbstractState::get_faithful_abstract_state_index);
+        .def("get_faithful_abstraction_vertex_index", &GlobalFaithfulAbstractState::get_faithful_abstraction_vertex_index);
 
     py::class_<GlobalFaithfulAbstraction, std::shared_ptr<GlobalFaithfulAbstraction>>(m, "GlobalFaithfulAbstraction")
         .def("__str__",

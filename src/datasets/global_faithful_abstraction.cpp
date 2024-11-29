@@ -28,8 +28,8 @@
 
 size_t std::hash<mimir::GlobalFaithfulAbstractState>::operator()(const mimir::GlobalFaithfulAbstractState& element) const
 {
-    // Note: we do not use element.get_index() because it is fa specific
-    return mimir::hash_combine(element.get_global_index(), element.get_faithful_abstraction_index(), element.get_faithful_abstract_state_index());
+    // Note: we do not use element.get_vertex_index() because it is fa specific
+    return mimir::hash_combine(element.get_global_index(), element.get_faithful_abstraction_index(), element.get_faithful_abstraction_vertex_index());
 }
 
 namespace mimir
@@ -38,14 +38,14 @@ namespace mimir
  * GlobalFaithfulAbstractState
  */
 
-GlobalFaithfulAbstractState::GlobalFaithfulAbstractState(Index index,
+GlobalFaithfulAbstractState::GlobalFaithfulAbstractState(Index vertex_index,
                                                          Index global_index,
                                                          Index faithful_abstraction_index,
-                                                         Index faithful_abstract_state_index) :
-    m_index(index),
+                                                         Index faithful_abstraction_vertex_index) :
+    m_vertex_index(vertex_index),
     m_global_index(global_index),
     m_faithful_abstraction_index(faithful_abstraction_index),
-    m_faithful_abstract_state_index(faithful_abstract_state_index)
+    m_faithful_abstraction_vertex_index(faithful_abstraction_vertex_index)
 {
 }
 
@@ -55,18 +55,18 @@ bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& 
     {
         // Note: we do not use m_index because it is fa specific
         return (m_global_index == other.m_global_index) && (m_faithful_abstraction_index == other.m_faithful_abstraction_index)
-               && (m_faithful_abstract_state_index == other.m_faithful_abstract_state_index);
+               && (m_faithful_abstraction_vertex_index == other.m_faithful_abstraction_vertex_index);
     }
     return true;
 }
 
-Index GlobalFaithfulAbstractState::get_index() const { return m_index; }
+Index GlobalFaithfulAbstractState::get_vertex_index() const { return m_vertex_index; }
 
 Index GlobalFaithfulAbstractState::get_global_index() const { return m_global_index; }
 
 Index GlobalFaithfulAbstractState::get_faithful_abstraction_index() const { return m_faithful_abstraction_index; }
 
-Index GlobalFaithfulAbstractState::get_faithful_abstract_state_index() const { return m_faithful_abstract_state_index; }
+Index GlobalFaithfulAbstractState::get_faithful_abstraction_vertex_index() const { return m_faithful_abstraction_vertex_index; }
 
 /**
  * GlobalFaithfulAbstraction
@@ -93,13 +93,13 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
     // Check correct state ordering
     for (Index vertex = 0; vertex < get_num_vertices(); ++vertex)
     {
-        assert(get_vertices().at(vertex).get_index() == vertex && "State index does not match its position in the list");
+        assert(get_vertices().at(vertex).get_vertex_index() == vertex && "State index does not match its position in the list");
     }
 
     /* Additional */
     for (const auto& state : m_states)
     {
-        m_global_vertex_index_to_vertex_index.emplace(state.get_global_index(), state.get_index());
+        m_global_vertex_index_to_vertex_index.emplace(state.get_global_index(), state.get_vertex_index());
     }
 }
 
@@ -163,13 +163,13 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
                 states.emplace_back(state.get_index(),
                                     it->second.get_global_index(),
                                     it->second.get_faithful_abstraction_index(),
-                                    it->second.get_faithful_abstract_state_index());
+                                    it->second.get_faithful_abstraction_vertex_index());
                 ++num_isomorphic_states;
 
                 // Ensure that goals remain goals and deadends remain deadends.
                 const auto& other_faithful_abstraction = relevant_faithful_abstractions->at(it->second.get_faithful_abstraction_index());
                 [[maybe_unused]] const auto& other_state =
-                    other_faithful_abstraction.get_graph().get_vertices().at(it->second.get_faithful_abstract_state_index());
+                    other_faithful_abstraction.get_graph().get_vertices().at(it->second.get_faithful_abstraction_vertex_index());
                 assert(faithful_abstraction.is_goal_vertex(state.get_index()) == other_faithful_abstraction.is_goal_vertex(other_state.get_index()));
                 assert(faithful_abstraction.is_deadend_vertex(state.get_index()) == other_faithful_abstraction.is_deadend_vertex(other_state.get_index()));
             }
@@ -204,11 +204,11 @@ std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
 
 Index GlobalFaithfulAbstraction::get_vertex_index(State state) const { return m_abstractions->at(m_index).get_vertex_index(state); }
 
-Index GlobalFaithfulAbstraction::get_vertex_index(Index global_vertex_index) const
+Index GlobalFaithfulAbstraction::get_vertex_index(Index global_index) const
 {
-    if (m_global_vertex_index_to_vertex_index.contains(global_vertex_index))
+    if (m_global_vertex_index_to_vertex_index.contains(global_index))
     {
-        return m_global_vertex_index_to_vertex_index.at(global_vertex_index);
+        return m_global_vertex_index_to_vertex_index.at(global_index);
     }
     throw std::runtime_error("Failed to access vertex of global state index. Are you sure that the global vertex index is part of the abstraction?");
 }
@@ -218,13 +218,13 @@ Index GlobalFaithfulAbstraction::get_vertex_index(Index global_vertex_index) con
  */
 
 template<IsTraversalDirection Direction>
-ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices(const IndexList& abstract_states) const
+ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices(const IndexList& vertices) const
 {
-    return m_abstractions->at(m_index).compute_shortest_distances_from_vertices<Direction>(abstract_states);
+    return m_abstractions->at(m_index).compute_shortest_distances_from_vertices<Direction>(vertices);
 }
 
-template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<ForwardTraversal>(const IndexList& abstract_states) const;
-template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<BackwardTraversal>(const IndexList& abstract_states) const;
+template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<ForwardTraversal>(const IndexList& vertices) const;
+template ContinuousCostList GlobalFaithfulAbstraction::compute_shortest_distances_from_vertices<BackwardTraversal>(const IndexList& vertices) const;
 
 template<IsTraversalDirection Direction>
 ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shortest_vertex_distances() const
@@ -398,12 +398,12 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         // label
         const auto& gfa_state = abstraction.get_vertices().at(state_index);
         out << "label=\"";
-        out << "state_index=" << gfa_state.get_index() << " "
+        out << "state_index=" << gfa_state.get_vertex_index() << " "
             << "global_state_index = " << gfa_state.get_global_index() << " "
             << "abstraction_index=" << gfa_state.get_faithful_abstraction_index() << " "
-            << "abstract_state_index=" << gfa_state.get_faithful_abstract_state_index() << "\n";
+            << "abstract_state_index=" << gfa_state.get_faithful_abstraction_vertex_index() << "\n";
         const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
-        for (const auto& state : mimir::get_states(fa_abstraction.get_graph().get_vertices().at(gfa_state.get_faithful_abstract_state_index())))
+        for (const auto& state : mimir::get_states(fa_abstraction.get_graph().get_vertices().at(gfa_state.get_faithful_abstraction_vertex_index())))
         {
             out << std::make_tuple(fa_abstraction.get_problem(), state, std::cref(*fa_abstraction.get_pddl_repositories())) << "\n";
         }

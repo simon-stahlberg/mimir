@@ -103,7 +103,7 @@ int main(int argc, char** argv)
                                             gfa.get_abstractions()
                                                 .at(gfa_state.get_faithful_abstraction_index())
                                                 .get_states()
-                                                .at(gfa_state.get_faithful_abstract_state_index())
+                                                .at(gfa_state.get_faithful_abstraction_vertex_index())
                                                 .get_representative_state(),
                                             std::cref(*gfa.get_pddl_repositories()))
                         << std::endl;
