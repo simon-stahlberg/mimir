@@ -254,7 +254,8 @@ public:
                                                LiteralList<Static> static_conditions,
                                                LiteralList<Fluent> fluent_conditions,
                                                LiteralList<Derived> derived_conditions,
-                                               Literal<Fluent> effect);
+                                               Literal<Fluent> effect,
+                                               FunctionExpression function_expression);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,

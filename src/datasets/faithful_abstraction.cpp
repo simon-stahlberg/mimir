@@ -149,8 +149,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                                   initial_state->get_index(),
                                                   options.mark_true_goal_literals,
                                                   *object_graph_pruning_strategy);
-    // std::cout << problem->get_filepath().value() << std::endl;
-    // std::cout << std::make_tuple(std::cref(object_graph), std::cref(color_function)) << std::endl;
+
     auto certificate = std::make_shared<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
     const auto abstract_initial_state_index = 0;
     abstract_states_by_certificate.emplace(std::move(certificate), abstract_initial_state_index);

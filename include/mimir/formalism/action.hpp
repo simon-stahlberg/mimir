@@ -34,9 +34,6 @@ private:
     LiteralList<Derived> m_derived_conditions;
     EffectSimpleList m_simple_effects;
     EffectComplexList m_complex_effects;
-    // More expressive than the definition of action costs:
-    // We allow arithmetic functions of ground functions
-    // and not just a single ground function (<numeric-term>).
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor

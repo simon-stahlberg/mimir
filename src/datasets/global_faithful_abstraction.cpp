@@ -90,7 +90,7 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
 {
     /* Ensure correctness. */
 
-    // Check correct state ordering
+    // Check correct vertex ordering
     for (Index vertex = 0; vertex < get_num_vertices(); ++vertex)
     {
         assert(get_vertices().at(vertex).get_vertex_index() == vertex && "State index does not match its position in the list");

@@ -301,14 +301,20 @@ EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parame
                                                              LiteralList<Static> static_conditions,
                                                              LiteralList<Fluent> fluent_conditions,
                                                              LiteralList<Derived> derived_conditions,
-                                                             Literal<Fluent> effect)
+                                                             Literal<Fluent> effect,
+                                                             FunctionExpression function_expression)
 {
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<EffectComplexImpl> {})
-        .get_or_create(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions), std::move(effect));
+        .get_or_create(std::move(parameters),
+                       std::move(static_conditions),
+                       std::move(fluent_conditions),
+                       std::move(derived_conditions),
+                       std::move(effect),
+                       std::move(function_expression));
 }
 
 Action PDDLRepositories::get_or_create_action(std::string name,

@@ -66,7 +66,9 @@ protected:
         constructor.
     }
     template<ConstructorTag D>
-    NonTerminal<D> translate_impl(const NonTerminalImpl<D>& constructor) = 0;
+    NonTerminal<D> translate_impl(const NonTerminalImpl<D>& constructor)
+    {
+    }
     template<ConstructorTag D>
     Choice<D> translate_impl(const ChoiceImpl<D>& constructor) = 0;
 

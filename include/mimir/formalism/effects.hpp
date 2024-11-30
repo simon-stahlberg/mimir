@@ -65,6 +65,7 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     Literal<Fluent> m_effect;
+    FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -73,7 +74,8 @@ private:
                       LiteralList<Static> static_conditions,
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
-                      Literal<Fluent> effect);
+                      Literal<Fluent> effect,
+                      FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -93,6 +95,7 @@ public:
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const Literal<Fluent>& get_effect() const;
+    const FunctionExpression& get_function_expression() const;
 
     size_t get_arity() const;
 };

@@ -58,13 +58,15 @@ EffectComplexImpl::EffectComplexImpl(Index index,
                                      LiteralList<Static> static_conditions,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
-                                     Literal<Fluent> effect) :
+                                     Literal<Fluent> effect,
+                                     FunctionExpression function_expression) :
     m_index(index),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
-    m_effect(std::move(effect))
+    m_effect(std::move(effect)),
+    m_function_expression(std::move(function_expression))
 {
     assert(is_all_unique(m_quantified_variables));
     assert(is_all_unique(m_static_conditions));
@@ -115,6 +117,8 @@ template const LiteralList<Fluent>& EffectComplexImpl::get_conditions<Fluent>() 
 template const LiteralList<Derived>& EffectComplexImpl::get_conditions<Derived>() const;
 
 const Literal<Fluent>& EffectComplexImpl::get_effect() const { return m_effect; }
+
+const FunctionExpression& EffectComplexImpl::get_function_expression() const { return m_function_expression; }
 
 size_t EffectComplexImpl::get_arity() const { return m_quantified_variables.size(); }
 
