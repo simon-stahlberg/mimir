@@ -33,6 +33,8 @@ StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> app
                                    || !m_applicable_action_generator->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
     m_state_builder(),
+    m_positive_cond_effects(),
+    m_negative_cond_effects(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms()
 {
@@ -135,22 +137,28 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
     fluent_state_atoms |= strips_action_effect.get_positive_effects();
 
     /* Conditional effects */
+    m_positive_cond_effects.unset_all();
+    m_negative_cond_effects.unset_all();
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
         if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
         {
-            const auto& simple_effect = conditional_effect.get_simple_effect();
-
-            if (simple_effect.is_negated)
+            for (const auto& simple_effect : conditional_effect.get_simple_effect())
             {
-                fluent_state_atoms.unset(simple_effect.atom_index);
-            }
-            else
-            {
-                fluent_state_atoms.set(simple_effect.atom_index);
+                if (simple_effect.is_negated)
+                {
+                    m_negative_cond_effects.unset(simple_effect.atom_index);
+                }
+                else
+                {
+                    m_positive_cond_effects.set(simple_effect.atom_index);
+                }
             }
         }
     }
+    fluent_state_atoms -= m_negative_cond_effects;
+    fluent_state_atoms |= m_positive_cond_effects;
+
     m_reached_fluent_atoms |= fluent_state_atoms;
 
     /* 4. Retrieve cached extended state */

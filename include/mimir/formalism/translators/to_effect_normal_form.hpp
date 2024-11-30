@@ -50,9 +50,9 @@ private:
 
     /**
      * 1. e and (phi > e)                        =>  e
-     * 2. e1 and (e2 and e3)                     =>  e1 and e2 and e3         % TODO: combine numeric effects using addition
-     * 3. forall(vars, e1) and forall(vars, e2)  => forall(vars, (e1 and e2)) % TODO
-     * 4. (phi > e1) and (phi > e2)              => phi > (e1 and e2)         % TODO: add this
+     * 2. e1 and (e2 and e3)                     =>  e1 and e2 and e3    % TODO: combine numeric effects using addition
+     * 3. (phi > e1) and (phi > e2)              =>  phi > (e1 and e2)
+     * 4. forall(vars, e1) and forall(vars, e2)  =>  forall(vars, (e1 and e2))
      */
     loki::Effect translate_impl(const loki::EffectAndImpl& effect);
     /**

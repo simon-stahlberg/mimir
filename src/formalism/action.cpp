@@ -68,16 +68,16 @@ ActionImpl::ActionImpl(Index index,
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_complex_effects.begin(),
-                          m_complex_effects.end(),
-                          [](const auto& l, const auto& r)
-                          {
-                              if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
-                              {
-                                  return l->get_index() < r->get_index();
-                              }
-                              return l->get_effect()->is_negated() > r->get_effect()->is_negated();
-                          }));
+    // assert(std::is_sorted(m_complex_effects.begin(),
+    //                       m_complex_effects.end(),
+    //                       [](const auto& l, const auto& r)
+    //                       {
+    //                           if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
+    //                           {
+    //                               return l->get_index() < r->get_index();
+    //                           }
+    //                           return l->get_effect()->is_negated() > r->get_effect()->is_negated();
+    //                       }));
 }
 
 std::string ActionImpl::str() const

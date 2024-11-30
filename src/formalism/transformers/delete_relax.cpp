@@ -106,8 +106,15 @@ EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effe
 
 EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
 {
-    auto simple_effect = this->transform(*effect.get_effect());
-    if (!simple_effect)
+    auto transformed_effects = LiteralList<Fluent> {};
+    for (const auto& literal : this->transform(effect.get_effect()))
+    {
+        if (literal)
+        {
+            transformed_effects.push_back(literal);
+        }
+    }
+    if (transformed_effects.empty())
     {
         return nullptr;
     }
@@ -116,8 +123,10 @@ EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& ef
     auto static_conditions = filter_positive_literals(this->transform(effect.get_conditions<Static>()));
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
+    auto function_expression = this->transform(*effect.get_function_expression());
 
-    return this->m_pddl_repositories.get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, simple_effect);
+    return this->m_pddl_repositories
+        .get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, transformed_effects, function_expression);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)

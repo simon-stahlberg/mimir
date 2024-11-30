@@ -39,6 +39,9 @@ private:
     StateImplSet m_states;
     StateImpl m_state_builder;
 
+    FlatBitset m_positive_cond_effects;
+    FlatBitset m_negative_cond_effects;
+
     FlatBitset m_reached_fluent_atoms;
     FlatBitset m_reached_derived_atoms;
 

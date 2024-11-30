@@ -257,20 +257,25 @@ void PDDLFormatter::write(const EffectComplexImpl& element, std::ostream& out)
             out << " ";
             write(*condition, out);
         }
-        out << " ) ";  // end and
+        out << " ) ";  // end condition and
     }
 
-    out << " ";
-    write(*element.get_effect(), out);
+    out << " (and ";
+    for (const auto& effect : element.get_effect())
+    {
+        out << " ";
+        write(*effect, out);
+    }
+    out << ")";  // end effect and
 
     if (!(element.get_conditions<Static>().empty() && element.get_conditions<Fluent>().empty() && element.get_conditions<Derived>().empty()))
     {
-        out << ")";  // end when
+        out << ")";  // end effect when
     }
 
     if (!element.get_parameters().empty())
     {
-        out << ")";  // end forall
+        out << ")";  // end effect forall
     }
 }
 

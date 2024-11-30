@@ -158,7 +158,8 @@ protected:
         this->prepare(effect.get_conditions<Static>());
         this->prepare(effect.get_conditions<Fluent>());
         this->prepare(effect.get_conditions<Derived>());
-        this->prepare(*effect.get_effect());
+        this->prepare(effect.get_effect());
+        this->prepare(*effect.get_function_expression());
     }
     void prepare_impl(const FunctionExpressionNumberImpl& function_expression) {}
     void prepare_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
@@ -409,7 +410,8 @@ protected:
                                                                       this->transform(effect.get_conditions<Static>()),
                                                                       this->transform(effect.get_conditions<Fluent>()),
                                                                       this->transform(effect.get_conditions<Derived>()),
-                                                                      this->transform(*effect.get_effect()));
+                                                                      this->transform(effect.get_effect()),
+                                                                      this->transform(*effect.get_function_expression()));
     }
     FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {

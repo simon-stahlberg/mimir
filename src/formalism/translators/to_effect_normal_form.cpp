@@ -30,7 +30,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
 
     // Collect type information of nested effects.
     auto effects_literal = std::unordered_set<loki::Effect> {};
-    auto effects_forall = std::unordered_map<loki::ParameterList, loki::EffectList, loki::UniquePDDLHasher<loki::VariableList>> {};
+    auto effects_forall = std::unordered_map<loki::ParameterList, loki::EffectList, loki::UniquePDDLHasher<loki::ParameterList>> {};
     auto effects_when = loki::EffectList {};
     auto effects_other = loki::EffectList {};
     for (const auto& nested_translated_effect : translated_nested_effects)
@@ -60,8 +60,6 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
     {
         translated_nested_effects.push_back(effect_literal);
     }
-
-    // Remove when effects that are dominated by literal effects
     auto when_condition_to_effects = std::unordered_map<loki::Condition, loki::EffectList> {};
     for (const auto& when_effect : effects_when)
     {
@@ -69,21 +67,24 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
 
         if (effects_literal.count(effect_when->get_effect()) == 0)
         {
-            when_condition_to_effects[effect_when->get_condition()].push_back(effect_when->get_effect());
+            continue;  // Remove when effects that are dominated by literal effects
         }
+
+        when_condition_to_effects[effect_when->get_condition()].push_back(effect_when->get_effect());
     }
+    // 3. (phi > e1) and (phi > e2)  =>  phi > (e1 and e2)
     for (const auto& [when_condition, when_effects] : when_condition_to_effects)
     {
         translated_nested_effects.push_back(
-            this->translate(this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_when(
+            this->translate(*this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_when(
                 when_condition,
                 this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_and(when_effects))))));
     }
-
+    // 4. forall(vars, e1) and forall(vars, e2)  =>  forall(vars, (e1 and e2))
     for (const auto& [forall_parameters, forall_effects] : effects_forall)
     {
         translated_nested_effects.push_back(
-            this->translate(this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_forall(
+            this->translate(*this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_forall(
                 forall_parameters,
                 this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_and(forall_effects))))));
     }

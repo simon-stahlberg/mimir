@@ -132,11 +132,15 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_effect = [this](const Literal<Fluent>& literal, SimpleFluentEffect& ref_effect, const auto& binding)
+    const auto fill_effects = [this](const LiteralList<Fluent>& literals, SimpleFluentEffectList& out_effects, const auto& binding)
     {
-        const auto grounded_literal = m_pddl_repositories->ground_literal(literal, binding);
-        ref_effect.is_negated = grounded_literal->is_negated();
-        ref_effect.atom_index = grounded_literal->get_atom()->get_index();
+        out_effects.clear();
+
+        for (const auto& literal : literals)
+        {
+            const auto grounded_literal = m_pddl_repositories->ground_literal(literal, binding);
+            out_effects.emplace_back(grounded_literal->is_negated(), grounded_literal->get_atom()->get_index());
+        }
     };
 
     /* Header */
@@ -258,7 +262,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                                 cond_negative_derived_precondition_j,
                                                                 binding_ext);
 
-                    fill_effect(complex_effect->get_effect(), cond_simple_effect_j, binding_ext);
+                    fill_effects(complex_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
                     ++j;
                 }
@@ -293,7 +297,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                             cond_negative_derived_precondition,
                                                             binding);
 
-                fill_effect(complex_effect->get_effect(), cond_simple_effect, binding);
+                fill_effects(complex_effect->get_effect(), cond_simple_effect, binding);
             }
         }
     }

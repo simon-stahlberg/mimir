@@ -297,9 +297,9 @@ template const FlatIndexList& ConditionalEffect::get_negative_precondition<Stati
 template const FlatIndexList& ConditionalEffect::get_negative_precondition<Fluent>() const;
 template const FlatIndexList& ConditionalEffect::get_negative_precondition<Derived>() const;
 
-SimpleFluentEffect& ConditionalEffect::get_simple_effect() { return m_effect; }
+SimpleFluentEffectList& ConditionalEffect::get_simple_effect() { return m_effect; }
 
-const SimpleFluentEffect& ConditionalEffect::get_simple_effect() const { return m_effect; }
+const SimpleFluentEffectList& ConditionalEffect::get_simple_effect() const { return m_effect; }
 
 template<DynamicPredicateTag P>
 bool ConditionalEffect::is_applicable(State state) const
@@ -395,6 +395,22 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, 
     {
         os << ")";
     }
+
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffectList, const PDDLRepositories&>& data)
+{
+    const auto& [simple_effects, pddl_repositories] = data;
+
+    os << "(and";
+
+    for (const auto& simple_effect : simple_effects)
+    {
+        os << " " << std::make_tuple(simple_effect, std::cref(pddl_repositories));
+    }
+
+    os << ")";
 
     return os;
 }
