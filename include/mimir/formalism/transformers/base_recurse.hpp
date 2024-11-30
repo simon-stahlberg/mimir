@@ -151,7 +151,7 @@ protected:
         this->prepare(*literal.get_atom());
     }
     void prepare_impl(const NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
-    void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(*effect.get_effect()); }
+    void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(effect.get_effect()); }
     void prepare_impl(const EffectComplexImpl& effect)
     {
         this->prepare(effect.get_parameters());
@@ -402,7 +402,7 @@ protected:
     }
     EffectSimple transform_impl(const EffectSimpleImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(effect.get_effect()));
     }
     EffectComplex transform_impl(const EffectComplexImpl& effect)
     {

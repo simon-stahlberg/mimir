@@ -149,7 +149,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
                                                                                   this->transform(action.get_conditions<Static>()),
                                                                                   this->transform(action.get_conditions<Fluent>()),
                                                                                   this->transform(action.get_conditions<Derived>()),
-                                                                                  this->transform(action.get_simple_effects()),
+                                                                                  this->transform(*action.get_simple_effects()),
                                                                                   translated_complex_effects,
                                                                                   this->transform(*action.get_function_expression()));
 

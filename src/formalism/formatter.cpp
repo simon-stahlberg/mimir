@@ -70,18 +70,20 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << std::string(m_indent, ' ') << ":effects ";
-    if (element.get_simple_effects().empty() && element.get_complex_effects().empty())
+    if (element.get_simple_effects()->get_effect().empty() && element.get_complex_effects().empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and";
-        for (const auto& effect : element.get_simple_effects())
+
+        for (const auto& literal : element.get_simple_effects()->get_effect())
         {
             out << " ";
-            write(*effect, out);
+            write(*literal, out);
         }
+
         for (const auto& effect : element.get_complex_effects())
         {
             out << " ";
@@ -221,7 +223,14 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
     out << std::string(m_indent, ' ') << ")";
 }
 
-void PDDLFormatter::write(const EffectSimpleImpl& element, std::ostream& out) { write(*element.get_effect(), out); }
+void PDDLFormatter::write(const EffectSimpleImpl& element, std::ostream& out)
+{
+    for (const auto& literal : element.get_effect())
+    {
+        write(*literal, out);
+        out << " ";
+    }
+}
 
 void PDDLFormatter::write(const EffectComplexImpl& element, std::ostream& out)
 {

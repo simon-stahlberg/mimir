@@ -40,7 +40,7 @@ ActionImpl::ActionImpl(Index index,
                        LiteralList<Static> static_conditions,
                        LiteralList<Fluent> fluent_conditions,
                        LiteralList<Derived> derived_conditions,
-                       EffectSimpleList simple_effects,
+                       EffectSimple simple_effect,
                        EffectComplexList complex_effects,
                        FunctionExpression function_expression) :
     m_index(index),
@@ -50,7 +50,7 @@ ActionImpl::ActionImpl(Index index,
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
-    m_simple_effects(std::move(simple_effects)),
+    m_simple_effect(std::move(simple_effect)),
     m_complex_effects(std::move(complex_effects)),
     m_function_expression(std::move(function_expression))
 {
@@ -59,7 +59,6 @@ ActionImpl::ActionImpl(Index index,
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
-    assert(is_all_unique(m_simple_effects));
     assert(is_all_unique(m_complex_effects));
     assert(
         std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -67,7 +66,6 @@ ActionImpl::ActionImpl(Index index,
         std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_simple_effects.begin(), m_simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     // assert(std::is_sorted(m_complex_effects.begin(),
     //                       m_complex_effects.end(),
     //                       [](const auto& l, const auto& r)
@@ -120,7 +118,7 @@ template const LiteralList<Static>& ActionImpl::get_conditions<Static>() const;
 template const LiteralList<Fluent>& ActionImpl::get_conditions<Fluent>() const;
 template const LiteralList<Derived>& ActionImpl::get_conditions<Derived>() const;
 
-const EffectSimpleList& ActionImpl::get_simple_effects() const { return m_simple_effects; }
+const EffectSimple& ActionImpl::get_simple_effects() const { return m_simple_effect; }
 
 const EffectComplexList& ActionImpl::get_complex_effects() const { return m_complex_effects; }
 

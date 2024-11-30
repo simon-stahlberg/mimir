@@ -180,11 +180,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     auto& negative_effect = strips_effect.get_negative_effects();
     positive_effect.unset_all();
     negative_effect.unset_all();
-    auto effect_literals = LiteralList<Fluent> {};
-    for (const auto& effect : action->get_simple_effects())
-    {
-        effect_literals.push_back(effect->get_effect());
-    }
+    const auto& effect_literals = action->get_simple_effects()->get_effect();
     m_pddl_repositories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
 
     /* Conditional effects */

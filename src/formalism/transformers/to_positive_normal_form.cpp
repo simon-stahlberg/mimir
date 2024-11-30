@@ -124,7 +124,7 @@ Action ToPositiveNormalFormTransformer::transform_impl(const ActionImpl& action)
                                                           transformed_static_conditions,
                                                           transformed_fluent_conditions,
                                                           transformed_derived_conditions,
-                                                          this->transform(action.get_simple_effects()),
+                                                          this->transform(*action.get_simple_effects()),
                                                           this->transform(action.get_complex_effects()),
                                                           this->transform(*action.get_function_expression()));
 }

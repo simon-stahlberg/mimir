@@ -41,7 +41,6 @@ private:
 
     template<PredicateTag P>
     LiteralList<P> transform_impl(const LiteralList<P>& literals);
-    EffectSimpleList transform_impl(const EffectSimpleList& effects);
     EffectComplexList transform_impl(const EffectComplexList& effects);
     ActionList transform_impl(const ActionList& actions);
     AxiomList transform_impl(const AxiomList& axioms);

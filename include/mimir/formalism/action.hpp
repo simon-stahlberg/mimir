@@ -32,7 +32,7 @@ private:
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
-    EffectSimpleList m_simple_effects;
+    EffectSimple m_simple_effect;
     EffectComplexList m_complex_effects;
     FunctionExpression m_function_expression;
 
@@ -45,7 +45,7 @@ private:
                LiteralList<Static> static_conditions,
                LiteralList<Fluent> fluent_conditions,
                LiteralList<Derived> derived_conditions,
-               EffectSimpleList simple_effects,
+               EffectSimple simple_effects,
                EffectComplexList complex_effects,
                FunctionExpression function_expression);
 
@@ -68,7 +68,7 @@ public:
     const VariableList& get_parameters() const;
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
-    const EffectSimpleList& get_simple_effects() const;
+    const EffectSimple& get_simple_effects() const;
     const EffectComplexList& get_complex_effects() const;
     const FunctionExpression& get_function_expression() const;
 

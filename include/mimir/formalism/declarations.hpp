@@ -63,7 +63,6 @@ using DomainList = std::vector<Domain>;
 
 class EffectSimpleImpl;
 using EffectSimple = const EffectSimpleImpl*;
-using EffectSimpleList = std::vector<EffectSimple>;
 
 class EffectComplexImpl;
 using EffectComplex = const EffectComplexImpl*;

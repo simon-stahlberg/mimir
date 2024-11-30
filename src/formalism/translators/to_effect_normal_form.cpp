@@ -65,7 +65,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
     {
         const auto effect_when = std::get<loki::EffectCompositeWhen>(when_effect->get_effect());
 
-        if (effects_literal.count(effect_when->get_effect()) == 0)
+        if (effects_literal.contains(effect_when->get_effect()))
         {
             continue;  // Remove when effects that are dominated by literal effects
         }
@@ -88,6 +88,8 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
                 forall_parameters,
                 this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_and(forall_effects))))));
     }
+
+    std::cout << translated_nested_effects.size() << std::endl;
 
     // 3. e1 and (e2 and e3)  =>  e1 and e2 and e3
     return flatten(*this->m_pddl_repositories.get_or_create_effect_and(translated_nested_effects), this->m_pddl_repositories);

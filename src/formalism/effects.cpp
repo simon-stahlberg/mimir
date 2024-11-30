@@ -36,7 +36,11 @@ namespace mimir
  * Type 1 effect
  */
 
-EffectSimpleImpl::EffectSimpleImpl(Index index, Literal<Fluent> effect) : m_index(index), m_effect(std::move(effect)) {}
+EffectSimpleImpl::EffectSimpleImpl(Index index, LiteralList<Fluent> effects) : m_index(index), m_effects(std::move(effects))
+{
+    assert(is_all_unique(m_effects));
+    assert(std::is_sorted(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+}
 
 std::string EffectSimpleImpl::str() const
 {
@@ -47,7 +51,7 @@ std::string EffectSimpleImpl::str() const
 
 Index EffectSimpleImpl::get_index() const { return m_index; }
 
-const Literal<Fluent>& EffectSimpleImpl::get_effect() const { return m_effect; }
+const LiteralList<Fluent>& EffectSimpleImpl::get_effect() const { return m_effects; }
 
 /**
  * Type 3 effect

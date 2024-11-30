@@ -184,7 +184,7 @@ protected:
         this->prepare(*literal.get_atom());
     }
     void prepare_impl(const NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
-    void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(*effect.get_effect()); }
+    void prepare_impl(const EffectSimpleImpl& effect) { this->prepare(effect.get_effect()); }
     void prepare_impl(const EffectComplexImpl& effect)
     {
         this->prepare(effect.get_parameters());
@@ -237,7 +237,7 @@ protected:
         this->prepare(action.get_conditions<Static>());
         this->prepare(action.get_conditions<Fluent>());
         this->prepare(action.get_conditions<Derived>());
-        this->prepare(action.get_simple_effects());
+        this->prepare(*action.get_simple_effects());
         this->prepare(action.get_complex_effects());
         this->prepare(*action.get_function_expression());
     }
@@ -538,7 +538,7 @@ protected:
     }
     EffectSimple transform_impl(const EffectSimpleImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(*effect.get_effect()));
+        return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(effect.get_effect()));
     }
     EffectComplex transform_impl(const EffectComplexImpl& effect)
     {
@@ -635,7 +635,7 @@ protected:
                                                               this->transform(action.get_conditions<Static>()),
                                                               this->transform(action.get_conditions<Fluent>()),
                                                               this->transform(action.get_conditions<Derived>()),
-                                                              this->transform(action.get_simple_effects()),
+                                                              this->transform(*action.get_simple_effects()),
                                                               this->transform(action.get_complex_effects()),
                                                               this->transform(*action.get_function_expression()));
     }

@@ -292,9 +292,9 @@ FunctionSkeleton PDDLRepositories::get_or_create_function_skeleton(std::string n
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl> {}).get_or_create(std::move(name), std::move(parameters));
 }
 
-EffectSimple PDDLRepositories::get_or_create_simple_effect(Literal<Fluent> effect)
+EffectSimple PDDLRepositories::get_or_create_simple_effect(LiteralList<Fluent> effects)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).get_or_create(std::move(effect));
+    return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).get_or_create(std::move(effects));
 }
 
 EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parameters,
@@ -323,7 +323,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                                               LiteralList<Static> static_conditions,
                                               LiteralList<Fluent> fluent_conditions,
                                               LiteralList<Derived> derived_conditions,
-                                              EffectSimpleList simple_effects,
+                                              EffectSimple simple_effect,
                                               EffectComplexList complex_effects,
                                               FunctionExpression function_expression)
 {
@@ -331,7 +331,6 @@ Action PDDLRepositories::get_or_create_action(std::string name,
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(simple_effects.begin(), simple_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     // Sort negative conditional effects to the beginning to process them first, additionally sort then by index.
     // std::sort(complex_effects.begin(),
     //          complex_effects.end(),
@@ -351,7 +350,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                        std::move(static_conditions),
                        std::move(fluent_conditions),
                        std::move(derived_conditions),
-                       std::move(simple_effects),
+                       std::move(simple_effect),
                        std::move(complex_effects),
                        std::move(function_expression));
 }

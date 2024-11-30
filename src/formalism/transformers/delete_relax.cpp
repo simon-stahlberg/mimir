@@ -37,20 +37,6 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
     return positive_literals;
 }
 
-EffectSimpleList DeleteRelaxTransformer::transform_impl(const EffectSimpleList& effects)
-{
-    auto positive_simple_effects = EffectSimpleList {};
-    for (const auto& simple_effect : effects)
-    {
-        const auto positive_simple_effect = this->transform(*simple_effect);
-        if (positive_simple_effect)
-        {
-            positive_simple_effects.push_back(positive_simple_effect);
-        }
-    }
-    return positive_simple_effects;
-}
-
 EffectComplexList DeleteRelaxTransformer::transform_impl(const EffectComplexList& effects)
 {
     auto positive_complex_effects = EffectComplexList {};
@@ -95,26 +81,33 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
 
 EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effect)
 {
-    const auto literal = this->transform(*effect.get_effect());
-    if (!literal)
-    {
-        return nullptr;
-    }
-
-    return this->m_pddl_repositories.get_or_create_simple_effect(literal);
-}
-
-EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
-{
-    auto transformed_effects = LiteralList<Fluent> {};
+    auto transformed_literals = LiteralList<Fluent> {};
     for (const auto& literal : this->transform(effect.get_effect()))
     {
         if (literal)
         {
-            transformed_effects.push_back(literal);
+            transformed_literals.push_back(literal);
         }
     }
-    if (transformed_effects.empty())
+    if (transformed_literals.empty())
+    {
+        return nullptr;
+    }
+
+    return this->m_pddl_repositories.get_or_create_simple_effect(transformed_literals);
+}
+
+EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
+{
+    auto transformed_literals = LiteralList<Fluent> {};
+    for (const auto& literal : this->transform(effect.get_effect()))
+    {
+        if (literal)
+        {
+            transformed_literals.push_back(literal);
+        }
+    }
+    if (transformed_literals.empty())
     {
         return nullptr;
     }
@@ -126,14 +119,14 @@ EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& ef
     auto function_expression = this->transform(*effect.get_function_expression());
 
     return this->m_pddl_repositories
-        .get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, transformed_effects, function_expression);
+        .get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, transformed_literals, function_expression);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
-    auto simple_effects = this->transform(action.get_simple_effects());
+    auto simple_effects = this->transform(*action.get_simple_effects());
     auto complex_effects = this->transform(action.get_complex_effects());
-    if (m_remove_useless_actions_and_axioms && simple_effects.empty() && complex_effects.empty())
+    if (m_remove_useless_actions_and_axioms && simple_effects && complex_effects.empty())
     {
         return nullptr;
     }

@@ -56,13 +56,14 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     auto to_enf_translator = ToENFTranslator(domain_parser.get_repositories());
     problem = to_enf_translator.run(*problem);
 
+    std::cout << *problem->get_domain() << std::endl;
+    std::cout << *problem << std::endl;
+
     // To mimir structures
     auto tmp_mimir_pddl_repositories = PDDLRepositories();
     auto to_mimir_structures_translator = ToMimirStructures(tmp_mimir_pddl_repositories);
     m_problem = to_mimir_structures_translator.run(*problem);
     m_domain = m_problem->get_domain();
-
-    // std::cout << *m_domain << std::endl;
 
     // To positive normal form: too expensive in general!
     // auto to_pnf_transformer = ToPositiveNormalFormTransformer(tmp_mimir_pddl_repositories);
