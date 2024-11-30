@@ -49,26 +49,26 @@ private:
     using BaseCachedRecurseTranslator::translate_impl;
 
     /**
-     * 1. e and (phi > e)                        =>  e
-     * 2. e1 and (e2 and e3)                     =>  e1 and e2 and e3    % TODO: combine numeric effects using addition
-     * 3. (phi > e1) and (phi > e2)              =>  phi > (e1 and e2)
-     * 4. forall(vars, e1) and forall(vars, e2)  =>  forall(vars, (e1 and e2))
+     * 1. e and (phi > e)          =>  e
+     * 2. e1 and (e2 and e3)       =>  e1 and e2 and e3
      */
     loki::Effect translate_impl(const loki::EffectAndImpl& effect);
     /**
-     * 5. forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
+     * 3. forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
+     * 4. forall(vars, (e1 and e2))          => forall(vars, e1) and forall(vars, e2)
      */
     loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect);
     /**
-     * 6. phi > (psi > e)                        =>  (phi and psi) > e
-     * 7. phi > forall(vars, e)                  => forall(vars, phi > e)
-     * 8. exists(vars, phi) > e                  => forall(vars, phi > e)
+     * 5. phi > (psi > e)    =>  (phi and psi) > e
+     * 6. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
+     * 7. phi > forall(vars, e)  => forall(vars, phi > e)
+     * 8. exists(vars, phi) > e  => forall(vars, phi > e)
      */
     loki::Effect translate_impl(const loki::EffectCompositeWhenImpl& effect);
     /**
      * Flatten conjunctions.
      *
-     * 9. phi and (psi and chi)  =>  phi and psi and chi  % TODO: combine numeric effects using addition
+     * 9. phi and (psi and chi)  =>  phi and psi and chi
      */
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
 

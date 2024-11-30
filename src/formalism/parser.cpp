@@ -70,7 +70,8 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     // m_problem = to_pnf_transformer.run(*m_problem);
     // m_domain = m_problem->get_domain();
 
-    // std::cout << *m_domain << std::endl;
+    std::cout << *m_domain << std::endl;
+    std::cout << *m_problem << std::endl;
 
     // Encode parameter index in variables
     auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);

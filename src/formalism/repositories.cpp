@@ -331,17 +331,6 @@ Action PDDLRepositories::get_or_create_action(std::string name,
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    // Sort negative conditional effects to the beginning to process them first, additionally sort then by index.
-    // std::sort(complex_effects.begin(),
-    //          complex_effects.end(),
-    //          [](const auto& l, const auto& r)
-    //          {
-    //              if (l->get_effect()->is_negated() == r->get_effect()->is_negated())
-    //              {
-    //                  return l->get_index() < r->get_index();
-    //              }
-    //              return l->get_effect()->is_negated() > r->get_effect()->is_negated();
-    //          });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
         .get_or_create(std::move(name),

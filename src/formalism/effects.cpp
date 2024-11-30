@@ -39,7 +39,6 @@ namespace mimir
 EffectSimpleImpl::EffectSimpleImpl(Index index, LiteralList<Fluent> effects) : m_index(index), m_effects(std::move(effects))
 {
     assert(is_all_unique(m_effects));
-    assert(std::is_sorted(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 std::string EffectSimpleImpl::str() const

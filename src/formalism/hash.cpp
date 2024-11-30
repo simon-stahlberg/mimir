@@ -93,7 +93,8 @@ size_t UniquePDDLHasher<EffectComplex>::operator()(EffectComplex e) const
                                     e->get_parameters(),
                                     e->get_conditions<Static>(),
                                     e->get_conditions<Fluent>(),
-                                    e->get_conditions<Derived>());
+                                    e->get_conditions<Derived>(),
+                                    e->get_function_expression());
 }
 
 size_t UniquePDDLHasher<FunctionExpressionNumber>::operator()(FunctionExpressionNumber e) const { return UniquePDDLHashCombiner()(e->get_number()); }

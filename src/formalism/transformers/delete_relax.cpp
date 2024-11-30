@@ -81,20 +81,7 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
 
 EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effect)
 {
-    auto transformed_literals = LiteralList<Fluent> {};
-    for (const auto& literal : this->transform(effect.get_effect()))
-    {
-        if (literal)
-        {
-            transformed_literals.push_back(literal);
-        }
-    }
-    if (transformed_literals.empty())
-    {
-        return nullptr;
-    }
-
-    return this->m_pddl_repositories.get_or_create_simple_effect(transformed_literals);
+    return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(effect.get_effect()));
 }
 
 EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
@@ -124,9 +111,10 @@ EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& ef
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
-    auto simple_effects = this->transform(*action.get_simple_effects());
+    auto simple_effect = this->transform(*action.get_simple_effects());
     auto complex_effects = this->transform(action.get_complex_effects());
-    if (m_remove_useless_actions_and_axioms && simple_effects && complex_effects.empty())
+
+    if (m_remove_useless_actions_and_axioms && simple_effect->get_effect().empty() && complex_effects.empty())
     {
         return nullptr;
     }
@@ -143,7 +131,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                                 static_conditions,
                                                                                 fluent_conditions,
                                                                                 derived_conditions,
-                                                                                simple_effects,
+                                                                                simple_effect,
                                                                                 complex_effects,
                                                                                 cost_expression);
 

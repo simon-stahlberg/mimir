@@ -18,6 +18,7 @@
 #include "mimir/formalism/translators/utils.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/hash.hpp"
 
 #include <iomanip>
 #include <sstream>
@@ -50,25 +51,6 @@ loki::Condition flatten(const loki::ConditionAndImpl& condition, loki::PDDLRepos
         }
     }
     return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_and(uniquify_elements(parts)));
-}
-
-loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& pddl_repositories)
-{
-    auto parts = loki::EffectList {};
-    for (const auto& part : effect.get_effects())
-    {
-        if (const auto and_effect = std::get_if<loki::EffectAnd>(&part->get_effect()))
-        {
-            const auto& nested_parts = *std::get<loki::EffectAnd>(flatten(**and_effect, pddl_repositories)->get_effect());
-
-            parts.insert(parts.end(), nested_parts.get_effects().begin(), nested_parts.get_effects().end());
-        }
-        else
-        {
-            parts.push_back(part);
-        }
-    }
-    return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_and(uniquify_elements(parts)));
 }
 
 loki::Condition flatten(const loki::ConditionOrImpl& condition, loki::PDDLRepositories& pddl_repositories)
@@ -114,6 +96,67 @@ loki::Condition flatten(const loki::ConditionForallImpl& condition, loki::PDDLRe
         return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_forall(parameters, nested_condition.get_condition()));
     }
     return pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition()));
+}
+
+loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& pddl_repositories)
+{
+    auto function_to_numeric_effects = std::unordered_map<std::pair<loki::AssignOperatorEnum, loki::Function>,
+                                                          loki::EffectList,
+                                                          mimir::Hash<std::pair<loki::AssignOperatorEnum, loki::Function>>> {};
+    auto other_effects = loki::EffectList {};
+
+    for (const auto& part : effect.get_effects())
+    {
+        if (const auto and_effect = std::get_if<loki::EffectAnd>(&part->get_effect()))
+        {
+            const auto& nested_parts = *std::get<loki::EffectAnd>(flatten(**and_effect, pddl_repositories)->get_effect());
+
+            for (const auto& nested_part : nested_parts.get_effects())
+            {
+                if (const auto numeric_effect = std::get_if<loki::EffectNumeric>(&nested_part->get_effect()))
+                {
+                    function_to_numeric_effects[std::make_pair((*numeric_effect)->get_assign_operator(), (*numeric_effect)->get_function())].push_back(
+                        nested_part);
+                }
+                else
+                {
+                    other_effects.push_back(nested_part);
+                }
+            }
+        }
+        else
+        {
+            if (const auto numeric_effect = std::get_if<loki::EffectNumeric>(&part->get_effect()))
+            {
+                function_to_numeric_effects[std::make_pair((*numeric_effect)->get_assign_operator(), (*numeric_effect)->get_function())].push_back(part);
+            }
+            else
+            {
+                other_effects.push_back(part);
+            }
+
+            other_effects.push_back(part);
+        }
+    }
+
+    // Sum aggregate function expressions with same (assign_operator and function).
+    for (const auto& [key, numeric_effects] : function_to_numeric_effects)
+    {
+        const auto& [assign_operator, function] = key;
+
+        auto function_expressions = loki::FunctionExpressionList {};
+        for (const auto& numeric_effect : numeric_effects)
+        {
+            function_expressions.push_back(std::get<loki::EffectNumeric>(numeric_effect->get_effect())->get_function_expression());
+        }
+        other_effects.push_back(pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_numeric(
+            assign_operator,
+            function,
+            pddl_repositories.get_or_create_function_expression(
+                pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, function_expressions)))));
+    }
+
+    return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_and(uniquify_elements(other_effects)));
 }
 
 loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::PDDLRepositories& pddl_repositories)
