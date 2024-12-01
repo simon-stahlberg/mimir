@@ -334,6 +334,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                                               EffectConditionalList conditional_effects)
 {
     /* Canonize before uniqueness test */
+    std::sort(parameters.begin() + original_arity, parameters.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });

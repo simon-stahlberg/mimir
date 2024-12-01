@@ -72,6 +72,94 @@ private:
      */
     loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
 
+    /**
+     * Flatten function expression binary operator
+     *
+     * PLUS
+     *
+     * 1. Flatten nested fexprs
+     * (+ f1 (+ f2 f3))  =>  (+ f1 f2 f3)
+     *
+     * 2. Remove identity
+     * (+ f 0)           =>  f
+     * (+ f f)           =>  (* 2 f)
+     *
+     * 3. Handle constants
+     * (+ 3 4)           =>  7
+     *
+     * MUL
+     *
+     * 1. Flatten nested fexprs
+     * (* f1 (* f2 f3))  =>  (* f1 f2 f3)
+     *
+     * 2. Remove identity
+     * (* f 1)           =>  f
+     * (* f 0)           =>  0
+     * (* f (- 1))       =>  (- f)
+     *
+     * 3. Handle constants
+     * (* 3 4)           =>  12
+     *
+     * DIV
+     *
+     * 1. Remove identity
+     * (/ f 1)           =>  f
+     * (/ 0 f)           =>  0
+     * (/ f f)           =>  1
+     *
+     * 2. Handle division by zero error
+     * (/ f 0)           =>  throw
+     *
+     * 3. Handle constants
+     * (/ 1 4)           =>  0.25
+     *
+     * MINUS
+     *
+     * 1. Remove identity
+     * (- f 0)           =>  f
+     * (- f f)           =>  0
+     *
+     * 2. Handle constants
+     * (- 5 3)           =>  2
+     */
+    // loki::FunctionExpression translate_impl(const loki::FunctionExpressionBinaryOperatorImpl& fexpr);
+
+    /**
+     * Flatten function expression multi operator
+     *
+     * PLUS
+     *
+     * 1. Flatten nested fexprs
+     * (+ f1 (+ f2 f3))  =>  (+ f1 f2 f3)
+     *
+     * 2. Remove identity
+     * (+ f1 f2 0)       =>  (+ f1 f2)
+     * (+ f)             =>  f
+     * (+ )              =>  0
+     *
+     * 3. Combine constants
+     * (+ f 3 4)         =>  (+ f 7)
+     *
+     * 4. Handle repeated terms
+     * (+ f1 f1 f2)      =>  (+ (* 2 f1) f2)
+     *
+     * MUL
+     *
+     * 1. Flatten nested fexprs
+     * (* f1 (* f2 f3))  =>  (* f1 f2 f3)
+     *
+     * 2. Remove identity
+     * (* f (- 1))       =>  (- f)
+     * (* f1 f2 0)       =>  0
+     * (* f1 f2 1)       =>  (* f1 f2)
+     * (* f)             =>  f
+     * (* )              =>  1
+     *
+     * 3. Combine constants
+     * (* f 3 4)         =>  (* f 12)
+     */
+    // loki::FunctionExpression translate_impl(const loki::FunctionExpressionMultiOperatorImpl& fexpr);
+
     loki::Problem run_impl(const loki::ProblemImpl& problem);
 
 public:
