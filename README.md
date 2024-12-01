@@ -60,6 +60,9 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   While modern grounded planners often use Finite Domain Representation (FDR/SAS+), this approach is challenging to adopt in a lifted setting.
   Given that both grounded and lifted settings are supported by the library, the bitset representation ensures consistency across both approaches.
 
+- **State-Dependent Action Costs (SDAC):**
+  State-dependent actions costs play a crucial role in accurately modelling real-world problems. For example, the cost of moving between locations might depend on the actual distance or the type of transportation. Mimir supports all features of `:action-costs` allowing modellers to write complex cost expressions directly into conditional effects.
+
 ## Getting Started (Python)
 
 Mimir is available on [pypi](https://pypi.org/project/pymimir/).
