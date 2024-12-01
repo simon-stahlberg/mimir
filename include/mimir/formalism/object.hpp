@@ -44,8 +44,6 @@ public:
     ObjectImpl(ObjectImpl&& other) = default;
     ObjectImpl& operator=(ObjectImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const std::string& get_name() const;
 };

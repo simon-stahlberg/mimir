@@ -48,8 +48,6 @@ public:
     LiteralImpl(LiteralImpl&& other) = default;
     LiteralImpl& operator=(LiteralImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     bool is_negated() const;
     const Atom<P>& get_atom() const;

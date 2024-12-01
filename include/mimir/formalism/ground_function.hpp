@@ -42,8 +42,6 @@ public:
     GroundFunctionImpl(GroundFunctionImpl&& other) = default;
     GroundFunctionImpl& operator=(GroundFunctionImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;

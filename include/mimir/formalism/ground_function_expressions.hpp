@@ -45,8 +45,6 @@ public:
     GroundFunctionExpressionNumberImpl(GroundFunctionExpressionNumberImpl&& other) = default;
     GroundFunctionExpressionNumberImpl& operator=(GroundFunctionExpressionNumberImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     double get_number() const;
 };
@@ -78,8 +76,6 @@ public:
     GroundFunctionExpressionBinaryOperatorImpl(GroundFunctionExpressionBinaryOperatorImpl&& other) = default;
     GroundFunctionExpressionBinaryOperatorImpl& operator=(GroundFunctionExpressionBinaryOperatorImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
     const GroundFunctionExpression& get_left_function_expression() const;
@@ -109,8 +105,6 @@ public:
     GroundFunctionExpressionMultiOperatorImpl(GroundFunctionExpressionMultiOperatorImpl&& other) = default;
     GroundFunctionExpressionMultiOperatorImpl& operator=(GroundFunctionExpressionMultiOperatorImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const GroundFunctionExpressionList& get_function_expressions() const;
@@ -138,8 +132,6 @@ public:
     GroundFunctionExpressionMinusImpl(GroundFunctionExpressionMinusImpl&& other) = default;
     GroundFunctionExpressionMinusImpl& operator=(GroundFunctionExpressionMinusImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const GroundFunctionExpression& get_function_expression() const;
 };
@@ -165,8 +157,6 @@ public:
     GroundFunctionExpressionFunctionImpl& operator=(const GroundFunctionExpressionFunctionImpl& other) = delete;
     GroundFunctionExpressionFunctionImpl(GroundFunctionExpressionFunctionImpl&& other) = default;
     GroundFunctionExpressionFunctionImpl& operator=(GroundFunctionExpressionFunctionImpl&& other) = default;
-
-    std::string str() const;
 
     Index get_index() const;
     const GroundFunction& get_function() const;

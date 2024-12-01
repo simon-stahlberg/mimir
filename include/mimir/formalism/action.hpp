@@ -58,8 +58,6 @@ public:
     ActionImpl(ActionImpl&& other) = default;
     ActionImpl& operator=(ActionImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const std::string& get_name() const;
     size_t get_original_arity() const;

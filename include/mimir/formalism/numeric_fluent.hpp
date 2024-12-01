@@ -38,8 +38,6 @@ private:
     friend class loki::SegmentedRepository;
 
 public:
-    std::string str() const;
-
     // moveable but not copyable
     NumericFluentImpl(const NumericFluentImpl& other) = delete;
     NumericFluentImpl& operator=(const NumericFluentImpl& other) = delete;

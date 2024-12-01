@@ -44,8 +44,6 @@ public:
     FunctionImpl(FunctionImpl&& other) = default;
     FunctionImpl& operator=(FunctionImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const TermList& get_terms() const;

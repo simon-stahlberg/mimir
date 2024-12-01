@@ -77,8 +77,6 @@ public:
 
     double operator()(const FunctionExpressionMultiOperatorImpl& expr)
     {
-        assert(!expr.get_function_expressions().empty());
-
         auto result = ContinuousCost(0);
         for (const auto& child_expr : expr.get_function_expressions())
         {
@@ -97,7 +95,7 @@ public:
         auto it = m_ground_function_to_cost.find(grounded_function);
         if (it == m_ground_function_to_cost.end())
         {
-            throw std::runtime_error("No numeric fluent available to determine cost for ground function "s + grounded_function->str());
+            throw std::runtime_error("No numeric fluent available to determine cost for ground function "s + to_string(*grounded_function));
         }
         const auto cost = it->second;
 

@@ -30,14 +30,6 @@ GroundLiteralImpl<P>::GroundLiteralImpl(Index index, bool is_negated, GroundAtom
 }
 
 template<PredicateTag P>
-std::string GroundLiteralImpl<P>::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
-template<PredicateTag P>
 Index GroundLiteralImpl<P>::get_index() const
 {
     return m_index;

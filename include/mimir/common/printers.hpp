@@ -23,6 +23,7 @@
 #include <memory>
 #include <ostream>
 #include <set>
+#include <sstream>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -30,6 +31,18 @@
 
 namespace mimir
 {
+
+/**
+ * Utility to write elements to a string using operator<< overload.
+ */
+
+template<typename T>
+std::string to_string(const T& element)
+{
+    auto os = std::stringstream();
+    os << element;
+    return os.str();
+}
 
 /**
  * Forward declarations

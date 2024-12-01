@@ -128,13 +128,6 @@ ProblemImpl::ProblemImpl(Index index,
     }
 }
 
-std::string ProblemImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index ProblemImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& ProblemImpl::get_filepath() const { return m_filepath; }

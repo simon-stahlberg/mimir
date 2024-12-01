@@ -30,13 +30,6 @@ FunctionImpl::FunctionImpl(Index index, FunctionSkeleton function_skeleton, Term
 {
 }
 
-std::string FunctionImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index FunctionImpl::get_index() const { return m_index; }
 
 const FunctionSkeleton& FunctionImpl::get_function_skeleton() const { return m_function_skeleton; }

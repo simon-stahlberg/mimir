@@ -28,13 +28,6 @@ namespace mimir
 /* FunctionExpressionNumber */
 GroundFunctionExpressionNumberImpl::GroundFunctionExpressionNumberImpl(Index index, double number) : m_index(index), m_number(number) {}
 
-std::string GroundFunctionExpressionNumberImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index GroundFunctionExpressionNumberImpl::get_index() const { return m_index; }
 
 double GroundFunctionExpressionNumberImpl::get_number() const { return m_number; }
@@ -49,13 +42,6 @@ GroundFunctionExpressionBinaryOperatorImpl::GroundFunctionExpressionBinaryOperat
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
 {
-}
-
-std::string GroundFunctionExpressionBinaryOperatorImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
 }
 
 Index GroundFunctionExpressionBinaryOperatorImpl::get_index() const { return m_index; }
@@ -84,13 +70,6 @@ GroundFunctionExpressionMultiOperatorImpl::GroundFunctionExpressionMultiOperator
                           }));
 }
 
-std::string GroundFunctionExpressionMultiOperatorImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index GroundFunctionExpressionMultiOperatorImpl::get_index() const { return m_index; }
 
 loki::MultiOperatorEnum GroundFunctionExpressionMultiOperatorImpl::get_multi_operator() const { return m_multi_operator; }
@@ -104,13 +83,6 @@ GroundFunctionExpressionMinusImpl::GroundFunctionExpressionMinusImpl(Index index
 {
 }
 
-std::string GroundFunctionExpressionMinusImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 
 const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
@@ -120,13 +92,6 @@ GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(Index
     m_index(index),
     m_function(std::move(function))
 {
-}
-
-std::string GroundFunctionExpressionFunctionImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
 }
 
 Index GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }

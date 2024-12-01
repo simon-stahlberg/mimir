@@ -45,13 +45,6 @@ EffectStripsImpl::EffectStripsImpl(Index index, LiteralList<Fluent> effects, Fun
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-std::string EffectStripsImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index EffectStripsImpl::get_index() const { return m_index; }
 
 const LiteralList<Fluent>& EffectStripsImpl::get_effects() const { return m_effects; }
@@ -89,13 +82,6 @@ EffectConditionalImpl::EffectConditionalImpl(Index index,
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-}
-
-std::string EffectConditionalImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
 }
 
 Index EffectConditionalImpl::get_index() const { return m_index; }

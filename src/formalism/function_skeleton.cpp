@@ -29,13 +29,6 @@ FunctionSkeletonImpl::FunctionSkeletonImpl(Index index, std::string name, Variab
 {
 }
 
-std::string FunctionSkeletonImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index FunctionSkeletonImpl::get_index() const { return m_index; }
 
 const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }

@@ -374,22 +374,22 @@ void init_pymimir(py::module_& m)
         .export_values();
 
     py::class_<RequirementsImpl>(m, "Requirements")  //
-        .def("__str__", &RequirementsImpl::str)
-        .def("__repr__", &RequirementsImpl::str)
+        .def("__str__", [](const RequirementsImpl& self) { return to_string(self); })
+        .def("__repr__", [](const RequirementsImpl& self) { return to_string(self); })
         .def("get_index", &RequirementsImpl::get_index)
         .def("get_requirements", &RequirementsImpl::get_requirements, py::return_value_policy::reference_internal);
 
     py::class_<ObjectImpl>(m, "Object")  //
-        .def("__str__", &ObjectImpl::str)
-        .def("__repr__", &ObjectImpl::str)
+        .def("__str__", [](const ObjectImpl& self) { return to_string(self); })
+        .def("__repr__", [](const ObjectImpl& self) { return to_string(self); })
         .def("get_index", &ObjectImpl::get_index)
         .def("get_name", &ObjectImpl::get_name, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<ObjectList>::value);  // Ensure return by reference + keep alive
     auto list_class = py::bind_vector<ObjectList>(m, "ObjectList");
 
     py::class_<VariableImpl>(m, "Variable")  //
-        .def("__str__", &VariableImpl::str)
-        .def("__repr__", &VariableImpl::str)
+        .def("__str__", [](const VariableImpl& self) { return to_string(self); })
+        .def("__repr__", [](const VariableImpl& self) { return to_string(self); })
         .def("get_index", &VariableImpl::get_index)
         .def("get_name", &VariableImpl::get_name, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<VariableList>::value);  // Ensure return by reference + keep alive
@@ -406,8 +406,8 @@ void init_pymimir(py::module_& m)
     auto bind_predicate = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         py::class_<PredicateImpl<Tag>>(m, class_name.c_str())
-            .def("__str__", &PredicateImpl<Tag>::str)
-            .def("__repr__", &PredicateImpl<Tag>::str)
+            .def("__str__", [](const PredicateImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const PredicateImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &PredicateImpl<Tag>::get_index)
             .def("get_name", &PredicateImpl<Tag>::get_name, py::return_value_policy::reference_internal)
             .def("get_parameters", &PredicateImpl<Tag>::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -424,8 +424,8 @@ void init_pymimir(py::module_& m)
     auto bind_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         py::class_<AtomImpl<Tag>>(m, class_name.c_str())
-            .def("__str__", &AtomImpl<Tag>::str)
-            .def("__repr__", &AtomImpl<Tag>::str)
+            .def("__str__", [](const AtomImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const AtomImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &AtomImpl<Tag>::get_index)
             .def("get_predicate", &AtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
             .def("get_terms", &AtomImpl<Tag>::get_terms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -439,8 +439,8 @@ void init_pymimir(py::module_& m)
     bind_atom("DerivedAtom", Derived {});
 
     py::class_<FunctionSkeletonImpl>(m, "FunctionSkeleton")  //
-        .def("__str__", &FunctionSkeletonImpl::str)
-        .def("__repr__", &FunctionSkeletonImpl::str)
+        .def("__str__", [](const FunctionSkeletonImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionSkeletonImpl& self) { return to_string(self); })
         .def("get_index", &FunctionSkeletonImpl::get_index)
         .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference_internal)
         .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy);
@@ -448,8 +448,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<FunctionSkeletonList>(m, "FunctionSkeletonList");
 
     py::class_<FunctionImpl>(m, "Function")  //
-        .def("__str__", &FunctionImpl::str)
-        .def("__repr__", &FunctionImpl::str)
+        .def("__str__", [](const FunctionImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionImpl& self) { return to_string(self); })
         .def("get_index", &FunctionImpl::get_index)
         .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
         .def("get_terms", &FunctionImpl::get_terms, py::keep_alive<0, 1>(), py::return_value_policy::copy);
@@ -457,8 +457,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<FunctionList>(m, "FunctionList");
 
     py::class_<GroundFunctionImpl>(m, "GroundFunction")  //
-        .def("__str__", &GroundFunctionImpl::str)
-        .def("__repr__", &GroundFunctionImpl::str)
+        .def("__str__", [](const GroundFunctionImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionImpl& self) { return to_string(self); })
         .def("get_index", &GroundFunctionImpl::get_index)
         .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
         .def("get_objects", &GroundFunctionImpl::get_objects, py::keep_alive<0, 1>(), py::return_value_policy::copy);
@@ -468,8 +468,8 @@ void init_pymimir(py::module_& m)
     auto bind_ground_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         py::class_<GroundAtomImpl<Tag>>(m, class_name.c_str())
-            .def("__str__", &GroundAtomImpl<Tag>::str)
-            .def("__repr__", &GroundAtomImpl<Tag>::str)
+            .def("__str__", [](const GroundAtomImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const GroundAtomImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &GroundAtomImpl<Tag>::get_index)
             .def("get_arity", &GroundAtomImpl<Tag>::get_arity)
             .def("get_predicate", &GroundAtomImpl<Tag>::get_predicate, py::return_value_policy::reference_internal)
@@ -489,8 +489,8 @@ void init_pymimir(py::module_& m)
     auto bind_ground_literal = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         py::class_<GroundLiteralImpl<Tag>>(m, class_name.c_str())
-            .def("__str__", &GroundLiteralImpl<Tag>::str)
-            .def("__repr__", &GroundLiteralImpl<Tag>::str)
+            .def("__str__", [](const GroundLiteralImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const GroundLiteralImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &GroundLiteralImpl<Tag>::get_index)
             .def("get_atom", &GroundLiteralImpl<Tag>::get_atom, py::return_value_policy::reference_internal)
             .def("is_negated", &GroundLiteralImpl<Tag>::is_negated);
@@ -510,8 +510,8 @@ void init_pymimir(py::module_& m)
     auto bind_literal = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         py::class_<LiteralImpl<Tag>>(m, class_name.c_str())
-            .def("__str__", &LiteralImpl<Tag>::str)
-            .def("__repr__", &LiteralImpl<Tag>::str)
+            .def("__str__", [](const LiteralImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const LiteralImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &LiteralImpl<Tag>::get_index)
             .def("get_atom", &LiteralImpl<Tag>::get_atom, py::return_value_policy::reference_internal)
             .def("is_negated", &LiteralImpl<Tag>::is_negated);
@@ -524,8 +524,8 @@ void init_pymimir(py::module_& m)
     bind_literal("DerivedLiteral", Derived {});
 
     py::class_<NumericFluentImpl>(m, "NumericFluent")  //
-        .def("__str__", &NumericFluentImpl::str)
-        .def("__repr__", &NumericFluentImpl::str)
+        .def("__str__", [](const NumericFluentImpl& self) { return to_string(self); })
+        .def("__repr__", [](const NumericFluentImpl& self) { return to_string(self); })
         .def("get_index", &NumericFluentImpl::get_index)
         .def("get_function", &NumericFluentImpl::get_function, py::return_value_policy::reference_internal)
         .def("get_number", &NumericFluentImpl::get_number);
@@ -533,8 +533,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<NumericFluentList>(m, "NumericFluentList");
 
     py::class_<EffectStripsImpl>(m, "EffectStrips")  //
-        .def("__str__", &EffectStripsImpl::str)
-        .def("__repr__", &EffectStripsImpl::str)
+        .def("__str__", [](const EffectStripsImpl& self) { return to_string(self); })
+        .def("__repr__", [](const EffectStripsImpl& self) { return to_string(self); })
         .def("get_index", &EffectStripsImpl::get_index)
         .def("get_effects", &EffectStripsImpl::get_effects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_function_expression", &EffectStripsImpl::get_function_expression, py::return_value_policy::reference_internal);
@@ -548,8 +548,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<FunctionExpressionList>(m, "FunctionExpressionList");
 
     py::class_<EffectConditionalImpl>(m, "EffectConditional")  //
-        .def("__str__", &EffectConditionalImpl::str)
-        .def("__repr__", &EffectConditionalImpl::str)
+        .def("__str__", [](const EffectConditionalImpl& self) { return to_string(self); })
+        .def("__repr__", [](const EffectConditionalImpl& self) { return to_string(self); })
         .def("get_index", &EffectConditionalImpl::get_index)
         .def("get_parameters", &EffectConditionalImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_static_conditions", &EffectConditionalImpl::get_conditions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -560,14 +560,14 @@ void init_pymimir(py::module_& m)
     py::bind_vector<EffectConditionalList>(m, "EffectConditionalList");
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
-        .def("__str__", &FunctionExpressionNumberImpl::str)
-        .def("__repr__", &FunctionExpressionNumberImpl::str)
+        .def("__str__", [](const FunctionExpressionNumberImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionExpressionNumberImpl& self) { return to_string(self); })
         .def("get_index", &FunctionExpressionNumberImpl::get_index)
         .def("get_number", &FunctionExpressionNumberImpl::get_number);
 
     py::class_<FunctionExpressionBinaryOperatorImpl>(m, "FunctionExpressionBinaryOperator")  //
-        .def("__str__", &FunctionExpressionBinaryOperatorImpl::str)
-        .def("__repr__", &FunctionExpressionBinaryOperatorImpl::str)
+        .def("__str__", [](const FunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
         .def("get_index", &FunctionExpressionBinaryOperatorImpl::get_index)
         .def("get_binary_operator", &FunctionExpressionBinaryOperatorImpl::get_binary_operator)
         .def("get_left_function_expression", &FunctionExpressionBinaryOperatorImpl::get_left_function_expression, py::return_value_policy::reference_internal)
@@ -576,21 +576,21 @@ void init_pymimir(py::module_& m)
              py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionMultiOperatorImpl>(m, "FunctionExpressionMultiOperator")  //
-        .def("__str__", &FunctionExpressionMultiOperatorImpl::str)
-        .def("__repr__", &FunctionExpressionMultiOperatorImpl::str)
+        .def("__str__", [](const FunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
         .def("get_index", &FunctionExpressionMultiOperatorImpl::get_index)
         .def("get_multi_operator", &FunctionExpressionMultiOperatorImpl::get_multi_operator)
         .def("get_function_expressions", &FunctionExpressionMultiOperatorImpl::get_function_expressions, py::keep_alive<0, 1>(), py::return_value_policy::copy);
 
     py::class_<FunctionExpressionMinusImpl>(m, "FunctionExpressionMinus")  //
-        .def("__str__", &FunctionExpressionMinusImpl::str)
-        .def("__repr__", &FunctionExpressionMinusImpl::str)
+        .def("__str__", [](const FunctionExpressionMinusImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionExpressionMinusImpl& self) { return to_string(self); })
         .def("get_index", &FunctionExpressionMinusImpl::get_index)
         .def("get_function_expression", &FunctionExpressionMinusImpl::get_function_expression, py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionFunctionImpl>(m, "FunctionExpressionFunction")  //
-        .def("__str__", &FunctionExpressionFunctionImpl::str)
-        .def("__repr__", &FunctionExpressionFunctionImpl::str)
+        .def("__str__", [](const FunctionExpressionFunctionImpl& self) { return to_string(self); })
+        .def("__repr__", [](const FunctionExpressionFunctionImpl& self) { return to_string(self); })
         .def("get_index", &FunctionExpressionFunctionImpl::get_index)
         .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
@@ -603,14 +603,14 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<GroundFunctionExpressionList>(m, "GroundFunctionExpressionList");
 
     py::class_<GroundFunctionExpressionNumberImpl>(m, "GroundFunctionExpressionNumber")  //
-        .def("__str__", &GroundFunctionExpressionNumberImpl::str)
-        .def("__repr__", &GroundFunctionExpressionNumberImpl::str)
+        .def("__str__", [](const GroundFunctionExpressionNumberImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionExpressionNumberImpl& self) { return to_string(self); })
         .def("get_index", &GroundFunctionExpressionNumberImpl::get_index)
         .def("get_number", &GroundFunctionExpressionNumberImpl::get_number);
 
     py::class_<GroundFunctionExpressionBinaryOperatorImpl>(m, "GroundFunctionExpressionBinaryOperator")  //
-        .def("__str__", &GroundFunctionExpressionBinaryOperatorImpl::str)
-        .def("__repr__", &GroundFunctionExpressionBinaryOperatorImpl::str)
+        .def("__str__", [](const GroundFunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionExpressionBinaryOperatorImpl& self) { return to_string(self); })
         .def("get_index", &GroundFunctionExpressionBinaryOperatorImpl::get_index)
         .def("get_binary_operator", &GroundFunctionExpressionBinaryOperatorImpl::get_binary_operator)
         .def("get_left_function_expression",
@@ -621,8 +621,8 @@ void init_pymimir(py::module_& m)
              py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionMultiOperatorImpl>(m, "GroundFunctionExpressionMultiOperator")  //
-        .def("__str__", &GroundFunctionExpressionMultiOperatorImpl::str)
-        .def("__repr__", &GroundFunctionExpressionMultiOperatorImpl::str)
+        .def("__str__", [](const GroundFunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionExpressionMultiOperatorImpl& self) { return to_string(self); })
         .def("get_index", &GroundFunctionExpressionMultiOperatorImpl::get_index)
         .def("get_multi_operator", &GroundFunctionExpressionMultiOperatorImpl::get_multi_operator)
         .def("get_function_expressions",
@@ -631,27 +631,27 @@ void init_pymimir(py::module_& m)
              py::return_value_policy::copy);
 
     py::class_<GroundFunctionExpressionMinusImpl>(m, "GroundFunctionExpressionMinus")  //
-        .def("__str__", &GroundFunctionExpressionMinusImpl::str)
-        .def("__repr__", &GroundFunctionExpressionMinusImpl::str)
+        .def("__str__", [](const GroundFunctionExpressionMinusImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionExpressionMinusImpl& self) { return to_string(self); })
         .def("get_index", &GroundFunctionExpressionMinusImpl::get_index)
         .def("get_function_expression", &GroundFunctionExpressionMinusImpl::get_function_expression, py::return_value_policy::reference_internal);
 
     py::class_<GroundFunctionExpressionFunctionImpl>(m, "GroundFunctionExpressionFunction")  //
-        .def("__str__", &GroundFunctionExpressionFunctionImpl::str)
-        .def("__repr__", &GroundFunctionExpressionFunctionImpl::str)
+        .def("__str__", [](const GroundFunctionExpressionFunctionImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionExpressionFunctionImpl& self) { return to_string(self); })
         .def("get_index", &GroundFunctionExpressionFunctionImpl::get_index)
         .def("get_function", &GroundFunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
 
     py::class_<OptimizationMetricImpl>(m, "OptimizationMetric")  //
-        .def("__str__", &OptimizationMetricImpl::str)
-        .def("__repr__", &OptimizationMetricImpl::str)
+        .def("__str__", [](const OptimizationMetricImpl& self) { return to_string(self); })
+        .def("__repr__", [](const OptimizationMetricImpl& self) { return to_string(self); })
         .def("get_index", &OptimizationMetricImpl::get_index)
         .def("get_function_expression", &OptimizationMetricImpl::get_function_expression, py::return_value_policy::reference_internal)
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
     py::class_<ActionImpl>(m, "Action")  //
-        .def("__str__", &ActionImpl::str)
-        .def("__repr__", &ActionImpl::str)
+        .def("__str__", [](const ActionImpl& self) { return to_string(self); })
+        .def("__repr__", [](const ActionImpl& self) { return to_string(self); })
         .def("get_index", &ActionImpl::get_index)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::copy)
         .def("get_parameters", &ActionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -665,8 +665,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<ActionList>(m, "ActionList");
 
     py::class_<AxiomImpl>(m, "Axiom")  //
-        .def("__str__", &AxiomImpl::str)
-        .def("__repr__", &AxiomImpl::str)
+        .def("__str__", [](const AxiomImpl& self) { return to_string(self); })
+        .def("__repr__", [](const AxiomImpl& self) { return to_string(self); })
         .def("get_index", &AxiomImpl::get_index)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference_internal)
         .def("get_static_conditions", &AxiomImpl::get_conditions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -677,8 +677,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<AxiomList>(m, "AxiomList");
 
     py::class_<DomainImpl>(m, "Domain")  //
-        .def("__str__", &DomainImpl::str)
-        .def("__repr__", &DomainImpl::str)
+        .def("__str__", [](const DomainImpl& self) { return to_string(self); })
+        .def("__repr__", [](const DomainImpl& self) { return to_string(self); })
         .def("get_index", &DomainImpl::get_index)
         .def(
             "get_filepath",
@@ -699,8 +699,8 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<DomainList>(m, "DomainList");
 
     py::class_<ProblemImpl>(m, "Problem")  //
-        .def("__str__", &ProblemImpl::str)
-        .def("__repr__", &ProblemImpl::str)
+        .def("__str__", [](const ProblemImpl& self) { return to_string(self); })
+        .def("__repr__", [](const ProblemImpl& self) { return to_string(self); })
         .def("get_index", &ProblemImpl::get_index)
         .def(
             "get_filepath",

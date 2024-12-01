@@ -48,8 +48,6 @@ public:
     GroundLiteralImpl(GroundLiteralImpl&& other) = default;
     GroundLiteralImpl& operator=(GroundLiteralImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;

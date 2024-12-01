@@ -48,8 +48,6 @@ public:
     PredicateImpl(PredicateImpl&& other) = default;
     PredicateImpl& operator=(PredicateImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const std::string& get_name() const;
     const VariableList& get_parameters() const;

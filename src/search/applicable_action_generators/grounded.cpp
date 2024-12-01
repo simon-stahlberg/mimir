@@ -65,9 +65,11 @@ static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& at
               });
     for (const auto& [_predicate, group] : sorted_groups)
     {
-        // Sort grounded atoms in each group by indices to get compiler independent results.
+        // Sort grounded atoms in each group by names to get compiler independent results.
         auto sorted_group = group;
-        std::sort(sorted_group.begin(), sorted_group.end(), [](const GroundAtom<P>& left, const GroundAtom<P>& right) { return left->str() < right->str(); });
+        std::sort(sorted_group.begin(),
+                  sorted_group.end(),
+                  [](const GroundAtom<P>& left, const GroundAtom<P>& right) { return to_string(*left) < to_string(*right); });
         for (const auto& grounded_atom : sorted_group)
 
         {

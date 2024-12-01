@@ -45,8 +45,6 @@ public:
     FunctionExpressionNumberImpl(FunctionExpressionNumberImpl&& other) = default;
     FunctionExpressionNumberImpl& operator=(FunctionExpressionNumberImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     double get_number() const;
 };
@@ -78,8 +76,6 @@ public:
     FunctionExpressionBinaryOperatorImpl(FunctionExpressionBinaryOperatorImpl&& other) = default;
     FunctionExpressionBinaryOperatorImpl& operator=(FunctionExpressionBinaryOperatorImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     loki::BinaryOperatorEnum get_binary_operator() const;
     const FunctionExpression& get_left_function_expression() const;
@@ -109,8 +105,6 @@ public:
     FunctionExpressionMultiOperatorImpl(FunctionExpressionMultiOperatorImpl&& other) = default;
     FunctionExpressionMultiOperatorImpl& operator=(FunctionExpressionMultiOperatorImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const FunctionExpressionList& get_function_expressions() const;
@@ -138,8 +132,6 @@ public:
     FunctionExpressionMinusImpl(FunctionExpressionMinusImpl&& other) = default;
     FunctionExpressionMinusImpl& operator=(FunctionExpressionMinusImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const FunctionExpression& get_function_expression() const;
 };
@@ -165,8 +157,6 @@ public:
     FunctionExpressionFunctionImpl& operator=(const FunctionExpressionFunctionImpl& other) = delete;
     FunctionExpressionFunctionImpl(FunctionExpressionFunctionImpl&& other) = default;
     FunctionExpressionFunctionImpl& operator=(FunctionExpressionFunctionImpl&& other) = default;
-
-    std::string str() const;
 
     Index get_index() const;
     const Function& get_function() const;

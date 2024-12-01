@@ -48,8 +48,6 @@ public:
     GroundAtomImpl(GroundAtomImpl&& other) = default;
     GroundAtomImpl& operator=(GroundAtomImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     Predicate<P> get_predicate() const;
     const ObjectList& get_objects() const;

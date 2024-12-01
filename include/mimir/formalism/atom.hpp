@@ -47,8 +47,6 @@ public:
     AtomImpl(AtomImpl&& other) = default;
     AtomImpl& operator=(AtomImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     Predicate<P> get_predicate() const;
     const TermList& get_terms() const;

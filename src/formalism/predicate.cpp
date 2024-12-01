@@ -35,14 +35,6 @@ PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList para
 }
 
 template<PredicateTag P>
-std::string PredicateImpl<P>::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
-template<PredicateTag P>
 Index PredicateImpl<P>::get_index() const
 {
     return m_index;

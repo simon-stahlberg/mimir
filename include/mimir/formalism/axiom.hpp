@@ -50,8 +50,6 @@ public:
     AxiomImpl(AxiomImpl&& other) = default;
     AxiomImpl& operator=(AxiomImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const VariableList& get_parameters() const;
     const Literal<Derived>& get_literal() const;

@@ -26,13 +26,6 @@ VariableImpl::VariableImpl(Index index, std::string name, size_t parameter_index
 {
 }
 
-std::string VariableImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index VariableImpl::get_index() const { return m_index; }
 
 const std::string& VariableImpl::get_name() const { return m_name; }

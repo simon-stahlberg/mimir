@@ -66,8 +66,6 @@ public:
     DomainImpl(DomainImpl&& other) = default;
     DomainImpl& operator=(DomainImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const std::optional<fs::path>& get_filepath() const;
     const std::string& get_name() const;

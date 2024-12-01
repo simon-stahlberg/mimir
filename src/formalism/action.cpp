@@ -69,13 +69,6 @@ ActionImpl::ActionImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-std::string ActionImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }

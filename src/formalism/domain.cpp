@@ -100,13 +100,6 @@ DomainImpl::DomainImpl(Index index,
     }
 }
 
-std::string DomainImpl::str() const
-{
-    auto out = std::stringstream();
-    out << *this;
-    return out.str();
-}
-
 Index DomainImpl::get_index() const { return m_index; }
 
 const std::optional<fs::path>& DomainImpl::get_filepath() const { return m_filepath; }

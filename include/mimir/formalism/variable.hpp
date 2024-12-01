@@ -45,8 +45,6 @@ public:
     VariableImpl(VariableImpl&& other) = default;
     VariableImpl& operator=(VariableImpl&& other) = default;
 
-    std::string str() const;
-
     Index get_index() const;
     const std::string& get_name() const;
     const size_t get_parameter_index() const;
