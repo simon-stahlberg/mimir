@@ -195,6 +195,10 @@ FlatBitset& StripsActionEffect::get_negative_effects() { return m_negative_effec
 
 const FlatBitset& StripsActionEffect::get_negative_effects() const { return m_negative_effects; }
 
+ContinuousCost& StripsActionEffect::get_cost() { return m_cost; }
+
+const ContinuousCost& StripsActionEffect::get_cost() const { return m_cost; }
+
 /* ConditionalEffect */
 
 template<PredicateTag P>
@@ -301,6 +305,10 @@ SimpleFluentEffectList& ConditionalEffect::get_simple_effect() { return m_effect
 
 const SimpleFluentEffectList& ConditionalEffect::get_simple_effect() const { return m_effect; }
 
+ContinuousCost& ConditionalEffect::get_cost() { return m_cost; }
+
+const ContinuousCost& ConditionalEffect::get_cost() const { return m_cost; }
+
 template<DynamicPredicateTag P>
 bool ConditionalEffect::is_applicable(State state) const
 {
@@ -337,10 +345,6 @@ Index GroundActionImpl::get_index() const { return m_index; }
 Index& GroundActionImpl::get_action_index() { return m_action_index; }
 
 Index GroundActionImpl::get_action_index() const { return m_action_index; }
-
-ContinuousCost& GroundActionImpl::get_cost() { return m_cost; }
-
-ContinuousCost GroundActionImpl::get_cost() const { return m_cost; }
 
 FlatIndexList& GroundActionImpl::get_objects() { return m_objects; }
 

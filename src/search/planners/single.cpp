@@ -24,11 +24,11 @@ namespace mimir
 
 SinglePlanner::SinglePlanner(std::shared_ptr<IAlgorithm> algorithm) : m_algorithm(std::move(algorithm)) {}
 
-std::tuple<SearchStatus, Plan> SinglePlanner::find_solution()
+std::tuple<SearchStatus, std::optional<Plan>> SinglePlanner::find_solution()
 {
-    auto action_view_list = GroundActionList {};
-    const auto status = m_algorithm->find_solution(action_view_list);
-    return std::make_tuple(status, to_plan(action_view_list, *m_algorithm->get_pddl_repositories()));
+    auto plan = std::optional<Plan> {};
+    const auto status = m_algorithm->find_solution(plan);
+    return std::make_tuple(status, plan);
 }
 
 }

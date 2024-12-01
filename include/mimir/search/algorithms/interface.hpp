@@ -45,13 +45,13 @@ public:
     virtual ~IAlgorithm() = default;
 
     /// @brief Find a plan for the initial state.
-    virtual SearchStatus find_solution(GroundActionList& out_plan) = 0;
+    virtual SearchStatus find_solution(std::optional<Plan>& out_plan) = 0;
 
     /// @brief Find a plan for a given state.
-    virtual SearchStatus find_solution(State start_state, GroundActionList& out_plan) = 0;
+    virtual SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan) = 0;
 
     /// @brief Find a plan for a given state.
-    virtual SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) = 0;
+    virtual SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state) = 0;
 
     virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
 };

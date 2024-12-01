@@ -38,11 +38,11 @@ public:
                                       std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
                                       std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler);
 
-    SearchStatus find_solution(GroundActionList& out_plan) override;
+    SearchStatus find_solution(std::optional<Plan>& out_plan) override;
 
-    SearchStatus find_solution(State start_state, GroundActionList& out_plan) override;
+    SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan) override;
 
-    SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override;
+    SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state) override;
 
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 

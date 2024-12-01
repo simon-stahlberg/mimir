@@ -81,7 +81,7 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
 
 EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effect)
 {
-    return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(effect.get_effect()));
+    return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(effect.get_effect()), this->transform(*effect.get_function_expression()));
 }
 
 EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
@@ -123,7 +123,6 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto static_conditions = filter_positive_literals(this->transform(action.get_conditions<Static>()));
     auto fluent_conditions = filter_positive_literals(this->transform(action.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(action.get_conditions<Derived>()));
-    auto cost_expression = this->transform(*action.get_function_expression());
 
     auto delete_relaxed_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
                                                                                 action.get_original_arity(),
@@ -132,8 +131,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                                 fluent_conditions,
                                                                                 derived_conditions,
                                                                                 simple_effect,
-                                                                                complex_effects,
-                                                                                cost_expression);
+                                                                                complex_effects);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
 

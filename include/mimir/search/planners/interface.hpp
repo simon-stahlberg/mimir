@@ -32,7 +32,7 @@ class IPlanner
 public:
     virtual ~IPlanner() = default;
 
-    virtual std::tuple<SearchStatus, Plan> find_solution() = 0;
+    virtual std::tuple<SearchStatus, std::optional<Plan>> find_solution() = 0;
 };
 
 }

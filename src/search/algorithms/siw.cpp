@@ -22,6 +22,7 @@
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
+#include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <sstream>
@@ -92,15 +93,15 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
     }
 }
 
-SearchStatus SerializedIterativeWidthAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_initial_state, out_plan); }
+SearchStatus SerializedIterativeWidthAlgorithm::find_solution(std::optional<Plan>& out_plan) { return find_solution(m_initial_state, out_plan); }
 
-SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
+SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan)
 {
     std::optional<State> unused_out_state = std::nullopt;
     return find_solution(start_state, out_plan, unused_out_state);
 }
 
-SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
+SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
 {
     const auto problem = m_applicable_action_generator->get_problem();
     const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
@@ -116,12 +117,15 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     auto cur_state = start_state;
     std::optional<State> goal_state = std::nullopt;
 
+    auto out_action_list = GroundActionList {};
+    auto out_costs = ContinuousCost(0);
+
     while (!problem_goal_test->test_dynamic_goal(cur_state))
     {
         // Run IW to decrease goal counter
         m_siw_event_handler->on_start_subproblem_search(problem, cur_state, pddl_repositories);
 
-        auto partial_plan = GroundActionList {};
+        auto partial_plan = std::optional<Plan> {};
 
         const auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state), partial_plan, goal_state);
 
@@ -141,7 +145,8 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
 
         assert(goal_state.has_value());
         cur_state = goal_state.value();
-        out_plan.insert(out_plan.end(), partial_plan.begin(), partial_plan.end());
+        out_action_list.insert(out_action_list.end(), partial_plan.value().get_actions().begin(), partial_plan.value().get_actions().end());
+        out_costs += partial_plan.value().get_cost();
 
         m_siw_event_handler->on_end_subproblem_search(m_iw_event_handler->get_statistics());
     }
@@ -152,7 +157,8 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_applicable_action_generator->on_end_search();
     }
-    m_siw_event_handler->on_solved(out_plan, *m_applicable_action_generator->get_pddl_repositories());
+    out_plan = Plan(std::move(out_action_list), out_costs);
+    m_siw_event_handler->on_solved(out_plan.value(), *m_applicable_action_generator->get_pddl_repositories());
     return SearchStatus::SOLVED;
 }
 

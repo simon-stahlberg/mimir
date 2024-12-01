@@ -61,11 +61,11 @@ public:
     {
     }
 
-    std::tuple<SearchStatus, Plan> find_solution()
+    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
     {
-        auto action_view_list = GroundActionList {};
-        const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list, *m_applicable_action_generator->get_pddl_repositories()));
+        auto plan = std::optional<Plan> {};
+        const auto status = m_algorithm->find_solution(plan);
+        return std::make_tuple(status, plan);
     }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
@@ -102,11 +102,11 @@ public:
     {
     }
 
-    std::tuple<SearchStatus, Plan> find_solution()
+    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
     {
-        auto action_view_list = GroundActionList {};
-        const auto status = m_algorithm->find_solution(action_view_list);
-        return std::make_tuple(status, to_plan(action_view_list, *m_applicable_action_generator->get_pddl_repositories()));
+        auto plan = std::optional<Plan> {};
+        const auto status = m_algorithm->find_solution(plan);
+        return std::make_tuple(status, plan);
     }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
@@ -307,7 +307,7 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
     auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 3);
     const auto [search_status, plan] = iw.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 4);
+    EXPECT_EQ(plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
 
@@ -334,7 +334,7 @@ TEST(MimirTests, SearchAlgorithmsIWLiftedDeliveryTest)
     auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 3);
     const auto [search_status, plan] = iw.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 4);
+    EXPECT_EQ(plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
 
@@ -362,7 +362,7 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedMiconicFullAdlTest)
                                 3);
     const auto [search_status, plan] = iw.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 7);
+    EXPECT_EQ(plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
 
@@ -391,7 +391,7 @@ TEST(MimirTests, SearchAlgorithmsIWLiftedMiconicFullAdlTest)
                               3);
     const auto [search_status, plan] = iw.find_solution();
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 7);
+    EXPECT_EQ(plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
 

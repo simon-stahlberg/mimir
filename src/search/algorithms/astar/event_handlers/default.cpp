@@ -64,15 +64,15 @@ void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, 
 
 void DefaultAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultAStarAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) const
+void DefaultAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
 {
-    auto plan = to_plan(ground_action_plan, pddl_repositories);
     std::cout << "[AStar] Plan found.\n"
               << "[AStar] Plan cost: " << plan.get_cost() << "\n"
               << "[AStar] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[AStar] " << i + 1 << ". " << plan.get_actions()[i] << std::endl;
+        std::cout << "[AStar] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {})
+                  << std::endl;
     }
 }
 

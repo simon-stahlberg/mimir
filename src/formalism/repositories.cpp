@@ -294,12 +294,12 @@ FunctionSkeleton PDDLRepositories::get_or_create_function_skeleton(std::string n
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl> {}).get_or_create(std::move(name), std::move(parameters));
 }
 
-EffectSimple PDDLRepositories::get_or_create_simple_effect(LiteralList<Fluent> effects)
+EffectSimple PDDLRepositories::get_or_create_simple_effect(LiteralList<Fluent> effects, FunctionExpression function_expression)
 {
     /* Canonize before uniqueness test. */
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).get_or_create(std::move(effects));
+    return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).get_or_create(std::move(effects), std::move(function_expression));
 }
 
 EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parameters,
@@ -331,8 +331,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                                               LiteralList<Fluent> fluent_conditions,
                                               LiteralList<Derived> derived_conditions,
                                               EffectSimple simple_effect,
-                                              EffectComplexList complex_effects,
-                                              FunctionExpression function_expression)
+                                              EffectComplexList complex_effects)
 {
     /* Canonize before uniqueness test */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -348,8 +347,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                        std::move(fluent_conditions),
                        std::move(derived_conditions),
                        std::move(simple_effect),
-                       std::move(complex_effects),
-                       std::move(function_expression));
+                       std::move(complex_effects));
 }
 
 Axiom PDDLRepositories::get_or_create_axiom(VariableList parameters,

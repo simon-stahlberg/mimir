@@ -31,10 +31,11 @@ class EffectSimpleImpl
 private:
     Index m_index;
     LiteralList<Fluent> m_effects;
+    FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectSimpleImpl(Index index, LiteralList<Fluent> effects);
+    EffectSimpleImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -51,6 +52,7 @@ public:
 
     Index get_index() const;
     const LiteralList<Fluent>& get_effect() const;
+    const FunctionExpression& get_function_expression() const;
 };
 
 /**

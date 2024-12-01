@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_PLAN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/action.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <cstdint>
@@ -32,22 +33,19 @@ namespace mimir
 class Plan
 {
 private:
-    std::vector<std::string> m_actions;
+    GroundActionList m_actions;
     ContinuousCost m_cost;
 
 public:
-    Plan(std::vector<std::string> actions, ContinuousCost cost);
+    Plan(GroundActionList actions, ContinuousCost cost);
 
-    const std::vector<std::string>& get_actions() const;
+    const GroundActionList& get_actions() const;
 
     ContinuousCost get_cost() const;
 };
 
-/// @brief Translates a ground action list to a plan
-extern Plan to_plan(const GroundActionList& action_view_list, const PDDLRepositories& factories);
-
 /// @brief Write the plan to an ostream.
-extern std::ostream& operator<<(std::ostream& os, const Plan& plan);
+extern std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const PDDLRepositories&>& data);
 
 }
 

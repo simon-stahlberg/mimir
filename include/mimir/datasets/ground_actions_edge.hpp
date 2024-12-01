@@ -33,26 +33,18 @@ namespace mimir
  * Declarations
  */
 
-using GroundActionsEdge = Edge<std::span<const GroundAction>>;
+using GroundActionsEdge = Edge<std::span<const GroundAction>, ContinuousCost>;
 using GroundActionsEdgeList = std::vector<GroundActionsEdge>;
 
 inline std::span<const GroundAction> get_actions(const GroundActionsEdge& edge) { return edge.get_property<0>(); }
-
-inline ContinuousCost get_cost(const GroundActionsEdge& edge)
-{
-    auto cost = std::numeric_limits<ContinuousCost>::infinity();
-
-    const auto actions = get_actions(edge);
-    std::for_each(actions.begin(), actions.end(), [&cost](const auto& action) { cost = std::min(cost, action->get_cost()); });
-
-    return cost;
-}
 
 inline GroundAction get_representative_action(const GroundActionsEdge& edge)
 {
     assert(!edge.get_property<0>().empty());
     return edge.get_property<0>().front();
 }
+
+inline ContinuousCost get_cost(const GroundActionsEdge& edge) { return edge.get_property<1>(); }
 
 }
 

@@ -57,7 +57,7 @@ public:
 
     State get_or_create_state(const GroundAtomList<Fluent>& atoms);
 
-    State get_or_create_successor_state(State state, GroundAction action);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
 
     size_t get_state_count() const;
 

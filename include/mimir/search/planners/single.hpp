@@ -37,7 +37,7 @@ private:
 public:
     SinglePlanner(std::shared_ptr<IAlgorithm> algorithm);
 
-    std::tuple<SearchStatus, Plan> find_solution() override;
+    std::tuple<SearchStatus, std::optional<Plan>> find_solution() override;
 };
 
 }

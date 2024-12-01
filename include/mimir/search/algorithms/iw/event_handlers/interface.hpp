@@ -50,7 +50,7 @@ public:
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -125,11 +125,11 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(ground_action_plan, pddl_repositories);
+            self().on_solved_impl(plan, pddl_repositories);
         }
     }
 

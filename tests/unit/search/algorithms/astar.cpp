@@ -52,7 +52,7 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
     auto [search_status, plan] = planner.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 3);
+    EXPECT_EQ(plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar_event_handler->get_statistics();
 
@@ -78,7 +78,7 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
     auto [search_status, plan] = planner.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 3);
+    EXPECT_EQ(plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar_event_handler->get_statistics();
 
@@ -103,7 +103,7 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
     auto [search_status, plan] = planner.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 3);
+    EXPECT_EQ(plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar_event_handler->get_statistics();
 
@@ -129,7 +129,7 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
     auto [search_status, plan] = planner.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.get_actions().size(), 3);
+    EXPECT_EQ(plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar_event_handler->get_statistics();
 

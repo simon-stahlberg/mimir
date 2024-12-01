@@ -81,7 +81,8 @@ class IIWAlgorithmEventHandler;
 // Serialized iterative width search
 class ISIWAlgorithmEventHandler;
 
-// AStar search
+// Plan
+class Plan;
 
 }
 

@@ -43,16 +43,16 @@ public:
                   std::shared_ptr<StateRepository> successor_state_generator,
                   std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler);
 
-    SearchStatus find_solution(GroundActionList& out_plan) override;
+    SearchStatus find_solution(std::optional<Plan>& out_plan) override;
 
-    SearchStatus find_solution(State start_state, GroundActionList& out_plan) override;
+    SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan) override;
 
-    SearchStatus find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state) override;
+    SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state) override;
 
     SearchStatus find_solution(State start_state,
                                std::unique_ptr<IGoalStrategy>&& goal_strategy,
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                               GroundActionList& out_plan,
+                               std::optional<Plan>& out_plan,
                                std::optional<State>& out_goal_state);
 
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;

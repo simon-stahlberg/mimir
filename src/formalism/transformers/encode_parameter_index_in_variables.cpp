@@ -150,8 +150,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
                                                                                   this->transform(action.get_conditions<Fluent>()),
                                                                                   this->transform(action.get_conditions<Derived>()),
                                                                                   this->transform(*action.get_simple_effects()),
-                                                                                  translated_complex_effects,
-                                                                                  this->transform(*action.get_function_expression()));
+                                                                                  translated_complex_effects);
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();

@@ -41,8 +41,7 @@ ActionImpl::ActionImpl(Index index,
                        LiteralList<Fluent> fluent_conditions,
                        LiteralList<Derived> derived_conditions,
                        EffectSimple simple_effect,
-                       EffectComplexList complex_effects,
-                       FunctionExpression function_expression) :
+                       EffectComplexList complex_effects) :
     m_index(index),
     m_name(std::move(name)),
     m_original_arity(std::move(original_arity)),
@@ -51,8 +50,7 @@ ActionImpl::ActionImpl(Index index,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_simple_effect(std::move(simple_effect)),
-    m_complex_effects(std::move(complex_effects)),
-    m_function_expression(std::move(function_expression))
+    m_complex_effects(std::move(complex_effects))
 {
     assert(m_original_arity <= m_parameters.size());
     assert(is_all_unique(m_parameters));
@@ -112,8 +110,6 @@ template const LiteralList<Derived>& ActionImpl::get_conditions<Derived>() const
 const EffectSimple& ActionImpl::get_simple_effects() const { return m_simple_effect; }
 
 const EffectComplexList& ActionImpl::get_complex_effects() const { return m_complex_effects; }
-
-const FunctionExpression& ActionImpl::get_function_expression() const { return m_function_expression; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
 

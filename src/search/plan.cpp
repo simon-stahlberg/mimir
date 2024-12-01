@@ -24,33 +24,21 @@ namespace mimir
 
 /* Plan */
 
-Plan::Plan(std::vector<std::string> actions, ContinuousCost cost) : m_actions(std::move(actions)), m_cost(cost) {}
+Plan::Plan(GroundActionList actions, ContinuousCost cost) : m_actions(std::move(actions)), m_cost(cost) {}
 
-const std::vector<std::string>& Plan::get_actions() const { return m_actions; }
+const GroundActionList& Plan::get_actions() const { return m_actions; }
 
 ContinuousCost Plan::get_cost() const { return m_cost; }
 
 /* Utility */
 
-Plan to_plan(const GroundActionList& action_view_list, const PDDLRepositories& factories)
+std::ostream& operator<<(std::ostream& os, const std::tuple<const Plan&, const PDDLRepositories&>& data)
 {
-    auto actions = std::vector<std::string> {};
-    auto cost = ContinuousCost(0);
-    for (const auto action : action_view_list)
-    {
-        std::stringstream ss;
-        ss << std::make_tuple(action, std::cref(factories), PlanActionFormatterTag {});
-        actions.push_back(ss.str());
-        cost += action->get_cost();
-    }
-    return Plan(std::move(actions), cost);
-}
+    const auto& [plan, pddl_repositories] = data;
 
-std::ostream& operator<<(std::ostream& os, const Plan& plan)
-{
     for (const auto& action : plan.get_actions())
     {
-        os << action << "\n";
+        os << std::make_tuple(action, std::cref(pddl_repositories), PlanActionFormatterTag {}) << "\n";
     }
     os << "; cost = " << plan.get_cost();
 

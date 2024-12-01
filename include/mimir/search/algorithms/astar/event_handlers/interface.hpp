@@ -71,7 +71,7 @@ public:
     virtual void on_end_search() = 0;
 
     /// @brief React on solving a search.
-    virtual void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on proving unsolvability during a search.
     virtual void on_unsolvable() = 0;
@@ -197,11 +197,11 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_solved_impl(ground_action_plan, pddl_repositories);
+            self().on_solved_impl(plan, pddl_repositories);
         }
     }
 
@@ -261,7 +261,7 @@ public:
 
     virtual void on_end_search_impl() {}
 
-    virtual void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) {}
+    virtual void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) {}
 
     virtual void on_unsolvable_impl() {}
 
@@ -354,11 +354,11 @@ public:
         }
     }
 
-    void on_solved(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            on_solved_impl(ground_action_plan, pddl_repositories);
+            on_solved_impl(plan, pddl_repositories);
         }
     }
 

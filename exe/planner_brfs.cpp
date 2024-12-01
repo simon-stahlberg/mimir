@@ -103,7 +103,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << plan;
+        plan_file << std::make_tuple(std::cref(plan.value()), std::cref(*parser.get_pddl_repositories()));
         plan_file.close();
     }
 

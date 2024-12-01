@@ -122,6 +122,7 @@ void set_plan(const cista::storage::Vector<SearchNodeImpl<SearchNodeProperties..
               GroundActionList& out_plan)
 {
     out_plan.clear();
+
     auto cur_search_node = search_node;
 
     while (get_parent_state(cur_search_node) != std::numeric_limits<Index>::max())

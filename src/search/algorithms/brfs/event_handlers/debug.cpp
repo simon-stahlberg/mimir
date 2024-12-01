@@ -66,15 +66,14 @@ void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Pro
 
 void DebugBrFSAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[BrFS] Search ended.\n" << m_statistics << std::endl; }
 
-void DebugBrFSAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) const
+void DebugBrFSAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
 {
-    auto plan = to_plan(ground_action_plan, pddl_repositories);
     std::cout << "[BrFS] Plan found.\n"
               << "[BrFS] Plan cost: " << plan.get_cost() << "\n"
               << "[BrFS] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[BrFS] " << i + 1 << ". " << plan.get_actions()[i] << std::endl;
+        std::cout << "[BrFS] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {}) << std::endl;
     }
 }
 

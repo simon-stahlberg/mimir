@@ -247,7 +247,7 @@ public:
     FunctionSkeleton get_or_create_function_skeleton(std::string name, VariableList parameters);
 
     /// @brief Get or create a simple effect for the given parameters.
-    EffectSimple get_or_create_simple_effect(LiteralList<Fluent> effects);
+    EffectSimple get_or_create_simple_effect(LiteralList<Fluent> effects, FunctionExpression function_expression);
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     EffectComplex get_or_create_complex_effect(VariableList parameters,
@@ -265,8 +265,7 @@ public:
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
                                 EffectSimple simple_effect,
-                                EffectComplexList complex_effects,
-                                FunctionExpression function_expression);
+                                EffectComplexList complex_effects);
 
     /// @brief Get or create a derived predicate for the given parameters.
     Axiom get_or_create_axiom(VariableList parameters,

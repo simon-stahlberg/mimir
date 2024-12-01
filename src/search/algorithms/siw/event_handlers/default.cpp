@@ -34,15 +34,14 @@ void DefaultSIWAlgorithmEventHandler::on_end_subproblem_search_impl(const IWAlgo
 
 void DefaultSIWAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[IW] Search ended.\n" << m_statistics << std::endl; }
 
-void DefaultSIWAlgorithmEventHandler::on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) const
+void DefaultSIWAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
 {
-    auto plan = to_plan(ground_action_plan, pddl_repositories);
     std::cout << "[SIW] Plan found.\n"
               << "[SIW] Plan cost: " << plan.get_cost() << "\n"
               << "[SIW] Plan length: " << plan.get_actions().size() << std::endl;
     for (size_t i = 0; i < plan.get_actions().size(); ++i)
     {
-        std::cout << "[SIW] " << i + 1 << ". " << plan.get_actions()[i] << std::endl;
+        std::cout << "[SIW] " << i + 1 << ". " << std::make_tuple(plan.get_actions()[i], std::cref(pddl_repositories), PlanActionFormatterTag {}) << std::endl;
     }
 }
 

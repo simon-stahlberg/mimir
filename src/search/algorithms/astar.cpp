@@ -23,6 +23,7 @@
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
+#include "mimir/search/plan.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -76,15 +77,15 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
 {
 }
 
-SearchStatus AStarAlgorithm::find_solution(GroundActionList& out_plan) { return find_solution(m_state_repository->get_or_create_initial_state(), out_plan); }
+SearchStatus AStarAlgorithm::find_solution(std::optional<Plan>& out_plan) { return find_solution(m_state_repository->get_or_create_initial_state(), out_plan); }
 
-SearchStatus AStarAlgorithm::find_solution(State start_state, GroundActionList& out_plan)
+SearchStatus AStarAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan)
 {
     std::optional<State> unused_out_state = std::nullopt;
     return find_solution(start_state, out_plan, unused_out_state);
 }
 
-SearchStatus AStarAlgorithm::find_solution(State start_state, GroundActionList& out_plan, std::optional<State>& out_goal_state)
+SearchStatus AStarAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
 {
     return find_solution(start_state,
                          std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()),
@@ -96,7 +97,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state, GroundActionList& 
 SearchStatus AStarAlgorithm::find_solution(State start_state,
                                            std::unique_ptr<IGoalStrategy>&& goal_strategy,
                                            std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                                           GroundActionList& out_plan,
+                                           std::optional<Plan>& out_plan,
                                            std::optional<State>& out_goal_state)
 {
     auto default_search_node = AStarSearchNodeImpl { SearchNodeStatus::NEW,
@@ -188,14 +189,16 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            set_plan(search_nodes, m_applicable_action_generator->get_ground_actions(), search_node, out_plan);
+            auto plan_actions = GroundActionList {};
+            set_plan(search_nodes, m_applicable_action_generator->get_ground_actions(), search_node, plan_actions);
+            out_plan = Plan(std::move(plan_actions), get_g_value(search_node));
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
                 m_applicable_action_generator->on_end_search();
             }
-            m_event_handler->on_solved(out_plan, pddl_repositories);
+            m_event_handler->on_solved(out_plan.value(), pddl_repositories);
 
             return SearchStatus::SOLVED;
         }
@@ -208,7 +211,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         for (const auto& action : applicable_actions)
         {
-            const auto successor_state = m_state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, costs] = m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
@@ -225,7 +228,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
             /* Check whether state must be reopened or not. */
 
-            const auto new_successor_g_value = get_g_value(search_node) + action->get_cost();
+            const auto new_successor_g_value = get_g_value(search_node) + costs;
             if (new_successor_g_value < get_g_value(successor_search_node))
             {
                 /* Open/Reopen state with updated f_value. */

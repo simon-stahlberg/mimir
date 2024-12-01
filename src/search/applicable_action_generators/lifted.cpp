@@ -146,8 +146,6 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     /* Header */
 
     m_action_builder.get_index() = m_flat_actions.size();
-    m_action_builder.get_cost() =
-        GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(*action->get_function_expression());
     m_action_builder.get_action_index() = action->get_index();
     auto& objects = m_action_builder.get_objects();
     objects.clear();
@@ -182,6 +180,8 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     negative_effect.unset_all();
     const auto& effect_literals = action->get_simple_effects()->get_effect();
     m_pddl_repositories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
+    strips_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(
+        *action->get_simple_effects()->get_function_expression());
 
     /* Conditional effects */
     // Fetch data
@@ -260,6 +260,9 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
                     fill_effects(complex_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
+                    cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(
+                        *complex_effect->get_function_expression());
+
                     ++j;
                 }
             }
@@ -294,6 +297,9 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                             binding);
 
                 fill_effects(complex_effect->get_effect(), cond_simple_effect, binding);
+
+                cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(
+                    *complex_effect->get_function_expression());
             }
         }
     }

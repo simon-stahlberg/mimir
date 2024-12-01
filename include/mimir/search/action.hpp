@@ -71,14 +71,16 @@ struct StripsActionEffect
 {
     FlatBitset m_positive_effects = FlatBitset();
     FlatBitset m_negative_effects = FlatBitset();
+    ContinuousCost m_cost = ContinuousCost(0.0);
 
     FlatBitset& get_positive_effects();
-
     const FlatBitset& get_positive_effects() const;
 
     FlatBitset& get_negative_effects();
-
     const FlatBitset& get_negative_effects() const;
+
+    ContinuousCost& get_cost();
+    const ContinuousCost& get_cost() const;
 };
 
 /// @brief `SimpleFluentEffect` encapsulates the effect on a single grounded atom.
@@ -100,26 +102,28 @@ struct ConditionalEffect
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
     SimpleFluentEffectList m_effect = SimpleFluentEffectList();
+    ContinuousCost m_cost = ContinuousCost(0.0);
 
     /* Precondition */
-
     template<PredicateTag P>
     FlatIndexList& get_positive_precondition();
-
     template<PredicateTag P>
     const FlatIndexList& get_positive_precondition() const;
 
     template<PredicateTag P>
     FlatIndexList& get_negative_precondition();
-
     template<PredicateTag P>
     const FlatIndexList& get_negative_precondition() const;
 
     /* Simple effects */
     SimpleFluentEffectList& get_simple_effect();
-
     const SimpleFluentEffectList& get_simple_effect() const;
 
+    /* Costs */
+    ContinuousCost& get_cost();
+    const ContinuousCost& get_cost() const;
+
+    /* Utility */
     template<DynamicPredicateTag P>
     bool is_applicable(State state) const;
 
@@ -141,7 +145,6 @@ struct GroundActionImpl
 {
     Index m_index = Index(0);
     Index m_action_index = Index(0);
-    ContinuousCost m_cost = ContinuousCost(0.0);
     FlatIndexList m_objects = FlatIndexList();
     StripsActionPrecondition m_strips_precondition = StripsActionPrecondition();
     StripsActionEffect m_strips_effect = StripsActionEffect();
@@ -149,12 +152,10 @@ struct GroundActionImpl
 
     Index& get_index();
     Index& get_action_index();
-    ContinuousCost& get_cost();
     FlatIndexList& get_objects();
 
     Index get_index() const;
     Index get_action_index() const;
-    ContinuousCost get_cost() const;
     const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */

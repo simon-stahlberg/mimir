@@ -18,6 +18,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
@@ -36,8 +37,8 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
-    auto ground_actions = GroundActionList {};
-    const auto status = brfs.find_solution(ground_actions);
+    auto plan = std::optional<Plan> {};
+    const auto status = brfs.find_solution(plan);
     EXPECT_EQ(status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
