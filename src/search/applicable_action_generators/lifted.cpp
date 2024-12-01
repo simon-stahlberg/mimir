@@ -41,7 +41,7 @@ namespace mimir
 class GroundAndEvaluateFunctionExpressionVisitor
 {
 private:
-    const GroundFunctionToValue& m_ground_function_value_costs;
+    const GroundFunctionToValue& m_ground_function_to_cost;
     const ObjectList& m_binding;
     PDDLRepositories& m_pddl_repositories;
 
@@ -53,11 +53,11 @@ private:
     }
 
 public:
-    GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionToValue& ground_function_value_costs,
+    GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionToValue& ground_function_value_cost,
                                                const ObjectList& binding,
                                                PDDLRepositories& ref_pddl_repositories) :
 
-        m_ground_function_value_costs(ground_function_value_costs),
+        m_ground_function_to_cost(ground_function_value_cost),
         m_binding(binding),
         m_pddl_repositories(ref_pddl_repositories)
     {
@@ -95,8 +95,8 @@ public:
     {
         auto grounded_function = ground_function(expr.get_function());
 
-        auto it = m_ground_function_value_costs.find(grounded_function);
-        if (it == m_ground_function_value_costs.end())
+        auto it = m_ground_function_to_cost.find(grounded_function);
+        if (it == m_ground_function_to_cost.end())
         {
             throw std::runtime_error("No numeric fluent available to determine cost for ground function "s + grounded_function->str());
         }
@@ -180,7 +180,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     negative_effect.unset_all();
     const auto& effect_literals = action->get_simple_effects()->get_effect();
     m_pddl_repositories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
-    strips_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(
+    strips_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
         *action->get_simple_effects()->get_function_expression());
 
     /* Conditional effects */
@@ -260,7 +260,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
                     fill_effects(complex_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
-                    cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(
+                    cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
                         *complex_effect->get_function_expression());
 
                     ++j;
@@ -298,7 +298,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
                 fill_effects(complex_effect->get_effect(), cond_simple_effect, binding);
 
-                cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_value_costs, binding, *m_pddl_repositories)(
+                cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
                     *complex_effect->get_function_expression());
             }
         }
@@ -380,13 +380,13 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     m_axiom_evaluator(problem, m_pddl_repositories, m_event_handler),
     m_action_precondition_grounders(),
     m_action_complex_effects(),
-    m_ground_function_value_costs()
+    m_ground_function_to_cost()
 {
     /* 1. Initialize ground function costs. */
 
     for (const auto numeric_fluent : problem->get_numeric_fluents())
     {
-        m_ground_function_value_costs.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
+        m_ground_function_to_cost.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
     }
 
     /* 2. Initialize the condition grounders for each action schema. */

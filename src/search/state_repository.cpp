@@ -115,8 +115,8 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
 std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action)
 {
-    /* Accumulate costs */
-    auto costs = ContinuousCost(0);
+    /* Accumulate action_cost */
+    auto action_cost = ContinuousCost(0);
 
     /* Fetch member references for non extended construction. */
 
@@ -138,7 +138,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     const auto& strips_action_effect = action->get_strips_effect();
     fluent_state_atoms -= strips_action_effect.get_negative_effects();
     fluent_state_atoms |= strips_action_effect.get_positive_effects();
-    costs += strips_action_effect.get_cost();
+    action_cost += strips_action_effect.get_cost();
 
     /* Conditional effects */
     m_positive_cond_effects.unset_all();
@@ -158,7 +158,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
                     m_positive_cond_effects.set(simple_effect.atom_index);
                 }
             }
-            costs += conditional_effect.get_cost();
+            action_cost += conditional_effect.get_cost();
         }
     }
     fluent_state_atoms -= m_negative_cond_effects;
@@ -172,14 +172,14 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     auto iter = m_states.find(m_state_builder);
     if (iter != m_states.end())
     {
-        return std::make_pair(*iter, costs);
+        return std::make_pair(*iter, action_cost);
     }
 
     /* Return early, if no axioms must be evaluated. */
     if (!m_problem_or_domain_has_axioms)
     {
         auto [iter2, inserted] = m_states.insert(m_state_builder);
-        return std::make_pair(*iter2, costs);
+        return std::make_pair(*iter2, action_cost);
     }
 
     /* Fetch member references for extended construction. */
@@ -198,7 +198,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
 
     /* 7. Return newly generated extended state */
 
-    return std::make_pair(*iter2, costs);
+    return std::make_pair(*iter2, action_cost);
 }
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }

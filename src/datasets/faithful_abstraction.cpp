@@ -180,14 +180,14 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
         for (const auto& action : applicable_actions)
         {
-            const auto [successor_state, costs] = state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
 
             // Regenerate concrete state
             const auto concrete_successor_state_exists = concrete_to_abstract_state.count(successor_state);
             if (concrete_successor_state_exists)
             {
                 const auto abstract_successor_state_index = concrete_to_abstract_state.at(successor_state);
-                transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action, costs);
+                transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action, action_cost);
                 continue;
             }
 
@@ -213,8 +213,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                          abstract_state_index,
                                          abstract_successor_state_index,
                                          action,
-                                         costs);  // TODO: options.compute_complete_abstraction_mapping = True -> must filter duplicate transitions later
-                                                  // because it also depends on the source state.
+                                         action_cost);  // TODO: options.compute_complete_abstraction_mapping = True -> must filter duplicate transitions later
+                                                        // because it also depends on the source state.
 
                 /* Add concrete state to abstraction mapping. */
                 if (options.compute_complete_abstraction_mapping)
@@ -229,7 +229,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                 const auto abstract_successor_state_index = next_abstract_state_index++;
                 abstract_states_by_certificate.emplace(std::move(certificate), abstract_successor_state_index);
 
-                transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action, costs);
+                transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action, action_cost);
 
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
                 lifo_queue.push_back(successor_state);
@@ -324,11 +324,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     {
         assert(!group.empty());
 
-        // Cost of abstract transition is minimum costs among all concrete transitions.
-        auto costs = std::numeric_limits<ContinuousCost>::infinity();
+        // Cost of abstract transition is minimum action_cost among all concrete transitions.
+        auto abstract_transition_cost = std::numeric_limits<ContinuousCost>::infinity();
         for (const auto& edge : group)
         {
-            costs = std::min(costs, get_cost(edge));
+            abstract_transition_cost = std::min(abstract_transition_cost, get_cost(edge));
         }
 
         abstract_transitions.emplace_back(abstract_transitions.size(),
@@ -336,7 +336,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
                                           group.front().get_target(),
                                           std::span<const GroundAction>(ground_actions_by_source_and_target->begin() + accumulated_transitions,
                                                                         ground_actions_by_source_and_target->begin() + accumulated_transitions + group.size()),
-                                          costs);
+                                          abstract_transition_cost);
         accumulated_transitions += group.size();
     }
 

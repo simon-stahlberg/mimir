@@ -170,7 +170,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         for (const auto& action : applicable_actions)
         {
             /* Open state. */
-            const auto [successor_state, costs] = this->m_state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, action_cost] = this->m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
             m_event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);

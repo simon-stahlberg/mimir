@@ -61,7 +61,6 @@ PYBIND11_MAKE_OPAQUE(AtomList<Fluent>);
 PYBIND11_MAKE_OPAQUE(AtomList<Derived>);
 PYBIND11_MAKE_OPAQUE(AxiomList);
 PYBIND11_MAKE_OPAQUE(DomainList);
-PYBIND11_MAKE_OPAQUE(EffectSimpleList);
 PYBIND11_MAKE_OPAQUE(EffectComplexList);
 PYBIND11_MAKE_OPAQUE(FunctionExpressionList);
 PYBIND11_MAKE_OPAQUE(FunctionSkeletonList);
@@ -285,9 +284,9 @@ public:
      * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
      */
     void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
-    void on_solved_impl(const GroundActionList& ground_action_plan, const PDDLRepositories& pddl_repositories) override
+    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, ground_action_plan, pddl_repositories);
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, plan, pddl_repositories);
     }
     void on_unsolvable_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_unsolvable_impl, ); }
     void on_exhausted_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_exhausted_impl, ); }
@@ -512,9 +511,8 @@ void init_pymimir(py::module_& m)
         .def("__str__", &EffectSimpleImpl::str)
         .def("__repr__", &EffectSimpleImpl::str)
         .def("get_index", &EffectSimpleImpl::get_index)
-        .def("get_effect", &EffectSimpleImpl::get_effect, py::return_value_policy::reference_internal);
-    static_assert(!py::detail::vector_needs_copy<EffectSimpleList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<EffectSimpleList>(m, "EffectSimpleList");
+        .def("get_effect", &EffectSimpleImpl::get_effect, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_function_expression", &EffectSimpleImpl::get_function_expression, py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
         .def(
@@ -786,7 +784,8 @@ void init_pymimir(py::module_& m)
     /* Action */
     py::class_<StripsActionEffect>(m, "StripsActionEffect")
         .def("get_positive_effects", py::overload_cast<>(&StripsActionEffect::get_positive_effects, py::const_), py::return_value_policy::copy)
-        .def("get_negative_effects", py::overload_cast<>(&StripsActionEffect::get_negative_effects, py::const_), py::return_value_policy::copy);
+        .def("get_negative_effects", py::overload_cast<>(&StripsActionEffect::get_negative_effects, py::const_), py::return_value_policy::copy)
+        .def("get_cost", py::overload_cast<>(&StripsActionEffect::get_cost, py::const_), py::return_value_policy::copy);
 
     py::class_<SimpleFluentEffect>(m, "SimpleFluentEffect")
         .def_readonly("is_negated", &SimpleFluentEffect::is_negated)
@@ -856,7 +855,6 @@ void init_pymimir(py::module_& m)
                  return ss.str();
              })
         .def("get_index", py::overload_cast<>(&GroundActionImpl::get_index, py::const_), py::return_value_policy::copy)
-        .def("get_cost", py::overload_cast<>(&GroundActionImpl::get_cost, py::const_), py::return_value_policy::copy)
         .def("get_action_index", py::overload_cast<>(&GroundActionImpl::get_action_index, py::const_), py::return_value_policy::copy)
         .def("get_object_indices", py::overload_cast<>(&GroundActionImpl::get_object_indices, py::const_), py::return_value_policy::copy)
         .def("get_strips_precondition", [](const GroundActionImpl& self) { return self.get_strips_precondition(); })
@@ -869,6 +867,12 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
+
+    /* Plan */
+    py::class_<Plan>(m, "Plan")  //
+        .def("__len__", [](const Plan& arg) { return arg.get_actions().size(); })
+        .def("get_actions", &Plan::get_actions)
+        .def("get_cost", &Plan::get_cost);
 
     /* ConjunctionGrounder */
 
@@ -957,7 +961,7 @@ void init_pymimir(py::module_& m)
         .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
         .def("get_or_create_successor_state",
              &StateRepository::get_or_create_successor_state,
-             py::return_value_policy::reference_internal,
+             py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
              py::arg("state"),
              py::arg("action"))
         .def("get_state_count", &StateRepository::get_state_count)
@@ -973,9 +977,9 @@ void init_pymimir(py::module_& m)
         .def("find_solution",
              [](IAlgorithm& algorithm)
              {
-                 auto out_actions = GroundActionList {};
-                 auto search_status = algorithm.find_solution(out_actions);
-                 return std::make_tuple(search_status, out_actions);
+                 auto plan = std::optional<Plan> {};
+                 auto search_status = algorithm.find_solution(plan);
+                 return std::make_tuple(search_status, plan);  // TODO: must ensure that the tuple keeps the IAlgorithm alive!
              });
 
     // AStar

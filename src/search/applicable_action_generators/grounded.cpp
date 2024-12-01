@@ -130,7 +130,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
         delete_free_lifted_applicable_action_generator->generate_applicable_actions(&state, actions);
         for (const auto& action : actions)
         {
-            const auto [succ_state, costs] = delete_free_state_repository.get_or_create_successor_state(&state, action);
+            const auto [succ_state, action_cost] = delete_free_state_repository.get_or_create_successor_state(&state, action);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())
             {
                 fluent_state_atoms.set(atom_index);

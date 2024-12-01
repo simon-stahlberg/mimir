@@ -41,13 +41,13 @@ TEST(MimirTests, SearchStateRepositoryTest)
 
     for (const auto& action : applicable_actions)
     {
-        const auto [successor_state, costs] = state_repository.get_or_create_successor_state(initial_state, action);
+        const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action);
 
         auto applicable_actions2 = GroundActionList {};
         lifted_applicable_action_generator->generate_applicable_actions(successor_state, applicable_actions2);
         for (const auto& action2 : applicable_actions2)
         {
-            [[maybe_unused]] const auto [successor_state2, costs2] = state_repository.get_or_create_successor_state(successor_state, action2);
+            [[maybe_unused]] const auto [successor_state2, action_cost2] = state_repository.get_or_create_successor_state(successor_state, action2);
         }
     }
 }

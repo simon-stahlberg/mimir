@@ -614,8 +614,6 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
         complex_effects.push_back(
             this->m_pddl_repositories
                 .get_or_create_complex_effect(variables, static_conditions, fluent_conditions, derived_conditions, effect_literals, cost_function_expression));
-
-        std::cout << *complex_effects.back() << std::endl;
     }
 
     return std::make_tuple(simple_effect, complex_effects);

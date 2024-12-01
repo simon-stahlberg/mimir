@@ -57,7 +57,7 @@ private:
     GroundActionImpl m_action_builder;
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;
 
-    GroundFunctionToValue m_ground_function_value_costs;
+    GroundFunctionToValue m_ground_function_to_cost;
 
 public:
     /// @brief Simplest construction

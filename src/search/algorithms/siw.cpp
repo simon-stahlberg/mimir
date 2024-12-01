@@ -117,8 +117,8 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     auto cur_state = start_state;
     std::optional<State> goal_state = std::nullopt;
 
-    auto out_action_list = GroundActionList {};
-    auto out_costs = ContinuousCost(0);
+    auto out_plan_actions = GroundActionList {};
+    auto out_plan_cost = ContinuousCost(0);
 
     while (!problem_goal_test->test_dynamic_goal(cur_state))
     {
@@ -145,8 +145,8 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
 
         assert(goal_state.has_value());
         cur_state = goal_state.value();
-        out_action_list.insert(out_action_list.end(), partial_plan.value().get_actions().begin(), partial_plan.value().get_actions().end());
-        out_costs += partial_plan.value().get_cost();
+        out_plan_actions.insert(out_plan_actions.end(), partial_plan.value().get_actions().begin(), partial_plan.value().get_actions().end());
+        out_plan_cost += partial_plan.value().get_cost();
 
         m_siw_event_handler->on_end_subproblem_search(m_iw_event_handler->get_statistics());
     }
@@ -157,7 +157,7 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_applicable_action_generator->on_end_search();
     }
-    out_plan = Plan(std::move(out_action_list), out_costs);
+    out_plan = Plan(std::move(out_plan_actions), out_plan_cost);
     m_siw_event_handler->on_solved(out_plan.value(), *m_applicable_action_generator->get_pddl_repositories());
     return SearchStatus::SOLVED;
 }
