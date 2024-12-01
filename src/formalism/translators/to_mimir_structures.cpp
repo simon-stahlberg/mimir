@@ -486,9 +486,9 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
 
 std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
-    using EffectSimpleData = std::pair<LiteralList<Fluent>, std::optional<FunctionExpression>>;
+    using EffectSimpleData = std::pair<LiteralList<Fluent>, FunctionExpressionList>;
     using EffectComplexData = std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>,
-                                                 std::pair<LiteralList<Fluent>, std::optional<FunctionExpression>>,
+                                                 std::pair<LiteralList<Fluent>, FunctionExpressionList>,
                                                  mimir::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
 
     const auto translate_effect_func = [&](const loki::Effect& effect, EffectSimpleData& ref_effect_simple_data, EffectComplexData& ref_effect_complex_data)
@@ -558,11 +558,11 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
             {
                 ref_effect_complex_data
                     [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
-                        .second = function_expression;
+                        .second.push_back(function_expression);
             }
             else
             {
-                ref_effect_simple_data.second = function_expression;
+                ref_effect_simple_data.second.push_back(function_expression);
             }
         }
         else
@@ -594,9 +594,13 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
     /* Instantiate simple effect. */
     const auto simple_effect = this->m_pddl_repositories.get_or_create_simple_effect(
         effect_simple_data.first,
-        effect_simple_data.second.has_value() ? effect_simple_data.second.value() :
-                                                this->m_pddl_repositories.get_or_create_function_expression(
-                                                    this->m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1)));
+        (effect_simple_data.second.size() > 0) ?
+            (effect_simple_data.second.size() == 1) ?
+            effect_simple_data.second.front() :
+            this->m_pddl_repositories.get_or_create_function_expression(
+                this->m_pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, effect_simple_data.second)) :
+            this->m_pddl_repositories.get_or_create_function_expression(
+                this->m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1)));
 
     /* Instantiate complex effects. */
     auto complex_effects = EffectComplexList {};
@@ -606,8 +610,11 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
         const auto& [effect_literals, function_expression] = value;
 
         auto cost_function_expression =
-            (function_expression.has_value()) ?
-                function_expression.value() :
+            (function_expression.size() > 0) ?
+                (function_expression.size() == 1) ?
+                function_expression.front() :
+                this->m_pddl_repositories.get_or_create_function_expression(
+                    this->m_pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, function_expression)) :
                 this->m_pddl_repositories.get_or_create_function_expression(
                     this->m_pddl_repositories.get_or_create_function_expression_number(0));  // always 0 default cost, independent of m_action_costs_enabled
 

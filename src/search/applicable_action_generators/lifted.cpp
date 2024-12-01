@@ -79,11 +79,10 @@ public:
     {
         assert(!expr.get_function_expressions().empty());
 
-        auto it = expr.get_function_expressions().begin();
-        auto result = (*this)(**it);
-        for (; it != expr.get_function_expressions().end(); ++it)
+        auto result = ContinuousCost(0);
+        for (const auto& child_expr : expr.get_function_expressions())
         {
-            result = evaluate_multi(expr.get_multi_operator(), result, (*this)(**it));
+            result = evaluate_multi(expr.get_multi_operator(), result, (*this)(*child_expr));
         }
 
         return result;
