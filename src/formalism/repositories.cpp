@@ -157,6 +157,13 @@ FunctionExpressionBinaryOperator PDDLRepositories::get_or_create_function_expres
                                                                                                      FunctionExpression left_function_expression,
                                                                                                      FunctionExpression right_function_expression)
 {
+    /* Canonize before uniqueness test. */
+    if (binary_operator == loki::BinaryOperatorEnum::MUL || binary_operator == loki::BinaryOperatorEnum::PLUS)
+    {
+        if (left_function_expression->get_index() > right_function_expression->get_index())
+            std::swap(left_function_expression, right_function_expression);
+    }
+
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionBinaryOperatorImpl> {})
         .get_or_create(binary_operator, std::move(left_function_expression), std::move(right_function_expression));
 }
@@ -165,13 +172,7 @@ FunctionExpressionMultiOperator PDDLRepositories::get_or_create_function_express
                                                                                                    FunctionExpressionList function_expressions)
 {
     /* Canonize before uniqueness test. */
-    std::sort(function_expressions.begin(),
-              function_expressions.end(),
-              [](auto&& l, auto&& r)
-              {
-                  return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_variant())
-                         < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_variant());
-              });
+    std::sort(function_expressions.begin(), function_expressions.end(), [](auto&& l, auto&& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMultiOperatorImpl> {})
         .get_or_create(multi_operator, std::move(function_expressions));
@@ -230,6 +231,7 @@ GroundFunctionExpressionMultiOperator
 PDDLRepositories::get_or_create_ground_function_expression_multi_operator(loki::MultiOperatorEnum multi_operator,
                                                                           GroundFunctionExpressionList function_expressions)
 {
+    /* Canonize before uniqueness test. */
     std::sort(function_expressions.begin(),
               function_expressions.end(),
               [](auto&& l, auto&& r)
@@ -294,6 +296,9 @@ FunctionSkeleton PDDLRepositories::get_or_create_function_skeleton(std::string n
 
 EffectSimple PDDLRepositories::get_or_create_simple_effect(LiteralList<Fluent> effects)
 {
+    /* Canonize before uniqueness test. */
+    std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).get_or_create(std::move(effects));
 }
 
@@ -304,9 +309,11 @@ EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parame
                                                              LiteralList<Fluent> effects,
                                                              FunctionExpression function_expression)
 {
+    /* Canonize before uniqueness test. */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<EffectComplexImpl> {})
         .get_or_create(std::move(parameters),
@@ -331,6 +338,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(complex_effects.begin(), complex_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
         .get_or_create(std::move(name),

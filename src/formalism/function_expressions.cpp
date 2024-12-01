@@ -49,6 +49,10 @@ FunctionExpressionBinaryOperatorImpl::FunctionExpressionBinaryOperatorImpl(Index
     m_left_function_expression(std::move(left_function_expression)),
     m_right_function_expression(std::move(right_function_expression))
 {
+    if (binary_operator == loki::BinaryOperatorEnum::MUL || binary_operator == loki::BinaryOperatorEnum::PLUS)
+    {
+        assert(m_left_function_expression->get_index() < m_right_function_expression->get_index());
+    }
 }
 
 std::string FunctionExpressionBinaryOperatorImpl::str() const
@@ -77,11 +81,7 @@ FunctionExpressionMultiOperatorImpl::FunctionExpressionMultiOperatorImpl(Index i
     assert(is_all_unique(m_function_expressions));
     assert(std::is_sorted(m_function_expressions.begin(),
                           m_function_expressions.end(),
-                          [](const auto& l, const auto& r)
-                          {
-                              return std::visit([](auto&& arg) { return arg->get_index(); }, l->get_variant())
-                                     < std::visit([](auto&& arg) { return arg->get_index(); }, r->get_variant());
-                          }));
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 std::string FunctionExpressionMultiOperatorImpl::str() const

@@ -516,6 +516,9 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
             static_literals = static_literals_;
             fluent_literals = fluent_literals_;
             derived_literals = derived_literals_;
+            std::sort(static_literals.begin(), static_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            std::sort(fluent_literals.begin(), fluent_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            std::sort(derived_literals.begin(), derived_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
             tmp_effect = (*tmp_effect_when)->get_effect();
         }
@@ -599,10 +602,11 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
         const auto& [variables, static_conditions, fluent_conditions, derived_conditions] = key;
         const auto& [effect_literals, function_expression] = value;
 
-        auto cost_function_expression = (function_expression.has_value()) ?
-                                            function_expression.value() :
-                                            this->m_pddl_repositories.get_or_create_function_expression(
-                                                this->m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1));
+        auto cost_function_expression =
+            (function_expression.has_value()) ?
+                function_expression.value() :
+                this->m_pddl_repositories.get_or_create_function_expression(
+                    this->m_pddl_repositories.get_or_create_function_expression_number(0));  // always 0 default cost, independent of m_action_costs_enabled
 
         complex_effects.push_back(
             this->m_pddl_repositories

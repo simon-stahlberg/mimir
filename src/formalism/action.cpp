@@ -66,6 +66,7 @@ ActionImpl::ActionImpl(Index index,
         std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_complex_effects.begin(), m_complex_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 std::string ActionImpl::str() const

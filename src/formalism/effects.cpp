@@ -39,6 +39,7 @@ namespace mimir
 EffectSimpleImpl::EffectSimpleImpl(Index index, LiteralList<Fluent> effects) : m_index(index), m_effects(std::move(effects))
 {
     assert(is_all_unique(m_effects));
+    assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 std::string EffectSimpleImpl::str() const
@@ -75,12 +76,14 @@ EffectComplexImpl::EffectComplexImpl(Index index,
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
+    assert(is_all_unique(m_effects));
     assert(
         std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 std::string EffectComplexImpl::str() const

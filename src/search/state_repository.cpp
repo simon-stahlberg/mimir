@@ -147,7 +147,7 @@ State StateRepository::get_or_create_successor_state(State state, GroundAction a
             {
                 if (simple_effect.is_negated)
                 {
-                    m_negative_cond_effects.unset(simple_effect.atom_index);
+                    m_negative_cond_effects.set(simple_effect.atom_index);
                 }
                 else
                 {
