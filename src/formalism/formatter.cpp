@@ -91,8 +91,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
         }
         if (m_action_costs)
         {
-            out << " "
-                << "(increase total-cost ";
+            out << " (increase total-cost ";
             write(*element.get_function_expression(), out);
             out << ")";
         }
@@ -266,14 +265,19 @@ void PDDLFormatter::write(const EffectComplexImpl& element, std::ostream& out)
             out << " ";
             write(*condition, out);
         }
-        out << " ) ";  // end condition and
+        out << ")";  // end condition and
     }
 
-    out << " (and ";
+    out << " (and";
     for (const auto& effect : element.get_effect())
     {
         out << " ";
         write(*effect, out);
+    }
+    if (m_action_costs)
+    {
+        out << " (increase total-cost ";
+        write(*element.get_function_expression(), out);
     }
     out << ")";  // end effect and
 

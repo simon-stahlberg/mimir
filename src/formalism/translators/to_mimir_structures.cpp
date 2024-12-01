@@ -507,18 +507,18 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
         }
 
         /* 2. Parse conditional part */
-        auto static_literals = LiteralList<Static> {};
-        auto fluent_literals = LiteralList<Fluent> {};
-        auto derived_literals = LiteralList<Derived> {};
+        auto static_conditions = LiteralList<Static> {};
+        auto fluent_conditions = LiteralList<Fluent> {};
+        auto derived_conditions = LiteralList<Derived> {};
         if (const auto tmp_effect_when = std::get_if<loki::EffectCompositeWhen>(&tmp_effect->get_effect()))
         {
             const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*(*tmp_effect_when)->get_condition());
-            static_literals = static_literals_;
-            fluent_literals = fluent_literals_;
-            derived_literals = derived_literals_;
-            std::sort(static_literals.begin(), static_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-            std::sort(fluent_literals.begin(), fluent_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-            std::sort(derived_literals.begin(), derived_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            static_conditions = static_literals_;
+            fluent_conditions = fluent_literals_;
+            derived_conditions = derived_literals_;
+            std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
             tmp_effect = (*tmp_effect_when)->get_effect();
         }
@@ -535,10 +535,11 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
 
             const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
 
-            if (!(parameters.empty() && static_literals.empty() && fluent_literals.empty() && derived_literals.empty()))
+            if (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()))
             {
-                ref_effect_data[std::make_tuple(std::move(parameters), std::move(static_literals), std::move(fluent_literals), std::move(derived_literals))]
-                    .first.push_back(fluent_effect);
+                ref_effect_data
+                    [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
+                        .first.push_back(fluent_effect);
             }
             else
             {
@@ -555,10 +556,13 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
 
             const auto function_expression = this->translate_lifted(*(*effect_numeric)->get_function_expression());
 
-            if (!(parameters.empty() && static_literals.empty() && fluent_literals.empty() && derived_literals.empty()))
+            std::cout << "Parsed function expressions!: " << *function_expression << std::endl;
+
+            if (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()))
             {
-                ref_effect_data[std::make_tuple(std::move(parameters), std::move(static_literals), std::move(fluent_literals), std::move(derived_literals))]
-                    .second = function_expression;
+                ref_effect_data
+                    [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
+                        .second = function_expression;
             }
             else
             {
@@ -602,6 +606,8 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
         const auto& [variables, static_conditions, fluent_conditions, derived_conditions] = key;
         const auto& [effect_literals, function_expression] = value;
 
+        std::cout << "Result function expressions!: " << **function_expression << std::endl;
+
         auto cost_function_expression =
             (function_expression.has_value()) ?
                 function_expression.value() :
@@ -611,6 +617,8 @@ std::tuple<EffectSimple, EffectComplexList, FunctionExpression> ToMimirStructure
         complex_effects.push_back(
             this->m_pddl_repositories
                 .get_or_create_complex_effect(variables, static_conditions, fluent_conditions, derived_conditions, effect_literals, cost_function_expression));
+
+        std::cout << *complex_effects.back() << std::endl;
     }
 
     /* Instantiate function expression. */
