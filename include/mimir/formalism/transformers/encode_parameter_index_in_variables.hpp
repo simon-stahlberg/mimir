@@ -49,7 +49,7 @@ private:
     Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate);
     FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton);
 
-    EffectComplex transform_impl(const EffectComplexImpl& effect);
+    EffectConditional transform_impl(const EffectConditionalImpl& effect);
     Axiom transform_impl(const AxiomImpl& axiom);
     Action transform_impl(const ActionImpl& action);
 

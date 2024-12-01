@@ -90,20 +90,20 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 Graphs::Graphs(Problem problem, Action action, const AssignmentSet<Static>& static_assignment_set) :
     m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_conditions<Static>(), static_assignment_set))
 {
-    m_complex_effects.reserve(action->get_complex_effects().size());
-    for (const auto& complex_effect : action->get_complex_effects())
+    m_conditional_effects.reserve(action->get_conditional_effects().size());
+    for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        m_complex_effects.push_back(StaticConsistencyGraph(problem,
-                                                           action->get_arity(),
-                                                           action->get_arity() + complex_effect->get_arity(),
-                                                           complex_effect->get_conditions<Static>(),
-                                                           static_assignment_set));
+        m_conditional_effects.push_back(StaticConsistencyGraph(problem,
+                                                               action->get_arity(),
+                                                               action->get_arity() + conditional_effect->get_arity(),
+                                                               conditional_effect->get_conditions<Static>(),
+                                                               static_assignment_set));
     }
 }
 
 const StaticConsistencyGraph& Graphs::get_precondition_graph() const { return m_precondition; }
 
-const std::vector<StaticConsistencyGraph>& Graphs::get_complex_effect_graphs() const { return m_complex_effects; }
+const std::vector<StaticConsistencyGraph>& Graphs::get_conditional_effect_graphs() const { return m_conditional_effects; }
 }
 
 namespace mimir

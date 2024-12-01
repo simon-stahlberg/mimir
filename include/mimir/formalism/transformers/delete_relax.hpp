@@ -41,14 +41,14 @@ private:
 
     template<PredicateTag P>
     LiteralList<P> transform_impl(const LiteralList<P>& literals);
-    EffectComplexList transform_impl(const EffectComplexList& effects);
+    EffectConditionalList transform_impl(const EffectConditionalList& effects);
     ActionList transform_impl(const ActionList& actions);
     AxiomList transform_impl(const AxiomList& axioms);
 
     template<PredicateTag P>
     Literal<P> transform_impl(const LiteralImpl<P>& literal);
-    EffectSimple transform_impl(const EffectSimpleImpl& effect);
-    EffectComplex transform_impl(const EffectComplexImpl& effect);
+    EffectStrips transform_impl(const EffectStripsImpl& effect);
+    EffectConditional transform_impl(const EffectConditionalImpl& effect);
     Action transform_impl(const ActionImpl& action);
     Axiom transform_impl(const AxiomImpl& axiom);
     Domain transform_impl(const DomainImpl& domain);

@@ -131,7 +131,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_effects = [this](const LiteralList<Fluent>& literals, SimpleFluentEffectList& out_effects, const auto& binding)
+    const auto fill_effects = [this](const LiteralList<Fluent>& literals, GroundEffectFluentLiteralList& out_effects, const auto& binding)
     {
         out_effects.clear();
 
@@ -177,10 +177,10 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     auto& negative_effect = strips_effect.get_negative_effects();
     positive_effect.unset_all();
     negative_effect.unset_all();
-    const auto& effect_literals = action->get_simple_effects()->get_effect();
+    const auto& effect_literals = action->get_strips_effect()->get_effect();
     m_pddl_repositories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
     strips_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
-        *action->get_simple_effects()->get_function_expression());
+        *action->get_strips_effect()->get_function_expression());
 
     /* Conditional effects */
     // Fetch data
@@ -195,20 +195,20 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     // and at the same time we need to use the original binding as cache key.
     auto binding_ext = binding;
 
-    const auto num_complex_effects = action->get_complex_effects().size();
-    if (num_complex_effects > 0)
+    const auto num_lifted_conditional_effects = action->get_conditional_effects().size();
+    if (num_lifted_conditional_effects > 0)
     {
-        const auto& complex_effect_consistency_graphs = m_action_complex_effects.at(action);
+        const auto& conditional_effect_consistency_graphs = m_action_conditional_effects.at(action);
         const auto binding_ext_size = binding_ext.size();
-        for (size_t i = 0; i < num_complex_effects; ++i)
+        for (size_t i = 0; i < num_lifted_conditional_effects; ++i)
         {
             // Fetch data
-            const auto& complex_effect = action->get_complex_effects().at(i);
+            const auto& lifted_cond_effect = action->get_conditional_effects().at(i);
 
             // Resize builders.
-            if (complex_effect->get_arity() > 0)
+            if (lifted_cond_effect->get_arity() > 0)
             {
-                const auto& consistency_graph = complex_effect_consistency_graphs.at(i);
+                const auto& consistency_graph = conditional_effect_consistency_graphs.at(i);
                 const auto& objects_by_parameter_index = consistency_graph.get_objects_by_parameter_index();
 
                 const auto num_conditional_effects = CartesianProduct(objects_by_parameter_index).num_combinations();
@@ -216,7 +216,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                 conditional_effects.resize(old_size + num_conditional_effects);
 
                 // Create binding and ground conditions and effect
-                binding_ext.resize(binding_ext_size + complex_effect->get_arity());
+                binding_ext.resize(binding_ext_size + lifted_cond_effect->get_arity());
 
                 // The position to place the conditional precondition + effect
                 auto j = old_size;
@@ -224,7 +224,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                 for (const auto& combination : CartesianProduct(objects_by_parameter_index))
                 {
                     // Create binding
-                    for (size_t pos = 0; pos < complex_effect->get_arity(); ++pos)
+                    for (size_t pos = 0; pos < lifted_cond_effect->get_arity(); ++pos)
                     {
                         const auto object_index = *combination[pos];
                         binding_ext[binding_ext_size + pos] = m_pddl_repositories->get_object(object_index);
@@ -237,30 +237,30 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                     auto& cond_negative_static_precondition_j = cond_effect_j.get_negative_precondition<Static>();
                     auto& cond_positive_derived_precondition_j = cond_effect_j.get_positive_precondition<Derived>();
                     auto& cond_negative_derived_precondition_j = cond_effect_j.get_negative_precondition<Derived>();
-                    auto& cond_simple_effect_j = cond_effect_j.get_simple_effect();
+                    auto& cond_simple_effect_j = cond_effect_j.get_fluent_effect_literals();
                     cond_positive_fluent_precondition_j.clear();
                     cond_negative_fluent_precondition_j.clear();
                     cond_positive_static_precondition_j.clear();
                     cond_negative_static_precondition_j.clear();
                     cond_positive_derived_precondition_j.clear();
                     cond_negative_derived_precondition_j.clear();
-                    m_pddl_repositories->ground_and_fill_vector(complex_effect->get_conditions<Fluent>(),
+                    m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
                                                                 cond_positive_fluent_precondition_j,
                                                                 cond_negative_fluent_precondition_j,
                                                                 binding_ext);
-                    m_pddl_repositories->ground_and_fill_vector(complex_effect->get_conditions<Static>(),
+                    m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
                                                                 cond_positive_static_precondition_j,
                                                                 cond_negative_static_precondition_j,
                                                                 binding_ext);
-                    m_pddl_repositories->ground_and_fill_vector(complex_effect->get_conditions<Derived>(),
+                    m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
                                                                 cond_positive_derived_precondition_j,
                                                                 cond_negative_derived_precondition_j,
                                                                 binding_ext);
 
-                    fill_effects(complex_effect->get_effect(), cond_simple_effect_j, binding_ext);
+                    fill_effects(lifted_cond_effect->get_effect(), cond_simple_effect_j, binding_ext);
 
                     cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
-                        *complex_effect->get_function_expression());
+                        *lifted_cond_effect->get_function_expression());
 
                     ++j;
                 }
@@ -275,30 +275,30 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                 auto& cond_negative_static_precondition = cond_effect.get_negative_precondition<Static>();
                 auto& cond_positive_derived_precondition = cond_effect.get_positive_precondition<Derived>();
                 auto& cond_negative_derived_precondition = cond_effect.get_negative_precondition<Derived>();
-                auto& cond_simple_effect = cond_effect.get_simple_effect();
+                auto& cond_simple_effect = cond_effect.get_fluent_effect_literals();
                 cond_positive_fluent_precondition.clear();
                 cond_negative_fluent_precondition.clear();
                 cond_positive_static_precondition.clear();
                 cond_negative_static_precondition.clear();
                 cond_positive_derived_precondition.clear();
                 cond_negative_derived_precondition.clear();
-                m_pddl_repositories->ground_and_fill_vector(complex_effect->get_conditions<Fluent>(),
+                m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
                                                             cond_positive_fluent_precondition,
                                                             cond_negative_fluent_precondition,
                                                             binding);
-                m_pddl_repositories->ground_and_fill_vector(complex_effect->get_conditions<Static>(),
+                m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
                                                             cond_positive_static_precondition,
                                                             cond_negative_static_precondition,
                                                             binding);
-                m_pddl_repositories->ground_and_fill_vector(complex_effect->get_conditions<Derived>(),
+                m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
                                                             cond_positive_derived_precondition,
                                                             cond_negative_derived_precondition,
                                                             binding);
 
-                fill_effects(complex_effect->get_effect(), cond_simple_effect, binding);
+                fill_effects(lifted_cond_effect->get_effect(), cond_simple_effect, binding);
 
                 cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
-                    *complex_effect->get_function_expression());
+                    *lifted_cond_effect->get_function_expression());
             }
         }
     }
@@ -378,7 +378,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
     m_event_handler(std::move(event_handler)),
     m_axiom_evaluator(problem, m_pddl_repositories, m_event_handler),
     m_action_precondition_grounders(),
-    m_action_complex_effects(),
+    m_action_conditional_effects(),
     m_ground_function_to_cost()
 {
     /* 1. Initialize ground function costs. */
@@ -403,19 +403,19 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
                                                                   action->get_conditions<Derived>(),
                                                                   static_assignment_set,
                                                                   m_pddl_repositories));
-        auto complex_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
-        complex_effects.reserve(action->get_complex_effects().size());
+        auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
+        conditional_effects.reserve(action->get_conditional_effects().size());
 
-        for (const auto& complex_effect : action->get_complex_effects())
+        for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            complex_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
-                                                                                action->get_arity(),
-                                                                                action->get_arity() + complex_effect->get_arity(),
-                                                                                complex_effect->get_conditions<Static>(),
-                                                                                static_assignment_set));
+            conditional_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
+                                                                                    action->get_arity(),
+                                                                                    action->get_arity() + conditional_effect->get_arity(),
+                                                                                    conditional_effect->get_conditions<Static>(),
+                                                                                    static_assignment_set));
         }
 
-        m_action_complex_effects.emplace(action, std::move(complex_effects));
+        m_action_conditional_effects.emplace(action, std::move(conditional_effects));
     }
 }
 

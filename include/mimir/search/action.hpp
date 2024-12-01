@@ -31,7 +31,7 @@
 
 namespace mimir
 {
-struct StripsActionPrecondition
+struct GroundConditionStrips
 {
     FlatBitset m_positive_static_atoms = FlatBitset();
     FlatBitset m_negative_static_atoms = FlatBitset();
@@ -67,7 +67,7 @@ struct StripsActionPrecondition
     bool is_applicable(const FlatBitset& fluent_state_atoms, const FlatBitset& derived_state_atoms, const FlatBitset& static_initial_atoms) const;
 };
 
-struct StripsActionEffect
+struct GroundEffectStrips
 {
     FlatBitset m_positive_effects = FlatBitset();
     FlatBitset m_negative_effects = FlatBitset();
@@ -83,17 +83,17 @@ struct StripsActionEffect
     const ContinuousCost& get_cost() const;
 };
 
-/// @brief `SimpleFluentEffect` encapsulates the effect on a single grounded atom.
+/// @brief `GroundEffectFluentLiteral` encapsulates the effect on a single grounded atom.
 /// We cannot consistently use cista::tuple since nested tuples will automatically be flattened.
-struct SimpleFluentEffect
+struct GroundEffectFluentLiteral
 {
     bool is_negated = false;
     Index atom_index = Index(0);
 };
 
-using SimpleFluentEffectList = cista::offset::vector<SimpleFluentEffect>;
+using GroundEffectFluentLiteralList = cista::offset::vector<GroundEffectFluentLiteral>;
 
-struct ConditionalEffect
+struct GroundEffectConditional
 {
     FlatIndexList m_positive_static_atoms = FlatIndexList();
     FlatIndexList m_negative_static_atoms = FlatIndexList();
@@ -101,7 +101,7 @@ struct ConditionalEffect
     FlatIndexList m_negative_fluent_atoms = FlatIndexList();
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
-    SimpleFluentEffectList m_effect = SimpleFluentEffectList();
+    GroundEffectFluentLiteralList m_effect = GroundEffectFluentLiteralList();
     ContinuousCost m_cost = ContinuousCost(0.0);
 
     /* Precondition */
@@ -116,8 +116,8 @@ struct ConditionalEffect
     const FlatIndexList& get_negative_precondition() const;
 
     /* Simple effects */
-    SimpleFluentEffectList& get_simple_effect();
-    const SimpleFluentEffectList& get_simple_effect() const;
+    GroundEffectFluentLiteralList& get_fluent_effect_literals();
+    const GroundEffectFluentLiteralList& get_fluent_effect_literals() const;
 
     /* Costs */
     ContinuousCost& get_cost();
@@ -134,7 +134,7 @@ struct ConditionalEffect
     bool is_applicable(Problem problem, State state) const;
 };
 
-using ConditionalEffects = cista::offset::vector<ConditionalEffect>;
+using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditional>;
 
 /**
  * Implementation class
@@ -146,9 +146,9 @@ struct GroundActionImpl
     Index m_index = Index(0);
     Index m_action_index = Index(0);
     FlatIndexList m_objects = FlatIndexList();
-    StripsActionPrecondition m_strips_precondition = StripsActionPrecondition();
-    StripsActionEffect m_strips_effect = StripsActionEffect();
-    ConditionalEffects m_conditional_effects = ConditionalEffects();
+    GroundConditionStrips m_strips_precondition = GroundConditionStrips();
+    GroundEffectStrips m_strips_effect = GroundEffectStrips();
+    GroundEffectConditionalList m_conditional_effects = GroundEffectConditionalList();
 
     Index& get_index();
     Index& get_action_index();
@@ -159,13 +159,13 @@ struct GroundActionImpl
     const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
-    StripsActionPrecondition& get_strips_precondition();
-    const StripsActionPrecondition& get_strips_precondition() const;
-    StripsActionEffect& get_strips_effect();
-    const StripsActionEffect& get_strips_effect() const;
+    GroundConditionStrips& get_strips_precondition();
+    const GroundConditionStrips& get_strips_precondition() const;
+    GroundEffectStrips& get_strips_effect();
+    const GroundEffectStrips& get_strips_effect() const;
     /* Conditional effects */
-    ConditionalEffects& get_conditional_effects();
-    const ConditionalEffects& get_conditional_effects() const;
+    GroundEffectConditionalList& get_conditional_effects();
+    const GroundEffectConditionalList& get_conditional_effects() const;
 
     bool is_dynamically_applicable(State state) const;
 
@@ -202,19 +202,19 @@ using GroundActionImplSet = cista::storage::UnorderedSet<GroundActionImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffect, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectFluentLiteral, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleFluentEffectList, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectFluentLiteralList, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionPrecondition, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<StripsActionEffect, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<ConditionalEffect, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditional, const PDDLRepositories&>& data);
 
 struct FullActionFormatterTag
 {

@@ -56,29 +56,29 @@ FlatIndexList& GroundAxiomImpl::get_objects() { return m_objects; }
 
 const FlatIndexList& GroundAxiomImpl::get_objects() const { return m_objects; }
 
-StripsActionPrecondition& GroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
+GroundConditionStrips& GroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
 
-const StripsActionPrecondition& GroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
+const GroundConditionStrips& GroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
 
-SimpleDerivedEffect& GroundAxiomImpl::get_derived_effect() { return m_effect; }
+GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_effect; }
 
-const SimpleDerivedEffect& GroundAxiomImpl::get_derived_effect() const { return m_effect; }
+const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_effect; }
 
 bool GroundAxiomImpl::is_applicable(const FlatBitset& state_fluent_atoms, const FlatBitset& state_derived_atoms, const FlatBitset& static_positive_atoms) const
 {  //
-    return StripsActionPrecondition(get_strips_precondition()).is_applicable(state_fluent_atoms, state_derived_atoms, static_positive_atoms);
+    return GroundConditionStrips(get_strips_precondition()).is_applicable(state_fluent_atoms, state_derived_atoms, static_positive_atoms);
 }
 
 bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive_bitset) const
 {  //
-    return StripsActionPrecondition(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
+    return GroundConditionStrips(get_strips_precondition()).is_statically_applicable(static_positive_bitset);
 }
 
 /**
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const PDDLRepositories&>& data)
 {
     const auto [derived_effect, pddl_repositories] = data;
 

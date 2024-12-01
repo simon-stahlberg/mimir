@@ -57,8 +57,8 @@ PDDLTypeToRepository create_default_pddl_type_to_repository()
         boost::hana::make_pair(boost::hana::type_c<FunctionImpl>, FunctionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<GroundFunctionImpl>, GroundFunctionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<FunctionSkeletonImpl>, FunctionSkeletonRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<EffectSimpleImpl>, EffectSimpleRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<EffectComplexImpl>, EffectUniversalRepository {}),
+        boost::hana::make_pair(boost::hana::type_c<EffectStripsImpl>, EffectStripsRepository {}),
+        boost::hana::make_pair(boost::hana::type_c<EffectConditionalImpl>, EffectUniversalRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ActionImpl>, ActionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<AxiomImpl>, AxiomRepository {}),
         boost::hana::make_pair(boost::hana::type_c<OptimizationMetricImpl>, OptimizationMetricRepository {}),
@@ -294,20 +294,20 @@ FunctionSkeleton PDDLRepositories::get_or_create_function_skeleton(std::string n
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl> {}).get_or_create(std::move(name), std::move(parameters));
 }
 
-EffectSimple PDDLRepositories::get_or_create_simple_effect(LiteralList<Fluent> effects, FunctionExpression function_expression)
+EffectStrips PDDLRepositories::get_or_create_strips_effect(LiteralList<Fluent> effects, FunctionExpression function_expression)
 {
     /* Canonize before uniqueness test. */
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectSimpleImpl> {}).get_or_create(std::move(effects), std::move(function_expression));
+    return boost::hana::at_key(m_repositories, boost::hana::type<EffectStripsImpl> {}).get_or_create(std::move(effects), std::move(function_expression));
 }
 
-EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parameters,
-                                                             LiteralList<Static> static_conditions,
-                                                             LiteralList<Fluent> fluent_conditions,
-                                                             LiteralList<Derived> derived_conditions,
-                                                             LiteralList<Fluent> effects,
-                                                             FunctionExpression function_expression)
+EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableList parameters,
+                                                                     LiteralList<Static> static_conditions,
+                                                                     LiteralList<Fluent> fluent_conditions,
+                                                                     LiteralList<Derived> derived_conditions,
+                                                                     LiteralList<Fluent> effects,
+                                                                     FunctionExpression function_expression)
 {
     /* Canonize before uniqueness test. */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -315,7 +315,7 @@ EffectComplex PDDLRepositories::get_or_create_complex_effect(VariableList parame
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectComplexImpl> {})
+    return boost::hana::at_key(m_repositories, boost::hana::type<EffectConditionalImpl> {})
         .get_or_create(std::move(parameters),
                        std::move(static_conditions),
                        std::move(fluent_conditions),
@@ -330,14 +330,14 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                                               LiteralList<Static> static_conditions,
                                               LiteralList<Fluent> fluent_conditions,
                                               LiteralList<Derived> derived_conditions,
-                                              EffectSimple simple_effect,
-                                              EffectComplexList complex_effects)
+                                              EffectStrips strips_effect,
+                                              EffectConditionalList conditional_effects)
 {
     /* Canonize before uniqueness test */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(complex_effects.begin(), complex_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
         .get_or_create(std::move(name),
@@ -346,8 +346,8 @@ Action PDDLRepositories::get_or_create_action(std::string name,
                        std::move(static_conditions),
                        std::move(fluent_conditions),
                        std::move(derived_conditions),
-                       std::move(simple_effect),
-                       std::move(complex_effects));
+                       std::move(strips_effect),
+                       std::move(conditional_effects));
 }
 
 Axiom PDDLRepositories::get_or_create_axiom(VariableList parameters,

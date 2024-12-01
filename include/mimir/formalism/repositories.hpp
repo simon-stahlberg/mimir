@@ -82,8 +82,8 @@ using GroundFunctionExpressionRepository = SegmentedPDDLRepository<GroundFunctio
 using FunctionRepository = SegmentedPDDLRepository<FunctionImpl>;
 using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl>;
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl>;
-using EffectSimpleRepository = SegmentedPDDLRepository<EffectSimpleImpl>;
-using EffectUniversalRepository = SegmentedPDDLRepository<EffectComplexImpl>;
+using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
+using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
@@ -126,8 +126,8 @@ using PDDLTypeToRepository =
                      boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionRepository>,
                      boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionRepository>,
                      boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
-                     boost::hana::pair<boost::hana::type<EffectSimpleImpl>, EffectSimpleRepository>,
-                     boost::hana::pair<boost::hana::type<EffectComplexImpl>, EffectUniversalRepository>,
+                     boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
+                     boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
                      boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
                      boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
                      boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
@@ -247,15 +247,15 @@ public:
     FunctionSkeleton get_or_create_function_skeleton(std::string name, VariableList parameters);
 
     /// @brief Get or create a simple effect for the given parameters.
-    EffectSimple get_or_create_simple_effect(LiteralList<Fluent> effects, FunctionExpression function_expression);
+    EffectStrips get_or_create_strips_effect(LiteralList<Fluent> effects, FunctionExpression function_expression);
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
-    EffectComplex get_or_create_complex_effect(VariableList parameters,
-                                               LiteralList<Static> static_conditions,
-                                               LiteralList<Fluent> fluent_conditions,
-                                               LiteralList<Derived> derived_conditions,
-                                               LiteralList<Fluent> effects,
-                                               FunctionExpression function_expression);
+    EffectConditional get_or_create_conditional_effect(VariableList parameters,
+                                                       LiteralList<Static> static_conditions,
+                                                       LiteralList<Fluent> fluent_conditions,
+                                                       LiteralList<Derived> derived_conditions,
+                                                       LiteralList<Fluent> effects,
+                                                       FunctionExpression function_expression);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
@@ -264,8 +264,8 @@ public:
                                 LiteralList<Static> static_conditions,
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
-                                EffectSimple simple_effect,
-                                EffectComplexList complex_effects);
+                                EffectStrips strips_effect,
+                                EffectConditionalList conditional_effects);
 
     /// @brief Get or create a derived predicate for the given parameters.
     Axiom get_or_create_axiom(VariableList parameters,

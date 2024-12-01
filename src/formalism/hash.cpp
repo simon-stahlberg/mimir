@@ -48,8 +48,8 @@ size_t UniquePDDLHasher<Action>::operator()(Action e) const
                                     e->get_conditions<Static>(),
                                     e->get_conditions<Fluent>(),
                                     e->get_conditions<Derived>(),
-                                    e->get_simple_effects(),
-                                    e->get_complex_effects());
+                                    e->get_strips_effect(),
+                                    e->get_conditional_effects());
 }
 
 template<PredicateTag P>
@@ -84,9 +84,9 @@ size_t UniquePDDLHasher<Domain>::operator()(Domain e) const
                                     e->get_axioms());
 }
 
-size_t UniquePDDLHasher<EffectSimple>::operator()(EffectSimple e) const { return UniquePDDLHashCombiner()(e->get_effect(), e->get_function_expression()); }
+size_t UniquePDDLHasher<EffectStrips>::operator()(EffectStrips e) const { return UniquePDDLHashCombiner()(e->get_effect(), e->get_function_expression()); }
 
-size_t UniquePDDLHasher<EffectComplex>::operator()(EffectComplex e) const
+size_t UniquePDDLHasher<EffectConditional>::operator()(EffectConditional e) const
 {
     return UniquePDDLHashCombiner()(e->get_effect(),
                                     e->get_parameters(),

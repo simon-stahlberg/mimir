@@ -47,7 +47,7 @@ bool UniquePDDLEqualTo<Action>::operator()(Action l, Action r) const
     {
         return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters()) && (l->get_conditions<Static>() == r->get_conditions<Static>())
                && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>()) && (l->get_conditions<Derived>() == r->get_conditions<Derived>())
-               && (l->get_simple_effects() == r->get_simple_effects()) && (l->get_complex_effects() == r->get_complex_effects());
+               && (l->get_strips_effect() == r->get_strips_effect()) && (l->get_conditional_effects() == r->get_conditional_effects());
     }
     return true;
 }
@@ -89,7 +89,7 @@ bool UniquePDDLEqualTo<Domain>::operator()(Domain l, Domain r) const
     return true;
 }
 
-bool UniquePDDLEqualTo<EffectSimple>::operator()(EffectSimple l, EffectSimple r) const
+bool UniquePDDLEqualTo<EffectStrips>::operator()(EffectStrips l, EffectStrips r) const
 {
     if (&l != &r)
     {
@@ -98,7 +98,7 @@ bool UniquePDDLEqualTo<EffectSimple>::operator()(EffectSimple l, EffectSimple r)
     return true;
 }
 
-bool UniquePDDLEqualTo<EffectComplex>::operator()(EffectComplex l, EffectComplex r) const
+bool UniquePDDLEqualTo<EffectConditional>::operator()(EffectConditional l, EffectConditional r) const
 {
     if (&l != &r)
     {

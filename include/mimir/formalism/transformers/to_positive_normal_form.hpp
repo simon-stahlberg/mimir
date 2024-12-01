@@ -47,7 +47,7 @@ private:
     void prepare_impl(const LiteralImpl<Static>& literal);
     void prepare_impl(const LiteralImpl<Fluent>& literal);
     void prepare_impl(const LiteralImpl<Derived>& literal);
-    void prepare_impl(const EffectComplexImpl& effect);
+    void prepare_impl(const EffectConditionalImpl& effect);
     void prepare_impl(const ActionImpl& action);
 
     /* Transform step */
@@ -68,7 +68,7 @@ private:
     std::unordered_map<Literal<Fluent>, Literal<Derived>> m_negative_fluent_transformed_duals;
     std::unordered_map<Literal<Derived>, Literal<Derived>> m_negative_derived_transformed_duals;
 
-    EffectComplex transform_impl(const EffectComplexImpl& effect);
+    EffectConditional transform_impl(const EffectConditionalImpl& effect);
     Action transform_impl(const ActionImpl& action);
 
     template<PredicateTag P>

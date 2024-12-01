@@ -60,7 +60,7 @@ public:
 
 /// Spezialization for std::ranges::forward_range.
 template<typename ForwardRange>
-    requires std::ranges::forward_range<ForwardRange>
+requires std::ranges::forward_range<ForwardRange>
 struct UniquePDDLHasher<ForwardRange>
 {
     size_t operator()(const ForwardRange& range) const
@@ -115,15 +115,15 @@ struct UniquePDDLHasher<Domain>
 };
 
 template<>
-struct UniquePDDLHasher<EffectSimple>
+struct UniquePDDLHasher<EffectStrips>
 {
-    size_t operator()(EffectSimple e) const;
+    size_t operator()(EffectStrips e) const;
 };
 
 template<>
-struct UniquePDDLHasher<EffectComplex>
+struct UniquePDDLHasher<EffectConditional>
 {
-    size_t operator()(EffectComplex e) const;
+    size_t operator()(EffectConditional e) const;
 };
 
 template<>

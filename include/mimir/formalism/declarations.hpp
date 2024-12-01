@@ -61,12 +61,12 @@ class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
 
-class EffectSimpleImpl;
-using EffectSimple = const EffectSimpleImpl*;
+class EffectStripsImpl;
+using EffectStrips = const EffectStripsImpl*;
 
-class EffectComplexImpl;
-using EffectComplex = const EffectComplexImpl*;
-using EffectComplexList = std::vector<EffectComplex>;
+class EffectConditionalImpl;
+using EffectConditional = const EffectConditionalImpl*;
+using EffectConditionalList = std::vector<EffectConditional>;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;

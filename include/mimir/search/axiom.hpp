@@ -31,7 +31,7 @@
 namespace mimir
 {
 
-struct SimpleDerivedEffect
+struct GroundEffectDerivedLiteral
 {
     bool is_negated = false;
     Index atom_index = Index(0);
@@ -45,8 +45,8 @@ struct GroundAxiomImpl
     Index m_index = Index(0);
     Index m_axiom_index = Index(0);
     FlatIndexList m_objects = FlatIndexList();
-    StripsActionPrecondition m_strips_precondition = StripsActionPrecondition();
-    SimpleDerivedEffect m_effect = SimpleDerivedEffect();
+    GroundConditionStrips m_strips_precondition = GroundConditionStrips();
+    GroundEffectDerivedLiteral m_effect = GroundEffectDerivedLiteral();
 
     Index& get_index();
     Index get_index() const;
@@ -58,12 +58,12 @@ struct GroundAxiomImpl
     const FlatIndexList& get_objects() const;
 
     /* STRIPS part */
-    StripsActionPrecondition& get_strips_precondition();
-    const StripsActionPrecondition& get_strips_precondition() const;
+    GroundConditionStrips& get_strips_precondition();
+    const GroundConditionStrips& get_strips_precondition() const;
 
     /* Effect*/
-    SimpleDerivedEffect& get_derived_effect();
-    const SimpleDerivedEffect& get_derived_effect() const;
+    GroundEffectDerivedLiteral& get_derived_effect();
+    const GroundEffectDerivedLiteral& get_derived_effect() const;
 
     // TODO: pass state instead of separated fluent and derived atoms?
     bool is_applicable(const FlatBitset& state_fluent_atoms, const FlatBitset& state_derived_atoms, const FlatBitset& static_positive_atoms) const;
@@ -99,7 +99,7 @@ using GroundAxiomImplSet = cista::storage::UnorderedSet<GroundAxiomImpl>;
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<SimpleDerivedEffect, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const PDDLRepositories&>& data);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLRepositories&>& data);

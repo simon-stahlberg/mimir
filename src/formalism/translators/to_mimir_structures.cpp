@@ -484,14 +484,15 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
+std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
-    using EffectSimpleData = std::pair<LiteralList<Fluent>, FunctionExpressionList>;
-    using EffectComplexData = std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>,
-                                                 std::pair<LiteralList<Fluent>, FunctionExpressionList>,
-                                                 mimir::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
+    using EffectStripsData = std::pair<LiteralList<Fluent>, FunctionExpressionList>;
+    using EffectConditionalData = std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>,
+                                                     std::pair<LiteralList<Fluent>, FunctionExpressionList>,
+                                                     mimir::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
 
-    const auto translate_effect_func = [&](const loki::Effect& effect, EffectSimpleData& ref_effect_simple_data, EffectComplexData& ref_effect_complex_data)
+    const auto translate_effect_func =
+        [&](const loki::Effect& effect, EffectStripsData& ref_effect_strips_data, EffectConditionalData& ref_effect_conditional_data)
     {
         auto tmp_effect = effect;
 
@@ -535,13 +536,13 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
 
             if (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()))
             {
-                ref_effect_complex_data
+                ref_effect_conditional_data
                     [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
                         .first.push_back(fluent_effect);
             }
             else
             {
-                ref_effect_simple_data.first.push_back(fluent_effect);
+                ref_effect_strips_data.first.push_back(fluent_effect);
             }
         }
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
@@ -556,13 +557,13 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
 
             if (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()))
             {
-                ref_effect_complex_data
+                ref_effect_conditional_data
                     [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
                         .second.push_back(function_expression);
             }
             else
             {
-                ref_effect_simple_data.second.push_back(function_expression);
+                ref_effect_strips_data.second.push_back(function_expression);
             }
         }
         else
@@ -575,36 +576,36 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
 
     /* Parse the effect */
     auto effect_ptr = &effect;
-    auto effect_simple_data = EffectSimpleData {};
-    auto effect_complex_data = EffectComplexData {};
+    auto effect_strips_data = EffectStripsData {};
+    auto effect_conditional_data = EffectConditionalData {};
     // Parse conjunctive part
     if (const auto& effect_and = std::get_if<loki::EffectAnd>(&effect_ptr->get_effect()))
     {
         for (const auto& nested_effect : (*effect_and)->get_effects())
         {
-            translate_effect_func(nested_effect, effect_simple_data, effect_complex_data);
+            translate_effect_func(nested_effect, effect_strips_data, effect_conditional_data);
         }
     }
     else
     {
         // Parse non conjunctive
-        translate_effect_func(effect_ptr, effect_simple_data, effect_complex_data);
+        translate_effect_func(effect_ptr, effect_strips_data, effect_conditional_data);
     }
 
-    /* Instantiate simple effect. */
-    const auto simple_effect = this->m_pddl_repositories.get_or_create_simple_effect(
-        effect_simple_data.first,
-        (effect_simple_data.second.size() > 0) ?
-            (effect_simple_data.second.size() == 1) ?
-            effect_simple_data.second.front() :
+    /* Instantiate STRIPS effect. */
+    const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(
+        effect_strips_data.first,
+        (effect_strips_data.second.size() > 0) ?
+            (effect_strips_data.second.size() == 1) ?
+            effect_strips_data.second.front() :
             this->m_pddl_repositories.get_or_create_function_expression(
-                this->m_pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, effect_simple_data.second)) :
+                this->m_pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, effect_strips_data.second)) :
             this->m_pddl_repositories.get_or_create_function_expression(
                 this->m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1)));
 
-    /* Instantiate complex effects. */
-    auto complex_effects = EffectComplexList {};
-    for (const auto& [key, value] : effect_complex_data)
+    /* Instantiate conditional effects. */
+    auto conditional_effects = EffectConditionalList {};
+    for (const auto& [key, value] : effect_conditional_data)
     {
         const auto& [variables, static_conditions, fluent_conditions, derived_conditions] = key;
         const auto& [effect_literals, function_expression] = value;
@@ -618,12 +619,15 @@ std::tuple<EffectSimple, EffectComplexList> ToMimirStructures::translate_lifted(
                 this->m_pddl_repositories.get_or_create_function_expression(
                     this->m_pddl_repositories.get_or_create_function_expression_number(0));  // always 0 default cost, independent of m_action_costs_enabled
 
-        complex_effects.push_back(
-            this->m_pddl_repositories
-                .get_or_create_complex_effect(variables, static_conditions, fluent_conditions, derived_conditions, effect_literals, cost_function_expression));
+        conditional_effects.push_back(this->m_pddl_repositories.get_or_create_conditional_effect(variables,
+                                                                                                 static_conditions,
+                                                                                                 fluent_conditions,
+                                                                                                 derived_conditions,
+                                                                                                 effect_literals,
+                                                                                                 cost_function_expression));
     }
 
-    return std::make_tuple(simple_effect, complex_effects);
+    return std::make_tuple(strips_effect, conditional_effects);
 }
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
@@ -641,13 +645,13 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     }
 
     // 2. Translate effects
-    auto simple_effect = EffectSimple {};
-    auto complex_effects = EffectComplexList {};
+    auto strips_effect = EffectStrips {};
+    auto conditional_effects = EffectConditionalList {};
     if (action.get_effect().has_value())
     {
-        const auto [simple_effect_, complex_effects_] = translate_lifted(*action.get_effect().value());
-        simple_effect = simple_effect_;
-        complex_effects = complex_effects_;
+        const auto [strips_effect_, conditional_effects_] = translate_lifted(*action.get_effect().value());
+        strips_effect = strips_effect_;
+        conditional_effects = conditional_effects_;
     }
 
     return m_pddl_repositories.get_or_create_action(action.get_name(),
@@ -656,8 +660,8 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
                                                     static_literals,
                                                     fluent_literals,
                                                     derived_literals,
-                                                    simple_effect,
-                                                    complex_effects);
+                                                    strips_effect,
+                                                    conditional_effects);
 }
 
 Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)

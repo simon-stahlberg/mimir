@@ -147,7 +147,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     {
         if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
         {
-            for (const auto& simple_effect : conditional_effect.get_simple_effect())
+            for (const auto& simple_effect : conditional_effect.get_fluent_effect_literals())
             {
                 if (simple_effect.is_negated)
                 {

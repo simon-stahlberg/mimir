@@ -79,8 +79,8 @@ public:
         self().prepare_base(literal);
     }
     void prepare(const NumericFluentImpl& numeric_fluent) { self().prepare_base(numeric_fluent); }
-    void prepare(const EffectSimpleImpl& effect) { self().prepare_base(effect); }
-    void prepare(const EffectComplexImpl& effect) { self().prepare_base(effect); }
+    void prepare(const EffectStripsImpl& effect) { self().prepare_base(effect); }
+    void prepare(const EffectConditionalImpl& effect) { self().prepare_base(effect); }
     void prepare(const FunctionExpressionNumberImpl& function_expression) { self().prepare_base(function_expression); }
     void prepare(const FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_base(function_expression); }
     void prepare(const FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_base(function_expression); }
@@ -137,8 +137,8 @@ public:
         return self().transform_base(literal);
     }
     NumericFluent transform(const NumericFluentImpl& numeric_fluent) { return self().transform_base(numeric_fluent); }
-    EffectSimple transform(const EffectSimpleImpl& effect) { return self().transform_base(effect); }
-    EffectComplex transform(const EffectComplexImpl& effect) { return self().transform_base(effect); }
+    EffectStrips transform(const EffectStripsImpl& effect) { return self().transform_base(effect); }
+    EffectConditional transform(const EffectConditionalImpl& effect) { return self().transform_base(effect); }
     FunctionExpression transform(const FunctionExpressionNumberImpl& function_expression) { return self().transform_base(function_expression); }
     FunctionExpression transform(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().transform_base(function_expression); }
     FunctionExpression transform(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().transform_base(function_expression); }

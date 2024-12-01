@@ -80,7 +80,7 @@ FunctionSkeleton EncodeParameterIndexInVariables::transform_impl(const FunctionS
     return translated_function_skeleton;
 }
 
-EffectComplex EncodeParameterIndexInVariables::transform_impl(const EffectComplexImpl& effect)
+EffectConditional EncodeParameterIndexInVariables::transform_impl(const EffectConditionalImpl& effect)
 {
     // Determine variable parameter indices
     const auto start_index = m_variable_to_parameter_index.size();
@@ -89,12 +89,12 @@ EffectComplex EncodeParameterIndexInVariables::transform_impl(const EffectComple
         m_variable_to_parameter_index[effect.get_parameters()[i]] = start_index + i;
     }
 
-    const auto translated_complex_effect = this->m_pddl_repositories.get_or_create_complex_effect(this->transform(effect.get_parameters()),
-                                                                                                  this->transform(effect.get_conditions<Static>()),
-                                                                                                  this->transform(effect.get_conditions<Fluent>()),
-                                                                                                  this->transform(effect.get_conditions<Derived>()),
-                                                                                                  this->transform(effect.get_effect()),
-                                                                                                  this->transform(*effect.get_function_expression()));
+    const auto translated_conditional_effect = this->m_pddl_repositories.get_or_create_conditional_effect(this->transform(effect.get_parameters()),
+                                                                                                          this->transform(effect.get_conditions<Static>()),
+                                                                                                          this->transform(effect.get_conditions<Fluent>()),
+                                                                                                          this->transform(effect.get_conditions<Derived>()),
+                                                                                                          this->transform(effect.get_effect()),
+                                                                                                          this->transform(*effect.get_function_expression()));
 
     // Erase for next universal effect
     for (size_t i = 0; i < effect.get_arity(); ++i)
@@ -102,7 +102,7 @@ EffectComplex EncodeParameterIndexInVariables::transform_impl(const EffectComple
         m_variable_to_parameter_index.erase(effect.get_parameters()[i]);
     }
 
-    return translated_complex_effect;
+    return translated_conditional_effect;
 }
 
 Axiom EncodeParameterIndexInVariables::transform_impl(const AxiomImpl& axiom)
@@ -141,7 +141,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
 
     const auto translated_parameters = this->transform(action.get_parameters());
 
-    const auto translated_complex_effects = this->transform(action.get_complex_effects());
+    const auto translated_conditional_effects = this->transform(action.get_conditional_effects());
 
     const auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
                                                                                   action.get_original_arity(),
@@ -149,8 +149,8 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
                                                                                   this->transform(action.get_conditions<Static>()),
                                                                                   this->transform(action.get_conditions<Fluent>()),
                                                                                   this->transform(action.get_conditions<Derived>()),
-                                                                                  this->transform(*action.get_simple_effects()),
-                                                                                  translated_complex_effects);
+                                                                                  this->transform(*action.get_strips_effect()),
+                                                                                  translated_conditional_effects);
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();

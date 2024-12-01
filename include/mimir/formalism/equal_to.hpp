@@ -59,15 +59,15 @@ struct UniquePDDLEqualTo<Domain>
 };
 
 template<>
-struct UniquePDDLEqualTo<EffectSimple>
+struct UniquePDDLEqualTo<EffectStrips>
 {
-    bool operator()(EffectSimple l, EffectSimple r) const;
+    bool operator()(EffectStrips l, EffectStrips r) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<EffectComplex>
+struct UniquePDDLEqualTo<EffectConditional>
 {
-    bool operator()(EffectComplex l, EffectComplex r) const;
+    bool operator()(EffectConditional l, EffectConditional r) const;
 };
 
 template<>

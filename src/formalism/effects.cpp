@@ -36,7 +36,7 @@ namespace mimir
  * Type 1 effect
  */
 
-EffectSimpleImpl::EffectSimpleImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression) :
+EffectStripsImpl::EffectStripsImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression) :
     m_index(index),
     m_effects(std::move(effects)),
     m_function_expression(std::move(function_expression))
@@ -45,30 +45,30 @@ EffectSimpleImpl::EffectSimpleImpl(Index index, LiteralList<Fluent> effects, Fun
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-std::string EffectSimpleImpl::str() const
+std::string EffectStripsImpl::str() const
 {
     auto out = std::stringstream();
     out << *this;
     return out.str();
 }
 
-Index EffectSimpleImpl::get_index() const { return m_index; }
+Index EffectStripsImpl::get_index() const { return m_index; }
 
-const LiteralList<Fluent>& EffectSimpleImpl::get_effect() const { return m_effects; }
+const LiteralList<Fluent>& EffectStripsImpl::get_effect() const { return m_effects; }
 
-const FunctionExpression& EffectSimpleImpl::get_function_expression() const { return m_function_expression; }
+const FunctionExpression& EffectStripsImpl::get_function_expression() const { return m_function_expression; }
 
 /**
  * Type 3 effect
  */
 
-EffectComplexImpl::EffectComplexImpl(Index index,
-                                     VariableList quantified_variables,
-                                     LiteralList<Static> static_conditions,
-                                     LiteralList<Fluent> fluent_conditions,
-                                     LiteralList<Derived> derived_conditions,
-                                     LiteralList<Fluent> effects,
-                                     FunctionExpression function_expression) :
+EffectConditionalImpl::EffectConditionalImpl(Index index,
+                                             VariableList quantified_variables,
+                                             LiteralList<Static> static_conditions,
+                                             LiteralList<Fluent> fluent_conditions,
+                                             LiteralList<Derived> derived_conditions,
+                                             LiteralList<Fluent> effects,
+                                             FunctionExpression function_expression) :
     m_index(index),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
@@ -91,19 +91,19 @@ EffectComplexImpl::EffectComplexImpl(Index index,
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-std::string EffectComplexImpl::str() const
+std::string EffectConditionalImpl::str() const
 {
     auto out = std::stringstream();
     out << *this;
     return out.str();
 }
 
-Index EffectComplexImpl::get_index() const { return m_index; }
+Index EffectConditionalImpl::get_index() const { return m_index; }
 
-const VariableList& EffectComplexImpl::get_parameters() const { return m_quantified_variables; }
+const VariableList& EffectConditionalImpl::get_parameters() const { return m_quantified_variables; }
 
 template<PredicateTag P>
-const LiteralList<P>& EffectComplexImpl::get_conditions() const
+const LiteralList<P>& EffectConditionalImpl::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -123,37 +123,37 @@ const LiteralList<P>& EffectComplexImpl::get_conditions() const
     }
 }
 
-template const LiteralList<Static>& EffectComplexImpl::get_conditions<Static>() const;
-template const LiteralList<Fluent>& EffectComplexImpl::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& EffectComplexImpl::get_conditions<Derived>() const;
+template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static>() const;
+template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
 
-const LiteralList<Fluent>& EffectComplexImpl::get_effect() const { return m_effects; }
+const LiteralList<Fluent>& EffectConditionalImpl::get_effect() const { return m_effects; }
 
-const FunctionExpression& EffectComplexImpl::get_function_expression() const { return m_function_expression; }
+const FunctionExpression& EffectConditionalImpl::get_function_expression() const { return m_function_expression; }
 
-size_t EffectComplexImpl::get_arity() const { return m_quantified_variables.size(); }
+size_t EffectConditionalImpl::get_arity() const { return m_quantified_variables.size(); }
 
-std::ostream& operator<<(std::ostream& out, const EffectSimpleImpl& element)
+std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const EffectComplexImpl& element)
+std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, EffectSimple element)
+std::ostream& operator<<(std::ostream& out, EffectStrips element)
 {
     out << *element;
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, EffectComplex element)
+std::ostream& operator<<(std::ostream& out, EffectConditional element)
 {
     out << *element;
     return out;

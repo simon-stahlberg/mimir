@@ -37,18 +37,18 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
     return positive_literals;
 }
 
-EffectComplexList DeleteRelaxTransformer::transform_impl(const EffectComplexList& effects)
+EffectConditionalList DeleteRelaxTransformer::transform_impl(const EffectConditionalList& effects)
 {
-    auto positive_complex_effects = EffectComplexList {};
-    for (const auto& complex_effect : effects)
+    auto positive_conditional_effects = EffectConditionalList {};
+    for (const auto& conditional_effect : effects)
     {
-        const auto positive_complex_effect = this->transform(*complex_effect);
-        if (positive_complex_effect)
+        const auto positive_conditional_effect = this->transform(*conditional_effect);
+        if (positive_conditional_effect)
         {
-            positive_complex_effects.push_back(positive_complex_effect);
+            positive_conditional_effects.push_back(positive_conditional_effect);
         }
     }
-    return uniquify_elements(positive_complex_effects);
+    return uniquify_elements(positive_conditional_effects);
 }
 
 ActionList DeleteRelaxTransformer::transform_impl(const ActionList& actions)
@@ -79,12 +79,12 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
-EffectSimple DeleteRelaxTransformer::transform_impl(const EffectSimpleImpl& effect)
+EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effect)
 {
-    return this->m_pddl_repositories.get_or_create_simple_effect(this->transform(effect.get_effect()), this->transform(*effect.get_function_expression()));
+    return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effect()), this->transform(*effect.get_function_expression()));
 }
 
-EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& effect)
+EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
 {
     auto transformed_literals = LiteralList<Fluent> {};
     for (const auto& literal : this->transform(effect.get_effect()))
@@ -106,15 +106,15 @@ EffectComplex DeleteRelaxTransformer::transform_impl(const EffectComplexImpl& ef
     auto function_expression = this->transform(*effect.get_function_expression());
 
     return this->m_pddl_repositories
-        .get_or_create_complex_effect(parameters, static_conditions, fluent_conditions, derived_conditions, transformed_literals, function_expression);
+        .get_or_create_conditional_effect(parameters, static_conditions, fluent_conditions, derived_conditions, transformed_literals, function_expression);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 {
-    auto simple_effect = this->transform(*action.get_simple_effects());
-    auto complex_effects = this->transform(action.get_complex_effects());
+    auto strips_effect = this->transform(*action.get_strips_effect());
+    auto conditional_effects = this->transform(action.get_conditional_effects());
 
-    if (m_remove_useless_actions_and_axioms && simple_effect->get_effect().empty() && complex_effects.empty())
+    if (m_remove_useless_actions_and_axioms && strips_effect->get_effect().empty() && conditional_effects.empty())
     {
         return nullptr;
     }
@@ -130,8 +130,8 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
                                                                                 static_conditions,
                                                                                 fluent_conditions,
                                                                                 derived_conditions,
-                                                                                simple_effect,
-                                                                                complex_effects);
+                                                                                strips_effect,
+                                                                                conditional_effects);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
 

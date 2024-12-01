@@ -32,8 +32,8 @@ private:
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
-    EffectSimple m_simple_effect;
-    EffectComplexList m_complex_effects;
+    EffectStrips m_strips_effect;
+    EffectConditionalList m_conditional_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -44,8 +44,8 @@ private:
                LiteralList<Static> static_conditions,
                LiteralList<Fluent> fluent_conditions,
                LiteralList<Derived> derived_conditions,
-               EffectSimple simple_effects,
-               EffectComplexList complex_effects);
+               EffectStrips strips_effect,
+               EffectConditionalList conditional_effects);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -66,8 +66,8 @@ public:
     const VariableList& get_parameters() const;
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
-    const EffectSimple& get_simple_effects() const;
-    const EffectComplexList& get_complex_effects() const;
+    const EffectStrips& get_strips_effect() const;
+    const EffectConditionalList& get_conditional_effects() const;
 
     size_t get_arity() const;
 };

@@ -27,9 +27,9 @@ from _pymimir import (
     DerivedPredicateList,
     Domain,
     DomainList,
-    EffectSimple,
-    EffectComplex,
-    EffectComplexList,
+    EffectStrips,
+    EffectConditional,
+    EffectConditionalList,
     FluentAtom,
     FluentAtomList,
     FluentGroundAtom,
@@ -107,7 +107,10 @@ from _pymimir import (
     DefaultIWAlgorithmEventHandler,
     DefaultLiftedApplicableActionGeneratorEventHandler,
     DefaultSIWAlgorithmEventHandler,
-    SimpleFluentEffect,
+    GroundEffectFluentLiteral,
+    GroundEffectDerivedLiteral,
+    GroundEffectStrips,
+    GroundConditionStrips,
     GroundAction,
     GroundActionList,
     GroundActionSpan,
@@ -135,8 +138,6 @@ from _pymimir import (
     StateRepository,
     StateSpan,
     IndexGroupedVector,
-    StripsActionEffect,
-    StripsActionPrecondition,
     TupleIndexMapper
 )
 

@@ -70,7 +70,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << std::string(m_indent, ' ') << ":effects ";
-    if (element.get_simple_effects()->get_effect().empty() && element.get_complex_effects().empty())
+    if (element.get_strips_effect()->get_effect().empty() && element.get_conditional_effects().empty())
     {
         out << "()\n";
     }
@@ -78,13 +78,13 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     {
         out << "(and";
 
-        for (const auto& literal : element.get_simple_effects()->get_effect())
+        for (const auto& literal : element.get_strips_effect()->get_effect())
         {
             out << " ";
             write(*literal, out);
         }
 
-        for (const auto& effect : element.get_complex_effects())
+        for (const auto& effect : element.get_conditional_effects())
         {
             out << " ";
             write(*effect, out);
@@ -92,7 +92,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
         if (m_action_costs)
         {
             out << " (increase total-cost ";
-            write(*element.get_simple_effects()->get_function_expression(), out);
+            write(*element.get_strips_effect()->get_function_expression(), out);
             out << ")";
         }
         out << ")";  // end and
@@ -222,7 +222,7 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
     out << std::string(m_indent, ' ') << ")";
 }
 
-void PDDLFormatter::write(const EffectSimpleImpl& element, std::ostream& out)
+void PDDLFormatter::write(const EffectStripsImpl& element, std::ostream& out)
 {
     for (const auto& literal : element.get_effect())
     {
@@ -231,7 +231,7 @@ void PDDLFormatter::write(const EffectSimpleImpl& element, std::ostream& out)
     }
 }
 
-void PDDLFormatter::write(const EffectComplexImpl& element, std::ostream& out)
+void PDDLFormatter::write(const EffectConditionalImpl& element, std::ostream& out)
 {
     if (!element.get_parameters().empty())
     {
