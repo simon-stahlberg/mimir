@@ -61,7 +61,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   Given that both grounded and lifted settings are supported by the library, the bitset representation ensures consistency across both approaches.
 
 - **State-Dependent Action Costs (SDAC):**
-  State-dependent actions costs play a crucial role in accurately modelling real-world problems. For example, the cost of moving between locations might depend on the actual distance or the type of transportation. Mimir supports all features of `:action-costs` allowing modellers to write complex cost expressions directly into conditional effects.
+  State-dependent action costs play a crucial role in accurately modeling real-world problems. For example, the cost of moving between locations might depend on the actual distance or the type of transportation. Mimir supports all `:action-costs` features, allowing modelers to write complex cost expressions directly into conditional effects.
 
 ## Getting Started (Python)
 
