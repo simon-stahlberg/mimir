@@ -134,8 +134,6 @@ loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& 
             {
                 other_effects.push_back(part);
             }
-
-            other_effects.push_back(part);
         }
     }
 
@@ -186,6 +184,37 @@ loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRe
     }
     return pddl_repositories.get_or_create_effect(pddl_repositories.get_or_create_effect_composite_forall(effect.get_parameters(), effect.get_effect()));
 }
+
+/*
+loki::FunctionExpression flatten(const loki::FunctionExpressionMultiOperatorImpl& fexpr, loki::PDDLRepositories& pddl_repositories)
+{
+
+    const auto assign_op = fexpr.get_multi_operator();
+
+    auto function_expressions = loki::FunctionExpressionList {};
+
+    for (const auto& part : fexpr.get_function_expressions())
+    {
+        if (const auto nested_fexpr_multi = std::get_if<loki::FunctionExpressionMultiOperator>(&part->get_function_expression()))
+        {
+            const auto nested_assign_op = (*nested_fexpr_multi)->get_multi_operator();
+
+            if (assign_op != nested_assign_op)
+                continue;
+
+            for (const auto nested_part : (*nested_fexpr_multi)->get_function_expressions())
+            {
+                function_expressions.push_back(flatten(**nested_fexpr_multi, pddl_repositories));
+            }
+        }
+        else if (const auto nested_fexpr_number = std::get_if<loki::FunctionExpressionNumber>(&part->get_function_expression())) {}
+    }
+
+    return pddl_repositories.get_or_create_function_expression(
+        pddl_repositories.get_or_create_function_expression_multi_operator(assign_op, function_expressions));
+
+}
+*/
 
 std::string create_unique_axiom_name(Index& next_axiom_index, std::unordered_set<std::string>& simple_and_derived_predicate_names)
 {

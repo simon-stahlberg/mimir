@@ -79,6 +79,20 @@ extern loki::Effect flatten(const loki::EffectCompositeWhenImpl& effect, loki::P
 extern loki::Effect flatten(const loki::EffectCompositeForallImpl& effect, loki::PDDLRepositories& pddl_repositories);
 
 /**
+ * Flatten function expression multi operator
+ *
+ * (+ f1 (+ f2 f3))  =>  (+ f1 f2 f3)
+ * (+ f1 f2 0)       =>  (+ f1 f2)
+ * (+ f 3 4)         =>  (+ f 7)
+ * (+ f)             =>  f
+ * (* f1 (* f2 f3))  =>  (* f1 f2 f3)
+ * (* f1 f2 1)       =>  (* f1 f2)
+ * (* f 3 4)         =>  (* f 12)
+ * (* f)             =>  f
+ */
+// extern loki::FunctionExpression flatten(const loki::FunctionExpressionMultiOperatorImpl& fexpr, loki::PDDLRepositories& pddl_repositories);
+
+/**
  * Axioms
  */
 

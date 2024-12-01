@@ -27,23 +27,20 @@
 namespace mimir
 {
 
-/**
- * Implementation class
- */
 class StateRepository
 {
 private:
-    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
-    bool m_problem_or_domain_has_axioms;
+    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;  ///< Provices access the axiom evaluator.
+    bool m_problem_or_domain_has_axioms;                                        ///< true iff the underlying problem or domain contains axioms.
 
-    StateImplSet m_states;
-    StateImpl m_state_builder;
+    StateImplSet m_states;      ///< Stores all created states.
+    StateImpl m_state_builder;  ///< temporary for state creation.
 
-    FlatBitset m_positive_cond_effects;
-    FlatBitset m_negative_cond_effects;
+    FlatBitset m_positive_cond_effects;  ///< temporary to collect applied positive effects of conditional effects.
+    FlatBitset m_negative_cond_effects;  ///< temporary to collect applied negative effects of conditional effects.
 
-    FlatBitset m_reached_fluent_atoms;
-    FlatBitset m_reached_derived_atoms;
+    FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
+    FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
 public:
     explicit StateRepository(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);
@@ -53,19 +50,36 @@ public:
     StateRepository(StateRepository&& other) = delete;
     StateRepository& operator=(StateRepository&& other) = delete;
 
+    /// @brief Get or create the extended initial state of the underlying problem.
+    /// @return the extended initial state.
     State get_or_create_initial_state();
 
+    /// @brief Get or create the extended state for a given set of grounded `atoms`.
+    /// @param atoms the grounded atoms.
+    /// @return the extended state.
     State get_or_create_state(const GroundAtomList<Fluent>& atoms);
 
+    /// @brief Get or creates the extended successor state when applying the given grounded `action` in the given `state`.
+    /// @param state is the state.
+    /// @param action is the grounded action.
+    /// @return the extended successor state and the action cost.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
 
+    /// @brief Return the number of created states.
+    /// @return the number of created states.
     size_t get_state_count() const;
 
+    /// @brief Return the reached fluent ground atoms.
+    /// @return a bitset that stores the fluent ground atom indices.
     const FlatBitset& get_reached_fluent_ground_atoms_bitset() const;
 
+    /// @brief Return the reached derived ground atoms.
+    /// @return a bitset that stores the derived ground atom indices.
     const FlatBitset& get_reached_derived_ground_atoms_bitset() const;
 
-    std::shared_ptr<IApplicableActionGenerator> get_applicable_action_generator() const;
+    /// @brief Get the underlying applicable action generator.
+    /// @return the applicable action generator.
+    const std::shared_ptr<IApplicableActionGenerator>& get_applicable_action_generator() const;
 };
 
 }

@@ -131,14 +131,16 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
 
     m_event_handler->on_ground_action(action, binding);
 
-    const auto fill_effects = [this](const LiteralList<Fluent>& literals, GroundEffectFluentLiteralList& out_effects, const auto& binding)
+    const auto fill_effects = [this](const LiteralList<Fluent>& lifted_effect_literals,  //
+                                     const ObjectList& binding,
+                                     GroundEffectFluentLiteralList& out_grounded_effect_literals)
     {
-        out_effects.clear();
+        out_grounded_effect_literals.clear();
 
-        for (const auto& literal : literals)
+        for (const auto& lifted_literal : lifted_effect_literals)
         {
-            const auto grounded_literal = m_pddl_repositories->ground_literal(literal, binding);
-            out_effects.emplace_back(grounded_literal->is_negated(), grounded_literal->get_atom()->get_index());
+            const auto grounded_literal = m_pddl_repositories->ground_literal(lifted_literal, binding);
+            out_grounded_effect_literals.emplace_back(grounded_literal->is_negated(), grounded_literal->get_atom()->get_index());
         }
     };
 
@@ -177,10 +179,11 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     auto& negative_effect = strips_effect.get_negative_effects();
     positive_effect.unset_all();
     negative_effect.unset_all();
-    const auto& effect_literals = action->get_strips_effect()->get_effects();
-    m_pddl_repositories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
-    strips_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
-        *action->get_strips_effect()->get_function_expression());
+    const auto& lifted_strips_effect = action->get_strips_effect();
+    const auto& lifted_effect_literals = lifted_strips_effect->get_effects();
+    m_pddl_repositories->ground_and_fill_bitset(lifted_effect_literals, positive_effect, negative_effect, binding);
+    strips_effect.get_cost() =
+        GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(*lifted_strips_effect->get_function_expression());
 
     /* Conditional effects */
     // Fetch data
@@ -257,7 +260,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                                 cond_negative_derived_precondition_j,
                                                                 binding_ext);
 
-                    fill_effects(lifted_cond_effect->get_effects(), cond_simple_effect_j, binding_ext);
+                    fill_effects(lifted_cond_effect->get_effects(), binding_ext, cond_simple_effect_j);
 
                     cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
                         *lifted_cond_effect->get_function_expression());
@@ -295,7 +298,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                             cond_negative_derived_precondition,
                                                             binding);
 
-                fill_effects(lifted_cond_effect->get_effects(), cond_simple_effect, binding);
+                fill_effects(lifted_cond_effect->get_effects(), binding, cond_simple_effect);
 
                 cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
                     *lifted_cond_effect->get_function_expression());

@@ -207,5 +207,5 @@ const FlatBitset& StateRepository::get_reached_fluent_ground_atoms_bitset() cons
 
 const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
 
-std::shared_ptr<IApplicableActionGenerator> StateRepository::get_applicable_action_generator() const { return m_applicable_action_generator; }
+const std::shared_ptr<IApplicableActionGenerator>& StateRepository::get_applicable_action_generator() const { return m_applicable_action_generator; }
 }
