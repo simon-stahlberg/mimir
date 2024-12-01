@@ -28,6 +28,7 @@ void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state, Proble
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
                                                                GroundAction action,
+                                                               ContinuousCost action_cost,
                                                                Problem problem,
                                                                const PDDLRepositories& pddl_repositories) const
 {
@@ -35,6 +36,7 @@ void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
                                                                        GroundAction action,
+                                                                       ContinuousCost action_cost,
                                                                        Problem problem,
                                                                        const PDDLRepositories& pddl_repositories) const
 {
@@ -42,6 +44,7 @@ void DefaultAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State sta
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                            GroundAction action,
+                                                                           ContinuousCost action_cost,
                                                                            Problem problem,
                                                                            const PDDLRepositories& pddl_repositories) const
 {

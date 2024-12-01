@@ -34,11 +34,19 @@ private:
 
     void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
 
-    void on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) const;
 
-    void on_generate_state_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_relaxed_impl(State state,
+                                        GroundAction action,
+                                        ContinuousCost action_cost,
+                                        Problem problem,
+                                        const PDDLRepositories& pddl_repositories) const;
 
-    void on_generate_state_not_relaxed_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const;
+    void on_generate_state_not_relaxed_impl(State state,
+                                            GroundAction action,
+                                            ContinuousCost action_cost,
+                                            Problem problem,
+                                            const PDDLRepositories& pddl_repositories) const;
 
     void on_close_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const;
 

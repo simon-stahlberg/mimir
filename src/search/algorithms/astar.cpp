@@ -214,7 +214,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             const auto [successor_state, action_cost] = m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
-            m_event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
+            m_event_handler->on_generate_state(successor_state, action, action_cost, problem, pddl_repositories);
 
             const bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
 
@@ -249,14 +249,14 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
                         continue;
                     }
                 }
-                m_event_handler->on_generate_state_relaxed(successor_state, action, problem, pddl_repositories);
+                m_event_handler->on_generate_state_relaxed(successor_state, action, action_cost, problem, pddl_repositories);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
                 openlist.insert(successor_f_value, successor_state);
             }
             else
             {
-                m_event_handler->on_generate_state_not_relaxed(successor_state, action, problem, pddl_repositories);
+                m_event_handler->on_generate_state_not_relaxed(successor_state, action, action_cost, problem, pddl_repositories);
             }
         }
 

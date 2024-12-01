@@ -45,13 +45,13 @@ class CustomAStarAlgorithmEventHandler(AStarAlgorithmEventHandlerBase):
     def on_expand_state_impl(self, state : State, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_generate_state_impl(self, state : State, action : GroundAction, problem : Problem, pddl_repositories : PDDLRepositories):
+    def on_generate_state_impl(self, state : State, action : GroundAction, action_cost: float, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_generate_state_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_repositories : PDDLRepositories):
+    def on_generate_state_relaxed_impl(self, state : State, action : GroundAction, action_cost: float, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
-    def on_generate_state_not_relaxed_impl(self, state : State, action : GroundAction, problem : Problem, pddl_repositories : PDDLRepositories):
+    def on_generate_state_not_relaxed_impl(self, state : State, action : GroundAction, action_cost: float, problem : Problem, pddl_repositories : PDDLRepositories):
         pass
 
     def on_close_state_impl(self, state : State, problem : Problem, pddl_repositories : PDDLRepositories):
