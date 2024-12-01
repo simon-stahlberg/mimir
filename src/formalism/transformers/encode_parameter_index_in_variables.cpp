@@ -93,7 +93,7 @@ EffectConditional EncodeParameterIndexInVariables::transform_impl(const EffectCo
                                                                                                           this->transform(effect.get_conditions<Static>()),
                                                                                                           this->transform(effect.get_conditions<Fluent>()),
                                                                                                           this->transform(effect.get_conditions<Derived>()),
-                                                                                                          this->transform(effect.get_effect()),
+                                                                                                          this->transform(effect.get_effects()),
                                                                                                           this->transform(*effect.get_function_expression()));
 
     // Erase for next universal effect

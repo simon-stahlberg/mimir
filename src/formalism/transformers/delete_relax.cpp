@@ -81,13 +81,13 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
 
 EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effect)
 {
-    return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effect()), this->transform(*effect.get_function_expression()));
+    return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()), this->transform(*effect.get_function_expression()));
 }
 
 EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
 {
     auto transformed_literals = LiteralList<Fluent> {};
-    for (const auto& literal : this->transform(effect.get_effect()))
+    for (const auto& literal : this->transform(effect.get_effects()))
     {
         if (literal)
         {
@@ -114,7 +114,7 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
     auto strips_effect = this->transform(*action.get_strips_effect());
     auto conditional_effects = this->transform(action.get_conditional_effects());
 
-    if (m_remove_useless_actions_and_axioms && strips_effect->get_effect().empty() && conditional_effects.empty())
+    if (m_remove_useless_actions_and_axioms && strips_effect->get_effects().empty() && conditional_effects.empty())
     {
         return nullptr;
     }

@@ -301,9 +301,9 @@ template const FlatIndexList& GroundEffectConditional::get_negative_precondition
 template const FlatIndexList& GroundEffectConditional::get_negative_precondition<Fluent>() const;
 template const FlatIndexList& GroundEffectConditional::get_negative_precondition<Derived>() const;
 
-GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() { return m_effect; }
+GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() { return m_effects; }
 
-const GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() const { return m_effect; }
+const GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() const { return m_effects; }
 
 ContinuousCost& GroundEffectConditional::get_cost() { return m_cost; }
 

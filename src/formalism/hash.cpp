@@ -84,11 +84,11 @@ size_t UniquePDDLHasher<Domain>::operator()(Domain e) const
                                     e->get_axioms());
 }
 
-size_t UniquePDDLHasher<EffectStrips>::operator()(EffectStrips e) const { return UniquePDDLHashCombiner()(e->get_effect(), e->get_function_expression()); }
+size_t UniquePDDLHasher<EffectStrips>::operator()(EffectStrips e) const { return UniquePDDLHashCombiner()(e->get_effects(), e->get_function_expression()); }
 
 size_t UniquePDDLHasher<EffectConditional>::operator()(EffectConditional e) const
 {
-    return UniquePDDLHashCombiner()(e->get_effect(),
+    return UniquePDDLHashCombiner()(e->get_effects(),
                                     e->get_parameters(),
                                     e->get_conditions<Static>(),
                                     e->get_conditions<Fluent>(),

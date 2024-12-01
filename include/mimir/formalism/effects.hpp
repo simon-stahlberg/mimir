@@ -51,7 +51,7 @@ public:
     std::string str() const;
 
     Index get_index() const;
-    const LiteralList<Fluent>& get_effect() const;
+    const LiteralList<Fluent>& get_effects() const;
     const FunctionExpression& get_function_expression() const;
 };
 
@@ -96,7 +96,7 @@ public:
     const VariableList& get_parameters() const;
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
-    const LiteralList<Fluent>& get_effect() const;
+    const LiteralList<Fluent>& get_effects() const;
     const FunctionExpression& get_function_expression() const;
 
     size_t get_arity() const;

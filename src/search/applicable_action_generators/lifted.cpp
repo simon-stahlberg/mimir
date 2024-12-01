@@ -177,7 +177,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     auto& negative_effect = strips_effect.get_negative_effects();
     positive_effect.unset_all();
     negative_effect.unset_all();
-    const auto& effect_literals = action->get_strips_effect()->get_effect();
+    const auto& effect_literals = action->get_strips_effect()->get_effects();
     m_pddl_repositories->ground_and_fill_bitset(effect_literals, positive_effect, negative_effect, binding);
     strips_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
         *action->get_strips_effect()->get_function_expression());
@@ -257,7 +257,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                                 cond_negative_derived_precondition_j,
                                                                 binding_ext);
 
-                    fill_effects(lifted_cond_effect->get_effect(), cond_simple_effect_j, binding_ext);
+                    fill_effects(lifted_cond_effect->get_effects(), cond_simple_effect_j, binding_ext);
 
                     cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
                         *lifted_cond_effect->get_function_expression());
@@ -295,7 +295,7 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
                                                             cond_negative_derived_precondition,
                                                             binding);
 
-                fill_effects(lifted_cond_effect->get_effect(), cond_simple_effect, binding);
+                fill_effects(lifted_cond_effect->get_effects(), cond_simple_effect, binding);
 
                 cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
                     *lifted_cond_effect->get_function_expression());

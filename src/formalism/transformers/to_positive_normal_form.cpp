@@ -101,7 +101,7 @@ EffectConditional ToPositiveNormalFormTransformer::transform_impl(const EffectCo
                                                                       transformed_static_conditions,
                                                                       transformed_fluent_conditions,
                                                                       transformed_derived_conditions,
-                                                                      this->transform(effect.get_effect()),
+                                                                      this->transform(effect.get_effects()),
                                                                       this->transform(*effect.get_function_expression()));
 }
 

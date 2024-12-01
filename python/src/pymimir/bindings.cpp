@@ -89,6 +89,7 @@ PYBIND11_MAKE_OPAQUE(TermList);
 
 /* Search */
 PYBIND11_MAKE_OPAQUE(StateList);
+PYBIND11_MAKE_OPAQUE(std::vector<GroundEffectConditional>);  // cannot bind cista vector
 PYBIND11_MAKE_OPAQUE(GroundActionList);
 
 /**
@@ -511,7 +512,7 @@ void init_pymimir(py::module_& m)
         .def("__str__", &EffectStripsImpl::str)
         .def("__repr__", &EffectStripsImpl::str)
         .def("get_index", &EffectStripsImpl::get_index)
-        .def("get_effect", &EffectStripsImpl::get_effect, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_effects", &EffectStripsImpl::get_effects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_function_expression", &EffectStripsImpl::get_function_expression, py::return_value_policy::reference_internal);
 
     py::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
@@ -530,7 +531,7 @@ void init_pymimir(py::module_& m)
         .def("get_static_conditions", &EffectConditionalImpl::get_conditions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_fluent_conditions", &EffectConditionalImpl::get_conditions<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_derived_conditions", &EffectConditionalImpl::get_conditions<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_effect", &EffectConditionalImpl::get_effect, py::return_value_policy::reference_internal);
+        .def("get_effects", &EffectConditionalImpl::get_effects, py::return_value_policy::reference_internal);
     static_assert(!py::detail::vector_needs_copy<EffectConditionalList>::value);  // Ensure return by reference + keep alive
     py::bind_vector<EffectConditionalList>(m, "EffectConditionalList");
 
@@ -835,7 +836,11 @@ void init_pymimir(py::module_& m)
         .def("get_derived_negative_condition",
              py::overload_cast<>(&GroundEffectConditional::get_negative_precondition<Derived>, py::const_),
              py::return_value_policy::copy)
-        .def("get_fluent_effect_literals", py::overload_cast<>(&GroundEffectConditional::get_fluent_effect_literals, py::const_), py::return_value_policy::copy);
+        .def("get_fluent_effect_literals",
+             py::overload_cast<>(&GroundEffectConditional::get_fluent_effect_literals, py::const_),
+             py::return_value_policy::copy);
+    static_assert(!py::detail::vector_needs_copy<std::vector<GroundEffectConditional>>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<std::vector<GroundEffectConditional>>(m, "GroundEffectConditionalList");
 
     py::class_<GroundActionImpl>(m, "GroundAction")  //
         .def("__hash__", [](const GroundActionImpl& self) { return self.get_index(); })
@@ -857,8 +862,10 @@ void init_pymimir(py::module_& m)
         .def("get_index", py::overload_cast<>(&GroundActionImpl::get_index, py::const_), py::return_value_policy::copy)
         .def("get_action_index", py::overload_cast<>(&GroundActionImpl::get_action_index, py::const_), py::return_value_policy::copy)
         .def("get_object_indices", py::overload_cast<>(&GroundActionImpl::get_object_indices, py::const_), py::return_value_policy::copy)
-        .def("get_strips_precondition", [](const GroundActionImpl& self) { return self.get_strips_precondition(); })
-        .def("get_strips_effect", [](const GroundActionImpl& self) { return self.get_strips_effect(); })
+        .def("get_strips_precondition",
+             py::overload_cast<>(&GroundActionImpl::get_strips_precondition, py::const_),
+             py::return_value_policy::reference_internal)
+        .def("get_strips_effect", py::overload_cast<>(&GroundActionImpl::get_strips_effect, py::const_), py::return_value_policy::reference_internal)
         .def(
             "get_conditional_effects",
             [](const GroundActionImpl& self)

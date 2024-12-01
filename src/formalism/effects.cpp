@@ -54,7 +54,7 @@ std::string EffectStripsImpl::str() const
 
 Index EffectStripsImpl::get_index() const { return m_index; }
 
-const LiteralList<Fluent>& EffectStripsImpl::get_effect() const { return m_effects; }
+const LiteralList<Fluent>& EffectStripsImpl::get_effects() const { return m_effects; }
 
 const FunctionExpression& EffectStripsImpl::get_function_expression() const { return m_function_expression; }
 
@@ -127,7 +127,7 @@ template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static
 template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
 template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
 
-const LiteralList<Fluent>& EffectConditionalImpl::get_effect() const { return m_effects; }
+const LiteralList<Fluent>& EffectConditionalImpl::get_effects() const { return m_effects; }
 
 const FunctionExpression& EffectConditionalImpl::get_function_expression() const { return m_function_expression; }
 

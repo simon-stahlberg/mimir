@@ -93,7 +93,7 @@ bool UniquePDDLEqualTo<EffectStrips>::operator()(EffectStrips l, EffectStrips r)
 {
     if (&l != &r)
     {
-        return (l->get_effect() == r->get_effect()) && (l->get_function_expression() == r->get_function_expression());
+        return (l->get_effects() == r->get_effects()) && (l->get_function_expression() == r->get_function_expression());
     }
     return true;
 }
@@ -102,7 +102,7 @@ bool UniquePDDLEqualTo<EffectConditional>::operator()(EffectConditional l, Effec
 {
     if (&l != &r)
     {
-        return (l->get_effect() == r->get_effect()) && (l->get_parameters() == r->get_parameters())
+        return (l->get_effects() == r->get_effects()) && (l->get_parameters() == r->get_parameters())
                && (l->get_conditions<Static>() == r->get_conditions<Static>()) && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>())
                && (l->get_conditions<Derived>() == r->get_conditions<Derived>()) && (l->get_function_expression() == r->get_function_expression());
     }

@@ -70,7 +70,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << std::string(m_indent, ' ') << ":effects ";
-    if (element.get_strips_effect()->get_effect().empty() && element.get_conditional_effects().empty())
+    if (element.get_strips_effect()->get_effects().empty() && element.get_conditional_effects().empty())
     {
         out << "()\n";
     }
@@ -78,7 +78,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     {
         out << "(and";
 
-        for (const auto& literal : element.get_strips_effect()->get_effect())
+        for (const auto& literal : element.get_strips_effect()->get_effects())
         {
             out << " ";
             write(*literal, out);
@@ -224,7 +224,7 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
 
 void PDDLFormatter::write(const EffectStripsImpl& element, std::ostream& out)
 {
-    for (const auto& literal : element.get_effect())
+    for (const auto& literal : element.get_effects())
     {
         write(*literal, out);
         out << " ";
@@ -269,7 +269,7 @@ void PDDLFormatter::write(const EffectConditionalImpl& element, std::ostream& ou
     }
 
     out << " (and";
-    for (const auto& effect : element.get_effect())
+    for (const auto& effect : element.get_effects())
     {
         out << " ";
         write(*effect, out);

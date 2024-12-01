@@ -101,7 +101,7 @@ struct GroundEffectConditional
     FlatIndexList m_negative_fluent_atoms = FlatIndexList();
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
-    GroundEffectFluentLiteralList m_effect = GroundEffectFluentLiteralList();
+    GroundEffectFluentLiteralList m_effects = GroundEffectFluentLiteralList();
     ContinuousCost m_cost = ContinuousCost(0.0);
 
     /* Precondition */
