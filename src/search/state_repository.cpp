@@ -33,8 +33,8 @@ StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> app
                                    || !m_applicable_action_generator->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
     m_state_builder(),
-    m_positive_cond_effects(),
-    m_negative_cond_effects(),
+    m_positive_applied_effects(),
+    m_negative_applied_effects(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms()
 {
@@ -136,13 +136,11 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
 
     /* STRIPS effects*/
     const auto& strips_action_effect = action->get_strips_effect();
-    fluent_state_atoms -= strips_action_effect.get_negative_effects();
-    fluent_state_atoms |= strips_action_effect.get_positive_effects();
+    m_negative_applied_effects = strips_action_effect.get_negative_effects();
+    m_positive_applied_effects = strips_action_effect.get_positive_effects();
     action_cost += strips_action_effect.get_cost();
 
     /* Conditional effects */
-    m_positive_cond_effects.unset_all();
-    m_negative_cond_effects.unset_all();
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
         if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
@@ -151,18 +149,18 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
             {
                 if (simple_effect.is_negated)
                 {
-                    m_negative_cond_effects.set(simple_effect.atom_index);
+                    m_negative_applied_effects.set(simple_effect.atom_index);
                 }
                 else
                 {
-                    m_positive_cond_effects.set(simple_effect.atom_index);
+                    m_positive_applied_effects.set(simple_effect.atom_index);
                 }
             }
             action_cost += conditional_effect.get_cost();
         }
     }
-    fluent_state_atoms -= m_negative_cond_effects;
-    fluent_state_atoms |= m_positive_cond_effects;
+    fluent_state_atoms -= m_negative_applied_effects;
+    fluent_state_atoms |= m_positive_applied_effects;
 
     m_reached_fluent_atoms |= fluent_state_atoms;
 
