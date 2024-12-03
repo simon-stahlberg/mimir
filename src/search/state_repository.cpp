@@ -115,88 +115,84 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 
 std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action)
 {
-    /* Accumulate action_cost */
+    /* Accumulate state-dependent action cost. */
     auto action_cost = ContinuousCost(0);
 
-    /* Fetch member references for non extended construction. */
+    /* 1. Set the state index. */
 
-    auto& state_index = m_state_builder.get_index();
-    auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
-    fluent_state_atoms.unset_all();
-
-    // 1. Initialize non-extended state
-    fluent_state_atoms = state->get_atoms<Fluent>();
-
-    /* 2. Set state id */
-
-    int next_state_index = m_states.size();
-    state_index = next_state_index;
-
-    /* 3. Construct non-extended state */
-
-    /* STRIPS effects*/
-    const auto& strips_action_effect = action->get_strips_effect();
-    m_negative_applied_effects = strips_action_effect.get_negative_effects();
-    m_positive_applied_effects = strips_action_effect.get_positive_effects();
-    action_cost += strips_action_effect.get_cost();
-
-    /* Conditional effects */
-    for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
+        auto& state_index = m_state_builder.get_index();
+        const auto next_state_index = Index(m_states.size());
+        state_index = next_state_index;
+    }
+
+    /* 2. Apply action effects to construct non-extended state. */
+
+    {
+        // Apply STRIPS effect
+        const auto& strips_action_effect = action->get_strips_effect();
+        m_negative_applied_effects = strips_action_effect.get_negative_effects();
+        m_positive_applied_effects = strips_action_effect.get_positive_effects();
+        action_cost += strips_action_effect.get_cost();
+
+        // Apply conditional effects
+        for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            for (const auto& simple_effect : conditional_effect.get_fluent_effect_literals())
+            if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
             {
-                if (simple_effect.is_negated)
+                for (const auto& effect_literal : conditional_effect.get_fluent_effect_literals())
                 {
-                    m_negative_applied_effects.set(simple_effect.atom_index);
+                    if (effect_literal.is_negated)
+                    {
+                        m_negative_applied_effects.set(effect_literal.atom_index);
+                    }
+                    else
+                    {
+                        m_positive_applied_effects.set(effect_literal.atom_index);
+                    }
                 }
-                else
-                {
-                    m_positive_applied_effects.set(simple_effect.atom_index);
-                }
+                action_cost += conditional_effect.get_cost();
             }
-            action_cost += conditional_effect.get_cost();
+        }
+
+        // Modify fluent state atoms
+        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
+        fluent_state_atoms = state->get_atoms<Fluent>();
+        fluent_state_atoms -= m_negative_applied_effects;
+        fluent_state_atoms |= m_positive_applied_effects;
+
+        // Update reached fluent atoms
+        m_reached_fluent_atoms |= fluent_state_atoms;
+
+        // Check if non-extended state exists in cache
+        const auto iter = m_states.find(m_state_builder);
+        if (iter != m_states.end())
+        {
+            return std::make_pair(*iter, action_cost);
         }
     }
-    fluent_state_atoms -= m_negative_applied_effects;
-    fluent_state_atoms |= m_positive_applied_effects;
 
-    m_reached_fluent_atoms |= fluent_state_atoms;
+    /* 3. Apply axioms to construct extended state. */
 
-    /* 4. Retrieve cached extended state */
-
-    // Test whether there exists an extended state for the given non extended state
-    auto iter = m_states.find(m_state_builder);
-    if (iter != m_states.end())
     {
-        return std::make_pair(*iter, action_cost);
+        // Return early if no axioms must be evaluated
+        if (!m_problem_or_domain_has_axioms)
+        {
+            const auto [iter2, inserted] = m_states.insert(m_state_builder);
+            return std::make_pair(*iter2, action_cost);
+        }
+
+        // Evaluate axioms
+        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
+        derived_state_atoms.unset_all();
+        m_applicable_action_generator->generate_and_apply_axioms(m_state_builder);
+
+        // Update reached derived atoms
+        m_reached_derived_atoms |= derived_state_atoms;
     }
 
-    /* Return early, if no axioms must be evaluated. */
-    if (!m_problem_or_domain_has_axioms)
-    {
-        auto [iter2, inserted] = m_states.insert(m_state_builder);
-        return std::make_pair(*iter2, action_cost);
-    }
-
-    /* Fetch member references for extended construction. */
-
-    auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
-    derived_state_atoms.unset_all();
-
-    /* 5. Construct extended state by evaluating Axioms */
-
-    m_applicable_action_generator->generate_and_apply_axioms(m_state_builder);
-    m_reached_derived_atoms |= derived_state_atoms;
-
-    /* 6. Cache extended state */
-
-    auto [iter2, inserted] = m_states.insert(m_state_builder);
-
-    /* 7. Return newly generated extended state */
-
-    return std::make_pair(*iter2, action_cost);
+    // Cache and return the extended state.
+    return std::make_pair(*m_states.insert(m_state_builder).first, action_cost);
 }
 
 size_t StateRepository::get_state_count() const { return m_states.size(); }
