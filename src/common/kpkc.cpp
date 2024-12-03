@@ -17,18 +17,21 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 
+#include <functional>
 #include <limits>
+#include <vector>
 
 namespace mimir
 {
+
 // TODO: Try to replace data-structures with flatmemory implementations.
-void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& on_clique,
+                                                  const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                   const std::vector<std::vector<size_t>>& partitions,
                                                   std::vector<boost::dynamic_bitset<>>& compatible_vertices,
                                                   boost::dynamic_bitset<>& partition_bits,
                                                   boost::dynamic_bitset<>& not_partition_bits,  // TODO: Check if !partition_bits[i] is better...
-                                                  std::vector<size_t>& partial_solution,
-                                                  std::vector<std::vector<std::size_t>>& out_cliques)
+                                                  std::vector<size_t>& partial_solution)
 {
     size_t k = partitions.size();
     size_t best_set_bits = std::numeric_limits<size_t>::max();
@@ -37,8 +40,7 @@ void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynam
     // Find the best partition to work with
     for (size_t partition = 0; partition < k; ++partition)
     {
-        const auto num_set_bits = compatible_vertices[partition].count();
-
+        auto num_set_bits = compatible_vertices[partition].count();
         if (not_partition_bits[partition] && (num_set_bits < best_set_bits))
         {
             best_set_bits = num_set_bits;
@@ -46,9 +48,8 @@ void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynam
         }
     }
 
-    size_t adjacent_index = compatible_vertices[best_partition].find_first();
-
     // Iterate through compatible vertices in the best partition
+    size_t adjacent_index = compatible_vertices[best_partition].find_first();
     while (adjacent_index < compatible_vertices[best_partition].size())
     {
         size_t vertex = partitions[best_partition][adjacent_index];
@@ -57,16 +58,21 @@ void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynam
 
         if (partial_solution.size() == k)
         {
-            out_cliques.push_back(partial_solution);
+            bool abort = !on_clique(partial_solution);
+
+            if (abort)
+            {
+                return false;
+            }
         }
         else
         {
             // Update compatible vertices for the next recursion
-            std::vector<boost::dynamic_bitset<>> compatible_vertices_next = compatible_vertices;
             size_t offset = 0;
+            std::vector<boost::dynamic_bitset<>> compatible_vertices_next = compatible_vertices;
             for (size_t partition = 0; partition < k; ++partition)
             {
-                const auto partition_size = compatible_vertices_next[partition].size();
+                auto partition_size = compatible_vertices_next[partition].size();
                 if (not_partition_bits[partition])
                 {
                     for (size_t index = 0; index < partition_size; ++index)
@@ -91,13 +97,18 @@ void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynam
 
             if ((partial_solution.size() + possible_additions) == k)
             {
-                find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
-                                                             partitions,
-                                                             compatible_vertices_next,
-                                                             partition_bits,
-                                                             not_partition_bits,
-                                                             partial_solution,
-                                                             out_cliques);
+                bool abort = !find_all_k_cliques_in_k_partite_graph_helper(on_clique,
+                                                                           adjacency_matrix,
+                                                                           partitions,
+                                                                           compatible_vertices_next,
+                                                                           partition_bits,
+                                                                           not_partition_bits,
+                                                                           partial_solution);
+
+                if (abort)
+                {
+                    return false;
+                }
             }
 
             partition_bits[best_partition] = 0;
@@ -107,11 +118,13 @@ void find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynam
         partial_solution.pop_back();
         adjacent_index = compatible_vertices[best_partition].find_next(adjacent_index);
     }
+
+    return true;
 }
 
-void find_all_k_cliques_in_k_partite_graph(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                           const std::vector<std::vector<size_t>>& partitions,
-                                           std::vector<std::vector<std::size_t>>& out_cliques)
+void find_all_k_cliques_in_k_partite_graph(const OnCliqueFoundCallback& on_clique,
+                                           const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                           const std::vector<std::vector<size_t>>& partitions)
 {
     std::vector<boost::dynamic_bitset<>> compatible_vertices;
 
@@ -129,13 +142,13 @@ void find_all_k_cliques_in_k_partite_graph(const std::vector<boost::dynamic_bits
     not_partition_bits.set();
     std::vector<size_t> partial_solution;
 
-    find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
+    find_all_k_cliques_in_k_partite_graph_helper(on_clique,
+                                                 adjacency_matrix,
                                                  partitions,
                                                  compatible_vertices,
                                                  partition_bits,
                                                  not_partition_bits,
-                                                 partial_solution,
-                                                 out_cliques);
+                                                 partial_solution);
 }
 
 }

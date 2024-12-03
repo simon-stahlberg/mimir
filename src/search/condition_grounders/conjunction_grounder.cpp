@@ -23,6 +23,7 @@
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
 
+#include <cstddef>
 #include <tuple>
 #include <utility>
 
@@ -48,7 +49,9 @@ LiftedConjunctionGrounder::LiftedConjunctionGrounder(Problem problem,
 {
 }
 
-std::pair<std::vector<ObjectList>, std::tuple<std::vector<GroundLiteralList<Static>>, std::vector<GroundLiteralList<Fluent>>, std::vector<GroundLiteralList<Derived>>>> LiftedConjunctionGrounder::ground(State state)
+std::pair<std::vector<ObjectList>,
+          std::tuple<std::vector<GroundLiteralList<Static>>, std::vector<GroundLiteralList<Fluent>>, std::vector<GroundLiteralList<Derived>>>>
+LiftedConjunctionGrounder::ground(State state, std::size_t max_bindings)
 {
     auto problem = m_condition_grounder.get_problem();
 
@@ -65,7 +68,7 @@ std::pair<std::vector<ObjectList>, std::tuple<std::vector<GroundLiteralList<Stat
     std::vector<GroundLiteralList<Fluent>> fluent_grounded_literal_list;
     std::vector<GroundLiteralList<Derived>> derived_grounded_literal_list;
 
-    m_condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings);
+    m_condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings, max_bindings);
 
     for (const auto& binding : bindings)
     {

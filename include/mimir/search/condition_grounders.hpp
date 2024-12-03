@@ -24,6 +24,8 @@
 #include "mimir/search/condition_grounders/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -60,17 +62,19 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(Problem problem, State state);
 
-    void nullary_case(State state, std::vector<ObjectList>& ref_bindings);
+    void nullary_case(State state, std::vector<ObjectList>& ref_bindings, std::size_t max_bindings);
 
     void unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                     const AssignmentSet<Derived>& derived_assignment_sets,
                     State state,
-                    std::vector<ObjectList>& ref_bindings);
+                    std::vector<ObjectList>& ref_bindings,
+                    std::size_t max_bindings);
 
     void general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                       const AssignmentSet<Derived>& derived_assignment_sets,
                       State state,
-                      std::vector<ObjectList>& ref_bindings);
+                      std::vector<ObjectList>& ref_bindings,
+                      std::size_t max_bindings);
 
 public:
     ConditionGrounder(Problem problem,
@@ -93,7 +97,8 @@ public:
     void compute_bindings(State state,
                           const AssignmentSet<Fluent>& fluent_assignment_set,
                           const AssignmentSet<Derived>& derived_assignment_set,
-                          std::vector<ObjectList>& out_bindings);
+                          std::vector<ObjectList>& out_bindings,
+                          std::size_t max_bindings = SIZE_MAX);
 
     /**
      * Getters

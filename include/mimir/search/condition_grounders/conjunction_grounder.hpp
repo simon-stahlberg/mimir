@@ -21,6 +21,7 @@
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/declarations.hpp"
 
+#include <cstdint>
 #include <memory>
 
 namespace mimir
@@ -40,7 +41,9 @@ public:
                               LiteralList<Derived> derived_literals,
                               std::shared_ptr<PDDLRepositories> pddl_repositories);
 
-    std::pair<std::vector<ObjectList>, std::tuple<std::vector<GroundLiteralList<Static>>, std::vector<GroundLiteralList<Fluent>>, std::vector<GroundLiteralList<Derived>>>> ground(State state);
+    std::pair<std::vector<ObjectList>,
+              std::tuple<std::vector<GroundLiteralList<Static>>, std::vector<GroundLiteralList<Fluent>>, std::vector<GroundLiteralList<Derived>>>>
+    ground(State state, std::size_t max_bindings = SIZE_MAX);
 };
 
 }

@@ -100,8 +100,13 @@ bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
            && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_repositories);
 }
 
-void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_bindings)
+void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_bindings, std::size_t max_bindings)
 {
+    if (ref_bindings.size() >= max_bindings)
+    {
+        return;
+    }
+
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
 
@@ -118,10 +123,16 @@ void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_b
 void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                                    const AssignmentSet<Derived>& derived_assignment_sets,
                                    State state,
-                                   std::vector<ObjectList>& ref_bindings)
+                                   std::vector<ObjectList>& ref_bindings,
+                                   std::size_t max_bindings)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
+        if (ref_bindings.size() >= max_bindings)
+        {
+            break;
+        }
+
         if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
             && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
         {
@@ -142,8 +153,14 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
 void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                                      const AssignmentSet<Derived>& derived_assignment_sets,
                                      State state,
-                                     std::vector<ObjectList>& ref_bindings)
+                                     std::vector<ObjectList>& ref_bindings,
+                                     std::size_t max_bindings)
 {
+    if (ref_bindings.size() >= max_bindings)
+    {
+        return;
+    }
+
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
         return;
@@ -172,11 +189,7 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
     // parameters) tends to be very small.
 
-    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    std::vector<std::vector<std::size_t>> cliques;
-    find_all_k_cliques_in_k_partite_graph(full_consistency_graph, partitions, cliques);
-
-    for (const auto& clique : cliques)
+    const OnCliqueFoundCallback on_clique_found = [&](const std::vector<std::size_t>& clique) -> bool
     {
         auto binding = ObjectList(clique.size());
 
@@ -196,7 +209,12 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
         {
             m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
         }
-    }
+
+        return ref_bindings.size() < max_bindings;
+    };
+
+    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
+    find_all_k_cliques_in_k_partite_graph(on_clique_found, full_consistency_graph, partitions);
 }
 
 ConditionGrounder::ConditionGrounder(Problem problem,
@@ -257,7 +275,8 @@ ConditionGrounder::ConditionGrounder(Problem problem,
 void ConditionGrounder::compute_bindings(State state,
                                          const AssignmentSet<Fluent>& fluent_assignment_set,
                                          const AssignmentSet<Derived>& derived_assignment_set,
-                                         std::vector<ObjectList>& out_bindings)
+                                         std::vector<ObjectList>& out_bindings,
+                                         std::size_t max_bindings)
 {
     out_bindings.clear();
 
@@ -265,15 +284,15 @@ void ConditionGrounder::compute_bindings(State state,
     {
         if (m_variables.size() == 0)
         {
-            nullary_case(state, out_bindings);
+            nullary_case(state, out_bindings, max_bindings);
         }
         else if (m_variables.size() == 1)
         {
-            unary_case(fluent_assignment_set, derived_assignment_set, state, out_bindings);
+            unary_case(fluent_assignment_set, derived_assignment_set, state, out_bindings, max_bindings);
         }
         else
         {
-            general_case(fluent_assignment_set, derived_assignment_set, state, out_bindings);
+            general_case(fluent_assignment_set, derived_assignment_set, state, out_bindings, max_bindings);
         }
     }
 }
