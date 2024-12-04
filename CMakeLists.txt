@@ -53,7 +53,7 @@ else()
     message(STATUS "C++ Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 
     # TODO: Add -Wextra and fix all warnings
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(COMPILER_ID MATCHES "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
     endif ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
