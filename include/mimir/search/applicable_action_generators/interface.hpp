@@ -21,8 +21,12 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
+#include <boost/coroutine2/all.hpp>
+
 namespace mimir
 {
+
+using ground_action_coroutine_t = boost::coroutines2::coroutine<GroundAction>;
 
 /**
  * Dynamic interface class.
@@ -33,7 +37,7 @@ public:
     virtual ~IApplicableActionGenerator() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) = 0;
+    virtual ground_action_coroutine_t::pull_type generate_applicable_actions(State state) = 0;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(StateImpl& unextended_state) = 0;

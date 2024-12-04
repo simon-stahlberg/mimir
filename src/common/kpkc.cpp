@@ -110,8 +110,8 @@ void find_all_k_cliques_in_k_partite_graph_helper(clique_coroutine_t::push_type&
     }
 }
 
-clique_coroutine_t::pull_type find_all_k_cliques_in_k_partite_graph(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                    const std::vector<std::vector<size_t>>& partitions)
+clique_coroutine_t::pull_type create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                           const std::vector<std::vector<size_t>>& partitions)
 {
     return clique_coroutine_t::pull_type(
         [&](clique_coroutine_t::push_type& sink)

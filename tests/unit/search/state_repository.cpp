@@ -36,16 +36,12 @@ TEST(MimirTests, SearchStateRepositoryTest)
     auto lifted_applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_repositories());
     auto state_repository = StateRepository(lifted_applicable_action_generator);
     auto initial_state = state_repository.get_or_create_initial_state();
-    auto applicable_actions = GroundActionList {};
-    lifted_applicable_action_generator->generate_applicable_actions(initial_state, applicable_actions);
 
-    for (const auto& action : applicable_actions)
+    for (const auto& action : lifted_applicable_action_generator->generate_applicable_actions(initial_state))
     {
         const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action);
 
-        auto applicable_actions2 = GroundActionList {};
-        lifted_applicable_action_generator->generate_applicable_actions(successor_state, applicable_actions2);
-        for (const auto& action2 : applicable_actions2)
+        for (const auto& action2 : lifted_applicable_action_generator->generate_applicable_actions(successor_state))
         {
             [[maybe_unused]] const auto [successor_state2, action_cost2] = state_repository.get_or_create_successor_state(successor_state, action2);
         }

@@ -68,9 +68,7 @@ LiftedConjunctionGrounder::ground(State state, std::size_t max_bindings)
     std::vector<GroundLiteralList<Fluent>> fluent_grounded_literal_list;
     std::vector<GroundLiteralList<Derived>> derived_grounded_literal_list;
 
-    m_condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set, bindings, max_bindings);
-
-    for (const auto& binding : bindings)
+    for (const auto& binding : m_condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set))
     {
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : m_condition_grounder.get_conditions<Static>())

@@ -207,9 +207,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         m_event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        m_applicable_action_generator->generate_applicable_actions(state, applicable_actions);
-
-        for (const auto& action : applicable_actions)
+        for (const auto& action : m_applicable_action_generator->generate_applicable_actions(state))
         {
             const auto [successor_state, action_cost] = m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);

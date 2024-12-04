@@ -63,7 +63,7 @@ public:
     GroundedApplicableActionGenerator(GroundedApplicableActionGenerator&& other) = delete;
     GroundedApplicableActionGenerator& operator=(GroundedApplicableActionGenerator&& other) = delete;
 
-    void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
+    ground_action_coroutine_t::pull_type generate_applicable_actions(State state) override;
 
     void generate_and_apply_axioms(StateImpl& unextended_state) override;
 

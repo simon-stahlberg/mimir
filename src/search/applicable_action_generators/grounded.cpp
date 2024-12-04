@@ -117,7 +117,6 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> state_buf;
 
-    auto actions = GroundActionList {};
     do
     {
         reached_delete_free_explore_fixpoint = true;
@@ -129,8 +128,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        delete_free_lifted_applicable_action_generator->generate_applicable_actions(&state, actions);
-        for (const auto& action : actions)
+        for (const auto& action : delete_free_lifted_applicable_action_generator->generate_applicable_actions(&state))
         {
             const auto [succ_state, action_cost] = delete_free_state_repository.get_or_create_successor_state(&state, action);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())
@@ -212,11 +210,18 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
 
-void GroundedApplicableActionGenerator::generate_applicable_actions(State state, GroundActionList& out_applicable_actions)
+ground_action_coroutine_t::pull_type GroundedApplicableActionGenerator::generate_applicable_actions(State state)
 {
-    out_applicable_actions.clear();
-
-    m_action_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), out_applicable_actions);
+    return ground_action_coroutine_t::pull_type(
+        [&, state](ground_action_coroutine_t::push_type& sink)
+        {
+            auto ground_actions = GroundActionList {};
+            m_action_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
+            for (const auto& action : ground_actions)
+            {
+                sink(action);
+            }
+        });
 }
 
 void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& unextended_state)

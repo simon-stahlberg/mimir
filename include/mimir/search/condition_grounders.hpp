@@ -24,6 +24,7 @@
 #include "mimir/search/condition_grounders/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
 
+#include <boost/coroutine2/all.hpp>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -34,6 +35,8 @@
 
 namespace mimir
 {
+
+using binding_coroutine_t = boost::coroutines2::coroutine<ObjectList>;
 
 class ConditionGrounder
 {
@@ -62,19 +65,13 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(Problem problem, State state);
 
-    void nullary_case(State state, std::vector<ObjectList>& ref_bindings, std::size_t max_bindings);
+    binding_coroutine_t::pull_type nullary_case(State state);
 
-    void unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                    const AssignmentSet<Derived>& derived_assignment_sets,
-                    State state,
-                    std::vector<ObjectList>& ref_bindings,
-                    std::size_t max_bindings);
+    binding_coroutine_t::pull_type
+    unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
-    void general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                      const AssignmentSet<Derived>& derived_assignment_sets,
-                      State state,
-                      std::vector<ObjectList>& ref_bindings,
-                      std::size_t max_bindings);
+    binding_coroutine_t::pull_type
+    general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
     ConditionGrounder(Problem problem,
@@ -94,11 +91,8 @@ public:
                       std::shared_ptr<PDDLRepositories> pddl_repositories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
-    void compute_bindings(State state,
-                          const AssignmentSet<Fluent>& fluent_assignment_set,
-                          const AssignmentSet<Derived>& derived_assignment_set,
-                          std::vector<ObjectList>& out_bindings,
-                          std::size_t max_bindings = SIZE_MAX);
+    binding_coroutine_t::pull_type
+    compute_bindings(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
 
     /**
      * Getters

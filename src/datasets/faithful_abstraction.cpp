@@ -160,7 +160,6 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     lifo_queue.push_back(initial_state);
     auto transitions = GroundActionEdgeList {};
     auto abstract_goal_states = IndexSet {};
-    auto applicable_actions = GroundActionList {};
     auto next_abstract_state_index = Index { 1 };
     stop_watch.start();
 
@@ -176,9 +175,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             abstract_goal_states.insert(abstract_state_index);
         }
 
-        applicable_action_generator->generate_applicable_actions(state, applicable_actions);
-
-        for (const auto& action : applicable_actions)
+        for (const auto& action : applicable_action_generator->generate_applicable_actions(state))
         {
             const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
 
