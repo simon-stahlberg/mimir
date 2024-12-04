@@ -17,7 +17,6 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 
-#include <coroutine>
 #include <functional>
 #include <limits>
 #include <vector>
@@ -26,7 +25,7 @@ namespace mimir
 {
 
 // TODO: Try to replace data-structures with flatmemory implementations.
-bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& on_clique,
+void find_all_k_cliques_in_k_partite_graph_helper(clique_coroutine_t::push_type& sink,
                                                   const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                   const std::vector<std::vector<size_t>>& partitions,
                                                   std::vector<boost::dynamic_bitset<>>& compatible_vertices,
@@ -59,12 +58,7 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& o
 
         if (partial_solution.size() == k)
         {
-            bool abort = !on_clique(partial_solution);
-
-            if (abort)
-            {
-                return false;
-            }
+            sink(partial_solution);
         }
         else
         {
@@ -98,18 +92,13 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& o
 
             if ((partial_solution.size() + possible_additions) == k)
             {
-                bool abort = !find_all_k_cliques_in_k_partite_graph_helper(on_clique,
-                                                                           adjacency_matrix,
-                                                                           partitions,
-                                                                           compatible_vertices_next,
-                                                                           partition_bits,
-                                                                           not_partition_bits,
-                                                                           partial_solution);
-
-                if (abort)
-                {
-                    return false;
-                }
+                find_all_k_cliques_in_k_partite_graph_helper(sink,
+                                                             adjacency_matrix,
+                                                             partitions,
+                                                             compatible_vertices_next,
+                                                             partition_bits,
+                                                             not_partition_bits,
+                                                             partial_solution);
             }
 
             partition_bits[best_partition] = 0;
@@ -119,37 +108,37 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& o
         partial_solution.pop_back();
         adjacent_index = compatible_vertices[best_partition].find_next(adjacent_index);
     }
-
-    return true;
 }
 
-void find_all_k_cliques_in_k_partite_graph(const OnCliqueFoundCallback& on_clique,
-                                           const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                           const std::vector<std::vector<size_t>>& partitions)
+clique_coroutine_t::pull_type find_all_k_cliques_in_k_partite_graph(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                    const std::vector<std::vector<size_t>>& partitions)
 {
-    std::vector<boost::dynamic_bitset<>> compatible_vertices;
+    return clique_coroutine_t::pull_type(
+        [&](clique_coroutine_t::push_type& sink)
+        {
+            std::vector<boost::dynamic_bitset<>> compatible_vertices;
+            for (std::size_t index = 0; index < partitions.size(); ++index)
+            {
+                boost::dynamic_bitset<> bitset(partitions[index].size());
+                bitset.set();
+                compatible_vertices.push_back(std::move(bitset));
+            }
 
-    for (std::size_t index = 0; index < partitions.size(); ++index)
-    {
-        boost::dynamic_bitset<> bitset(partitions[index].size());
-        bitset.set();
-        compatible_vertices.push_back(std::move(bitset));
-    }
+            const size_t k = partitions.size();
+            boost::dynamic_bitset<> partition_bits(k);
+            boost::dynamic_bitset<> not_partition_bits(k);
+            partition_bits.reset();
+            not_partition_bits.set();
+            std::vector<size_t> partial_solution;
 
-    const size_t k = partitions.size();
-    boost::dynamic_bitset<> partition_bits(k);
-    boost::dynamic_bitset<> not_partition_bits(k);
-    partition_bits.reset();
-    not_partition_bits.set();
-    std::vector<size_t> partial_solution;
-
-    find_all_k_cliques_in_k_partite_graph_helper(on_clique,
-                                                 adjacency_matrix,
-                                                 partitions,
-                                                 compatible_vertices,
-                                                 partition_bits,
-                                                 not_partition_bits,
-                                                 partial_solution);
+            find_all_k_cliques_in_k_partite_graph_helper(sink,
+                                                         adjacency_matrix,
+                                                         partitions,
+                                                         compatible_vertices,
+                                                         partition_bits,
+                                                         not_partition_bits,
+                                                         partial_solution);
+        });
 }
 
 }

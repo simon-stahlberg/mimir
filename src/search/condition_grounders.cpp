@@ -189,8 +189,16 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
     // parameters) tends to be very small.
 
-    const OnCliqueFoundCallback on_clique_found = [&](const std::vector<std::size_t>& clique) -> bool
+    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
+
+    auto num_found_cliques = size_t(0);
+    for (const auto& clique : find_all_k_cliques_in_k_partite_graph(full_consistency_graph, partitions))
     {
+        if (++num_found_cliques > max_bindings)
+        {
+            return;
+        }
+
         auto binding = ObjectList(clique.size());
 
         for (std::size_t index = 0; index < clique.size(); ++index)
@@ -209,12 +217,7 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
         {
             m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
         }
-
-        return ref_bindings.size() < max_bindings;
     };
-
-    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    find_all_k_cliques_in_k_partite_graph(on_clique_found, full_consistency_graph, partitions);
 }
 
 ConditionGrounder::ConditionGrounder(Problem problem,
