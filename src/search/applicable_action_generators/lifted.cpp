@@ -342,11 +342,11 @@ std::generator<GroundAction> LiftedApplicableActionGenerator::generate_applicabl
 
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
-        for (const auto& binding : condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set))
+        for (auto&& binding : condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set))
         {
             try
             {
-                co_yield ground_action(action, ObjectList(binding));
+                co_yield ground_action(action, std::move(binding));
             }
             catch (const std::exception& e)
             {

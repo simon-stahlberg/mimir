@@ -107,7 +107,7 @@ std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
 
     if (is_valid_binding(m_problem, state, binding))
     {
-        co_yield binding;
+        co_yield std::move(binding);
     }
     else
     {
@@ -127,7 +127,7 @@ ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_set
 
             if (is_valid_binding(m_problem, state, binding))
             {
-                co_yield binding;
+                co_yield std::move(binding);
             }
             else
             {
@@ -184,7 +184,7 @@ ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_s
 
         if (this->is_valid_binding(this->m_problem, state, binding))
         {
-            co_yield binding;
+            co_yield std::move(binding);
         }
         else
         {

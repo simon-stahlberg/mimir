@@ -26,8 +26,8 @@ namespace mimir
 {
 
 // Find all cliques of size k in a k-partite graph
-std::generator<std::vector<size_t>> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                 const std::vector<std::vector<size_t>>& partitions);
+std::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                        const std::vector<std::vector<size_t>>& partitions);
 
 }
 
