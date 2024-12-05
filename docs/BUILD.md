@@ -42,3 +42,22 @@ cmake --install build --prefix=<path/to/installation-directory>
 ```
 
 The compiled executables should now be in either the build directory or the installation directory.
+
+## Installing GCC 14.2 (c++23 support)
+
+```console
+git clone git@github.com:gcc-mirror/gcc.git gcc-14.2.0
+git checkout release/gcc-14.2.0
+cd gcc-14.2.0
+export GCC_INSTALL_DIR=<path/to_installation>
+./configure --prefix=${GCC_INSTALL_DIR} --enable-languages=c,c++ --disable-multilib
+make -j$(nproc)
+make install
+
+export CC=${GCC_INSTALL_DIR}/bin/gcc
+export CXX=${GCC_INSTALL_DIR}/bin/g++
+export PATH=${GCC_INSTALL_DIR}/bin:$PATH
+export LD_LIBRARY_PATH=${GCC_INSTALL_DIR}/lib64:$LD_LIBRARY_PATH
+export LIBRARY_PATH=${GCC_INSTALL_DIR}/lib64:$LIBRARY_PATH
+export CPATH=${GCC_INSTALL_DIR}/include:$CPATH
+```
