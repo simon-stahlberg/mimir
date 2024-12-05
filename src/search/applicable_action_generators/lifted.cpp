@@ -320,40 +320,42 @@ GroundAction LiftedApplicableActionGenerator::ground_action(Action action, Objec
     return grounded_action;
 }
 
-ground_action_coroutine_t::pull_type LiftedApplicableActionGenerator::generate_applicable_actions(State state)
+std::generator<GroundAction> LiftedApplicableActionGenerator::generate_applicable_actions(State state)
 {
-    // We must capture state by value because it is a local variable!
-    return ground_action_coroutine_t::pull_type(
-        [&, state](ground_action_coroutine_t::push_type& sink)
+    m_event_handler->on_start_generating_applicable_actions();
+
+    // Create the assignment sets that are shared by all action schemas.
+
+    auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
+    auto fluent_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
+
+    auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
+
+    auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
+
+    auto derived_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
+    auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
+
+    // Get all applicable ground actions.
+    // This is done by getting bindings in the given state using the precondition.
+    // These bindings are then used to ground the actual action schemas.
+
+    for (auto& [action, condition_grounder] : m_action_precondition_grounders)
+    {
+        for (const auto& binding : condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set))
         {
-            m_event_handler->on_start_generating_applicable_actions();
-
-            // Create the assignment sets that are shared by all action schemas.
-
-            auto& fluent_predicates = m_problem->get_domain()->get_predicates<Fluent>();
-            auto fluent_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
-
-            auto fluent_assignment_set = AssignmentSet<Fluent>(m_problem, fluent_predicates, fluent_atoms);
-
-            auto& derived_predicates = m_problem->get_problem_and_domain_derived_predicates();
-
-            auto derived_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
-            auto derived_assignment_set = AssignmentSet<Derived>(m_problem, derived_predicates, derived_atoms);
-
-            // Get all applicable ground actions.
-            // This is done by getting bindings in the given state using the precondition.
-            // These bindings are then used to ground the actual action schemas.
-
-            for (auto& [action, condition_grounder] : m_action_precondition_grounders)
+            try
             {
-                for (auto& binding : condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set))
-                {
-                    sink(ground_action(action, std::move(binding)));
-                }
+                co_yield ground_action(action, ObjectList(binding));
             }
+            catch (const std::exception& e)
+            {
+                std::cerr << "Exception in sink: " << e.what() << std::endl;
+            }
+        }
+    }
 
-            // m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_repositories);
-        });
+    // m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_repositories);
 }
 
 void LiftedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& unextended_state)

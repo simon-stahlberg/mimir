@@ -74,9 +74,9 @@ void AxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
             {
                 auto& condition_grounder = m_condition_grounders.at(axiom);
 
-                for (auto& binding : condition_grounder.compute_bindings(&unextended_state, fluent_assignment_set, derived_assignment_set))
+                for (const auto& binding : condition_grounder.compute_bindings(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
-                    applicable_axioms.emplace_back(ground_axiom(axiom, std::move(binding)));
+                    applicable_axioms.emplace_back(ground_axiom(axiom, ObjectList(binding)));
                 }
             }
 

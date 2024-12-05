@@ -18,18 +18,16 @@
 #ifndef MIMIR_ALGORITHMS_KPKC_HPP_
 #define MIMIR_ALGORITHMS_KPKC_HPP_
 
-#include <boost/coroutine2/all.hpp>
 #include <boost/dynamic_bitset.hpp>
+#include <generator>
 #include <vector>
 
 namespace mimir
 {
 
-using clique_coroutine_t = boost::coroutines2::coroutine<std::vector<size_t>>;
-
 // Find all cliques of size k in a k-partite graph
-clique_coroutine_t::pull_type create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                           const std::vector<std::vector<size_t>>& partitions);
+std::generator<std::vector<size_t>> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                 const std::vector<std::vector<size_t>>& partitions);
 
 }
 

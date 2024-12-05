@@ -100,113 +100,97 @@ bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
            && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_repositories);
 }
 
-binding_coroutine_t::pull_type ConditionGrounder::nullary_case(State state)
+std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
 {
-    // We must capture state by value because it is a local variable!
-    return binding_coroutine_t::pull_type(
-        [&, state](binding_coroutine_t::push_type& sink)
+    // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
+    auto binding = ObjectList {};
+
+    if (is_valid_binding(m_problem, state, binding))
+    {
+        co_yield binding;
+    }
+    else
+    {
+        m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
+    }
+}
+
+std::generator<ObjectList>
+ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
+{
+    for (const auto& vertex : m_static_consistency_graph.get_vertices())
+    {
+        if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
+            && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
         {
-            // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
-            auto binding = ObjectList {};
+            auto binding = ObjectList { m_pddl_repositories->get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(m_problem, state, binding))
             {
-                sink(std::move(binding));
+                co_yield binding;
             }
             else
             {
                 m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
             }
-        });
+        }
+    }
 }
 
-binding_coroutine_t::pull_type
-ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
-{
-    // We must capture state by value because it is a local variable!
-    return binding_coroutine_t::pull_type(
-        [&, state](binding_coroutine_t::push_type& sink)
-        {
-            for (const auto& vertex : m_static_consistency_graph.get_vertices())
-            {
-                if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
-                    && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
-                {
-                    auto binding = ObjectList { m_pddl_repositories->get_object(vertex.get_object_index()) };
-
-                    if (is_valid_binding(m_problem, state, binding))
-                    {
-                        sink(std::move(binding));
-                    }
-                    else
-                    {
-                        m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
-                    }
-                }
-            }
-        });
-}
-
-binding_coroutine_t::pull_type
+std::generator<ObjectList>
 ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
 {
-    // We must capture state by value because it is a local variable!
-    return binding_coroutine_t::pull_type(
-        [&, state](binding_coroutine_t::push_type& sink)
+    if (m_static_consistency_graph.get_edges().size() == 0)
+    {
+        co_return;
+    }
+
+    const auto& vertices = m_static_consistency_graph.get_vertices();
+
+    std::vector<boost::dynamic_bitset<>> full_consistency_graph(vertices.size(), boost::dynamic_bitset<>(vertices.size()));
+
+    // D: Restrict statically consistent assignments based on the assignments in the current state
+    //    and build the consistency graph as an adjacency matrix
+    for (const auto& edge : m_static_consistency_graph.get_edges())
+    {
+        if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, edge) && derived_assignment_sets.consistent_literals(m_derived_conditions, edge))
         {
-            if (m_static_consistency_graph.get_edges().size() == 0)
-            {
-                return;
-            }
+            const auto first_index = edge.get_src().get_index();
+            const auto second_index = edge.get_dst().get_index();
+            auto& first_row = full_consistency_graph[first_index];
+            auto& second_row = full_consistency_graph[second_index];
+            first_row[second_index] = 1;
+            second_row[first_index] = 1;
+        }
+    }
 
-            const auto& vertices = m_static_consistency_graph.get_vertices();
+    // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
+    // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
+    // parameters) tends to be very small.
 
-            std::vector<boost::dynamic_bitset<>> full_consistency_graph(vertices.size(), boost::dynamic_bitset<>(vertices.size()));
+    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
 
-            // D: Restrict statically consistent assignments based on the assignments in the current state
-            //    and build the consistency graph as an adjacency matrix
-            for (const auto& edge : m_static_consistency_graph.get_edges())
-            {
-                if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, edge)
-                    && derived_assignment_sets.consistent_literals(m_derived_conditions, edge))
-                {
-                    const auto first_index = edge.get_src().get_index();
-                    const auto second_index = edge.get_dst().get_index();
-                    auto& first_row = full_consistency_graph[first_index];
-                    auto& second_row = full_consistency_graph[second_index];
-                    first_row[second_index] = 1;
-                    second_row[first_index] = 1;
-                }
-            }
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(full_consistency_graph, partitions))
+    {
+        auto binding = ObjectList(clique.size());
 
-            // Find all cliques of size num_parameters whose labels denote complete assignments that might yield an applicable precondition. The relatively few
-            // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
-            // parameters) tends to be very small.
+        for (std::size_t index = 0; index < clique.size(); ++index)
+        {
+            const auto& vertex = vertices[clique[index]];
+            const auto parameter_index = vertex.get_parameter_index();
+            const auto object_index = vertex.get_object_index();
+            binding[parameter_index] = m_pddl_repositories->get_object(object_index);
+        }
 
-            const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-
-            for (const auto& clique : create_k_clique_in_k_partite_graph_generator(full_consistency_graph, partitions))
-            {
-                auto binding = ObjectList(clique.size());
-
-                for (std::size_t index = 0; index < clique.size(); ++index)
-                {
-                    const auto& vertex = vertices[clique[index]];
-                    const auto parameter_index = vertex.get_parameter_index();
-                    const auto object_index = vertex.get_object_index();
-                    binding[parameter_index] = m_pddl_repositories->get_object(object_index);
-                }
-
-                if (this->is_valid_binding(this->m_problem, state, binding))
-                {
-                    sink(std::move(binding));
-                }
-                else
-                {
-                    m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
-                }
-            };
-        });
+        if (this->is_valid_binding(this->m_problem, state, binding))
+        {
+            co_yield binding;
+        }
+        else
+        {
+            m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
+        }
+    };
 }
 
 ConditionGrounder::ConditionGrounder(Problem problem,
@@ -264,25 +248,24 @@ ConditionGrounder::ConditionGrounder(Problem problem,
     }
 }
 
-binding_coroutine_t::pull_type
+std::generator<ObjectList>
 ConditionGrounder::compute_bindings(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set)
 {
     if (nullary_conditions_hold(m_problem, state))
     {
         if (m_variables.size() == 0)
         {
-            return nullary_case(state);
+            co_yield std::ranges::elements_of(nullary_case(state));
         }
         else if (m_variables.size() == 1)
         {
-            return unary_case(fluent_assignment_set, derived_assignment_set, state);
+            co_yield std::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
         }
         else
         {
-            return general_case(fluent_assignment_set, derived_assignment_set, state);
+            co_yield std::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state));
         }
     }
-    return binding_coroutine_t::pull_type([](binding_coroutine_t::push_type&) {});
 }
 
 Problem ConditionGrounder::get_problem() const { return m_problem; }

@@ -210,18 +210,14 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem pro
     m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
 }
 
-ground_action_coroutine_t::pull_type GroundedApplicableActionGenerator::generate_applicable_actions(State state)
+std::generator<GroundAction> GroundedApplicableActionGenerator::generate_applicable_actions(State state)
 {
-    return ground_action_coroutine_t::pull_type(
-        [&, state](ground_action_coroutine_t::push_type& sink)
-        {
-            auto ground_actions = GroundActionList {};
-            m_action_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
-            for (const auto& action : ground_actions)
-            {
-                sink(action);
-            }
-        });
+    auto ground_actions = GroundActionList {};
+    m_action_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
+    for (const auto& action : ground_actions)
+    {
+        co_yield action;
+    }
 }
 
 void GroundedApplicableActionGenerator::generate_and_apply_axioms(StateImpl& unextended_state)

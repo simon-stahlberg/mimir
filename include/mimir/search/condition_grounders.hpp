@@ -24,9 +24,9 @@
 #include "mimir/search/condition_grounders/event_handlers/interface.hpp"
 #include "mimir/search/state.hpp"
 
-#include <boost/coroutine2/all.hpp>
 #include <cstddef>
 #include <cstdint>
+#include <generator>
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -35,8 +35,6 @@
 
 namespace mimir
 {
-
-using binding_coroutine_t = boost::coroutines2::coroutine<ObjectList>;
 
 class ConditionGrounder
 {
@@ -65,12 +63,12 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(Problem problem, State state);
 
-    binding_coroutine_t::pull_type nullary_case(State state);
+    std::generator<ObjectList> nullary_case(State state);
 
-    binding_coroutine_t::pull_type
+    std::generator<ObjectList>
     unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
-    binding_coroutine_t::pull_type
+    std::generator<ObjectList>
     general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
@@ -91,7 +89,7 @@ public:
                       std::shared_ptr<PDDLRepositories> pddl_repositories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
-    binding_coroutine_t::pull_type
+    std::generator<ObjectList>
     compute_bindings(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
 
     /**
