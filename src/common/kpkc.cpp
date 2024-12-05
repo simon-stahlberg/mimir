@@ -17,7 +17,6 @@
 
 #include "mimir/algorithms/kpkc.hpp"
 
-#include <coroutine>
 #include <functional>
 #include <limits>
 #include <vector>
