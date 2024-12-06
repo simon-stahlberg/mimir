@@ -53,63 +53,11 @@ protected:
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
-    template<typename Container>
-    void prepare_base(const Container& input)
+    template<typename T>
+    void prepare_base(const T& element)
     {
-        self().prepare_impl(input);
+        self().prepare_impl(element);
     }
-    void prepare_base(const RequirementsImpl& requirements) { self().prepare_impl(requirements); }
-    void prepare_base(const ObjectImpl& object) { self().prepare_impl(object); }
-    void prepare_base(const VariableImpl& variable) { self().prepare_impl(variable); }
-    void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
-    template<PredicateTag P>
-    void prepare_base(const PredicateImpl<P>& predicate)
-    {
-        self().prepare_impl(predicate);
-    }
-    template<PredicateTag P>
-    void prepare_base(const AtomImpl<P>& atom)
-    {
-        self().prepare_impl(atom);
-    }
-    template<PredicateTag P>
-    void prepare_base(const GroundAtomImpl<P>& atom)
-    {
-        self().prepare_impl(atom);
-    }
-    template<PredicateTag P>
-    void prepare_base(const LiteralImpl<P>& literal)
-    {
-        self().prepare_impl(literal);
-    }
-    template<PredicateTag P>
-    void prepare_base(const GroundLiteralImpl<P>& literal)
-    {
-        self().prepare_impl(literal);
-    }
-    void prepare_base(const NumericFluentImpl& numeric_fluent) { self().prepare_impl(numeric_fluent); }
-    void prepare_base(const EffectStripsImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const EffectConditionalImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-    void prepare_base(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
-    void prepare_base(const FunctionExpressionImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionNumberImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionBinaryOperatorImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionMultiOperatorImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionMinusImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionFunctionImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
-    void prepare_base(const FunctionImpl& function) { self().prepare_impl(function); }
-    void prepare_base(const GroundFunctionImpl& function) { return self().prepare_impl(function); }
-    void prepare_base(const ActionImpl& action) { self().prepare_impl(action); }
-    void prepare_base(const AxiomImpl& axiom) { self().prepare_impl(axiom); }
-    void prepare_base(const DomainImpl& domain) { self().prepare_impl(domain); }
-    void prepare_base(const OptimizationMetricImpl& metric) { self().prepare_impl(metric); }
-    void prepare_base(const ProblemImpl& problem) { self().prepare_impl(problem); }
 
     template<typename Container>
     void prepare_impl(const Container& input)
@@ -252,90 +200,12 @@ protected:
 
     /// @brief Apply problem translation.
     ///        Default behavior reparses it into the pddl_repositories.
-    template<typename Container>
-    auto transform_base(const Container& input)
+    template<typename T>
+    auto transform_base(const T& element)
     {
-        return this->self().transform_impl(input);
+        return self().transform_impl(element);
     }
-    Requirements transform_base(const RequirementsImpl& requirements) { return this->self().transform_impl(requirements); }
-    Object transform_base(const ObjectImpl& object) { return this->self().transform_impl(object); }
-    Variable transform_base(const VariableImpl& variable) { return this->self().transform_impl(variable); }
-    Term transform_base(const TermImpl& term) { return this->self().transform_impl(term); }
-    template<PredicateTag P>
-    Predicate<P> transform_base(const PredicateImpl<P>& predicate)
-    {
-        return this->self().transform_impl(predicate);
-    }
-    template<PredicateTag P>
-    Atom<P> transform_base(const AtomImpl<P>& atom)
-    {
-        return this->self().transform_impl(atom);
-    }
-    template<PredicateTag P>
-    GroundAtom<P> transform_base(const GroundAtomImpl<P>& atom)
-    {
-        return this->self().transform_impl(atom);
-    }
-    template<PredicateTag P>
-    Literal<P> transform_base(const LiteralImpl<P>& literal)
-    {
-        return this->self().transform_impl(literal);
-    }
-    template<PredicateTag P>
-    GroundLiteral<P> transform_base(const GroundLiteralImpl<P>& literal)
-    {
-        return this->self().transform_impl(literal);
-    }
-    NumericFluent transform_base(const NumericFluentImpl& numeric_fluent) { return this->self().transform_impl(numeric_fluent); }
-    EffectStrips transform_base(const EffectStripsImpl& effect) { return this->self().transform_impl(effect); }
-    EffectConditional transform_base(const EffectConditionalImpl& effect) { return this->self().transform_impl(effect); }
-    FunctionExpression transform_base(const FunctionExpressionNumberImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionMinusImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionFunctionImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionImpl& function_expression)
-    {
-        return std::visit([this](auto&& arg) -> FunctionExpression { return this->transform_impl(*arg); }, function_expression.get_variant());
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionNumberImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionMinusImpl& function_expression) { return self().transform_impl(function_expression); }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionFunctionImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionImpl& function_expression)
-    {
-        return std::visit([this](auto&& arg) -> GroundFunctionExpression { return this->transform_impl(*arg); }, function_expression.get_variant());
-    }
-    FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton) { return this->self().transform_impl(function_skeleton); }
-    Function transform_base(const FunctionImpl& function) { return this->self().transform_impl(function); }
-    GroundFunction transform_base(const GroundFunctionImpl& function) { return this->self().transform_impl(function); }
-    Action transform_base(const ActionImpl& action) { return this->self().transform_impl(action); }
-    Axiom transform_base(const AxiomImpl& axiom) { return this->self().transform_impl(axiom); }
-    Domain transform_base(const DomainImpl& domain) { return this->self().transform_impl(domain); }
-    OptimizationMetric transform_base(const OptimizationMetricImpl& metric) { return this->self().transform_impl(metric); }
-    Problem transform_base(const ProblemImpl& problem) { return this->self().transform_impl(problem); }
 
-    template<typename Container>
-    auto transform_impl(const Container& input)
-    {
-        Container output;
-        output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->transform(*arg); });
-        return output;
-    }
     Requirements transform_impl(const RequirementsImpl& requirements)
     {
         return this->m_pddl_repositories.get_or_create_requirements(requirements.get_requirements());
@@ -416,70 +286,64 @@ protected:
                                                                           this->transform(effect.get_effects()),
                                                                           this->transform(*effect.get_function_expression()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
+    FunctionExpressionNumber transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number()));
+        return this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number());
     }
-    FunctionExpression transform_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
+    FunctionExpressionBinaryOperator transform_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_binary_operator(function_expression.get_binary_operator(),
-                                                                                        this->transform(*function_expression.get_left_function_expression()),
-                                                                                        this->transform(*function_expression.get_right_function_expression())));
+        return this->m_pddl_repositories.get_or_create_function_expression_binary_operator(
+            function_expression.get_binary_operator(),
+            this->transform(*function_expression.get_left_function_expression()),
+            this->transform(*function_expression.get_right_function_expression()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionMultiOperatorImpl& function_expression)
+    FunctionExpressionMultiOperator transform_impl(const FunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                       this->transform(function_expression.get_function_expressions())));
+        return this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                          this->transform(function_expression.get_function_expressions()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionMinusImpl& function_expression)
+    FunctionExpressionMinus transform_impl(const FunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression())));
+        return this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionFunctionImpl& function_expression)
+    FunctionExpressionFunction transform_impl(const FunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(*function_expression.get_function())));
+        return this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(*function_expression.get_function()));
     }
     FunctionExpression transform_impl(const FunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->transform(*arg); }, function_expression.get_variant());
+        return std::visit([this](auto&& arg) { return this->m_pddl_repositories.get_or_create_function_expression(this->transform(*arg)); },
+                          function_expression.get_variant());
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionNumberImpl& function_expression)
+    GroundFunctionExpressionNumber transform_impl(const GroundFunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_number(function_expression.get_number()));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_number(function_expression.get_number());
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+    GroundFunctionExpressionBinaryOperator transform_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(
-                function_expression.get_binary_operator(),
-                this->transform(*function_expression.get_left_function_expression()),
-                this->transform(*function_expression.get_right_function_expression())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(
+            function_expression.get_binary_operator(),
+            this->transform(*function_expression.get_left_function_expression()),
+            this->transform(*function_expression.get_right_function_expression()));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
+    GroundFunctionExpressionMultiOperator transform_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                              this->transform(function_expression.get_function_expressions())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(
+            function_expression.get_multi_operator(),
+            this->transform(function_expression.get_function_expressions()));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionMinusImpl& function_expression)
+    GroundFunctionExpressionMinus transform_impl(const GroundFunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression()));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
+    GroundFunctionExpressionFunction transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function()));
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->transform(*arg); }, function_expression.get_variant());
+        return std::visit([this](auto&& arg) { return this->m_pddl_repositories.get_or_create_ground_function_expression(this->transform(*arg)); },
+                          function_expression.get_variant());
     }
     FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton)
     {

@@ -43,7 +43,7 @@ cmake --install build --prefix=<path/to/installation-directory>
 
 The compiled executables should now be in either the build directory or the installation directory.
 
-## Installing GCC 14.2 (c++23 support)
+## Installing GCC 14.2 (C++23 support)
 
 1. Installing GMP
 

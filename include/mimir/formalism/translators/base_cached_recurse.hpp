@@ -270,7 +270,7 @@ protected:
     {
         return cached_translate_impl(element,
                                      boost::hana::at_key(m_translated_elements, boost::hana::type<const T*> {}),
-                                     [this](auto&& arg) { return this->self().translate_impl(arg); });
+                                     [this](auto&& arg) { return self().translate_impl(arg); });
     }
 
     loki::Requirements translate_impl(const loki::RequirementsImpl& requirements)

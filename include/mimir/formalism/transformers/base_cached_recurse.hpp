@@ -45,38 +45,57 @@ private:
 protected:
     PDDLRepositories& m_pddl_repositories;
 
-    std::unordered_map<Requirements, Requirements> m_transformed_requirements;
-    std::unordered_map<Object, Object> m_transformed_objects;
-    std::unordered_map<Variable, Variable> m_transformed_variables;
-    std::unordered_map<Term, Term> m_transformed_terms;
-    std::unordered_map<Predicate<Static>, Predicate<Static>> m_transformed_static_predicates;
-    std::unordered_map<Predicate<Fluent>, Predicate<Fluent>> m_transformed_fluent_predicates;
-    std::unordered_map<Predicate<Derived>, Predicate<Derived>> m_transformed_derived_predicates;
-    std::unordered_map<Atom<Static>, Atom<Static>> m_transformed_static_atoms;
-    std::unordered_map<Atom<Fluent>, Atom<Fluent>> m_transformed_fluent_atoms;
-    std::unordered_map<Atom<Derived>, Atom<Derived>> m_transformed_derived_atoms;
-    std::unordered_map<GroundAtom<Static>, GroundAtom<Static>> m_transformed_static_ground_atoms;
-    std::unordered_map<GroundAtom<Fluent>, GroundAtom<Fluent>> m_transformed_fluent_ground_atoms;
-    std::unordered_map<GroundAtom<Derived>, GroundAtom<Derived>> m_transformed_derived_ground_atoms;
-    std::unordered_map<Literal<Static>, Literal<Static>> m_transformed_static_literals;
-    std::unordered_map<Literal<Fluent>, Literal<Fluent>> m_transformed_fluent_literals;
-    std::unordered_map<Literal<Derived>, Literal<Derived>> m_transformed_derived_literals;
-    std::unordered_map<GroundLiteral<Static>, GroundLiteral<Static>> m_transformed_static_ground_literals;
-    std::unordered_map<GroundLiteral<Fluent>, GroundLiteral<Fluent>> m_transformed_fluent_ground_literals;
-    std::unordered_map<GroundLiteral<Derived>, GroundLiteral<Derived>> m_transformed_derived_ground_literals;
-    std::unordered_map<NumericFluent, NumericFluent> m_transformed_numeric_fluents;
-    std::unordered_map<EffectStrips, EffectStrips> m_transformed_strips_effects;
-    std::unordered_map<EffectConditional, EffectConditional> m_transformed_conditional_effects;
-    std::unordered_map<FunctionExpression, FunctionExpression> m_transformed_function_expressions;
-    std::unordered_map<GroundFunctionExpression, GroundFunctionExpression> m_transformed_ground_function_expressions;
-    std::unordered_map<FunctionSkeleton, FunctionSkeleton> m_transformed_function_skeletons;
-    std::unordered_map<Function, Function> m_transformed_functions;
-    std::unordered_map<GroundFunction, GroundFunction> m_transformed_ground_functions;
-    std::unordered_map<Action, Action> m_transformed_actions;
-    std::unordered_map<Axiom, Axiom> m_transformed_axioms;
-    std::unordered_map<Domain, Domain> m_transformed_domains;
-    std::unordered_map<OptimizationMetric, OptimizationMetric> m_transformed_optimization_metrics;
-    std::unordered_map<Problem, Problem> m_transformed_problems;
+    using PDDLElementToTranslatedPDDLElement = boost::hana::map<
+        boost::hana::pair<boost::hana::type<Requirements>, std::unordered_map<Requirements, Requirements>>,  //
+        boost::hana::pair<boost::hana::type<Object>, std::unordered_map<Object, Object>>,
+        boost::hana::pair<boost::hana::type<Variable>, std::unordered_map<Variable, Variable>>,
+        boost::hana::pair<boost::hana::type<Term>, std::unordered_map<Term, Term>>,
+        boost::hana::pair<boost::hana::type<Predicate<Static>>, std::unordered_map<Predicate<Static>, Predicate<Static>>>,
+        boost::hana::pair<boost::hana::type<Predicate<Fluent>>, std::unordered_map<Predicate<Fluent>, Predicate<Fluent>>>,
+        boost::hana::pair<boost::hana::type<Predicate<Derived>>, std::unordered_map<Predicate<Derived>, Predicate<Derived>>>,
+        boost::hana::pair<boost::hana::type<Atom<Static>>, std::unordered_map<Atom<Static>, Atom<Static>>>,
+        boost::hana::pair<boost::hana::type<Atom<Fluent>>, std::unordered_map<Atom<Fluent>, Atom<Fluent>>>,
+        boost::hana::pair<boost::hana::type<Atom<Derived>>, std::unordered_map<Atom<Derived>, Atom<Derived>>>,
+        boost::hana::pair<boost::hana::type<GroundAtom<Static>>, std::unordered_map<GroundAtom<Static>, GroundAtom<Static>>>,
+        boost::hana::pair<boost::hana::type<GroundAtom<Fluent>>, std::unordered_map<GroundAtom<Fluent>, GroundAtom<Fluent>>>,
+        boost::hana::pair<boost::hana::type<GroundAtom<Derived>>, std::unordered_map<GroundAtom<Derived>, GroundAtom<Derived>>>,
+        boost::hana::pair<boost::hana::type<Literal<Static>>, std::unordered_map<Literal<Static>, Literal<Static>>>,
+        boost::hana::pair<boost::hana::type<Literal<Fluent>>, std::unordered_map<Literal<Fluent>, Literal<Fluent>>>,
+        boost::hana::pair<boost::hana::type<Literal<Derived>>, std::unordered_map<Literal<Derived>, Literal<Derived>>>,
+        boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, std::unordered_map<GroundLiteral<Static>, GroundLiteral<Static>>>,
+        boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, std::unordered_map<GroundLiteral<Fluent>, GroundLiteral<Fluent>>>,
+        boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, std::unordered_map<GroundLiteral<Derived>, GroundLiteral<Derived>>>,
+        boost::hana::pair<boost::hana::type<NumericFluent>, std::unordered_map<NumericFluent, NumericFluent>>,
+        boost::hana::pair<boost::hana::type<EffectStrips>, std::unordered_map<EffectStrips, EffectStrips>>,
+        boost::hana::pair<boost::hana::type<EffectConditional>, std::unordered_map<EffectConditional, EffectConditional>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionNumber>, std::unordered_map<FunctionExpressionNumber, FunctionExpressionNumber>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionBinaryOperator>,
+                          std::unordered_map<FunctionExpressionBinaryOperator, FunctionExpressionBinaryOperator>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionMultiOperator>,
+                          std::unordered_map<FunctionExpressionMultiOperator, FunctionExpressionMultiOperator>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionMinus>, std::unordered_map<FunctionExpressionMinus, FunctionExpressionMinus>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionFunction>, std::unordered_map<FunctionExpressionFunction, FunctionExpressionFunction>>,
+        boost::hana::pair<boost::hana::type<FunctionExpression>, std::unordered_map<FunctionExpression, FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionNumber>,
+                          std::unordered_map<GroundFunctionExpressionNumber, GroundFunctionExpressionNumber>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionBinaryOperator>,
+                          std::unordered_map<GroundFunctionExpressionBinaryOperator, GroundFunctionExpressionBinaryOperator>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionMultiOperator>,
+                          std::unordered_map<GroundFunctionExpressionMultiOperator, GroundFunctionExpressionMultiOperator>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionMinus>, std::unordered_map<GroundFunctionExpressionMinus, GroundFunctionExpressionMinus>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunction>,
+                          std::unordered_map<GroundFunctionExpressionFunction, GroundFunctionExpressionFunction>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpression>, std::unordered_map<GroundFunctionExpression, GroundFunctionExpression>>,
+        boost::hana::pair<boost::hana::type<FunctionSkeleton>, std::unordered_map<FunctionSkeleton, FunctionSkeleton>>,
+        boost::hana::pair<boost::hana::type<Function>, std::unordered_map<Function, Function>>,
+        boost::hana::pair<boost::hana::type<GroundFunction>, std::unordered_map<GroundFunction, GroundFunction>>,
+        boost::hana::pair<boost::hana::type<Action>, std::unordered_map<Action, Action>>,
+        boost::hana::pair<boost::hana::type<Axiom>, std::unordered_map<Axiom, Axiom>>,
+        boost::hana::pair<boost::hana::type<Domain>, std::unordered_map<Domain, Domain>>,
+        boost::hana::pair<boost::hana::type<OptimizationMetric>, std::unordered_map<OptimizationMetric, OptimizationMetric>>,
+        boost::hana::pair<boost::hana::type<Problem>, std::unordered_map<Problem, Problem>>>;
+
+    PDDLElementToTranslatedPDDLElement m_translated_elements;
 
     explicit BaseCachedRecurseTransformer(PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
 
@@ -86,69 +105,12 @@ protected:
 
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
-    template<typename Container>
-    void prepare_base(const Container& input)
+    template<typename T>
+    void prepare_base(const T& element)
     {
-        self().prepare_impl(input);
+        self().prepare_impl(element);
     }
-    void prepare_base(const RequirementsImpl& requirements) { self().prepare_impl(requirements); }
-    void prepare_base(const ObjectImpl& object) { self().prepare_impl(object); }
-    void prepare_base(const VariableImpl& variable) { self().prepare_impl(variable); }
-    void prepare_base(const TermImpl& term) { self().prepare_impl(term); }
-    template<PredicateTag P>
-    void prepare_base(const PredicateImpl<P>& predicate)
-    {
-        self().prepare_impl(predicate);
-    }
-    template<PredicateTag P>
-    void prepare_base(const AtomImpl<P>& atom)
-    {
-        self().prepare_impl(atom);
-    }
-    template<PredicateTag P>
-    void prepare_base(const GroundAtomImpl<P>& atom)
-    {
-        self().prepare_impl(atom);
-    }
-    template<PredicateTag P>
-    void prepare_base(const LiteralImpl<P>& literal)
-    {
-        self().prepare_impl(literal);
-    }
-    template<PredicateTag P>
-    void prepare_base(const GroundLiteralImpl<P>& literal)
-    {
-        self().prepare_impl(literal);
-    }
-    void prepare_base(const NumericFluentImpl& numeric_fluent) { self().prepare_impl(numeric_fluent); }
-    void prepare_base(const EffectStripsImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const EffectConditionalImpl& effect) { self().prepare_impl(effect); }
-    void prepare_base(const FunctionExpressionNumberImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionExpressionMultiOperatorImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-    void prepare_base(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
-    void prepare_base(const FunctionExpressionImpl& function_expression) { self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionNumberImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionBinaryOperatorImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionMultiOperatorImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionMinusImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionFunctionImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const GroundFunctionExpressionImpl& function_expression) { return self().prepare_impl(function_expression); }
-    void prepare_base(const FunctionSkeletonImpl& function_skeleton) { self().prepare_impl(function_skeleton); }
-    void prepare_base(const FunctionImpl& function) { self().prepare_impl(function); }
-    void prepare_base(const GroundFunctionImpl& function) { return self().prepare_impl(function); }
-    void prepare_base(const ActionImpl& action) { self().prepare_impl(action); }
-    void prepare_base(const AxiomImpl& axiom) { self().prepare_impl(axiom); }
-    void prepare_base(const DomainImpl& domain) { self().prepare_impl(domain); }
-    void prepare_base(const OptimizationMetricImpl& metric) { self().prepare_impl(metric); }
-    void prepare_base(const ProblemImpl& problem) { self().prepare_impl(problem); }
 
-    template<typename Container>
-    void prepare_impl(const Container& input)
-    {
-        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare(*arg); });
-    }
     void prepare_impl(const RequirementsImpl& requirements) {}
     void prepare_impl(const ObjectImpl& object) {}
     void prepare_impl(const VariableImpl& variable) {}
@@ -283,171 +245,9 @@ protected:
         this->prepare(problem.get_axioms());
     }
 
-    /// @brief Apply problem translation.
-    ///        Default behavior reparses it into the pddl_repositories.
-    template<typename Container>
-    auto transform_base(const Container& input)
-    {
-        return this->self().transform_impl(input);
-    }
-    Requirements transform_base(const RequirementsImpl& requirements)
-    {
-        return cached_transform_impl(requirements, m_transformed_requirements, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Object transform_base(const ObjectImpl& object)
-    {
-        return cached_transform_impl(object, m_transformed_objects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Variable transform_base(const VariableImpl& variable)
-    {
-        return cached_transform_impl(variable, m_transformed_variables, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Term transform_base(const TermImpl& term)
-    {
-        return cached_transform_impl(term, m_transformed_terms, [this, &term](const auto& arg) { return this->self().transform_impl(term); });
-    }
-    Predicate<Static> transform_base(const PredicateImpl<Static>& predicate)
-    {
-        return cached_transform_impl(predicate, m_transformed_static_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Predicate<Fluent> transform_base(const PredicateImpl<Fluent>& predicate)
-    {
-        return cached_transform_impl(predicate, m_transformed_fluent_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Predicate<Derived> transform_base(const PredicateImpl<Derived>& predicate)
-    {
-        return cached_transform_impl(predicate, m_transformed_derived_predicates, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Atom<Static> transform_base(const AtomImpl<Static>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_static_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Atom<Fluent> transform_base(const AtomImpl<Fluent>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_fluent_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Atom<Derived> transform_base(const AtomImpl<Derived>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_derived_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundAtom<Static> transform_base(const GroundAtomImpl<Static>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_static_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundAtom<Fluent> transform_base(const GroundAtomImpl<Fluent>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_fluent_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundAtom<Derived> transform_base(const GroundAtomImpl<Derived>& atom)
-    {
-        return cached_transform_impl(atom, m_transformed_derived_ground_atoms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Literal<Static> transform_base(const LiteralImpl<Static>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_static_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Literal<Fluent> transform_base(const LiteralImpl<Fluent>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_fluent_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Literal<Derived> transform_base(const LiteralImpl<Derived>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_derived_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundLiteral<Static> transform_base(const GroundLiteralImpl<Static>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_static_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundLiteral<Fluent> transform_base(const GroundLiteralImpl<Fluent>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_fluent_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundLiteral<Derived> transform_base(const GroundLiteralImpl<Derived>& literal)
-    {
-        return cached_transform_impl(literal, m_transformed_derived_ground_literals, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    NumericFluent transform_base(const NumericFluentImpl& numeric_fluent)
-    {
-        return cached_transform_impl(numeric_fluent, m_transformed_numeric_fluents, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    EffectStrips transform_base(const EffectStripsImpl& effect)
-    {
-        return cached_transform_impl(effect, m_transformed_strips_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    EffectConditional transform_base(const EffectConditionalImpl& effect)
-    {
-        return cached_transform_impl(effect, m_transformed_conditional_effects, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    FunctionExpression transform_base(const FunctionExpressionNumberImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionBinaryOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionMultiOperatorImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionMinusImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionFunctionImpl& function_expression) { return self().transform_impl(function_expression); }
-    FunctionExpression transform_base(const FunctionExpressionImpl& function_expression)
-    {
-        return cached_transform_impl(function_expression,
-                                     m_transformed_function_expressions,
-                                     [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionNumberImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionMinusImpl& function_expression) { return self().transform_impl(function_expression); }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionFunctionImpl& function_expression)
-    {
-        return self().transform_impl(function_expression);
-    }
-    GroundFunctionExpression transform_base(const GroundFunctionExpressionImpl& function_expression)
-    {
-        return cached_transform_impl(function_expression,
-                                     m_transformed_ground_function_expressions,
-                                     [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    FunctionSkeleton transform_base(const FunctionSkeletonImpl& function_skeleton)
-    {
-        return cached_transform_impl(function_skeleton, m_transformed_function_skeletons, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Function transform_base(const FunctionImpl& function)
-    {
-        return cached_transform_impl(function, m_transformed_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    GroundFunction transform_base(const GroundFunctionImpl& function)
-    {
-        return cached_transform_impl(function, m_transformed_ground_functions, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Action transform_base(const ActionImpl& action)
-    {
-        return cached_transform_impl(action, m_transformed_actions, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Axiom transform_base(const AxiomImpl& axiom)
-    {
-        return cached_transform_impl(axiom, m_transformed_axioms, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Domain transform_base(const DomainImpl& domain)
-    {
-        return cached_transform_impl(domain, m_transformed_domains, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    OptimizationMetric transform_base(const OptimizationMetricImpl& metric)
-    {
-        return cached_transform_impl(metric, m_transformed_optimization_metrics, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-    Problem transform_base(const ProblemImpl& problem)
-    {
-        return cached_transform_impl(problem, m_transformed_problems, [this](const auto& arg) { return this->self().transform_impl(arg); });
-    }
-
     /// @brief Retrieve or create cache entry of translation to avoid recomputations.
-    template<typename Impl, typename TranslateFunc>
-    auto cached_transform_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl*>& cache, const TranslateFunc& transformFunc)
+    template<typename Impl, typename Impl2, typename TransformFunc>
+    auto cached_transform_impl(const Impl& impl, std::unordered_map<const Impl*, const Impl2*>& cache, const TransformFunc& transformFunc)
     {
         // Access from cache
         auto it = cache.find(&impl);
@@ -457,21 +257,25 @@ protected:
         }
 
         // Translate
-        auto transformd = transformFunc(impl);
+        auto transformed = transformFunc(impl);
 
         // Insert into cache
-        cache.emplace(&impl, transformd);
+        cache.emplace(&impl, transformed);
 
-        return transformd;
+        return transformed;
     }
-    template<typename Container>
-    auto transform_impl(const Container& input)
+    /// @brief Cache the translation.
+    /// @tparam T
+    /// @param element
+    /// @return
+    template<typename T>
+    auto transform_base(const T& element)
     {
-        Container output;
-        output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->transform(*arg); });
-        return output;
+        return cached_transform_impl(element,
+                                     boost::hana::at_key(m_translated_elements, boost::hana::type<const T*> {}),
+                                     [this](auto&& arg) { return self().transform_impl(arg); });
     }
+
     Requirements transform_impl(const RequirementsImpl& requirements)
     {
         return this->m_pddl_repositories.get_or_create_requirements(requirements.get_requirements());
@@ -552,70 +356,64 @@ protected:
                                                                           this->transform(effect.get_effects()),
                                                                           this->transform(*effect.get_function_expression()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionNumberImpl& function_expression)
+    FunctionExpressionNumber transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number()));
+        return this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number());
     }
-    FunctionExpression transform_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
+    FunctionExpressionBinaryOperator transform_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_binary_operator(function_expression.get_binary_operator(),
-                                                                                        this->transform(*function_expression.get_left_function_expression()),
-                                                                                        this->transform(*function_expression.get_right_function_expression())));
+        return this->m_pddl_repositories.get_or_create_function_expression_binary_operator(
+            function_expression.get_binary_operator(),
+            this->transform(*function_expression.get_left_function_expression()),
+            this->transform(*function_expression.get_right_function_expression()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionMultiOperatorImpl& function_expression)
+    FunctionExpressionMultiOperator transform_impl(const FunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                       this->transform(function_expression.get_function_expressions())));
+        return this->m_pddl_repositories.get_or_create_function_expression_multi_operator(function_expression.get_multi_operator(),
+                                                                                          this->transform(function_expression.get_function_expressions()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionMinusImpl& function_expression)
+    FunctionExpressionMinus transform_impl(const FunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression())));
+        return this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression()));
     }
-    FunctionExpression transform_impl(const FunctionExpressionFunctionImpl& function_expression)
+    FunctionExpressionFunction transform_impl(const FunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_function_expression(
-            this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(*function_expression.get_function())));
+        return this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(*function_expression.get_function()));
     }
     FunctionExpression transform_impl(const FunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->transform(*arg); }, function_expression.get_variant());
+        return std::visit([this](auto&& arg) { return this->m_pddl_repositories.get_or_create_function_expression(this->transform(*arg)); },
+                          function_expression.get_variant());
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionNumberImpl& function_expression)
+    GroundFunctionExpressionNumber transform_impl(const GroundFunctionExpressionNumberImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_number(function_expression.get_number()));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_number(function_expression.get_number());
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
+    GroundFunctionExpressionBinaryOperator transform_impl(const GroundFunctionExpressionBinaryOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(
-                function_expression.get_binary_operator(),
-                this->transform(*function_expression.get_left_function_expression()),
-                this->transform(*function_expression.get_right_function_expression())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(
+            function_expression.get_binary_operator(),
+            this->transform(*function_expression.get_left_function_expression()),
+            this->transform(*function_expression.get_right_function_expression()));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
+    GroundFunctionExpressionMultiOperator transform_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(function_expression.get_multi_operator(),
-                                                                                              this->transform(function_expression.get_function_expressions())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(
+            function_expression.get_multi_operator(),
+            this->transform(function_expression.get_function_expressions()));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionMinusImpl& function_expression)
+    GroundFunctionExpressionMinus transform_impl(const GroundFunctionExpressionMinusImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression()));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
+    GroundFunctionExpressionFunction transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
     {
-        return this->m_pddl_repositories.get_or_create_ground_function_expression(
-            this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function())));
+        return this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function()));
     }
     GroundFunctionExpression transform_impl(const GroundFunctionExpressionImpl& function_expression)
     {
-        return std::visit([this](auto&& arg) { return this->transform(*arg); }, function_expression.get_variant());
+        return std::visit([this](auto&& arg) { return this->m_pddl_repositories.get_or_create_ground_function_expression(this->transform(*arg)); },
+                          function_expression.get_variant());
     }
     FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton)
     {
