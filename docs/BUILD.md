@@ -76,7 +76,7 @@ cd ..
 3. Installing MPC
 
 ```console
-wget https://gcc.gnu.org/pub/gcc/infrastructure/mpfr-1.2.1.tar.bz2
+wget https://gcc.gnu.org/pub/gcc/infrastructure/mpc-1.2.1.tar.gz
 tar -xzf mpc-1.2.1.tar.gz
 mv mpc-1.2.1 mpc-1.2.1-src
 export MPC_INSTALL_DIR=<path/to_installation>
@@ -91,8 +91,8 @@ cd ..
 
 ```console
 git clone git@github.com:gcc-mirror/gcc.git gcc-14.2.0
-git checkout release/gcc-14.2.0
 cd gcc-14.2.0
+git checkout releases/gcc-14.2.0
 export GCC_INSTALL_DIR=<path/to_installation>
 ./configure --prefix=$GCC_INSTALL_DIR --enable-languages=c,c++ --disable-multilib --with-gmp=$GMP_INSTALL_DIR --with-mpfr=$MPFR_INSTALL_DIR --with-mpc=$MPC_INSTALL_DIR
 make -j$(nproc)
