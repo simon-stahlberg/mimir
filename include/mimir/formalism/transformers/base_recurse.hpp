@@ -51,6 +51,17 @@ protected:
     /* Implement ITranslator interface */
     friend class ITransformer<BaseRecurseTransformer<Derived_>>;
 
+    template<std::ranges::forward_range Range>
+    void prepare_base(const Range& input)
+    {
+        self().prepare_impl(input);
+    }
+    template<std::ranges::forward_range Range>
+    void prepare_impl(const Range& input)
+    {
+        std::ranges::for_each(input, [this](auto&& arg) { this->prepare(*arg); });
+    }
+
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
     template<typename T>
@@ -196,6 +207,28 @@ protected:
             this->prepare(*problem.get_optimization_metric().value());
         }
         this->prepare(problem.get_axioms());
+    }
+
+    /// @brief Translate a container of elements into a container of elements.
+    template<IsBackInsertibleRange Range>
+    auto transform_base(const Range& input)
+    {
+        return self().transform_impl(input);
+    }
+    /// @brief Translate a container of elements into a container of elements.
+    template<IsBackInsertibleRange Range>
+    auto transform_impl(const Range& input)
+    {
+        std::remove_cvref_t<Range> output;
+
+        if constexpr (requires { output.reserve(std::ranges::size(input)); })
+        {
+            output.reserve(std::ranges::size(input));
+        }
+
+        std::ranges::transform(input, std::back_inserter(output), [this](auto&& arg) { return this->transform(*arg); });
+
+        return output;
     }
 
     /// @brief Apply problem translation.
@@ -422,8 +455,8 @@ protected:
 
     Problem run_impl(const ProblemImpl& problem)
     {
-        self().prepare(problem);
-        return self().transform(problem);
+        this->prepare(problem);
+        return this->transform(problem);
     }
 };
 }
