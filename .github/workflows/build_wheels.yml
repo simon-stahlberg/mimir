@@ -42,8 +42,8 @@ jobs:
           conda create --name gcc_env -y
           conda activate gcc_env
           conda install -y gxx=14.2.0 gcc=14.2.0 bzip2 xz zlib zstd
-          g++ --version
-          gcc --version
+          echo "source $HOME/miniconda/etc/profile.d/conda.sh && conda activate gcc_env" >> $HOME/.bashrc
+        CIBW_ENVIRONMENT: "PATH=$HOME/miniconda/bin:$PATH"
 
     - name: Upload to PyPI
       env:
