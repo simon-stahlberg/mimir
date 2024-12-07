@@ -178,6 +178,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         {
             f_value = search_node_f_value;
             m_applicable_action_generator->on_finish_search_layer();
+            m_state_repository->get_axiom_evaluator()->on_finish_search_layer();
             m_event_handler->on_finish_f_layer(f_value);
         }
 
@@ -202,6 +203,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             if (!m_event_handler->is_quiet())
             {
                 m_applicable_action_generator->on_end_search();
+                m_state_repository->get_axiom_evaluator()->on_end_search();
             }
             m_event_handler->on_solved(out_plan.value(), pddl_repositories);
 

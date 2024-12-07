@@ -141,8 +141,16 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
     m_event_handler->on_end_generating_applicable_axioms();
 }
 
+void LiftedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+
+void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
+
 AxiomGrounder& LiftedAxiomEvaluator::get_axiom_grounder() { return m_grounder; }
 
 const AxiomGrounder& LiftedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
+
+const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
+
+const std::vector<AxiomPartition>& LiftedAxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
 
 }

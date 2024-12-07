@@ -87,7 +87,15 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
     }
 }
 
+void GroundedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+
+void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
+
 AxiomGrounder& GroundedAxiomEvaluator::get_axiom_grounder() { return m_grounder; }
 
 const AxiomGrounder& GroundedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
+
+const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
+
+const std::vector<AxiomPartition>& GroundedAxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
 }

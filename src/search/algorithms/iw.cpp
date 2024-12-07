@@ -901,6 +901,7 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
             if (!m_iw_event_handler->is_quiet())
             {
                 m_applicable_action_generator->on_end_search();
+                m_state_repository->get_axiom_evaluator()->on_end_search();
             }
             m_iw_event_handler->on_solved(out_plan.value(), *m_applicable_action_generator->get_action_grounder().get_pddl_repositories());
             return SearchStatus::SOLVED;

@@ -55,8 +55,15 @@ public:
 
     void generate_and_apply_axioms(StateImpl& unextended_state) override;
 
+    void on_finish_search_layer() override;
+    void on_end_search() override;
+
     AxiomGrounder& get_axiom_grounder() override;
     const AxiomGrounder& get_axiom_grounder() const override;
+
+    const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
+
+    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 };
 
 }  // namespace mimir

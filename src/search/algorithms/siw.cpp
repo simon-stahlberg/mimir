@@ -160,6 +160,7 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     if (!m_siw_event_handler->is_quiet())
     {
         m_applicable_action_generator->on_end_search();
+        m_state_repository->get_axiom_evaluator()->on_end_search();
     }
     out_plan = Plan(std::move(out_plan_actions), out_plan_cost);
     m_siw_event_handler->on_solved(out_plan.value(), pddl_repositories);

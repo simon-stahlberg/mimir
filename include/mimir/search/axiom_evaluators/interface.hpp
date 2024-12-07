@@ -37,6 +37,10 @@ public:
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
     virtual void generate_and_apply_axioms(StateImpl& unextended_state) = 0;
 
+    /// @brief Accumulate event handler statistics during search.
+    virtual void on_finish_search_layer() = 0;
+    virtual void on_end_search() = 0;
+
     /* Getters */
     virtual AxiomGrounder& get_axiom_grounder() = 0;
     virtual const AxiomGrounder& get_axiom_grounder() const = 0;
