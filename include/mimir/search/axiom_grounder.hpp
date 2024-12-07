@@ -15,21 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_AXIOM_EVALUATOR_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_AXIOM_EVALUATOR_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_GROUNDER_HPP_
+#define MIMIR_SEARCH_AXIOM_GROUNDER_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
-#include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
-#include "mimir/search/applicable_action_generators/lifted/axiom_stratification.hpp"
-#include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
-#include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/assignment_set.hpp"
+#include "mimir/search/grounding/consistency_graph.hpp"
 
 #include <stdexcept>
 #include <unordered_map>
@@ -38,43 +36,33 @@
 namespace mimir
 {
 
-class AxiomEvaluator
+class AxiomGrounder
 {
 private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
-    std::vector<AxiomPartition> m_partitioning;
+    std::unordered_map<Axiom, ConditionGrounder> m_condition_grounders;
 
     GroundAxiomImplSet m_flat_axioms;
     GroundAxiomList m_axioms_by_index;
     GroundAxiomImpl m_axiom_builder;
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;
 
-    std::unordered_map<Axiom, ConditionGrounder> m_condition_grounders;
-
 public:
-    /// @brief Simplest construction, expects the event handler from the lifted applicable_action_generator.
-    AxiomEvaluator(Problem problem,
-                   std::shared_ptr<PDDLRepositories> pddl_repositories,
-                   std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
+    AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     // Uncopyable
-    AxiomEvaluator(const AxiomEvaluator& other) = delete;
-    AxiomEvaluator& operator=(const AxiomEvaluator& other) = delete;
-    // Unmovable
-    AxiomEvaluator(AxiomEvaluator&& other) = delete;
-    AxiomEvaluator& operator=(AxiomEvaluator&& other) = delete;
-
-    /// @brief Generate and apply all applicable axioms.
-    void generate_and_apply_axioms(StateImpl& unextended_state);
-
-    /// @brief Return the axiom partitioning.
-    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
+    AxiomGrounder(const AxiomGrounder& other) = delete;
+    AxiomGrounder& operator=(const AxiomGrounder& other) = delete;
+    // Moveable
+    AxiomGrounder(AxiomGrounder&& other) = default;
+    AxiomGrounder& operator=(AxiomGrounder&& other) = default;
 
     /// @brief Ground an axiom and return a view onto it.
     GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
+
+    std::unordered_map<Axiom, ConditionGrounder>& get_axiom_precondition_grounders();
 
     /// @brief Return all axioms.
     const GroundAxiomList& get_ground_axioms() const;
@@ -82,6 +70,9 @@ public:
     GroundAxiom get_ground_axiom(Index axiom_index) const;
 
     size_t get_num_ground_axioms() const;
+
+    Problem get_problem() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
 };
 
 }  // namespace mimir

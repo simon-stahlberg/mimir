@@ -20,7 +20,7 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 
@@ -30,8 +30,8 @@ namespace mimir
 class StateRepository
 {
 private:
-    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;  ///< Provices access the axiom evaluator.
-    bool m_problem_or_domain_has_axioms;                                        ///< true iff the underlying problem or domain contains axioms.
+    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< Provices access the axiom evaluator.
+    bool m_problem_or_domain_has_axioms;                 ///< true iff the underlying problem or domain contains axioms.
 
     StateImplSet m_states;      ///< Stores all created states.
     StateImpl m_state_builder;  ///< temporary for state creation.
@@ -43,7 +43,7 @@ private:
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
 public:
-    explicit StateRepository(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);
+    explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
 
     StateRepository(const StateRepository& other) = delete;
     StateRepository& operator=(const StateRepository& other) = delete;
@@ -77,9 +77,9 @@ public:
     /// @return a bitset that stores the derived ground atom indices.
     const FlatBitset& get_reached_derived_ground_atoms_bitset() const;
 
-    /// @brief Get the underlying applicable action generator.
-    /// @return the applicable action generator.
-    const std::shared_ptr<IApplicableActionGenerator>& get_applicable_action_generator() const;
+    /// @brief Get the underlying axiom evaluator.
+    /// @return the axiom evaluator.
+    const std::shared_ptr<IAxiomEvaluator>& get_axiom_evaluator() const;
 };
 
 }

@@ -52,8 +52,6 @@ public:
 
     /// @brief Find a plan for a given state.
     virtual SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state) = 0;
-
-    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
 };
 
 }

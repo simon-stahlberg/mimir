@@ -19,9 +19,9 @@
 #define MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
-#include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
 #include "mimir/search/condition_grounders/event_handlers/interface.hpp"
+#include "mimir/search/grounding/assignment_set.hpp"
+#include "mimir/search/grounding/consistency_graph.hpp"
 #include "mimir/search/state.hpp"
 
 #include <cstddef>

@@ -18,6 +18,7 @@
 #include "mimir/search/algorithms/brfs.hpp"
 
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -62,18 +63,17 @@ get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_
  * BrFS
  */
 
-BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
-    BrFSAlgorithm(applicable_action_generator,
-                  std::make_shared<StateRepository>(applicable_action_generator),
-                  std::make_shared<DefaultBrFSAlgorithmEventHandler>())
+BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
+    BrFSAlgorithm(applicable_action_generator, std::make_shared<StateRepository>(axiom_evaluator), std::make_shared<DefaultBrFSAlgorithmEventHandler>())
 {
 }
 
 BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                             std::shared_ptr<StateRepository> successor_state_generator,
+                             std::shared_ptr<StateRepository> state_repository,
                              std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
     m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_state_repository(std::move(successor_state_generator)),
+    m_axiom_evaluator(state_repository->get_axiom_evaluator()),
+    m_state_repository(std::move(state_repository)),
     m_event_handler(std::move(event_handler))
 {
 }
@@ -89,7 +89,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state, std::optional<Plan>
 SearchStatus BrFSAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
 {
     return find_solution(start_state,
-                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()),
+                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()),
                          std::make_unique<DuplicateStatePruning>(),
                          out_plan,
                          out_goal_state);
@@ -106,8 +106,8 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
-    const auto problem = m_applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
+    const auto problem = m_applicable_action_generator->get_action_grounder().get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder().get_pddl_repositories();
     m_event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
@@ -143,20 +143,20 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         if (get_g_value(search_node) > g_value)
         {
             g_value = get_g_value(search_node);
-            m_applicable_action_generator->on_finish_search_layer();
+            // m_applicable_action_generator->on_finish_search_layer();
             m_event_handler->on_finish_g_layer();
         }
 
         if (goal_strategy->test_dynamic_goal(state))
         {
             auto plan_actions = GroundActionList {};
-            set_plan(search_nodes, m_applicable_action_generator->get_ground_actions(), search_node, plan_actions);
+            set_plan(search_nodes, m_applicable_action_generator->get_action_grounder().get_ground_actions(), search_node, plan_actions);
             out_goal_state = state;
             out_plan = Plan(std::move(plan_actions), get_g_value(search_node));
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
-                m_applicable_action_generator->on_end_search();
+                // m_applicable_action_generator->on_end_search();
             }
             m_event_handler->on_solved(out_plan.value(), pddl_repositories);
 
@@ -197,7 +197,5 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
     return SearchStatus::EXHAUSTED;
 }
-
-const std::shared_ptr<PDDLRepositories>& BrFSAlgorithm::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
 
 }

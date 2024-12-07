@@ -46,6 +46,7 @@ private:
     // Below: add additional members if needed and initialize them in the constructor
     bool m_static_goal_holds;
     PredicateList<Derived> m_problem_and_domain_derived_predicates;
+    AxiomList m_problem_and_domain_axioms;
 
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
@@ -90,6 +91,7 @@ public:
     const GroundLiteralList<P>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
+    const AxiomList& get_problem_and_domain_axioms() const;
     bool static_goal_holds() const;
     bool static_literal_holds(const GroundLiteral<Static> literal) const;
 };

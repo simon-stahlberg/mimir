@@ -22,6 +22,8 @@
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/search/axiom_evaluators/grounded.hpp"
+#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -91,9 +93,10 @@ std::optional<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
-
+    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+    auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
+    auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
+    auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
     return FaithfulAbstraction::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository, options);
 }
 
@@ -414,8 +417,10 @@ FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<f
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto applicable_action_generator = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-        auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
+        auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
+        auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
         memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
     }
 

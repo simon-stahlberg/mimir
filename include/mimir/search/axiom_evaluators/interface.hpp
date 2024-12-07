@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
+#define MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
@@ -29,16 +29,17 @@ namespace mimir
 /**
  * Dynamic interface class.
  */
-class IApplicableActionGenerator
+class IAxiomEvaluator
 {
 public:
-    virtual ~IApplicableActionGenerator() = default;
+    virtual ~IAxiomEvaluator() = default;
 
-    /// @brief Generate all applicable actions for a given state.
-    virtual std::generator<GroundAction> generate_applicable_actions(State state) = 0;
+    /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
+    virtual void generate_and_apply_axioms(StateImpl& unextended_state) = 0;
 
-    virtual ActionGrounder& get_action_grounder() = 0;
-    virtual const ActionGrounder& get_action_grounder() const = 0;
+    /* Getters */
+    virtual AxiomGrounder& get_axiom_grounder() = 0;
+    virtual const AxiomGrounder& get_axiom_grounder() const = 0;
 };
 
 }

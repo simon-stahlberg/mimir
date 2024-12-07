@@ -48,16 +48,25 @@ int main(int argc, char** argv)
     std::cout << "Problem:" << std::endl;
     std::cout << *parser.get_problem() << std::endl;
 
-    auto applicable_action_generator = (grounded) ? std::shared_ptr<IApplicableActionGenerator> { std::make_shared<GroundedApplicableActionGenerator>(
-                                           parser.get_problem(),
-                                           parser.get_pddl_repositories(),
-                                           std::make_shared<DebugGroundedApplicableActionGeneratorEventHandler>(false)) } :
-                                                    std::shared_ptr<IApplicableActionGenerator> { std::make_shared<LiftedApplicableActionGenerator>(
-                                                        parser.get_problem(),
-                                                        parser.get_pddl_repositories(),
-                                                        std::make_shared<DebugLiftedApplicableActionGeneratorEventHandler>(false)) };
-
-    auto successor_state_generator = std::make_shared<StateRepository>(applicable_action_generator);
+    auto applicable_action_generator = std::shared_ptr<IApplicableActionGenerator>(nullptr);
+    auto axiom_evaluator = std::shared_ptr<IAxiomEvaluator>(nullptr);
+    auto state_repository = std::shared_ptr<StateRepository>(nullptr);
+    if (grounded)
+    {
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        applicable_action_generator =
+            std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator());
+        axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(delete_relaxed_problem_explorator.create_grounded_axiom_evaluator());
+        state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    }
+    else
+    {
+        applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(
+            std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories()));
+        axiom_evaluator =
+            std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
+        state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    }
 
     auto brfs_event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>() } :
                                         std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>() };
@@ -66,8 +75,7 @@ int main(int argc, char** argv)
 
     auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(false);
 
-    auto siw =
-        std::make_shared<SIWAlgorithm>(applicable_action_generator, arity, successor_state_generator, brfs_event_handler, iw_event_handler, siw_event_handler);
+    auto siw = std::make_shared<SIWAlgorithm>(applicable_action_generator, arity, state_repository, brfs_event_handler, iw_event_handler, siw_event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(siw));
 

@@ -21,7 +21,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
-#include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
+#include "mimir/search/grounding/assignment_set.hpp"
 
 #include <cstddef>
 #include <tuple>

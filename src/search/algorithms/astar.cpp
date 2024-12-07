@@ -17,9 +17,11 @@
 
 #include "mimir/search/algorithms/astar.hpp"
 
+#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
@@ -58,20 +60,23 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
  * AStar
  */
 
-AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic) :
+AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                               std::shared_ptr<IAxiomEvaluator> axiom_evaluator,
+                               std::shared_ptr<IHeuristic> heuristic) :
     AStarAlgorithm(applicable_action_generator,
-                   std::make_shared<StateRepository>(applicable_action_generator),
+                   std::make_shared<StateRepository>(axiom_evaluator),
                    std::move(heuristic),
                    std::make_shared<DefaultAStarAlgorithmEventHandler>())
 {
 }
 
 AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                               std::shared_ptr<StateRepository> successor_state_generator,
+                               std::shared_ptr<StateRepository> state_repository,
                                std::shared_ptr<IHeuristic> heuristic,
                                std::shared_ptr<IAStarAlgorithmEventHandler> event_handler) :
     m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_state_repository(std::move(successor_state_generator)),
+    m_axiom_evaluator(state_repository->get_axiom_evaluator()),
+    m_state_repository(std::move(state_repository)),
     m_heuristic(std::move(heuristic)),
     m_event_handler(std::move(event_handler))
 {
@@ -88,7 +93,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state, std::optional<Plan
 SearchStatus AStarAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
 {
     return find_solution(start_state,
-                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()),
+                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()),
                          std::make_unique<NoStatePruning>(),
                          out_plan,
                          out_goal_state);
@@ -109,8 +114,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
     auto openlist = PriorityQueue<State>();
 
-    const auto problem = m_applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
+    const auto problem = m_applicable_action_generator->get_action_grounder().get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder().get_pddl_repositories();
     m_event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     const auto start_g_value = ContinuousCost(0);
@@ -172,7 +177,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         if (search_node_f_value > f_value)
         {
             f_value = search_node_f_value;
-            m_applicable_action_generator->on_finish_search_layer();
+            // m_applicable_action_generator->on_finish_search_layer();
             m_event_handler->on_finish_f_layer(f_value);
         }
 
@@ -190,13 +195,13 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         if (goal_strategy->test_dynamic_goal(state))
         {
             auto plan_actions = GroundActionList {};
-            set_plan(search_nodes, m_applicable_action_generator->get_ground_actions(), search_node, plan_actions);
+            set_plan(search_nodes, m_applicable_action_generator->get_action_grounder().get_ground_actions(), search_node, plan_actions);
             out_plan = Plan(std::move(plan_actions), get_g_value(search_node));
             out_goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
-                m_applicable_action_generator->on_end_search();
+                // m_applicable_action_generator->on_end_search();
             }
             m_event_handler->on_solved(out_plan.value(), pddl_repositories);
 
@@ -269,7 +274,5 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
     return SearchStatus::EXHAUSTED;
 }
-
-const std::shared_ptr<PDDLRepositories>& AStarAlgorithm::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
 
 }

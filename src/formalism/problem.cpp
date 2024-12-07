@@ -70,7 +70,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
     m_static_goal_holds(false),
-    m_problem_and_domain_derived_predicates()
+    m_problem_and_domain_derived_predicates(),
+    m_problem_and_domain_axioms()
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -109,6 +110,11 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_derived_predicates.insert(m_problem_and_domain_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
     assert(is_all_unique(m_problem_and_domain_derived_predicates));
 
+    // Combine axioms
+    m_problem_and_domain_axioms = m_domain->get_axioms();
+    m_problem_and_domain_axioms.insert(m_problem_and_domain_axioms.end(), m_axioms.begin(), m_axioms.end());
+    assert(is_all_unique(m_problem_and_domain_axioms));
+
     // Initialize static atom bitsets
     for (const auto& literal : m_static_initial_literals)
     {
@@ -124,6 +130,30 @@ ProblemImpl::ProblemImpl(Index index,
         if (literal->is_negated() == m_static_initial_positive_atoms.get(literal->get_atom()->get_index()))
         {
             m_static_goal_holds = false;
+        }
+    }
+
+    for (const auto& literal : get_fluent_initial_literals())
+    {
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("Negative literals in the initial state is not supported.");
+        }
+    }
+
+    for (const auto& literal : get_static_initial_literals())
+    {
+        if (literal->is_negated())
+        {
+            throw std::runtime_error("Negative literals in the initial state is not supported.");
+        }
+    }
+
+    for (const auto& axiom : get_problem_and_domain_axioms())
+    {
+        if (axiom->get_literal()->is_negated())
+        {
+            throw std::runtime_error("Negative literals in axiom heads is not supported.");
         }
     }
 }
@@ -180,6 +210,8 @@ template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Deriv
 const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
+
+const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
 
 bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 

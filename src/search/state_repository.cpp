@@ -23,14 +23,14 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/axiom_grounder.hpp"
 
 namespace mimir
 {
-StateRepository::StateRepository(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator) :
-    m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_problem_or_domain_has_axioms(!m_applicable_action_generator->get_problem()->get_axioms().empty()
-                                   || !m_applicable_action_generator->get_problem()->get_domain()->get_axioms().empty()),
+StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
+    m_axiom_evaluator(std::move(axiom_evaluator)),
+    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder().get_problem()->get_axioms().empty()
+                                   || !m_axiom_evaluator->get_axiom_grounder().get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
     m_state_builder(),
     m_positive_applied_effects(),
@@ -44,7 +44,7 @@ State StateRepository::get_or_create_initial_state()
 {
     auto ground_atoms = GroundAtomList<Fluent> {};
 
-    for (const auto& literal : m_applicable_action_generator->get_problem()->get_fluent_initial_literals())
+    for (const auto& literal : m_axiom_evaluator->get_axiom_grounder().get_problem()->get_fluent_initial_literals())
     {
         if (literal->is_negated())
         {
@@ -99,7 +99,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
         // Evaluate axioms
         auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
         derived_state_atoms.unset_all();
-        m_applicable_action_generator->generate_and_apply_axioms(m_state_builder);
+        m_axiom_evaluator->generate_and_apply_axioms(m_state_builder);
 
         // Update reached derived atoms
         m_reached_derived_atoms |= derived_state_atoms;
@@ -134,7 +134,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         // Apply conditional effects
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            if (conditional_effect.is_applicable(m_applicable_action_generator->get_problem(), state))
+            if (conditional_effect.is_applicable(m_axiom_evaluator->get_axiom_grounder().get_problem(), state))
             {
                 for (const auto& effect_literal : conditional_effect.get_fluent_effect_literals())
                 {
@@ -181,7 +181,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         // Evaluate axioms
         auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
         derived_state_atoms.unset_all();
-        m_applicable_action_generator->generate_and_apply_axioms(m_state_builder);
+        m_axiom_evaluator->generate_and_apply_axioms(m_state_builder);
 
         // Update reached derived atoms
         m_reached_derived_atoms |= derived_state_atoms;
@@ -197,5 +197,5 @@ const FlatBitset& StateRepository::get_reached_fluent_ground_atoms_bitset() cons
 
 const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() const { return m_reached_derived_atoms; }
 
-const std::shared_ptr<IApplicableActionGenerator>& StateRepository::get_applicable_action_generator() const { return m_applicable_action_generator; }
+const std::shared_ptr<IAxiomEvaluator>& StateRepository::get_axiom_evaluator() const { return m_axiom_evaluator; }
 }

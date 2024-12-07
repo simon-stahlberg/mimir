@@ -36,7 +36,7 @@ class BrFSAlgorithm : public IAlgorithm
 {
 public:
     /// @brief Simplest construction
-    explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);
+    explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
 
     /// @brief Complete construction
     BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
@@ -55,10 +55,9 @@ public:
                                std::optional<Plan>& out_plan,
                                std::optional<State>& out_goal_state);
 
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
-
 private:
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
 };

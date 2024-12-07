@@ -20,8 +20,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/statistics.hpp"
-#include "mimir/search/applicable_action_generators/grounded/match_tree.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/match_tree.hpp"
 
 namespace mimir
 {
