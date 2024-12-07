@@ -1,4 +1,4 @@
-name: Pip-Linux
+name: Pip - Linux
 
 on:
   push:

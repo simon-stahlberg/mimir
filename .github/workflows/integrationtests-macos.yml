@@ -1,0 +1,29 @@
+name: Integration Tests - Macos
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout Mimir
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Configure, Build, and Install Dependencies
+      run: |
+        cd tests/integration/dependencies
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/tests/integration/dependencies/installs"
+        cmake --build build
+
+    - name: Build and Test Project
+      run: |
+        cd tests/integration
+        cmake -S . -B build -DCMAKE_PREFIX_PATH="$GITHUB_WORKSPACE/tests/integration/dependencies/installs"
+        cmake --build build

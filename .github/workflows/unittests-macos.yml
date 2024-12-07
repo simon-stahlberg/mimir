@@ -1,0 +1,43 @@
+name: Googletest Unit Tests - Macos
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout Mimir
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Configure, Build, and Install Dependencies
+      run: |
+        cd dependencies
+        cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/dependencies/installs
+        cmake --build build
+
+    # Debug
+    - name: Debug, Configure, and Build Mimir
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -S . -B build_debug -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
+        cmake --build build_debug
+
+    - name: Debug Test
+      working-directory: build_debug/tests/unit
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V
+
+    # Release
+    - name: Release, Configure, and Build Mimir
+      run: |
+        cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTS=ON -S . -B build_release -DCMAKE_PREFIX_PATH=$GITHUB_WORKSPACE/dependencies/installs
+        cmake --build build_release
+
+    - name: Release Test
+      working-directory: build_release/tests/unit
+      run: GTEST_OUTPUT=xml:test-results/ GTEST_COLOR=1 ctest -V

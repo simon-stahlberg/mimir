@@ -1,4 +1,4 @@
-name: Integration Tests
+name: Integration Tests - Linux
 
 on: [push, pull_request]
 
@@ -6,8 +6,19 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            python-version: "3.8"
+            container: gcc:14.2
+          - os: ubuntu-latest
+            python-version: "3.9"
+            container: gcc:14.2
+          - os: ubuntu-latest
+            python-version: "3.10"
+            container: gcc:14.2
+
     runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
 
     steps:
     - name: Checkout Mimir
