@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, LiftedApplicableActionGenerator, StateRepository
+from pymimir import PDDLParser, LiftedAxiomEvaluator, StateRepository
 
 from pathlib import Path
 
@@ -12,7 +12,8 @@ def test_state_repository_ownership():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     pddl_parser = PDDLParser(domain_filepath, problem_filepath)
 
-    state_repository = StateRepository(LiftedApplicableActionGenerator(pddl_parser.get_problem(), pddl_parser.get_pddl_repositories()))
+    axiom_evaluator = LiftedAxiomEvaluator(pddl_parser.get_problem(), pddl_parser.get_pddl_repositories())
+    state_repository = StateRepository(axiom_evaluator)
     initial_state = state_repository.get_or_create_initial_state()
 
     del state_repository

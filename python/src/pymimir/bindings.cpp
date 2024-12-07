@@ -1,5 +1,6 @@
 #include "init_declarations.hpp"
 
+#include <iterator>
 #include <pybind11/attr.h>
 #include <pybind11/detail/common.h>
 
@@ -901,6 +902,11 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
 
+    /* GroundEffectDerivedLiteral */
+    py::class_<GroundEffectDerivedLiteral>(m, "GroundEffectDerivedLiteral")
+        .def_readonly("is_negated", &GroundEffectDerivedLiteral::is_negated)
+        .def_readonly("atom_index", &GroundEffectDerivedLiteral::atom_index);
+
     /* GroundAxiom */
     py::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
         .def("__hash__", [](const GroundAxiomImpl& self) { return self.get_index(); })
@@ -926,8 +932,50 @@ void init_pymimir(py::module_& m)
         .def("get_actions", &Plan::get_actions)
         .def("get_cost", &Plan::get_cost);
 
+    /* */
+    auto bind_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<AssignmentSet<Tag>>(m, class_name.c_str())
+            .def(py::init<Problem, PredicateList<Tag>, GroundAtomList<Tag>>(), py::arg("problem"), py::arg("predicates"), py::arg("ground_atoms"));
+    };
+    bind_assignment_set("StaticAssignmentSet", Static {});
+    bind_assignment_set("FluentAssignmentSet", Fluent {});
+    bind_assignment_set("DerivedAssignmentSet", Derived {});
+
     /* ConditionGrounder */
-    py::class_<ConditionGrounder>(m, "ConditionGrounder");
+    py::class_<ConditionGrounder>(m, "ConditionGrounder")  //
+        .def(py::init<Problem,
+                      VariableList,
+                      LiteralList<Static>,
+                      LiteralList<Fluent>,
+                      LiteralList<Derived>,
+                      AssignmentSet<Static>,
+                      std::shared_ptr<PDDLRepositories>>(),
+             py::arg("problem"),
+             py::arg("parameters"),
+             py::arg("static_literals"),
+             py::arg("fluent_literals"),
+             py::arg("derived_literals"),
+             py::arg("static_assignment_set"),
+             py::arg("pddl_repositories"))
+        .def("create_ground_conjunction_generator",  // we use the c++ name already for future update of pybind11 in regards of std::generator
+             [](ConditionGrounder& self, State state, size_t max_num_groundings)
+             {
+                 auto result =
+                     std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
+
+                 auto count = size_t(0);
+                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state))
+                 {
+                     if (count >= max_num_groundings)
+                     {
+                         break;
+                     }
+                     result.push_back(ground_conjunction);
+                     ++count;
+                 }
+                 return result;  // TODO: keep alive is not set. Lets leave it "buggy" for this specialized piece of code...
+             });
 
     /* ActionGrounder */
     py::class_<ActionGrounder>(m, "ActionGrounder")  //
@@ -940,18 +988,21 @@ void init_pymimir(py::module_& m)
         .def("get_num_ground_actions", &ActionGrounder::get_num_ground_actions, py::return_value_policy::reference_internal);
 
     /* ApplicableActionGenerators */
-    py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(
-        m,
-        "IApplicableActionGenerator")  //
-                                       //.def(
-                                       //    "create_applicable_action_generator",
-                                       //    [](IApplicableActionGenerator& self, State state)
-                                       //    {
-                                       //        auto iterator = self.create_applicable_action_generator(state);
-                                       //        return py::make_iterator(iterator.begin(), iterator.end(), py::return_value_policy::reference_internal);
-                                       //    },
-                                       //    py::keep_alive<0, 1>(),
-                                       //    py::arg("state"))
+    py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(m, "IApplicableActionGenerator")
+        .def(
+            "create_applicable_action_generator",  // we use the c++ name already for future update of pybind11 in regards of std::generator
+            [](IApplicableActionGenerator& self, State state)
+            {
+                // TODO: pybind11 does not support std::generator. Is there a simple workaround WITHOUT introducing additional code?
+                auto actions = GroundActionList {};
+                for (const auto& action : self.create_applicable_action_generator(state))
+                {
+                    actions.push_back(action);
+                }
+                return actions;
+            },
+            py::keep_alive<0, 1>(),
+            py::arg("state"))
         .def("get_action_grounder", py::overload_cast<>(&IApplicableActionGenerator::get_action_grounder), py::return_value_policy::reference_internal);
 
     // Lifted

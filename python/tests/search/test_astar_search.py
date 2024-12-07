@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, PDDLRepositories, Problem, LiftedApplicableActionGenerator, State, StateRepository, GroundAction, AStarAlgorithm, SearchStatus, IHeuristic, DefaultAStarAlgorithmEventHandler, AStarAlgorithmEventHandlerBase
+from pymimir import PDDLParser, PDDLRepositories, Problem, LiftedApplicableActionGenerator, LiftedAxiomEvaluator, State, StateRepository, GroundAction, AStarAlgorithm, SearchStatus, IHeuristic, DefaultAStarAlgorithmEventHandler, AStarAlgorithmEventHandlerBase
 
 from pathlib import Path
 from typing import List
@@ -84,14 +84,15 @@ def test_astar_search():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     parser = PDDLParser(domain_filepath, problem_filepath)
-    lifted_applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
-    state_repository = StateRepository(lifted_applicable_action_generator)
+    applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
+    axiom_evaluator = LiftedAxiomEvaluator(parser.get_problem(), parser.get_pddl_repositories())
+    state_repository = StateRepository(axiom_evaluator)
 
     blind_heuristic = CustomBlindHeuristic()
     goal_count_heuristic = CustomGoalCountHeuristic(parser.get_problem(), parser.get_pddl_repositories())
 
     event_handler = CustomAStarAlgorithmEventHandler(False)
-    astar_search_algorithm = AStarAlgorithm(lifted_applicable_action_generator, state_repository, goal_count_heuristic, event_handler)
+    astar_search_algorithm = AStarAlgorithm(applicable_action_generator, state_repository, goal_count_heuristic, event_handler)
     search_status, plan = astar_search_algorithm.find_solution()
 
     assert search_status == SearchStatus.SOLVED

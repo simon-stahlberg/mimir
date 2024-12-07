@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, LiftedApplicableActionGenerator, BrFSAlgorithm, SearchStatus
+from pymimir import PDDLParser, LiftedApplicableActionGenerator, LiftedAxiomEvaluator, StateRepository, BrFSAlgorithm, SearchStatus
 
 from pathlib import Path
 
@@ -11,8 +11,10 @@ def test_breadth_first_search():
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     parser = PDDLParser(domain_filepath, problem_filepath)
-    lifted_applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
-    breadth_first_search_algorithm = BrFSAlgorithm(lifted_applicable_action_generator)
+    applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
+    axiom_evaluator = LiftedAxiomEvaluator(parser.get_problem(), parser.get_pddl_repositories())
+    state_repository = StateRepository(axiom_evaluator)
+    breadth_first_search_algorithm = BrFSAlgorithm(applicable_action_generator, state_repository)
     search_status, plan = breadth_first_search_algorithm.find_solution()
 
     assert search_status == SearchStatus.SOLVED

@@ -113,7 +113,7 @@ from _pymimir import (
     GroundConditionStrips,
     GroundEffectStrips,
     GroundEffectFluentLiteral,
-    # GroundEffectDerivedLiteral, # must be added first
+    GroundEffectDerivedLiteral,
     GroundEffectConditional,
     GroundEffectConditionalList,
     GroundAction,
@@ -127,7 +127,6 @@ from _pymimir import (
     IAlgorithm,
     IAStarAlgorithmEventHandler,
     IAxiomEvaluator,
-    IAxiomEvaluatorEventHandler,
     IBrFSAlgorithmEventHandler,
     IIWAlgorithmEventHandler,
     IGroundedApplicableActionGeneratorEventHandler,
@@ -150,7 +149,11 @@ from _pymimir import (
     StateSpan,
     StateRepository,
     IndexGroupedVector,
-    TupleIndexMapper
+    TupleIndexMapper,
+
+    StaticAssignmentSet,
+    FluentAssignmentSet,
+    DerivedAssignmentSet
 )
 
 # Dataset
