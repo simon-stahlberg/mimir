@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, LiftedApplicableActionGenerator, StateRepository
+from pymimir import PDDLParser, LiftedApplicableActionGenerator, LiftedAxiomEvaluator, StateRepository
 
 from pathlib import Path
 
@@ -13,9 +13,10 @@ def test_applicable_action_generator_ownership():
     pddl_parser = PDDLParser(domain_filepath, problem_filepath)
 
     applicable_action_generator = LiftedApplicableActionGenerator(pddl_parser.get_problem(), pddl_parser.get_pddl_repositories())
-    state_repository = StateRepository(applicable_action_generator)
+    axiom_evaluator = LiftedAxiomEvaluator(pddl_parser.get_problem(), pddl_parser.get_pddl_repositories())
+    state_repository = StateRepository(axiom_evaluator)
     initial_state = state_repository.get_or_create_initial_state()
-    actions = applicable_action_generator.compute_applicable_actions(initial_state)
+    actions = applicable_action_generator.create_applicable_action_generator(initial_state)
 
     del state_repository
     del applicable_action_generator

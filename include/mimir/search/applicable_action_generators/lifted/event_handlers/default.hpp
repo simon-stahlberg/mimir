@@ -32,23 +32,13 @@ private:
 
     void on_start_generating_applicable_actions_impl() const;
 
-    void on_ground_action_impl(Action action, const ObjectList& binding) const;
+    void on_ground_action_impl(GroundAction action) const;
 
-    void on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const;
+    void on_ground_action_cache_hit_impl(GroundAction action) const;
 
-    void on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const;
+    void on_ground_action_cache_miss_impl(GroundAction action) const;
 
-    void on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) const;
-
-    void on_start_generating_applicable_axioms_impl() const;
-
-    void on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const;
-
-    void on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const;
-
-    void on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const;
-
-    void on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) const;
+    void on_end_generating_applicable_actions_impl() const;
 
     void on_finish_search_layer_impl() const;
 

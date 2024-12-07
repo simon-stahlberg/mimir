@@ -18,6 +18,7 @@
 #include "mimir/algorithms/kpkc.hpp"
 
 #include <functional>
+#include <iostream>
 #include <limits>
 #include <vector>
 
@@ -25,13 +26,13 @@ namespace mimir
 {
 
 // TODO: Try to replace data-structures with flatmemory implementations.
-bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& on_clique,
-                                                  const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                  const std::vector<std::vector<size_t>>& partitions,
-                                                  std::vector<boost::dynamic_bitset<>>& compatible_vertices,
-                                                  boost::dynamic_bitset<>& partition_bits,
-                                                  boost::dynamic_bitset<>& not_partition_bits,  // TODO: Check if !partition_bits[i] is better...
-                                                  std::vector<size_t>& partial_solution)
+std::generator<const std::vector<size_t>&>
+find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                             const std::vector<std::vector<size_t>>& partitions,
+                                             std::vector<boost::dynamic_bitset<>>& compatible_vertices,
+                                             boost::dynamic_bitset<>& partition_bits,
+                                             boost::dynamic_bitset<>& not_partition_bits,  // TODO: Check if !partition_bits[i] is better...
+                                             std::vector<size_t>& partial_solution)
 {
     size_t k = partitions.size();
     size_t best_set_bits = std::numeric_limits<size_t>::max();
@@ -58,12 +59,7 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& o
 
         if (partial_solution.size() == k)
         {
-            bool abort = !on_clique(partial_solution);
-
-            if (abort)
-            {
-                return false;
-            }
+            co_yield partial_solution;
         }
         else
         {
@@ -97,17 +93,14 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& o
 
             if ((partial_solution.size() + possible_additions) == k)
             {
-                bool abort = !find_all_k_cliques_in_k_partite_graph_helper(on_clique,
-                                                                           adjacency_matrix,
-                                                                           partitions,
-                                                                           compatible_vertices_next,
-                                                                           partition_bits,
-                                                                           not_partition_bits,
-                                                                           partial_solution);
-
-                if (abort)
+                for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix,
+                                                                                       partitions,
+                                                                                       compatible_vertices_next,
+                                                                                       partition_bits,
+                                                                                       not_partition_bits,
+                                                                                       partial_solution))
                 {
-                    return false;
+                    co_yield result;
                 }
             }
 
@@ -118,16 +111,12 @@ bool find_all_k_cliques_in_k_partite_graph_helper(const OnCliqueFoundCallback& o
         partial_solution.pop_back();
         adjacent_index = compatible_vertices[best_partition].find_next(adjacent_index);
     }
-
-    return true;
 }
 
-void find_all_k_cliques_in_k_partite_graph(const OnCliqueFoundCallback& on_clique,
-                                           const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                           const std::vector<std::vector<size_t>>& partitions)
+std::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                        const std::vector<std::vector<size_t>>& partitions)
 {
     std::vector<boost::dynamic_bitset<>> compatible_vertices;
-
     for (std::size_t index = 0; index < partitions.size(); ++index)
     {
         boost::dynamic_bitset<> bitset(partitions[index].size());
@@ -142,13 +131,11 @@ void find_all_k_cliques_in_k_partite_graph(const OnCliqueFoundCallback& on_cliqu
     not_partition_bits.set();
     std::vector<size_t> partial_solution;
 
-    find_all_k_cliques_in_k_partite_graph_helper(on_clique,
-                                                 adjacency_matrix,
-                                                 partitions,
-                                                 compatible_vertices,
-                                                 partition_bits,
-                                                 not_partition_bits,
-                                                 partial_solution);
+    for (const auto& result :
+         find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, compatible_vertices, partition_bits, not_partition_bits, partial_solution))
+    {
+        co_yield result;
+    }
 }
 
 }

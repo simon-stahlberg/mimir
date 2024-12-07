@@ -50,8 +50,17 @@ protected:
     /* Implement ITranslator interface */
     friend class ITranslator<BaseRecurseTranslator<Derived_>>;
 
-    /// @brief Collect information.
-    ///        Default implementation recursively calls prepare.
+    template<std::ranges::forward_range Range>
+    void prepare_base(const Range& input)
+    {
+        self().prepare_impl(input);
+    }
+    template<std::ranges::forward_range Range>
+    void prepare_impl(const Range& input)
+    {
+        std::ranges::for_each(input, [this](auto&& arg) { this->prepare(*arg); });
+    }
+
     template<typename T>
     void prepare_base(const T& element)
     {
@@ -190,7 +199,29 @@ protected:
         this->prepare(problem.get_axioms());
     }
 
-    /// @brief Apply problem translation.
+    /// @brief Translate a container of elements into a container of elements.
+    ///        Default behavior reparses it into the pddl_repositories.
+    template<IsBackInsertibleRange Range>
+    auto translate_base(const Range& input)
+    {
+        return self().translate_impl(input);
+    }
+    template<IsBackInsertibleRange Range>
+    auto translate_impl(const Range& input)
+    {
+        std::remove_cvref_t<Range> output;
+
+        if constexpr (requires { output.reserve(std::ranges::size(input)); })
+        {
+            output.reserve(std::ranges::size(input));
+        }
+
+        std::ranges::transform(input, std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
+
+        return output;
+    }
+
+    /// @brief Translate a single element.
     ///        Default behavior reparses it into the pddl_repositories.
     template<typename T>
     auto translate_base(const T& element)
@@ -409,8 +440,8 @@ protected:
 
     loki::Problem run_impl(const loki::ProblemImpl& problem)
     {
-        self().prepare(problem);
-        return self().translate(problem);
+        this->prepare(problem);
+        return this->translate(problem);
     }
 };
 }

@@ -15,17 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
-#define MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
+#ifndef MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
+#define MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/applicable_action_generators/lifted/assignment_set.hpp"
-#include "mimir/search/applicable_action_generators/lifted/consistency_graph.hpp"
-#include "mimir/search/condition_grounders/event_handlers/interface.hpp"
+#include "mimir/search/grounding/assignment_set.hpp"
+#include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
+#include "mimir/search/grounding/consistency_graph.hpp"
 #include "mimir/search/state.hpp"
 
 #include <cstddef>
 #include <cstdint>
+#include <generator>
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -62,19 +63,13 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(Problem problem, State state);
 
-    void nullary_case(State state, std::vector<ObjectList>& ref_bindings, std::size_t max_bindings);
+    std::generator<ObjectList> nullary_case(State state);
 
-    void unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                    const AssignmentSet<Derived>& derived_assignment_sets,
-                    State state,
-                    std::vector<ObjectList>& ref_bindings,
-                    std::size_t max_bindings);
+    std::generator<ObjectList>
+    unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
-    void general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                      const AssignmentSet<Derived>& derived_assignment_sets,
-                      State state,
-                      std::vector<ObjectList>& ref_bindings,
-                      std::size_t max_bindings);
+    std::generator<ObjectList>
+    general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
     ConditionGrounder(Problem problem,
@@ -94,11 +89,11 @@ public:
                       std::shared_ptr<PDDLRepositories> pddl_repositories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
-    void compute_bindings(State state,
-                          const AssignmentSet<Fluent>& fluent_assignment_set,
-                          const AssignmentSet<Derived>& derived_assignment_set,
-                          std::vector<ObjectList>& out_bindings,
-                          std::size_t max_bindings = SIZE_MAX);
+    std::generator<ObjectList>
+    create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
+
+    std::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    create_ground_conjunction_generator(State state);
 
     /**
      * Getters

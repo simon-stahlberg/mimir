@@ -22,6 +22,10 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/planners/single.hpp"
@@ -32,29 +36,162 @@
 namespace mimir::tests
 {
 
+enum class HeuristicType
+{
+    BLIND = 0,
+    HSTAR = 1
+};
+
+/// @brief Instantiate a lifted AStar
+class LiftedAStarPlanner
+{
+private:
+    PDDLParser m_parser;
+
+    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    std::shared_ptr<LiftedAxiomEvaluator> m_axiom_evaluator;
+    std::shared_ptr<StateRepository> m_state_repository;
+    std::shared_ptr<IHeuristic> m_heuristic;
+    std::shared_ptr<IAStarAlgorithmEventHandler> m_astar_event_handler;
+    std::unique_ptr<IAlgorithm> m_algorithm;
+
+public:
+    LiftedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
+        m_parser(PDDLParser(domain_file, problem_file)),
+        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(),
+                                                                                        m_parser.get_pddl_repositories(),
+                                                                                        m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_axiom_evaluator_event_handler)),
+        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
+        m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(false))
+    {
+        switch (type)
+        {
+            case HeuristicType::BLIND:
+            {
+                m_heuristic = std::make_shared<BlindHeuristic>();
+                break;
+            }
+            case HeuristicType::HSTAR:
+            {
+                m_heuristic = std::make_shared<HStarHeuristic>(m_parser.get_problem(),
+                                                               m_parser.get_pddl_repositories(),
+                                                               m_applicable_action_generator,
+                                                               m_state_repository);
+                break;
+            }
+            default:
+            {
+                throw std::runtime_error("Missing implementation for heuristic type");
+            }
+        }
+        m_algorithm = std::make_unique<AStarAlgorithm>(m_applicable_action_generator, m_state_repository, m_heuristic, m_astar_event_handler);
+    }
+
+    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
+    {
+        auto plan = std::optional<Plan> {};
+        const auto status = m_algorithm->find_solution(plan);
+        return std::make_tuple(status, plan);
+    }
+
+    const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
+
+    const LiftedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    {
+        return m_applicable_action_generator_event_handler->get_statistics();
+    }
+
+    const LiftedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+};
+
+/// @brief Instantiate a grounded AStar
+class GroundedAStarPlanner
+{
+private:
+    PDDLParser m_parser;
+
+    DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
+    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
+    std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
+    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
+    std::shared_ptr<GroundedAxiomEvaluator> m_axiom_evaluator;
+    std::shared_ptr<StateRepository> m_state_repository;
+    std::shared_ptr<IHeuristic> m_heuristic;
+    std::shared_ptr<IAStarAlgorithmEventHandler> m_astar_event_handler;
+    std::unique_ptr<IAlgorithm> m_algorithm;
+
+public:
+    GroundedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
+        m_parser(PDDLParser(domain_file, problem_file)),
+        m_delete_relaxed_problem_explorator(m_parser.get_problem(), m_parser.get_pddl_repositories()),
+        m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
+        m_applicable_action_generator(
+            m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(m_applicable_action_generator_event_handler)),
+        m_axiom_evaluator_event_handler(std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()),
+        m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(m_axiom_evaluator_event_handler)),
+        m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
+        m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>())
+    {
+        switch (type)
+        {
+            case HeuristicType::BLIND:
+            {
+                m_heuristic = std::make_shared<BlindHeuristic>();
+                break;
+            }
+            case HeuristicType::HSTAR:
+            {
+                m_heuristic = std::make_shared<HStarHeuristic>(m_parser.get_problem(),
+                                                               m_parser.get_pddl_repositories(),
+                                                               m_applicable_action_generator,
+                                                               m_state_repository);
+                break;
+            }
+            default:
+            {
+                throw std::runtime_error("Missing implementation for heuristic type");
+            }
+        }
+        m_algorithm = std::make_unique<AStarAlgorithm>(m_applicable_action_generator, m_state_repository, m_heuristic, m_astar_event_handler);
+    }
+
+    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
+    {
+        auto plan = std::optional<Plan> {};
+        const auto status = m_algorithm->find_solution(plan);
+        return std::make_tuple(status, plan);
+    }
+
+    const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
+
+    const GroundedApplicableActionGeneratorStatistics& get_applicable_action_generator_statistics() const
+    {
+        return m_applicable_action_generator_event_handler->get_statistics();
+    }
+
+    const GroundedAxiomEvaluatorStatistics& get_axiom_evaluator_statistics() const { return m_axiom_evaluator_event_handler->get_statistics(); }
+};
+
 /**
  * Gripper
  */
 
 TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
-    auto parser = PDDLParser(domain_file, problem_file);
-    auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator =
-        std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
-    auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    auto hstar = std::make_shared<HStarHeuristic>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
-    auto astar = std::make_shared<AStarAlgorithm>(applicable_action_generator, state_repository, hstar, astar_event_handler);
-    auto planner = SinglePlanner(astar);
-    auto [search_status, plan] = planner.find_solution();
+    auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
+                                      fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
+                                      HeuristicType::HSTAR);
+    auto [search_status, plan] = astar.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.value().get_actions().size(), 3);
 
-    const auto& astar_statistics = astar_event_handler->get_statistics();
+    const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Zero because AStar never enters a new f-layer.
     EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 0);
@@ -63,24 +200,15 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
 
 TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
-    auto parser = PDDLParser(domain_file, problem_file);
-    auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator =
-        std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
-    auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    auto hstar = std::make_shared<HStarHeuristic>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
-    auto astar = std::make_shared<AStarAlgorithm>(applicable_action_generator, state_repository, hstar, astar_event_handler);
-    auto planner = SinglePlanner(astar);
-
-    auto [search_status, plan] = planner.find_solution();
+    auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
+                                    fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
+                                    HeuristicType::HSTAR);
+    auto [search_status, plan] = astar.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.value().get_actions().size(), 3);
 
-    const auto& astar_statistics = astar_event_handler->get_statistics();
+    const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Zero because AStar never enters a new f-layer.
     EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 0);
@@ -89,23 +217,15 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
 
 TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
-    auto parser = PDDLParser(domain_file, problem_file);
-    auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator =
-        std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
-    auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    auto blind = std::make_shared<BlindHeuristic>();
-    auto astar = std::make_shared<AStarAlgorithm>(applicable_action_generator, state_repository, blind, astar_event_handler);
-    auto planner = SinglePlanner(astar);
-    auto [search_status, plan] = planner.find_solution();
+    auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
+                                      fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
+                                      HeuristicType::BLIND);
+    auto [search_status, plan] = astar.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.value().get_actions().size(), 3);
 
-    const auto& astar_statistics = astar_event_handler->get_statistics();
+    const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Identical to the BrFs result because domain has unit cost 1.
     EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 44);
@@ -114,24 +234,15 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
 
 TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
 {
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
-    auto parser = PDDLParser(domain_file, problem_file);
-    auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator =
-        std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
-    auto astar_event_handler = std::make_shared<DefaultAStarAlgorithmEventHandler>();
-    auto blind = std::make_shared<BlindHeuristic>();
-    auto astar = std::make_shared<AStarAlgorithm>(applicable_action_generator, state_repository, blind, astar_event_handler);
-    auto planner = SinglePlanner(astar);
-
-    auto [search_status, plan] = planner.find_solution();
+    auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
+                                    fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
+                                    HeuristicType::BLIND);
+    auto [search_status, plan] = astar.find_solution();
 
     EXPECT_EQ(search_status, SearchStatus::SOLVED);
     EXPECT_EQ(plan.value().get_actions().size(), 3);
 
-    const auto& astar_statistics = astar_event_handler->get_statistics();
+    const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Identical to the BrFs result because domain has unit cost 1.
     EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 44);

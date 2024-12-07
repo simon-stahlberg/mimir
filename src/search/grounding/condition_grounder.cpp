@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/condition_grounders.hpp"
+#include "mimir/search/grounding/condition_grounder.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
@@ -25,7 +25,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/condition_grounders/event_handlers/default.hpp"
+#include "mimir/search/grounding/condition_grounder/event_handlers/default.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
@@ -100,19 +100,14 @@ bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
            && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_repositories);
 }
 
-void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_bindings, std::size_t max_bindings)
+std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
 {
-    if (ref_bindings.size() >= max_bindings)
-    {
-        return;
-    }
-
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
 
     if (is_valid_binding(m_problem, state, binding))
     {
-        ref_bindings.emplace_back(std::move(binding));
+        co_yield std::move(binding);
     }
     else
     {
@@ -120,19 +115,11 @@ void ConditionGrounder::nullary_case(State state, std::vector<ObjectList>& ref_b
     }
 }
 
-void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                   const AssignmentSet<Derived>& derived_assignment_sets,
-                                   State state,
-                                   std::vector<ObjectList>& ref_bindings,
-                                   std::size_t max_bindings)
+std::generator<ObjectList>
+ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
-        if (ref_bindings.size() >= max_bindings)
-        {
-            break;
-        }
-
         if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
             && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
         {
@@ -140,7 +127,7 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
 
             if (is_valid_binding(m_problem, state, binding))
             {
-                ref_bindings.emplace_back(std::move(binding));
+                co_yield std::move(binding);
             }
             else
             {
@@ -150,20 +137,12 @@ void ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignmen
     }
 }
 
-void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                     const AssignmentSet<Derived>& derived_assignment_sets,
-                                     State state,
-                                     std::vector<ObjectList>& ref_bindings,
-                                     std::size_t max_bindings)
+std::generator<ObjectList>
+ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
 {
-    if (ref_bindings.size() >= max_bindings)
-    {
-        return;
-    }
-
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
-        return;
+        co_return;
     }
 
     const auto& vertices = m_static_consistency_graph.get_vertices();
@@ -189,7 +168,9 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
     // parameters) tends to be very small.
 
-    const OnCliqueFoundCallback on_clique_found = [&](const std::vector<std::size_t>& clique) -> bool
+    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
+
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(full_consistency_graph, partitions))
     {
         auto binding = ObjectList(clique.size());
 
@@ -201,20 +182,15 @@ void ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignm
             binding[parameter_index] = m_pddl_repositories->get_object(object_index);
         }
 
-        if (is_valid_binding(m_problem, state, binding))
+        if (this->is_valid_binding(this->m_problem, state, binding))
         {
-            ref_bindings.emplace_back(std::move(binding));
+            co_yield std::move(binding);
         }
         else
         {
             m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
         }
-
-        return ref_bindings.size() < max_bindings;
     };
-
-    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    find_all_k_cliques_in_k_partite_graph(on_clique_found, full_consistency_graph, partitions);
 }
 
 ConditionGrounder::ConditionGrounder(Problem problem,
@@ -272,28 +248,61 @@ ConditionGrounder::ConditionGrounder(Problem problem,
     }
 }
 
-void ConditionGrounder::compute_bindings(State state,
-                                         const AssignmentSet<Fluent>& fluent_assignment_set,
-                                         const AssignmentSet<Derived>& derived_assignment_set,
-                                         std::vector<ObjectList>& out_bindings,
-                                         std::size_t max_bindings)
+std::generator<ObjectList> ConditionGrounder::create_binding_generator(State state,
+                                                                       const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                                       const AssignmentSet<Derived>& derived_assignment_set)
 {
-    out_bindings.clear();
-
     if (nullary_conditions_hold(m_problem, state))
     {
         if (m_variables.size() == 0)
         {
-            nullary_case(state, out_bindings, max_bindings);
+            co_yield std::ranges::elements_of(nullary_case(state));
         }
         else if (m_variables.size() == 1)
         {
-            unary_case(fluent_assignment_set, derived_assignment_set, state, out_bindings, max_bindings);
+            co_yield std::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
         }
         else
         {
-            general_case(fluent_assignment_set, derived_assignment_set, state, out_bindings, max_bindings);
+            co_yield std::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state));
         }
+    }
+}
+
+std::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+ConditionGrounder::create_ground_conjunction_generator(State state)
+{
+    auto problem = m_problem;
+
+    auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
+    auto fluent_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
+    auto fluent_assignment_set = AssignmentSet<Fluent>(problem, fluent_predicates, fluent_atoms);
+
+    auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
+    auto derived_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
+    auto derived_assignment_set = AssignmentSet<Derived>(problem, derived_predicates, derived_atoms);
+
+    for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
+    {
+        GroundLiteralList<Static> static_grounded_literals;
+        for (const auto& static_literal : get_conditions<Static>())
+        {
+            static_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(static_literal, binding));
+        }
+
+        GroundLiteralList<Fluent> fluent_grounded_literals;
+        for (const auto& fluent_literal : get_conditions<Fluent>())
+        {
+            fluent_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(fluent_literal, binding));
+        }
+
+        GroundLiteralList<Derived> derived_grounded_literals;
+        for (const auto& derived_literal : get_conditions<Derived>())
+        {
+            derived_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(derived_literal, binding));
+        }
+
+        co_yield std::make_pair(binding, std::make_tuple(static_grounded_literals, fluent_grounded_literals, derived_grounded_literals));
     }
 }
 

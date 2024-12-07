@@ -20,6 +20,8 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/search/axiom_evaluators/grounded.hpp"
+#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -63,8 +65,10 @@ StateSpace::StateSpace(Problem problem,
 std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto applicable_action_generator = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+    auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
+    auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
+    auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
     return StateSpace::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository, options);
 }
 
@@ -93,7 +97,6 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
     auto lifo_queue = std::deque<StateVertex>();
     lifo_queue.push_back(graph.get_vertices().at(initial_vertex_index));
 
-    auto applicable_actions = GroundActionList {};
     stop_watch.start();
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
@@ -106,8 +109,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
             goal_vertex_indices.insert(vertex_index);
         }
 
-        applicable_action_generator->generate_applicable_actions(mimir::get_state(vertex), applicable_actions);
-        for (const auto& action : applicable_actions)
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
         {
             const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action);
             const auto it = state_to_vertex_index.find(successor_state);
@@ -201,8 +203,10 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::ve
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto applicable_action_generator = std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-        auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
+        auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
+        auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
         memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
     }
 

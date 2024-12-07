@@ -624,10 +624,10 @@ TupleGraphFactory::TupleGraphFactory(std::shared_ptr<StateSpace> state_space, in
     m_state_space(std::move(state_space)),
     m_tuple_index_mapper(std::make_shared<TupleIndexMapper>(
         arity,
-        boost::hana::at_key(m_state_space->get_applicable_action_generator()->get_pddl_repositories()->get_pddl_type_to_factory(),
+        boost::hana::at_key(m_state_space->get_applicable_action_generator()->get_action_grounder().get_pddl_repositories()->get_pddl_type_to_factory(),
                             boost::hana::type<GroundAtomImpl<Fluent>> {})
                 .size()
-            + boost::hana::at_key(m_state_space->get_applicable_action_generator()->get_pddl_repositories()->get_pddl_type_to_factory(),
+            + boost::hana::at_key(m_state_space->get_applicable_action_generator()->get_action_grounder().get_pddl_repositories()->get_pddl_type_to_factory(),
                                   boost::hana::type<GroundAtomImpl<Derived>> {})
                   .size())),
     m_prune_dominated_tuples(prune_dominated_tuples)

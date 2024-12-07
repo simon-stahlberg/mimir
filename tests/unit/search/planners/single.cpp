@@ -18,8 +18,10 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/planners.hpp"
+#include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
 #include <string>
@@ -32,9 +34,12 @@ TEST(MimirTests, SearchPlannersSingleTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     auto parser = PDDLParser(domain_file, problem_file);
-    auto successor_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+    auto axiom_evaluator =
+        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
+    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     auto blind_heuristic = std::make_shared<BlindHeuristic>();
-    auto lifted_astar = std::make_shared<AStarAlgorithm>(successor_generator, blind_heuristic);
+    auto lifted_astar = std::make_shared<AStarAlgorithm>(applicable_action_generator, state_repository, blind_heuristic);
     auto planner = SinglePlanner(lifted_astar);
     const auto [status, plan] = planner.find_solution();
 }

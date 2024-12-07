@@ -20,10 +20,11 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
-#include "mimir/search/applicable_action_generators/grounded/match_tree.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounding/match_tree.hpp"
 
 #include <variant>
 
@@ -37,23 +38,18 @@ namespace mimir
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    Problem m_problem;
+    ActionGrounder m_grounder;
+    MatchTree<GroundAction> m_match_tree;
 
-    // Memory
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
-    LiftedApplicableActionGenerator m_lifted_applicable_action_generator;
-
-    MatchTree<GroundAction> m_action_match_tree;
-    MatchTree<GroundAxiom> m_axiom_match_tree;
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    GroundedApplicableActionGenerator(ActionGrounder grounder, MatchTree<GroundAction> match_tree);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(Problem problem,
-                                      std::shared_ptr<PDDLRepositories> pddl_repositories,
+    GroundedApplicableActionGenerator(ActionGrounder grounder,
+                                      MatchTree<GroundAction> match_tree,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
@@ -63,29 +59,13 @@ public:
     GroundedApplicableActionGenerator(GroundedApplicableActionGenerator&& other) = delete;
     GroundedApplicableActionGenerator& operator=(GroundedApplicableActionGenerator&& other) = delete;
 
-    void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) override;
+    std::generator<GroundAction> create_applicable_action_generator(State state) override;
 
-    void generate_and_apply_axioms(StateImpl& unextended_state) override;
+    void on_finish_search_layer() override;
+    void on_end_search() override;
 
-    void on_finish_search_layer() const override;
-
-    void on_end_search() const override;
-
-    Problem get_problem() const override;
-
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
-
-    const GroundActionList& get_ground_actions() const override;
-
-    GroundAction get_ground_action(Index action_index) const override;
-
-    const GroundAxiomList& get_ground_axioms() const override;
-
-    GroundAxiom get_ground_axiom(Index axiom_index) const override;
-
-    size_t get_num_ground_actions() const override;
-
-    size_t get_num_ground_axioms() const override;
+    ActionGrounder& get_action_grounder() override;
+    const ActionGrounder& get_action_grounder() const override;
 };
 
 }

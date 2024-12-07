@@ -15,23 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
-#define MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_HPP_
+#define MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_HPP_
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/search/condition_grounders/event_handlers/interface.hpp"
-
-namespace mimir
-{
-
-class DefaultConditionGrounderEventHandler : public IConditionGrounderEventHandler
-{
-public:
-    DefaultConditionGrounderEventHandler() : IConditionGrounderEventHandler() {}
-
-    void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_repositories) {}
-};
-
-}
+/**
+ * Include all specializations here
+ */
+#include "mimir/search/axiom_evaluators/grounded/event_handlers/debug.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
 
 #endif

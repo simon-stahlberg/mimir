@@ -18,7 +18,6 @@
 #include "mimir/search/applicable_action_generators/lifted/event_handlers/debug.hpp"
 
 #include "mimir/search/action.hpp"
-#include "mimir/search/axiom.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>
@@ -29,45 +28,19 @@ void DebugLiftedApplicableActionGeneratorEventHandler::on_start_generating_appli
 {  //
 }
 
-void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_impl(Action action, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_impl(GroundAction action) const
 {  //
 }
 
-void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const
 {  //
 }
 
-void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const
 {  //
 }
 
-void DebugLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions,
-                                                                                                 const PDDLRepositories& pddl_repositories) const
-{
-    //
-}
-
-void DebugLiftedApplicableActionGeneratorEventHandler::on_start_generating_applicable_axioms_impl() const
-{  //
-}
-
-void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DebugLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DebugLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms,
-                                                                                                const PDDLRepositories& pddl_repositories) const
+void DebugLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl() const
 {
     //
 }

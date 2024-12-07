@@ -6,7 +6,7 @@ project(mimir VERSION 0.1.1)
 # Language setup
 ##############################################################
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -49,9 +49,11 @@ else()
         set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel." FORCE)
     endif()
     # TODO: Add -Wextra and fix all warnings
+
     message("CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+    # if(COMPILER_ID MATCHES "GNU")
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines")
     endif ()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")
@@ -94,7 +96,7 @@ configure_ccache()
 # Boost
 # Find Boost headers only according to https://cmake.org/cmake/help/latest/module/FindBoost.html
 configure_boost()
-find_package(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS iostreams PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+find_package(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS iostreams context coroutine PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
   message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")

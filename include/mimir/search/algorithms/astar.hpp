@@ -36,11 +36,13 @@ class AStarAlgorithm : public IAlgorithm
 {
 public:
     /// @brief Simplest construction
-    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IHeuristic> heuristic);
+    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                   std::shared_ptr<StateRepository> state_repository,
+                   std::shared_ptr<IHeuristic> heuristic);
 
     /// @brief Complete construction
     AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                   std::shared_ptr<StateRepository> successor_state_generator,
+                   std::shared_ptr<StateRepository> state_repository,
                    std::shared_ptr<IHeuristic> heuristic,
                    std::shared_ptr<IAStarAlgorithmEventHandler> event_handler);
 
@@ -55,8 +57,6 @@ public:
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
                                std::optional<Plan>& out_plan,
                                std::optional<State>& out_goal_state);
-
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
 private:
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;

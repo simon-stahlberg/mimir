@@ -54,8 +54,8 @@ struct GroundAxiomImpl
     Index& get_axiom();
     Index get_axiom_index() const;
 
-    FlatIndexList& get_objects();
-    const FlatIndexList& get_objects() const;
+    FlatIndexList& get_object_indices();
+    const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
     GroundConditionStrips& get_strips_precondition();

@@ -18,6 +18,7 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -34,7 +35,11 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
     auto applicable_action_generator =
         std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+    auto axiom_evaluator_event_handler =
+        std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
+    auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
+        std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories(), axiom_evaluator_event_handler));
+    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
     auto plan = std::optional<Plan> {};
@@ -42,12 +47,13 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     EXPECT_EQ(status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
+    const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 95);
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 10);
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 472);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_misses_per_search_layer().back(), 16);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 

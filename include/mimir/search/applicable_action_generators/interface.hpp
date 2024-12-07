@@ -21,6 +21,8 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
+#include <generator>
+
 namespace mimir
 {
 
@@ -33,35 +35,14 @@ public:
     virtual ~IApplicableActionGenerator() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual void generate_applicable_actions(State state, GroundActionList& out_applicable_actions) = 0;
+    virtual std::generator<GroundAction> create_applicable_action_generator(State state) = 0;
 
-    /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(StateImpl& unextended_state) = 0;
+    /// @brief Accumulate event handler statistics during search.
+    virtual void on_finish_search_layer() = 0;
+    virtual void on_end_search() = 0;
 
-    // Notify that a new f-layer was reached
-    virtual void on_finish_search_layer() const = 0;
-
-    /// @brief Notify that the search has finished
-    virtual void on_end_search() const = 0;
-
-    /// @brief Return the ground actions.
-    virtual const GroundActionList& get_ground_actions() const = 0;
-
-    /// @brief Return the ground action with the given index.
-    virtual GroundAction get_ground_action(Index action_index) const = 0;
-
-    /// @brief Return the ground axioms.
-    virtual const GroundAxiomList& get_ground_axioms() const = 0;
-
-    /// @brief Return the ground axiom with the given index.
-    virtual GroundAxiom get_ground_axiom(Index action_index) const = 0;
-
-    virtual size_t get_num_ground_actions() const = 0;
-    virtual size_t get_num_ground_axioms() const = 0;
-
-    /* Getters */
-    virtual Problem get_problem() const = 0;
-    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
+    virtual ActionGrounder& get_action_grounder() = 0;
+    virtual const ActionGrounder& get_action_grounder() const = 0;
 };
 
 }

@@ -36,11 +36,11 @@ class BrFSAlgorithm : public IAlgorithm
 {
 public:
     /// @brief Simplest construction
-    explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator);
+    explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
 
     /// @brief Complete construction
     BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                  std::shared_ptr<StateRepository> successor_state_generator,
+                  std::shared_ptr<StateRepository> state_repository,
                   std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler);
 
     SearchStatus find_solution(std::optional<Plan>& out_plan) override;
@@ -54,8 +54,6 @@ public:
                                std::unique_ptr<IPruningStrategy>&& pruning_strategy,
                                std::optional<Plan>& out_plan,
                                std::optional<State>& out_goal_state);
-
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
 
 private:
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;

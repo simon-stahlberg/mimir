@@ -322,7 +322,7 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
     return translated_problem;
 }
 
-loki::Problem RemoveTypesTranslator::run_impl(const loki::ProblemImpl& problem) { return self().translate(problem); }
+loki::Problem RemoveTypesTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
 RemoveTypesTranslator::RemoveTypesTranslator(loki::PDDLRepositories& pddl_repositories) : BaseCachedRecurseTranslator<RemoveTypesTranslator>(pddl_repositories)
 {
