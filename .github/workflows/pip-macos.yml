@@ -1,4 +1,4 @@
-name: Pip
+name: Pip-Macos
 
 on:
   push:
