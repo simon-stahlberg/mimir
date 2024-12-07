@@ -18,7 +18,6 @@
 #include "mimir/search/applicable_action_generators/lifted/event_handlers/debug.hpp"
 
 #include "mimir/search/action.hpp"
-#include "mimir/search/axiom.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>

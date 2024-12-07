@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/axiom_grounder.hpp"
 
@@ -34,11 +35,16 @@ class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
     AxiomGrounder m_grounder;
+    std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
 
 public:
     LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+
+    LiftedAxiomEvaluator(Problem problem,
+                         std::shared_ptr<PDDLRepositories> pddl_repositories,
+                         std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;

@@ -15,41 +15,41 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/applicable_action_generators/lifted/event_handlers/default.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers/default.hpp"
 
-#include "mimir/search/action.hpp"
+#include "mimir/search/axiom.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>
 
 namespace mimir
 {
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_start_generating_applicable_actions_impl() const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_start_generating_applicable_axioms_impl() const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_impl(GroundAction action) const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_ground_axiom_impl(GroundAxiom axiom) const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl() const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_end_generating_applicable_axioms_impl() const
 {
     //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_finish_search_layer_impl() const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_finish_search_layer_impl() const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_search_impl() const
+void DefaultLiftedAxiomEvaluatorEventHandler::on_end_search_impl() const
 {  //
     std::cout << get_statistics() << std::endl;
 }

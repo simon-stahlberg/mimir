@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/axiom_grounder.hpp"
@@ -33,11 +34,14 @@ class GroundedAxiomEvaluator : public IAxiomEvaluator
 private:
     AxiomGrounder m_grounder;
     MatchTree<GroundAxiom> m_match_tree;
+    std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
 
 public:
     GroundedAxiomEvaluator(AxiomGrounder grounder, MatchTree<GroundAxiom> match_tree);
+
+    GroundedAxiomEvaluator(AxiomGrounder grounder, MatchTree<GroundAxiom> match_tree, std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;

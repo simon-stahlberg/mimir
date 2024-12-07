@@ -22,11 +22,20 @@
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 
 namespace mimir
 {
 LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
+    LiftedAxiomEvaluator(problem, std::move(pddl_repositories), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())
+{
+}
+
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem,
+                                           std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                           std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
     m_grounder(problem, pddl_repositories),
+    m_event_handler(std::move(event_handler)),
     m_partitioning(compute_axiom_partitioning(problem->get_problem_and_domain_axioms(), problem->get_problem_and_domain_derived_predicates()))
 {
 }
@@ -35,7 +44,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 {
     /* 1. Initialize assignment set */
 
-    // m_event_handler->on_start_generating_applicable_axioms();
+    m_event_handler->on_start_generating_applicable_axioms();
 
     const auto problem = m_grounder.get_problem();
     auto pddl_repositories = m_grounder.get_pddl_repositories();
@@ -79,7 +88,15 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 
                 for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
-                    applicable_axioms.emplace_back(m_grounder.ground_axiom(axiom, std::move(binding)));
+                    const auto ground_axiom = m_grounder.ground_axiom(axiom, std::move(binding));
+
+                    m_event_handler->on_ground_axiom(ground_axiom);
+
+                    (ground_axiom->get_index() == m_grounder.get_ground_axioms().back()->get_index()) ?
+                        m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                        m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+
+                    applicable_axioms.emplace_back(ground_axiom);
                 }
             }
 
@@ -121,7 +138,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
         } while (!reached_partition_fixed_point);
     }
 
-    // m_event_handler->on_end_generating_applicable_axioms(applicable_axioms, *m_pddl_repositories);
+    m_event_handler->on_end_generating_applicable_axioms();
 }
 
 AxiomGrounder& LiftedAxiomEvaluator::get_axiom_grounder() { return m_grounder; }

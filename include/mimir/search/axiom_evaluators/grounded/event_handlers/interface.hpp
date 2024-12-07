@@ -15,11 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/applicable_action_generators/grounded/event_handlers/statistics.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/match_tree.hpp"
 
@@ -31,20 +31,15 @@ class MatchTree;
 /**
  * Interface class
  */
-class IGroundedApplicableActionGeneratorEventHandler
+class IGroundedAxiomEvaluatorEventHandler
 {
 public:
-    virtual ~IGroundedApplicableActionGeneratorEventHandler() = default;
+    virtual ~IGroundedAxiomEvaluatorEventHandler() = default;
 
     /// @brief React on finishing delete-free exploration
     virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                                    const GroundAtomList<Derived>& reached_derived_atoms,
-                                                   const GroundActionList& instantiated_actions,
                                                    const GroundAxiomList& instantiated_axioms) = 0;
-
-    virtual void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) = 0;
-
-    virtual void on_finish_build_action_match_tree(const MatchTree<GroundAction>& action_match_tree) = 0;
 
     virtual void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) = 0;
 
@@ -54,7 +49,7 @@ public:
 
     virtual void on_end_search() = 0;
 
-    virtual const GroundedApplicableActionGeneratorStatistics& get_statistics() const = 0;
+    virtual const GroundedAxiomEvaluatorStatistics& get_statistics() const = 0;
 };
 
 /**
@@ -63,14 +58,14 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class GroundedApplicableActionGeneratorEventHandlerBase : public IGroundedApplicableActionGeneratorEventHandler
+class GroundedAxiomEvaluatorEventHandlerBase : public IGroundedAxiomEvaluatorEventHandler
 {
 protected:
-    GroundedApplicableActionGeneratorStatistics m_statistics;
+    GroundedAxiomEvaluatorStatistics m_statistics;
     bool m_quiet;
 
 private:
-    GroundedApplicableActionGeneratorEventHandlerBase() = default;
+    GroundedAxiomEvaluatorEventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived.
@@ -78,41 +73,19 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit GroundedApplicableActionGeneratorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
+    explicit GroundedAxiomEvaluatorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                            const GroundAtomList<Derived>& reached_derived_atoms,
-                                           const GroundActionList& instantiated_actions,
                                            const GroundAxiomList& instantiated_axioms) override
     {  //
         m_statistics.set_num_delete_free_reachable_fluent_ground_atoms(reached_fluent_atoms.size());
         m_statistics.set_num_delete_free_reachable_derived_ground_atoms(reached_derived_atoms.size());
-        m_statistics.set_num_delete_free_actions(instantiated_actions.size());
         m_statistics.set_num_delete_free_axioms(instantiated_axioms.size());
 
         if (!m_quiet)
         {
-            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions, instantiated_axioms);
-        }
-    }
-
-    void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) override
-    {  //
-        m_statistics.set_num_ground_actions(unrelaxed_actions.size());
-
-        if (!m_quiet)
-        {
-            self().on_finish_grounding_unrelaxed_actions_impl(unrelaxed_actions);
-        }
-    }
-
-    void on_finish_build_action_match_tree(const MatchTree<GroundAction>& action_match_tree) override
-    {  //
-        m_statistics.set_num_nodes_in_action_match_tree(action_match_tree.get_num_nodes());
-
-        if (!m_quiet)
-        {
-            self().on_finish_build_action_match_tree_impl(action_match_tree);
+            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_axioms);
         }
     }
 
@@ -152,7 +125,7 @@ public:
         }
     }
 
-    const GroundedApplicableActionGeneratorStatistics& get_statistics() const override { return m_statistics; }
+    const GroundedAxiomEvaluatorStatistics& get_statistics() const override { return m_statistics; }
 };
 }
 

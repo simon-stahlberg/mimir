@@ -22,12 +22,21 @@
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 
 namespace mimir
 {
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(AxiomGrounder grounder, MatchTree<GroundAxiom> match_tree) :
+    GroundedAxiomEvaluator(std::move(grounder), std::move(match_tree), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+{
+}
+
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(AxiomGrounder grounder,
+                                               MatchTree<GroundAxiom> match_tree,
+                                               std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
     m_grounder(std::move(grounder)),
     m_match_tree(std::move(match_tree)),
+    m_event_handler(std::move(event_handler)),
     m_partitioning(compute_axiom_partitioning(m_grounder.get_problem()->get_problem_and_domain_axioms(),
                                               m_grounder.get_problem()->get_problem_and_domain_derived_predicates()))
 {

@@ -15,50 +15,36 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EVENT_HANDLERS_DEBUG_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EVENT_HANDLERS_DEBUG_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_LIFTED_EVENT_HANDLERS_DEBUG_HPP_
+#define MIMIR_SEARCH_AXIOM_EVALUATORS_LIFTED_EVENT_HANDLERS_DEBUG_HPP_
 
-#include "mimir/search/applicable_action_generators/lifted/event_handlers/interface.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers/interface.hpp"
 
 namespace mimir
 {
 
-class DebugLiftedApplicableActionGeneratorEventHandler :
-    public LiftedApplicableActionGeneratorEventHandlerBase<DebugLiftedApplicableActionGeneratorEventHandler>
+class DebugLiftedAxiomEvaluatorEventHandler : public LiftedAxiomEvaluatorEventHandlerBase<DebugLiftedAxiomEvaluatorEventHandler>
 {
 private:
-    /* Implement LiftedApplicableActionGeneratorEventHandlerBase interface */
-    friend class LiftedApplicableActionGeneratorEventHandlerBase<DebugLiftedApplicableActionGeneratorEventHandler>;
-
-    void on_start_generating_applicable_actions_impl() const;
-
-    void on_ground_action_impl(Action action, const ObjectList& binding) const;
-
-    void on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const;
-
-    void on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const;
-
-    void on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) const;
+    /* Implement LiftedAxiomEvaluatorEventHandlerBase interface */
+    friend class LiftedAxiomEvaluatorEventHandlerBase<DebugLiftedAxiomEvaluatorEventHandler>;
 
     void on_start_generating_applicable_axioms_impl() const;
 
-    void on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const;
+    void on_ground_axiom_impl(GroundAxiom axiom) const;
 
-    void on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const;
+    void on_ground_axiom_cache_hit_impl(GroundAxiom axiom) const;
 
-    void on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const;
+    void on_ground_axiom_cache_miss_impl(GroundAxiom axiom) const;
 
-    void on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) const;
+    void on_end_generating_applicable_axioms_impl() const;
 
     void on_finish_search_layer_impl() const;
 
     void on_end_search_impl() const;
 
 public:
-    explicit DebugLiftedApplicableActionGeneratorEventHandler(bool quiet = true) :
-        LiftedApplicableActionGeneratorEventHandlerBase<DebugLiftedApplicableActionGeneratorEventHandler>(quiet)
-    {
-    }
+    explicit DebugLiftedAxiomEvaluatorEventHandler(bool quiet = true) : LiftedAxiomEvaluatorEventHandlerBase<DebugLiftedAxiomEvaluatorEventHandler>(quiet) {}
 };
 
 }

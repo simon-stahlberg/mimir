@@ -15,13 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EVENT_HANDLERS_INTERFACE_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_EVENT_HANDLERS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_LIFTED_EVENT_HANDLERS_INTERFACE_HPP_
+#define MIMIR_SEARCH_AXIOM_EVALUATORS_LIFTED_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/applicable_action_generators/lifted/event_handlers/statistics.hpp"
+#include "mimir/search/axiom_evaluators/lifted/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
 
 namespace mimir
 {
@@ -31,36 +30,26 @@ class MatchTree;
 /**
  * Interface class
  */
-class ILiftedApplicableActionGeneratorEventHandler
+class ILiftedAxiomEvaluatorEventHandler
 {
 public:
-    virtual ~ILiftedApplicableActionGeneratorEventHandler() = default;
-
-    virtual void on_start_generating_applicable_actions() = 0;
-
-    virtual void on_ground_action(Action action, const ObjectList& binding) = 0;
-
-    virtual void on_ground_action_cache_hit(Action action, const ObjectList& binding) = 0;
-
-    virtual void on_ground_action_cache_miss(Action action, const ObjectList& binding) = 0;
-
-    virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) = 0;
+    virtual ~ILiftedAxiomEvaluatorEventHandler() = default;
 
     virtual void on_start_generating_applicable_axioms() = 0;
 
-    virtual void on_ground_axiom(Axiom axiom, const ObjectList& binding) = 0;
+    virtual void on_ground_axiom(GroundAxiom axiom) = 0;
 
-    virtual void on_ground_axiom_cache_hit(Axiom axiom, const ObjectList& binding) = 0;
+    virtual void on_ground_axiom_cache_hit(GroundAxiom axiom) = 0;
 
-    virtual void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) = 0;
+    virtual void on_ground_axiom_cache_miss(GroundAxiom axiom) = 0;
 
-    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_end_generating_applicable_axioms() = 0;
 
     virtual void on_end_search() = 0;
 
     virtual void on_finish_search_layer() = 0;
 
-    virtual const LiftedApplicableActionGeneratorStatistics& get_statistics() const = 0;
+    virtual const LiftedAxiomEvaluatorStatistics& get_statistics() const = 0;
 };
 
 /**
@@ -69,14 +58,14 @@ public:
  * Collect statistics and call implementation of derived class.
  */
 template<typename Derived_>
-class LiftedApplicableActionGeneratorEventHandlerBase : public ILiftedApplicableActionGeneratorEventHandler
+class LiftedAxiomEvaluatorEventHandlerBase : public ILiftedAxiomEvaluatorEventHandler
 {
 protected:
-    LiftedApplicableActionGeneratorStatistics m_statistics;
+    LiftedAxiomEvaluatorStatistics m_statistics;
     bool m_quiet;
 
 private:
-    LiftedApplicableActionGeneratorEventHandlerBase() = default;
+    LiftedAxiomEvaluatorEventHandlerBase() = default;
     friend Derived_;
 
     /// @brief Helper to cast to Derived_.
@@ -84,51 +73,7 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    explicit LiftedApplicableActionGeneratorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
-
-    void on_start_generating_applicable_actions() override
-    {
-        if (!m_quiet)
-        {
-            self().on_start_generating_applicable_actions_impl();
-        }
-    }
-
-    void on_ground_action(Action action, const ObjectList& binding) override
-    {
-        if (!m_quiet)
-        {
-            self().on_ground_action_impl(action, binding);
-        }
-    }
-
-    void on_ground_action_cache_hit(Action action, const ObjectList& binding) override
-    {
-        m_statistics.increment_num_ground_action_cache_hits();
-
-        if (!m_quiet)
-        {
-            self().on_ground_action_cache_hit_impl(action, binding);
-        }
-    }
-
-    void on_ground_action_cache_miss(Action action, const ObjectList& binding) override
-    {
-        m_statistics.increment_num_ground_action_cache_misses();
-
-        if (!m_quiet)
-        {
-            self().on_ground_action_cache_miss_impl(action, binding);
-        }
-    }
-
-    void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) override
-    {
-        if (!m_quiet)
-        {
-            self().on_end_generating_applicable_actions_impl(ground_actions, pddl_repositories);
-        }
-    }
+    explicit LiftedAxiomEvaluatorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
     void on_start_generating_applicable_axioms() override
     {
@@ -138,39 +83,39 @@ public:
         }
     }
 
-    void on_ground_axiom(Axiom axiom, const ObjectList& binding) override
+    void on_ground_axiom(GroundAxiom axiom) override
     {
         if (!m_quiet)
         {
-            self().on_ground_axiom_impl(axiom, binding);
+            self().on_ground_axiom_impl(axiom);
         }
     }
 
-    void on_ground_axiom_cache_hit(Axiom axiom, const ObjectList& binding) override
+    void on_ground_axiom_cache_hit(GroundAxiom axiom) override
     {
         m_statistics.increment_num_ground_axiom_cache_hits();
 
         if (!m_quiet)
         {
-            self().on_ground_axiom_cache_hit_impl(axiom, binding);
+            self().on_ground_axiom_cache_hit_impl(axiom);
         }
     }
 
-    void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) override
+    void on_ground_axiom_cache_miss(GroundAxiom axiom) override
     {
         m_statistics.increment_num_ground_axiom_cache_misses();
 
         if (!m_quiet)
         {
-            self().on_ground_axiom_cache_miss_impl(axiom, binding);
+            self().on_ground_axiom_cache_miss_impl(axiom);
         }
     }
 
-    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) override
+    void on_end_generating_applicable_axioms() override
     {
         if (!m_quiet)
         {
-            self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_repositories);
+            self().on_end_generating_applicable_axioms_impl();
         }
     }
 
@@ -192,7 +137,7 @@ public:
         }
     }
 
-    const LiftedApplicableActionGeneratorStatistics& get_statistics() const override { return m_statistics; }
+    const LiftedAxiomEvaluatorStatistics& get_statistics() const override { return m_statistics; }
 };
 }
 

@@ -23,6 +23,7 @@
 #include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/condition_grounder.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
@@ -59,7 +60,8 @@ public:
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
-    std::shared_ptr<GroundedAxiomEvaluator> create_grounded_axiom_evaluator() const;
+    std::shared_ptr<GroundedAxiomEvaluator> create_grounded_axiom_evaluator(
+        std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()) const;
     std::shared_ptr<GroundedApplicableActionGenerator>
     create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler =
                                                     std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()) const;

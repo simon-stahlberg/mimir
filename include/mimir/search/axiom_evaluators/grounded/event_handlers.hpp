@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_HPP_
+#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_HPP_
+#define MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_HPP_
 
 /**
  * Include all specializations here
  */
-#include "mimir/search/applicable_action_generators/grounded/event_handlers/debug.hpp"
-#include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers/debug.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
 
 #endif

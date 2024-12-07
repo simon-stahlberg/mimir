@@ -131,8 +131,14 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
         compute_ground_atom_order(m_pddl_repositories->get_ground_atoms_from_indices<Derived>(derived_state_atoms), *m_pddl_repositories);
 }
 
-std::shared_ptr<GroundedAxiomEvaluator> DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator() const
+std::shared_ptr<GroundedAxiomEvaluator>
+DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) const
 {
+    event_handler->on_finish_delete_free_exploration(
+        m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
+        m_pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
+        m_delete_free_axiom_evalator->get_axiom_grounder().get_ground_axioms());
+
     auto axiom_grounder = AxiomGrounder(m_problem, m_pddl_repositories);
 
     auto ground_axioms = GroundAxiomList {};
@@ -150,14 +156,13 @@ std::shared_ptr<GroundedAxiomEvaluator> DeleteRelaxedProblemExplorator::create_g
         }
     }
 
-    // m_event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
+    event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
-    // 3. Build match tree
     auto match_tree = MatchTree(ground_axioms, m_fluent_atoms_ordering, m_derived_atoms_ordering);
 
-    // m_event_handler->on_finish_build_axiom_match_tree(m_axiom_match_tree);
+    event_handler->on_finish_build_axiom_match_tree(match_tree);
 
-    return std::make_shared<GroundedAxiomEvaluator>(std::move(axiom_grounder), std::move(match_tree));
+    return std::make_shared<GroundedAxiomEvaluator>(std::move(axiom_grounder), std::move(match_tree), std::move(event_handler));
 }
 
 std::shared_ptr<GroundedApplicableActionGenerator>
@@ -187,7 +192,6 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
 
     event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
-    // 3. Build match tree
     auto match_tree = MatchTree(ground_actions, m_fluent_atoms_ordering, m_derived_atoms_ordering);
 
     event_handler->on_finish_build_action_match_tree(match_tree);
