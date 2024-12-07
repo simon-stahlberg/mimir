@@ -31,17 +31,27 @@ private:
     uint64_t m_num_ground_action_cache_hits;
     uint64_t m_num_ground_action_cache_misses;
 
+    uint64_t m_num_ground_axiom_cache_hits;
+    uint64_t m_num_ground_axiom_cache_misses;
+
     std::vector<uint64_t> m_num_ground_action_cache_hits_per_search_layer;
     std::vector<uint64_t> m_num_ground_action_cache_misses_per_search_layer;
     std::vector<uint64_t> m_num_inapplicable_grounded_actions_per_search_layer;
+
+    std::vector<uint64_t> m_num_ground_axiom_cache_hits_per_search_layer;
+    std::vector<uint64_t> m_num_ground_axiom_cache_misses_per_search_layer;
 
 public:
     LiftedApplicableActionGeneratorStatistics() :
         m_num_ground_action_cache_hits(0),
         m_num_ground_action_cache_misses(0),
+        m_num_ground_axiom_cache_hits(0),
+        m_num_ground_axiom_cache_misses(0),
         m_num_ground_action_cache_hits_per_search_layer(),
         m_num_ground_action_cache_misses_per_search_layer(),
-        m_num_inapplicable_grounded_actions_per_search_layer()
+        m_num_inapplicable_grounded_actions_per_search_layer(),
+        m_num_ground_axiom_cache_hits_per_search_layer(),
+        m_num_ground_axiom_cache_misses_per_search_layer()
     {
     }
 
@@ -50,17 +60,29 @@ public:
     {
         m_num_ground_action_cache_hits_per_search_layer.push_back(m_num_ground_action_cache_hits);
         m_num_ground_action_cache_misses_per_search_layer.push_back(m_num_ground_action_cache_misses);
+
+        m_num_ground_axiom_cache_hits_per_search_layer.push_back(m_num_ground_axiom_cache_hits);
+        m_num_ground_axiom_cache_misses_per_search_layer.push_back(m_num_ground_axiom_cache_misses);
     }
 
     void increment_num_ground_action_cache_hits() { ++m_num_ground_action_cache_hits; }
     void increment_num_ground_action_cache_misses() { ++m_num_ground_action_cache_misses; }
 
+    void increment_num_ground_axiom_cache_hits() { ++m_num_ground_axiom_cache_hits; }
+    void increment_num_ground_axiom_cache_misses() { ++m_num_ground_axiom_cache_misses; }
+
     uint64_t get_num_ground_action_cache_hits() const { return m_num_ground_action_cache_hits; }
     uint64_t get_num_ground_action_cache_misses() const { return m_num_ground_action_cache_misses; }
+
+    uint64_t get_num_ground_axiom_cache_hits() const { return m_num_ground_axiom_cache_hits; }
+    uint64_t get_num_ground_axiom_cache_misses() const { return m_num_ground_axiom_cache_misses; }
 
     const std::vector<uint64_t>& get_num_ground_action_cache_hits_per_search_layer() const { return m_num_ground_action_cache_hits_per_search_layer; }
     const std::vector<uint64_t>& get_num_ground_action_cache_misses_per_search_layer() const { return m_num_ground_action_cache_misses_per_search_layer; }
     const std::vector<uint64_t>& get_num_inapplicable_grounded_actions_per_search_layer() const { return m_num_inapplicable_grounded_actions_per_search_layer; }
+
+    const std::vector<uint64_t>& get_num_ground_axiom_cache_hits_per_search_layer() const { return m_num_ground_axiom_cache_hits_per_search_layer; }
+    const std::vector<uint64_t>& get_num_ground_axiom_cache_misses_per_search_layer() const { return m_num_ground_axiom_cache_misses_per_search_layer; }
 };
 
 /**
@@ -81,7 +103,16 @@ inline std::ostream& operator<<(std::ostream& os, const LiftedApplicableActionGe
        << "[LiftedApplicableActionGenerator] Number of generated inapplicable grounded actions until last f-layer: "
        << (statistics.get_num_inapplicable_grounded_actions_per_search_layer().empty() ?
                0 :
-               statistics.get_num_inapplicable_grounded_actions_per_search_layer().back());
+               statistics.get_num_inapplicable_grounded_actions_per_search_layer().back())
+       << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache hits: " << statistics.get_num_ground_axiom_cache_hits() << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache hits until last f-layer: "
+       << (statistics.get_num_ground_axiom_cache_hits_per_search_layer().empty() ? 0 : statistics.get_num_ground_axiom_cache_hits_per_search_layer().back())
+       << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache misses: " << statistics.get_num_ground_axiom_cache_misses() << std::endl
+       << "[LiftedApplicableActionGenerator] Number of grounded axiom cache misses until last f-layer: "
+       << (statistics.get_num_ground_axiom_cache_misses_per_search_layer().empty() ? 0 :
+                                                                                     statistics.get_num_ground_axiom_cache_misses_per_search_layer().back());
 
     return os;
 }

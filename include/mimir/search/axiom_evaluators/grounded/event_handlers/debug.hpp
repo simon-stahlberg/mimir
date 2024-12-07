@@ -15,36 +15,41 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_DEFAULT_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_DEBUG_HPP_
+#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_EVENT_HANDLERS_DEBUG_HPP_
 
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/interface.hpp"
 
 namespace mimir
 {
 
-class DefaultGroundedApplicableActionGeneratorEventHandler :
-    public GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>
+class DebugGroundedApplicableActionGeneratorEventHandler :
+    public GroundedApplicableActionGeneratorEventHandlerBase<DebugGroundedApplicableActionGeneratorEventHandler>
 {
 private:
     /* Implement GroundedApplicableActionGeneratorEventHandlerBase interface */
-    friend class GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>;
+    friend class GroundedApplicableActionGeneratorEventHandlerBase<DebugGroundedApplicableActionGeneratorEventHandler>;
 
     void on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                                 const GroundAtomList<Derived>& reached_derived_atoms,
-                                                const GroundActionList& instantiated_actions);
+                                                const GroundActionList& instantiated_actions,
+                                                const GroundAxiomList& instantiated_axioms);
 
     void on_finish_grounding_unrelaxed_actions_impl(const GroundActionList& unrelaxed_actions);
 
     void on_finish_build_action_match_tree_impl(const MatchTree<GroundAction>& action_match_tree);
+
+    void on_finish_grounding_unrelaxed_axioms_impl(const GroundAxiomList& unrelaxed_axioms);
+
+    void on_finish_build_axiom_match_tree_impl(const MatchTree<GroundAxiom>& axiom_match_tree);
 
     void on_finish_search_layer_impl() const;
 
     void on_end_search_impl() const;
 
 public:
-    explicit DefaultGroundedApplicableActionGeneratorEventHandler(bool quiet = true) :
-        GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>(quiet)
+    explicit DebugGroundedApplicableActionGeneratorEventHandler(bool quiet = true) :
+        GroundedApplicableActionGeneratorEventHandlerBase<DebugGroundedApplicableActionGeneratorEventHandler>(quiet)
     {
     }
 };

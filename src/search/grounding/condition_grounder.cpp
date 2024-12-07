@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/condition_grounders.hpp"
+#include "mimir/search/grounding/condition_grounder.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
@@ -25,7 +25,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/condition_grounders/event_handlers/default.hpp"
+#include "mimir/search/grounding/condition_grounder/event_handlers/default.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
@@ -248,8 +248,9 @@ ConditionGrounder::ConditionGrounder(Problem problem,
     }
 }
 
-std::generator<ObjectList>
-ConditionGrounder::compute_bindings(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set)
+std::generator<ObjectList> ConditionGrounder::create_binding_generator(State state,
+                                                                       const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                                       const AssignmentSet<Derived>& derived_assignment_set)
 {
     if (nullary_conditions_hold(m_problem, state))
     {
@@ -265,6 +266,43 @@ ConditionGrounder::compute_bindings(State state, const AssignmentSet<Fluent>& fl
         {
             co_yield std::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state));
         }
+    }
+}
+
+std::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+ConditionGrounder::create_ground_conjunction_generator(State state)
+{
+    auto problem = m_problem;
+
+    auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
+    auto fluent_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
+    auto fluent_assignment_set = AssignmentSet<Fluent>(problem, fluent_predicates, fluent_atoms);
+
+    auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
+    auto derived_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
+    auto derived_assignment_set = AssignmentSet<Derived>(problem, derived_predicates, derived_atoms);
+
+    for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
+    {
+        GroundLiteralList<Static> static_grounded_literals;
+        for (const auto& static_literal : get_conditions<Static>())
+        {
+            static_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(static_literal, binding));
+        }
+
+        GroundLiteralList<Fluent> fluent_grounded_literals;
+        for (const auto& fluent_literal : get_conditions<Fluent>())
+        {
+            fluent_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(fluent_literal, binding));
+        }
+
+        GroundLiteralList<Derived> derived_grounded_literals;
+        for (const auto& derived_literal : get_conditions<Derived>())
+        {
+            derived_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(derived_literal, binding));
+        }
+
+        co_yield std::make_pair(binding, std::make_tuple(static_grounded_literals, fluent_grounded_literals, derived_grounded_literals));
     }
 }
 

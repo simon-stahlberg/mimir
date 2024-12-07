@@ -35,8 +35,16 @@ namespace mimir
 {
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ActionGrounder grounder, MatchTree<GroundAction> match_tree) :
+    GroundedApplicableActionGenerator(std::move(grounder), std::move(match_tree), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
+{
+}
+
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ActionGrounder grounder,
+                                                                     MatchTree<GroundAction> match_tree,
+                                                                     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
     m_grounder(std::move(grounder)),
-    m_match_tree(std::move(match_tree))
+    m_match_tree(std::move(match_tree)),
+    m_event_handler(std::move(event_handler))
 {
 }
 
@@ -50,7 +58,12 @@ std::generator<GroundAction> GroundedApplicableActionGenerator::generate_applica
     }
 }
 
+void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+
+void GroundedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
+
 ActionGrounder& GroundedApplicableActionGenerator::get_action_grounder() { return m_grounder; }
+
 const ActionGrounder& GroundedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
 
 }

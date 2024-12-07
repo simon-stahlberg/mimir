@@ -19,11 +19,11 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
 #include "mimir/search/grounding/match_tree.hpp"
 
 #include <variant>
@@ -41,9 +41,16 @@ private:
     ActionGrounder m_grounder;
     MatchTree<GroundAction> m_match_tree;
 
+    std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
+
 public:
     /// @brief Simplest construction
     GroundedApplicableActionGenerator(ActionGrounder grounder, MatchTree<GroundAction> match_tree);
+
+    /// @brief Complete construction
+    GroundedApplicableActionGenerator(ActionGrounder grounder,
+                                      MatchTree<GroundAction> match_tree,
+                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     GroundedApplicableActionGenerator(const GroundedApplicableActionGenerator& other) = delete;
@@ -53,6 +60,9 @@ public:
     GroundedApplicableActionGenerator& operator=(GroundedApplicableActionGenerator&& other) = delete;
 
     std::generator<GroundAction> generate_applicable_actions(State state) override;
+
+    void on_finish_search_layer() override;
+    void on_end_search() override;
 
     ActionGrounder& get_action_grounder() override;
     const ActionGrounder& get_action_grounder() const override;

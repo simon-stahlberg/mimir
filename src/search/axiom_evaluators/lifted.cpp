@@ -77,7 +77,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             {
                 auto& condition_grounder = m_grounder.get_axiom_precondition_grounders().at(axiom);
 
-                for (auto&& binding : condition_grounder.compute_bindings(&unextended_state, fluent_assignment_set, derived_assignment_set))
+                for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
                     applicable_axioms.emplace_back(m_grounder.ground_axiom(axiom, std::move(binding)));
                 }

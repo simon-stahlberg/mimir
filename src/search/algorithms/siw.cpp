@@ -17,13 +17,13 @@
 
 #include "mimir/search/algorithms/siw.hpp"
 
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -159,7 +159,7 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
     m_siw_event_handler->on_end_search();
     if (!m_siw_event_handler->is_quiet())
     {
-        // m_applicable_action_generator->on_end_search();
+        m_applicable_action_generator->on_end_search();
     }
     out_plan = Plan(std::move(out_plan_actions), out_plan_cost);
     m_siw_event_handler->on_solved(out_plan.value(), pddl_repositories);

@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ACTION_GROUNDER_HPP_
-#define MIMIR_SEARCH_ACTION_GROUNDER_HPP_
+#ifndef MIMIR_SEARCH_GROUNDING_ACTION_GROUNDER_HPP_
+#define MIMIR_SEARCH_GROUNDING_ACTION_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/condition_grounder.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
 
 #include <unordered_map>
@@ -36,8 +36,6 @@ class ActionGrounder
 {
 private:
     Problem m_problem;
-
-    // Memory
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
     std::unordered_map<Action, ConditionGrounder> m_action_precondition_grounders;

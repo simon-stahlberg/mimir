@@ -18,7 +18,6 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/common/printers.hpp"
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/interface.hpp"
@@ -30,6 +29,7 @@
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -900,7 +900,7 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
             m_iw_event_handler->on_end_search();
             if (!m_iw_event_handler->is_quiet())
             {
-                // m_applicable_action_generator->on_end_search();
+                m_applicable_action_generator->on_end_search();
             }
             m_iw_event_handler->on_solved(out_plan.value(), *m_applicable_action_generator->get_action_grounder().get_pddl_repositories());
             return SearchStatus::SOLVED;

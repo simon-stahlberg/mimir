@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
-#define MIMIR_SEARCH_CONDITION_GROUNDERS_HPP_
+#ifndef MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
+#define MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/condition_grounders/event_handlers/interface.hpp"
 #include "mimir/search/grounding/assignment_set.hpp"
+#include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
 #include "mimir/search/state.hpp"
 
@@ -90,7 +90,10 @@ public:
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
     std::generator<ObjectList>
-    compute_bindings(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
+    create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
+
+    std::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    create_ground_conjunction_generator(State state);
 
     /**
      * Getters

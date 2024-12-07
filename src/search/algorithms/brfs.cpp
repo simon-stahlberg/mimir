@@ -18,12 +18,12 @@
 #include "mimir/search/algorithms/brfs.hpp"
 
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -143,7 +143,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         if (get_g_value(search_node) > g_value)
         {
             g_value = get_g_value(search_node);
-            // m_applicable_action_generator->on_finish_search_layer();
+            m_applicable_action_generator->on_finish_search_layer();
             m_event_handler->on_finish_g_layer();
         }
 
@@ -156,7 +156,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
-                // m_applicable_action_generator->on_end_search();
+                m_applicable_action_generator->on_end_search();
             }
             m_event_handler->on_solved(out_plan.value(), pddl_repositories);
 

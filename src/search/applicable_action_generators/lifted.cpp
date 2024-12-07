@@ -26,7 +26,7 @@
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/condition_grounders.hpp"
+#include "mimir/search/grounding/condition_grounder.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
 
 #include <boost/dynamic_bitset.hpp>
@@ -38,9 +38,22 @@ using namespace std::string_literals;
 namespace mimir
 {
 
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
+    LiftedApplicableActionGenerator(problem, std::move(pddl_repositories), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
+{
+}
+
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem,
+                                                                 std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                                                 std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
+    m_grounder(problem, std::move(pddl_repositories)),
+    m_event_handler(std::move(event_handler))
+{
+}
+
 std::generator<GroundAction> LiftedApplicableActionGenerator::generate_applicable_actions(State state)
 {
-    // m_event_handler->on_start_generating_applicable_actions();
+    m_event_handler->on_start_generating_applicable_actions();
 
     // Create the assignment sets that are shared by all action schemas.
 
@@ -63,28 +76,28 @@ std::generator<GroundAction> LiftedApplicableActionGenerator::generate_applicabl
 
     for (auto& [action, condition_grounder] : m_grounder.get_action_precondition_grounders())
     {
-        for (auto&& binding : condition_grounder.compute_bindings(state, fluent_assignment_set, derived_assignment_set))
+        for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
         {
-            try
-            {
-                co_yield m_grounder.ground_action(action, std::move(binding));
-            }
-            catch (const std::exception& e)
-            {
-                std::cerr << "Exception in sink: " << e.what() << std::endl;
-            }
+            const auto ground_action = m_grounder.ground_action(action, std::move(binding));
+
+            m_event_handler->on_ground_action(ground_action);
+
+            (ground_action->get_index() == m_grounder.get_ground_actions().back()->get_index()) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                                                  m_event_handler->on_ground_action_cache_hit(ground_action);
+
+            co_yield ground_action;
         }
     }
 
-    // m_event_handler->on_end_generating_applicable_actions(out_applicable_actions, *m_pddl_repositories);
+    m_event_handler->on_end_generating_applicable_actions();
 }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
-    m_grounder(problem, std::move(pddl_repositories))
-{
-}
+void LiftedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
+
+void LiftedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
 
 ActionGrounder& LiftedApplicableActionGenerator::get_action_grounder() { return m_grounder; }
+
 const ActionGrounder& LiftedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
 
 }

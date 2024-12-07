@@ -15,34 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
+#define MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/declarations.hpp"
-
-#include <generator>
+#include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
 
 namespace mimir
 {
 
-/**
- * Dynamic interface class.
- */
-class IApplicableActionGenerator
+class DefaultConditionGrounderEventHandler : public IConditionGrounderEventHandler
 {
 public:
-    virtual ~IApplicableActionGenerator() = default;
+    DefaultConditionGrounderEventHandler() : IConditionGrounderEventHandler() {}
 
-    /// @brief Generate all applicable actions for a given state.
-    virtual std::generator<GroundAction> generate_applicable_actions(State state) = 0;
-
-    /// @brief Accumulate event handler statistics during search.
-    virtual void on_finish_search_layer() = 0;
-    virtual void on_end_search() = 0;
-
-    virtual ActionGrounder& get_action_grounder() = 0;
-    virtual const ActionGrounder& get_action_grounder() const = 0;
+    void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_repositories) {}
 };
 
 }

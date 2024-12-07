@@ -23,7 +23,7 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/axiom_grounder.hpp"
+#include "mimir/search/grounding/axiom_grounder.hpp"
 
 namespace mimir
 {

@@ -21,11 +21,11 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
-#include "mimir/search/condition_grounders.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounding/condition_grounder.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
 
 #include <unordered_map>
@@ -42,9 +42,16 @@ class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 private:
     ActionGrounder m_grounder;
 
+    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
+
 public:
     /// @brief Simplest construction
     LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+
+    /// @brief Complete construction
+    LiftedApplicableActionGenerator(Problem problem,
+                                    std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
@@ -54,6 +61,9 @@ public:
     LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
 
     std::generator<GroundAction> generate_applicable_actions(State state) override;
+
+    void on_finish_search_layer() override;
+    void on_end_search() override;
 
     ActionGrounder& get_action_grounder() override;
     const ActionGrounder& get_action_grounder() const override;

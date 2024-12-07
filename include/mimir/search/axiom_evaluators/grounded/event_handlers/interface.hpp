@@ -39,11 +39,16 @@ public:
     /// @brief React on finishing delete-free exploration
     virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                                    const GroundAtomList<Derived>& reached_derived_atoms,
-                                                   const GroundActionList& instantiated_actions) = 0;
+                                                   const GroundActionList& instantiated_actions,
+                                                   const GroundAxiomList& instantiated_axioms) = 0;
 
     virtual void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) = 0;
 
     virtual void on_finish_build_action_match_tree(const MatchTree<GroundAction>& action_match_tree) = 0;
+
+    virtual void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) = 0;
+
+    virtual void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) = 0;
 
     virtual void on_finish_search_layer() = 0;
 
@@ -77,15 +82,17 @@ public:
 
     void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
                                            const GroundAtomList<Derived>& reached_derived_atoms,
-                                           const GroundActionList& instantiated_actions) override
+                                           const GroundActionList& instantiated_actions,
+                                           const GroundAxiomList& instantiated_axioms) override
     {  //
         m_statistics.set_num_delete_free_reachable_fluent_ground_atoms(reached_fluent_atoms.size());
         m_statistics.set_num_delete_free_reachable_derived_ground_atoms(reached_derived_atoms.size());
         m_statistics.set_num_delete_free_actions(instantiated_actions.size());
+        m_statistics.set_num_delete_free_axioms(instantiated_axioms.size());
 
         if (!m_quiet)
         {
-            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions);
+            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions, instantiated_axioms);
         }
     }
 
@@ -106,6 +113,26 @@ public:
         if (!m_quiet)
         {
             self().on_finish_build_action_match_tree_impl(action_match_tree);
+        }
+    }
+
+    void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) override
+    {  //
+        m_statistics.set_num_ground_axioms(unrelaxed_axioms.size());
+
+        if (!m_quiet)
+        {
+            self().on_finish_grounding_unrelaxed_axioms_impl(unrelaxed_axioms);
+        }
+    }
+
+    void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) override
+    {  //
+        m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree.get_num_nodes());
+
+        if (!m_quiet)
+        {
+            self().on_finish_build_axiom_match_tree_impl(axiom_match_tree);
         }
     }
 

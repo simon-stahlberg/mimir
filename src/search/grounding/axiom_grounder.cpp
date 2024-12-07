@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/axiom_grounder.hpp"
+#include "mimir/search/grounding/axiom_grounder.hpp"
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"

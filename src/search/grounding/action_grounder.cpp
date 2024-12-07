@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/action_grounder.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -139,7 +139,6 @@ const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories()
 
 std::unordered_map<Action, ConditionGrounder>& ActionGrounder::get_action_precondition_grounders() { return m_action_precondition_grounders; }
 
-/// @brief Ground an action and return a view onto it.
 GroundAction ActionGrounder::ground_action(Action action, ObjectList&& binding)
 {
     /* 1. Check if grounding is cached */

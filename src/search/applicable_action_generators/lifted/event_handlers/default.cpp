@@ -29,45 +29,19 @@ void DefaultLiftedApplicableActionGeneratorEventHandler::on_start_generating_app
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_impl(Action action, const ObjectList& binding) const
+void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_impl(GroundAction action) const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_hit_impl(Action action, const ObjectList& binding) const
+void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_hit_impl(GroundAction action) const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_miss_impl(Action action, const ObjectList& binding) const
+void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_action_cache_miss_impl(GroundAction action) const
 {  //
 }
 
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl(const GroundActionList& ground_actions,
-                                                                                                   const PDDLRepositories& pddl_repositories) const
-{
-    //
-}
-
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_start_generating_applicable_axioms_impl() const
-{  //
-}
-
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_impl(Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_hit_impl(Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_ground_axiom_cache_miss_impl(Axiom axiom, const ObjectList& binding) const
-{
-    //
-}
-
-void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_axioms_impl(const GroundAxiomList& ground_axioms,
-                                                                                                  const PDDLRepositories& pddl_repositories) const
+void DefaultLiftedApplicableActionGeneratorEventHandler::on_end_generating_applicable_actions_impl() const
 {
     //
 }

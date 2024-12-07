@@ -58,6 +58,9 @@ class LiftedApplicableActionGenerator;
 
 class ActionGrounder;
 
+class IGroundedApplicableActionGeneratorEventHandler;
+class ILiftedApplicableActionGeneratorEventHandler;
+
 /* AxiomEvaluators */
 class IAxiomEvaluator;
 class GroundedAxiomEvaluator;

@@ -17,12 +17,12 @@
 
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/axiom_grounder.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounding/axiom_grounder.hpp"
 #include "mimir/search/grounding/match_tree.hpp"
 
 namespace mimir
@@ -160,8 +160,14 @@ std::shared_ptr<GroundedAxiomEvaluator> DeleteRelaxedProblemExplorator::create_g
     return std::make_shared<GroundedAxiomEvaluator>(std::move(axiom_grounder), std::move(match_tree));
 }
 
-std::shared_ptr<GroundedApplicableActionGenerator> DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator() const
+std::shared_ptr<GroundedApplicableActionGenerator>
+DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) const
 {
+    event_handler->on_finish_delete_free_exploration(
+        m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
+        m_pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
+        m_delete_free_applicable_action_generator->get_action_grounder().get_ground_actions());
+
     auto action_grounder = ActionGrounder(m_problem, m_pddl_repositories);
 
     auto ground_actions = GroundActionList {};
@@ -179,14 +185,14 @@ std::shared_ptr<GroundedApplicableActionGenerator> DeleteRelaxedProblemExplorato
         }
     }
 
-    // m_event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
+    event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // 3. Build match tree
     auto match_tree = MatchTree(ground_actions, m_fluent_atoms_ordering, m_derived_atoms_ordering);
 
-    // m_event_handler->on_finish_build_action_match_tree(m_action_match_tree);
+    event_handler->on_finish_build_action_match_tree(match_tree);
 
-    return std::make_shared<GroundedApplicableActionGenerator>(std::move(action_grounder), std::move(match_tree));
+    return std::make_shared<GroundedApplicableActionGenerator>(std::move(action_grounder), std::move(match_tree), std::move(event_handler));
 }
 
 Problem DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }

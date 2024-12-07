@@ -21,8 +21,8 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/axiom_grounder.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounding/axiom_grounder.hpp"
 #include "mimir/search/grounding/match_tree.hpp"
 
 namespace mimir

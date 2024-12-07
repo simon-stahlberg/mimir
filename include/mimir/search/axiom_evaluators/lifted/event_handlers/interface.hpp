@@ -38,13 +38,23 @@ public:
 
     virtual void on_start_generating_applicable_actions() = 0;
 
-    virtual void on_ground_action(GroundAction action) = 0;
+    virtual void on_ground_action(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_ground_action_cache_hit(GroundAction action) = 0;
+    virtual void on_ground_action_cache_hit(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_ground_action_cache_miss(GroundAction action) = 0;
+    virtual void on_ground_action_cache_miss(Action action, const ObjectList& binding) = 0;
 
-    virtual void on_end_generating_applicable_actions() = 0;
+    virtual void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) = 0;
+
+    virtual void on_start_generating_applicable_axioms() = 0;
+
+    virtual void on_ground_axiom(Axiom axiom, const ObjectList& binding) = 0;
+
+    virtual void on_ground_axiom_cache_hit(Axiom axiom, const ObjectList& binding) = 0;
+
+    virtual void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) = 0;
+
+    virtual void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) = 0;
 
     virtual void on_end_search() = 0;
 
@@ -84,39 +94,83 @@ public:
         }
     }
 
-    void on_ground_action(GroundAction action) override
+    void on_ground_action(Action action, const ObjectList& binding) override
     {
         if (!m_quiet)
         {
-            self().on_ground_action_impl(action);
+            self().on_ground_action_impl(action, binding);
         }
     }
 
-    void on_ground_action_cache_hit(GroundAction action) override
+    void on_ground_action_cache_hit(Action action, const ObjectList& binding) override
     {
         m_statistics.increment_num_ground_action_cache_hits();
 
         if (!m_quiet)
         {
-            self().on_ground_action_cache_hit_impl(action);
+            self().on_ground_action_cache_hit_impl(action, binding);
         }
     }
 
-    void on_ground_action_cache_miss(GroundAction action) override
+    void on_ground_action_cache_miss(Action action, const ObjectList& binding) override
     {
         m_statistics.increment_num_ground_action_cache_misses();
 
         if (!m_quiet)
         {
-            self().on_ground_action_cache_miss_impl(action);
+            self().on_ground_action_cache_miss_impl(action, binding);
         }
     }
 
-    void on_end_generating_applicable_actions() override
+    void on_end_generating_applicable_actions(const GroundActionList& ground_actions, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_end_generating_applicable_actions_impl();
+            self().on_end_generating_applicable_actions_impl(ground_actions, pddl_repositories);
+        }
+    }
+
+    void on_start_generating_applicable_axioms() override
+    {
+        if (!m_quiet)
+        {
+            self().on_start_generating_applicable_axioms_impl();
+        }
+    }
+
+    void on_ground_axiom(Axiom axiom, const ObjectList& binding) override
+    {
+        if (!m_quiet)
+        {
+            self().on_ground_axiom_impl(axiom, binding);
+        }
+    }
+
+    void on_ground_axiom_cache_hit(Axiom axiom, const ObjectList& binding) override
+    {
+        m_statistics.increment_num_ground_axiom_cache_hits();
+
+        if (!m_quiet)
+        {
+            self().on_ground_axiom_cache_hit_impl(axiom, binding);
+        }
+    }
+
+    void on_ground_axiom_cache_miss(Axiom axiom, const ObjectList& binding) override
+    {
+        m_statistics.increment_num_ground_axiom_cache_misses();
+
+        if (!m_quiet)
+        {
+            self().on_ground_axiom_cache_miss_impl(axiom, binding);
+        }
+    }
+
+    void on_end_generating_applicable_axioms(const GroundAxiomList& ground_axioms, const PDDLRepositories& pddl_repositories) override
+    {
+        if (!m_quiet)
+        {
+            self().on_end_generating_applicable_axioms_impl(ground_axioms, pddl_repositories);
         }
     }
 

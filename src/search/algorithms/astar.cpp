@@ -17,11 +17,11 @@
 
 #include "mimir/search/algorithms/astar.hpp"
 
-#include "mimir/search/action_grounder.hpp"
 #include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/grounding/action_grounder.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
@@ -177,7 +177,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         if (search_node_f_value > f_value)
         {
             f_value = search_node_f_value;
-            // m_applicable_action_generator->on_finish_search_layer();
+            m_applicable_action_generator->on_finish_search_layer();
             m_event_handler->on_finish_f_layer(f_value);
         }
 
@@ -201,7 +201,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
-                // m_applicable_action_generator->on_end_search();
+                m_applicable_action_generator->on_end_search();
             }
             m_event_handler->on_solved(out_plan.value(), pddl_repositories);
 
