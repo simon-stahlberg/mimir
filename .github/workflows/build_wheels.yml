@@ -41,7 +41,7 @@ jobs:
           source $HOME/miniconda/etc/profile.d/conda.sh
           conda create --name gcc_env -y
           conda activate gcc_env
-          conda install -y gxx=14.2.0 gcc=14.2.0 bzip2 xz zlib zstd
+          conda install -y -c conda-forge gxx=14.2.0 gcc=14.2.0 bzip2 xz zlib zstd
         CIBW_ENVIRONMENT: |
           GCC_INSTALL_DIR=$HOME/miniconda/envs/gcc_env/
           CC=$GCC_INSTALL_DIR/bin/gcc
