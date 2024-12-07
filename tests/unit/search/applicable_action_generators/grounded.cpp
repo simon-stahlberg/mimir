@@ -18,6 +18,8 @@
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -31,10 +33,13 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
+    auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator =
-        std::make_shared<GroundedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
-    auto state_repository = std::make_shared<StateRepository>(applicable_action_generator);
+    auto applicable_action_generator = delete_free_problem_explorator.create_grounded_applicable_action_generator(applicable_action_generator_event_handler);
+    auto axiom_evaluator_event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
+    auto axiom_evaluator =
+        std::dynamic_pointer_cast<IAxiomEvaluator>(delete_free_problem_explorator.create_grounded_axiom_evaluator(axiom_evaluator_event_handler));
+    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
     auto plan = std::optional<Plan> {};
@@ -42,16 +47,17 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     EXPECT_EQ(status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
+    const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
     EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
     EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
     EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_axioms(), 20);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 20);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
     EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 12);
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_axioms(), 16);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 16);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
 
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 

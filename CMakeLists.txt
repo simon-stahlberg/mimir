@@ -145,14 +145,14 @@ add_subdirectory(exe)
 # Target Profiling
 # ----------------
 if(BUILD_PROFILING)
-    # add_subdirectory(benchmark)
+    add_subdirectory(benchmark)
 endif()
 
 # -----------
 # Target Test
 # -----------
 if(BUILD_TESTS)
-    # add_subdirectory(tests)
+    add_subdirectory(tests)
 endif()
 
 

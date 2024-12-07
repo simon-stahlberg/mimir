@@ -78,12 +78,14 @@ std::generator<GroundAction> LiftedApplicableActionGenerator::generate_applicabl
     {
         for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
         {
+            const auto num_ground_actions = m_grounder.get_num_ground_actions();
+
             const auto ground_action = m_grounder.ground_action(action, std::move(binding));
 
             m_event_handler->on_ground_action(ground_action);
 
-            (ground_action->get_index() == m_grounder.get_ground_actions().back()->get_index()) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
-                                                                                                  m_event_handler->on_ground_action_cache_hit(ground_action);
+            (m_grounder.get_num_ground_actions() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                         m_event_handler->on_ground_action_cache_hit(ground_action);
 
             co_yield ground_action;
         }

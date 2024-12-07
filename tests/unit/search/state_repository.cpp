@@ -19,7 +19,8 @@
 
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
-#include "mimir/search/applicable_action_generators/lifted.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
 
 #include <gtest/gtest.h>
 
@@ -32,16 +33,17 @@ TEST(MimirTests, SearchStateRepositoryTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
-    const auto problem = parser.get_problem();
-    auto lifted_applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(problem, parser.get_pddl_repositories());
-    auto state_repository = StateRepository(lifted_applicable_action_generator);
+    auto applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories());
+    auto axiom_evaluator =
+        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
+    auto state_repository = StateRepository(axiom_evaluator);
     auto initial_state = state_repository.get_or_create_initial_state();
 
-    for (const auto& action : lifted_applicable_action_generator->generate_applicable_actions(initial_state))
+    for (const auto& action : applicable_action_generator.generate_applicable_actions(initial_state))
     {
         const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action);
 
-        for (const auto& action2 : lifted_applicable_action_generator->generate_applicable_actions(successor_state))
+        for (const auto& action2 : applicable_action_generator.generate_applicable_actions(successor_state))
         {
             [[maybe_unused]] const auto [successor_state2, action_cost2] = state_repository.get_or_create_successor_state(successor_state, action2);
         }

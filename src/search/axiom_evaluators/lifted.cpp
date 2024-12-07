@@ -88,13 +88,14 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 
                 for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
+                    const auto num_ground_axioms = m_grounder.get_num_ground_axioms();
+
                     const auto ground_axiom = m_grounder.ground_axiom(axiom, std::move(binding));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
-                    (ground_axiom->get_index() == m_grounder.get_ground_axioms().back()->get_index()) ?
-                        m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
-                        m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+                    (m_grounder.get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                                                                               m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
 
                     applicable_axioms.emplace_back(ground_axiom);
                 }
