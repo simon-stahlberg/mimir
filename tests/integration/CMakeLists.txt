@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-
+project(integration_example VERSION "0.0.1")
 
 ##############################################################
 # Language setup
@@ -41,13 +41,6 @@ else()
 endif()
 
 message(STATUS "Build configuration: ${CMAKE_BUILD_TYPE}")
-
-
-##############################################################
-# Establish project
-##############################################################
-
-project(integration_example VERSION "0.0.1" LANGUAGES C CXX)
 
 
 ##############################################################
