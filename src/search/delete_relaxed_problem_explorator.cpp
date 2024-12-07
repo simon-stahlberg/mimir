@@ -149,7 +149,7 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
         for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(m_pddl_repositories->get_axiom(axiom->get_axiom_index())))
         {
-            auto axiom_arguments = m_pddl_repositories->get_objects_from_indices(axiom->get_objects());
+            auto axiom_arguments = m_pddl_repositories->get_objects_from_indices(axiom->get_object_indices());
             auto grounded_axiom = axiom_grounder.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
             if (grounded_axiom->is_statically_applicable(m_problem->get_static_initial_positive_atoms_bitset()))
             {

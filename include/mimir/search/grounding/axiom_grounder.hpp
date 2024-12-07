@@ -60,7 +60,7 @@ public:
     AxiomGrounder& operator=(AxiomGrounder&& other) = default;
 
     /// @brief Ground an axiom and return a view onto it.
-    GroundAxiom ground_axiom(Axiom axiom, ObjectList&& binding);
+    GroundAxiom ground_axiom(Axiom axiom, ObjectList binding);
 
     std::unordered_map<Axiom, ConditionGrounder>& get_axiom_precondition_grounders();
 

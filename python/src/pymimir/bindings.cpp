@@ -91,6 +91,7 @@ PYBIND11_MAKE_OPAQUE(TermList);
 PYBIND11_MAKE_OPAQUE(StateList);
 PYBIND11_MAKE_OPAQUE(std::vector<GroundEffectConditional>);  // cannot bind cista vector
 PYBIND11_MAKE_OPAQUE(GroundActionList);
+PYBIND11_MAKE_OPAQUE(GroundAxiomList);
 
 /**
  * Common
@@ -866,18 +867,19 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<std::vector<GroundEffectConditional>>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<std::vector<GroundEffectConditional>>(m, "GroundEffectConditionalList");
 
+    /* GroundAction */
     py::class_<GroundActionImpl>(m, "GroundAction")  //
         .def("__hash__", [](const GroundActionImpl& self) { return self.get_index(); })
         .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
         .def("to_string",
-             [](const GroundActionImpl& self, PDDLRepositories& pddl_repositories)
+             [](const GroundActionImpl& self, const PDDLRepositories& pddl_repositories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories), FullActionFormatterTag {});
                  return ss.str();
              })
         .def("to_string_for_plan",
-             [](const GroundActionImpl& self, PDDLRepositories& pddl_repositories)
+             [](const GroundActionImpl& self, const PDDLRepositories& pddl_repositories)
              {
                  std::stringstream ss;
                  ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories), PlanActionFormatterTag {});
@@ -899,45 +901,58 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
     bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
 
+    /* GroundAxiom */
+    py::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
+        .def("__hash__", [](const GroundAxiomImpl& self) { return self.get_index(); })
+        .def("__eq__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
+        .def("to_string",
+             [](const GroundAxiomImpl& self, const PDDLRepositories& pddl_repositories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(GroundAxiom(&self), std::cref(pddl_repositories));
+                 return ss.str();
+             })
+        .def("get_index", py::overload_cast<>(&GroundAxiomImpl::get_index, py::const_), py::return_value_policy::copy)
+        .def("get_axiom_index", py::overload_cast<>(&GroundAxiomImpl::get_axiom_index, py::const_), py::return_value_policy::copy)
+        .def("get_object_indices", py::overload_cast<>(&GroundAxiomImpl::get_object_indices, py::const_), py::return_value_policy::copy)
+        .def("get_strips_precondition", py::overload_cast<>(&GroundAxiomImpl::get_strips_precondition, py::const_), py::return_value_policy::reference_internal)
+        .def("get_derived_effect", py::overload_cast<>(&GroundAxiomImpl::get_derived_effect, py::const_), py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<GroundAxiomList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<GroundAxiomList>(m, "GroundAxiomList");
+
     /* Plan */
     py::class_<Plan>(m, "Plan")  //
         .def("__len__", [](const Plan& arg) { return arg.get_actions().size(); })
         .def("get_actions", &Plan::get_actions)
         .def("get_cost", &Plan::get_cost);
 
-    /* ConjunctionGrounder */
+    /* ConditionGrounder */
+    py::class_<ConditionGrounder>(m, "ConditionGrounder");
 
-    py::class_<LiftedConjunctionGrounder, std::shared_ptr<LiftedConjunctionGrounder>>(m,
-                                                                                      "LiftedConjunctionGrounder")  //
-        .def(py::init<Problem, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, std::shared_ptr<PDDLRepositories>>(),
-             py::arg("problem"),
-             py::arg("variables"),
-             py::arg("static_literals"),
-             py::arg("fluent_literals"),
-             py::arg("derived_literals"),
-             py::arg("pddl_repositories"))
-        .def("ground", &LiftedConjunctionGrounder::ground, py::arg("state"), py::arg("max_bindings"));
+    /* ActionGrounder */
+    py::class_<ActionGrounder>(m, "ActionGrounder")  //
+        .def("get_problem", &ActionGrounder::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &ActionGrounder::get_pddl_repositories, py::return_value_policy::copy)
+        .def("get_action_precondition_grounders", &ActionGrounder::get_action_precondition_grounders, py::return_value_policy::copy)
+        .def("ground_action", &ActionGrounder::ground_action, py::return_value_policy::reference_internal, py::arg("action"), py::arg("binding"))
+        .def("get_ground_actions", &ActionGrounder::get_ground_actions, py::return_value_policy::reference_internal)
+        .def("get_ground_action", &ActionGrounder::get_ground_action, py::return_value_policy::reference_internal, py::arg("action_index"))
+        .def("get_num_ground_actions", &ActionGrounder::get_num_ground_actions, py::return_value_policy::reference_internal);
 
     /* ApplicableActionGenerators */
-
-    py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(m,
-                                                                                        "IApplicableActionGenerator")  //
-        .def(
-            "compute_applicable_actions",
-            [](IApplicableActionGenerator& self, State state)
-            {
-                auto applicable_actions = GroundActionList();
-                self.generate_applicable_actions(state, applicable_actions);
-                return applicable_actions;
-            },
-            py::keep_alive<0, 1>(),
-            py::arg("state"))
-        .def("get_ground_actions", &IApplicableActionGenerator::get_ground_actions, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_ground_action", &IApplicableActionGenerator::get_ground_action, py::return_value_policy::reference_internal, py::arg("action_index"))
-        .def("get_ground_axioms", &IApplicableActionGenerator::get_ground_axioms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_ground_axiom", &IApplicableActionGenerator::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
-        .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_repositories", &IApplicableActionGenerator::get_pddl_repositories);
+    py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(
+        m,
+        "IApplicableActionGenerator")  //
+                                       //.def(
+                                       //    "create_applicable_action_generator",
+                                       //    [](IApplicableActionGenerator& self, State state)
+                                       //    {
+                                       //        auto iterator = self.create_applicable_action_generator(state);
+                                       //        return py::make_iterator(iterator.begin(), iterator.end(), py::return_value_policy::reference_internal);
+                                       //    },
+                                       //    py::keep_alive<0, 1>(),
+                                       //    py::arg("state"))
+        .def("get_action_grounder", py::overload_cast<>(&IApplicableActionGenerator::get_action_grounder), py::return_value_policy::reference_internal);
 
     // Lifted
     py::class_<ILiftedApplicableActionGeneratorEventHandler, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(
@@ -978,16 +993,67 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<GroundedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<GroundedApplicableActionGenerator>>(
         m,
-        "GroundedApplicableActionGenerator")  //
+        "GroundedApplicableActionGenerator");
+
+    /* AxiomGrounder */
+    py::class_<AxiomGrounder>(m, "AxiomGrounder")  //
+        .def("get_problem", &AxiomGrounder::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &AxiomGrounder::get_pddl_repositories, py::return_value_policy::copy)
+        .def("get_axiom_precondition_grounders", &AxiomGrounder::get_axiom_precondition_grounders, py::return_value_policy::copy)
+        .def("ground_axiom", &AxiomGrounder::ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
+        .def("get_ground_axioms", &AxiomGrounder::get_ground_axioms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_ground_axiom", &AxiomGrounder::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
+        .def("get_num_ground_axioms", &AxiomGrounder::get_num_ground_axioms, py::return_value_policy::reference_internal);
+
+    /* IAxiomEvaluator */
+    py::class_<IAxiomEvaluator, std::shared_ptr<IAxiomEvaluator>>(m, "IAxiomEvaluator")  //
+        .def("get_axiom_grounder", py::overload_cast<>(&IAxiomEvaluator::get_axiom_grounder), py::return_value_policy::reference_internal);
+
+    // Lifted
+    py::class_<ILiftedAxiomEvaluatorEventHandler, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(m, "ILiftedAxiomEvaluatorEventHandler");  //
+    py::class_<DefaultLiftedAxiomEvaluatorEventHandler, ILiftedAxiomEvaluatorEventHandler, std::shared_ptr<DefaultLiftedAxiomEvaluatorEventHandler>>(
+        m,
+        "DefaultLiftedAxiomEvaluatorEventHandler")  //
+        .def(py::init<>());
+    py::class_<DebugLiftedAxiomEvaluatorEventHandler, ILiftedAxiomEvaluatorEventHandler, std::shared_ptr<DebugLiftedAxiomEvaluatorEventHandler>>(
+        m,
+        "DebugLiftedAxiomEvaluatorEventHandler")  //
+        .def(py::init<>());
+    py::class_<LiftedAxiomEvaluator, IAxiomEvaluator, std::shared_ptr<LiftedAxiomEvaluator>>(m, "LiftedAxiomEvaluator")  //
         .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler>>(),
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(),
              py::arg("problem"),
              py::arg("pddl_repositories"),
              py::arg("event_handler"));
 
+    // Grounded
+    py::class_<IGroundedAxiomEvaluatorEventHandler, std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>>(m, "IGroundedAxiomEvaluatorEventHandler");  //
+    py::class_<DefaultGroundedAxiomEvaluatorEventHandler, IGroundedAxiomEvaluatorEventHandler, std::shared_ptr<DefaultGroundedAxiomEvaluatorEventHandler>>(
+        m,
+        "DefaultGroundedAxiomEvaluatorEventHandler")  //
+        .def(py::init<>());
+    py::class_<DebugGroundedAxiomEvaluatorEventHandler, IGroundedAxiomEvaluatorEventHandler, std::shared_ptr<DebugGroundedAxiomEvaluatorEventHandler>>(
+        m,
+        "DebugGroundedAxiomEvaluatorEventHandler")  //
+        .def(py::init<>());
+    py::class_<GroundedAxiomEvaluator, IAxiomEvaluator, std::shared_ptr<GroundedAxiomEvaluator>>(m, "GroundedAxiomEvaluator")  //
+        ;
+
+    /* DeleteRelaxedProblemExplorator */
+    py::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
+        .def("create_grounded_axiom_evaluator",
+             &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
+             py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+        .def("create_grounded_applicable_action_generator",
+             &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
+             py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
+        .def("get_problem", &DeleteRelaxedProblemExplorator::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &DeleteRelaxedProblemExplorator::get_pddl_repositories, py::return_value_policy::copy);
+
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>(), py::arg("applicable_action_generator"))
+        .def(py::init<std::shared_ptr<IAxiomEvaluator>>(), py::arg("axiom_evaluator"))
         .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
         .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
         .def("get_or_create_successor_state",
@@ -1041,7 +1107,10 @@ void init_pymimir(py::module_& m)
                                                                        "AStarAlgorithmEventHandlerBase")  //
         .def(py::init<bool>(), py::arg("quiet") = true);
     py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<IHeuristic>>(), py::arg("applicable_action_generator"), py::arg("heuristic"))
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IHeuristic>>(),
+             py::arg("applicable_action_generator"),
+             py::arg("state_repository"),
+             py::arg("heuristic"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
                       std::shared_ptr<StateRepository>,
                       std::shared_ptr<IHeuristic>,
@@ -1072,7 +1141,9 @@ void init_pymimir(py::module_& m)
         "DebugBrFSAlgorithmEventHandler")  //
         .def(py::init<>());
     py::class_<BrFSAlgorithm, IAlgorithm, std::shared_ptr<BrFSAlgorithm>>(m, "BrFSAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>>(), py::arg("applicable_action_generator"))
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>(),
+             py::arg("applicable_action_generator"),
+             py::arg("state_repository"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IBrFSAlgorithmEventHandler>>(),
              py::arg("applicable_action_generator"),
              py::arg("state_repository"),
@@ -1105,15 +1176,18 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>(), py::arg("applicable_action_generator"), py::arg("max_arity"))
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, size_t>(),
+             py::arg("applicable_action_generator"),
+             py::arg("state_repository"),
+             py::arg("max_arity"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      size_t,
                       std::shared_ptr<StateRepository>,
+                      size_t,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>>(),
              py::arg("applicable_action_generator"),
-             py::arg("max_arity"),
              py::arg("state_repository"),
+             py::arg("max_arity"),
              py::arg("brfs_event_handler"),
              py::arg("iw_event_handler"));
 
@@ -1128,16 +1202,19 @@ void init_pymimir(py::module_& m)
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
     py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, size_t>(), py::arg("applicable_action_generator"), py::arg("max_arity"))
+        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, size_t>(),
+             py::arg("applicable_action_generator"),
+             py::arg("state_repository"),
+             py::arg("max_arity"))
         .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      size_t,
                       std::shared_ptr<StateRepository>,
+                      size_t,
                       std::shared_ptr<IBrFSAlgorithmEventHandler>,
                       std::shared_ptr<IIWAlgorithmEventHandler>,
                       std::shared_ptr<ISIWAlgorithmEventHandler>>(),
              py::arg("applicable_action_generator"),
-             py::arg("max_arity"),
              py::arg("state_repository"),
+             py::arg("max_arity"),
              py::arg("brfs_event_handler"),
              py::arg("iw_event_handler"),
              py::arg("siw_event_handler"));

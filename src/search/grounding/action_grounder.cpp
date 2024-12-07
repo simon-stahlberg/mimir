@@ -146,7 +146,7 @@ const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories()
 
 std::unordered_map<Action, ConditionGrounder>& ActionGrounder::get_action_precondition_grounders() { return m_action_precondition_grounders; }
 
-GroundAction ActionGrounder::ground_action(Action action, ObjectList&& binding)
+GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 

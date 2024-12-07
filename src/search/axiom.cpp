@@ -26,16 +26,16 @@
 size_t cista::storage::DerefStdHasher<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* ptr) const
 {
     const auto axiom = ptr->get_axiom_index();
-    const auto& objects = ptr->get_objects();
+    const auto& objects = ptr->get_object_indices();
     return mimir::hash_combine(axiom, objects);
 }
 
 bool cista::storage::DerefStdEqualTo<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* lhs, const mimir::GroundAxiomImpl* rhs) const
 {
     const auto axiom_left = lhs->get_axiom_index();
-    const auto& objects_left = lhs->get_objects();
+    const auto& objects_left = lhs->get_object_indices();
     const auto axiom_right = rhs->get_axiom_index();
-    const auto& objects_right = rhs->get_objects();
+    const auto& objects_right = rhs->get_object_indices();
     return (axiom_left == axiom_right) && (objects_left == objects_right);
 }
 
@@ -52,9 +52,9 @@ Index& GroundAxiomImpl::get_axiom() { return m_axiom_index; }
 
 Index GroundAxiomImpl::get_axiom_index() const { return m_axiom_index; }
 
-FlatIndexList& GroundAxiomImpl::get_objects() { return m_objects; }
+FlatIndexList& GroundAxiomImpl::get_object_indices() { return m_objects; }
 
-const FlatIndexList& GroundAxiomImpl::get_objects() const { return m_objects; }
+const FlatIndexList& GroundAxiomImpl::get_object_indices() const { return m_objects; }
 
 GroundConditionStrips& GroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
 
@@ -78,6 +78,7 @@ bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive
  * Pretty printing
  */
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedLiteral, const PDDLRepositories&>& data)
 {
     const auto [derived_effect, pddl_repositories] = data;
@@ -99,12 +100,13 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectDerivedL
     return os;
 }
 
+template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const PDDLRepositories&>& data)
 {
     const auto [axiom, pddl_repositories] = data;
 
     auto binding = ObjectList {};
-    for (const auto object_index : axiom->get_objects())
+    for (const auto object_index : axiom->get_object_indices())
     {
         binding.push_back(pddl_repositories.get_object(object_index));
     }

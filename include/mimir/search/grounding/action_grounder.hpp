@@ -66,7 +66,7 @@ public:
     std::unordered_map<Action, ConditionGrounder>& get_action_precondition_grounders();
 
     /// @brief Ground an action and return a view onto it.
-    GroundAction ground_action(Action action, ObjectList&& binding);
+    GroundAction ground_action(Action action, ObjectList binding);
 
     const GroundActionList& get_ground_actions() const;
 

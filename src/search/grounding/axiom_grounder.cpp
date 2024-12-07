@@ -52,7 +52,7 @@ AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> 
 }
 
 /// @brief Ground an axiom and return a view onto it.
-GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList&& binding)
+GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -75,7 +75,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList&& binding)
 
     m_axiom_builder.get_index() = m_axioms.size();
     m_axiom_builder.get_axiom() = axiom->get_index();
-    auto& objects = m_axiom_builder.get_objects();
+    auto& objects = m_axiom_builder.get_object_indices();
     objects.clear();
     for (const auto& obj : binding)
     {
