@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 
     auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(false);
 
-    auto iw = std::make_shared<IWAlgorithm>(applicable_action_generator, arity, state_repository, brfs_event_handler, iw_event_handler);
+    auto iw = std::make_shared<IWAlgorithm>(applicable_action_generator, state_repository, arity, brfs_event_handler, iw_event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(iw));
 

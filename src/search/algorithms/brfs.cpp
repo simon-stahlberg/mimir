@@ -63,8 +63,8 @@ get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_
  * BrFS
  */
 
-BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
-    BrFSAlgorithm(applicable_action_generator, std::make_shared<StateRepository>(axiom_evaluator), std::make_shared<DefaultBrFSAlgorithmEventHandler>())
+BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository) :
+    BrFSAlgorithm(applicable_action_generator, std::move(state_repository), std::make_shared<DefaultBrFSAlgorithmEventHandler>())
 {
 }
 
@@ -72,7 +72,6 @@ BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applica
                              std::shared_ptr<StateRepository> state_repository,
                              std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
     m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_axiom_evaluator(state_repository->get_axiom_evaluator()),
     m_state_repository(std::move(state_repository)),
     m_event_handler(std::move(event_handler))
 {
@@ -167,7 +166,7 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
 
         m_event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        for (const auto& action : this->m_applicable_action_generator->generate_applicable_actions(state))
+        for (const auto& action : this->m_applicable_action_generator->create_applicable_action_generator(state))
         {
             /* Open state. */
             const auto [successor_state, action_cost] = this->m_state_repository->get_or_create_successor_state(state, action);

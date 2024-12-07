@@ -35,7 +35,7 @@ public:
     virtual ~IApplicableActionGenerator() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual std::generator<GroundAction> generate_applicable_actions(State state) = 0;
+    virtual std::generator<GroundAction> create_applicable_action_generator(State state) = 0;
 
     /// @brief Accumulate event handler statistics during search.
     virtual void on_finish_search_layer() = 0;

@@ -81,7 +81,7 @@ int main(int argc, char** argv)
 
     auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(false);
 
-    auto siw = std::make_shared<SIWAlgorithm>(applicable_action_generator, arity, state_repository, brfs_event_handler, iw_event_handler, siw_event_handler);
+    auto siw = std::make_shared<SIWAlgorithm>(applicable_action_generator, state_repository, arity, brfs_event_handler, iw_event_handler, siw_event_handler);
 
     auto planner = std::make_shared<SinglePlanner>(std::move(siw));
 

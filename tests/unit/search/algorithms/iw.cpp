@@ -65,7 +65,7 @@ public:
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IWAlgorithm>(m_applicable_action_generator, arity, m_state_repository, m_brfs_event_handler, m_iw_event_handler))
+        m_algorithm(std::make_unique<IWAlgorithm>(m_applicable_action_generator, m_state_repository, arity, m_brfs_event_handler, m_iw_event_handler))
     {
     }
 
@@ -114,7 +114,7 @@ public:
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IWAlgorithm>(m_applicable_action_generator, arity, m_state_repository, m_brfs_event_handler, m_iw_event_handler))
+        m_algorithm(std::make_unique<IWAlgorithm>(m_applicable_action_generator, m_state_repository, arity, m_brfs_event_handler, m_iw_event_handler))
     {
     }
 

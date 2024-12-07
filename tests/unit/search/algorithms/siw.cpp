@@ -67,8 +67,8 @@ public:
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
         m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
         m_algorithm(std::make_unique<SIWAlgorithm>(m_applicable_action_generator,
-                                                   arity,
                                                    m_state_repository,
+                                                   arity,
                                                    m_brfs_event_handler,
                                                    m_iw_event_handler,
                                                    m_siw_event_handler))
@@ -123,8 +123,8 @@ public:
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
         m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
         m_algorithm(std::make_unique<SIWAlgorithm>(m_applicable_action_generator,
-                                                   arity,
                                                    m_state_repository,
+                                                   arity,
                                                    m_brfs_event_handler,
                                                    m_iw_event_handler,
                                                    m_siw_event_handler))

@@ -29,13 +29,13 @@ class SerializedIterativeWidthAlgorithm : public IAlgorithm
 public:
     /// @brief Simplest construction
     SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                      std::shared_ptr<IAxiomEvaluator> axiom_evaluator,
+                                      std::shared_ptr<StateRepository> state_repository,
                                       size_t max_arity);
 
     /// @brief Complete construction
     SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                      std::shared_ptr<StateRepository> state_repository,
                                       size_t max_arity,
-                                      std::shared_ptr<StateRepository> successor_state_generator,
                                       std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                       std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
                                       std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler);
@@ -48,10 +48,8 @@ public:
 
 private:
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;
-    size_t m_max_arity;
-
     std::shared_ptr<StateRepository> m_state_repository;
+    size_t m_max_arity;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;

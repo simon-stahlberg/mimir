@@ -820,25 +820,24 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 
 /* IterativeWidthAlgorithm */
 IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                 std::shared_ptr<IAxiomEvaluator> axiom_evaluator,
+                                                 std::shared_ptr<StateRepository> state_repository,
                                                  size_t max_arity) :
-    IterativeWidthAlgorithm(applicable_action_generator,
+    IterativeWidthAlgorithm(std::move(applicable_action_generator),
+                            std::move(state_repository),
                             max_arity,
-                            std::make_shared<StateRepository>(axiom_evaluator),
                             std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
                             std::make_shared<DefaultIWAlgorithmEventHandler>())
 {
 }
 
 IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                 size_t max_arity,
                                                  std::shared_ptr<StateRepository> state_repository,
+                                                 size_t max_arity,
                                                  std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                                                  std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
     m_applicable_action_generator(applicable_action_generator),
-    m_axiom_evaluator(state_repository->get_axiom_evaluator()),
-    m_max_arity(max_arity),
     m_state_repository(state_repository),
+    m_max_arity(max_arity),
     m_brfs_event_handler(brfs_event_handler),
     m_iw_event_handler(iw_event_handler),
     m_initial_state(m_state_repository->get_or_create_initial_state()),

@@ -61,10 +61,10 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
  */
 
 AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                               std::shared_ptr<IAxiomEvaluator> axiom_evaluator,
+                               std::shared_ptr<StateRepository> state_repository,
                                std::shared_ptr<IHeuristic> heuristic) :
-    AStarAlgorithm(applicable_action_generator,
-                   std::make_shared<StateRepository>(axiom_evaluator),
+    AStarAlgorithm(std::move(applicable_action_generator),
+                   std::move(state_repository),
                    std::move(heuristic),
                    std::make_shared<DefaultAStarAlgorithmEventHandler>())
 {
@@ -75,7 +75,6 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
                                std::shared_ptr<IHeuristic> heuristic,
                                std::shared_ptr<IAStarAlgorithmEventHandler> event_handler) :
     m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_axiom_evaluator(state_repository->get_axiom_evaluator()),
     m_state_repository(std::move(state_repository)),
     m_heuristic(std::move(heuristic)),
     m_event_handler(std::move(event_handler))
@@ -214,7 +213,7 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
 
         m_event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        for (const auto& action : m_applicable_action_generator->generate_applicable_actions(state))
+        for (const auto& action : m_applicable_action_generator->create_applicable_action_generator(state))
         {
             const auto [successor_state, action_cost] = m_state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);

@@ -23,7 +23,14 @@
 
 namespace mimir
 {
-AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) : m_problem(problem), m_pddl_repositories(pddl_repositories)
+AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
+    m_problem(problem),
+    m_pddl_repositories(pddl_repositories),
+    m_condition_grounders(),
+    m_axioms(),
+    m_axioms_by_index(),
+    m_axiom_builder(),
+    m_axiom_groundings()
 {
     /* 3. Initialize condition grounders */
 
@@ -66,7 +73,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList&& binding)
 
     /* Header */
 
-    m_axiom_builder.get_index() = m_flat_axioms.size();
+    m_axiom_builder.get_index() = m_axioms.size();
     m_axiom_builder.get_axiom() = axiom->get_index();
     auto& objects = m_axiom_builder.get_objects();
     objects.clear();
@@ -108,7 +115,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList&& binding)
     m_axiom_builder.get_derived_effect().is_negated = false;
     m_axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
 
-    const auto [iter, inserted] = m_flat_axioms.insert(m_axiom_builder);
+    const auto [iter, inserted] = m_axioms.insert(m_axiom_builder);
     const auto grounded_axiom = *iter;
 
     if (inserted)

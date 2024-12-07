@@ -112,7 +112,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 
                 assert(grounded_axiom->is_applicable(unextended_state.get_atoms<Fluent>(),
                                                      unextended_state.get_atoms<Derived>(),
-                                                     m_problem->get_static_initial_positive_atoms_bitset()));
+                                                     problem->get_static_initial_positive_atoms_bitset()));
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 

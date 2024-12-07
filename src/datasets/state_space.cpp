@@ -109,7 +109,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
             goal_vertex_indices.insert(vertex_index);
         }
 
-        for (const auto& action : applicable_action_generator->generate_applicable_actions(mimir::get_state(vertex)))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
         {
             const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action);
             const auto it = state_to_vertex_index.find(successor_state);

@@ -44,7 +44,7 @@ private:
 
     std::unordered_map<Axiom, ConditionGrounder> m_condition_grounders;
 
-    GroundAxiomImplSet m_flat_axioms;
+    GroundAxiomImplSet m_axioms;
     GroundAxiomList m_axioms_by_index;
     GroundAxiomImpl m_axiom_builder;
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;

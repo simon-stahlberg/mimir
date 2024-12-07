@@ -60,7 +60,7 @@ public:
     LiftedApplicableActionGenerator(LiftedApplicableActionGenerator&& other) = delete;
     LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
 
-    std::generator<GroundAction> generate_applicable_actions(State state) override;
+    std::generator<GroundAction> create_applicable_action_generator(State state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

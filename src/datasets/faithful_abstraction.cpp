@@ -178,7 +178,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
             abstract_goal_states.insert(abstract_state_index);
         }
 
-        for (const auto& action : applicable_action_generator->generate_applicable_actions(state))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
             const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
 

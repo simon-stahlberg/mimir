@@ -41,7 +41,7 @@ private:
     std::unordered_map<Action, ConditionGrounder> m_action_precondition_grounders;
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
 
-    GroundActionImplSet m_flat_actions;
+    GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
     GroundActionImpl m_action_builder;
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;

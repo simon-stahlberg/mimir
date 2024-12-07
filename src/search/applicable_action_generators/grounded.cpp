@@ -48,7 +48,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ActionGroun
 {
 }
 
-std::generator<GroundAction> GroundedApplicableActionGenerator::generate_applicable_actions(State state)
+std::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state)
 {
     auto ground_actions = GroundActionList {};
     m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);

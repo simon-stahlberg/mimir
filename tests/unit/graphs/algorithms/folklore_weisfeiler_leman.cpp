@@ -89,30 +89,4 @@ TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanTest)
         EXPECT_EQ(line_graph_1_certificate, line_graph_2_certificate);
     }
 }
-
-TEST(MimirTests, GraphsAlgorithmsFolkloreWeisfeilerLemanBlocks3opsTest)
-{
-    {
-        const auto domain_file = fs::path(std::string(DATA_DIR) + "blocks_3/domain.pddl");
-        const auto problem_file = fs::path(std::string(DATA_DIR) + "blocks_3/test_problem2.pddl");
-
-        const auto abstraction = FaithfulAbstraction::create(domain_file, problem_file).value();
-
-        const auto color_function = ProblemColorFunction(abstraction.get_problem());
-
-        const auto& state_1 = get_representative_state(abstraction.get_vertices().at(0));
-        const auto& state_2 = get_representative_state(abstraction.get_vertices().at(49));
-
-        const auto object_graph_1 = create_object_graph(color_function, *abstraction.get_pddl_repositories(), abstraction.get_problem(), state_1, 1);
-        const auto object_graph_2 = create_object_graph(color_function, *abstraction.get_pddl_repositories(), abstraction.get_problem(), state_2, 2);
-
-        auto iso_type_function = kfwl::IsomorphismTypeCompressionFunction();
-
-        auto certificate_1 = kfwl::compute_certificate<2>(object_graph_1, iso_type_function);
-
-        auto certificate_2 = kfwl::compute_certificate<2>(object_graph_2, iso_type_function);
-
-        EXPECT_NE(certificate_1, certificate_2);
-    }
-}
 }

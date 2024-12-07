@@ -81,7 +81,9 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
     m_delete_free_problem(m_delete_relax_transformer.run(*m_problem)),
     m_delete_free_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_delete_free_problem, m_pddl_repositories)),
     m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem, m_pddl_repositories)),
-    m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
+    m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator))),
+    m_fluent_atoms_ordering(),
+    m_derived_atoms_ordering()
 {
     auto state_builder = StateImpl();
     auto state_builder_tmp = StateImpl();
@@ -105,7 +107,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        for (const auto& action : m_delete_free_applicable_action_generator->generate_applicable_actions(&state))
+        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(&state))
         {
             const auto [succ_state, action_cost] = m_delete_free_state_repository.get_or_create_successor_state(&state, action);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())

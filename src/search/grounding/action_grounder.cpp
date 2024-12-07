@@ -93,7 +93,14 @@ public:
 /// @brief Simplest construction
 ActionGrounder::ActionGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
     m_problem(problem),
-    m_pddl_repositories(std::move(pddl_repositories))
+    m_pddl_repositories(std::move(pddl_repositories)),
+    m_action_precondition_grounders(),
+    m_action_conditional_effects(),
+    m_actions(),
+    m_actions_by_index(),
+    m_action_builder(),
+    m_action_groundings(),
+    m_ground_function_to_cost()
 {
     /* 1. Initialize ground function costs. */
 
@@ -173,7 +180,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList&& binding)
 
     /* Header */
 
-    m_action_builder.get_index() = m_flat_actions.size();
+    m_action_builder.get_index() = m_actions.size();
     m_action_builder.get_action_index() = action->get_index();
     auto& objects = m_action_builder.get_objects();
     objects.clear();
@@ -333,7 +340,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList&& binding)
         }
     }
 
-    const auto [iter, inserted] = m_flat_actions.insert(m_action_builder);
+    const auto [iter, inserted] = m_actions.insert(m_action_builder);
     const auto grounded_action = *iter;
     if (inserted)
     {

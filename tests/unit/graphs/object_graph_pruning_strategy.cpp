@@ -67,13 +67,13 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategyMultiSCCTest)
     const auto& pruning_component_1 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(1));
     EXPECT_EQ(pruning_component_1.m_pruned_objects.count(), 1);
 
-    // moved 2 forward -> deadend state
-    const auto& pruning_component_2 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(2));
-    EXPECT_EQ(pruning_component_2.m_pruned_objects.count(), 5);
-
     // moved 1 forward + picked spanner
+    const auto& pruning_component_2 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(2));
+    EXPECT_EQ(pruning_component_2.m_pruned_objects.count(), 1);
+
+    // moved 2 forward -> deadend state
     const auto& pruning_component_3 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(3));
-    EXPECT_EQ(pruning_component_3.m_pruned_objects.count(), 1);
+    EXPECT_EQ(pruning_component_3.m_pruned_objects.count(), 5);
 
     // moved 2 forward + picked spanner
     const auto& pruning_component_4 = pruning_strategy.get_pruning_components().at(pruning_strategy.get_component_map().at(4));
