@@ -118,12 +118,12 @@ ActionGrounder::ActionGrounder(Problem problem, std::shared_ptr<PDDLRepositories
     {
         m_action_precondition_grounders.emplace(action,
                                                 ConditionGrounder(m_problem,
+                                                                  m_pddl_repositories,
                                                                   action->get_parameters(),
                                                                   action->get_conditions<Static>(),
                                                                   action->get_conditions<Fluent>(),
                                                                   action->get_conditions<Derived>(),
-                                                                  static_assignment_set,
-                                                                  m_pddl_repositories));
+                                                                  static_assignment_set));
         auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         conditional_effects.reserve(action->get_conditional_effects().size());
 

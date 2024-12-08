@@ -945,19 +945,19 @@ void init_pymimir(py::module_& m)
     /* ConditionGrounder */
     py::class_<ConditionGrounder>(m, "ConditionGrounder")  //
         .def(py::init<Problem,
+                      std::shared_ptr<PDDLRepositories>,
                       VariableList,
                       LiteralList<Static>,
                       LiteralList<Fluent>,
                       LiteralList<Derived>,
-                      AssignmentSet<Static>,
-                      std::shared_ptr<PDDLRepositories>>(),
+                      AssignmentSet<Static>>(),
              py::arg("problem"),
+             py::arg("pddl_repositories"),
              py::arg("parameters"),
              py::arg("static_literals"),
              py::arg("fluent_literals"),
              py::arg("derived_literals"),
-             py::arg("static_assignment_set"),
-             py::arg("pddl_repositories"))
+             py::arg("static_assignment_set"))
         .def("create_ground_conjunction_generator",  // we use the c++ name already for future update of pybind11 in regards of std::generator
              [](ConditionGrounder& self, State state, size_t max_num_groundings)
              {

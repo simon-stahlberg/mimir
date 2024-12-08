@@ -40,12 +40,14 @@ class ConditionGrounder
 {
 private:
     Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+
     VariableList m_variables;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     AssignmentSet<Static> m_static_assignment_set;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+
     std::shared_ptr<IConditionGrounderEventHandler> m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
@@ -53,15 +55,15 @@ private:
     template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);
 
-    bool is_valid_static_binding(Problem problem, const LiteralList<Static>& literals, const ObjectList& binding);
+    bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
 
-    bool is_valid_binding(Problem problem, State state, const ObjectList& binding);
+    bool is_valid_binding(State state, const ObjectList& binding);
 
     template<DynamicPredicateTag P>
-    bool nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories);
+    bool nullary_literals_hold(const LiteralList<P>& literals, State state);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_conditions_hold(Problem problem, State state);
+    bool nullary_conditions_hold(State state);
 
     std::generator<ObjectList> nullary_case(State state);
 
@@ -73,20 +75,20 @@ private:
 
 public:
     ConditionGrounder(Problem problem,
+                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                       VariableList variables,
                       LiteralList<Static> static_conditions,
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
-                      AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<PDDLRepositories> pddl_repositories);
+                      AssignmentSet<Static> static_assignment_set);
 
     ConditionGrounder(Problem problem,
+                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                       VariableList variables,
                       LiteralList<Static> static_conditions,
                       LiteralList<Fluent> fluent_conditions,
                       LiteralList<Derived> derived_conditions,
                       AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
     std::generator<ObjectList>
@@ -100,11 +102,12 @@ public:
      */
 
     Problem get_problem() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+
     const VariableList& get_variables() const;
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const AssignmentSet<Static>& get_static_assignment_set() const;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<IConditionGrounderEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };

@@ -42,12 +42,12 @@ AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> 
     {
         m_condition_grounders.emplace(axiom,
                                       ConditionGrounder(m_problem,
+                                                        m_pddl_repositories,
                                                         axiom->get_parameters(),
                                                         axiom->get_conditions<Static>(),
                                                         axiom->get_conditions<Fluent>(),
                                                         axiom->get_conditions<Derived>(),
-                                                        static_assignment_set,
-                                                        m_pddl_repositories));
+                                                        static_assignment_set));
     }
 }
 

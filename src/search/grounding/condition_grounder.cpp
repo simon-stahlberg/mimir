@@ -52,13 +52,13 @@ bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals,
 template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, State state, const ObjectList& binding);
 template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Derived>& literals, State state, const ObjectList& binding);
 
-bool ConditionGrounder::is_valid_static_binding(Problem problem, const LiteralList<Static>& literals, const ObjectList& binding)
+bool ConditionGrounder::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
         auto ground_literal = m_pddl_repositories->ground_literal(literal, binding);
 
-        if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
+        if (ground_literal->is_negated() == m_problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
         {
             return false;
         }
@@ -67,21 +67,21 @@ bool ConditionGrounder::is_valid_static_binding(Problem problem, const LiteralLi
     return true;
 }
 
-bool ConditionGrounder::is_valid_binding(Problem problem, State state, const ObjectList& binding)
+bool ConditionGrounder::is_valid_binding(State state, const ObjectList& binding)
 {
-    return is_valid_static_binding(problem, m_static_conditions, binding)      // We need to test all
+    return is_valid_static_binding(m_static_conditions, binding)               // We need to test all
            && is_valid_dynamic_binding(m_fluent_conditions, state, binding)    // types of conditions
            && is_valid_dynamic_binding(m_derived_conditions, state, binding);  // due to over-approx.
 }
 
 template<DynamicPredicateTag P>
-bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories)
+bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, State state)
 {
     for (const auto& literal : literals)
     {
         if (literal->get_atom()->get_predicate()->get_arity() == 0)
         {
-            if (!state->literal_holds(pddl_repositories.ground_literal(literal, {})))
+            if (!state->literal_holds(m_pddl_repositories->ground_literal(literal, {})))
             {
                 return false;
             }
@@ -91,14 +91,13 @@ bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, Pr
     return true;
 }
 
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories);
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, Problem problem, State state, PDDLRepositories& pddl_repositories);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, State state);
+template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, State state);
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool ConditionGrounder::nullary_conditions_hold(Problem problem, State state)
+bool ConditionGrounder::nullary_conditions_hold(State state)
 {
-    return nullary_literals_hold(m_fluent_conditions, problem, state, *m_pddl_repositories)
-           && nullary_literals_hold(m_derived_conditions, problem, state, *m_pddl_repositories);
+    return nullary_literals_hold(m_fluent_conditions, state) && nullary_literals_hold(m_derived_conditions, state);
 }
 
 std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
@@ -106,7 +105,7 @@ std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
 
-    if (is_valid_binding(m_problem, state, binding))
+    if (is_valid_binding(state, binding))
     {
         co_yield std::move(binding);
     }
@@ -126,7 +125,7 @@ ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_set
         {
             auto binding = ObjectList { m_pddl_repositories->get_object(vertex.get_object_index()) };
 
-            if (is_valid_binding(m_problem, state, binding))
+            if (is_valid_binding(state, binding))
             {
                 co_yield std::move(binding);
             }
@@ -183,7 +182,7 @@ ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_s
             binding[parameter_index] = m_pddl_repositories->get_object(object_index);
         }
 
-        if (this->is_valid_binding(this->m_problem, state, binding))
+        if (this->is_valid_binding(state, binding))
         {
             co_yield std::move(binding);
         }
@@ -195,38 +194,38 @@ ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_s
 }
 
 ConditionGrounder::ConditionGrounder(Problem problem,
+                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                      VariableList variables,
                                      LiteralList<Static> static_conditions,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
-                                     AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<PDDLRepositories> pddl_repositories) :
+                                     AssignmentSet<Static> static_assignment_set) :
     ConditionGrounder(std::move(problem),
+                      std::move(pddl_repositories),
                       std::move(variables),
                       std::move(static_conditions),
                       std::move(fluent_conditions),
                       std::move(derived_conditions),
                       std::move(static_assignment_set),
-                      std::move(pddl_repositories),
                       std::make_shared<DefaultConditionGrounderEventHandler>())
 {
 }
 
 ConditionGrounder::ConditionGrounder(Problem problem,
+                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                      VariableList variables,
                                      LiteralList<Static> static_conditions,
                                      LiteralList<Fluent> fluent_conditions,
                                      LiteralList<Derived> derived_conditions,
                                      AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                      std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
     m_problem(std::move(problem)),
+    m_pddl_repositories(std::move(pddl_repositories)),
     m_variables(std::move(variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_static_assignment_set(std::move(static_assignment_set)),
-    m_pddl_repositories(std::move(pddl_repositories)),
     m_event_handler(std::move(event_handler)),
     m_static_consistency_graph(m_problem, 0, m_variables.size(), m_static_conditions, m_static_assignment_set)
 {
@@ -253,7 +252,7 @@ std::generator<ObjectList> ConditionGrounder::create_binding_generator(State sta
                                                                        const AssignmentSet<Fluent>& fluent_assignment_set,
                                                                        const AssignmentSet<Derived>& derived_assignment_set)
 {
-    if (nullary_conditions_hold(m_problem, state))
+    if (nullary_conditions_hold(state))
     {
         if (m_variables.size() == 0)
         {
