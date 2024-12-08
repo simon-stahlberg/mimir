@@ -65,6 +65,20 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
+                assert(grounded_axiom->is_statically_applicable(m_grounder.get_problem()->get_static_initial_positive_atoms_bitset()));
+                // TODO: There is an error somewhere and we generate inapplicable axioms in psr-middle/p03-s28-n2-l5-f10.pddl
+                if (!grounded_axiom->is_applicable(unextended_state.get_atoms<Fluent>(),
+                                                   unextended_state.get_atoms<Derived>(),
+                                                   m_grounder.get_problem()->get_static_initial_positive_atoms_bitset()))
+                {
+                    std::cout << "INAPPLICABLE AXIOM GENERATED: " << std::make_tuple(grounded_axiom, std::cref(*m_grounder.get_pddl_repositories()))
+                              << std::endl;
+                    continue;
+                }
+                assert(grounded_axiom->is_applicable(unextended_state.get_atoms<Fluent>(),
+                                                     unextended_state.get_atoms<Derived>(),
+                                                     m_grounder.get_problem()->get_static_initial_positive_atoms_bitset()));
+
                 if (!lifted_partition.get_axioms().count(m_grounder.get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index())))
                 {
                     // axiom not part of same partition

@@ -53,6 +53,7 @@ std::generator<GroundAction> GroundedApplicableActionGenerator::create_applicabl
 {
     auto ground_actions = GroundActionList {};
     m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
+
     for (const auto& action : ground_actions)
     {
         co_yield action;

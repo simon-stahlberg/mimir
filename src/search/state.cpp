@@ -152,6 +152,17 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
     pddl_repositories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
     pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), out_derived_ground_atoms);
 
+    // Sort by name for easier comparison
+    std::sort(out_fluent_ground_atoms.begin(),
+              out_fluent_ground_atoms.end(),
+              [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
+    std::sort(out_static_ground_atoms.begin(),
+              out_static_ground_atoms.end(),
+              [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
+    std::sort(out_derived_ground_atoms.begin(),
+              out_derived_ground_atoms.end(),
+              [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
+
     os << "State("
        << "index=" << state->get_index() << ", "
        << "fluent atoms=" << out_fluent_ground_atoms << ", "

@@ -164,7 +164,7 @@ MatchTree<T>::NodeIndex MatchTree<T>::MatchTree::build_recursively(const size_t 
     // 2. Conquer:
 
     bool is_fluent = (order_pos < num_fluent_atoms);
-    const auto atom_index = (is_fluent) ? fluent_ground_atoms_order[order_pos] : derived_ground_atoms_order[order_pos - num_fluent_atoms];
+    const auto atom_index = (is_fluent) ? fluent_ground_atoms_order.at(order_pos) : derived_ground_atoms_order.at(order_pos - num_fluent_atoms);
     // Partition elements into positive, negative and dontcare depending on how atom_index occurs in precondition
     auto positive_elements = std::vector<T> {};
     auto negative_elements = std::vector<T> {};
@@ -217,7 +217,7 @@ MatchTree<T>::NodeIndex MatchTree<T>::MatchTree::build_recursively(const size_t 
                                        MatchTree::GeneratorOrSelectorNode::MAX_VALUE;
 
         // Update node with computed information
-        auto& node = m_nodes[node_index];
+        auto& node = m_nodes.at(node_index);
         node.set_true_succ(true_succ);
         node.set_false_succ(false_succ);
         node.set_dontcare_succ(dontcare_succ);
@@ -232,6 +232,7 @@ MatchTree<T>::NodeIndex MatchTree<T>::MatchTree::build_recursively(const size_t 
     else
     {
         // All elements are dontcares, skip creating a node.
+        assert(elements.size() == dontcare_elements.size());
         return build_recursively(order_pos + 1, dontcare_elements, fluent_ground_atoms_order, derived_ground_atoms_order);
     }
 }

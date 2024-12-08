@@ -85,13 +85,9 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
     m_fluent_atoms_ordering(),
     m_derived_atoms_ordering()
 {
-    auto state_builder = StateImpl();
-    auto state_builder_tmp = StateImpl();
+    auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state());
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
     auto& derived_state_atoms = state_builder.get_atoms<Derived>();
-    const auto initial_state = m_delete_free_state_repository.get_or_create_initial_state();
-    fluent_state_atoms = initial_state->get_atoms<Fluent>();
-    derived_state_atoms = initial_state->get_atoms<Derived>();
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -100,16 +96,13 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
     {
         reached_delete_free_explore_fixpoint = true;
 
-        state_builder_tmp = state_builder;
-        const auto state = state_builder_tmp;
-
         auto num_atoms_before = fluent_state_atoms.count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(&state))
+        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_builder))
         {
-            const auto [succ_state, action_cost] = m_delete_free_state_repository.get_or_create_successor_state(&state, action);
+            const auto [succ_state, action_cost] = m_delete_free_state_repository.get_or_create_successor_state(&state_builder, action);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())
             {
                 fluent_state_atoms.set(atom_index);
