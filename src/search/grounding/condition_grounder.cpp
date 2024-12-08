@@ -74,30 +74,26 @@ bool ConditionGrounder::is_valid_binding(State state, const ObjectList& binding)
            && is_valid_dynamic_binding(m_derived_conditions, state, binding);  // due to over-approx.
 }
 
-template<DynamicPredicateTag P>
-bool ConditionGrounder::nullary_literals_hold(const LiteralList<P>& literals, State state)
+template<PredicateTag P>
+bool nullary_literals_hold(const GroundLiteralList<P>& literals, State state)
 {
     for (const auto& literal : literals)
     {
-        if (literal->get_atom()->get_predicate()->get_arity() == 0)
+        assert(literal->get_atom()->get_arity() == 0);
+
+        if (!state->literal_holds(literal))
         {
-            if (!state->literal_holds(m_pddl_repositories->ground_literal(literal, {})))
-            {
-                return false;
-            }
+            return false;
         }
     }
 
     return true;
 }
 
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Fluent>& literals, State state);
-template bool ConditionGrounder::nullary_literals_hold(const LiteralList<Derived>& literals, State state);
-
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
 bool ConditionGrounder::nullary_conditions_hold(State state)
 {
-    return nullary_literals_hold(m_fluent_conditions, state) && nullary_literals_hold(m_derived_conditions, state);
+    return nullary_literals_hold(m_nullary_fluent_conditions, state) && nullary_literals_hold(m_nullary_derived_conditions, state);
 }
 
 std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
@@ -193,6 +189,21 @@ ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_s
     };
 }
 
+template<PredicateTag P>
+static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, PDDLRepositories& pddl_repositories)
+{
+    auto ground_literals = GroundLiteralList<P> {};
+    for (const auto& literal : literals)
+    {
+        if (literal->get_atom()->get_arity() != 0)
+            continue;
+
+        ground_literals.push_back(pddl_repositories.ground_literal(literal, {}));
+    }
+
+    return ground_literals;
+}
+
 ConditionGrounder::ConditionGrounder(Problem problem,
                                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                                      VariableList variables,
@@ -227,25 +238,11 @@ ConditionGrounder::ConditionGrounder(Problem problem,
     m_derived_conditions(std::move(derived_conditions)),
     m_static_assignment_set(std::move(static_assignment_set)),
     m_event_handler(std::move(event_handler)),
+    m_nullary_static_conditions(ground_nullary_literals(m_static_conditions, *m_pddl_repositories)),
+    m_nullary_fluent_conditions(ground_nullary_literals(m_fluent_conditions, *m_pddl_repositories)),
+    m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_pddl_repositories)),
     m_static_consistency_graph(m_problem, 0, m_variables.size(), m_static_conditions, m_static_assignment_set)
 {
-    /* Error checking. */
-
-    for (const auto& literal : problem->get_static_initial_literals())
-    {
-        if (literal->is_negated())
-        {
-            throw std::runtime_error("Negative literals in the initial state is not supported.");
-        }
-    }
-
-    for (const auto& literal : problem->get_fluent_initial_literals())
-    {
-        if (literal->is_negated())
-        {
-            throw std::runtime_error("Negative literals in the initial state is not supported.");
-        }
-    }
 }
 
 std::generator<ObjectList> ConditionGrounder::create_binding_generator(State state,
