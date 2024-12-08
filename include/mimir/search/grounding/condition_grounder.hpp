@@ -46,9 +46,14 @@ private:
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
-    AssignmentSet<Static> m_static_assignment_set;
 
+    AssignmentSet<Static> m_static_assignment_set;
     std::shared_ptr<IConditionGrounderEventHandler> m_event_handler;
+
+    /* Precomputed grounded conditions with zero arguments. */
+    GroundLiteralList<Static> m_nullary_static_conditions;
+    GroundLiteralList<Fluent> m_nullary_fluent_conditions;
+    GroundLiteralList<Derived> m_nullary_derived_conditions;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
@@ -58,9 +63,6 @@ private:
     bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
 
     bool is_valid_binding(State state, const ObjectList& binding);
-
-    template<DynamicPredicateTag P>
-    bool nullary_literals_hold(const LiteralList<P>& literals, State state);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(State state);
