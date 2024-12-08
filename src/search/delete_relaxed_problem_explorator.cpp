@@ -81,9 +81,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
     m_delete_free_problem(m_delete_relax_transformer.run(*m_problem)),
     m_delete_free_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_delete_free_problem, m_pddl_repositories)),
     m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem, m_pddl_repositories)),
-    m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator))),
-    m_fluent_atoms_ordering(),
-    m_derived_atoms_ordering()
+    m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
     auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state());
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
@@ -119,12 +117,6 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
         }
 
     } while (!reached_delete_free_explore_fixpoint);
-
-    /* Computing ground atom order must occur after delete relaxed exploration, when the pddl factories contain all delete relaxed reachable ground atoms. There
-     * can also be additional derived atoms depending on what the user does with it but that is not problematic since the match tree will take into account the
-     * action/axiom preconditions during building the tree. */
-    m_fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*m_pddl_repositories);
-    m_derived_atoms_ordering = compute_ground_atom_order<Derived>(*m_pddl_repositories);
 }
 
 std::shared_ptr<GroundedAxiomEvaluator>
@@ -154,7 +146,10 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
 
     event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
-    auto match_tree = MatchTree(ground_axioms, m_fluent_atoms_ordering, m_derived_atoms_ordering);
+    // Compute order here after grounding all axioms. Could also be moved into the match tree.
+    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*m_pddl_repositories);
+    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*m_pddl_repositories);
+    auto match_tree = MatchTree(ground_axioms, fluent_atoms_ordering, derived_atoms_ordering);
 
     event_handler->on_finish_build_axiom_match_tree(match_tree);
 
@@ -188,7 +183,10 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
 
     event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
-    auto match_tree = MatchTree(ground_actions, m_fluent_atoms_ordering, m_derived_atoms_ordering);
+    // Compute order here after grounding all actions. Could also be moved into the match tree.
+    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*m_pddl_repositories);
+    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*m_pddl_repositories);
+    auto match_tree = MatchTree(ground_actions, fluent_atoms_ordering, derived_atoms_ordering);
 
     event_handler->on_finish_build_action_match_tree(match_tree);
 

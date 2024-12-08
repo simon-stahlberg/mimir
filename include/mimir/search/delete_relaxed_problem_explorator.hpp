@@ -42,9 +42,6 @@ private:
     std::shared_ptr<LiftedAxiomEvaluator> m_delete_free_axiom_evalator;
     StateRepository m_delete_free_state_repository;
 
-    std::vector<size_t> m_fluent_atoms_ordering;
-    std::vector<size_t> m_derived_atoms_ordering;
-
 public:
     DeleteRelaxedProblemExplorator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 

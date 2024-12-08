@@ -65,9 +65,14 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(grounded_axiom->is_applicable(unextended_state.get_atoms<Fluent>(),
-                                                     unextended_state.get_atoms<Derived>(),
-                                                     m_grounder.get_problem()->get_static_initial_positive_atoms_bitset()));
+                // *** DOUBLE CHECK ***
+                // Due to overapproximation, we must check applicability of axioms with atoms of arity greater than 2.
+                const auto axiom = m_grounder.get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index());
+                const bool verify_applicability = axiom->get_max_condition_arity() > 2;
+                if (verify_applicability && !grounded_axiom->is_applicable(m_grounder.get_problem(), &unextended_state))
+                    continue;
+
+                assert(grounded_axiom->is_applicable(m_grounder.get_problem(), &unextended_state));
 
                 if (!lifted_partition.get_axioms().count(m_grounder.get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index())))
                 {

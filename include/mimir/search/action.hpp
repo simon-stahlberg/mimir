@@ -63,8 +63,6 @@ struct GroundConditionStrips
 
     template<PredicateTag P>
     bool is_applicable(const FlatBitset& atoms) const;
-
-    bool is_applicable(const FlatBitset& fluent_state_atoms, const FlatBitset& derived_state_atoms, const FlatBitset& static_initial_atoms) const;
 };
 
 struct GroundEffectStrips
@@ -172,6 +170,9 @@ struct GroundActionImpl
     bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
     bool is_applicable(Problem problem, State state) const;
+
+    template<PredicateTag P>
+    bool is_applicable(const FlatBitset& atoms) const;
 };
 
 }

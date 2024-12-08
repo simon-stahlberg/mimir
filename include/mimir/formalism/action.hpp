@@ -36,6 +36,7 @@ private:
     EffectConditionalList m_conditional_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
+    size_t m_max_condition_arity;
 
     ActionImpl(Index index,
                std::string name,
@@ -68,6 +69,7 @@ public:
     const EffectConditionalList& get_conditional_effects() const;
 
     size_t get_arity() const;
+    size_t get_max_condition_arity() const;
 };
 
 /**

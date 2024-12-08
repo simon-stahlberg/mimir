@@ -50,7 +50,8 @@ ActionImpl::ActionImpl(Index index,
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_strips_effect(std::move(strips_effect)),
-    m_conditional_effects(std::move(conditional_effects))
+    m_conditional_effects(std::move(conditional_effects)),
+    m_max_condition_arity(0)
 {
     assert(m_original_arity <= m_parameters.size());
     assert(is_all_unique(m_parameters));
@@ -67,6 +68,19 @@ ActionImpl::ActionImpl(Index index,
     assert(std::is_sorted(m_conditional_effects.begin(),
                           m_conditional_effects.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+
+    for (const auto& literal : m_static_conditions)
+    {
+        m_max_condition_arity = std::max(m_max_condition_arity, literal->get_atom()->get_arity());
+    }
+    for (const auto& literal : m_fluent_conditions)
+    {
+        m_max_condition_arity = std::max(m_max_condition_arity, literal->get_atom()->get_arity());
+    }
+    for (const auto& literal : m_derived_conditions)
+    {
+        m_max_condition_arity = std::max(m_max_condition_arity, literal->get_atom()->get_arity());
+    }
 }
 
 Index ActionImpl::get_index() const { return m_index; }
@@ -107,6 +121,8 @@ const EffectStrips& ActionImpl::get_strips_effect() const { return m_strips_effe
 const EffectConditionalList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
 size_t ActionImpl::get_arity() const { return m_parameters.size(); }
+
+size_t ActionImpl::get_max_condition_arity() const { return m_max_condition_arity; }
 
 std::ostream& operator<<(std::ostream& out, const ActionImpl& element)
 {

@@ -32,6 +32,9 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
 
+    // Below: add additional members if needed and initialize them in the constructor
+    size_t m_max_condition_arity;
+
     AxiomImpl(Index index,
               VariableList parameters,
               Literal<Derived> literal,
@@ -57,6 +60,7 @@ public:
     const LiteralList<P>& get_conditions() const;
 
     size_t get_arity() const;
+    size_t get_max_condition_arity() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const AxiomImpl& element);

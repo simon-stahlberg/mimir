@@ -60,8 +60,6 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     auto it = groundings.find(binding);
     if (it != groundings.end())
     {
-        // m_event_handler->on_ground_axiom_cache_hit(axiom, binding);
-
         return it->second;
     }
 

@@ -54,9 +54,18 @@ std::generator<GroundAction> GroundedApplicableActionGenerator::create_applicabl
     auto ground_actions = GroundActionList {};
     m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
 
-    for (const auto& action : ground_actions)
+    for (const auto& ground_action : ground_actions)
     {
-        co_yield action;
+        // *** DOUBLE CHECK ***
+        // Due to overapproximation, we must check applicability of actions with atoms of arity greater than 2.
+        const auto action = m_grounder.get_pddl_repositories()->get_action(ground_action->get_action_index());
+        const bool verify_applicability = action->get_max_condition_arity() > 2;
+        if (verify_applicability && !ground_action->is_applicable(m_grounder.get_problem(), state))
+            continue;
+
+        assert(ground_action->is_applicable(m_grounder.get_problem(), state));
+
+        co_yield ground_action;
     }
 }
 

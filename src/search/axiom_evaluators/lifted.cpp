@@ -87,11 +87,20 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             {
                 auto& condition_grounder = m_grounder.get_axiom_precondition_grounders().at(axiom);
 
+                const bool verify_applicability = axiom->get_max_condition_arity() > 2;
+
                 for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
                     const auto num_ground_axioms = m_grounder.get_num_ground_axioms();
 
                     const auto ground_axiom = m_grounder.ground_axiom(axiom, std::move(binding));
+
+                    // *** DOUBLE CHECK ***
+                    // Due to overapproximation, we must check applicability of axioms with atoms of arity greater than 2.
+                    if (verify_applicability && !ground_axiom->is_applicable(m_grounder.get_problem(), &unextended_state))
+                        continue;
+
+                    assert(ground_axiom->is_applicable(problem, &unextended_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
@@ -110,10 +119,6 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             for (const auto& grounded_axiom : applicable_axioms)
             {
                 assert(!grounded_axiom->get_derived_effect().is_negated);
-
-                assert(grounded_axiom->is_applicable(unextended_state.get_atoms<Fluent>(),
-                                                     unextended_state.get_atoms<Derived>(),
-                                                     problem->get_static_initial_positive_atoms_bitset()));
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
@@ -136,7 +141,6 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 
                 unextended_state.get_atoms<Derived>().set(grounded_atom_index);
             }
-
         } while (!reached_partition_fixed_point);
     }
 
@@ -154,5 +158,4 @@ const AxiomGrounder& LiftedAxiomEvaluator::get_axiom_grounder() const { return m
 const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 
 const std::vector<AxiomPartition>& LiftedAxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
-
 }
