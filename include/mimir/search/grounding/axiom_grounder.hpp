@@ -18,16 +18,11 @@
 #ifndef MIMIR_SEARCH_GROUNDING_AXIOM_GROUNDER_HPP_
 #define MIMIR_SEARCH_GROUNDING_AXIOM_GROUNDER_HPP_
 
-#include "mimir/common/printers.hpp"
-#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounding_table.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/assignment_set.hpp"
 #include "mimir/search/grounding/condition_grounder.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
 
 #include <stdexcept>
 #include <unordered_map>

@@ -26,6 +26,7 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/grounding/condition_grounder/event_handlers/default.hpp"
+#include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 

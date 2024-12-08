@@ -19,14 +19,10 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/grounding_table.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/action_grounder.hpp"
-#include "mimir/search/grounding/condition_grounder.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
 
 #include <unordered_map>
 #include <vector>

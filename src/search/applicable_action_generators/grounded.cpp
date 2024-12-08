@@ -26,6 +26,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <deque>

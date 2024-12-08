@@ -19,10 +19,10 @@
 #define MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/assignment_set.hpp"
 #include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
-#include "mimir/search/state.hpp"
 
 #include <cstddef>
 #include <cstdint>

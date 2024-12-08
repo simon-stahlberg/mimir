@@ -28,6 +28,7 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/grounding/condition_grounder.hpp"
 #include "mimir/search/grounding/consistency_graph.hpp"
+#include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <stdexcept>

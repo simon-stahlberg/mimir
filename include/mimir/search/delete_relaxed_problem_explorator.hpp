@@ -19,17 +19,12 @@
 #define MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/condition_grounder.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
 #include "mimir/search/state_repository.hpp"
 
-#include <unordered_map>
 #include <vector>
 
 namespace mimir

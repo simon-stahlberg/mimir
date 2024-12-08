@@ -23,6 +23,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {
