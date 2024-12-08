@@ -1,6 +1,6 @@
 # Building Mimir (C++)
 
-We assume that the user has a C++ compiler and CMake set up on their machine.
+We assume that the user has a C++23 compiler and CMake set up on their machine. Instructions on how to install a C++23 compiler are below.
 
 ## Installing the Dependencies
 
@@ -43,7 +43,13 @@ cmake --install build --prefix=<path/to/installation-directory>
 
 The compiled executables should now be in either the build directory or the installation directory.
 
-## Installing GCC 14.2 (C++23 support)
+# Installing C++23 compliant compiler
+
+Unfortunately, Clang does not support the C++23 features that we are using, meaning that Mimir currently does not run on MacOS.
+
+## Installing GCC 14.2
+
+### From source:
 
 1. Installing GMP
 
@@ -97,7 +103,11 @@ export GCC_INSTALL_DIR=<path/to_installation>
 ./configure --prefix=$GCC_INSTALL_DIR --enable-languages=c,c++ --disable-multilib --with-gmp=$GMP_INSTALL_DIR --with-mpfr=$MPFR_INSTALL_DIR --with-mpc=$MPC_INSTALL_DIR
 make -j$(nproc)
 make install
+```
 
+5. Update environment variables
+
+```console
 export CC=${GCC_INSTALL_DIR}/bin/gcc
 export CXX=${GCC_INSTALL_DIR}/bin/g++
 export PATH=${GCC_INSTALL_DIR}/bin:$PATH
@@ -106,7 +116,7 @@ export LIBRARY_PATH=${GCC_INSTALL_DIR}/lib64:$LIBRARY_PATH
 export CPATH=${GCC_INSTALL_DIR}/include:$CPATH
 ```
 
-Alternatively using conda
+### Using package manager conda
 
 ```console
 conda create --name gcc_env
