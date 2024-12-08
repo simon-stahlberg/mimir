@@ -263,11 +263,9 @@ MatchTree<T>::MatchTree(const std::vector<T>& elements,
                         const std::vector<size_t>& fluent_ground_atoms_order,
                         const std::vector<size_t>& derived_ground_atoms_order)
 {
-    const auto root_node_index = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
+    [[maybe_unused]] const auto root_node_index = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
 
     assert(root_node_index == 0);
-    // Prevent unused variable warning when not in debug mode
-    (void) root_node_index;
 }
 
 template<typename T>

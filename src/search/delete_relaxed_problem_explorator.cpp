@@ -33,11 +33,11 @@ namespace mimir
 /// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
 /// We also consider larger groups first since such mutex variables would result in a very large linear split.
 template<PredicateTag P>
-static std::vector<size_t> compute_ground_atom_order(const GroundAtomList<P>& atoms, const PDDLRepositories& pddl_repositories)
+static std::vector<size_t> compute_ground_atom_order(const PDDLRepositories& pddl_repositories)
 {
     auto ground_atoms_order = std::vector<size_t> {};
     auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<P>, GroundAtomList<P>> {};
-    for (const auto& ground_atom : atoms)
+    for (const auto& ground_atom : pddl_repositories.get_ground_atoms<P>())
     {
         m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
     }
@@ -87,7 +87,6 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
 {
     auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state());
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
-    auto& derived_state_atoms = state_builder.get_atoms<Derived>();
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -121,9 +120,11 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
 
     } while (!reached_delete_free_explore_fixpoint);
 
-    m_fluent_atoms_ordering = compute_ground_atom_order(m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(fluent_state_atoms), *m_pddl_repositories);
-    m_derived_atoms_ordering =
-        compute_ground_atom_order(m_pddl_repositories->get_ground_atoms_from_indices<Derived>(derived_state_atoms), *m_pddl_repositories);
+    /* Computing ground atom order must occur after delete relaxed exploration, when the pddl factories contain all delete relaxed reachable ground atoms. There
+     * can also be additional derived atoms depending on what the user does with it but that is not problematic since the match tree will take into account the
+     * action/axiom preconditions during building the tree. */
+    m_fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*m_pddl_repositories);
+    m_derived_atoms_ordering = compute_ground_atom_order<Derived>(*m_pddl_repositories);
 }
 
 std::shared_ptr<GroundedAxiomEvaluator>
