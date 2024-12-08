@@ -89,11 +89,9 @@ int main(int argc, char** argv)
 
     auto brfs = std::make_shared<BrFSAlgorithm>(applicable_action_generator, state_repository, event_handler);
 
-    auto planner = std::make_shared<SinglePlanner>(std::move(brfs));
+    auto result = brfs->find_solution();
 
-    auto [stats, plan] = planner->find_solution();
-
-    if (stats == SearchStatus::SOLVED)
+    if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;
         plan_file.open(plan_file_name);
@@ -102,7 +100,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << std::make_tuple(std::cref(plan.value()), std::cref(*parser.get_pddl_repositories()));
+        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*parser.get_pddl_repositories()));
         plan_file.close();
     }
 

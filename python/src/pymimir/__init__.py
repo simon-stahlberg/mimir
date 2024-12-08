@@ -142,6 +142,7 @@ from _pymimir import (
     Plan,
     SearchNodeStatus,
     SearchStatus,
+    SearchResult,
     SIWAlgorithm,
     SIWAlgorithmStatistics,
     State,

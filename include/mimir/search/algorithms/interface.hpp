@@ -19,7 +19,10 @@
 #define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
 
 #include "mimir/search/action.hpp"
+#include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
+
+#include <optional>
 
 namespace mimir
 {
@@ -35,6 +38,13 @@ enum SearchStatus
     UNSOLVABLE
 };
 
+struct SearchResult
+{
+    SearchStatus status = SearchStatus::IN_PROGRESS;
+    std::optional<Plan> plan = std::nullopt;
+    std::optional<State> goal_state = std::nullopt;
+};
+
 /**
  * Interface class.
  */
@@ -45,13 +55,10 @@ public:
     virtual ~IAlgorithm() = default;
 
     /// @brief Find a plan for the initial state.
-    virtual SearchStatus find_solution(std::optional<Plan>& out_plan) = 0;
+    virtual SearchResult find_solution() = 0;
 
     /// @brief Find a plan for a given state.
-    virtual SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan) = 0;
-
-    /// @brief Find a plan for a given state.
-    virtual SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state) = 0;
+    virtual SearchResult find_solution(State start_state) = 0;
 };
 
 }

@@ -69,12 +69,7 @@ public:
     {
     }
 
-    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
-    {
-        auto plan = std::optional<Plan> {};
-        const auto status = m_algorithm->find_solution(plan);
-        return std::make_tuple(status, plan);
-    }
+    SearchResult find_solution() { return m_algorithm->find_solution(); }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
@@ -118,12 +113,7 @@ public:
     {
     }
 
-    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
-    {
-        auto plan = std::optional<Plan> {};
-        const auto status = m_algorithm->find_solution(plan);
-        return std::make_tuple(status, plan);
-    }
+    SearchResult find_solution() { return m_algorithm->find_solution(); }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
@@ -324,9 +314,9 @@ TEST(MimirTests, SearchAlgorithmsIWStatePairTupleIndexGeneratorWidth2Test3)
 TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
 {
     auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 3);
-    const auto [search_status, plan] = iw.find_solution();
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 4);
+    const auto result = iw.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
@@ -352,9 +342,9 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
 TEST(MimirTests, SearchAlgorithmsIWLiftedDeliveryTest)
 {
     auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "delivery/domain.pddl"), fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl"), 3);
-    const auto [search_status, plan] = iw.find_solution();
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 4);
+    const auto result = iw.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
@@ -381,9 +371,9 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedMiconicFullAdlTest)
     auto iw = GroundedIWPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
                                 fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
                                 3);
-    const auto [search_status, plan] = iw.find_solution();
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 7);
+    const auto result = iw.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
@@ -411,9 +401,9 @@ TEST(MimirTests, SearchAlgorithmsIWLiftedMiconicFullAdlTest)
     auto iw = LiftedIWPlanner(fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl"),
                               fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl"),
                               3);
-    const auto [search_status, plan] = iw.find_solution();
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 7);
+    const auto result = iw.find_solution();
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();

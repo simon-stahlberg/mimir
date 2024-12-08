@@ -76,7 +76,6 @@
 #include "mimir/search/grounding.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
-#include "mimir/search/planners.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"

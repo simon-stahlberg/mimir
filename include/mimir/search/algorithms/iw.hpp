@@ -39,14 +39,11 @@ public:
                             std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
                             std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler);
 
-    SearchStatus find_solution(std::optional<Plan>& out_plan) override;
+    SearchResult find_solution() override;
 
-    SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan) override;
+    SearchResult find_solution(State start_state) override;
 
-    SearchStatus find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state) override;
-
-    SearchStatus
-    find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state);
+    SearchResult find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy);
 
 private:
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;

@@ -93,7 +93,7 @@ def test_astar_search():
 
     event_handler = CustomAStarAlgorithmEventHandler(False)
     astar_search_algorithm = AStarAlgorithm(applicable_action_generator, state_repository, goal_count_heuristic, event_handler)
-    search_status, plan = astar_search_algorithm.find_solution()
+    result = astar_search_algorithm.find_solution()
 
-    assert search_status == SearchStatus.SOLVED
-    assert len(plan) == 3
+    assert result.status == SearchStatus.SOLVED
+    assert len(result.plan) == 3

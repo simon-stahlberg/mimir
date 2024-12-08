@@ -96,16 +96,12 @@ SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared
     }
 }
 
-SearchStatus SerializedIterativeWidthAlgorithm::find_solution(std::optional<Plan>& out_plan) { return find_solution(m_initial_state, out_plan); }
+SearchResult SerializedIterativeWidthAlgorithm::find_solution() { return find_solution(m_initial_state); }
 
-SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan)
+SearchResult SerializedIterativeWidthAlgorithm::find_solution(State start_state)
 {
-    std::optional<State> unused_out_state = std::nullopt;
-    return find_solution(start_state, out_plan, unused_out_state);
-}
+    auto result = SearchResult();
 
-SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
-{
     const auto problem = m_applicable_action_generator->get_action_grounder().get_problem();
     const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder().get_pddl_repositories();
     m_siw_event_handler->on_start_search(problem, start_state, pddl_repositories);
@@ -114,12 +110,11 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
 
     if (!problem_goal_test->test_static_goal())
     {
-        return SearchStatus::UNSOLVABLE;
+        result.status = SearchStatus::UNSOLVABLE;
+        return result;
     }
 
     auto cur_state = start_state;
-    std::optional<State> goal_state = std::nullopt;
-
     auto out_plan_actions = GroundActionList {};
     auto out_plan_cost = ContinuousCost(0);
 
@@ -130,40 +125,43 @@ SearchStatus SerializedIterativeWidthAlgorithm::find_solution(State start_state,
 
         auto partial_plan = std::optional<Plan> {};
 
-        const auto search_status = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state), partial_plan, goal_state);
+        const auto sub_result = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state));
 
-        if (search_status == SearchStatus::UNSOLVABLE)
+        if (sub_result.status == SearchStatus::UNSOLVABLE)
         {
             m_siw_event_handler->on_end_search();
             m_siw_event_handler->on_unsolvable();
-            return SearchStatus::UNSOLVABLE;
+
+            result.status = SearchStatus::UNSOLVABLE;
+            return result;
         }
 
-        if (search_status == SearchStatus::FAILED)
+        if (sub_result.status == SearchStatus::FAILED)
         {
             m_siw_event_handler->on_end_search();
             m_siw_event_handler->on_exhausted();
-            return SearchStatus::FAILED;
+
+            result.status = SearchStatus::FAILED;
+            return result;
         }
 
-        assert(goal_state.has_value());
-        cur_state = goal_state.value();
-        out_plan_actions.insert(out_plan_actions.end(), partial_plan.value().get_actions().begin(), partial_plan.value().get_actions().end());
-        out_plan_cost += partial_plan.value().get_cost();
+        cur_state = sub_result.goal_state.value();
+        out_plan_actions.insert(out_plan_actions.end(), sub_result.plan.value().get_actions().begin(), sub_result.plan.value().get_actions().end());
+        out_plan_cost += sub_result.plan.value().get_cost();
 
         m_siw_event_handler->on_end_subproblem_search(m_iw_event_handler->get_statistics());
     }
 
-    out_goal_state = goal_state;
     m_siw_event_handler->on_end_search();
     if (!m_siw_event_handler->is_quiet())
     {
         m_applicable_action_generator->on_end_search();
         m_state_repository->get_axiom_evaluator()->on_end_search();
     }
-    out_plan = Plan(std::move(out_plan_actions), out_plan_cost);
-    m_siw_event_handler->on_solved(out_plan.value(), pddl_repositories);
-    return SearchStatus::SOLVED;
+    result.plan = Plan(std::move(out_plan_actions), out_plan_cost);
+    m_siw_event_handler->on_solved(result.plan.value(), pddl_repositories);
+    result.status = SearchStatus::SOLVED;
+    return result;
 }
 
 }

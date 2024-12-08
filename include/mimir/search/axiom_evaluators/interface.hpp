@@ -21,8 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
-#include <generator>
-
 namespace mimir
 {
 

@@ -81,29 +81,19 @@ AStarAlgorithm::AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> appli
 {
 }
 
-SearchStatus AStarAlgorithm::find_solution(std::optional<Plan>& out_plan) { return find_solution(m_state_repository->get_or_create_initial_state(), out_plan); }
+SearchResult AStarAlgorithm::find_solution() { return find_solution(m_state_repository->get_or_create_initial_state()); }
 
-SearchStatus AStarAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan)
-{
-    std::optional<State> unused_out_state = std::nullopt;
-    return find_solution(start_state, out_plan, unused_out_state);
-}
-
-SearchStatus AStarAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
+SearchResult AStarAlgorithm::find_solution(State start_state)
 {
     return find_solution(start_state,
                          std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()),
-                         std::make_unique<NoStatePruning>(),
-                         out_plan,
-                         out_goal_state);
+                         std::make_unique<NoStatePruning>());
 }
 
-SearchStatus AStarAlgorithm::find_solution(State start_state,
-                                           std::unique_ptr<IGoalStrategy>&& goal_strategy,
-                                           std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                                           std::optional<Plan>& out_plan,
-                                           std::optional<State>& out_goal_state)
+SearchResult
+AStarAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, std::unique_ptr<IPruningStrategy>&& pruning_strategy)
 {
+    auto result = SearchResult();
     auto default_search_node = AStarSearchNodeImpl { SearchNodeStatus::NEW,
                                                      std::numeric_limits<Index>::max(),
                                                      std::numeric_limits<Index>::max(),
@@ -132,7 +122,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     {
         m_event_handler->on_unsolvable();
 
-        return SearchStatus::UNSOLVABLE;
+        result.status = SearchStatus::UNSOLVABLE;
+        return result;
     }
 
     /* Test static goal. */
@@ -141,14 +132,16 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     {
         m_event_handler->on_unsolvable();
 
-        return SearchStatus::UNSOLVABLE;
+        result.status = SearchStatus::UNSOLVABLE;
+        return result;
     }
 
     /* Test pruning of start state. */
 
     if (pruning_strategy->test_prune_initial_state(start_state))
     {
-        return SearchStatus::FAILED;
+        result.status = SearchStatus::FAILED;
+        return result;
     }
 
     auto applicable_actions = GroundActionList {};
@@ -187,7 +180,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         {
             m_event_handler->on_unsolvable();
 
-            return SearchStatus::UNSOLVABLE;
+            result.status = SearchStatus::UNSOLVABLE;
+            return result;
         }
 
         /* Test whether state achieves the dynamic goal. */
@@ -196,17 +190,18 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
         {
             auto plan_actions = GroundActionList {};
             set_plan(search_nodes, m_applicable_action_generator->get_action_grounder().get_ground_actions(), search_node, plan_actions);
-            out_plan = Plan(std::move(plan_actions), get_g_value(search_node));
-            out_goal_state = state;
+            result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
+            result.goal_state = state;
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
                 m_applicable_action_generator->on_end_search();
                 m_state_repository->get_axiom_evaluator()->on_end_search();
             }
-            m_event_handler->on_solved(out_plan.value(), pddl_repositories);
+            m_event_handler->on_solved(result.plan.value(), pddl_repositories);
 
-            return SearchStatus::SOLVED;
+            result.status = SearchStatus::SOLVED;
+            return result;
         }
 
         /* Expand the successors of the state. */
@@ -273,7 +268,8 @@ SearchStatus AStarAlgorithm::find_solution(State start_state,
     m_event_handler->on_end_search();
     m_event_handler->on_exhausted();
 
-    return SearchStatus::EXHAUSTED;
+    result.status = SearchStatus::EXHAUSTED;
+    return result;
 }
 
 }

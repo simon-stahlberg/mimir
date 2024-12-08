@@ -850,29 +850,14 @@ IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActi
     }
 }
 
-SearchStatus IterativeWidthAlgorithm::find_solution(std::optional<Plan>& out_plan) { return find_solution(m_initial_state, out_plan); }
+SearchResult IterativeWidthAlgorithm::find_solution() { return find_solution(m_initial_state); }
 
-SearchStatus IterativeWidthAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan)
+SearchResult IterativeWidthAlgorithm::find_solution(State start_state)
 {
-    std::optional<State> unused_out_state = std::nullopt;
-    return find_solution(start_state,
-                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()),
-                         out_plan,
-                         unused_out_state);
+    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()));
 }
 
-SearchStatus IterativeWidthAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
-{
-    return find_solution(start_state,
-                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()),
-                         out_plan,
-                         out_goal_state);
-}
-
-SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
-                                                    std::unique_ptr<IGoalStrategy>&& goal_strategy,
-                                                    std::optional<Plan>& out_plan,
-                                                    std::optional<State>& out_goal_state)
+SearchResult IterativeWidthAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy)
 {
     const auto problem = m_applicable_action_generator->get_action_grounder().get_problem();
     const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder().get_pddl_repositories();
@@ -883,18 +868,14 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
     {
         m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_repositories, cur_arity);
 
-        const auto search_status =
+        const auto result =
             (cur_arity > 0) ?
-                m_brfs.find_solution(start_state,
-                                     std::move(goal_strategy),
-                                     std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS),
-                                     out_plan,
-                                     out_goal_state) :
-                m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityZeroNoveltyPruning>(start_state), out_plan, out_goal_state);
+                m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
+                m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityZeroNoveltyPruning>(start_state));
 
         m_iw_event_handler->on_end_arity_search(m_brfs_event_handler->get_statistics());
 
-        if (search_status == SearchStatus::SOLVED)
+        if (result.status == SearchStatus::SOLVED)
         {
             m_iw_event_handler->on_end_search();
             if (!m_iw_event_handler->is_quiet())
@@ -902,17 +883,22 @@ SearchStatus IterativeWidthAlgorithm::find_solution(State start_state,
                 m_applicable_action_generator->on_end_search();
                 m_state_repository->get_axiom_evaluator()->on_end_search();
             }
-            m_iw_event_handler->on_solved(out_plan.value(), *m_applicable_action_generator->get_action_grounder().get_pddl_repositories());
-            return SearchStatus::SOLVED;
+            m_iw_event_handler->on_solved(result.plan.value(), *m_applicable_action_generator->get_action_grounder().get_pddl_repositories());
+
+            return result;
         }
-        else if (search_status == SearchStatus::UNSOLVABLE)
+        else if (result.status == SearchStatus::UNSOLVABLE)
         {
             m_iw_event_handler->on_unsolvable();
-            return SearchStatus::UNSOLVABLE;
+
+            return result;
         }
 
         ++cur_arity;
     }
-    return SearchStatus::FAILED;
+
+    auto result = SearchResult();
+    result.status = SearchStatus::FAILED;
+    return result;
 }
 }

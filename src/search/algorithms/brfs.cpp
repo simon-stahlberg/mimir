@@ -77,29 +77,19 @@ BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applica
 {
 }
 
-SearchStatus BrFSAlgorithm::find_solution(std::optional<Plan>& out_plan) { return find_solution(m_state_repository->get_or_create_initial_state(), out_plan); }
+SearchResult BrFSAlgorithm::find_solution() { return find_solution(m_state_repository->get_or_create_initial_state()); }
 
-SearchStatus BrFSAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan)
-{
-    std::optional<State> unused_out_state = std::nullopt;
-    return find_solution(start_state, out_plan, unused_out_state);
-}
-
-SearchStatus BrFSAlgorithm::find_solution(State start_state, std::optional<Plan>& out_plan, std::optional<State>& out_goal_state)
+SearchResult BrFSAlgorithm::find_solution(State start_state)
 {
     return find_solution(start_state,
                          std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()),
-                         std::make_unique<DuplicateStatePruning>(),
-                         out_plan,
-                         out_goal_state);
+                         std::make_unique<DuplicateStatePruning>());
 }
 
-SearchStatus BrFSAlgorithm::find_solution(State start_state,
-                                          std::unique_ptr<IGoalStrategy>&& goal_strategy,
-                                          std::unique_ptr<IPruningStrategy>&& pruning_strategy,
-                                          std::optional<Plan>& out_plan,
-                                          std::optional<State>& out_goal_state)
+SearchResult
+BrFSAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, std::unique_ptr<IPruningStrategy>&& pruning_strategy)
 {
+    auto result = SearchResult();
     auto default_search_node =
         BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), std::numeric_limits<Index>::max(), DiscreteCost(0) };
     auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
@@ -117,14 +107,16 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     {
         m_event_handler->on_unsolvable();
 
-        return SearchStatus::UNSOLVABLE;
+        result.status = SearchStatus::UNSOLVABLE;
+        return result;
     }
 
     auto applicable_actions = GroundActionList {};
 
     if (pruning_strategy->test_prune_initial_state(start_state))
     {
-        return SearchStatus::FAILED;
+        result.status = SearchStatus::FAILED;
+        return result;
     }
 
     queue.emplace_back(start_state);
@@ -151,17 +143,18 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
         {
             auto plan_actions = GroundActionList {};
             set_plan(search_nodes, m_applicable_action_generator->get_action_grounder().get_ground_actions(), search_node, plan_actions);
-            out_goal_state = state;
-            out_plan = Plan(std::move(plan_actions), get_g_value(search_node));
+            result.goal_state = state;
+            result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
             m_event_handler->on_end_search();
             if (!m_event_handler->is_quiet())
             {
                 m_applicable_action_generator->on_end_search();
                 m_state_repository->get_axiom_evaluator()->on_end_search();
             }
-            m_event_handler->on_solved(out_plan.value(), pddl_repositories);
+            m_event_handler->on_solved(result.plan.value(), pddl_repositories);
 
-            return SearchStatus::SOLVED;
+            result.status = SearchStatus::SOLVED;
+            return result;
         }
 
         m_event_handler->on_expand_state(state, problem, pddl_repositories);
@@ -196,7 +189,8 @@ SearchStatus BrFSAlgorithm::find_solution(State start_state,
     m_event_handler->on_end_search();
     m_event_handler->on_exhausted();
 
-    return SearchStatus::EXHAUSTED;
+    result.status = SearchStatus::EXHAUSTED;
+    return result;
 }
 
 }

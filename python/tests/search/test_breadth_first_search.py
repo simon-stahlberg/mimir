@@ -15,7 +15,7 @@ def test_breadth_first_search():
     axiom_evaluator = LiftedAxiomEvaluator(parser.get_problem(), parser.get_pddl_repositories())
     state_repository = StateRepository(axiom_evaluator)
     breadth_first_search_algorithm = BrFSAlgorithm(applicable_action_generator, state_repository)
-    search_status, plan = breadth_first_search_algorithm.find_solution()
+    result = breadth_first_search_algorithm.find_solution()
 
-    assert search_status == SearchStatus.SOLVED
-    assert len(plan) == 3
+    assert result.status == SearchStatus.SOLVED
+    assert len(result.plan) == 3

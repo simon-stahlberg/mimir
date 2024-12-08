@@ -28,7 +28,6 @@
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/plan.hpp"
-#include "mimir/search/planners/single.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
@@ -92,12 +91,7 @@ public:
         m_algorithm = std::make_unique<AStarAlgorithm>(m_applicable_action_generator, m_state_repository, m_heuristic, m_astar_event_handler);
     }
 
-    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
-    {
-        auto plan = std::optional<Plan> {};
-        const auto status = m_algorithm->find_solution(plan);
-        return std::make_tuple(status, plan);
-    }
+    SearchResult find_solution() { return m_algorithm->find_solution(); }
 
     const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
@@ -160,12 +154,7 @@ public:
         m_algorithm = std::make_unique<AStarAlgorithm>(m_applicable_action_generator, m_state_repository, m_heuristic, m_astar_event_handler);
     }
 
-    std::tuple<SearchStatus, std::optional<Plan>> find_solution()
-    {
-        auto plan = std::optional<Plan> {};
-        const auto status = m_algorithm->find_solution(plan);
-        return std::make_tuple(status, plan);
-    }
+    SearchResult find_solution() { return m_algorithm->find_solution(); }
 
     const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
@@ -186,10 +175,10 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
     auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
                                       fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
                                       HeuristicType::HSTAR);
-    auto [search_status, plan] = astar.find_solution();
+    auto result = astar.find_solution();
 
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 3);
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
@@ -203,10 +192,10 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
     auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
                                     fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
                                     HeuristicType::HSTAR);
-    auto [search_status, plan] = astar.find_solution();
+    auto result = astar.find_solution();
 
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 3);
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
@@ -220,10 +209,10 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
     auto astar = GroundedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
                                       fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
                                       HeuristicType::BLIND);
-    auto [search_status, plan] = astar.find_solution();
+    auto result = astar.find_solution();
 
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 3);
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
@@ -237,10 +226,10 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
     auto astar = LiftedAStarPlanner(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"),
                                     fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"),
                                     HeuristicType::BLIND);
-    auto [search_status, plan] = astar.find_solution();
+    auto result = astar.find_solution();
 
-    EXPECT_EQ(search_status, SearchStatus::SOLVED);
-    EXPECT_EQ(plan.value().get_actions().size(), 3);
+    EXPECT_EQ(result.status, SearchStatus::SOLVED);
+    EXPECT_EQ(result.plan.value().get_actions().size(), 3);
 
     const auto& astar_statistics = astar.get_algorithm_statistics();
 

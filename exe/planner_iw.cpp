@@ -81,11 +81,9 @@ int main(int argc, char** argv)
 
     auto iw = std::make_shared<IWAlgorithm>(applicable_action_generator, state_repository, arity, brfs_event_handler, iw_event_handler);
 
-    auto planner = std::make_shared<SinglePlanner>(std::move(iw));
+    auto result = iw->find_solution();
 
-    auto [stats, plan] = planner->find_solution();
-
-    if (stats == SearchStatus::SOLVED)
+    if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;
         plan_file.open(plan_file_name);
@@ -94,7 +92,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << std::make_tuple(std::cref(plan.value()), std::cref(*parser.get_pddl_repositories()));
+        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*parser.get_pddl_repositories()));
         plan_file.close();
     }
 

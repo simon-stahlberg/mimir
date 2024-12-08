@@ -1121,14 +1121,22 @@ void init_pymimir(py::module_& m)
     py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
 
     /* Algorithms */
+
+    // SearchResult
+    py::class_<SearchResult>(m, "SearchResult")
+        .def(py::init<>())
+        .def_readwrite("status", &SearchResult::status)
+        .def_readwrite("plan", &SearchResult::plan)
+        .def_readwrite("goal_state", &SearchResult::goal_state);
+
+    // IAlgorithm
     py::class_<IAlgorithm, std::shared_ptr<IAlgorithm>>(m, "IAlgorithm")  //
+        .def("find_solution", py::overload_cast<>(&IAlgorithm::find_solution), py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("find_solution",
-             [](IAlgorithm& algorithm)
-             {
-                 auto plan = std::optional<Plan> {};
-                 auto search_status = algorithm.find_solution(plan);
-                 return std::make_tuple(search_status, plan);  // TODO: must ensure that the tuple keeps the IAlgorithm alive!
-             });
+             py::overload_cast<State>(&IAlgorithm::find_solution),
+             py::arg("start_state"),
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy);
 
     // AStar
     py::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics")  //
