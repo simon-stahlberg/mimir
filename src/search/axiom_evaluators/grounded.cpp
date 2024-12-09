@@ -67,13 +67,14 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(grounded_axiom->is_applicable(m_grounder.get_problem(), &unextended_state));
-
+                /* Important: we must check this immediately because the match tree does not respect the stratification. */
                 if (!lifted_partition.get_axioms().count(m_grounder.get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index())))
                 {
                     // axiom not part of same partition
                     continue;
                 }
+
+                assert(grounded_axiom->is_applicable(m_grounder.get_problem(), &unextended_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 

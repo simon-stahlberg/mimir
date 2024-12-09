@@ -20,6 +20,7 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"

@@ -95,9 +95,11 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
 
         auto num_atoms_before = fluent_state_atoms.count();
 
+        const auto state_tmp = state_builder;
+
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_builder))
+        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_tmp))
         {
             const auto [succ_state, action_cost] = m_delete_free_state_repository.get_or_create_successor_state(&state_builder, action);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())

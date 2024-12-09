@@ -46,11 +46,6 @@ State StateRepository::get_or_create_initial_state()
 
     for (const auto& literal : m_axiom_evaluator->get_axiom_grounder().get_problem()->get_fluent_initial_literals())
     {
-        if (literal->is_negated())
-        {
-            throw std::runtime_error("negative literals in the initial state are not supported");
-        }
-
         ground_atoms.push_back(literal->get_atom());
     }
 
