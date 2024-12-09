@@ -1488,6 +1488,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>(),
             py::arg("state_index"))
         .def("get_num_edges", &StateSpace::get_num_edges)
+        .def("get_goal_distance", &StateSpace::get_goal_distance, py::arg("state_index"))
         .def("get_goal_distances", &StateSpace::get_goal_distances, py::return_value_policy::reference_internal)
         .def("get_max_goal_distance", &StateSpace::get_max_goal_distance)
         .def("sample_vertex_index_with_goal_distance",
@@ -1715,6 +1716,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>(),
             py::arg("vertex_index"))
         .def("get_num_edges", &FaithfulAbstraction::get_num_edges)
+        .def("get_goal_distance", &FaithfulAbstraction::get_goal_distance, py::arg("state_index"))
         .def("get_goal_distances", &FaithfulAbstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // GlobalFaithfulAbstraction
@@ -1861,6 +1863,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>(),
             py::arg("vertex_index"))
         .def("get_num_edges", &GlobalFaithfulAbstraction::get_num_edges)
+        .def("get_goal_distance", &GlobalFaithfulAbstraction::get_goal_distance, py::arg("state_index"))
         .def("get_goal_distances", &GlobalFaithfulAbstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // Abstraction
@@ -1937,6 +1940,7 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>(),
             py::arg("vertex_index"))
         .def("get_num_edges", &Abstraction::get_num_edges)
+        .def("get_goal_distance", &Abstraction::get_goal_distance, py::arg("state_index"))
         .def("get_goal_distances", &Abstraction::get_goal_distances, py::return_value_policy::reference_internal);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
