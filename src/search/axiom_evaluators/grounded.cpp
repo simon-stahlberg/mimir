@@ -45,6 +45,8 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(AxiomGrounder grounder,
 
 void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
 {
+    auto applicable_axioms = GroundAxiomList {};
+
     for (const auto& lifted_partition : m_partitioning)
     {
         bool reached_partition_fixed_point;
@@ -55,7 +57,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
             /* Compute applicable axioms. */
 
-            auto applicable_axioms = GroundAxiomList {};
+            applicable_axioms.clear();
 
             // TODO: For axioms, the same fluent branch is taken all the time.
             // Exploit this!
@@ -65,13 +67,6 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                /* Important: due to overapproximation during exploration of delete-relaxed problem,
-                              we must check applicability of axioms with atoms of arity greater than 2. */
-                const auto axiom = m_grounder.get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index());
-                const bool verify_applicability = axiom->get_max_condition_arity() > 2;
-                if (verify_applicability && !grounded_axiom->is_applicable(m_grounder.get_problem(), &unextended_state))
-                    continue;
-
                 assert(grounded_axiom->is_applicable(m_grounder.get_problem(), &unextended_state));
 
                 if (!lifted_partition.get_axioms().count(m_grounder.get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index())))
