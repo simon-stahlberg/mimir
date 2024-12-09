@@ -116,14 +116,6 @@ void RenameQuantifiedVariablesTranslator::increment_num_quantifications(const lo
     }
 }
 
-void RenameQuantifiedVariablesTranslator::decrement_num_quantifications(const loki::ParameterList& parameters)
-{
-    for (const auto& parameter : parameters)
-    {
-        --m_num_quantifications.at(parameter->get_variable());
-    }
-}
-
 void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::VariableImpl& variable) { m_variables.insert(&variable); }
 
 void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::ConditionExistsImpl& condition)
@@ -185,6 +177,7 @@ void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::AxiomImpl& ax
 
 loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
 {
+    // TODO: names of renamed variables might clash with non renamed variables?
     return (m_renaming_enabled) ? m_pddl_repositories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_index()) + "_"
                                                                              + std::to_string(m_num_quantifications.at(&variable))) :
                                   m_pddl_repositories.get_or_create_variable(variable.get_name());
@@ -220,6 +213,11 @@ loki::FunctionSkeleton RenameQuantifiedVariablesTranslator::translate_impl(const
 
 loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::ActionImpl& action)
 {
+    // Reset num quantifications
+    for (auto& [variable, m_num_quantifications] : m_num_quantifications)
+    {
+        m_num_quantifications = 0;
+    }
     increment_num_quantifications(action.get_parameters());
 
     const auto translated_parameters = this->translate(action.get_parameters());
@@ -234,13 +232,17 @@ loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::Act
                                                                             translated_conditions,
                                                                             translated_effect);
 
-    decrement_num_quantifications(action.get_parameters());
-
     return translated_action;
 }
 
 loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(const loki::AxiomImpl& axiom)
 {
+    // Reset num quantifications
+    for (auto& [variable, m_num_quantifications] : m_num_quantifications)
+    {
+        m_num_quantifications = 0;
+    }
+
     increment_num_quantifications(axiom.get_parameters());
 
     const auto translated_parameters = this->translate(axiom.get_parameters());
@@ -250,8 +252,6 @@ loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(const loki::Axio
                                                                           translated_parameters,
                                                                           translated_conditions,
                                                                           axiom.get_num_parameters_to_ground_head());
-
-    decrement_num_quantifications(axiom.get_parameters());
 
     return translated_axiom;
 }
@@ -266,8 +266,6 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     auto translated_condition = this->m_pddl_repositories.get_or_create_condition(
         this->m_pddl_repositories.get_or_create_condition_exists(translated_parameters, translated_nested_condition));
 
-    decrement_num_quantifications(condition.get_parameters());
-
     return translated_condition;
 }
 
@@ -281,8 +279,6 @@ loki::Condition RenameQuantifiedVariablesTranslator::translate_impl(const loki::
     auto translated_condition = this->m_pddl_repositories.get_or_create_condition(
         this->m_pddl_repositories.get_or_create_condition_forall(translated_parameters, translated_nested_condition));
 
-    decrement_num_quantifications(condition.get_parameters());
-
     return translated_condition;
 }
 
@@ -295,8 +291,6 @@ loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::Eff
 
     auto translated_effect = this->m_pddl_repositories.get_or_create_effect(
         this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect));
-
-    decrement_num_quantifications(effect.get_parameters());
 
     return translated_effect;
 }

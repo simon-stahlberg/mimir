@@ -104,7 +104,6 @@ private:
     bool m_renaming_enabled;
 
     void increment_num_quantifications(const loki::ParameterList& parameters);
-    void decrement_num_quantifications(const loki::ParameterList& parameters);
 
     loki::Variable translate_impl(const loki::VariableImpl& variable);
 
