@@ -56,8 +56,8 @@ std::generator<GroundAction> GroundedApplicableActionGenerator::create_applicabl
 
     for (const auto& ground_action : ground_actions)
     {
-        // *** DOUBLE CHECK ***
-        // Due to overapproximation, we must check applicability of actions with atoms of arity greater than 2.
+        /* Important: due to overapproximation during exploration of delete-relaxed problem,
+                      we must check applicability of actions with atoms of arity greater than 2. */
         const auto action = m_grounder.get_pddl_repositories()->get_action(ground_action->get_action_index());
         const bool verify_applicability = action->get_max_condition_arity() > 2;
         if (verify_applicability && !ground_action->is_applicable(m_grounder.get_problem(), state))

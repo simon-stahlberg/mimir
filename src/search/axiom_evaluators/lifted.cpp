@@ -87,18 +87,11 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             {
                 auto& condition_grounder = m_grounder.get_axiom_precondition_grounders().at(axiom);
 
-                const bool verify_applicability = axiom->get_max_condition_arity() > 2;
-
                 for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
                     const auto num_ground_axioms = m_grounder.get_num_ground_axioms();
 
                     const auto ground_axiom = m_grounder.ground_axiom(axiom, std::move(binding));
-
-                    // *** DOUBLE CHECK ***
-                    // Due to overapproximation, we must check applicability of axioms with atoms of arity greater than 2.
-                    if (verify_applicability && !ground_axiom->is_applicable(m_grounder.get_problem(), &unextended_state))
-                        continue;
 
                     assert(ground_axiom->is_applicable(problem, &unextended_state));
 

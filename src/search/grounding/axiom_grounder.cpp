@@ -63,11 +63,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
         return it->second;
     }
 
-    // m_event_handler->on_ground_axiom_cache_miss(axiom, binding);
-
     /* 2. Ground the axiom */
-
-    // m_event_handler->on_ground_axiom(axiom, binding);
 
     /* Header */
 

@@ -77,18 +77,11 @@ std::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_
 
     for (auto& [action, condition_grounder] : m_grounder.get_action_precondition_grounders())
     {
-        const bool verify_applicability = action->get_max_condition_arity() > 2;
-
         for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
         {
             const auto num_ground_actions = m_grounder.get_num_ground_actions();
 
             const auto ground_action = m_grounder.ground_action(action, std::move(binding));
-
-            // *** DOUBLE CHECK ***
-            // Due to overapproximation, we must check applicability of actions with atoms of arity greater than 2.
-            if (verify_applicability && !ground_action->is_applicable(m_grounder.get_problem(), state))
-                continue;
 
             assert(ground_action->is_applicable(problem, state));
 

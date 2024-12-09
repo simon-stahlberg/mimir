@@ -154,12 +154,8 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     auto it = groundings.find(binding);
     if (it != groundings.end())
     {
-        // m_event_handler->on_ground_action_cache_hit(action, binding);
-
         return it->second;
     }
-
-    // m_event_handler->on_ground_action_cache_miss(action, binding);
 
     /* 2. Ground the action */
 
