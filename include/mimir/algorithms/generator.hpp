@@ -78,6 +78,8 @@ struct elements_of
 {
     [[no_unique_address]] _Range range;
     [[no_unique_address]] _Alloc allocator = _Alloc();
+
+    elements_of(_Range&& r, _Alloc alloc = _Alloc()) : range(std::forward<_Range>(r)), allocator(std::move(alloc)) {}
 };
 
 template<typename _Range, typename _Alloc = std::allocator<std::byte>>
