@@ -30,17 +30,22 @@
 #ifndef INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 #define INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 
-// Those are GNU platform specific headers
-// #include <bits/c++config.h>
-// #include <bits/elements_of.h>
-// #include <bits/exception_ptr.h>
-// #include <bits/memory_resource.h>
-// #include <bits/move.h>
-// #include <bits/ranges_base.h>
-// #include <bits/ranges_util.h>
-// #include <bits/uses_allocator.h>
-// #include <bits/version.h>
-
+#ifdef __GNUC__  // Defined for GNU compilers
+#include <bits/c++config.h>
+#include <bits/elements_of.h>
+#include <bits/exception_ptr.h>
+#include <bits/memory_resource.h>
+#include <bits/move.h>
+#include <bits/ranges_base.h>
+#include <bits/ranges_util.h>
+#include <bits/uses_allocator.h>
+#include <bits/version.h>
+#endif
+#ifdef __clang__  // Defined for Clang compilers
+// Include Clang-specific headers if any.
+// For `libstdc++` with Clang, GNU-specific includes might still apply.
+#endif
+#include <cassert>
 #include <concepts>
 #include <coroutine>
 #include <cstddef>
@@ -224,14 +229,14 @@ struct _Promise_erased<_Yielded>::_Subyield_state
             return __f->_M_bottom.promise()._M_nest._M_top();
 
         auto __bf = std::get_if<_Bottom_frame>(&this->_M_stack);
-        __glibcxx_assert(__bf);
+        assert(__bf);
         return __bf->_M_top;
     }
 
     void _M_push(_Coro_handle __current, _Coro_handle __subyield) noexcept
     {
-        __glibcxx_assert(&__current.promise()._M_nest == this);
-        __glibcxx_assert(this->_M_top() == __current);
+        assert(&__current.promise()._M_nest == this);
+        assert(this->_M_top() == __current);
 
         __subyield.promise()._M_nest._M_jump_in(__current, __subyield);
     }
@@ -252,13 +257,13 @@ struct _Promise_erased<_Yielded>::_Subyield_state
 
     void _M_jump_in(_Coro_handle __rest, _Coro_handle __new) noexcept
     {
-        __glibcxx_assert(&__new.promise()._M_nest == this);
-        __glibcxx_assert(this->_M_is_bottom());
+        assert(&__new.promise()._M_nest == this);
+        assert(this->_M_is_bottom());
         // We're bottom.  We're also top if top is unset (note that this is
         // not true if something was added to the coro stack and then popped,
         // but in that case we can't possibly be yielded from, as it would
         // require rerunning begin()).
-        __glibcxx_assert(!this->_M_top());
+        assert(!this->_M_top());
 
         auto& __rn = __rest.promise()._M_nest;
         __rn._M_top() = __new;
@@ -276,20 +281,20 @@ struct _Promise_erased<_Yielded>::_Subyield_state
 
     _ValuePtr& _M_bottom_value(_Promise_erased& __current) noexcept
     {
-        __glibcxx_assert(&__current._M_nest == this);
+        assert(&__current._M_nest == this);
         if (auto __bf = std::get_if<_Bottom_frame>(&this->_M_stack))
             return __bf->_M_value;
         auto __f = std::get_if<_Frame>(&this->_M_stack);
-        __glibcxx_assert(__f);
+        assert(__f);
         auto& __p = __f->_M_bottom.promise();
         return __p._M_nest._M_value(__p);
     }
 
     _ValuePtr& _M_value(_Promise_erased& __current) noexcept
     {
-        __glibcxx_assert(&__current._M_nest == this);
+        assert(&__current._M_nest == this);
         auto __bf = std::get_if<_Bottom_frame>(&this->_M_stack);
-        __glibcxx_assert(__bf);
+        assert(__bf);
         return __bf->_M_value;
     }
 };
@@ -618,7 +623,7 @@ public:
 
     generator(const generator&) = delete;
 
-    generator(generator&& __other) noexcept : _M_coro(std::__exchange(__other._M_coro, nullptr)), _M_began(std::__exchange(__other._M_began, false)) {}
+    generator(generator&& __other) noexcept : _M_coro(std::exchange(__other._M_coro, nullptr)), _M_began(std::exchange(__other._M_began, false)) {}
 
     ~generator()
     {
@@ -645,11 +650,11 @@ public:
 private:
     using _Coro_handle = std::coroutine_handle<_Erased_promise>;
 
-    generator(std::coroutine_handle<promise_type> __coro) noexcept : _M_coro { move(__coro) } {}
+    generator(std::coroutine_handle<promise_type> __coro) noexcept : _M_coro { std::move(__coro) } {}
 
     void _M_mark_as_started() noexcept
     {
-        __glibcxx_assert(!this->_M_began);
+        assert(!this->_M_began);
         this->_M_began = true;
     }
 
@@ -667,11 +672,11 @@ struct generator<_Ref, _Val, _Alloc>::_Iterator
 
     friend class generator;
 
-    _Iterator(_Iterator&& __o) noexcept : _M_coro(std::__exchange(__o._M_coro, {})) {}
+    _Iterator(_Iterator&& __o) noexcept : _M_coro(std::exchange(__o._M_coro, {})) {}
 
     _Iterator& operator=(_Iterator&& __o) noexcept
     {
-        this->_M_coro = std::__exchange(__o._M_coro, {});
+        this->_M_coro = std::exchange(__o._M_coro, {});
         return *this;
     }
 
