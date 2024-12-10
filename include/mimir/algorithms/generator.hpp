@@ -30,15 +30,17 @@
 #ifndef INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 #define INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 
-#include <bits/c++config.h>
-#include <bits/elements_of.h>
-#include <bits/exception_ptr.h>
-#include <bits/memory_resource.h>
-#include <bits/move.h>
-#include <bits/ranges_base.h>
-#include <bits/ranges_util.h>
-#include <bits/uses_allocator.h>
-#include <bits/version.h>
+// Those are GNU platform specific headers
+// #include <bits/c++config.h>
+// #include <bits/elements_of.h>
+// #include <bits/exception_ptr.h>
+// #include <bits/memory_resource.h>
+// #include <bits/move.h>
+// #include <bits/ranges_base.h>
+// #include <bits/ranges_util.h>
+// #include <bits/uses_allocator.h>
+// #include <bits/version.h>
+
 #include <concepts>
 #include <coroutine>
 #include <cstddef>
