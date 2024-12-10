@@ -15,34 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/algorithms/generator.hpp"
+#include "mimir/common/itertools.hpp"
 
 #include <gtest/gtest.h>
 
 namespace mimir::tests
 {
 
-mimir::generator<int> fibonacci()
+TEST(MimirTests, AlgorithmsItertoolsCartesianSetTest)
 {
-    int i = 0;
-    int j = 1;
-    while (true)
+    auto vectors = std::vector<std::vector<int>> { { 1, 2 }, { 2, 3, 4 } };
+    auto result = std::vector<std::vector<int>> {};
+    for (const auto& combination : create_cartesian_product_generator(vectors))
     {
-        co_yield i = std::exchange(j, i + j);
+        result.push_back(combination);
     }
-}
-
-TEST(MimirTests, AlgorithmsGeneratorTest)
-{
-    auto result = std::vector<int> {};
-    for (const auto& f : fibonacci())
-    {
-        result.push_back(f);
-        if (result.size() == 10)
-        {
-            break;
-        }
-    }
-    EXPECT_EQ(result, (std::vector<int> { 1, 1, 2, 3, 5, 8, 13, 21, 34, 55 }));
+    EXPECT_EQ(result, (std::vector<std::vector<int>> { { 1, 2 }, { 2, 2 }, { 1, 3 }, { 2, 3 }, { 1, 4 }, { 2, 4 } }));
 }
 }

@@ -18,6 +18,8 @@
 #ifndef MIMIR_COMMON_ITERTOOLS_HPP_
 #define MIMIR_COMMON_ITERTOOLS_HPP_
 
+#include "mimir/algorithms/generator.hpp"
+
 #include <iostream>
 #include <unordered_set>
 #include <vector>
@@ -25,109 +27,72 @@
 namespace mimir
 {
 
+/**
+ * Cartesian set.
+ */
+
 template<typename T>
-class CartesianProduct
+mimir::generator<const std::vector<T>&> create_cartesian_product_generator(const std::vector<std::vector<T>>& vectors)
 {
-private:
-    const std::vector<std::vector<T>>& m_vectors;
+    // Store the result to be yielded.
+    auto result = std::vector<T>(vectors.size());
 
-public:
-    explicit CartesianProduct(const std::vector<std::vector<T>>& vectors) : m_vectors(vectors) {}
-
-    /**
-     * Iterators
-     */
-    class const_iterator
+    // Handle edge case: if any vector is empty, the Cartesian product is empty.
+    for (const auto& vec : vectors)
     {
-    private:
-        const std::vector<std::vector<T>>& m_vectors;
-        typename std::vector<typename std::vector<T>::const_iterator> m_current;
-        bool m_is_end;
-
-    public:
-        using difference_type = std::ptrdiff_t;
-        using value_type = std::vector<typename std::vector<T>::const_iterator>;
-        using pointer = const value_type*;
-        using reference = const value_type&;
-        using iterator_category = std::forward_iterator_tag;
-
-        const_iterator(const std::vector<std::vector<T>>& vectors, bool begin) : m_vectors(vectors), m_is_end(false)
-        {
-            if (vectors.empty() || !begin)
-            {
-                m_is_end = true;
-                return;
-            }
-
-            for (auto& vec : vectors)
-            {
-                if (vec.empty())
-                {
-                    m_is_end = true;
-                    return;
-                }
-                m_current.push_back(vec.begin());
-            }
-        }
-
-        reference operator*() const { return m_current; }
-
-        const_iterator& operator++()
-        {
-            for (int i = m_current.size() - 1; i >= 0; --i)
-            {
-                ++m_current[i];
-                if (m_current[i] != m_vectors[i].end())
-                {
-                    return *this;
-                }
-                if (i == 0)
-                {  // if we increment the first vector and it's at end, we are at the end
-                    m_is_end = true;
-                    break;
-                }
-                m_current[i] = m_vectors[i].begin();  // Reset and increment the next iterator left
-            }
-            return *this;
-        }
-
-        const_iterator operator++(int)
-        {
-            const_iterator tmp = *this;
-            ++(*this);
-            return tmp;
-        }
-
-        bool operator==(const const_iterator& other) const
-        {
-            if (m_is_end && other.m_is_end)
-                return true;
-            if (m_is_end != other.m_is_end)
-                return false;
-            return m_current == other.m_current;
-        }
-
-        bool operator!=(const const_iterator& other) const { return !(*this == other); }
-    };
-
-    const_iterator begin() const { return const_iterator(m_vectors, true); }
-
-    const_iterator end() const { return const_iterator(m_vectors, false); }
-
-    size_t num_combinations() const
-    {
-        auto result = size_t { 1 };
-        for (const auto& vec : m_vectors)
-        {
-            if (vec.empty())
-            {
-                return 0;
-            }
-            result *= vec.size();
-        }
-        return result;
+        if (vec.empty())
+            co_return;
     }
-};
+
+    // Initialize the first result.
+    for (size_t i = 0; i < vectors.size(); ++i)
+    {
+        result[i] = vectors[i].front();
+    }
+    co_yield result;
+
+    // Initialize the current indices
+    auto indices = std::vector<size_t>(vectors.size(), 0);
+
+    while (true)
+    {
+        // increment right most index, apply carry over, update result, and yield it
+
+        // Increment indices in bit-flip style
+        for (size_t i = 0; i < vectors.size(); ++i)
+        {
+            if (++indices[i] < vectors[i].size())
+            {
+                result[i] = vectors[i][indices[i]];
+                break;  // No carry-over; proceed with the next result
+            }
+            indices[i] = 0;  // Reset current index and carry over to the next
+            result[i] = vectors[i][0];
+
+            if (i == vectors.size() - 1)
+            {
+                co_return;  // Terminate when all indices are reset
+            }
+        }
+
+        co_yield result;
+    }
+}
+
+template<typename T>
+size_t get_size_cartesian_product(const std::vector<std::vector<T>>& vectors)
+{
+    auto result = size_t { 1 };
+    for (const auto& vec : vectors)
+    {
+        if (vec.empty())
+        {
+            return 0;
+        }
+        result *= vec.size();
+    }
+    return result;
+}
 
 }
 
