@@ -79,7 +79,7 @@ struct elements_of
     [[no_unique_address]] _Range range;
     [[no_unique_address]] _Alloc allocator = _Alloc();
 
-    elements_of(_Range r, _Alloc alloc = _Alloc()) : range(std::forward<_Range>(r)), allocator(std::forward<_Alloc>(alloc)) {}
+    // elements_of(_Range r, _Alloc alloc = _Alloc()) : range(std::forward<_Range>(r)), allocator(std::forward<_Alloc>(alloc)) {}
 };
 
 template<typename _Range, typename _Alloc = std::allocator<std::byte>>
@@ -178,7 +178,7 @@ public:
             for (; __i != __s; ++__i)
                 co_yield static_cast<_Yielded>(*__i);
         };
-        return yield_value(mimir::ranges::elements_of(__n(std::allocator_arg, __r.allocator, std::ranges::begin(__r.range), std::ranges::end(__r.range))));
+        return yield_value(mimir::ranges::elements_of { __n(std::allocator_arg, __r.allocator, std::ranges::begin(__r.range), std::ranges::end(__r.range)) });
     }
 
     _Final_awaiter final_suspend() noexcept { return {}; }

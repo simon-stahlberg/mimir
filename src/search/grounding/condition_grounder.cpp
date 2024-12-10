@@ -253,15 +253,15 @@ mimir::generator<ObjectList> ConditionGrounder::create_binding_generator(State s
     {
         if (m_variables.size() == 0)
         {
-            co_yield mimir::ranges::elements_of(nullary_case(state));
+            co_yield mimir::ranges::elements_of { nullary_case(state) };
         }
         else if (m_variables.size() == 1)
         {
-            co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
+            co_yield mimir::ranges::elements_of { unary_case(fluent_assignment_set, derived_assignment_set, state) };
         }
         else
         {
-            co_yield mimir::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state));
+            co_yield mimir::ranges::elements_of { general_case(fluent_assignment_set, derived_assignment_set, state) };
         }
     }
 }
