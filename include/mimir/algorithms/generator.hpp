@@ -31,15 +31,15 @@
 #define INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 
 #ifdef __GNUC__  // Defined for GNU compilers
-#include <bits/c++config.h>
-#include <bits/elements_of.h>
-#include <bits/exception_ptr.h>
-#include <bits/memory_resource.h>
-#include <bits/move.h>
-#include <bits/ranges_base.h>
-#include <bits/ranges_util.h>
-#include <bits/uses_allocator.h>
-#include <bits/version.h>
+//#include <bits/c++config.h>
+//#include <bits/elements_of.h>
+//#include <bits/exception_ptr.h>
+//#include <bits/memory_resource.h>
+//#include <bits/move.h>
+//#include <bits/ranges_base.h>
+//#include <bits/ranges_util.h>
+//#include <bits/uses_allocator.h>
+//#include <bits/version.h>
 #endif
 #ifdef __clang__  // Defined for Clang compilers
 // Include Clang-specific headers if any.
@@ -54,6 +54,7 @@
 #include <new>
 #include <ranges>
 #include <type_traits>
+#include <utility>
 #include <variant>
 
 namespace mimir
