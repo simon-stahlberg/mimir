@@ -39,14 +39,6 @@ private:
     using BaseRecurseTranslator::prepare_impl;
     using BaseRecurseTranslator::translate_impl;
 
-    /* Prepare step */
-
-    // Collect all variables in preparation phase.
-    loki::VariableSet m_variables;
-
-    /// @brief Collect all existing variables.
-    void prepare_impl(const loki::VariableImpl& variable);
-
     /* Translate step */
 
     std::unordered_map<loki::Variable, size_t> m_num_quantifications;

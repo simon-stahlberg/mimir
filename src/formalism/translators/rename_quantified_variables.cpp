@@ -22,30 +22,28 @@ using namespace std::string_literals;
 namespace mimir
 {
 
-static void initialize_num_quantifications(const loki::VariableSet& variables, std::unordered_map<loki::Variable, size_t>& out_num_quantifications)
-{
-    out_num_quantifications.clear();
-    for (const auto& variable : variables)
-    {
-        out_num_quantifications.emplace(variable, 0);
-    }
-}
-
 static void increment_num_quantifications(const loki::ParameterList& parameters, std::unordered_map<loki::Variable, size_t>& ref_num_quantifications)
 {
     for (const auto& parameter : parameters)
     {
-        ++ref_num_quantifications.at(parameter->get_variable());
+        const auto variable = parameter->get_variable();
+
+        ref_num_quantifications.contains(variable) ? ++ref_num_quantifications.at(variable) : ref_num_quantifications[variable] = 0;
     }
 }
 
-void RenameQuantifiedVariablesTranslator::prepare_impl(const loki::VariableImpl& variable) { m_variables.insert(&variable); }
-
 loki::Variable RenameQuantifiedVariablesTranslator::translate_impl(const loki::VariableImpl& variable)
 {
-    return (m_renaming_enabled) ? m_pddl_repositories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_index()) + "_"
-                                                                             + std::to_string(m_num_quantifications.at(&variable))) :
-                                  m_pddl_repositories.get_or_create_variable(variable.get_name());
+    if (m_renaming_enabled)
+    {
+        /* If variable is not quantified, then we have a bug somewhere. */
+        assert(m_num_quantifications.contains(&variable));
+
+        return m_pddl_repositories.get_or_create_variable(variable.get_name() + "_" + std::to_string(variable.get_index()) + "_"
+                                                          + std::to_string(m_num_quantifications.at(&variable)));
+    }
+
+    return m_pddl_repositories.get_or_create_variable(variable.get_name());
 }
 
 loki::Predicate RenameQuantifiedVariablesTranslator::translate_impl(const loki::PredicateImpl& predicate)
@@ -78,7 +76,8 @@ loki::FunctionSkeleton RenameQuantifiedVariablesTranslator::translate_impl(const
 
 loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::ActionImpl& action)
 {
-    initialize_num_quantifications(m_variables, m_num_quantifications);
+    // Clear quantifications as we enter a new top-level scope.
+    m_num_quantifications.clear();
     increment_num_quantifications(action.get_parameters(), m_num_quantifications);
 
     const auto translated_parameters = this->translate(action.get_parameters());
@@ -98,7 +97,8 @@ loki::Action RenameQuantifiedVariablesTranslator::translate_impl(const loki::Act
 
 loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(const loki::AxiomImpl& axiom)
 {
-    initialize_num_quantifications(m_variables, m_num_quantifications);
+    // Clear quantifications as we enter a new top-level scope.
+    m_num_quantifications.clear();
     increment_num_quantifications(axiom.get_parameters(), m_num_quantifications);
 
     const auto translated_parameters = this->translate(axiom.get_parameters());
@@ -151,14 +151,7 @@ loki::Effect RenameQuantifiedVariablesTranslator::translate_impl(const loki::Eff
     return translated_effect;
 }
 
-loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemImpl& problem)
-{
-    this->prepare(problem);
-
-    initialize_num_quantifications(m_variables, m_num_quantifications);
-
-    return this->translate(problem);
-}
+loki::Problem RenameQuantifiedVariablesTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
 
 RenameQuantifiedVariablesTranslator::RenameQuantifiedVariablesTranslator(loki::PDDLRepositories& pddl_repositories) :
     BaseRecurseTranslator(pddl_repositories),
