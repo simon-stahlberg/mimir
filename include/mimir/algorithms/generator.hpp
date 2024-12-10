@@ -30,7 +30,10 @@
 #ifndef INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 #define INCLUDE_MIMIR_ALGORITHMS_GENERATOR
 
-#ifdef __GNUC__  // Defined for GNU compilers
+#ifdef __clang__
+
+#else
+#ifdef __GNUC__
 //#include <bits/c++config.h>
 //#include <bits/elements_of.h>
 //#include <bits/exception_ptr.h>
@@ -41,10 +44,8 @@
 //#include <bits/uses_allocator.h>
 //#include <bits/version.h>
 #endif
-#ifdef __clang__  // Defined for Clang compilers
-// Include Clang-specific headers if any.
-// For `libstdc++` with Clang, GNU-specific includes might still apply.
 #endif
+
 #include <cassert>
 #include <concepts>
 #include <coroutine>
