@@ -18,10 +18,9 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
+#include "mimir/algorithms/generator.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-
-#include <generator>
 
 namespace mimir
 {
@@ -35,7 +34,7 @@ public:
     virtual ~IApplicableActionGenerator() = default;
 
     /// @brief Generate all applicable actions for a given state.
-    virtual std::generator<GroundAction> create_applicable_action_generator(State state) = 0;
+    virtual mimir::generator<GroundAction> create_applicable_action_generator(State state) = 0;
 
     /// @brief Accumulate event handler statistics during search.
     virtual void on_finish_search_layer() = 0;

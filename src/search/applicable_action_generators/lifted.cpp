@@ -52,7 +52,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
 {
 }
 
-std::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state)
+mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state)
 {
     m_event_handler->on_start_generating_applicable_actions();
 

@@ -26,7 +26,7 @@ namespace mimir
 {
 
 // TODO: Try to replace data-structures with flatmemory implementations.
-std::generator<const std::vector<size_t>&>
+mimir::generator<const std::vector<size_t>&>
 find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                              const std::vector<std::vector<size_t>>& partitions,
                                              std::vector<boost::dynamic_bitset<>>& compatible_vertices,
@@ -113,8 +113,8 @@ find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bi
     }
 }
 
-std::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                        const std::vector<std::vector<size_t>>& partitions)
+mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                          const std::vector<std::vector<size_t>>& partitions)
 {
     std::vector<boost::dynamic_bitset<>> compatible_vertices;
     for (std::size_t index = 0; index < partitions.size(); ++index)

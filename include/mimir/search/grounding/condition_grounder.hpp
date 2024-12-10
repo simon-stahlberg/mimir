@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
 #define MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
 
+#include "mimir/algorithms/generator.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounding/assignment_set.hpp"
@@ -26,7 +27,6 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <generator>
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -67,12 +67,12 @@ private:
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
     bool nullary_conditions_hold(State state);
 
-    std::generator<ObjectList> nullary_case(State state);
+    mimir::generator<ObjectList> nullary_case(State state);
 
-    std::generator<ObjectList>
+    mimir::generator<ObjectList>
     unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
-    std::generator<ObjectList>
+    mimir::generator<ObjectList>
     general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
@@ -93,10 +93,10 @@ public:
                       AssignmentSet<Static> static_assignment_set,
                       std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
-    std::generator<ObjectList>
+    mimir::generator<ObjectList>
     create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
 
-    std::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
     create_ground_conjunction_generator(State state);
 
     /**

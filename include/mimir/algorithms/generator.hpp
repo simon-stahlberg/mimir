@@ -35,6 +35,7 @@
 #include <bits/exception_ptr.h>
 #include <bits/memory_resource.h>
 #include <bits/move.h>
+#include <bits/ranges_base.h>
 #include <bits/ranges_util.h>
 #include <bits/uses_allocator.h>
 #include <bits/version.h>
@@ -50,6 +51,31 @@
 
 namespace mimir
 {
+
+/**
+ * Dominik(2024-12-10): We needed elements_of from the elements_of.hpp
+ */
+namespace ranges
+{
+
+/**
+ * @ingroup ranges
+ * @since C++23
+ * @{
+ */
+
+template<std::ranges::range _Range, typename _Alloc = std::allocator<std::byte>>
+struct elements_of
+{
+    [[no_unique_address]] _Range range;
+    [[no_unique_address]] _Alloc allocator = _Alloc();
+};
+
+template<typename _Range, typename _Alloc = std::allocator<std::byte>>
+elements_of(_Range&&, _Alloc = _Alloc()) -> elements_of<_Range&&, _Alloc>;
+
+/// @}
+}
 
 /**
  * @defgroup generator_coros Range generator coroutines
@@ -129,11 +155,11 @@ public:
 
     template<typename _R2, typename _V2, typename _A2, typename _U2>
     requires std::same_as<_Yield2_t<_R2, _V2>, _Yielded>
-    auto yield_value(std::ranges::elements_of<generator<_R2, _V2, _A2>&&, _U2> __r) noexcept { return _Recursive_awaiter { std::move(__r.range) }; }
+    auto yield_value(mimir::ranges::elements_of<generator<_R2, _V2, _A2>&&, _U2> __r) noexcept { return _Recursive_awaiter { std::move(__r.range) }; }
 
     template<std::ranges::input_range _R, typename _Alloc>
     requires std::convertible_to<std::ranges::range_reference_t<_R>, _Yielded>
-    auto yield_value(std::ranges::elements_of<_R, _Alloc> __r)
+    auto yield_value(mimir::ranges::elements_of<_R, _Alloc> __r)
     {
         auto __n = [](std::allocator_arg_t, _Alloc, std::ranges::iterator_t<_R> __i, std::ranges::sentinel_t<_R> __s)
             -> generator<_Yielded, std::ranges::range_value_t<_R>, _Alloc>
@@ -141,7 +167,7 @@ public:
             for (; __i != __s; ++__i)
                 co_yield static_cast<_Yielded>(*__i);
         };
-        return yield_value(std::ranges::elements_of(__n(std::allocator_arg, __r.allocator, std::ranges::begin(__r.range), std::ranges::end(__r.range))));
+        return yield_value(mimir::ranges::elements_of(__n(std::allocator_arg, __r.allocator, std::ranges::begin(__r.range), std::ranges::end(__r.range))));
     }
 
     _Final_awaiter final_suspend() noexcept { return {}; }

@@ -96,7 +96,7 @@ bool ConditionGrounder::nullary_conditions_hold(State state)
     return nullary_literals_hold(m_nullary_fluent_conditions, state) && nullary_literals_hold(m_nullary_derived_conditions, state);
 }
 
-std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
+mimir::generator<ObjectList> ConditionGrounder::nullary_case(State state)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
@@ -111,7 +111,7 @@ std::generator<ObjectList> ConditionGrounder::nullary_case(State state)
     }
 }
 
-std::generator<ObjectList>
+mimir::generator<ObjectList>
 ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
@@ -133,7 +133,7 @@ ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_set
     }
 }
 
-std::generator<ObjectList>
+mimir::generator<ObjectList>
 ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
@@ -245,28 +245,28 @@ ConditionGrounder::ConditionGrounder(Problem problem,
 {
 }
 
-std::generator<ObjectList> ConditionGrounder::create_binding_generator(State state,
-                                                                       const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                       const AssignmentSet<Derived>& derived_assignment_set)
+mimir::generator<ObjectList> ConditionGrounder::create_binding_generator(State state,
+                                                                         const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                                         const AssignmentSet<Derived>& derived_assignment_set)
 {
     if (nullary_conditions_hold(state))
     {
         if (m_variables.size() == 0)
         {
-            co_yield std::ranges::elements_of(nullary_case(state));
+            co_yield mimir::ranges::elements_of(nullary_case(state));
         }
         else if (m_variables.size() == 1)
         {
-            co_yield std::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
+            co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
         }
         else
         {
-            co_yield std::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state));
+            co_yield mimir::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state));
         }
     }
 }
 
-std::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
 ConditionGrounder::create_ground_conjunction_generator(State state)
 {
     auto problem = m_problem;
