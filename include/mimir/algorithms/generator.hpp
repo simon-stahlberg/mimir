@@ -75,11 +75,11 @@ namespace __gen
 /// _Reference type for a generator whose reference (first argument) and
 /// value (second argument) types are _Ref and _Val.
 template<typename _Ref, typename _Val>
-using _Reference_t = __conditional_t<is_void_v<_Val>, _Ref&&, _Ref>;
+using _Reference_t = std::__conditional_t<std::is_void_v<_Val>, _Ref&&, _Ref>;
 
 /// Type yielded by a generator whose _Reference type is _Reference.
 template<typename _Reference>
-using _Yield_t = __conditional_t<is_reference_v<_Reference>, _Reference, const _Reference&>;
+using _Yield_t = std::__conditional_t<std::is_reference_v<_Reference>, _Reference, const _Reference&>;
 
 /// _Yield_t * _Reference_t
 template<typename _Ref, typename _Val>
@@ -88,21 +88,21 @@ using _Yield2_t = _Yield_t<_Reference_t<_Ref, _Val>>;
 template<typename>
 constexpr bool __is_generator = false;
 template<typename _Val, typename _Ref, typename _Alloc>
-constexpr bool __is_generator<std::generator<_Val, _Ref, _Alloc>> = true;
+constexpr bool __is_generator<mimir::generator<_Val, _Ref, _Alloc>> = true;
 
 /// Allocator and value type erased generator promise type.
 /// \tparam _Yielded The corresponding generators yielded type.
 template<typename _Yielded>
 class _Promise_erased
 {
-    static_assert(is_reference_v<_Yielded>);
-    using _Yielded_deref = remove_reference_t<_Yielded>;
-    using _Yielded_decvref = remove_cvref_t<_Yielded>;
-    using _ValuePtr = add_pointer_t<_Yielded>;
+    static_assert(std::is_reference_v<_Yielded>);
+    using _Yielded_deref = std::remove_reference_t<_Yielded>;
+    using _Yielded_decvref = std::remove_cvref_t<_Yielded>;
+    using _ValuePtr = std::add_pointer_t<_Yielded>;
     using _Coro_handle = std::coroutine_handle<_Promise_erased>;
 
     template<typename, typename, typename>
-    friend class std::generator;
+    friend class mimir::generator;
 
     template<typename _Gen>
     struct _Recursive_awaiter;
@@ -113,34 +113,35 @@ class _Promise_erased
     struct _Final_awaiter;
 
 public:
-    suspend_always initial_suspend() const noexcept { return {}; }
+    std::suspend_always initial_suspend() const noexcept { return {}; }
 
-    suspend_always yield_value(_Yielded __val) noexcept
+    std::suspend_always yield_value(_Yielded __val) noexcept
     {
         _M_bottom_value() = ::std::addressof(__val);
         return {};
     }
 
-    auto yield_value(const _Yielded_deref& __val) noexcept(is_nothrow_constructible_v<_Yielded_decvref, const _Yielded_deref&>) requires(
-        is_rvalue_reference_v<_Yielded>&& constructible_from<_Yielded_decvref, const _Yielded_deref&>)
+    auto yield_value(const _Yielded_deref& __val) noexcept(std::is_nothrow_constructible_v<_Yielded_decvref, const _Yielded_deref&>) requires(
+        std::is_rvalue_reference_v<_Yielded>&& std::constructible_from<_Yielded_decvref, const _Yielded_deref&>)
     {
         return _Copy_awaiter(__val, _M_bottom_value());
     }
 
     template<typename _R2, typename _V2, typename _A2, typename _U2>
     requires std::same_as<_Yield2_t<_R2, _V2>, _Yielded>
-    auto yield_value(ranges::elements_of<generator<_R2, _V2, _A2>&&, _U2> __r) noexcept { return _Recursive_awaiter { std::move(__r.range) }; }
+    auto yield_value(std::ranges::elements_of<generator<_R2, _V2, _A2>&&, _U2> __r) noexcept { return _Recursive_awaiter { std::move(__r.range) }; }
 
-    template<ranges::input_range _R, typename _Alloc>
-    requires convertible_to<ranges::range_reference_t<_R>, _Yielded>
-    auto yield_value(ranges::elements_of<_R, _Alloc> __r)
+    template<std::ranges::input_range _R, typename _Alloc>
+    requires std::convertible_to<std::ranges::range_reference_t<_R>, _Yielded>
+    auto yield_value(std::ranges::elements_of<_R, _Alloc> __r)
     {
-        auto __n = [](allocator_arg_t, _Alloc, ranges::iterator_t<_R> __i, ranges::sentinel_t<_R> __s) -> generator<_Yielded, ranges::range_value_t<_R>, _Alloc>
+        auto __n = [](std::allocator_arg_t, _Alloc, std::ranges::iterator_t<_R> __i, std::ranges::sentinel_t<_R> __s)
+            -> generator<_Yielded, std::ranges::range_value_t<_R>, _Alloc>
         {
             for (; __i != __s; ++__i)
                 co_yield static_cast<_Yielded>(*__i);
         };
-        return yield_value(ranges::elements_of(__n(allocator_arg, __r.allocator, ranges::begin(__r.range), ranges::end(__r.range))));
+        return yield_value(std::ranges::elements_of(__n(std::allocator_arg, __r.allocator, std::ranges::begin(__r.range), std::ranges::end(__r.range))));
     }
 
     _Final_awaiter final_suspend() noexcept { return {}; }
@@ -274,7 +275,7 @@ struct _Promise_erased<_Yielded>::_Final_awaiter
     auto await_suspend(std::coroutine_handle<_Promise> __c) noexcept
     {
 #ifdef __glibcxx_is_pointer_interconvertible
-        static_assert(is_pointer_interconvertible_base_of_v<_Promise_erased, _Promise>);
+        static_assert(std::is_pointer_interconvertible_base_of_v<_Promise_erased, _Promise>);
 #endif
 
         auto& __n = __c.promise()._M_nest;
@@ -296,7 +297,7 @@ struct _Promise_erased<_Yielded>::_Copy_awaiter
     void await_suspend(std::coroutine_handle<_Promise>) noexcept
     {
 #ifdef __glibcxx_is_pointer_interconvertible
-        static_assert(is_pointer_interconvertible_base_of_v<_Promise_erased, _Promise>);
+        static_assert(std::is_pointer_interconvertible_base_of_v<_Promise_erased, _Promise>);
 #endif
         _M_bottom_value = ::std::addressof(_M_value);
     }
@@ -320,7 +321,7 @@ struct _Promise_erased<_Yielded>::_Recursive_awaiter
     std::coroutine_handle<> await_suspend(std::coroutine_handle<_Promise> __p) noexcept
     {
 #ifdef __glibcxx_is_pointer_interconvertible
-        static_assert(is_pointer_interconvertible_base_of_v<_Promise_erased, _Promise>);
+        static_assert(std::is_pointer_interconvertible_base_of_v<_Promise_erased, _Promise>);
 #endif
 
         auto __c = _Coro_handle::from_address(__p.address());
@@ -348,15 +349,15 @@ struct _Alloc_block
 };
 
 template<typename _All>
-concept _Stateless_alloc = (allocator_traits<_All>::is_always_equal::value && default_initializable<_All>);
+concept _Stateless_alloc = (std::allocator_traits<_All>::is_always_equal::value && std::default_initializable<_All>);
 
 template<typename _Alloc>
 class _Promise_alloc
 {
-    using _ATr = allocator_traits<_Alloc>;
+    using _ATr = std::allocator_traits<_Alloc>;
     using _Rebound = typename _ATr::template rebind_alloc<_Alloc_block>;
     using _Rebound_ATr = typename _ATr ::template rebind_traits<_Alloc_block>;
-    static_assert(is_pointer_v<typename _Rebound_ATr::pointer>, "Must use allocators for true pointers with generators");
+    static_assert(std::is_pointer_v<typename _Rebound_ATr::pointer>, "Must use allocators for true pointers with generators");
 
     static auto _M_alloc_address(std::uintptr_t __fn, std::uintptr_t __fsz) noexcept
     {
@@ -392,19 +393,19 @@ class _Promise_alloc
     }
 
 public:
-    void* operator new(std::size_t __sz) requires default_initializable<_Rebound>  // _Alloc is non-void
+    void* operator new(std::size_t __sz) requires std::default_initializable<_Rebound>  // _Alloc is non-void
     {
         return _M_allocate({}, __sz);
     }
 
     template<typename _Na, typename... _Args>
-    void* operator new(std::size_t __sz, allocator_arg_t, const _Na& __na, const _Args&...) requires convertible_to<const _Na&, _Alloc>
+    void* operator new(std::size_t __sz, std::allocator_arg_t, const _Na& __na, const _Args&...) requires std::convertible_to<const _Na&, _Alloc>
     {
         return _M_allocate(static_cast<_Rebound>(static_cast<_Alloc>(__na)), __sz);
     }
 
     template<typename _This, typename _Na, typename... _Args>
-    void* operator new(std::size_t __sz, const _This&, allocator_arg_t, const _Na& __na, const _Args&...) requires convertible_to<const _Na&, _Alloc>
+    void* operator new(std::size_t __sz, const _This&, std::allocator_arg_t, const _Na& __na, const _Args&...) requires std::convertible_to<const _Na&, _Alloc>
     {
         return _M_allocate(static_cast<_Rebound>(static_cast<_Alloc>(__na)), __sz);
     }
@@ -495,7 +496,7 @@ class _Promise_alloc<void>
         using _Rebound = typename std::allocator_traits<_Na>::template rebind_alloc<_Alloc_block>;
         using _Rebound_ATr = typename std::allocator_traits<_Na>::template rebind_traits<_Alloc_block>;
 
-        static_assert(is_pointer_v<typename _Rebound_ATr::pointer>, "Must use allocators for true pointers with generators");
+        static_assert(std::is_pointer_v<typename _Rebound_ATr::pointer>, "Must use allocators for true pointers with generators");
 
         _Dealloc_fn __d = &_M_deallocator<_Rebound>;
         auto __b = static_cast<_Rebound>(__na);
@@ -524,13 +525,13 @@ public:
     }
 
     template<typename _Na, typename... _Args>
-    void* operator new(std::size_t __sz, allocator_arg_t, const _Na& __na, const _Args&...)
+    void* operator new(std::size_t __sz, std::allocator_arg_t, const _Na& __na, const _Args&...)
     {
         return _M_allocate(__na, __sz);
     }
 
     template<typename _This, typename _Na, typename... _Args>
-    void* operator new(std::size_t __sz, const _This&, allocator_arg_t, const _Na& __na, const _Args&...)
+    void* operator new(std::size_t __sz, const _This&, std::allocator_arg_t, const _Na& __na, const _Args&...)
     {
         return _M_allocate(__na, __sz);
     }
@@ -545,27 +546,27 @@ public:
 };
 
 template<typename _Tp>
-concept _Cv_unqualified_object = is_object_v<_Tp> && same_as<_Tp, remove_cv_t<_Tp>>;
+concept _Cv_unqualified_object = std::is_object_v<_Tp> && std::same_as<_Tp, std::remove_cv_t<_Tp>>;
 }  // namespace __gen
 /// @endcond
 
 template<typename _Ref, typename _Val, typename _Alloc>
-class generator : public ranges::view_interface<generator<_Ref, _Val, _Alloc>>
+class generator : public std::ranges::view_interface<generator<_Ref, _Val, _Alloc>>
 {
-    using _Value = __conditional_t<is_void_v<_Val>, remove_cvref_t<_Ref>, _Val>;
+    using _Value = std::__conditional_t<std::is_void_v<_Val>, std::remove_cvref_t<_Ref>, _Val>;
     static_assert(__gen::_Cv_unqualified_object<_Value>, "Generator value must be a cv-unqualified object type");
     using _Reference = __gen::_Reference_t<_Ref, _Val>;
-    static_assert(is_reference_v<_Reference> || (__gen::_Cv_unqualified_object<_Reference> && copy_constructible<_Reference>),
+    static_assert(std::is_reference_v<_Reference> || (__gen::_Cv_unqualified_object<_Reference> && std::copy_constructible<_Reference>),
                   "Generator reference type must be either a cv-unqualified "
                   "object type that is trivially constructible or a "
                   "reference type");
 
-    using _RRef = __conditional_t<is_reference_v<_Reference>, remove_reference_t<_Reference>&&, _Reference>;
+    using _RRef = std::__conditional_t<std::is_reference_v<_Reference>, std::remove_reference_t<_Reference>&&, _Reference>;
 
     /* Required to model indirectly_readable, and input_iterator.  */
-    static_assert(common_reference_with<_Reference&&, _Value&&>);
-    static_assert(common_reference_with<_Reference&&, _RRef&&>);
-    static_assert(common_reference_with<_RRef&&, const _Value&>);
+    static_assert(std::common_reference_with<_Reference&&, _Value&&>);
+    static_assert(std::common_reference_with<_Reference&&, _RRef&&>);
+    static_assert(std::common_reference_with<_RRef&&, const _Value&>);
 
     using _Yielded = __gen::_Yield_t<_Reference>;
     using _Erased_promise = __gen::_Promise_erased<_Yielded>;
@@ -580,11 +581,11 @@ public:
 
     struct promise_type : _Erased_promise, __gen::_Promise_alloc<_Alloc>
     {
-        generator get_return_object() noexcept { return { coroutine_handle<promise_type>::from_promise(*this) }; }
+        generator get_return_object() noexcept { return { std::coroutine_handle<promise_type>::from_promise(*this) }; }
     };
 
 #ifdef __glibcxx_is_pointer_interconvertible
-    static_assert(is_pointer_interconvertible_base_of_v<_Erased_promise, promise_type>);
+    static_assert(std::is_pointer_interconvertible_base_of_v<_Erased_promise, promise_type>);
 #endif
 
     generator(const generator&) = delete;
@@ -599,8 +600,8 @@ public:
 
     generator& operator=(generator __other) noexcept
     {
-        swap(__other._M_coro, this->_M_coro);
-        swap(__other._M_began, this->_M_began);
+        std::swap(__other._M_coro, this->_M_coro);
+        std::swap(__other._M_began, this->_M_began);
     }
 
     _Iterator begin()
@@ -611,12 +612,12 @@ public:
         return { __h };
     }
 
-    default_sentinel_t end() const noexcept { return default_sentinel; }
+    std::default_sentinel_t end() const noexcept { return std::default_sentinel; }
 
 private:
     using _Coro_handle = std::coroutine_handle<_Erased_promise>;
 
-    generator(coroutine_handle<promise_type> __coro) noexcept : _M_coro { move(__coro) } {}
+    generator(std::coroutine_handle<promise_type> __coro) noexcept : _M_coro { move(__coro) } {}
 
     void _M_mark_as_started() noexcept
     {
@@ -624,7 +625,7 @@ private:
         this->_M_began = true;
     }
 
-    coroutine_handle<promise_type> _M_coro;
+    std::coroutine_handle<promise_type> _M_coro;
     bool _M_began = false;
 };
 
@@ -634,7 +635,7 @@ struct generator<_Ref, _Val, _Alloc>::_Iterator
     using value_type = _Value;
     using difference_type = ptrdiff_t;
 
-    friend bool operator==(const _Iterator& __i, default_sentinel_t) noexcept { return __i._M_coro.done(); }
+    friend bool operator==(const _Iterator& __i, std::default_sentinel_t) noexcept { return __i._M_coro.done(); }
 
     friend class generator;
 
@@ -654,7 +655,7 @@ struct generator<_Ref, _Val, _Alloc>::_Iterator
 
     void operator++(int) { this->operator++(); }
 
-    _Reference operator*() const noexcept(is_nothrow_move_constructible_v<_Reference>)
+    _Reference operator*() const noexcept(std::is_nothrow_move_constructible_v<_Reference>)
     {
         auto& __p = this->_M_coro.promise();
         return static_cast<_Reference>(*__p._M_value());

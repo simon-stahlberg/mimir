@@ -12,6 +12,7 @@ function(add_gtest test_name source_file)
 endfunction()
 
 # Add each test source file as a separate test executable
+add_gtest(algorithms_generator_test                        "algorithms/generator.cpp")
 add_gtest(algorithms_memory_pool_test                      "algorithms/memory_pool.cpp")
 add_gtest(algorithms_nauty_test                            "algorithms/nauty.cpp")
 
