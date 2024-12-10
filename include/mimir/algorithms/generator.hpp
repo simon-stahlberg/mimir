@@ -79,7 +79,7 @@ struct elements_of
     [[no_unique_address]] _Range range;
     [[no_unique_address]] _Alloc allocator = _Alloc();
 
-    // elements_of(_Range r, _Alloc alloc = _Alloc()) : range(std::forward<_Range>(r)), allocator(std::forward<_Alloc>(alloc)) {}
+    elements_of(_Range r, _Alloc alloc = _Alloc()) : range(std::move(r)), allocator(std::move(alloc)) {}
 };
 
 template<typename _Range, typename _Alloc = std::allocator<std::byte>>
@@ -166,7 +166,7 @@ public:
 
     template<typename _R2, typename _V2, typename _A2, typename _U2>
     requires std::same_as<_Yield2_t<_R2, _V2>, _Yielded>
-    auto yield_value(mimir::ranges::elements_of<generator<_R2, _V2, _A2>&&, _U2> __r) noexcept { return _Recursive_awaiter { std::move(__r.range) }; }
+    auto yield_value(mimir::ranges::elements_of<generator<_R2, _V2, _A2>&&, _U2> __r) noexcept { return _Recursive_awaiter(std::move(__r.range)); }
 
     template<std::ranges::input_range _R, typename _Alloc>
     requires std::convertible_to<std::ranges::range_reference_t<_R>, _Yielded>
