@@ -159,7 +159,7 @@ public:
     auto yield_value(const _Yielded_deref& __val) noexcept(std::is_nothrow_constructible_v<_Yielded_decvref, const _Yielded_deref&>) requires(
         std::is_rvalue_reference_v<_Yielded>&& std::constructible_from<_Yielded_decvref, const _Yielded_deref&>)
     {
-        return _Copy_awaiter(__val, _M_bottom_value());
+        return _Copy_awaiter { __val, _M_bottom_value() };
     }
 
     template<typename _R2, typename _V2, typename _A2, typename _U2>
