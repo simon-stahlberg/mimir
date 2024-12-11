@@ -24,8 +24,8 @@ Grounder::Grounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repos
     m_pddl_repositories(std::move(pddl_repositories)),
     m_literal_grounder(std::make_shared<LiteralGrounder>(m_problem, m_pddl_repositories)),
     m_function_grounder(std::make_shared<FunctionGrounder>(m_problem, m_pddl_repositories)),
-    m_action_grounder(std::make_shared<ActionGrounder>(m_problem, m_pddl_repositories, m_literal_grounder, m_function_grounder)),
-    m_axiom_grounder(std::make_shared<AxiomGrounder>(m_problem, m_pddl_repositories))
+    m_action_grounder(std::make_shared<ActionGrounder>(m_literal_grounder, m_function_grounder)),
+    m_axiom_grounder(std::make_shared<AxiomGrounder>(m_literal_grounder))
 {
 }
 

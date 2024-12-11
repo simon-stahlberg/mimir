@@ -103,8 +103,7 @@ public:
     /// @param options the options.
     /// @return `GlobalFaithfulAbstractionList` contains the `GlobalFaithfulAbstraction`s for which the construction was successful.
     static std::vector<GlobalFaithfulAbstraction>
-    create(const std::vector<
-               std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+    create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
            const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**

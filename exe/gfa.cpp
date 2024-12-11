@@ -55,8 +55,8 @@ int main(int argc, char** argv)
     {
         num_ss_states += state_space.get_num_vertices();
         num_ss_transitions += state_space.get_num_edges();
-        num_ss_ground_actions += state_space.get_applicable_action_generator()->get_action_grounder().get_num_ground_actions();
-        num_ss_ground_axioms += state_space.get_state_repository()->get_axiom_evaluator()->get_axiom_grounder().get_num_ground_axioms();
+        num_ss_ground_actions += state_space.get_applicable_action_generator()->get_action_grounder()->get_num_ground_actions();
+        num_ss_ground_axioms += state_space.get_state_repository()->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms();
     }
     std::cout << "Num sss: " << state_spaces.size() << std::endl;
     std::cout << "Num ss states: " << num_ss_states << std::endl;
@@ -64,14 +64,10 @@ int main(int argc, char** argv)
     std::cout << "Num ss ground actions: " << num_ss_ground_actions << std::endl;
     std::cout << "Num ss ground axioms: " << num_ss_ground_axioms << std::endl;
 
-    auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& state_space : state_spaces)
     {
-        memories.emplace_back(state_space.get_problem(),
-                              state_space.get_pddl_repositories(),
-                              state_space.get_applicable_action_generator(),
-                              state_space.get_state_repository());
+        memories.emplace_back(state_space.get_applicable_action_generator(), state_space.get_state_repository());
     }
 
     /* Gfas */
@@ -91,8 +87,8 @@ int main(int argc, char** argv)
                   << gfa.get_num_non_isomorphic_states() << std::endl;
         num_gfa_states += gfa.get_num_vertices();
         num_gfa_transitions += gfa.get_num_edges();
-        num_gfa_ground_actions += gfa.get_applicable_action_generator()->get_action_grounder().get_num_ground_actions();
-        num_gfa_ground_axioms += gfa.get_state_repository()->get_axiom_evaluator()->get_axiom_grounder().get_num_ground_axioms();
+        num_gfa_ground_actions += gfa.get_applicable_action_generator()->get_action_grounder()->get_num_ground_actions();
+        num_gfa_ground_axioms += gfa.get_state_repository()->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms();
         num_isomorphic_states += gfa.get_num_isomorphic_states();
         num_non_isomorphic_states += gfa.get_num_non_isomorphic_states();
 

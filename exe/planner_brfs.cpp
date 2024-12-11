@@ -63,12 +63,13 @@ int main(int argc, char** argv)
         std::cout << std::endl;
     }
 
+    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator = std::shared_ptr<IApplicableActionGenerator>(nullptr);
     auto axiom_evaluator = std::shared_ptr<IAxiomEvaluator>(nullptr);
     auto state_repository = std::shared_ptr<StateRepository>(nullptr);
     if (grounded)
     {
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
                 std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>(false)));
@@ -79,13 +80,10 @@ int main(int argc, char** argv)
     else
     {
         applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(
-            std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(),
-                                                              parser.get_pddl_repositories(),
+            std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder(),
                                                               std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(),
-                                                   parser.get_pddl_repositories(),
-                                                   std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
+            std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder(), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     }
 

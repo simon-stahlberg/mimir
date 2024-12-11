@@ -26,6 +26,7 @@
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/grounders/grounder.hpp"
 
 #include <gtest/gtest.h>
 
@@ -85,11 +86,11 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
 
     auto constructor_repositories = dl::create_default_constructor_type_to_repository();
 
-    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
-    auto axiom_evaluator =
-        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
+    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+    auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder());
+    auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    auto state_space = StateSpace::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
+    auto state_space = StateSpace::create(applicable_action_generator, state_repository);
     auto state_list = StateList();
     for (const auto& state_vertex : state_space.value().get_vertices())
     {

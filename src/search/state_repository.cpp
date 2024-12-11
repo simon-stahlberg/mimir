@@ -29,8 +29,8 @@ namespace mimir
 {
 StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
-    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder().get_problem()->get_axioms().empty()
-                                   || !m_axiom_evaluator->get_axiom_grounder().get_problem()->get_domain()->get_axioms().empty()),
+    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_axioms().empty()
+                                   || !m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
     m_state_builder(),
     m_positive_applied_effects(),
@@ -44,7 +44,7 @@ State StateRepository::get_or_create_initial_state()
 {
     auto ground_atoms = GroundAtomList<Fluent> {};
 
-    for (const auto& literal : m_axiom_evaluator->get_axiom_grounder().get_problem()->get_fluent_initial_literals())
+    for (const auto& literal : m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_fluent_initial_literals())
     {
         ground_atoms.push_back(literal->get_atom());
     }
@@ -129,7 +129,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         // Apply conditional effects
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            if (conditional_effect.is_applicable(m_axiom_evaluator->get_axiom_grounder().get_problem(), state))
+            if (conditional_effect.is_applicable(m_axiom_evaluator->get_axiom_grounder()->get_problem(), state))
             {
                 for (const auto& effect_literal : conditional_effect.get_fluent_effect_literals())
                 {

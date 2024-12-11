@@ -203,9 +203,7 @@ void mark_objects_as_not_prunable(const GroundAtomList<P>& atoms, FlatBitset& re
 }
 
 std::optional<ObjectGraphStaticSccPruningStrategy>
-ObjectGraphStaticSccPruningStrategy::create(Problem problem,
-                                            std::shared_ptr<PDDLRepositories> factories,
-                                            std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+ObjectGraphStaticSccPruningStrategy::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                             std::shared_ptr<StateRepository> state_repository,
                                             const StateSpaceOptions& options)
 {
@@ -215,11 +213,13 @@ ObjectGraphStaticSccPruningStrategy::create(Problem problem,
          2. No unsatisfiable goal, e.g., x and not x
     */
 
-    auto state_space = StateSpace::create(problem, factories, applicable_action_generator, state_repository, options);
+    auto state_space = StateSpace::create(applicable_action_generator, state_repository, options);
     if (!state_space.has_value())
     {
         return std::nullopt;
     }
+
+    const auto problem = state_space.value().get_problem();
 
     auto graph = TraversalDirectionTaggedType(state_space.value().get_graph(), ForwardTraversal());
     const auto [num_components, component_map] = strong_components(graph);

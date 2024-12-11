@@ -854,13 +854,13 @@ SearchResult IterativeWidthAlgorithm::find_solution() { return find_solution(m_i
 
 SearchResult IterativeWidthAlgorithm::find_solution(State start_state)
 {
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder().get_problem()));
+    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder()->get_problem()));
 }
 
 SearchResult IterativeWidthAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy)
 {
-    const auto problem = m_applicable_action_generator->get_action_grounder().get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder().get_pddl_repositories();
+    const auto problem = m_applicable_action_generator->get_action_grounder()->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
     m_iw_event_handler->on_start_search(problem, start_state, pddl_repositories);
 
     size_t cur_arity = 0;
@@ -883,7 +883,7 @@ SearchResult IterativeWidthAlgorithm::find_solution(State start_state, std::uniq
                 m_applicable_action_generator->on_end_search();
                 m_state_repository->get_axiom_evaluator()->on_end_search();
             }
-            m_iw_event_handler->on_solved(result.plan.value(), *m_applicable_action_generator->get_action_grounder().get_pddl_repositories());
+            m_iw_event_handler->on_solved(result.plan.value(), *m_applicable_action_generator->get_action_grounder()->get_pddl_repositories());
 
             return result;
         }

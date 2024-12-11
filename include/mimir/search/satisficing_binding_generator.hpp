@@ -24,6 +24,7 @@
 #include "mimir/search/grounders/assignment_set.hpp"
 #include "mimir/search/grounders/condition_grounder/event_handlers/interface.hpp"
 #include "mimir/search/grounders/consistency_graph.hpp"
+#include "mimir/search/grounders/literal_grounder.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -39,8 +40,7 @@ namespace mimir
 class SatisficingBindingGenerator
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    std::shared_ptr<LiteralGrounder> m_literal_grounder;
 
     VariableList m_variables;
     LiteralList<Static> m_static_conditions;
@@ -76,16 +76,14 @@ private:
     general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
-    SatisficingBindingGenerator(Problem problem,
-                                std::shared_ptr<PDDLRepositories> pddl_repositories,
+    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                 VariableList variables,
                                 LiteralList<Static> static_conditions,
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
                                 AssignmentSet<Static> static_assignment_set);
 
-    SatisficingBindingGenerator(Problem problem,
-                                std::shared_ptr<PDDLRepositories> pddl_repositories,
+    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                 VariableList variables,
                                 LiteralList<Static> static_conditions,
                                 LiteralList<Fluent> fluent_conditions,
@@ -103,8 +101,7 @@ public:
      * Getters
      */
 
-    Problem get_problem() const;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+    const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
 
     const VariableList& get_variables() const;
     template<PredicateTag P>

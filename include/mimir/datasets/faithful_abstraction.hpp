@@ -109,10 +109,8 @@ private:
     /// The create function calls this constructor and ensures that
     /// the `FaithfulAbstraction` is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    FaithfulAbstraction(Problem problem,
-                        bool mark_true_goal_literals,
+    FaithfulAbstraction(bool mark_true_goal_literals,
                         bool use_unit_cost_one,
-                        std::shared_ptr<PDDLRepositories> factories,
                         std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                         std::shared_ptr<StateRepository> state_repository,
                         typename FaithfulAbstraction::GraphType graph,
@@ -135,9 +133,7 @@ public:
     /// @param state_repository is the external successor state generator.
     /// @param options the options.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
-    static std::optional<FaithfulAbstraction> create(Problem problem,
-                                                     std::shared_ptr<PDDLRepositories> factories,
-                                                     std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+    static std::optional<FaithfulAbstraction> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                                      std::shared_ptr<StateRepository> state_repository,
                                                      const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
@@ -151,8 +147,7 @@ public:
     /// @param options the options.
     /// @return `FaithfulAbstractionList` contains the `FaithfulAbstraction`s for which the construction was successful.
     static std::vector<FaithfulAbstraction>
-    create(const std::vector<
-               std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+    create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
            const FaithfulAbstractionsOptions& options = FaithfulAbstractionsOptions());
 
     /**
@@ -231,12 +226,10 @@ public:
 
 private:
     /* Meta data */
-    Problem m_problem;
     bool m_mark_true_goal_literals;
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<StateRepository> m_state_repository;
 

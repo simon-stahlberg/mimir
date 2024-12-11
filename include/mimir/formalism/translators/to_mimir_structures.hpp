@@ -21,6 +21,7 @@
 #include "mimir/formalism/repositories.hpp"
 
 #include <loki/loki.hpp>
+#include <tuple>
 #include <unordered_map>
 #include <variant>
 

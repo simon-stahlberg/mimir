@@ -86,9 +86,7 @@ public:
         const FlatBitset& get_pruned_goal_literals() const;
     };
 
-    static std::optional<ObjectGraphStaticSccPruningStrategy> create(Problem problem,
-                                                                     std::shared_ptr<PDDLRepositories> factories,
-                                                                     std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+    static std::optional<ObjectGraphStaticSccPruningStrategy> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                                                      std::shared_ptr<StateRepository> state_repository,
                                                                      const StateSpaceOptions& options = StateSpaceOptions());
 

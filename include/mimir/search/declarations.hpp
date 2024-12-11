@@ -51,6 +51,13 @@ using StateSet = std::unordered_set<State>;
 template<typename T>
 using StateMap = std::unordered_map<State, T>;
 
+/* Grounders */
+class LiteralGrounder;
+class FunctionGrounder;
+class ActionGrounder;
+class AxiomGrounder;
+class Grounder;
+
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;
 class GroundedApplicableActionGenerator;

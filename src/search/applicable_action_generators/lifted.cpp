@@ -60,8 +60,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     for (const auto& action : problem->get_domain()->get_actions())
     {
         m_action_precondition_grounders.emplace(action,
-                                                SatisficingBindingGenerator(problem,
-                                                                            pddl_repositories,
+                                                SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
                                                                             action->get_parameters(),
                                                                             action->get_conditions<Static>(),
                                                                             action->get_conditions<Fluent>(),

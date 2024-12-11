@@ -36,9 +36,9 @@ class DeleteRelaxedProblemExplorator
 private:
     std::shared_ptr<Grounder> m_grounder;
 
-    std::shared_ptr<Grounder> m_delete_free_grounder;
     DeleteRelaxTransformer m_delete_relax_transformer;
     Problem m_delete_free_problem;
+    std::shared_ptr<Grounder> m_delete_free_grounder;
     std::shared_ptr<LiftedApplicableActionGenerator> m_delete_free_applicable_action_generator;
     std::shared_ptr<LiftedAxiomEvaluator> m_delete_free_axiom_evalator;
     StateRepository m_delete_free_state_repository;

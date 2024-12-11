@@ -38,7 +38,7 @@ bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>&
 {
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_pddl_repositories->ground_literal(literal, binding);
+        auto ground_literal = m_literal_grounder->ground_literal(literal, binding);
 
         if (!state->literal_holds(ground_literal))
         {
@@ -54,11 +54,13 @@ template bool SatisficingBindingGenerator::is_valid_dynamic_binding(const Litera
 
 bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
+    const auto problem = m_literal_grounder->get_problem();
+
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_pddl_repositories->ground_literal(literal, binding);
+        auto ground_literal = m_literal_grounder->ground_literal(literal, binding);
 
-        if (ground_literal->is_negated() == m_problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
+        if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
         {
             return false;
         }
@@ -107,7 +109,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(State sta
     }
     else
     {
-        m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
+        m_event_handler->on_invalid_binding(binding, *m_literal_grounder->get_pddl_repositories());
     }
 }
 
@@ -119,7 +121,7 @@ SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assi
         if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
             && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
         {
-            auto binding = ObjectList { m_pddl_repositories->get_object(vertex.get_object_index()) };
+            auto binding = ObjectList { m_literal_grounder->get_pddl_repositories()->get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(state, binding))
             {
@@ -127,7 +129,7 @@ SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assi
             }
             else
             {
-                m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
+                m_event_handler->on_invalid_binding(binding, *m_literal_grounder->get_pddl_repositories());
             }
         }
     }
@@ -176,7 +178,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
             const auto& vertex = vertices[clique[index]];
             const auto parameter_index = vertex.get_parameter_index();
             const auto object_index = vertex.get_object_index();
-            binding[parameter_index] = m_pddl_repositories->get_object(object_index);
+            binding[parameter_index] = m_literal_grounder->get_pddl_repositories()->get_object(object_index);
         }
 
         if (this->is_valid_binding(state, binding))
@@ -185,13 +187,13 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
         }
         else
         {
-            m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
+            m_event_handler->on_invalid_binding(binding, *m_literal_grounder->get_pddl_repositories());
         }
     };
 }
 
 template<PredicateTag P>
-static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, PDDLRepositories& pddl_repositories)
+static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, LiteralGrounder& literal_grounder)
 {
     auto ground_literals = GroundLiteralList<P> {};
     for (const auto& literal : literals)
@@ -199,21 +201,19 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
         if (literal->get_atom()->get_arity() != 0)
             continue;
 
-        ground_literals.push_back(pddl_repositories.ground_literal(literal, {}));
+        ground_literals.push_back(literal_grounder.ground_literal(literal, {}));
     }
 
     return ground_literals;
 }
 
-SatisficingBindingGenerator::SatisficingBindingGenerator(Problem problem,
-                                                         std::shared_ptr<PDDLRepositories> pddl_repositories,
+SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                                          VariableList variables,
                                                          LiteralList<Static> static_conditions,
                                                          LiteralList<Fluent> fluent_conditions,
                                                          LiteralList<Derived> derived_conditions,
                                                          AssignmentSet<Static> static_assignment_set) :
-    SatisficingBindingGenerator(std::move(problem),
-                                std::move(pddl_repositories),
+    SatisficingBindingGenerator(std::move(literal_grounder),
                                 std::move(variables),
                                 std::move(static_conditions),
                                 std::move(fluent_conditions),
@@ -223,26 +223,24 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(Problem problem,
 {
 }
 
-SatisficingBindingGenerator::SatisficingBindingGenerator(Problem problem,
-                                                         std::shared_ptr<PDDLRepositories> pddl_repositories,
+SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                                          VariableList variables,
                                                          LiteralList<Static> static_conditions,
                                                          LiteralList<Fluent> fluent_conditions,
                                                          LiteralList<Derived> derived_conditions,
                                                          AssignmentSet<Static> static_assignment_set,
                                                          std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
-    m_problem(std::move(problem)),
-    m_pddl_repositories(std::move(pddl_repositories)),
+    m_literal_grounder(std::move(literal_grounder)),
     m_variables(std::move(variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_static_assignment_set(std::move(static_assignment_set)),
     m_event_handler(std::move(event_handler)),
-    m_nullary_static_conditions(ground_nullary_literals(m_static_conditions, *m_pddl_repositories)),
-    m_nullary_fluent_conditions(ground_nullary_literals(m_fluent_conditions, *m_pddl_repositories)),
-    m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_pddl_repositories)),
-    m_static_consistency_graph(m_problem, 0, m_variables.size(), m_static_conditions, m_static_assignment_set)
+    m_nullary_static_conditions(ground_nullary_literals(m_static_conditions, *m_literal_grounder)),
+    m_nullary_fluent_conditions(ground_nullary_literals(m_fluent_conditions, *m_literal_grounder)),
+    m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_literal_grounder)),
+    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions, m_static_assignment_set)
 {
 }
 
@@ -270,14 +268,15 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
 SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
 {
-    auto problem = m_problem;
+    const auto problem = m_literal_grounder->get_problem();
+    const auto pddl_repositories = m_literal_grounder->get_pddl_repositories();
 
     auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
-    auto fluent_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
+    auto fluent_atoms = pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
     auto fluent_assignment_set = AssignmentSet<Fluent>(problem, fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
-    auto derived_atoms = m_pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
+    auto derived_atoms = pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
     auto derived_assignment_set = AssignmentSet<Derived>(problem, derived_predicates, derived_atoms);
 
     for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
@@ -285,26 +284,26 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : get_conditions<Static>())
         {
-            static_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(static_literal, binding));
+            static_grounded_literals.emplace_back(m_literal_grounder->ground_literal(static_literal, binding));
         }
 
         GroundLiteralList<Fluent> fluent_grounded_literals;
         for (const auto& fluent_literal : get_conditions<Fluent>())
         {
-            fluent_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(fluent_literal, binding));
+            fluent_grounded_literals.emplace_back(m_literal_grounder->ground_literal(fluent_literal, binding));
         }
 
         GroundLiteralList<Derived> derived_grounded_literals;
         for (const auto& derived_literal : get_conditions<Derived>())
         {
-            derived_grounded_literals.emplace_back(m_pddl_repositories->ground_literal(derived_literal, binding));
+            derived_grounded_literals.emplace_back(m_literal_grounder->ground_literal(derived_literal, binding));
         }
 
         co_yield std::make_pair(binding, std::make_tuple(static_grounded_literals, fluent_grounded_literals, derived_grounded_literals));
     }
 }
 
-Problem SatisficingBindingGenerator::get_problem() const { return m_problem; }
+const std::shared_ptr<LiteralGrounder>& SatisficingBindingGenerator::get_literal_grounder() const { return m_literal_grounder; }
 
 const VariableList& SatisficingBindingGenerator::get_variables() const { return m_variables; }
 
@@ -334,8 +333,6 @@ template const LiteralList<Fluent>& SatisficingBindingGenerator::get_conditions<
 template const LiteralList<Derived>& SatisficingBindingGenerator::get_conditions<Derived>() const;
 
 const AssignmentSet<Static>& SatisficingBindingGenerator::get_static_assignment_set() const { return m_static_assignment_set; }
-
-const std::shared_ptr<PDDLRepositories>& SatisficingBindingGenerator::get_pddl_repositories() const { return m_pddl_repositories; }
 
 const std::shared_ptr<IConditionGrounderEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
 

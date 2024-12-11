@@ -32,9 +32,7 @@ namespace mimir
 /**
  * StateSpace
  */
-StateSpace::StateSpace(Problem problem,
-                       bool use_unit_cost_one,
-                       std::shared_ptr<PDDLRepositories> pddl_repositories,
+StateSpace::StateSpace(bool use_unit_cost_one,
                        std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                        std::shared_ptr<StateRepository> state_repository,
                        typename StateSpace::GraphType graph,
@@ -43,9 +41,7 @@ StateSpace::StateSpace(Problem problem,
                        IndexSet goal_vertex_indices,
                        IndexSet deadend_vertex_indices,
                        ContinuousCostList goal_distances) :
-    m_problem(problem),
     m_use_unit_cost_one(use_unit_cost_one),
-    m_pddl_repositories(std::move(pddl_repositories)),
     m_applicable_action_generator(std::move(applicable_action_generator)),
     m_state_repository(std::move(state_repository)),
     m_graph(std::move(graph)),
@@ -65,19 +61,20 @@ StateSpace::StateSpace(Problem problem,
 std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-    return StateSpace::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository, options);
+    return StateSpace::create(applicable_action_generator, state_repository, options);
 }
 
-std::optional<StateSpace> StateSpace::create(Problem problem,
-                                             std::shared_ptr<PDDLRepositories> factories,
-                                             std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                              std::shared_ptr<StateRepository> state_repository,
                                              const StateSpaceOptions& options)
 {
+    const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
+
     auto stop_watch = StopWatch(options.timeout_ms);
 
     auto initial_state = state_repository->get_or_create_initial_state();
@@ -183,9 +180,7 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
         }
     }
 
-    return StateSpace(problem,
-                      options.use_unit_cost_one,
-                      std::move(factories),
+    return StateSpace(options.use_unit_cost_one,
                       std::move(applicable_action_generator),
                       std::move(state_repository),
                       std::move(bidirectional_graph),
@@ -198,35 +193,33 @@ std::optional<StateSpace> StateSpace::create(Problem problem,
 
 StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const StateSpacesOptions& options)
 {
-    auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
         auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
         auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
         auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
+        memories.emplace_back(applicable_action_generator, state_repository);
     }
 
     return StateSpace::create(memories, options);
 }
 
-std::vector<StateSpace> StateSpace::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-        memories,
-    const StateSpacesOptions& options)
+std::vector<StateSpace>
+StateSpace::create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+                   const StateSpacesOptions& options)
 {
     auto state_spaces = StateSpaceList {};
     auto pool = BS::thread_pool(options.num_threads);
     auto futures = std::vector<std::future<std::optional<StateSpace>>> {};
 
-    for (const auto& [problem, factories, applicable_action_generator, state_repository] : memories)
+    for (const auto& [applicable_action_generator, state_repository] : memories)
     {
-        futures.push_back(
-            pool.submit_task([problem, factories, applicable_action_generator, state_repository, state_space_options = options.state_space_options]
-                             { return StateSpace::create(problem, factories, applicable_action_generator, state_repository, state_space_options); }));
+        futures.push_back(pool.submit_task([applicable_action_generator, state_repository, state_space_options = options.state_space_options]
+                                           { return StateSpace::create(applicable_action_generator, state_repository, state_space_options); }));
     }
 
     for (auto& future : futures)
@@ -307,11 +300,14 @@ template ContinuousCostMatrix StateSpace::compute_pairwise_shortest_vertex_dista
  */
 
 /* Meta data */
-Problem StateSpace::get_problem() const { return m_problem; }
+Problem StateSpace::get_problem() const { return m_applicable_action_generator->get_action_grounder()->get_problem(); }
 bool StateSpace::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLRepositories>& StateSpace::get_pddl_repositories() const { return m_pddl_repositories; }
+const std::shared_ptr<PDDLRepositories>& StateSpace::get_pddl_repositories() const
+{
+    return m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+}
 
 const std::shared_ptr<IApplicableActionGenerator>& StateSpace::get_applicable_action_generator() const { return m_applicable_action_generator; }
 

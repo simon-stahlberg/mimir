@@ -26,6 +26,7 @@
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -47,6 +48,7 @@ class LiftedAStarPlanner
 private:
     PDDLParser m_parser;
 
+    std::shared_ptr<Grounder> m_grounder;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
@@ -59,12 +61,12 @@ private:
 public:
     LiftedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)),
-        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(),
-                                                                                        m_parser.get_pddl_repositories(),
-                                                                                        m_applicable_action_generator_event_handler)),
+        m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
+        m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
+        m_applicable_action_generator(
+            std::make_shared<LiftedApplicableActionGenerator>(m_grounder->get_action_grounder(), m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_axiom_evaluator_event_handler)),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_grounder->get_axiom_grounder(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_astar_event_handler(std::make_shared<DefaultAStarAlgorithmEventHandler>(false))
     {
@@ -77,10 +79,7 @@ public:
             }
             case HeuristicType::HSTAR:
             {
-                m_heuristic = std::make_shared<HStarHeuristic>(m_parser.get_problem(),
-                                                               m_parser.get_pddl_repositories(),
-                                                               m_applicable_action_generator,
-                                                               m_state_repository);
+                m_heuristic = std::make_shared<HStarHeuristic>(m_applicable_action_generator, m_state_repository);
                 break;
             }
             default:
@@ -109,6 +108,7 @@ class GroundedAStarPlanner
 private:
     PDDLParser m_parser;
 
+    std::shared_ptr<Grounder> m_grounder;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
@@ -122,7 +122,8 @@ private:
 public:
     GroundedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
         m_parser(PDDLParser(domain_file, problem_file)),
-        m_delete_relaxed_problem_explorator(m_parser.get_problem(), m_parser.get_pddl_repositories()),
+        m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
+        m_delete_relaxed_problem_explorator(m_grounder),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
         m_applicable_action_generator(
             m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(m_applicable_action_generator_event_handler)),
@@ -140,10 +141,7 @@ public:
             }
             case HeuristicType::HSTAR:
             {
-                m_heuristic = std::make_shared<HStarHeuristic>(m_parser.get_problem(),
-                                                               m_parser.get_pddl_repositories(),
-                                                               m_applicable_action_generator,
-                                                               m_state_repository);
+                m_heuristic = std::make_shared<HStarHeuristic>(m_applicable_action_generator, m_state_repository);
                 break;
             }
             default:

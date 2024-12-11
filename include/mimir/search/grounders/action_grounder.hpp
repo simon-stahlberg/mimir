@@ -37,8 +37,6 @@ using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
 class ActionGrounder
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<FunctionGrounder> m_function_grounder;
 
@@ -53,10 +51,7 @@ private:
 
 public:
     /// @brief Simplest construction
-    ActionGrounder(Problem problem,
-                   std::shared_ptr<PDDLRepositories> pddl_repositories,
-                   std::shared_ptr<LiteralGrounder> literal_grounder,
-                   std::shared_ptr<FunctionGrounder> function_grounder);
+    ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<FunctionGrounder> function_grounder);
 
     // Uncopyable
     ActionGrounder(const ActionGrounder& other) = delete;

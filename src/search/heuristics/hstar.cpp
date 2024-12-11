@@ -22,17 +22,14 @@
 namespace mimir
 {
 
-HStarHeuristic::HStarHeuristic(Problem problem,
-                               std::shared_ptr<PDDLRepositories> pddl_repositories,
-                               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                               std::shared_ptr<StateRepository> state_repository) :
+HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository) :
     m_estimates()
 {
     // We simply create a state space and copy the estimates
     auto state_space_options = StateSpaceOptions();
     state_space_options.use_unit_cost_one = false;
     state_space_options.remove_if_unsolvable = false;
-    auto state_space = StateSpace::create(problem, pddl_repositories, applicable_action_generator, state_repository, state_space_options).value();
+    auto state_space = StateSpace::create(applicable_action_generator, state_repository, state_space_options).value();
     for (size_t state_index = 0; state_index < state_space.get_num_vertices(); ++state_index)
     {
         m_estimates.emplace(get_state(state_space.get_vertex(state_index)), state_space.get_goal_distance(state_index));

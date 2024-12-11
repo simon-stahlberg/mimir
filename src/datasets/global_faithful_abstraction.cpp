@@ -108,25 +108,24 @@ GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literal
 std::vector<GlobalFaithfulAbstraction>
 GlobalFaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
-    auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
         auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
         auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
         auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
+        memories.emplace_back(applicable_action_generator, state_repository);
     }
 
     return GlobalFaithfulAbstraction::create(memories, options);
 }
 
-std::vector<GlobalFaithfulAbstraction> GlobalFaithfulAbstraction::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-        memories,
-    const FaithfulAbstractionsOptions& options)
+std::vector<GlobalFaithfulAbstraction>
+GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+                                  const FaithfulAbstractionsOptions& options)
 {
     auto abstractions = std::vector<GlobalFaithfulAbstraction> {};
     auto faithful_abstractions = FaithfulAbstraction::create(memories, options);

@@ -20,6 +20,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -33,14 +34,16 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     PDDLParser parser(domain_file, problem_file);
-    auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
-    auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator = delete_free_problem_explorator.create_grounded_applicable_action_generator(applicable_action_generator_event_handler);
-    auto axiom_evaluator_event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
-    auto axiom_evaluator =
+    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+    auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
+    const auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
+    const auto applicable_action_generator =
+        delete_free_problem_explorator.create_grounded_applicable_action_generator(applicable_action_generator_event_handler);
+    const auto axiom_evaluator_event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
+    const auto axiom_evaluator =
         std::dynamic_pointer_cast<IAxiomEvaluator>(delete_free_problem_explorator.create_grounded_axiom_evaluator(axiom_evaluator_event_handler));
-    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
     const auto result = brfs.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);

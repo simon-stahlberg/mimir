@@ -27,7 +27,9 @@
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/grounders/condition_grounder/event_handlers/default.hpp"
 #include "mimir/search/grounders/consistency_graph.hpp"
+#include "mimir/search/grounders/grounder.hpp"
+#include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/grounders/match_tree.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
+#include "mimir/search/grounders/variable_grounder.hpp"
 
 #endif

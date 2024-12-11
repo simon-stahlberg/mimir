@@ -85,22 +85,26 @@ public:
 };
 
 /// @brief Simplest construction
-ActionGrounder::ActionGrounder(Problem problem,
-                               std::shared_ptr<PDDLRepositories> pddl_repositories,
-                               std::shared_ptr<LiteralGrounder> literal_grounder,
-                               std::shared_ptr<FunctionGrounder> function_grounder) :
-    m_problem(problem),
-    m_pddl_repositories(std::move(pddl_repositories)),
+ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<FunctionGrounder> function_grounder) :
     m_literal_grounder(std::move(literal_grounder)),
     m_function_grounder(std::move(function_grounder)),
     m_actions(),
     m_actions_by_index(),
     m_action_builder(),
     m_action_groundings(),
-    m_ground_function_to_cost(),
-    m_action_conditional_effects()
+    m_action_conditional_effects(),
+    m_ground_function_to_cost()
 {
+    /* Error checking */
+    if (m_literal_grounder->get_problem() != m_function_grounder->get_problem()
+        || m_literal_grounder->get_pddl_repositories() != m_function_grounder->get_pddl_repositories())
+    {
+        throw std::runtime_error("ActionGrounder::ActionGrounder: Problem and PDDLRepositories of LiteralGrounder and FunctionGrounder do not match.");
+    }
+
     /* 1. Initialize ground function costs. */
+
+    const auto problem = m_literal_grounder->get_problem();
 
     for (const auto numeric_fluent : problem->get_numeric_fluents())
     {
@@ -109,10 +113,10 @@ ActionGrounder::ActionGrounder(Problem problem,
 
     /* 2. Initialize the condition grounders for each action schema. */
 
-    auto static_initial_atoms = to_ground_atoms(m_problem->get_static_initial_literals());
-    auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
+    auto static_initial_atoms = to_ground_atoms(problem->get_static_initial_literals());
+    auto static_assignment_set = AssignmentSet<Static>(problem, problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
 
-    for (const auto& action : m_problem->get_domain()->get_actions())
+    for (const auto& action : problem->get_domain()->get_actions())
     {
         auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         conditional_effects.reserve(action->get_conditional_effects().size());
@@ -228,7 +232,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     // Create binding
                     for (size_t pos = 0; pos < lifted_cond_effect->get_arity(); ++pos)
                     {
-                        binding_ext[binding.size() + pos] = m_pddl_repositories->get_object(binding_cond[pos]);
+                        binding_ext[binding.size() + pos] = get_pddl_repositories()->get_object(binding_cond[pos]);
                     }
 
                     auto cond_effect_j = GroundEffectConditional();
@@ -321,9 +325,9 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     return grounded_action;
 }
 
-Problem ActionGrounder::get_problem() const { return m_problem; }
+Problem ActionGrounder::get_problem() const { return m_literal_grounder->get_problem(); }
 
-const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
+const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories() const { return m_literal_grounder->get_pddl_repositories(); }
 
 const std::shared_ptr<LiteralGrounder>& ActionGrounder::get_literal_grounder() const { return m_literal_grounder; }
 

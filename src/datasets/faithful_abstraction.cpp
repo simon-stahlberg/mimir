@@ -38,10 +38,8 @@ namespace mimir
  * FaithfulAbstraction
  */
 
-FaithfulAbstraction::FaithfulAbstraction(Problem problem,
-                                         bool mark_true_goal_literals,
+FaithfulAbstraction::FaithfulAbstraction(bool mark_true_goal_literals,
                                          bool use_unit_cost_one,
-                                         std::shared_ptr<PDDLRepositories> factories,
                                          std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                          std::shared_ptr<StateRepository> state_repository,
                                          typename FaithfulAbstraction::GraphType graph,
@@ -52,10 +50,8 @@ FaithfulAbstraction::FaithfulAbstraction(Problem problem,
                                          IndexSet deadend_vertex_indices,
                                          std::shared_ptr<const GroundActionList> ground_actions_by_source_and_target,
                                          ContinuousCostList goal_distances) :
-    m_problem(problem),
     m_mark_true_goal_literals(mark_true_goal_literals),
     m_use_unit_cost_one(use_unit_cost_one),
-    m_pddl_repositories(std::move(factories)),
     m_applicable_action_generator(std::move(applicable_action_generator)),
     m_state_repository(std::move(state_repository)),
     m_graph(std::move(graph)),
@@ -93,19 +89,21 @@ std::optional<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-    return FaithfulAbstraction::create(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository, options);
+    return FaithfulAbstraction::create(applicable_action_generator, state_repository, options);
 }
 
-std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
-                                                               std::shared_ptr<PDDLRepositories> factories,
-                                                               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                                                std::shared_ptr<StateRepository> state_repository,
                                                                const FaithfulAbstractionOptions& options)
 {
+    const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
+    const auto pddl_repositories = applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+
     auto stop_watch = StopWatch(options.timeout_ms);
 
     auto initial_state = state_repository->get_or_create_initial_state();
@@ -131,8 +129,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         auto state_space_options = StateSpaceOptions();
         state_space_options.max_num_states = options.max_num_concrete_states;
         state_space_options.timeout_ms = options.timeout_ms;
-        auto scc_pruning_strategy =
-            ObjectGraphStaticSccPruningStrategy::create(problem, factories, applicable_action_generator, state_repository, state_space_options);
+        auto scc_pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator, state_repository, state_space_options);
         if (!scc_pruning_strategy.has_value())
         {
             return std::nullopt;
@@ -146,7 +143,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
     assert(object_graph_pruning_strategy);
 
     const auto object_graph = create_object_graph(color_function,
-                                                  *factories,
+                                                  *pddl_repositories,
                                                   problem,
                                                   initial_state,
                                                   initial_state->get_index(),
@@ -193,7 +190,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 
             // Compute certificate of successor state
             const auto object_graph = create_object_graph(color_function,
-                                                          *factories,
+                                                          *pddl_repositories,
                                                           problem,
                                                           successor_state,
                                                           successor_state->get_index(),
@@ -393,10 +390,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
         }
     }
 
-    return FaithfulAbstraction(problem,
-                               options.mark_true_goal_literals,
+    return FaithfulAbstraction(options.mark_true_goal_literals,
                                options.use_unit_cost_one,
-                               std::move(factories),
                                std::move(applicable_action_generator),
                                std::move(state_repository),
                                std::move(bidirectional_graph),
@@ -412,35 +407,33 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(Problem problem,
 std::vector<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const FaithfulAbstractionsOptions& options)
 {
-    auto memories =
-        std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
+    auto memories = std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>> {};
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
         auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
         auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
         auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-        memories.emplace_back(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator, state_repository);
+        memories.emplace_back(applicable_action_generator, state_repository);
     }
 
     return FaithfulAbstraction::create(memories, options);
 }
 
-std::vector<FaithfulAbstraction> FaithfulAbstraction::create(
-    const std::vector<std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-        memories,
-    const FaithfulAbstractionsOptions& options)
+std::vector<FaithfulAbstraction>
+FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+                            const FaithfulAbstractionsOptions& options)
 {
     auto abstractions_data = std::vector<FaithfulAbstraction> {};
     auto pool = BS::thread_pool(options.num_threads);
     auto futures = std::vector<std::future<std::optional<FaithfulAbstraction>>> {};
 
-    for (const auto& [problem, factories, applicable_action_generator, state_repository] : memories)
+    for (const auto& [applicable_action_generator, state_repository] : memories)
     {
-        futures.push_back(
-            pool.submit_task([problem, factories, applicable_action_generator, state_repository, fa_options = options.fa_options]
-                             { return FaithfulAbstraction::create(problem, factories, applicable_action_generator, state_repository, fa_options); }));
+        futures.push_back(pool.submit_task([applicable_action_generator, state_repository, fa_options = options.fa_options]
+                                           { return FaithfulAbstraction::create(applicable_action_generator, state_repository, fa_options); }));
     }
 
     for (auto& future : futures)
@@ -534,14 +527,17 @@ template ContinuousCostMatrix FaithfulAbstraction::compute_pairwise_shortest_ver
  */
 
 /* Meta data */
-Problem FaithfulAbstraction::get_problem() const { return m_problem; }
+Problem FaithfulAbstraction::get_problem() const { return m_applicable_action_generator->get_action_grounder()->get_problem(); }
 
 bool FaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_true_goal_literals; }
 
 bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLRepositories>& FaithfulAbstraction::get_pddl_repositories() const { return m_pddl_repositories; }
+const std::shared_ptr<PDDLRepositories>& FaithfulAbstraction::get_pddl_repositories() const
+{
+    return m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+}
 
 const std::shared_ptr<IApplicableActionGenerator>& FaithfulAbstraction::get_applicable_action_generator() const { return m_applicable_action_generator; }
 

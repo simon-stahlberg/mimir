@@ -19,6 +19,7 @@
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 
@@ -31,14 +32,15 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
-    auto parser = PDDLParser(domain_file, problem_file);
+    const auto parser = PDDLParser(domain_file, problem_file);
+    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
     auto applicable_action_generator =
-        std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories(), applicable_action_generator_event_handler);
+        std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder(), applicable_action_generator_event_handler);
     auto axiom_evaluator_event_handler =
         std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
-    auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-        std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories(), axiom_evaluator_event_handler));
+    auto axiom_evaluator =
+        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder(), axiom_evaluator_event_handler));
     auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);

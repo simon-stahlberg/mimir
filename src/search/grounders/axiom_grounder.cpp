@@ -23,9 +23,7 @@
 
 namespace mimir
 {
-AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories, std::shared_ptr<LiteralGrounder> literal_grounder) :
-    m_problem(problem),
-    m_pddl_repositories(std::move(pddl_repositories)),
+AxiomGrounder::AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder) :
     m_literal_grounder(std::move(literal_grounder)),
     m_axioms(),
     m_axioms_by_index(),
@@ -116,9 +114,9 @@ GroundAxiom AxiomGrounder::get_ground_axiom(Index axiom_index) const { return m_
 
 size_t AxiomGrounder::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
 
-Problem AxiomGrounder::get_problem() const { return m_problem; }
+Problem AxiomGrounder::get_problem() const { return m_literal_grounder->get_problem(); }
 
-const std::shared_ptr<PDDLRepositories>& AxiomGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
+const std::shared_ptr<PDDLRepositories>& AxiomGrounder::get_pddl_repositories() const { return m_literal_grounder->get_pddl_repositories(); }
 
 const std::shared_ptr<LiteralGrounder>& AxiomGrounder::get_literal_grounder() const { return m_literal_grounder; }
 }

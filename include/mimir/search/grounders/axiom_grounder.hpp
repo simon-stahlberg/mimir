@@ -35,8 +35,6 @@ namespace mimir
 class AxiomGrounder
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
 
     GroundAxiomImplSet m_axioms;
@@ -45,7 +43,7 @@ private:
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;
 
 public:
-    AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories, std::shared_ptr<LiteralGrounder> literal_grounder);
+    explicit AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder);
 
     // Uncopyable
     AxiomGrounder(const AxiomGrounder& other) = delete;

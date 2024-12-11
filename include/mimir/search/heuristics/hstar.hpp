@@ -29,10 +29,7 @@ namespace mimir
 class HStarHeuristic : public IHeuristic
 {
 public:
-    HStarHeuristic(Problem problem,
-                   std::shared_ptr<PDDLRepositories> factories,
-                   std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                   std::shared_ptr<StateRepository> state_repository);
+    HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
 
     double compute_heuristic(State state) override;
 

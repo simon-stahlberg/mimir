@@ -85,9 +85,7 @@ private:
     /// The create function calls this constructor and ensures that
     /// the `StateSpace` is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
-    StateSpace(Problem problem,
-               bool use_unit_cost_one,
-               std::shared_ptr<PDDLRepositories> pddl_repositories,
+    StateSpace(bool use_unit_cost_one,
                std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                std::shared_ptr<StateRepository> state_repository,
                typename StateSpace::GraphType graph,
@@ -105,9 +103,7 @@ public:
     /// @param state_repository External memory to state_repository.
     /// @param options the options.
     /// @return StateSpace if construction is within the given options, and otherwise nullptr.
-    static std::optional<StateSpace> create(Problem problem,
-                                            std::shared_ptr<PDDLRepositories> pddl_repositories,
-                                            std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+    static std::optional<StateSpace> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                             std::shared_ptr<StateRepository> state_repository,
                                             const StateSpaceOptions& options = StateSpaceOptions());
 
@@ -124,8 +120,7 @@ public:
     /// @param options the options.
     /// @return `StateSpaceList` contains the `StateSpace`s for which the construction was successful.
     static std::vector<StateSpace>
-    create(const std::vector<
-               std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
+    create(const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
            const StateSpacesOptions& options = StateSpacesOptions());
 
     /**
@@ -200,11 +195,9 @@ public:
 
 private:
     /* Meta data */
-    Problem m_problem;
     bool m_use_unit_cost_one;
 
     /* Memory */
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<StateRepository> m_state_repository;
 

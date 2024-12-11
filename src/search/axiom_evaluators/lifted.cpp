@@ -51,8 +51,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     for (const auto& axiom : problem->get_problem_and_domain_axioms())
     {
         m_condition_grounders.emplace(axiom,
-                                      SatisficingBindingGenerator(problem,
-                                                                  pddl_repositories,
+                                      SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
                                                                   axiom->get_parameters(),
                                                                   axiom->get_conditions<Static>(),
                                                                   axiom->get_conditions<Fluent>(),

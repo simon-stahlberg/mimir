@@ -18,11 +18,13 @@
 #include "mimir/formalism/translators/to_mimir_structures.hpp"
 
 #include "mimir/common/collections.hpp"
+#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
 #include <numeric>
 #include <typeinfo>
+#include <unordered_map>
 
 namespace mimir
 {
