@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, LiftedApplicableActionGenerator, LiftedAxiomEvaluator, StateRepository, BrFSAlgorithm, SearchStatus
+import pymimir as mm
 
 from pathlib import Path
 
@@ -10,12 +10,13 @@ def test_breadth_first_search():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    parser = PDDLParser(domain_filepath, problem_filepath)
-    applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories())
-    axiom_evaluator = LiftedAxiomEvaluator(parser.get_problem(), parser.get_pddl_repositories())
-    state_repository = StateRepository(axiom_evaluator)
-    breadth_first_search_algorithm = BrFSAlgorithm(applicable_action_generator, state_repository)
+    parser = mm.PDDLParser(domain_filepath, problem_filepath)
+    grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
+    applicable_action_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
+    axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
+    state_repository = mm.StateRepository(axiom_evaluator)
+    breadth_first_search_algorithm = mm.BrFSAlgorithm(applicable_action_generator, state_repository)
     result = breadth_first_search_algorithm.find_solution()
 
-    assert result.status == SearchStatus.SOLVED
+    assert result.status == mm.SearchStatus.SOLVED
     assert len(result.plan) == 3

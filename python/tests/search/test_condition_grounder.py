@@ -1,4 +1,4 @@
-from pymimir import PDDLParser, LiftedApplicableActionGenerator, LiftedAxiomEvaluator, StaticGroundAtomList, StaticAssignmentSet, ConditionGrounder, StateRepository, StaticLiteralList, DerivedLiteralList
+import pymimir as mm
 
 from pathlib import Path
 
@@ -10,19 +10,20 @@ def test_condition_grounder():
     """
     domain_filepath = str(ROOT_DIR / "data" / "gripper" / "domain.pddl")
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
-    pddl_parser = PDDLParser(domain_filepath, problem_filepath)
+    parser = mm.PDDLParser(domain_filepath, problem_filepath)
 
-    problem = pddl_parser.get_problem()
-    pddl_repositories = pddl_parser.get_pddl_repositories()
+    problem = parser.get_problem()
+    pddl_repositories = parser.get_pddl_repositories()
     goal_variables, goal_lifted = problem.get_fluent_goal_condition().lift(pddl_repositories)
-    static_initial_atoms = StaticGroundAtomList([literal.get_atom() for literal in problem.get_static_initial_literals()])
-    static_assignment_set = StaticAssignmentSet(problem, problem.get_domain().get_static_predicates(), static_initial_atoms)
-    condition_grounder = ConditionGrounder(problem, pddl_repositories, goal_variables, StaticLiteralList(), goal_lifted, DerivedLiteralList(), static_assignment_set)
-    applicable_action_generator = LiftedApplicableActionGenerator(problem, pddl_repositories)
-    axiom_evaluator = LiftedAxiomEvaluator(problem, pddl_repositories)
-    state_repository = StateRepository(axiom_evaluator)
+    static_initial_atoms = mm.StaticGroundAtomList([literal.get_atom() for literal in problem.get_static_initial_literals()])
+    static_assignment_set = mm.StaticAssignmentSet(problem, problem.get_domain().get_static_predicates(), static_initial_atoms)
+    grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
+    condition_grounder = mm.SatisficingBindingGenerator(grounder.get_literal_grounder(), goal_variables, mm.StaticLiteralList(), goal_lifted, mm.DerivedLiteralList(), static_assignment_set)
+    applicable_action_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
+    axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
+    state_repository = mm.StateRepository(axiom_evaluator)
     initial_state = state_repository.get_or_create_initial_state()
-    goal_bindings = condition_grounder.create_ground_conjunction_generator(initial_state, 1_000_000)
+    goal_bindings = condition_grounder.generate_ground_conjunctions(initial_state, 1_000_000)
 
     del state_repository
     del applicable_action_generator

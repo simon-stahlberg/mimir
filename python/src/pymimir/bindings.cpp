@@ -942,24 +942,17 @@ void init_pymimir(py::module_& m)
     bind_assignment_set("FluentAssignmentSet", Fluent {});
     bind_assignment_set("DerivedAssignmentSet", Derived {});
 
-    /* ConditionGrounder */
-    py::class_<ConditionGrounder>(m, "ConditionGrounder")  //
-        .def(py::init<Problem,
-                      std::shared_ptr<PDDLRepositories>,
-                      VariableList,
-                      LiteralList<Static>,
-                      LiteralList<Fluent>,
-                      LiteralList<Derived>,
-                      AssignmentSet<Static>>(),
-             py::arg("problem"),
-             py::arg("pddl_repositories"),
+    /* SatisficingBindingGenerator */
+    py::class_<SatisficingBindingGenerator>(m, "SatisficingBindingGenerator")  //
+        .def(py::init<std::shared_ptr<LiteralGrounder>, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, AssignmentSet<Static>>(),
+             py::arg("literal_grounder"),
              py::arg("parameters"),
              py::arg("static_literals"),
              py::arg("fluent_literals"),
              py::arg("derived_literals"),
              py::arg("static_assignment_set"))
-        .def("create_ground_conjunction_generator",  // we use the c++ name already for future update of pybind11 in regards of std::generator
-             [](ConditionGrounder& self, State state, size_t max_num_groundings)
+        .def("generate_ground_conjunctions",
+             [](SatisficingBindingGenerator& self, State state, size_t max_num_groundings)
              {
                  auto result =
                      std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
@@ -977,20 +970,66 @@ void init_pymimir(py::module_& m)
                  return result;  // TODO: keep alive is not set. Lets leave it "buggy" for this specialized piece of code...
              });
 
+    /* LiteralGrounder */
+    py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>>(m, "LiteralGrounder")  //
+        .def("get_problem", &LiteralGrounder::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &LiteralGrounder::get_pddl_repositories, py::return_value_policy::copy)
+        .def("ground_static_literal",
+             &LiteralGrounder::ground_literal<Static>,
+             py::return_value_policy::reference_internal,
+             py::arg("literal"),
+             py::arg("binding"))
+        .def("ground_fluent_literal",
+             &LiteralGrounder::ground_literal<Fluent>,
+             py::return_value_policy::reference_internal,
+             py::arg("literal"),
+             py::arg("binding"))
+        .def("ground_derived_literal",
+             &LiteralGrounder::ground_literal<Derived>,
+             py::return_value_policy::reference_internal,
+             py::arg("literal"),
+             py::arg("binding"));
+
+    /* FunctionGrounder */
+    py::class_<FunctionGrounder, std::shared_ptr<FunctionGrounder>>(m, "FunctionGrounder")  //
+        .def("get_problem", &FunctionGrounder::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &FunctionGrounder::get_pddl_repositories, py::return_value_policy::copy)
+        .def("ground_function", &FunctionGrounder::ground_function, py::return_value_policy::reference_internal, py::arg("function"), py::arg("binding"));
+
     /* ActionGrounder */
-    py::class_<ActionGrounder>(m, "ActionGrounder")  //
+    py::class_<ActionGrounder, std::shared_ptr<ActionGrounder>>(m, "ActionGrounder")  //
         .def("get_problem", &ActionGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &ActionGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("get_action_precondition_grounders", &ActionGrounder::get_action_precondition_grounders, py::return_value_policy::copy)
         .def("ground_action", &ActionGrounder::ground_action, py::return_value_policy::reference_internal, py::arg("action"), py::arg("binding"))
-        .def("get_ground_actions", &ActionGrounder::get_ground_actions, py::return_value_policy::reference_internal)
+        .def("get_ground_actions", &ActionGrounder::get_ground_actions, py::return_value_policy::copy)
         .def("get_ground_action", &ActionGrounder::get_ground_action, py::return_value_policy::reference_internal, py::arg("action_index"))
-        .def("get_num_ground_actions", &ActionGrounder::get_num_ground_actions, py::return_value_policy::reference_internal);
+        .def("get_num_ground_actions", &ActionGrounder::get_num_ground_actions, py::return_value_policy::copy);
+
+    /* AxiomGrounder */
+    py::class_<AxiomGrounder, std::shared_ptr<AxiomGrounder>>(m, "AxiomGrounder")  //
+        .def("get_problem", &AxiomGrounder::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &AxiomGrounder::get_pddl_repositories, py::return_value_policy::copy)
+        .def("ground_axiom", &AxiomGrounder::ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
+        .def("get_ground_axioms", &AxiomGrounder::get_ground_axioms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_ground_axiom", &AxiomGrounder::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
+        .def("get_num_ground_axioms", &AxiomGrounder::get_num_ground_axioms, py::return_value_policy::copy);
+
+    /* Grounder */
+    py::class_<Grounder, std::shared_ptr<Grounder>>(m, "Grounder")  //
+        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
+        .def("get_problem", &Grounder::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &Grounder::get_pddl_repositories, py::return_value_policy::copy)
+        .def("get_literal_grounder", &Grounder::get_literal_grounder, py::return_value_policy::copy)
+        .def("get_function_grounder", &Grounder::get_function_grounder, py::return_value_policy::copy)
+        .def("get_action_grounder", &Grounder::get_action_grounder, py::return_value_policy::copy)
+        .def("get_axiom_grounder", &Grounder::get_axiom_grounder, py::return_value_policy::copy);
 
     /* ApplicableActionGenerators */
     py::class_<IApplicableActionGenerator, std::shared_ptr<IApplicableActionGenerator>>(m, "IApplicableActionGenerator")
+        .def("get_problem", &IApplicableActionGenerator::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &IApplicableActionGenerator::get_pddl_repositories, py::return_value_policy::copy)
         .def(
-            "create_applicable_action_generator",  // we use the c++ name already for future update of pybind11 in regards of std::generator
+            "generate_applicable_actions",
             [](IApplicableActionGenerator& self, State state)
             {
                 // TODO: pybind11 does not support std::generator. Is there a simple workaround WITHOUT introducing additional code?
@@ -1003,7 +1042,7 @@ void init_pymimir(py::module_& m)
             },
             py::keep_alive<0, 1>(),
             py::arg("state"))
-        .def("get_action_grounder", py::overload_cast<>(&IApplicableActionGenerator::get_action_grounder), py::return_value_policy::reference_internal);
+        .def("get_action_grounder", &IApplicableActionGenerator::get_action_grounder, py::return_value_policy::copy);
 
     // Lifted
     py::class_<ILiftedApplicableActionGeneratorEventHandler, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(
@@ -1022,10 +1061,9 @@ void init_pymimir(py::module_& m)
     py::class_<LiftedApplicableActionGenerator, IApplicableActionGenerator, std::shared_ptr<LiftedApplicableActionGenerator>>(
         m,
         "LiftedApplicableActionGenerator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
-             py::arg("problem"),
-             py::arg("pddl_repositories"),
+        .def(py::init<std::shared_ptr<ActionGrounder>>(), py::arg("action_grounder"))
+        .def(py::init<std::shared_ptr<ActionGrounder>, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler>>(),
+             py::arg("action_grounder"),
              py::arg("event_handler"));
 
     // Grounded
@@ -1046,19 +1084,11 @@ void init_pymimir(py::module_& m)
         m,
         "GroundedApplicableActionGenerator");
 
-    /* AxiomGrounder */
-    py::class_<AxiomGrounder>(m, "AxiomGrounder")  //
-        .def("get_problem", &AxiomGrounder::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_repositories", &AxiomGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("get_axiom_precondition_grounders", &AxiomGrounder::get_axiom_precondition_grounders, py::return_value_policy::copy)
-        .def("ground_axiom", &AxiomGrounder::ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
-        .def("get_ground_axioms", &AxiomGrounder::get_ground_axioms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_ground_axiom", &AxiomGrounder::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
-        .def("get_num_ground_axioms", &AxiomGrounder::get_num_ground_axioms, py::return_value_policy::reference_internal);
-
     /* IAxiomEvaluator */
     py::class_<IAxiomEvaluator, std::shared_ptr<IAxiomEvaluator>>(m, "IAxiomEvaluator")  //
-        .def("get_axiom_grounder", py::overload_cast<>(&IAxiomEvaluator::get_axiom_grounder), py::return_value_policy::reference_internal);
+        .def("get_problem", &IAxiomEvaluator::get_problem, py::return_value_policy::reference_internal)
+        .def("get_pddl_repositories", &IAxiomEvaluator::get_pddl_repositories, py::return_value_policy::copy)
+        .def("get_axiom_grounder", &IAxiomEvaluator::get_axiom_grounder, py::return_value_policy::copy);
 
     // Lifted
     py::class_<ILiftedAxiomEvaluatorEventHandler, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(m, "ILiftedAxiomEvaluatorEventHandler");  //
@@ -1071,10 +1101,9 @@ void init_pymimir(py::module_& m)
         "DebugLiftedAxiomEvaluatorEventHandler")  //
         .def(py::init<>());
     py::class_<LiftedAxiomEvaluator, IAxiomEvaluator, std::shared_ptr<LiftedAxiomEvaluator>>(m, "LiftedAxiomEvaluator")  //
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(),
-             py::arg("problem"),
-             py::arg("pddl_repositories"),
+        .def(py::init<std::shared_ptr<AxiomGrounder>>(), py::arg("axiom_grounder"))
+        .def(py::init<std::shared_ptr<AxiomGrounder>, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>>(),
+             py::arg("axiom_grounder"),
              py::arg("event_handler"));
 
     // Grounded
@@ -1092,15 +1121,14 @@ void init_pymimir(py::module_& m)
 
     /* DeleteRelaxedProblemExplorator */
     py::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
-        .def(py::init<Problem, std::shared_ptr<PDDLRepositories>>(), py::arg("problem"), py::arg("pddl_repositories"))
+        .def(py::init<std::shared_ptr<Grounder>>(), py::arg("grounder"))
         .def("create_grounded_axiom_evaluator",
              &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
              py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
         .def("create_grounded_applicable_action_generator",
              &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
              py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
-        .def("get_problem", &DeleteRelaxedProblemExplorator::get_problem, py::return_value_policy::reference_internal)
-        .def("get_pddl_repositories", &DeleteRelaxedProblemExplorator::get_pddl_repositories, py::return_value_policy::copy);
+        .def("get_grounder", &DeleteRelaxedProblemExplorator::get_grounder, py::return_value_policy::copy);
 
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
@@ -1360,13 +1388,9 @@ void init_pymimir(py::module_& m)
             py::arg("options") = StateSpaceOptions())
         .def_static(
             "create",
-            [](Problem problem,
-               std::shared_ptr<PDDLRepositories> factories,
-               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+            [](std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                std::shared_ptr<StateRepository> state_repository,
-               const StateSpaceOptions& options) { return StateSpace::create(problem, factories, applicable_action_generator, state_repository, options); },
-            py::arg("problem"),
-            py::arg("factories"),
+               const StateSpaceOptions& options) { return StateSpace::create(applicable_action_generator, state_repository, options); },
             py::arg("applicable_action_generator"),
             py::arg("state_repository"),
             py::arg("options") = StateSpaceOptions())
@@ -1382,9 +1406,7 @@ void init_pymimir(py::module_& m)
             py::arg("options") = StateSpacesOptions())
         .def_static(
             "create",
-            [](const std::vector<
-                   std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-                   memories,
+            [](const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
                const StateSpacesOptions& options) { return StateSpace::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = StateSpacesOptions())
@@ -1587,14 +1609,9 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionOptions())
         .def_static(
             "create",
-            [](Problem problem,
-               std::shared_ptr<PDDLRepositories> factories,
-               std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+            [](std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                std::shared_ptr<StateRepository> state_repository,
-               const FaithfulAbstractionOptions& options)
-            { return FaithfulAbstraction::create(problem, factories, applicable_action_generator, state_repository, options); },
-            py::arg("problem"),
-            py::arg("factories"),
+               const FaithfulAbstractionOptions& options) { return FaithfulAbstraction::create(applicable_action_generator, state_repository, options); },
             py::arg("applicable_action_generator"),
             py::arg("state_repository"),
             py::arg("options") = FaithfulAbstractionOptions())
@@ -1610,9 +1627,7 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
-            [](const std::vector<
-                   std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-                   memories,
+            [](const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
                const FaithfulAbstractionsOptions& options) { return FaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionOptions())
@@ -1749,9 +1764,7 @@ void init_pymimir(py::module_& m)
             py::arg("options") = FaithfulAbstractionsOptions())
         .def_static(
             "create",
-            [](const std::vector<
-                   std::tuple<Problem, std::shared_ptr<PDDLRepositories>, std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>&
-                   memories,
+            [](const std::vector<std::tuple<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>>& memories,
                const FaithfulAbstractionsOptions& options) { return GlobalFaithfulAbstraction::create(memories, options); },
             py::arg("memories"),
             py::arg("options") = FaithfulAbstractionsOptions())
