@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounding/condition_grounder.hpp"
+#include "mimir/search/satisficing_binding_generator.hpp"
 
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
@@ -25,7 +25,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/grounding/condition_grounder/event_handlers/default.hpp"
+#include "mimir/search/grounders/condition_grounder/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
@@ -34,7 +34,7 @@ namespace mimir
 {
 
 template<DynamicPredicateTag P>
-bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding)
+bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -49,10 +49,10 @@ bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<P>& literals,
     return true;
 }
 
-template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, State state, const ObjectList& binding);
-template bool ConditionGrounder::is_valid_dynamic_binding(const LiteralList<Derived>& literals, State state, const ObjectList& binding);
+template bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, State state, const ObjectList& binding);
+template bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<Derived>& literals, State state, const ObjectList& binding);
 
-bool ConditionGrounder::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
+bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -67,7 +67,7 @@ bool ConditionGrounder::is_valid_static_binding(const LiteralList<Static>& liter
     return true;
 }
 
-bool ConditionGrounder::is_valid_binding(State state, const ObjectList& binding)
+bool SatisficingBindingGenerator::is_valid_binding(State state, const ObjectList& binding)
 {
     return is_valid_static_binding(m_static_conditions, binding)               // We need to test all
            && is_valid_dynamic_binding(m_fluent_conditions, state, binding)    // types of conditions
@@ -91,12 +91,12 @@ bool nullary_literals_hold(const GroundLiteralList<P>& literals, State state)
 }
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-bool ConditionGrounder::nullary_conditions_hold(State state)
+bool SatisficingBindingGenerator::nullary_conditions_hold(State state) const
 {
     return nullary_literals_hold(m_nullary_fluent_conditions, state) && nullary_literals_hold(m_nullary_derived_conditions, state);
 }
 
-mimir::generator<ObjectList> ConditionGrounder::nullary_case(State state)
+mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(State state)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
@@ -112,7 +112,7 @@ mimir::generator<ObjectList> ConditionGrounder::nullary_case(State state)
 }
 
 mimir::generator<ObjectList>
-ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
+SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
@@ -133,8 +133,9 @@ ConditionGrounder::unary_case(const AssignmentSet<Fluent>& fluent_assignment_set
     }
 }
 
-mimir::generator<ObjectList>
-ConditionGrounder::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
+mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                                       const AssignmentSet<Derived>& derived_assignment_sets,
+                                                                       State state)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
@@ -204,32 +205,32 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
     return ground_literals;
 }
 
-ConditionGrounder::ConditionGrounder(Problem problem,
-                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
-                                     VariableList variables,
-                                     LiteralList<Static> static_conditions,
-                                     LiteralList<Fluent> fluent_conditions,
-                                     LiteralList<Derived> derived_conditions,
-                                     AssignmentSet<Static> static_assignment_set) :
-    ConditionGrounder(std::move(problem),
-                      std::move(pddl_repositories),
-                      std::move(variables),
-                      std::move(static_conditions),
-                      std::move(fluent_conditions),
-                      std::move(derived_conditions),
-                      std::move(static_assignment_set),
-                      std::make_shared<DefaultConditionGrounderEventHandler>())
+SatisficingBindingGenerator::SatisficingBindingGenerator(Problem problem,
+                                                         std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                                         VariableList variables,
+                                                         LiteralList<Static> static_conditions,
+                                                         LiteralList<Fluent> fluent_conditions,
+                                                         LiteralList<Derived> derived_conditions,
+                                                         AssignmentSet<Static> static_assignment_set) :
+    SatisficingBindingGenerator(std::move(problem),
+                                std::move(pddl_repositories),
+                                std::move(variables),
+                                std::move(static_conditions),
+                                std::move(fluent_conditions),
+                                std::move(derived_conditions),
+                                std::move(static_assignment_set),
+                                std::make_shared<DefaultConditionGrounderEventHandler>())
 {
 }
 
-ConditionGrounder::ConditionGrounder(Problem problem,
-                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
-                                     VariableList variables,
-                                     LiteralList<Static> static_conditions,
-                                     LiteralList<Fluent> fluent_conditions,
-                                     LiteralList<Derived> derived_conditions,
-                                     AssignmentSet<Static> static_assignment_set,
-                                     std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
+SatisficingBindingGenerator::SatisficingBindingGenerator(Problem problem,
+                                                         std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                                         VariableList variables,
+                                                         LiteralList<Static> static_conditions,
+                                                         LiteralList<Fluent> fluent_conditions,
+                                                         LiteralList<Derived> derived_conditions,
+                                                         AssignmentSet<Static> static_assignment_set,
+                                                         std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
     m_problem(std::move(problem)),
     m_pddl_repositories(std::move(pddl_repositories)),
     m_variables(std::move(variables)),
@@ -245,9 +246,9 @@ ConditionGrounder::ConditionGrounder(Problem problem,
 {
 }
 
-mimir::generator<ObjectList> ConditionGrounder::create_binding_generator(State state,
-                                                                         const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                         const AssignmentSet<Derived>& derived_assignment_set)
+mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(State state,
+                                                                                   const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                                                   const AssignmentSet<Derived>& derived_assignment_set)
 {
     if (nullary_conditions_hold(state))
     {
@@ -267,7 +268,7 @@ mimir::generator<ObjectList> ConditionGrounder::create_binding_generator(State s
 }
 
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-ConditionGrounder::create_ground_conjunction_generator(State state)
+SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
 {
     auto problem = m_problem;
 
@@ -303,12 +304,12 @@ ConditionGrounder::create_ground_conjunction_generator(State state)
     }
 }
 
-Problem ConditionGrounder::get_problem() const { return m_problem; }
+Problem SatisficingBindingGenerator::get_problem() const { return m_problem; }
 
-const VariableList& ConditionGrounder::get_variables() const { return m_variables; }
+const VariableList& SatisficingBindingGenerator::get_variables() const { return m_variables; }
 
 template<PredicateTag P>
-const LiteralList<P>& ConditionGrounder::get_conditions() const
+const LiteralList<P>& SatisficingBindingGenerator::get_conditions() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -328,19 +329,19 @@ const LiteralList<P>& ConditionGrounder::get_conditions() const
     }
 }
 
-template const LiteralList<Static>& ConditionGrounder::get_conditions<Static>() const;
-template const LiteralList<Fluent>& ConditionGrounder::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& ConditionGrounder::get_conditions<Derived>() const;
+template const LiteralList<Static>& SatisficingBindingGenerator::get_conditions<Static>() const;
+template const LiteralList<Fluent>& SatisficingBindingGenerator::get_conditions<Fluent>() const;
+template const LiteralList<Derived>& SatisficingBindingGenerator::get_conditions<Derived>() const;
 
-const AssignmentSet<Static>& ConditionGrounder::get_static_assignment_set() const { return m_static_assignment_set; }
+const AssignmentSet<Static>& SatisficingBindingGenerator::get_static_assignment_set() const { return m_static_assignment_set; }
 
-const std::shared_ptr<PDDLRepositories>& ConditionGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
+const std::shared_ptr<PDDLRepositories>& SatisficingBindingGenerator::get_pddl_repositories() const { return m_pddl_repositories; }
 
-const std::shared_ptr<IConditionGrounderEventHandler>& ConditionGrounder::get_event_handler() const { return m_event_handler; }
+const std::shared_ptr<IConditionGrounderEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
 
-const consistency_graph::StaticConsistencyGraph& ConditionGrounder::get_static_consistency_graph() const { return m_static_consistency_graph; }
+const consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator::get_static_consistency_graph() const { return m_static_consistency_graph; }
 
-std::ostream& operator<<(std::ostream& out, const ConditionGrounder& condition_grounder)
+std::ostream& operator<<(std::ostream& out, const SatisficingBindingGenerator& condition_grounder)
 {
     out << "Condition Grounder:" << std::endl;
     out << " - Variables: " << condition_grounder.get_variables() << std::endl;

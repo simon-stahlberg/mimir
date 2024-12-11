@@ -23,8 +23,8 @@
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/axiom_grounder.hpp"
-#include "mimir/search/grounding/match_tree.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
+#include "mimir/search/grounders/match_tree.hpp"
 
 namespace mimir
 {

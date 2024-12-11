@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -117,13 +117,13 @@ ActionGrounder::ActionGrounder(Problem problem, std::shared_ptr<PDDLRepositories
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
         m_action_precondition_grounders.emplace(action,
-                                                ConditionGrounder(m_problem,
-                                                                  m_pddl_repositories,
-                                                                  action->get_parameters(),
-                                                                  action->get_conditions<Static>(),
-                                                                  action->get_conditions<Fluent>(),
-                                                                  action->get_conditions<Derived>(),
-                                                                  static_assignment_set));
+                                                SatisficingBindingGenerator(m_problem,
+                                                                            m_pddl_repositories,
+                                                                            action->get_parameters(),
+                                                                            action->get_conditions<Static>(),
+                                                                            action->get_conditions<Fluent>(),
+                                                                            action->get_conditions<Derived>(),
+                                                                            static_assignment_set));
         auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         conditional_effects.reserve(action->get_conditional_effects().size());
 
@@ -144,7 +144,7 @@ Problem ActionGrounder::get_problem() const { return m_problem; }
 
 const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
 
-std::unordered_map<Action, ConditionGrounder>& ActionGrounder::get_action_precondition_grounders() { return m_action_precondition_grounders; }
+std::unordered_map<Action, SatisficingBindingGenerator>& ActionGrounder::get_action_precondition_grounders() { return m_action_precondition_grounders; }
 
 GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 {

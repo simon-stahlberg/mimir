@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounding/axiom_grounder.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
@@ -41,13 +41,13 @@ AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> 
     for (const auto& axiom : problem->get_problem_and_domain_axioms())
     {
         m_condition_grounders.emplace(axiom,
-                                      ConditionGrounder(m_problem,
-                                                        m_pddl_repositories,
-                                                        axiom->get_parameters(),
-                                                        axiom->get_conditions<Static>(),
-                                                        axiom->get_conditions<Fluent>(),
-                                                        axiom->get_conditions<Derived>(),
-                                                        static_assignment_set));
+                                      SatisficingBindingGenerator(m_problem,
+                                                                  m_pddl_repositories,
+                                                                  axiom->get_parameters(),
+                                                                  axiom->get_conditions<Static>(),
+                                                                  axiom->get_conditions<Fluent>(),
+                                                                  axiom->get_conditions<Derived>(),
+                                                                  static_assignment_set));
     }
 }
 
@@ -126,7 +126,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     return grounded_axiom;
 }
 
-std::unordered_map<Axiom, ConditionGrounder>& AxiomGrounder::get_axiom_precondition_grounders() { return m_condition_grounders; }
+std::unordered_map<Axiom, SatisficingBindingGenerator>& AxiomGrounder::get_axiom_precondition_grounders() { return m_condition_grounders; }
 
 /// @brief Return all axioms.
 const GroundAxiomList& AxiomGrounder::get_ground_axioms() const { return m_axioms_by_index; }

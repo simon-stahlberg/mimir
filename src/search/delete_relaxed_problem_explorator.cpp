@@ -21,9 +21,9 @@
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/grounding/action_grounder.hpp"
-#include "mimir/search/grounding/axiom_grounder.hpp"
-#include "mimir/search/grounding/match_tree.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
+#include "mimir/search/grounders/match_tree.hpp"
 
 namespace mimir
 {

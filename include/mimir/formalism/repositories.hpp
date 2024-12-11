@@ -31,7 +31,6 @@
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/hash.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -142,13 +141,6 @@ class PDDLRepositories
 {
 private:
     PDDLTypeToRepository m_repositories;
-
-    using GroundedTypeToGroundingTableList =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, GroundingTableList<GroundLiteral<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, GroundingTableList<GroundLiteral<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, GroundingTableList<GroundLiteral<Derived>>>>;
-
-    GroundedTypeToGroundingTableList m_grounding_tables;
 
 public:
     PDDLRepositories();
@@ -343,25 +335,6 @@ public:
 
     // Axiom
     Axiom get_axiom(size_t axiom_index) const;
-
-    /* Grounding */
-
-    void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms);
-
-    template<PredicateTag P>
-    GroundLiteral<P> ground_literal(const Literal<P> literal, const ObjectList& binding);
-
-    template<PredicateTag P>
-    void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
-                                FlatBitset& ref_positive_bitset,
-                                FlatBitset& ref_negative_bitset,
-                                const ObjectList& binding);
-
-    template<PredicateTag P>
-    void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
-                                FlatIndexList& ref_positive_indices,
-                                FlatIndexList& ref_negative_indices,
-                                const ObjectList& binding);
 };
 
 /**

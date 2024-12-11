@@ -15,15 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDING_ACTION_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDING_ACTION_GROUNDER_HPP_
+#ifndef MIMIR_SEARCH_GROUNDERS_ACTION_GROUNDER_HPP_
+#define MIMIR_SEARCH_GROUNDERS_ACTION_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/condition_grounder.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
+#include "mimir/search/grounders/consistency_graph.hpp"
+#include "mimir/search/grounders/grounding_table.hpp"
+#include "mimir/search/grounders/literal_grounder.hpp"
+#include "mimir/search/satisficing_binding_generator.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -37,9 +38,6 @@ class ActionGrounder
 private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
-
-    std::unordered_map<Action, ConditionGrounder> m_action_precondition_grounders;
-    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
 
     GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
@@ -62,8 +60,6 @@ public:
     Problem get_problem() const;
 
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
-
-    std::unordered_map<Action, ConditionGrounder>& get_action_precondition_grounders();
 
     /// @brief Ground an action and return a view onto it.
     GroundAction ground_action(Action action, ObjectList binding);

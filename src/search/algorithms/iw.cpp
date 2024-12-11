@@ -29,7 +29,7 @@
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 

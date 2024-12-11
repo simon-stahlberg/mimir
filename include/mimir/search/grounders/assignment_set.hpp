@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDING_LIFTED_ASSIGNMENT_SET_HPP_
-#define MIMIR_SEARCH_GROUNDING_LIFTED_ASSIGNMENT_SET_HPP_
+#ifndef MIMIR_SEARCH_GROUNDERS_LIFTED_ASSIGNMENT_SET_HPP_
+#define MIMIR_SEARCH_GROUNDERS_LIFTED_ASSIGNMENT_SET_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
+#include "mimir/search/grounders/consistency_graph.hpp"
 
 #include <cassert>
 #include <limits>

@@ -15,15 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDING_CONDITION_GROUNDER_HPP_
+#ifndef MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_HPP_
+#define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_HPP_
 
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/assignment_set.hpp"
-#include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
+#include "mimir/search/grounders/assignment_set.hpp"
+#include "mimir/search/grounders/condition_grounder/event_handlers/interface.hpp"
+#include "mimir/search/grounders/consistency_graph.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -36,7 +36,7 @@
 namespace mimir
 {
 
-class ConditionGrounder
+class SatisficingBindingGenerator
 {
 private:
     Problem m_problem;
@@ -65,7 +65,7 @@ private:
     bool is_valid_binding(State state, const ObjectList& binding);
 
     /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_conditions_hold(State state);
+    bool nullary_conditions_hold(State state) const;
 
     mimir::generator<ObjectList> nullary_case(State state);
 
@@ -76,22 +76,22 @@ private:
     general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
-    ConditionGrounder(Problem problem,
-                      std::shared_ptr<PDDLRepositories> pddl_repositories,
-                      VariableList variables,
-                      LiteralList<Static> static_conditions,
-                      LiteralList<Fluent> fluent_conditions,
-                      LiteralList<Derived> derived_conditions,
-                      AssignmentSet<Static> static_assignment_set);
+    SatisficingBindingGenerator(Problem problem,
+                                std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                VariableList variables,
+                                LiteralList<Static> static_conditions,
+                                LiteralList<Fluent> fluent_conditions,
+                                LiteralList<Derived> derived_conditions,
+                                AssignmentSet<Static> static_assignment_set);
 
-    ConditionGrounder(Problem problem,
-                      std::shared_ptr<PDDLRepositories> pddl_repositories,
-                      VariableList variables,
-                      LiteralList<Static> static_conditions,
-                      LiteralList<Fluent> fluent_conditions,
-                      LiteralList<Derived> derived_conditions,
-                      AssignmentSet<Static> static_assignment_set,
-                      std::shared_ptr<IConditionGrounderEventHandler> event_handler);
+    SatisficingBindingGenerator(Problem problem,
+                                std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                VariableList variables,
+                                LiteralList<Static> static_conditions,
+                                LiteralList<Fluent> fluent_conditions,
+                                LiteralList<Derived> derived_conditions,
+                                AssignmentSet<Static> static_assignment_set,
+                                std::shared_ptr<IConditionGrounderEventHandler> event_handler);
 
     mimir::generator<ObjectList>
     create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
@@ -118,7 +118,7 @@ public:
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& out, const ConditionGrounder& condition_grounder);
+std::ostream& operator<<(std::ostream& out, const SatisficingBindingGenerator& condition_grounder);
 
 }
 

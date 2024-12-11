@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounding/consistency_graph.hpp"
+#include "mimir/search/grounders/consistency_graph.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
@@ -23,7 +23,7 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/grounding/assignment_set.hpp"
+#include "mimir/search/grounders/assignment_set.hpp"
 
 #include <cstdint>
 

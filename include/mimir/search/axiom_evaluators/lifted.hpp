@@ -23,7 +23,7 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/axiom_grounder.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -36,6 +36,8 @@ class LiftedAxiomEvaluator : public IAxiomEvaluator
 private:
     AxiomGrounder m_grounder;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
+
+    std::unordered_map<Axiom, SatisficingBindingGenerator> m_condition_grounders;
 
     std::vector<AxiomPartition> m_partitioning;
 

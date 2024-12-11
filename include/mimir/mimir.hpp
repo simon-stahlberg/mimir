@@ -73,7 +73,7 @@
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/grounding.hpp"
+#include "mimir/search/grounders.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
 #include "mimir/search/search_node.hpp"

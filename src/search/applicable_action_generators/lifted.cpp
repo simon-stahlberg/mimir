@@ -26,8 +26,8 @@
 #include "mimir/formalism/utils.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/grounding/condition_grounder.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
+#include "mimir/search/grounders/consistency_graph.hpp"
+#include "mimir/search/satisficing_binding_generator.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>

@@ -21,7 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/match_tree.hpp"
+#include "mimir/search/grounders/match_tree.hpp"
 
 namespace mimir
 {

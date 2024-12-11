@@ -23,7 +23,7 @@
 #include "mimir/search/algorithms/siw/event_handlers.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 

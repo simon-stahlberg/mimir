@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDING_AXIOM_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDING_AXIOM_GROUNDER_HPP_
+#ifndef MIMIR_SEARCH_GROUNDERS_AXIOM_GROUNDER_HPP_
+#define MIMIR_SEARCH_GROUNDERS_AXIOM_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/condition_grounder.hpp"
+#include "mimir/search/grounders/grounding_table.hpp"
+#include "mimir/search/satisficing_binding_generator.hpp"
 
 #include <stdexcept>
 #include <unordered_map>
@@ -36,8 +36,6 @@ class AxiomGrounder
 private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
-
-    std::unordered_map<Axiom, ConditionGrounder> m_condition_grounders;
 
     GroundAxiomImplSet m_axioms;
     GroundAxiomList m_axioms_by_index;
@@ -56,8 +54,6 @@ public:
 
     /// @brief Ground an axiom and return a view onto it.
     GroundAxiom ground_axiom(Axiom axiom, ObjectList binding);
-
-    std::unordered_map<Axiom, ConditionGrounder>& get_axiom_precondition_grounders();
 
     /// @brief Return all axioms.
     const GroundAxiomList& get_ground_axioms() const;

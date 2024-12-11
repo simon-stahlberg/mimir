@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/grounding/condition_grounder/event_handlers/interface.hpp"
+#include "mimir/search/grounders/condition_grounder/event_handlers/interface.hpp"
 
 namespace mimir
 {

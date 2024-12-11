@@ -15,19 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDING_HPP_
-#define MIMIR_SEARCH_GROUNDING_HPP_
+#ifndef MIMIR_SEARCH_GROUNDERS_HPP_
+#define MIMIR_SEARCH_GROUNDERS_HPP_
 
 /**
  * Include all specializations here
  */
 
-#include "mimir/search/grounding/action_grounder.hpp"
-#include "mimir/search/grounding/assignment_set.hpp"
-#include "mimir/search/grounding/axiom_grounder.hpp"
-#include "mimir/search/grounding/condition_grounder.hpp"
-#include "mimir/search/grounding/condition_grounder/event_handlers/default.hpp"
-#include "mimir/search/grounding/consistency_graph.hpp"
-#include "mimir/search/grounding/match_tree.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
+#include "mimir/search/grounders/assignment_set.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
+#include "mimir/search/grounders/condition_grounder/event_handlers/default.hpp"
+#include "mimir/search/grounders/consistency_graph.hpp"
+#include "mimir/search/grounders/match_tree.hpp"
+#include "mimir/search/satisficing_binding_generator.hpp"
 
 #endif

@@ -22,7 +22,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounding/action_grounder.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -37,6 +37,9 @@ class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
     ActionGrounder m_grounder;
+
+    std::unordered_map<Action, SatisficingBindingGenerator> m_action_precondition_grounders;
+    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
 
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
