@@ -81,9 +81,7 @@ SearchResult BrFSAlgorithm::find_solution() { return find_solution(m_state_repos
 
 SearchResult BrFSAlgorithm::find_solution(State start_state)
 {
-    return find_solution(start_state,
-                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder()->get_problem()),
-                         std::make_unique<DuplicateStatePruning>());
+    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()), std::make_unique<DuplicateStatePruning>());
 }
 
 SearchResult
@@ -95,8 +93,8 @@ BrFSAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&&
     auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
-    const auto problem = m_applicable_action_generator->get_action_grounder()->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
     m_event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);

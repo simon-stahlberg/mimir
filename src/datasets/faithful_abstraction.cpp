@@ -527,17 +527,14 @@ template ContinuousCostMatrix FaithfulAbstraction::compute_pairwise_shortest_ver
  */
 
 /* Meta data */
-Problem FaithfulAbstraction::get_problem() const { return m_applicable_action_generator->get_action_grounder()->get_problem(); }
+Problem FaithfulAbstraction::get_problem() const { return m_applicable_action_generator->get_problem(); }
 
 bool FaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_true_goal_literals; }
 
 bool FaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
-const std::shared_ptr<PDDLRepositories>& FaithfulAbstraction::get_pddl_repositories() const
-{
-    return m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
-}
+const std::shared_ptr<PDDLRepositories>& FaithfulAbstraction::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
 
 const std::shared_ptr<IApplicableActionGenerator>& FaithfulAbstraction::get_applicable_action_generator() const { return m_applicable_action_generator; }
 

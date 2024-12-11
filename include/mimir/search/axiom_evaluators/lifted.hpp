@@ -62,6 +62,8 @@ public:
      * Getters.
      */
 
+    Problem get_problem() const override;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
     const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
     const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
     const std::vector<AxiomPartition>& get_axiom_partitioning() const;

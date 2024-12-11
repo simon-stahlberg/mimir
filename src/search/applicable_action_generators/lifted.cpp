@@ -114,6 +114,10 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     m_event_handler->on_end_generating_applicable_actions();
 }
 
+Problem LiftedApplicableActionGenerator::get_problem() const { return m_grounder->get_problem(); }
+
+const std::shared_ptr<PDDLRepositories>& LiftedApplicableActionGenerator::get_pddl_repositories() const { return m_grounder->get_pddl_repositories(); }
+
 void LiftedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 
 void LiftedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }

@@ -102,8 +102,8 @@ SearchResult SerializedIterativeWidthAlgorithm::find_solution(State start_state)
 {
     auto result = SearchResult();
 
-    const auto problem = m_applicable_action_generator->get_action_grounder()->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
     m_siw_event_handler->on_start_search(problem, start_state, pddl_repositories);
 
     auto problem_goal_test = std::make_unique<ProblemGoal>(problem);

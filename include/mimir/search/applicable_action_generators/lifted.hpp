@@ -65,6 +65,8 @@ public:
      * Getters
      */
 
+    Problem get_problem() const override;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
     const std::shared_ptr<ActionGrounder>& get_action_grounder() const override;
 };
 

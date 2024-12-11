@@ -186,6 +186,10 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     return std::make_pair(*m_states.insert(m_state_builder).first, action_cost);
 }
 
+Problem StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }
+
+const std::shared_ptr<PDDLRepositories>& StateRepository::get_pddl_repositories() const { return m_axiom_evaluator->get_pddl_repositories(); }
+
 size_t StateRepository::get_state_count() const { return m_states.size(); }
 
 const FlatBitset& StateRepository::get_reached_fluent_ground_atoms_bitset() const { return m_reached_fluent_atoms; }

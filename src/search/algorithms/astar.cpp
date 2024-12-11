@@ -85,9 +85,7 @@ SearchResult AStarAlgorithm::find_solution() { return find_solution(m_state_repo
 
 SearchResult AStarAlgorithm::find_solution(State start_state)
 {
-    return find_solution(start_state,
-                         std::make_unique<ProblemGoal>(m_applicable_action_generator->get_action_grounder()->get_problem()),
-                         std::make_unique<NoStatePruning>());
+    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()), std::make_unique<NoStatePruning>());
 }
 
 SearchResult
@@ -103,8 +101,8 @@ AStarAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&
 
     auto openlist = PriorityQueue<State>();
 
-    const auto problem = m_applicable_action_generator->get_action_grounder()->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+    const auto problem = m_applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
     m_event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     const auto start_g_value = ContinuousCost(0);

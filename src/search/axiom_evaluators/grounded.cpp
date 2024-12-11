@@ -97,6 +97,10 @@ void GroundedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_fini
 
 void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
+Problem GroundedAxiomEvaluator::get_problem() const { return m_grounder->get_problem(); }
+
+const std::shared_ptr<PDDLRepositories>& GroundedAxiomEvaluator::get_pddl_repositories() const { return m_grounder->get_pddl_repositories(); }
+
 const std::shared_ptr<AxiomGrounder>& GroundedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
 
 const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }

@@ -163,6 +163,10 @@ void LiftedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish
 
 void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
+Problem LiftedAxiomEvaluator::get_problem() const { return m_grounder->get_problem(); }
+
+const std::shared_ptr<PDDLRepositories>& LiftedAxiomEvaluator::get_pddl_repositories() const { return m_grounder->get_pddl_repositories(); }
+
 const std::shared_ptr<AxiomGrounder>& LiftedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
 
 const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }

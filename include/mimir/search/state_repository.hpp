@@ -69,6 +69,9 @@ public:
      * Getters
      */
 
+    Problem get_problem() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+
     /// @brief Return the number of created states.
     /// @return the number of created states.
     size_t get_state_count() const;

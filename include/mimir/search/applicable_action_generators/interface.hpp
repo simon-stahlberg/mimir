@@ -44,6 +44,8 @@ public:
      * Getters
      */
 
+    virtual Problem get_problem() const = 0;
+    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
     virtual const std::shared_ptr<ActionGrounder>& get_action_grounder() const = 0;
 };
 
