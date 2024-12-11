@@ -61,6 +61,10 @@ public:
     void on_finish_search_layer() override;
     void on_end_search() override;
 
+    /**
+     * Getters
+     */
+
     const std::shared_ptr<ActionGrounder>& get_action_grounder() const override;
 };
 

@@ -39,6 +39,10 @@ public:
     virtual void on_finish_search_layer() = 0;
     virtual void on_end_search() = 0;
 
+    /**
+     * Getters
+     */
+
     /* Getters */
     virtual const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const = 0;
 };

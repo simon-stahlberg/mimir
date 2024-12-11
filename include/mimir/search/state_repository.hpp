@@ -65,6 +65,10 @@ public:
     /// @return the extended successor state and the action cost.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
 
+    /**
+     * Getters
+     */
+
     /// @brief Return the number of created states.
     /// @return the number of created states.
     size_t get_state_count() const;

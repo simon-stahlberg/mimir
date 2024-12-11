@@ -95,13 +95,6 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
     m_action_conditional_effects(),
     m_ground_function_to_cost()
 {
-    /* Error checking */
-    if (m_literal_grounder->get_problem() != m_function_grounder->get_problem()
-        || m_literal_grounder->get_pddl_repositories() != m_function_grounder->get_pddl_repositories())
-    {
-        throw std::runtime_error("ActionGrounder::ActionGrounder: Problem and PDDLRepositories of LiteralGrounder and FunctionGrounder do not match.");
-    }
-
     /* 1. Initialize ground function costs. */
 
     const auto problem = m_literal_grounder->get_problem();

@@ -55,16 +55,17 @@ public:
     /// @brief Ground an axiom and return a view onto it.
     GroundAxiom ground_axiom(Axiom axiom, ObjectList binding);
 
-    /// @brief Return all axioms.
-    const GroundAxiomList& get_ground_axioms() const;
-
-    GroundAxiom get_ground_axiom(Index axiom_index) const;
-
-    size_t get_num_ground_axioms() const;
+    /**
+     * Getters
+     */
 
     Problem get_problem() const;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
+
+    const GroundAxiomList& get_ground_axioms() const;
+    GroundAxiom get_ground_axiom(Index axiom_index) const;
+    size_t get_num_ground_axioms() const;
 };
 
 }  // namespace mimir
