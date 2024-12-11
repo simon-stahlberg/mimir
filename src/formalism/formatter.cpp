@@ -17,8 +17,30 @@
 
 #include "formatter.hpp"
 
+#include "mimir/formalism/action.hpp"
+#include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/function.hpp"
+#include "mimir/formalism/function_expressions.hpp"
+#include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_function.hpp"
+#include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/hash.hpp"
+#include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/metric.hpp"
+#include "mimir/formalism/numeric_fluent.hpp"
+#include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/requirements.hpp"
+#include "mimir/formalism/term.hpp"
+#include "mimir/formalism/universally_quantified_conjunction.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <cassert>
 #include <sstream>
@@ -27,6 +49,42 @@ namespace mimir
 {
 
 PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs) : m_indent(indent), m_add_indent(add_indent), m_action_costs(action_costs) {}
+
+void PDDLFormatter::write(const UniversallyQuantifiedConjunctionImpl& element, std::ostream& out)
+{
+    if (!element.get_parameters().empty())
+    {
+        out << "(forall ";
+    }
+    if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty())
+    {
+        out << "()";
+    }
+    else
+    {
+        out << "(and";
+        for (const auto& condition : element.get_literals<Static>())
+        {
+            out << " ";
+            write(*condition, out);
+        }
+        for (const auto& condition : element.get_literals<Fluent>())
+        {
+            out << " ";
+            write(*condition, out);
+        }
+        for (const auto& condition : element.get_literals<Derived>())
+        {
+            out << " ";
+            write(*condition, out);
+        }
+        out << ")";  // end and
+    }
+    if (!element.get_parameters().empty())
+    {
+        out << ")";  // end forall
+    }
+}
 
 void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
 {

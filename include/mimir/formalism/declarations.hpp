@@ -173,6 +173,9 @@ using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
 
+class UniversallyQuantifiedConjunctionImpl;
+using UniversallyQuantifiedConjunction = const UniversallyQuantifiedConjunctionImpl*;
+
 class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;

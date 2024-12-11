@@ -18,27 +18,7 @@
 #ifndef MIMIR_FORMALISM_FORMATTER_HPP_
 #define MIMIR_FORMALISM_FORMATTER_HPP_
 
-#include "mimir/formalism/action.hpp"
-#include "mimir/formalism/atom.hpp"
-#include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/function.hpp"
-#include "mimir/formalism/function_expressions.hpp"
-#include "mimir/formalism/function_skeleton.hpp"
-#include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/ground_function.hpp"
-#include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/metric.hpp"
-#include "mimir/formalism/numeric_fluent.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate.hpp"
-#include "mimir/formalism/problem.hpp"
-#include "mimir/formalism/requirements.hpp"
-#include "mimir/formalism/term.hpp"
-#include "mimir/formalism/variable.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <cstddef>
 #include <ostream>
@@ -59,6 +39,7 @@ private:
 public:
     PDDLFormatter(size_t indent = 0, size_t add_indent = 4, bool action_costs = false);
 
+    void write(const UniversallyQuantifiedConjunctionImpl& element, std::ostream& out);
     void write(const ActionImpl& element, std::ostream& out);
     template<PredicateTag P>
     void write(const AtomImpl<P>& element, std::ostream& out);
