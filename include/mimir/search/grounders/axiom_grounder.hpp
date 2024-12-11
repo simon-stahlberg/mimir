@@ -22,6 +22,7 @@
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
+#include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator.hpp"
 
 #include <stdexcept>
@@ -36,6 +37,7 @@ class AxiomGrounder
 private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    std::shared_ptr<LiteralGrounder> m_literal_grounder;
 
     GroundAxiomImplSet m_axioms;
     GroundAxiomList m_axioms_by_index;
@@ -43,7 +45,7 @@ private:
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;
 
 public:
-    AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositori, std::shared_ptr<LiteralGrounder> literal_grounderes);
 
     // Uncopyable
     AxiomGrounder(const AxiomGrounder& other) = delete;
@@ -64,6 +66,7 @@ public:
 
     Problem get_problem() const;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+    const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
 };
 
 }  // namespace mimir

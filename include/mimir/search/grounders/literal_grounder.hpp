@@ -43,8 +43,6 @@ private:
 
     GroundedTypeToGroundingTableList m_grounding_tables;
 
-    void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms);
-
 public:
     /// @brief Simplest construction
     LiteralGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
@@ -57,7 +55,7 @@ public:
     LiteralGrounder& operator=(LiteralGrounder&& other) = default;
 
     template<PredicateTag P>
-    GroundLiteral<P> ground_literal(const Literal<P> literal, const ObjectList& binding);
+    GroundLiteral<P> ground_literal(Literal<P> literal, const ObjectList& binding);
 
     template<PredicateTag P>
     void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,

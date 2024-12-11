@@ -15,42 +15,38 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDERS_GROUNDER_HPP_
+#ifndef MIMIR_SEARCH_GROUNDERS_FUNCTION_GROUNDER_HPP_
+#define MIMIR_SEARCH_GROUNDERS_FUNCTION_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
-#include "mimir/search/grounders/function_grounder.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
+#include "mimir/search/grounders/grounding_table.hpp"
 
 #include <unordered_map>
 #include <vector>
 
 namespace mimir
 {
-class Grounder
+class FunctionGrounder
 {
 private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
-    std::shared_ptr<LiteralGrounder> m_literal_grounder;
-    std::shared_ptr<FunctionGrounder> m_function_grounder;
-    std::shared_ptr<ActionGrounder> m_action_grounder;
-    std::shared_ptr<AxiomGrounder> m_axiom_ground;
+    GroundingTableList<GroundFunction> m_grounding_tables;
 
 public:
     /// @brief Simplest construction
-    Grounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    FunctionGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     // Uncopyable
-    Grounder(const Grounder& other) = delete;
-    Grounder& operator=(const Grounder& other) = delete;
+    FunctionGrounder(const FunctionGrounder& other) = delete;
+    FunctionGrounder& operator=(const FunctionGrounder& other) = delete;
     // Moveable
-    Grounder(Grounder&& other) = default;
-    Grounder& operator=(Grounder&& other) = default;
+    FunctionGrounder(FunctionGrounder&& other) = default;
+    FunctionGrounder& operator=(FunctionGrounder&& other) = default;
+
+    GroundFunction ground_function(Function function, const ObjectList& binding);
 
     /**
      * Getters
@@ -58,10 +54,6 @@ public:
 
     Problem get_problem() const;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
-    const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
-    const std::shared_ptr<FunctionGrounder>& get_function_grounder() const;
-    const std::shared_ptr<ActionGrounder>& get_action_grounder() const;
-    const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const;
 };
 
 }  // namespace mimir

@@ -21,6 +21,7 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/action.hpp"
+#include "mimir/search/grounders/grounder.hpp"
 
 namespace mimir
 {
@@ -30,23 +31,16 @@ class GroundAndEvaluateFunctionExpressionVisitor
 private:
     const GroundFunctionToValue& m_ground_function_to_cost;
     const ObjectList& m_binding;
-    PDDLRepositories& m_pddl_repositories;
-
-    GroundFunction ground_function(const Function& function)
-    {
-        auto grounded_terms = ObjectList {};
-        m_pddl_repositories.ground_variables(function->get_terms(), m_binding, grounded_terms);
-        return m_pddl_repositories.get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
-    }
+    FunctionGrounder& m_function_grounder;
 
 public:
     GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionToValue& ground_function_value_cost,
                                                const ObjectList& binding,
-                                               PDDLRepositories& ref_pddl_repositories) :
+                                               FunctionGrounder& ref_function_grounder) :
 
         m_ground_function_to_cost(ground_function_value_cost),
         m_binding(binding),
-        m_pddl_repositories(ref_pddl_repositories)
+        m_function_grounder(ref_function_grounder)
     {
     }
 
@@ -77,7 +71,7 @@ public:
 
     double operator()(const FunctionExpressionFunctionImpl& expr)
     {
-        auto grounded_function = ground_function(expr.get_function());
+        auto grounded_function = m_function_grounder.ground_function(expr.get_function(), m_binding);
 
         auto it = m_ground_function_to_cost.find(grounded_function);
         if (it == m_ground_function_to_cost.end())
@@ -91,16 +85,20 @@ public:
 };
 
 /// @brief Simplest construction
-ActionGrounder::ActionGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
+ActionGrounder::ActionGrounder(Problem problem,
+                               std::shared_ptr<PDDLRepositories> pddl_repositories,
+                               std::shared_ptr<LiteralGrounder> literal_grounder,
+                               std::shared_ptr<FunctionGrounder> function_grounder) :
     m_problem(problem),
     m_pddl_repositories(std::move(pddl_repositories)),
-    m_action_precondition_grounders(),
-    m_action_conditional_effects(),
+    m_literal_grounder(std::move(literal_grounder)),
+    m_function_grounder(std::move(function_grounder)),
     m_actions(),
     m_actions_by_index(),
     m_action_builder(),
     m_action_groundings(),
-    m_ground_function_to_cost()
+    m_ground_function_to_cost(),
+    m_action_conditional_effects()
 {
     /* 1. Initialize ground function costs. */
 
@@ -116,14 +114,6 @@ ActionGrounder::ActionGrounder(Problem problem, std::shared_ptr<PDDLRepositories
 
     for (const auto& action : m_problem->get_domain()->get_actions())
     {
-        m_action_precondition_grounders.emplace(action,
-                                                SatisficingBindingGenerator(m_problem,
-                                                                            m_pddl_repositories,
-                                                                            action->get_parameters(),
-                                                                            action->get_conditions<Static>(),
-                                                                            action->get_conditions<Fluent>(),
-                                                                            action->get_conditions<Derived>(),
-                                                                            static_assignment_set));
         auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
         conditional_effects.reserve(action->get_conditional_effects().size());
 
@@ -140,12 +130,6 @@ ActionGrounder::ActionGrounder(Problem problem, std::shared_ptr<PDDLRepositories
     }
 }
 
-Problem ActionGrounder::get_problem() const { return m_problem; }
-
-const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
-
-std::unordered_map<Action, SatisficingBindingGenerator>& ActionGrounder::get_action_precondition_grounders() { return m_action_precondition_grounders; }
-
 GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
@@ -159,8 +143,6 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
     /* 2. Ground the action */
 
-    // m_event_handler->on_ground_action(action, binding);
-
     const auto fill_effects = [this](const LiteralList<Fluent>& lifted_effect_literals,  //
                                      const ObjectList& binding,
                                      GroundEffectFluentLiteralList& out_grounded_effect_literals)
@@ -169,7 +151,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
         for (const auto& lifted_literal : lifted_effect_literals)
         {
-            const auto grounded_literal = m_pddl_repositories->ground_literal(lifted_literal, binding);
+            const auto grounded_literal = m_literal_grounder->ground_literal(lifted_literal, binding);
             out_grounded_effect_literals.emplace_back(grounded_literal->is_negated(), grounded_literal->get_atom()->get_index());
         }
     };
@@ -199,9 +181,9 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_pddl_repositories->ground_and_fill_bitset(action->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_pddl_repositories->ground_and_fill_bitset(action->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
-    m_pddl_repositories->ground_and_fill_bitset(action->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(action->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(action->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(action->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Strips effects */
     auto& strips_effect = m_action_builder.get_strips_effect();
@@ -211,9 +193,9 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     negative_effect.unset_all();
     const auto& lifted_strips_effect = action->get_strips_effect();
     const auto& lifted_effect_literals = lifted_strips_effect->get_effects();
-    m_pddl_repositories->ground_and_fill_bitset(lifted_effect_literals, positive_effect, negative_effect, binding);
+    m_literal_grounder->ground_and_fill_bitset(lifted_effect_literals, positive_effect, negative_effect, binding);
     strips_effect.get_cost() =
-        GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(*lifted_strips_effect->get_function_expression());
+        GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_function_grounder)(*lifted_strips_effect->get_function_expression());
 
     /* Conditional effects */
     // Fetch data
@@ -263,22 +245,22 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     cond_negative_static_precondition_j.clear();
                     cond_positive_derived_precondition_j.clear();
                     cond_negative_derived_precondition_j.clear();
-                    m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
-                                                                cond_positive_fluent_precondition_j,
-                                                                cond_negative_fluent_precondition_j,
-                                                                binding_ext);
-                    m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
-                                                                cond_positive_static_precondition_j,
-                                                                cond_negative_static_precondition_j,
-                                                                binding_ext);
-                    m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
-                                                                cond_positive_derived_precondition_j,
-                                                                cond_negative_derived_precondition_j,
-                                                                binding_ext);
+                    m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
+                                                               cond_positive_fluent_precondition_j,
+                                                               cond_negative_fluent_precondition_j,
+                                                               binding_ext);
+                    m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
+                                                               cond_positive_static_precondition_j,
+                                                               cond_negative_static_precondition_j,
+                                                               binding_ext);
+                    m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
+                                                               cond_positive_derived_precondition_j,
+                                                               cond_negative_derived_precondition_j,
+                                                               binding_ext);
 
                     fill_effects(lifted_cond_effect->get_effects(), binding_ext, cond_simple_effect_j);
 
-                    cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
+                    cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_function_grounder)(
                         *lifted_cond_effect->get_function_expression());
 
                     conditional_effects.push_back(std::move(cond_effect_j));
@@ -300,22 +282,22 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                 cond_negative_static_precondition.clear();
                 cond_positive_derived_precondition.clear();
                 cond_negative_derived_precondition.clear();
-                m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
-                                                            cond_positive_fluent_precondition,
-                                                            cond_negative_fluent_precondition,
-                                                            binding);
-                m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
-                                                            cond_positive_static_precondition,
-                                                            cond_negative_static_precondition,
-                                                            binding);
-                m_pddl_repositories->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
-                                                            cond_positive_derived_precondition,
-                                                            cond_negative_derived_precondition,
-                                                            binding);
+                m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
+                                                           cond_positive_fluent_precondition,
+                                                           cond_negative_fluent_precondition,
+                                                           binding);
+                m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
+                                                           cond_positive_static_precondition,
+                                                           cond_negative_static_precondition,
+                                                           binding);
+                m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
+                                                           cond_positive_derived_precondition,
+                                                           cond_negative_derived_precondition,
+                                                           binding);
 
                 fill_effects(lifted_cond_effect->get_effects(), binding, cond_simple_effect);
 
-                cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_pddl_repositories)(
+                cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_function_grounder)(
                     *lifted_cond_effect->get_function_expression());
 
                 conditional_effects.push_back(std::move(cond_effect));
@@ -338,6 +320,14 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
     return grounded_action;
 }
+
+Problem ActionGrounder::get_problem() const { return m_problem; }
+
+const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
+
+const std::shared_ptr<LiteralGrounder>& ActionGrounder::get_literal_grounder() const { return m_literal_grounder; }
+
+const std::shared_ptr<FunctionGrounder>& ActionGrounder::get_function_grounder() const { return m_function_grounder; }
 
 const GroundActionList& ActionGrounder::get_ground_actions() const { return m_actions_by_index; }
 

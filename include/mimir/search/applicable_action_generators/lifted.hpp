@@ -39,7 +39,6 @@ private:
     ActionGrounder m_grounder;
 
     std::unordered_map<Action, SatisficingBindingGenerator> m_action_precondition_grounders;
-    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
 
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 

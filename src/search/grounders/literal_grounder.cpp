@@ -20,6 +20,7 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
 #include "mimir/search/action.hpp"
+#include "mimir/search/grounders/variable_grounder.hpp"
 
 namespace mimir
 {
@@ -30,32 +31,8 @@ LiteralGrounder::LiteralGrounder(Problem problem, std::shared_ptr<PDDLRepositori
 {
 }
 
-void LiteralGrounder::ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
-{
-    out_terms.clear();
-
-    for (const auto& term : terms)
-    {
-        std::visit(
-            [&](auto&& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, Object>)
-                {
-                    out_terms.emplace_back(arg);
-                }
-                else if constexpr (std::is_same_v<T, Variable>)
-                {
-                    assert(arg->get_parameter_index() < binding.size());
-                    out_terms.emplace_back(binding[arg->get_parameter_index()]);
-                }
-            },
-            term->get_variant());
-    }
-}
-
 template<PredicateTag P>
-GroundLiteral<P> LiteralGrounder::ground_literal(const Literal<P> literal, const ObjectList& binding)
+GroundLiteral<P> LiteralGrounder::ground_literal(Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundLiteral<P>> {});

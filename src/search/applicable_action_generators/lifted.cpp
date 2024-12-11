@@ -48,8 +48,25 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
                                                                  std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                  std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_grounder(problem, std::move(pddl_repositories)),
-    m_event_handler(std::move(event_handler))
+    m_event_handler(std::move(event_handler)),
+    m_action_precondition_grounders()
 {
+    /* 2. Initialize the condition grounders for each action schema. */
+
+    auto static_initial_atoms = to_ground_atoms(m_problem->get_static_initial_literals());
+    auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
+
+    for (const auto& action : m_problem->get_domain()->get_actions())
+    {
+        m_action_precondition_grounders.emplace(action,
+                                                SatisficingBindingGenerator(m_problem,
+                                                                            m_pddl_repositories,
+                                                                            action->get_parameters(),
+                                                                            action->get_conditions<Static>(),
+                                                                            action->get_conditions<Fluent>(),
+                                                                            action->get_conditions<Derived>(),
+                                                                            static_assignment_set));
+    }
 }
 
 mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state)
