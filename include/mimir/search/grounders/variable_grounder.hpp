@@ -25,3 +25,5 @@ namespace mimir
 {
 extern void ground_variables(const TermList& terms, const ObjectList& binding, ObjectList& out_terms);
 }
+
+#endif

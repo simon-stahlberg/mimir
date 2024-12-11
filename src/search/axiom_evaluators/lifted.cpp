@@ -22,23 +22,43 @@
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/utils.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
 {
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
-    LiftedAxiomEvaluator(problem, std::move(pddl_repositories), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder) :
+    LiftedAxiomEvaluator(std::move(axiom_grounder), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())
 {
 }
 
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem,
-                                           std::shared_ptr<PDDLRepositories> pddl_repositories,
-                                           std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
-    m_grounder(problem, pddl_repositories),
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
+    m_grounder(std::move(axiom_grounder)),
     m_event_handler(std::move(event_handler)),
-    m_partitioning(compute_axiom_partitioning(problem->get_problem_and_domain_axioms(), problem->get_problem_and_domain_derived_predicates()))
+    m_condition_grounders(),
+    m_partitioning(compute_axiom_partitioning(m_grounder->get_problem()->get_problem_and_domain_axioms(),
+                                              m_grounder->get_problem()->get_problem_and_domain_derived_predicates()))
 {
+    /* 3. Initialize condition grounders */
+    const auto problem = m_grounder->get_problem();
+    const auto pddl_repositories = m_grounder->get_pddl_repositories();
+
+    auto static_initial_atoms = GroundAtomList<Static> {};
+    to_ground_atoms(problem->get_static_initial_literals(), static_initial_atoms);
+    const auto static_assignment_set = AssignmentSet<Static>(problem, problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
+
+    for (const auto& axiom : problem->get_problem_and_domain_axioms())
+    {
+        m_condition_grounders.emplace(axiom,
+                                      SatisficingBindingGenerator(problem,
+                                                                  pddl_repositories,
+                                                                  axiom->get_parameters(),
+                                                                  axiom->get_conditions<Static>(),
+                                                                  axiom->get_conditions<Fluent>(),
+                                                                  axiom->get_conditions<Derived>(),
+                                                                  static_assignment_set));
+    }
 }
 
 void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
@@ -47,8 +67,8 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 
     m_event_handler->on_start_generating_applicable_axioms();
 
-    const auto problem = m_grounder.get_problem();
-    auto pddl_repositories = m_grounder.get_pddl_repositories();
+    const auto problem = m_grounder->get_problem();
+    auto pddl_repositories = m_grounder->get_pddl_repositories();
 
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
     const auto fluent_assignment_set = AssignmentSet<Fluent>(problem,
@@ -85,20 +105,20 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             applicable_axioms.clear();
             for (const auto& axiom : relevant_axioms)
             {
-                auto& condition_grounder = m_grounder.get_axiom_precondition_grounders().at(axiom);
+                auto& condition_grounder = m_condition_grounders.at(axiom);
 
                 for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
-                    const auto num_ground_axioms = m_grounder.get_num_ground_axioms();
+                    const auto num_ground_axioms = m_grounder->get_num_ground_axioms();
 
-                    const auto ground_axiom = m_grounder.ground_axiom(axiom, std::move(binding));
+                    const auto ground_axiom = m_grounder->ground_axiom(axiom, std::move(binding));
 
                     assert(ground_axiom->is_applicable(problem, &unextended_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
-                    (m_grounder.get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
-                                                                               m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+                    (m_grounder->get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                                                                                m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
 
                     applicable_axioms.emplace_back(ground_axiom);
                 }
@@ -144,9 +164,7 @@ void LiftedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish
 
 void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
-AxiomGrounder& LiftedAxiomEvaluator::get_axiom_grounder() { return m_grounder; }
-
-const AxiomGrounder& LiftedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
+const std::shared_ptr<AxiomGrounder>& LiftedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
 
 const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 

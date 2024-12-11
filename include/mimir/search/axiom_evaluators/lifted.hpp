@@ -34,7 +34,7 @@ namespace mimir
 class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    AxiomGrounder m_grounder;
+    std::shared_ptr<AxiomGrounder> m_grounder;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::unordered_map<Axiom, SatisficingBindingGenerator> m_condition_grounders;
@@ -42,11 +42,9 @@ private:
     std::vector<AxiomPartition> m_partitioning;
 
 public:
-    LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    explicit LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder);
 
-    LiftedAxiomEvaluator(Problem problem,
-                         std::shared_ptr<PDDLRepositories> pddl_repositories,
-                         std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
+    LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -60,8 +58,7 @@ public:
     void on_finish_search_layer() override;
     void on_end_search() override;
 
-    AxiomGrounder& get_axiom_grounder() override;
-    const AxiomGrounder& get_axiom_grounder() const override;
+    const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
 
     const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
 

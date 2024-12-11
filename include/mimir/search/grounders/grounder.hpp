@@ -30,6 +30,7 @@
 
 namespace mimir
 {
+/// @brief `Grounder` encapsulates instantiation and access to all specific grounders.
 class Grounder
 {
 private:
@@ -39,7 +40,7 @@ private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<FunctionGrounder> m_function_grounder;
     std::shared_ptr<ActionGrounder> m_action_grounder;
-    std::shared_ptr<AxiomGrounder> m_axiom_ground;
+    std::shared_ptr<AxiomGrounder> m_axiom_grounder;
 
 public:
     /// @brief Simplest construction
@@ -58,6 +59,7 @@ public:
 
     Problem get_problem() const;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
     const std::shared_ptr<FunctionGrounder>& get_function_grounder() const;
     const std::shared_ptr<ActionGrounder>& get_action_grounder() const;

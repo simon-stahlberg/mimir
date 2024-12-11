@@ -40,8 +40,7 @@ public:
     virtual void on_finish_search_layer() = 0;
     virtual void on_end_search() = 0;
 
-    virtual ActionGrounder& get_action_grounder() = 0;
-    virtual const ActionGrounder& get_action_grounder() const = 0;
+    virtual const std::shared_ptr<ActionGrounder>& get_action_grounder() const = 0;
 };
 
 }

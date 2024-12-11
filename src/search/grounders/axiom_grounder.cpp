@@ -23,32 +23,15 @@
 
 namespace mimir
 {
-AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
+AxiomGrounder::AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories, std::shared_ptr<LiteralGrounder> literal_grounder) :
     m_problem(problem),
-    m_pddl_repositories(pddl_repositories),
-    m_condition_grounders(),
+    m_pddl_repositories(std::move(pddl_repositories)),
+    m_literal_grounder(std::move(literal_grounder)),
     m_axioms(),
     m_axioms_by_index(),
     m_axiom_builder(),
     m_axiom_groundings()
 {
-    /* 3. Initialize condition grounders */
-
-    auto static_initial_atoms = GroundAtomList<Static> {};
-    to_ground_atoms(m_problem->get_static_initial_literals(), static_initial_atoms);
-    const auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
-
-    for (const auto& axiom : problem->get_problem_and_domain_axioms())
-    {
-        m_condition_grounders.emplace(axiom,
-                                      SatisficingBindingGenerator(m_problem,
-                                                                  m_pddl_repositories,
-                                                                  axiom->get_parameters(),
-                                                                  axiom->get_conditions<Static>(),
-                                                                  axiom->get_conditions<Fluent>(),
-                                                                  axiom->get_conditions<Derived>(),
-                                                                  static_assignment_set));
-    }
 }
 
 /// @brief Ground an axiom and return a view onto it.
@@ -90,9 +73,9 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_pddl_repositories->ground_and_fill_bitset(axiom->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_pddl_repositories->ground_and_fill_bitset(axiom->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
-    m_pddl_repositories->ground_and_fill_bitset(axiom->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(axiom->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(axiom->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(axiom->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
 
     /* Effect */
 
@@ -103,8 +86,8 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     const auto is_complete_binding_relevant_for_head = (binding.size() == effect_literal_arity);
     const auto grounded_literal =
         is_complete_binding_relevant_for_head ?
-            m_pddl_repositories->ground_literal(axiom->get_literal(), binding) :
-            m_pddl_repositories->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
+            m_literal_grounder->ground_literal(axiom->get_literal(), binding) :
+            m_literal_grounder->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
     m_axiom_builder.get_derived_effect().is_negated = false;
     m_axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
@@ -126,8 +109,6 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     return grounded_axiom;
 }
 
-std::unordered_map<Axiom, SatisficingBindingGenerator>& AxiomGrounder::get_axiom_precondition_grounders() { return m_condition_grounders; }
-
 /// @brief Return all axioms.
 const GroundAxiomList& AxiomGrounder::get_ground_axioms() const { return m_axioms_by_index; }
 
@@ -138,4 +119,6 @@ size_t AxiomGrounder::get_num_ground_axioms() const { return m_axioms_by_index.s
 Problem AxiomGrounder::get_problem() const { return m_problem; }
 
 const std::shared_ptr<PDDLRepositories>& AxiomGrounder::get_pddl_repositories() const { return m_pddl_repositories; }
+
+const std::shared_ptr<LiteralGrounder>& AxiomGrounder::get_literal_grounder() const { return m_literal_grounder; }
 }

@@ -23,6 +23,7 @@
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <vector>
@@ -33,9 +34,9 @@ namespace mimir
 class DeleteRelaxedProblemExplorator
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    std::shared_ptr<Grounder> m_grounder;
 
+    std::shared_ptr<Grounder> m_delete_free_grounder;
     DeleteRelaxTransformer m_delete_relax_transformer;
     Problem m_delete_free_problem;
     std::shared_ptr<LiftedApplicableActionGenerator> m_delete_free_applicable_action_generator;
@@ -43,7 +44,7 @@ private:
     StateRepository m_delete_free_state_repository;
 
 public:
-    DeleteRelaxedProblemExplorator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    explicit DeleteRelaxedProblemExplorator(std::shared_ptr<Grounder> grounder);
 
     // Uncopyable
     DeleteRelaxedProblemExplorator(const DeleteRelaxedProblemExplorator& other) = delete;
@@ -59,8 +60,7 @@ public:
     create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler =
                                                     std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()) const;
 
-    Problem get_problem() const;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
+    const std::shared_ptr<Grounder>& get_grounder() const;
 };
 
 }  // namespace mimir

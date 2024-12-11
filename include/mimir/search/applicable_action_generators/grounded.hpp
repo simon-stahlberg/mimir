@@ -37,17 +37,17 @@ namespace mimir
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    ActionGrounder m_grounder;
+    std::shared_ptr<ActionGrounder> m_grounder;
     MatchTree<GroundAction> m_match_tree;
 
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(ActionGrounder grounder, MatchTree<GroundAction> match_tree);
+    GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder, MatchTree<GroundAction> match_tree);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(ActionGrounder grounder,
+    GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
                                       MatchTree<GroundAction> match_tree,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
@@ -63,8 +63,7 @@ public:
     void on_finish_search_layer() override;
     void on_end_search() override;
 
-    ActionGrounder& get_action_grounder() override;
-    const ActionGrounder& get_action_grounder() const override;
+    const std::shared_ptr<ActionGrounder>& get_action_grounder() const override;
 };
 
 }

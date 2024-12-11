@@ -40,8 +40,7 @@ public:
     virtual void on_end_search() = 0;
 
     /* Getters */
-    virtual AxiomGrounder& get_axiom_grounder() = 0;
-    virtual const AxiomGrounder& get_axiom_grounder() const = 0;
+    virtual const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const = 0;
 };
 
 }

@@ -39,28 +39,29 @@ using namespace std::string_literals;
 namespace mimir
 {
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
-    LiftedApplicableActionGenerator(problem, std::move(pddl_repositories), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder) :
+    LiftedApplicableActionGenerator(std::move(action_grounder), std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>())
 {
 }
 
-LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem,
-                                                                 std::shared_ptr<PDDLRepositories> pddl_repositories,
+LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
                                                                  std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
-    m_grounder(problem, std::move(pddl_repositories)),
+    m_grounder(std::move(action_grounder)),
     m_event_handler(std::move(event_handler)),
     m_action_precondition_grounders()
 {
     /* 2. Initialize the condition grounders for each action schema. */
+    const auto problem = m_grounder->get_problem();
+    const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
-    auto static_initial_atoms = to_ground_atoms(m_problem->get_static_initial_literals());
-    auto static_assignment_set = AssignmentSet<Static>(m_problem, m_problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
+    auto static_initial_atoms = to_ground_atoms(problem->get_static_initial_literals());
+    auto static_assignment_set = AssignmentSet<Static>(problem, problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
 
-    for (const auto& action : m_problem->get_domain()->get_actions())
+    for (const auto& action : problem->get_domain()->get_actions())
     {
         m_action_precondition_grounders.emplace(action,
-                                                SatisficingBindingGenerator(m_problem,
-                                                                            m_pddl_repositories,
+                                                SatisficingBindingGenerator(problem,
+                                                                            pddl_repositories,
                                                                             action->get_parameters(),
                                                                             action->get_conditions<Static>(),
                                                                             action->get_conditions<Fluent>(),
@@ -75,8 +76,8 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
     // Create the assignment sets that are shared by all action schemas.
 
-    const auto problem = m_grounder.get_problem();
-    auto& pddl_repositories = m_grounder.get_pddl_repositories();
+    const auto problem = m_grounder->get_problem();
+    auto& pddl_repositories = m_grounder->get_pddl_repositories();
 
     auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
@@ -92,20 +93,20 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     // This is done by getting bindings in the given state using the precondition.
     // These bindings are then used to ground the actual action schemas.
 
-    for (auto& [action, condition_grounder] : m_grounder.get_action_precondition_grounders())
+    for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
         for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
         {
-            const auto num_ground_actions = m_grounder.get_num_ground_actions();
+            const auto num_ground_actions = m_grounder->get_num_ground_actions();
 
-            const auto ground_action = m_grounder.ground_action(action, std::move(binding));
+            const auto ground_action = m_grounder->ground_action(action, std::move(binding));
 
             assert(ground_action->is_applicable(problem, state));
 
             m_event_handler->on_ground_action(ground_action);
 
-            (m_grounder.get_num_ground_actions() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
-                                                                         m_event_handler->on_ground_action_cache_hit(ground_action);
+            (m_grounder->get_num_ground_actions() > num_ground_actions) ? m_event_handler->on_ground_action_cache_miss(ground_action) :
+                                                                          m_event_handler->on_ground_action_cache_hit(ground_action);
 
             co_yield ground_action;
         }
@@ -118,8 +119,6 @@ void LiftedApplicableActionGenerator::on_finish_search_layer() { m_event_handler
 
 void LiftedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
 
-ActionGrounder& LiftedApplicableActionGenerator::get_action_grounder() { return m_grounder; }
-
-const ActionGrounder& LiftedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
+const std::shared_ptr<ActionGrounder>& LiftedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
 
 }

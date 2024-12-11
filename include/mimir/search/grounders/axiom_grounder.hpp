@@ -45,7 +45,7 @@ private:
     std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;
 
 public:
-    AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositori, std::shared_ptr<LiteralGrounder> literal_grounderes);
+    AxiomGrounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories, std::shared_ptr<LiteralGrounder> literal_grounder);
 
     // Uncopyable
     AxiomGrounder(const AxiomGrounder& other) = delete;

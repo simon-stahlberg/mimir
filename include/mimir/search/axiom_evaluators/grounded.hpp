@@ -32,16 +32,18 @@ namespace mimir
 class GroundedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    AxiomGrounder m_grounder;
+    std::shared_ptr<AxiomGrounder> m_grounder;
     MatchTree<GroundAxiom> m_match_tree;
     std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::vector<AxiomPartition> m_partitioning;
 
 public:
-    GroundedAxiomEvaluator(AxiomGrounder grounder, MatchTree<GroundAxiom> match_tree);
+    GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder, MatchTree<GroundAxiom> match_tree);
 
-    GroundedAxiomEvaluator(AxiomGrounder grounder, MatchTree<GroundAxiom> match_tree, std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
+    GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder,
+                           MatchTree<GroundAxiom> match_tree,
+                           std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     GroundedAxiomEvaluator(const GroundedAxiomEvaluator& other) = delete;
@@ -55,8 +57,7 @@ public:
     void on_finish_search_layer() override;
     void on_end_search() override;
 
-    AxiomGrounder& get_axiom_grounder() override;
-    const AxiomGrounder& get_axiom_grounder() const override;
+    const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
 
     const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& get_event_handler() const;
 

@@ -35,15 +35,17 @@
 namespace mimir
 {
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ActionGrounder grounder, MatchTree<GroundAction> match_tree) :
-    GroundedApplicableActionGenerator(std::move(grounder), std::move(match_tree), std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder, MatchTree<GroundAction> match_tree) :
+    GroundedApplicableActionGenerator(std::move(action_grounder),
+                                      std::move(match_tree),
+                                      std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ActionGrounder grounder,
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
                                                                      MatchTree<GroundAction> match_tree,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
-    m_grounder(std::move(grounder)),
+    m_grounder(std::move(action_grounder)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler))
 {
@@ -51,12 +53,13 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ActionGroun
 
 mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state)
 {
+    const auto problem = m_grounder->get_problem();
     auto ground_actions = GroundActionList {};
     m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(ground_action->is_applicable(m_grounder.get_problem(), state));
+        assert(ground_action->is_applicable(problem, state));
 
         co_yield ground_action;
     }
@@ -66,8 +69,6 @@ void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handl
 
 void GroundedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
 
-ActionGrounder& GroundedApplicableActionGenerator::get_action_grounder() { return m_grounder; }
-
-const ActionGrounder& GroundedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
+const std::shared_ptr<ActionGrounder>& GroundedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
 
 }

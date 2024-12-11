@@ -36,19 +36,17 @@ namespace mimir
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    ActionGrounder m_grounder;
+    std::shared_ptr<ActionGrounder> m_grounder;
+    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     std::unordered_map<Action, SatisficingBindingGenerator> m_action_precondition_grounders;
 
-    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
-
 public:
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(Problem problem,
-                                    std::shared_ptr<PDDLRepositories> pddl_repositories,
+    LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
                                     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
@@ -63,8 +61,7 @@ public:
     void on_finish_search_layer() override;
     void on_end_search() override;
 
-    ActionGrounder& get_action_grounder() override;
-    const ActionGrounder& get_action_grounder() const override;
+    const std::shared_ptr<ActionGrounder>& get_action_grounder() const override;
 };
 
 }  // namespace mimir

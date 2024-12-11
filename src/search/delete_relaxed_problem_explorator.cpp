@@ -74,13 +74,14 @@ static std::vector<size_t> compute_ground_atom_order(const PDDLRepositories& pdd
     return ground_atoms_order;
 }
 
-DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
-    m_problem(problem),
-    m_pddl_repositories(std::move(pddl_repositories)),
-    m_delete_relax_transformer(*m_pddl_repositories, false),
-    m_delete_free_problem(m_delete_relax_transformer.run(*m_problem)),
-    m_delete_free_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_delete_free_problem, m_pddl_repositories)),
-    m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem, m_pddl_repositories)),
+DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<Grounder> grounder) :
+    m_grounder(std::move(grounder)),
+    m_delete_free_grounder(std::make_shared<Grounder>(m_grounder->get_problem(), m_grounder->get_pddl_repositories())),
+    m_delete_relax_transformer(*m_delete_free_grounder->get_pddl_repositories(), false),
+    m_delete_free_problem(m_delete_relax_transformer.run(*m_delete_free_grounder->get_problem())),
+    m_delete_free_applicable_action_generator(
+        std::make_shared<LiftedApplicableActionGenerator>(m_delete_free_problem, m_delete_free_grounder->get_action_grounder())),
+    m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem, m_delete_free_grounder->get_axiom_grounder())),
     m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
     auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state());
@@ -124,22 +125,23 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
 std::shared_ptr<GroundedAxiomEvaluator>
 DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) const
 {
-    event_handler->on_finish_delete_free_exploration(
-        m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
-        m_pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
-        m_delete_free_axiom_evalator->get_axiom_grounder().get_ground_axioms());
+    const auto problem = m_grounder->get_problem();
+    const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
-    auto axiom_grounder = AxiomGrounder(m_problem, m_pddl_repositories);
+    event_handler->on_finish_delete_free_exploration(
+        pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
+        pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
+        m_delete_free_grounder->get_axiom_grounder()->get_ground_axioms());
 
     auto ground_axioms = GroundAxiomList {};
-    for (const auto& axiom : m_delete_free_axiom_evalator->get_axiom_grounder().get_ground_axioms())
+    for (const auto& axiom : m_delete_free_grounder->get_axiom_grounder()->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(m_pddl_repositories->get_axiom(axiom->get_axiom_index())))
+        for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(pddl_repositories->get_axiom(axiom->get_axiom_index())))
         {
-            auto axiom_arguments = m_pddl_repositories->get_objects_from_indices(axiom->get_object_indices());
-            auto grounded_axiom = axiom_grounder.ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom->is_statically_applicable(m_problem->get_static_initial_positive_atoms_bitset()))
+            auto axiom_arguments = pddl_repositories->get_objects_from_indices(axiom->get_object_indices());
+            auto grounded_axiom = m_grounder->get_axiom_grounder()->ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
+            if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
@@ -149,34 +151,35 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
     event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
     // Compute order here after grounding all axioms. Could also be moved into the match tree.
-    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*m_pddl_repositories);
-    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*m_pddl_repositories);
+    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*pddl_repositories);
+    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*pddl_repositories);
     auto match_tree = MatchTree(ground_axioms, fluent_atoms_ordering, derived_atoms_ordering);
 
     event_handler->on_finish_build_axiom_match_tree(match_tree);
 
-    return std::make_shared<GroundedAxiomEvaluator>(std::move(axiom_grounder), std::move(match_tree), std::move(event_handler));
+    return std::make_shared<GroundedAxiomEvaluator>(m_grounder->get_axiom_grounder(), std::move(match_tree), std::move(event_handler));
 }
 
 std::shared_ptr<GroundedApplicableActionGenerator>
 DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) const
 {
-    event_handler->on_finish_delete_free_exploration(
-        m_pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
-        m_pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
-        m_delete_free_applicable_action_generator->get_action_grounder().get_ground_actions());
+    const auto problem = m_grounder->get_problem();
+    const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
-    auto action_grounder = ActionGrounder(m_problem, m_pddl_repositories);
+    event_handler->on_finish_delete_free_exploration(
+        pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
+        pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
+        m_delete_free_grounder->get_action_grounder()->get_ground_actions());
 
     auto ground_actions = GroundActionList {};
-    for (const auto& action : m_delete_free_applicable_action_generator->get_action_grounder().get_ground_actions())
+    for (const auto& action : m_delete_free_grounder->get_action_grounder()->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_action : m_delete_relax_transformer.get_unrelaxed_actions(m_pddl_repositories->get_action(action->get_action_index())))
+        for (const auto& unrelaxed_action : m_delete_relax_transformer.get_unrelaxed_actions(pddl_repositories->get_action(action->get_action_index())))
         {
-            auto action_arguments = m_pddl_repositories->get_objects_from_indices(action->get_object_indices());
-            auto grounded_action = action_grounder.ground_action(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action->is_statically_applicable(m_problem->get_static_initial_positive_atoms_bitset()))
+            auto action_arguments = pddl_repositories->get_objects_from_indices(action->get_object_indices());
+            auto grounded_action = m_grounder->get_action_grounder()->ground_action(unrelaxed_action, std::move(action_arguments));
+            if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
             }
@@ -186,16 +189,15 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
     event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
     // Compute order here after grounding all actions. Could also be moved into the match tree.
-    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*m_pddl_repositories);
-    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*m_pddl_repositories);
+    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*pddl_repositories);
+    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*pddl_repositories);
     auto match_tree = MatchTree(ground_actions, fluent_atoms_ordering, derived_atoms_ordering);
 
     event_handler->on_finish_build_action_match_tree(match_tree);
 
-    return std::make_shared<GroundedApplicableActionGenerator>(std::move(action_grounder), std::move(match_tree), std::move(event_handler));
+    return std::make_shared<GroundedApplicableActionGenerator>(m_grounder->get_action_grounder(), std::move(match_tree), std::move(event_handler));
 }
 
-Problem DeleteRelaxedProblemExplorator::get_problem() const { return m_problem; }
-const std::shared_ptr<PDDLRepositories>& DeleteRelaxedProblemExplorator::get_pddl_repositories() const { return m_pddl_repositories; }
+const std::shared_ptr<Grounder>& DeleteRelaxedProblemExplorator::get_grounder() const { return m_grounder; }
 
 }  // namespace mimir
