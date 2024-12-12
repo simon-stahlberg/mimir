@@ -20,10 +20,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
 
 namespace mimir

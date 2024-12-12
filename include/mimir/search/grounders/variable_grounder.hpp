@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_GROUNDERS_VARIABLE_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {

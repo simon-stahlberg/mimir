@@ -19,20 +19,9 @@
 #define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_HPP_
 
 #include "mimir/algorithms/generator.hpp"
-#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
-#include "mimir/search/satisficing_binding_generator/event_handlers/interface.hpp"
-
-#include <cstddef>
-#include <cstdint>
-#include <memory>
-#include <ostream>
-#include <stdexcept>
-#include <tuple>
-#include <utility>
 
 namespace mimir
 {

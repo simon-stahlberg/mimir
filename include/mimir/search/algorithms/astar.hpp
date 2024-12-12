@@ -19,9 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/utils.hpp"
-#include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <memory>

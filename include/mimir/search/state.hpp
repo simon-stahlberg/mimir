@@ -19,17 +19,12 @@
 #define MIMIR_SEARCH_STATE_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
-#include "cista/containers/tuple.h"
 #include "cista/serialization.h"
 #include "cista/storage/unordered_set.h"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-
-#include <ostream>
-#include <tuple>
-#include <unordered_map>
 
 namespace mimir
 {

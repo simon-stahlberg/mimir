@@ -75,7 +75,14 @@ class LiftedAxiomEvaluator;
 
 class AxiomGrounder;
 
-// MatchTree
+class IGroundedAxiomEvaluatorEventHandler;
+class ILiftedAxiomEvaluatorEventHandler;
+
+/* SatisficingBindingGenerator */
+class SatisficingBindingGenerator;
+class ISatisficingBindingGeneratorEventHandler;
+
+/* MatchTree */
 template<typename T>
 class MatchTree;
 

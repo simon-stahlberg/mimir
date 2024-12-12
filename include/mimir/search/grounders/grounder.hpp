@@ -25,9 +25,6 @@
 #include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 
-#include <unordered_map>
-#include <vector>
-
 namespace mimir
 {
 /// @brief `Grounder` encapsulates instantiation and access to all specific grounders.

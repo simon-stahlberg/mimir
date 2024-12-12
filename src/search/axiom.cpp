@@ -18,10 +18,8 @@
 #include "mimir/search/axiom.hpp"
 
 #include "mimir/common/hash.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
-
-#include <ostream>
-#include <tuple>
 
 size_t cista::storage::DerefStdHasher<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* ptr) const
 {

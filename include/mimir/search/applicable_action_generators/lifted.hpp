@@ -20,12 +20,8 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
-
-#include <unordered_map>
-#include <vector>
+#include "mimir/search/satisficing_binding_generator.hpp"
 
 namespace mimir
 {

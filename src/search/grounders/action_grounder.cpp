@@ -19,9 +19,9 @@
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/utils.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/grounder.hpp"
+#include "mimir/search/grounders/literal_grounder.hpp"
 
 namespace mimir
 {

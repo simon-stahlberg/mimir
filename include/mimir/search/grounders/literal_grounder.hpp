@@ -18,14 +18,10 @@
 #ifndef MIMIR_SEARCH_GROUNDERS_LITERAL_GROUNDER_HPP_
 #define MIMIR_SEARCH_GROUNDERS_LITERAL_GROUNDER_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
-
-#include <unordered_map>
-#include <vector>
 
 namespace mimir
 {

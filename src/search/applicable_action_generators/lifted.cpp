@@ -17,15 +17,10 @@
 
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 
-#include "mimir/common/itertools.hpp"
-#include "mimir/formalism/action.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/object.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/variable.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
+#include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>

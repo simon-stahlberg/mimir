@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_ALGORITHMS_IW_HPP_
 
 #include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/algorithms/iw/event_handlers/interface.hpp"
 
 namespace mimir
 {

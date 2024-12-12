@@ -4,8 +4,6 @@
 #include "mimir/common/hash.hpp"
 #include "mimir/formalism/declarations.hpp"
 
-#include <unordered_map>
-
 namespace mimir
 {
 

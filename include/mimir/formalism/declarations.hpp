@@ -22,8 +22,13 @@
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
 
+#include <cassert>
+#include <cstdint>
 #include <loki/loki.hpp>
+#include <ostream>
+#include <stdexcept>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <variant>

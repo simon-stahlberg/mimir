@@ -22,13 +22,7 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
-
-#include <unordered_map>
-#include <vector>
 
 namespace mimir
 {

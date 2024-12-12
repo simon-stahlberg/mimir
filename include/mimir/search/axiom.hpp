@@ -24,10 +24,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 
-#include <cstdint>
-#include <ostream>
-#include <tuple>
-
 namespace mimir
 {
 

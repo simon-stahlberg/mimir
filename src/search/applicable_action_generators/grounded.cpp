@@ -17,20 +17,11 @@
 
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 
-#include "mimir/common/collections.hpp"
-#include "mimir/common/itertools.hpp"
-#include "mimir/common/printers.hpp"
-#include "mimir/formalism/transformers/delete_relax.hpp"
-#include "mimir/formalism/utils.hpp"
-#include "mimir/search/algorithms/brfs.hpp"
-#include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
-
-#include <deque>
-#include <memory>
 
 namespace mimir
 {

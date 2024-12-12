@@ -18,8 +18,7 @@
 #include "mimir/search/grounders/axiom_grounder.hpp"
 
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/utils.hpp"
-#include "mimir/search/axiom.hpp"
+#include "mimir/search/grounders/literal_grounder.hpp"
 
 namespace mimir
 {

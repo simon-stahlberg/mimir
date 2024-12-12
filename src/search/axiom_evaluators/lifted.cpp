@@ -17,13 +17,9 @@
 
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 
-#include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/formalism/utils.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
