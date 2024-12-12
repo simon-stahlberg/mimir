@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_BRFS_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/interface.hpp"
+#include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <memory>
@@ -29,31 +29,12 @@
 namespace mimir
 {
 
-/**
- * Specialized implementation class.
- */
-class BrFSAlgorithm : public IAlgorithm
-{
-public:
-    /// @brief Simplest construction
-    explicit BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
-
-    /// @brief Complete construction
-    BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                  std::shared_ptr<StateRepository> state_repository,
-                  std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler);
-
-    SearchResult find_solution() override;
-
-    SearchResult find_solution(State start_state) override;
-
-    SearchResult find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, std::unique_ptr<IPruningStrategy>&& pruning_strategy);
-
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_event_handler;
-};
+extern SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                       std::shared_ptr<StateRepository> state_repository,
+                                       std::optional<State> start_state = std::nullopt,
+                                       std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> event_handler = std::nullopt,
+                                       std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,
+                                       std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy = std::nullopt);
 
 }
 

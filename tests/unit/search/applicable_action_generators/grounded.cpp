@@ -44,8 +44,7 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
         std::dynamic_pointer_cast<IAxiomEvaluator>(delete_free_problem_explorator.create_grounded_axiom_evaluator(axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
-    const auto result = brfs.find_solution();
+    const auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();

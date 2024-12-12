@@ -63,39 +63,30 @@ get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_
  * BrFS
  */
 
-BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository) :
-    BrFSAlgorithm(applicable_action_generator, std::move(state_repository), std::make_shared<DefaultBrFSAlgorithmEventHandler>())
+SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                std::shared_ptr<StateRepository> state_repository,
+                                std::optional<State> start_state_,
+                                std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> event_handler_,
+                                std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_,
+                                std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy_)
 {
-}
+    assert(applicable_action_generator && state_repository);
 
-BrFSAlgorithm::BrFSAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                             std::shared_ptr<StateRepository> state_repository,
-                             std::shared_ptr<IBrFSAlgorithmEventHandler> event_handler) :
-    m_applicable_action_generator(std::move(applicable_action_generator)),
-    m_state_repository(std::move(state_repository)),
-    m_event_handler(std::move(event_handler))
-{
-}
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto goal_strategy =
+        (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
+    const auto pruning_strategy = (pruning_strategy_.has_value()) ? pruning_strategy_.value() : std::make_shared<DuplicateStatePruning>();
 
-SearchResult BrFSAlgorithm::find_solution() { return find_solution(m_state_repository->get_or_create_initial_state()); }
-
-SearchResult BrFSAlgorithm::find_solution(State start_state)
-{
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()), std::make_unique<DuplicateStatePruning>());
-}
-
-SearchResult
-BrFSAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, std::unique_ptr<IPruningStrategy>&& pruning_strategy)
-{
     auto result = SearchResult();
     auto default_search_node =
         BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), std::numeric_limits<Index>::max(), DiscreteCost(0) };
     auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
-    const auto problem = m_applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
-    m_event_handler->on_start_search(start_state, problem, pddl_repositories);
+    const auto problem = applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *applicable_action_generator->get_pddl_repositories();
+    event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     set_status(start_search_node, SearchNodeStatus::OPEN);
@@ -103,7 +94,7 @@ BrFSAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&&
 
     if (!goal_strategy->test_static_goal())
     {
-        m_event_handler->on_unsolvable();
+        event_handler->on_unsolvable();
 
         result.status = SearchStatus::UNSOLVABLE;
         return result;
@@ -132,43 +123,43 @@ BrFSAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&&
         if (get_g_value(search_node) > g_value)
         {
             g_value = get_g_value(search_node);
-            m_applicable_action_generator->on_finish_search_layer();
-            m_state_repository->get_axiom_evaluator()->on_finish_search_layer();
-            m_event_handler->on_finish_g_layer();
+            applicable_action_generator->on_finish_search_layer();
+            state_repository->get_axiom_evaluator()->on_finish_search_layer();
+            event_handler->on_finish_g_layer();
         }
 
         if (goal_strategy->test_dynamic_goal(state))
         {
             auto plan_actions = GroundActionList {};
-            set_plan(search_nodes, m_applicable_action_generator->get_action_grounder()->get_ground_actions(), search_node, plan_actions);
+            set_plan(search_nodes, applicable_action_generator->get_action_grounder()->get_ground_actions(), search_node, plan_actions);
             result.goal_state = state;
             result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
-            m_event_handler->on_end_search();
-            if (!m_event_handler->is_quiet())
+            event_handler->on_end_search();
+            if (!event_handler->is_quiet())
             {
-                m_applicable_action_generator->on_end_search();
-                m_state_repository->get_axiom_evaluator()->on_end_search();
+                applicable_action_generator->on_end_search();
+                state_repository->get_axiom_evaluator()->on_end_search();
             }
-            m_event_handler->on_solved(result.plan.value(), pddl_repositories);
+            event_handler->on_solved(result.plan.value(), pddl_repositories);
 
             result.status = SearchStatus::SOLVED;
             return result;
         }
 
-        m_event_handler->on_expand_state(state, problem, pddl_repositories);
+        event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        for (const auto& action : this->m_applicable_action_generator->create_applicable_action_generator(state))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
             /* Open state. */
-            const auto [successor_state, action_cost] = this->m_state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
-            m_event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
+            event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
 
             const bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
-                m_event_handler->on_prune_state(successor_state, problem, pddl_repositories);
+                event_handler->on_prune_state(successor_state, problem, pddl_repositories);
                 continue;
             }
 
@@ -184,8 +175,8 @@ BrFSAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&&
         set_status(search_node, SearchNodeStatus::CLOSED);
     }
 
-    m_event_handler->on_end_search();
-    m_event_handler->on_exhausted();
+    event_handler->on_end_search();
+    event_handler->on_exhausted();
 
     result.status = SearchStatus::EXHAUSTED;
     return result;

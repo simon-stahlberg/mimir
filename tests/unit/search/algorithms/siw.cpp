@@ -43,6 +43,7 @@ class LiftedSIWPlanner
 {
 private:
     PDDLParser m_parser;
+    size_t m_arity;
 
     std::shared_ptr<Grounder> m_grounder;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
@@ -53,11 +54,11 @@ private:
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
-    std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
-    LiftedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
+    LiftedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
+        m_arity(arity),
         m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
         m_applicable_action_generator(
@@ -67,17 +68,20 @@ public:
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<SIWAlgorithm>(m_applicable_action_generator,
-                                                   m_state_repository,
-                                                   arity,
-                                                   m_brfs_event_handler,
-                                                   m_iw_event_handler,
-                                                   m_siw_event_handler))
+        m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>())
     {
     }
 
-    SearchResult find_solution() { return m_algorithm->find_solution(); }
+    SearchResult find_solution()
+    {
+        return find_solution_siw(m_applicable_action_generator,
+                                 m_state_repository,
+                                 std::nullopt,
+                                 m_arity,
+                                 m_siw_event_handler,
+                                 m_iw_event_handler,
+                                 m_brfs_event_handler);
+    }
 
     const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
 
@@ -94,6 +98,7 @@ class GroundedSIWPlanner
 {
 private:
     PDDLParser m_parser;
+    size_t m_arity;
 
     std::shared_ptr<Grounder> m_grounder;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
@@ -105,11 +110,11 @@ private:
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
     std::shared_ptr<ISIWAlgorithmEventHandler> m_siw_event_handler;
-    std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
-    GroundedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
+    GroundedSIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
+        m_arity(arity),
         m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
         m_delete_relaxed_problem_explorator(m_grounder),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
@@ -120,17 +125,20 @@ public:
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
         m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<SIWAlgorithm>(m_applicable_action_generator,
-                                                   m_state_repository,
-                                                   arity,
-                                                   m_brfs_event_handler,
-                                                   m_iw_event_handler,
-                                                   m_siw_event_handler))
+        m_siw_event_handler(std::make_shared<DefaultSIWAlgorithmEventHandler>())
     {
     }
 
-    SearchResult find_solution() { return m_algorithm->find_solution(); }
+    SearchResult find_solution()
+    {
+        return find_solution_siw(m_applicable_action_generator,
+                                 m_state_repository,
+                                 std::nullopt,
+                                 m_arity,
+                                 m_siw_event_handler,
+                                 m_iw_event_handler,
+                                 m_brfs_event_handler);
+    }
 
     const SIWAlgorithmStatistics& get_iw_statistics() const { return m_siw_event_handler->get_statistics(); }
 

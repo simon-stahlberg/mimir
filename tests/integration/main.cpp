@@ -85,9 +85,7 @@ int main(int argc, char** argv)
     auto event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
                                    std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
-    auto brfs = std::make_shared<BrFSAlgorithm>(applicable_action_generator, state_repository, event_handler);
-
-    auto result = brfs->find_solution();
+    auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {

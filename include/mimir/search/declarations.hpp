@@ -83,7 +83,6 @@ class MatchTree;
 class IHeuristic;
 
 /* Algorithms */
-class IAlgorithm;
 
 class IPruningStrategy;
 class IGoalStrategy;

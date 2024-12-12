@@ -79,9 +79,8 @@ int main(int argc, char** argv)
 
     auto siw_event_handler = std::make_shared<DefaultSIWAlgorithmEventHandler>(false);
 
-    auto siw = std::make_shared<SIWAlgorithm>(applicable_action_generator, state_repository, arity, brfs_event_handler, iw_event_handler, siw_event_handler);
-
-    auto result = siw->find_solution();
+    auto result =
+        find_solution_siw(applicable_action_generator, state_repository, std::nullopt, arity, siw_event_handler, iw_event_handler, brfs_event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {

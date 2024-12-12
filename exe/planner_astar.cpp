@@ -109,9 +109,7 @@ int main(int argc, char** argv)
     }
     assert(heuristic);
 
-    auto astar = std::make_shared<AStarAlgorithm>(applicable_action_generator, state_repository, heuristic, event_handler);
-
-    auto result = astar->find_solution();
+    auto result = find_solution_astar(applicable_action_generator, state_repository, heuristic, std::nullopt, event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {

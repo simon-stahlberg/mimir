@@ -93,8 +93,7 @@ def test_astar_search():
     goal_count_heuristic = CustomGoalCountHeuristic(parser.get_problem(), parser.get_pddl_repositories())
 
     event_handler = CustomAStarAlgorithmEventHandler(False)
-    astar_search_algorithm = mm.AStarAlgorithm(applicable_action_generator, state_repository, goal_count_heuristic, event_handler)
-    result = astar_search_algorithm.find_solution()
+    result = mm.find_solution_astar(applicable_action_generator, state_repository, goal_count_heuristic, None, event_handler)
 
     assert result.status == mm.SearchStatus.SOLVED
     assert len(result.plan) == 3

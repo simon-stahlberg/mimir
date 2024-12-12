@@ -56,7 +56,6 @@ private:
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IHeuristic> m_heuristic;
     std::shared_ptr<IAStarAlgorithmEventHandler> m_astar_event_handler;
-    std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
     LiftedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
@@ -87,10 +86,12 @@ public:
                 throw std::runtime_error("Missing implementation for heuristic type");
             }
         }
-        m_algorithm = std::make_unique<AStarAlgorithm>(m_applicable_action_generator, m_state_repository, m_heuristic, m_astar_event_handler);
     }
 
-    SearchResult find_solution() { return m_algorithm->find_solution(); }
+    SearchResult find_solution()
+    {
+        return find_solution_astar(m_applicable_action_generator, m_state_repository, m_heuristic, std::nullopt, m_astar_event_handler);
+    }
 
     const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 
@@ -117,7 +118,6 @@ private:
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IHeuristic> m_heuristic;
     std::shared_ptr<IAStarAlgorithmEventHandler> m_astar_event_handler;
-    std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
     GroundedAStarPlanner(const fs::path& domain_file, const fs::path& problem_file, HeuristicType type) :
@@ -149,10 +149,12 @@ public:
                 throw std::runtime_error("Missing implementation for heuristic type");
             }
         }
-        m_algorithm = std::make_unique<AStarAlgorithm>(m_applicable_action_generator, m_state_repository, m_heuristic, m_astar_event_handler);
     }
 
-    SearchResult find_solution() { return m_algorithm->find_solution(); }
+    SearchResult find_solution()
+    {
+        return find_solution_astar(m_applicable_action_generator, m_state_repository, m_heuristic, std::nullopt, m_astar_event_handler);
+    }
 
     const AStarAlgorithmStatistics& get_algorithm_statistics() const { return m_astar_event_handler->get_statistics(); }
 

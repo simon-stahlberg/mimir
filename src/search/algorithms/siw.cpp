@@ -61,54 +61,39 @@ bool ProblemGoalCounter::test_static_goal() { return m_problem->static_goal_hold
 bool ProblemGoalCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 /* SIW */
-
-SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                                     std::shared_ptr<StateRepository> state_repository,
-                                                                     size_t max_arity) :
-    SerializedIterativeWidthAlgorithm(std::move(applicable_action_generator),
-                                      std::move(state_repository),
-                                      max_arity,
-                                      std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
-                                      std::make_shared<DefaultIWAlgorithmEventHandler>(),
-                                      std::make_shared<DefaultSIWAlgorithmEventHandler>())
+SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                               std::shared_ptr<StateRepository> state_repository,
+                               std::optional<State> start_state_,
+                               std::optional<size_t> max_arity_,
+                               std::optional<std::shared_ptr<ISIWAlgorithmEventHandler>> siw_event_handler_,
+                               std::optional<std::shared_ptr<IIWAlgorithmEventHandler>> iw_event_handler_,
+                               std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler_,
+                               std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_)
 {
-}
+    assert(applicable_action_generator && state_repository);
 
-SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                                     std::shared_ptr<StateRepository> state_repository,
-                                                                     size_t max_arity,
-                                                                     std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
-                                                                     std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler,
-                                                                     std::shared_ptr<ISIWAlgorithmEventHandler> siw_event_handler) :
-    m_applicable_action_generator(applicable_action_generator),
-    m_state_repository(state_repository),
-    m_max_arity(max_arity),
-    m_brfs_event_handler(brfs_event_handler),
-    m_iw_event_handler(iw_event_handler),
-    m_siw_event_handler(siw_event_handler),
-    m_initial_state(m_state_repository->get_or_create_initial_state()),
-    m_iw(applicable_action_generator, state_repository, max_arity, brfs_event_handler, iw_event_handler)
-{
+    const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    const auto siw_event_handler = (siw_event_handler_.has_value()) ? siw_event_handler_.value() : std::make_shared<DefaultSIWAlgorithmEventHandler>();
+    const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
+    const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto goal_strategy =
+        (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
+
+    assert(applicable_action_generator && state_repository && iw_event_handler && brfs_event_handler && goal_strategy);
     if (max_arity >= MAX_ARITY)
     {
-        throw std::runtime_error("SerializedIterativeWidthAlgorithm::SerializedIterativeWidthAlgorithm(...): max_arity (" + std::to_string(max_arity)
-                                 + ") cannot be greater than or equal to MAX_ARITY (" + std::to_string(MAX_ARITY) + ") compile time constant.");
+        throw std::runtime_error("siw::find_solution(...): max_arity (" + std::to_string(max_arity) + ") cannot be greater than or equal to MAX_ARITY ("
+                                 + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
-}
 
-SearchResult SerializedIterativeWidthAlgorithm::find_solution() { return find_solution(m_initial_state); }
-
-SearchResult SerializedIterativeWidthAlgorithm::find_solution(State start_state)
-{
     auto result = SearchResult();
 
-    const auto problem = m_applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
-    m_siw_event_handler->on_start_search(problem, start_state, pddl_repositories);
+    const auto problem = applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *applicable_action_generator->get_pddl_repositories();
+    siw_event_handler->on_start_search(problem, start_state, pddl_repositories);
 
-    auto problem_goal_test = std::make_unique<ProblemGoal>(problem);
-
-    if (!problem_goal_test->test_static_goal())
+    if (!goal_strategy->test_static_goal())
     {
         result.status = SearchStatus::UNSOLVABLE;
         return result;
@@ -118,19 +103,25 @@ SearchResult SerializedIterativeWidthAlgorithm::find_solution(State start_state)
     auto out_plan_actions = GroundActionList {};
     auto out_plan_cost = ContinuousCost(0);
 
-    while (!problem_goal_test->test_dynamic_goal(cur_state))
+    while (!goal_strategy->test_dynamic_goal(cur_state))
     {
         // Run IW to decrease goal counter
-        m_siw_event_handler->on_start_subproblem_search(problem, cur_state, pddl_repositories);
+        siw_event_handler->on_start_subproblem_search(problem, cur_state, pddl_repositories);
 
         auto partial_plan = std::optional<Plan> {};
 
-        const auto sub_result = m_iw.find_solution(cur_state, std::make_unique<ProblemGoalCounter>(problem, cur_state));
+        const auto sub_result = find_solution_iw(applicable_action_generator,
+                                                 state_repository,
+                                                 cur_state,
+                                                 max_arity,
+                                                 iw_event_handler,
+                                                 brfs_event_handler,
+                                                 std::make_shared<ProblemGoalCounter>(problem, cur_state));
 
         if (sub_result.status == SearchStatus::UNSOLVABLE)
         {
-            m_siw_event_handler->on_end_search();
-            m_siw_event_handler->on_unsolvable();
+            siw_event_handler->on_end_search();
+            siw_event_handler->on_unsolvable();
 
             result.status = SearchStatus::UNSOLVABLE;
             return result;
@@ -138,8 +129,8 @@ SearchResult SerializedIterativeWidthAlgorithm::find_solution(State start_state)
 
         if (sub_result.status == SearchStatus::FAILED)
         {
-            m_siw_event_handler->on_end_search();
-            m_siw_event_handler->on_exhausted();
+            siw_event_handler->on_end_search();
+            siw_event_handler->on_exhausted();
 
             result.status = SearchStatus::FAILED;
             return result;
@@ -149,19 +140,18 @@ SearchResult SerializedIterativeWidthAlgorithm::find_solution(State start_state)
         out_plan_actions.insert(out_plan_actions.end(), sub_result.plan.value().get_actions().begin(), sub_result.plan.value().get_actions().end());
         out_plan_cost += sub_result.plan.value().get_cost();
 
-        m_siw_event_handler->on_end_subproblem_search(m_iw_event_handler->get_statistics());
+        siw_event_handler->on_end_subproblem_search(iw_event_handler->get_statistics());
     }
 
-    m_siw_event_handler->on_end_search();
-    if (!m_siw_event_handler->is_quiet())
+    siw_event_handler->on_end_search();
+    if (!siw_event_handler->is_quiet())
     {
-        m_applicable_action_generator->on_end_search();
-        m_state_repository->get_axiom_evaluator()->on_end_search();
+        applicable_action_generator->on_end_search();
+        state_repository->get_axiom_evaluator()->on_end_search();
     }
     result.plan = Plan(std::move(out_plan_actions), out_plan_cost);
-    m_siw_event_handler->on_solved(result.plan.value(), pddl_repositories);
+    siw_event_handler->on_solved(result.plan.value(), pddl_repositories);
     result.status = SearchStatus::SOLVED;
     return result;
 }
-
 }

@@ -77,9 +77,7 @@ int main(int argc, char** argv)
 
     auto iw_event_handler = std::make_shared<DefaultIWAlgorithmEventHandler>(false);
 
-    auto iw = std::make_shared<IWAlgorithm>(applicable_action_generator, state_repository, arity, brfs_event_handler, iw_event_handler);
-
-    auto result = iw->find_solution();
+    auto result = find_solution_iw(applicable_action_generator, state_repository, std::nullopt, arity, iw_event_handler, brfs_event_handler);
 
     if (result.status == SearchStatus::SOLVED)
     {

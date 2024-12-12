@@ -44,6 +44,7 @@ class LiftedIWPlanner
 {
 private:
     PDDLParser m_parser;
+    size_t m_arity;
 
     std::shared_ptr<Grounder> m_grounder;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
@@ -53,11 +54,11 @@ private:
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
-    LiftedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
+    LiftedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
+        m_arity(arity),
         m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
         m_applicable_action_generator(
@@ -66,12 +67,14 @@ public:
         m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_grounder->get_axiom_grounder(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IWAlgorithm>(m_applicable_action_generator, m_state_repository, arity, m_brfs_event_handler, m_iw_event_handler))
+        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>())
     {
     }
 
-    SearchResult find_solution() { return m_algorithm->find_solution(); }
+    SearchResult find_solution()
+    {
+        return find_solution_iw(m_applicable_action_generator, m_state_repository, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler);
+    }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
@@ -88,6 +91,7 @@ class GroundedIWPlanner
 {
 private:
     PDDLParser m_parser;
+    size_t m_arity;
 
     std::shared_ptr<Grounder> m_grounder;
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
@@ -98,11 +102,11 @@ private:
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-    std::unique_ptr<IAlgorithm> m_algorithm;
 
 public:
-    GroundedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, int arity) :
+    GroundedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
         m_parser(PDDLParser(domain_file, problem_file)),
+        m_arity(arity),
         m_grounder(std::make_shared<Grounder>(m_parser.get_problem(), m_parser.get_pddl_repositories())),
         m_delete_relaxed_problem_explorator(m_grounder),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
@@ -112,12 +116,14 @@ public:
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
-        m_algorithm(std::make_unique<IWAlgorithm>(m_applicable_action_generator, m_state_repository, arity, m_brfs_event_handler, m_iw_event_handler))
+        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>())
     {
     }
 
-    SearchResult find_solution() { return m_algorithm->find_solution(); }
+    SearchResult find_solution()
+    {
+        return find_solution_iw(m_applicable_action_generator, m_state_repository, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler);
+    }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 

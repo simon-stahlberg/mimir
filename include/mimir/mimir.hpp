@@ -70,6 +70,8 @@
 
 #include "mimir/search/action.hpp"
 #include "mimir/search/algorithms.hpp"
+#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
+#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/axiom_evaluators.hpp"

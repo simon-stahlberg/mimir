@@ -24,39 +24,13 @@
 namespace mimir
 {
 
-class IterativeWidthAlgorithm : public IAlgorithm
-{
-public:
-    /// @brief Simplest construction
-    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                            std::shared_ptr<StateRepository> state_repository,
-                            size_t max_arity);
-
-    /// @brief Complete construction
-    IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                            std::shared_ptr<StateRepository> state_repository,
-                            size_t max_arity,
-                            std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
-                            std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler);
-
-    SearchResult find_solution() override;
-
-    SearchResult find_solution(State start_state) override;
-
-    SearchResult find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy);
-
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    size_t m_max_arity;
-    std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
-    std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
-
-    State m_initial_state;
-    BrFSAlgorithm m_brfs;
-};
-
-using IWAlgorithm = IterativeWidthAlgorithm;
+extern SearchResult find_solution_iw(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                     std::shared_ptr<StateRepository> state_repository,
+                                     std::optional<State> start_state = std::nullopt,
+                                     std::optional<size_t> max_arity = std::nullopt,
+                                     std::optional<std::shared_ptr<IIWAlgorithmEventHandler>> iw_event_handler = std::nullopt,
+                                     std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler = std::nullopt,
+                                     std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt);
 }
 
 #endif

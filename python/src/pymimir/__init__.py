@@ -90,11 +90,9 @@ from _pymimir import (
 
 # Search
 from _pymimir import (
-    AStarAlgorithm,
     AStarAlgorithmEventHandlerBase,
     AStarAlgorithmStatistics,
     BlindHeuristic,
-    BrFSAlgorithm,
     BrFSAlgorithmStatistics,
     DebugAStarAlgorithmEventHandler,
     DebugBrFSAlgorithmEventHandler,
@@ -121,7 +119,6 @@ from _pymimir import (
     GroundedApplicableActionGenerator,
     GroundedAxiomEvaluator,
     IApplicableActionGenerator,
-    IAlgorithm,
     IAStarAlgorithmEventHandler,
     IAxiomEvaluator,
     IBrFSAlgorithmEventHandler,
@@ -132,7 +129,6 @@ from _pymimir import (
     ILiftedApplicableActionGeneratorEventHandler,
     ILiftedAxiomEvaluatorEventHandler,
     ISIWAlgorithmEventHandler,
-    IWAlgorithm,
     IWAlgorithmStatistics,
     LiftedApplicableActionGenerator,
     LiftedAxiomEvaluator,
@@ -140,7 +136,6 @@ from _pymimir import (
     SearchNodeStatus,
     SearchStatus,
     SearchResult,
-    SIWAlgorithm,
     SIWAlgorithmStatistics,
     State,
     StateList,
@@ -160,6 +155,14 @@ from _pymimir import (
     StaticAssignmentSet,
     FluentAssignmentSet,
     DerivedAssignmentSet
+)
+
+# Search (free functions)
+from _pymimir import (
+    find_solution_astar,
+    find_solution_brfs,
+    find_solution_iw,
+    find_solution_siw
 )
 
 # Dataset

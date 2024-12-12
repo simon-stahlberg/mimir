@@ -15,10 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
-#define MIMIR_SEARCH_ALGORITHMS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_ALGORITHMS_UTILS_HPP_
+#define MIMIR_SEARCH_ALGORITHMS_UTILS_HPP_
 
-#include "mimir/search/action.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state.hpp"
 
@@ -43,22 +42,6 @@ struct SearchResult
     SearchStatus status = SearchStatus::IN_PROGRESS;
     std::optional<Plan> plan = std::nullopt;
     std::optional<State> goal_state = std::nullopt;
-};
-
-/**
- * Interface class.
- */
-
-class IAlgorithm
-{
-public:
-    virtual ~IAlgorithm() = default;
-
-    /// @brief Find a plan for the initial state.
-    virtual SearchResult find_solution() = 0;
-
-    /// @brief Find a plan for a given state.
-    virtual SearchResult find_solution(State start_state) = 0;
 };
 
 }

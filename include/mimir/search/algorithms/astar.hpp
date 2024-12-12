@@ -19,7 +19,9 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/algorithms/interface.hpp"
+#include "mimir/search/algorithms/astar/event_handlers.hpp"
+#include "mimir/search/algorithms/utils.hpp"
+#include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <memory>
@@ -29,35 +31,13 @@
 namespace mimir
 {
 
-/**
- * Specialized implementation class.
- */
-class AStarAlgorithm : public IAlgorithm
-{
-public:
-    /// @brief Simplest construction
-    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                   std::shared_ptr<StateRepository> state_repository,
-                   std::shared_ptr<IHeuristic> heuristic);
-
-    /// @brief Complete construction
-    AStarAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                   std::shared_ptr<StateRepository> state_repository,
-                   std::shared_ptr<IHeuristic> heuristic,
-                   std::shared_ptr<IAStarAlgorithmEventHandler> event_handler);
-
-    SearchResult find_solution() override;
-
-    SearchResult find_solution(State start_state) override;
-
-    SearchResult find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy, std::unique_ptr<IPruningStrategy>&& pruning_strategy);
-
-private:
-    std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
-    std::shared_ptr<StateRepository> m_state_repository;
-    std::shared_ptr<IHeuristic> m_heuristic;
-    std::shared_ptr<IAStarAlgorithmEventHandler> m_event_handler;
-};
+extern SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                        std::shared_ptr<StateRepository> state_repository,
+                                        std::shared_ptr<IHeuristic> heuristic,
+                                        std::optional<State> start_state = std::nullopt,
+                                        std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler = std::nullopt,
+                                        std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,
+                                        std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy = std::nullopt);
 
 }
 

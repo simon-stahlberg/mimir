@@ -34,17 +34,16 @@ TEST(MimirTests, SearchApplicableActionGeneratorsLiftedTest)
     const auto problem_file = fs::path(std::string(DATA_DIR) + "miconic-fulladl/test_problem.pddl");
     const auto parser = PDDLParser(domain_file, problem_file);
     const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
-    auto applicable_action_generator =
+    const auto applicable_action_generator_event_handler = std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>();
+    const auto applicable_action_generator =
         std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder(), applicable_action_generator_event_handler);
-    auto axiom_evaluator_event_handler =
+    const auto axiom_evaluator_event_handler =
         std::dynamic_pointer_cast<ILiftedAxiomEvaluatorEventHandler>(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>());
-    auto axiom_evaluator =
+    const auto axiom_evaluator =
         std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder(), axiom_evaluator_event_handler));
-    auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    auto brfs = BrFSAlgorithm(applicable_action_generator, state_repository, brfs_event_handler);
-    const auto result = brfs.find_solution();
+    const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
+    const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
     const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();

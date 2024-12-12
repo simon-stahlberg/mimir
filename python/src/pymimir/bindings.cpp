@@ -1159,15 +1159,6 @@ void init_pymimir(py::module_& m)
         .def_readwrite("plan", &SearchResult::plan)
         .def_readwrite("goal_state", &SearchResult::goal_state);
 
-    // IAlgorithm
-    py::class_<IAlgorithm, std::shared_ptr<IAlgorithm>>(m, "IAlgorithm")  //
-        .def("find_solution", py::overload_cast<>(&IAlgorithm::find_solution), py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("find_solution",
-             py::overload_cast<State>(&IAlgorithm::find_solution),
-             py::arg("start_state"),
-             py::keep_alive<0, 1>(),
-             py::return_value_policy::copy);
-
     // AStar
     py::class_<AStarAlgorithmStatistics>(m, "AStarAlgorithmStatistics")  //
         .def("get_num_generated", &AStarAlgorithmStatistics::get_num_generated)
@@ -1195,19 +1186,16 @@ void init_pymimir(py::module_& m)
                std::shared_ptr<DynamicAStarAlgorithmEventHandlerBase>>(m,
                                                                        "AStarAlgorithmEventHandlerBase")  //
         .def(py::init<bool>(), py::arg("quiet") = true);
-    py::class_<AStarAlgorithm, IAlgorithm, std::shared_ptr<AStarAlgorithm>>(m, "AStarAlgorithm")  //
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IHeuristic>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("heuristic"))
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      std::shared_ptr<StateRepository>,
-                      std::shared_ptr<IHeuristic>,
-                      std::shared_ptr<IAStarAlgorithmEventHandler>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("heuristic"),
-             py::arg("event_handler"));
+
+    m.def("find_solution_astar",
+          &find_solution_astar,
+          py::arg("applicable_action_generator"),
+          py::arg("state_repository"),
+          py::arg("heuristic") = std::nullopt,
+          py::arg("start_state") = std::nullopt,
+          py::arg("brfs_event_handler") = std::nullopt,
+          py::arg("goal_strategy") = std::nullopt,
+          py::arg("pruning_strategy") = std::nullopt);
 
     // BrFS
     py::class_<BrFSAlgorithmStatistics>(m, "BrFSAlgorithmStatistics")  //
@@ -1229,14 +1217,15 @@ void init_pymimir(py::module_& m)
         m,
         "DebugBrFSAlgorithmEventHandler")  //
         .def(py::init<>());
-    py::class_<BrFSAlgorithm, IAlgorithm, std::shared_ptr<BrFSAlgorithm>>(m, "BrFSAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"))
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, std::shared_ptr<IBrFSAlgorithmEventHandler>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("event_handler"));
+
+    m.def("find_solution_brfs",
+          &find_solution_brfs,
+          py::arg("applicable_action_generator"),
+          py::arg("state_repository"),
+          py::arg("start_state") = std::nullopt,
+          py::arg("brfs_event_handler") = std::nullopt,
+          py::arg("goal_strategy") = std::nullopt,
+          py::arg("pruning_strategy") = std::nullopt);
 
     // IW
     py::class_<TupleIndexMapper, std::shared_ptr<TupleIndexMapper>>(m, "TupleIndexMapper")  //
@@ -1264,21 +1253,16 @@ void init_pymimir(py::module_& m)
         .def("get_statistics", &IIWAlgorithmEventHandler::get_statistics);
     py::class_<DefaultIWAlgorithmEventHandler, IIWAlgorithmEventHandler, std::shared_ptr<DefaultIWAlgorithmEventHandler>>(m, "DefaultIWAlgorithmEventHandler")
         .def(py::init<>());
-    py::class_<IWAlgorithm, IAlgorithm, std::shared_ptr<IWAlgorithm>>(m, "IWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, size_t>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("max_arity"))
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      std::shared_ptr<StateRepository>,
-                      size_t,
-                      std::shared_ptr<IBrFSAlgorithmEventHandler>,
-                      std::shared_ptr<IIWAlgorithmEventHandler>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("max_arity"),
-             py::arg("brfs_event_handler"),
-             py::arg("iw_event_handler"));
+
+    m.def("find_solution_iw",
+          &find_solution_iw,
+          py::arg("applicable_action_generator"),
+          py::arg("state_repository"),
+          py::arg("start_state") = std::nullopt,
+          py::arg("max_arity") = std::nullopt,
+          py::arg("iw_event_handler") = std::nullopt,
+          py::arg("brfs_event_handler") = std::nullopt,
+          py::arg("goal_strategy") = std::nullopt);
 
     // SIW
     py::class_<SIWAlgorithmStatistics>(m, "SIWAlgorithmStatistics")  //
@@ -1290,23 +1274,17 @@ void init_pymimir(py::module_& m)
     py::class_<DefaultSIWAlgorithmEventHandler, ISIWAlgorithmEventHandler, std::shared_ptr<DefaultSIWAlgorithmEventHandler>>(m,
                                                                                                                              "DefaultSIWAlgorithmEventHandler")
         .def(py::init<>());
-    py::class_<SIWAlgorithm, IAlgorithm, std::shared_ptr<SIWAlgorithm>>(m, "SIWAlgorithm")
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>, std::shared_ptr<StateRepository>, size_t>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("max_arity"))
-        .def(py::init<std::shared_ptr<IApplicableActionGenerator>,
-                      std::shared_ptr<StateRepository>,
-                      size_t,
-                      std::shared_ptr<IBrFSAlgorithmEventHandler>,
-                      std::shared_ptr<IIWAlgorithmEventHandler>,
-                      std::shared_ptr<ISIWAlgorithmEventHandler>>(),
-             py::arg("applicable_action_generator"),
-             py::arg("state_repository"),
-             py::arg("max_arity"),
-             py::arg("brfs_event_handler"),
-             py::arg("iw_event_handler"),
-             py::arg("siw_event_handler"));
+
+    m.def("find_solution_siw",
+          &find_solution_siw,
+          py::arg("applicable_action_generator"),
+          py::arg("state_repository"),
+          py::arg("start_state") = std::nullopt,
+          py::arg("max_arity") = std::nullopt,
+          py::arg("siw_event_handler") = std::nullopt,
+          py::arg("iw_event_handler") = std::nullopt,
+          py::arg("brfs_event_handler") = std::nullopt,
+          py::arg("goal_strategy") = std::nullopt);
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // DataSets

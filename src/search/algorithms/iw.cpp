@@ -20,7 +20,6 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
-#include "mimir/search/algorithms/interface.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/pruning_strategy.hpp"
@@ -28,6 +27,7 @@
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
+#include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
@@ -819,77 +819,69 @@ bool ArityKNoveltyPruning::test_prune_successor_state(const State state, const S
 }
 
 /* IterativeWidthAlgorithm */
-IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                 std::shared_ptr<StateRepository> state_repository,
-                                                 size_t max_arity) :
-    IterativeWidthAlgorithm(std::move(applicable_action_generator),
-                            std::move(state_repository),
-                            max_arity,
-                            std::make_shared<DefaultBrFSAlgorithmEventHandler>(),
-                            std::make_shared<DefaultIWAlgorithmEventHandler>())
-{
-}
 
-IterativeWidthAlgorithm::IterativeWidthAlgorithm(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                 std::shared_ptr<StateRepository> state_repository,
-                                                 size_t max_arity,
-                                                 std::shared_ptr<IBrFSAlgorithmEventHandler> brfs_event_handler,
-                                                 std::shared_ptr<IIWAlgorithmEventHandler> iw_event_handler) :
-    m_applicable_action_generator(applicable_action_generator),
-    m_state_repository(state_repository),
-    m_max_arity(max_arity),
-    m_brfs_event_handler(brfs_event_handler),
-    m_iw_event_handler(iw_event_handler),
-    m_initial_state(m_state_repository->get_or_create_initial_state()),
-    m_brfs(applicable_action_generator, state_repository, brfs_event_handler)
+SearchResult find_solution_iw(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                              std::shared_ptr<StateRepository> state_repository,
+                              std::optional<State> start_state_,
+                              std::optional<size_t> max_arity_,
+                              std::optional<std::shared_ptr<IIWAlgorithmEventHandler>> iw_event_handler_,
+                              std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler_,
+                              std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_)
 {
+    assert(applicable_action_generator && state_repository);
+
+    const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
+    const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
+    const auto goal_strategy =
+        (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
+
     if (max_arity >= MAX_ARITY)
     {
-        throw std::runtime_error("IterativeWidthAlgorithm::IterativeWidthAlgorithm(...): max_arity (" + std::to_string(max_arity)
-                                 + ") cannot be greater than or equal to MAX_ARITY (" + std::to_string(MAX_ARITY) + ") compile time constant.");
+        throw std::runtime_error("iw::find_solution(...): max_arity (" + std::to_string(max_arity) + ") cannot be greater than or equal to MAX_ARITY ("
+                                 + std::to_string(MAX_ARITY) + ") compile time constant.");
     }
-}
 
-SearchResult IterativeWidthAlgorithm::find_solution() { return find_solution(m_initial_state); }
-
-SearchResult IterativeWidthAlgorithm::find_solution(State start_state)
-{
-    return find_solution(start_state, std::make_unique<ProblemGoal>(m_applicable_action_generator->get_problem()));
-}
-
-SearchResult IterativeWidthAlgorithm::find_solution(State start_state, std::unique_ptr<IGoalStrategy>&& goal_strategy)
-{
-    const auto problem = m_applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *m_applicable_action_generator->get_pddl_repositories();
-    m_iw_event_handler->on_start_search(problem, start_state, pddl_repositories);
+    const auto problem = applicable_action_generator->get_problem();
+    const auto& pddl_repositories = *applicable_action_generator->get_pddl_repositories();
+    iw_event_handler->on_start_search(problem, start_state, pddl_repositories);
 
     size_t cur_arity = 0;
-    while (cur_arity <= m_max_arity)
+    while (cur_arity <= max_arity)
     {
-        m_iw_event_handler->on_start_arity_search(problem, start_state, pddl_repositories, cur_arity);
+        iw_event_handler->on_start_arity_search(problem, start_state, pddl_repositories, cur_arity);
 
-        const auto result =
-            (cur_arity > 0) ?
-                m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
-                m_brfs.find_solution(start_state, std::move(goal_strategy), std::make_unique<ArityZeroNoveltyPruning>(start_state));
+        const auto result = (cur_arity > 0) ? find_solution_brfs(applicable_action_generator,
+                                                                 state_repository,
+                                                                 start_state,
+                                                                 brfs_event_handler,
+                                                                 goal_strategy,
+                                                                 std::make_shared<ArityKNoveltyPruning>(cur_arity, INITIAL_TABLE_ATOMS)) :
+                                              find_solution_brfs(applicable_action_generator,
+                                                                 state_repository,
+                                                                 start_state,
+                                                                 brfs_event_handler,
+                                                                 goal_strategy,
+                                                                 std::make_shared<ArityZeroNoveltyPruning>(start_state));
 
-        m_iw_event_handler->on_end_arity_search(m_brfs_event_handler->get_statistics());
+        iw_event_handler->on_end_arity_search(brfs_event_handler->get_statistics());
 
         if (result.status == SearchStatus::SOLVED)
         {
-            m_iw_event_handler->on_end_search();
-            if (!m_iw_event_handler->is_quiet())
+            iw_event_handler->on_end_search();
+            if (!iw_event_handler->is_quiet())
             {
-                m_applicable_action_generator->on_end_search();
-                m_state_repository->get_axiom_evaluator()->on_end_search();
+                applicable_action_generator->on_end_search();
+                state_repository->get_axiom_evaluator()->on_end_search();
             }
-            m_iw_event_handler->on_solved(result.plan.value(), *m_applicable_action_generator->get_pddl_repositories());
+            iw_event_handler->on_solved(result.plan.value(), *applicable_action_generator->get_pddl_repositories());
 
             return result;
         }
         else if (result.status == SearchStatus::UNSOLVABLE)
         {
-            m_iw_event_handler->on_unsolvable();
+            iw_event_handler->on_unsolvable();
 
             return result;
         }
