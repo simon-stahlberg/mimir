@@ -22,9 +22,9 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/assignment_set.hpp"
-#include "mimir/search/grounders/condition_grounder/event_handlers/interface.hpp"
 #include "mimir/search/grounders/consistency_graph.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
+#include "mimir/search/satisficing_binding_generator/event_handlers/interface.hpp"
 
 #include <cstddef>
 #include <cstdint>
@@ -48,7 +48,7 @@ private:
     LiteralList<Derived> m_derived_conditions;
 
     AssignmentSet<Static> m_static_assignment_set;
-    std::shared_ptr<IConditionGrounderEventHandler> m_event_handler;
+    std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
     /* Precomputed grounded conditions with zero arguments. */
     GroundLiteralList<Static> m_nullary_static_conditions;
@@ -89,7 +89,7 @@ public:
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
                                 AssignmentSet<Static> static_assignment_set,
-                                std::shared_ptr<IConditionGrounderEventHandler> event_handler);
+                                std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 
     mimir::generator<ObjectList>
     create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
@@ -107,7 +107,7 @@ public:
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const AssignmentSet<Static>& get_static_assignment_set() const;
-    const std::shared_ptr<IConditionGrounderEventHandler>& get_event_handler() const;
+    const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
 

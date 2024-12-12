@@ -25,7 +25,6 @@
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/assignment_set.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
-#include "mimir/search/grounders/condition_grounder/event_handlers/default.hpp"
 #include "mimir/search/grounders/consistency_graph.hpp"
 #include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"

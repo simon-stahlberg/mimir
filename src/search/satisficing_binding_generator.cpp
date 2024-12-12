@@ -25,7 +25,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/grounders/condition_grounder/event_handlers/default.hpp"
+#include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
@@ -219,7 +219,7 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
                                 std::move(fluent_conditions),
                                 std::move(derived_conditions),
                                 std::move(static_assignment_set),
-                                std::make_shared<DefaultConditionGrounderEventHandler>())
+                                std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
 {
 }
 
@@ -229,7 +229,7 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
                                                          LiteralList<Fluent> fluent_conditions,
                                                          LiteralList<Derived> derived_conditions,
                                                          AssignmentSet<Static> static_assignment_set,
-                                                         std::shared_ptr<IConditionGrounderEventHandler> event_handler) :
+                                                         std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
     m_literal_grounder(std::move(literal_grounder)),
     m_variables(std::move(variables)),
     m_static_conditions(std::move(static_conditions)),
@@ -334,7 +334,7 @@ template const LiteralList<Derived>& SatisficingBindingGenerator::get_conditions
 
 const AssignmentSet<Static>& SatisficingBindingGenerator::get_static_assignment_set() const { return m_static_assignment_set; }
 
-const std::shared_ptr<IConditionGrounderEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
+const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
 
 const consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator::get_static_consistency_graph() const { return m_static_consistency_graph; }
 

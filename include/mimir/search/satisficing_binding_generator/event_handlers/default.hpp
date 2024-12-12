@@ -15,19 +15,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
-#define MIMIR_SEARCH_CONDITION_GROUNDERS_EVENT_HANDLERS_DEFAULT_HPP_
+#ifndef MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_EVENT_HANDLERS_DEFAULT_HPP_
+#define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_EVENT_HANDLERS_DEFAULT_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/grounders/condition_grounder/event_handlers/interface.hpp"
+#include "mimir/search/satisficing_binding_generator/event_handlers/interface.hpp"
 
 namespace mimir
 {
 
-class DefaultConditionGrounderEventHandler : public IConditionGrounderEventHandler
+class DefaultSatisficingBindingGeneratorEventHandler : public ISatisficingBindingGeneratorEventHandler
 {
 public:
-    DefaultConditionGrounderEventHandler() : IConditionGrounderEventHandler() {}
+    DefaultSatisficingBindingGeneratorEventHandler() : ISatisficingBindingGeneratorEventHandler() {}
 
     void on_invalid_binding(const ObjectList& binding, PDDLRepositories& ref_pddl_repositories) {}
 };
