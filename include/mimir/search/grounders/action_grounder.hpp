@@ -32,8 +32,6 @@
 
 namespace mimir
 {
-using GroundFunctionToValue = std::unordered_map<GroundFunction, double>;
-
 class ActionGrounder
 {
 private:
@@ -45,9 +43,8 @@ private:
     GroundActionImpl m_action_builder;
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;
 
+    // TODO: we can think about moving the consistency graph into the action schemas
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
-
-    GroundFunctionToValue m_ground_function_to_cost;
 
 public:
     /// @brief Simplest construction

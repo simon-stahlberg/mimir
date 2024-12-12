@@ -47,6 +47,7 @@ private:
     bool m_static_goal_holds;
     PredicateList<Derived> m_problem_and_domain_derived_predicates;
     AxiomList m_problem_and_domain_axioms;
+    GroundFunctionMap<ContinuousCost> m_ground_function_to_value;
 
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
@@ -94,6 +95,8 @@ public:
     const AxiomList& get_problem_and_domain_axioms() const;
     bool static_goal_holds() const;
     bool static_literal_holds(const GroundLiteral<Static> literal) const;
+    const GroundFunctionMap<ContinuousCost>& get_ground_function_to_value() const;
+    ContinuousCost get_ground_function_value(GroundFunction function) const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

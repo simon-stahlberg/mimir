@@ -24,6 +24,7 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/existentially_quantified_conjunction.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -40,7 +41,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
-#include "mimir/formalism/universally_quantified_conjunction.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <boost/hana.hpp>
@@ -84,7 +84,7 @@ using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl>;
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl>;
 using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
 using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
-using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<UniversallyQuantifiedConjunctionImpl>;
+using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ExistentiallyQuantifiedConjunctionImpl>;
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
@@ -129,7 +129,7 @@ using PDDLTypeToRepository =
                      boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
                      boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
                      boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
-                     boost::hana::pair<boost::hana::type<UniversallyQuantifiedConjunctionImpl>, UniversallyQuantifiedConjunctionRepository>,
+                     boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctionImpl>, UniversallyQuantifiedConjunctionRepository>,
                      boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
                      boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
                      boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,

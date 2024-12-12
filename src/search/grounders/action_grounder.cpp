@@ -29,16 +29,13 @@ namespace mimir
 class GroundAndEvaluateFunctionExpressionVisitor
 {
 private:
-    const GroundFunctionToValue& m_ground_function_to_cost;
+    Problem m_problem;
     const ObjectList& m_binding;
     FunctionGrounder& m_function_grounder;
 
 public:
-    GroundAndEvaluateFunctionExpressionVisitor(const GroundFunctionToValue& ground_function_value_cost,
-                                               const ObjectList& binding,
-                                               FunctionGrounder& ref_function_grounder) :
-
-        m_ground_function_to_cost(ground_function_value_cost),
+    GroundAndEvaluateFunctionExpressionVisitor(Problem problem, const ObjectList& binding, FunctionGrounder& ref_function_grounder) :
+        m_problem(problem),
         m_binding(binding),
         m_function_grounder(ref_function_grounder)
     {
@@ -71,16 +68,7 @@ public:
 
     double operator()(const FunctionExpressionFunctionImpl& expr)
     {
-        auto grounded_function = m_function_grounder.ground_function(expr.get_function(), m_binding);
-
-        auto it = m_ground_function_to_cost.find(grounded_function);
-        if (it == m_ground_function_to_cost.end())
-        {
-            throw std::runtime_error("No numeric fluent available to determine cost for ground function " + to_string(*grounded_function));
-        }
-        const auto cost = it->second;
-
-        return cost;
+        return m_problem->get_ground_function_value(m_function_grounder.ground_function(expr.get_function(), m_binding));
     }
 };
 
@@ -92,17 +80,11 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
     m_actions_by_index(),
     m_action_builder(),
     m_action_groundings(),
-    m_action_conditional_effects(),
-    m_ground_function_to_cost()
+    m_action_conditional_effects()
 {
     /* 1. Initialize ground function costs. */
 
     const auto problem = m_literal_grounder->get_problem();
-
-    for (const auto numeric_fluent : problem->get_numeric_fluents())
-    {
-        m_ground_function_to_cost.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
-    }
 
     /* 2. Initialize the condition grounders for each action schema. */
 
@@ -129,6 +111,8 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 
 GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 {
+    const auto problem = m_literal_grounder->get_problem();
+
     /* 1. Check if grounding is cached */
 
     auto& groundings = m_action_groundings[action];
@@ -192,7 +176,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     const auto& lifted_effect_literals = lifted_strips_effect->get_effects();
     m_literal_grounder->ground_and_fill_bitset(lifted_effect_literals, positive_effect, negative_effect, binding);
     strips_effect.get_cost() =
-        GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_function_grounder)(*lifted_strips_effect->get_function_expression());
+        GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_strips_effect->get_function_expression());
 
     /* Conditional effects */
     // Fetch data
@@ -257,8 +241,8 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
                     fill_effects(lifted_cond_effect->get_effects(), binding_ext, cond_simple_effect_j);
 
-                    cond_effect_j.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_function_grounder)(
-                        *lifted_cond_effect->get_function_expression());
+                    cond_effect_j.get_cost() =
+                        GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
 
                     conditional_effects.push_back(std::move(cond_effect_j));
                 }
@@ -294,8 +278,8 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
                 fill_effects(lifted_cond_effect->get_effects(), binding, cond_simple_effect);
 
-                cond_effect.get_cost() = GroundAndEvaluateFunctionExpressionVisitor(m_ground_function_to_cost, binding, *m_function_grounder)(
-                    *lifted_cond_effect->get_function_expression());
+                cond_effect.get_cost() =
+                    GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
 
                 conditional_effects.push_back(std::move(cond_effect));
             }

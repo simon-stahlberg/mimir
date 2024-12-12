@@ -59,7 +59,7 @@ PDDLTypeToRepository create_default_pddl_type_to_repository()
         boost::hana::make_pair(boost::hana::type_c<FunctionSkeletonImpl>, FunctionSkeletonRepository {}),
         boost::hana::make_pair(boost::hana::type_c<EffectStripsImpl>, EffectStripsRepository {}),
         boost::hana::make_pair(boost::hana::type_c<EffectConditionalImpl>, EffectUniversalRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<UniversallyQuantifiedConjunctionImpl>, UniversallyQuantifiedConjunctionRepository {}),
+        boost::hana::make_pair(boost::hana::type_c<ExistentiallyQuantifiedConjunctionImpl>, UniversallyQuantifiedConjunctionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ActionImpl>, ActionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<AxiomImpl>, AxiomRepository {}),
         boost::hana::make_pair(boost::hana::type_c<OptimizationMetricImpl>, OptimizationMetricRepository {}),

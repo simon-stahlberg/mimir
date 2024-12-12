@@ -23,6 +23,7 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/equal_to.hpp"
+#include "mimir/formalism/existentially_quantified_conjunction.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -39,7 +40,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 #include "mimir/formalism/term.hpp"
-#include "mimir/formalism/universally_quantified_conjunction.hpp"
 #include "mimir/formalism/variable.hpp"
 
 #include <cassert>
@@ -50,12 +50,8 @@ namespace mimir
 
 PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs) : m_indent(indent), m_add_indent(add_indent), m_action_costs(action_costs) {}
 
-void PDDLFormatter::write(const UniversallyQuantifiedConjunctionImpl& element, std::ostream& out)
+void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctionImpl& element, std::ostream& out)
 {
-    if (!element.get_parameters().empty())
-    {
-        out << "(forall ";
-    }
     if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty())
     {
         out << "()";
@@ -79,10 +75,6 @@ void PDDLFormatter::write(const UniversallyQuantifiedConjunctionImpl& element, s
             write(*condition, out);
         }
         out << ")";  // end and
-    }
-    if (!element.get_parameters().empty())
-    {
-        out << ")";  // end forall
     }
 }
 

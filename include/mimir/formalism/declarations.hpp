@@ -116,6 +116,8 @@ using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 class GroundFunctionImpl;
 using GroundFunction = const GroundFunctionImpl*;
 using GroundFunctionList = std::vector<GroundFunction>;
+template<typename T>
+using GroundFunctionMap = std::unordered_map<GroundFunction, T>;
 
 template<PredicateTag P>
 class GroundLiteralImpl;
@@ -173,8 +175,8 @@ using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
 
-class UniversallyQuantifiedConjunctionImpl;
-using UniversallyQuantifiedConjunction = const UniversallyQuantifiedConjunctionImpl*;
+class ExistentiallyQuantifiedConjunctionImpl;
+using UniversallyQuantifiedConjunction = const ExistentiallyQuantifiedConjunctionImpl*;
 
 class TermImpl;
 using Term = const TermImpl*;

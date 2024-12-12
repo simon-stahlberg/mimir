@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_UNIVERSALLY_QUANTIFIED_CONJUNCTION_HPP_
-#define MIMIR_FORMALISM_UNIVERSALLY_QUANTIFIED_CONJUNCTION_HPP_
+#ifndef MIMIR_FORMALISM_EXISTENTIALLY_QUANTIFIED_CONJUNCTION_HPP_
+#define MIMIR_FORMALISM_EXISTENTIALLY_QUANTIFIED_CONJUNCTION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
-class UniversallyQuantifiedConjunctionImpl
+class ExistentiallyQuantifiedConjunctionImpl
 {
 private:
     Index m_index;
@@ -36,14 +36,14 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    UniversallyQuantifiedConjunctionImpl(Index index,
-                                         VariableList parameters,
-                                         LiteralList<Static> static_conditions,
-                                         LiteralList<Fluent> fluent_conditions,
-                                         LiteralList<Derived> derived_conditions,
-                                         GroundLiteralList<Static> nullary_static_conditions,
-                                         GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                         GroundLiteralList<Derived> nullary_derived_conditions);
+    ExistentiallyQuantifiedConjunctionImpl(Index index,
+                                           VariableList parameters,
+                                           LiteralList<Static> static_conditions,
+                                           LiteralList<Fluent> fluent_conditions,
+                                           LiteralList<Derived> derived_conditions,
+                                           GroundLiteralList<Static> nullary_static_conditions,
+                                           GroundLiteralList<Fluent> nullary_fluent_conditions,
+                                           GroundLiteralList<Derived> nullary_derived_conditions);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -51,10 +51,10 @@ private:
 
 public:
     // moveable but not copyable
-    UniversallyQuantifiedConjunctionImpl(const UniversallyQuantifiedConjunctionImpl& other) = delete;
-    UniversallyQuantifiedConjunctionImpl& operator=(const UniversallyQuantifiedConjunctionImpl& other) = delete;
-    UniversallyQuantifiedConjunctionImpl(UniversallyQuantifiedConjunctionImpl&& other) = default;
-    UniversallyQuantifiedConjunctionImpl& operator=(UniversallyQuantifiedConjunctionImpl&& other) = default;
+    ExistentiallyQuantifiedConjunctionImpl(const ExistentiallyQuantifiedConjunctionImpl& other) = delete;
+    ExistentiallyQuantifiedConjunctionImpl& operator=(const ExistentiallyQuantifiedConjunctionImpl& other) = delete;
+    ExistentiallyQuantifiedConjunctionImpl(ExistentiallyQuantifiedConjunctionImpl&& other) = default;
+    ExistentiallyQuantifiedConjunctionImpl& operator=(ExistentiallyQuantifiedConjunctionImpl&& other) = default;
 
     Index get_index() const;
     const VariableList& get_parameters() const;
@@ -66,7 +66,7 @@ public:
     size_t get_arity() const;
 };
 
-extern std::ostream& operator<<(std::ostream& out, const UniversallyQuantifiedConjunctionImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const ExistentiallyQuantifiedConjunctionImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, UniversallyQuantifiedConjunction element);
 

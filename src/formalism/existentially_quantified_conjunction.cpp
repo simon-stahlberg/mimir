@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/universally_quantified_conjunction.hpp"
+#include "mimir/formalism/existentially_quantified_conjunction.hpp"
 
 #include "formatter.hpp"
 #include "mimir/common/concepts.hpp"
@@ -23,14 +23,14 @@
 
 namespace mimir
 {
-UniversallyQuantifiedConjunctionImpl::UniversallyQuantifiedConjunctionImpl(Index index,
-                                                                           VariableList parameters,
-                                                                           LiteralList<Static> static_conditions,
-                                                                           LiteralList<Fluent> fluent_conditions,
-                                                                           LiteralList<Derived> derived_conditions,
-                                                                           GroundLiteralList<Static> nullary_static_conditions,
-                                                                           GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                                                           GroundLiteralList<Derived> nullary_derived_conditions) :
+ExistentiallyQuantifiedConjunctionImpl::ExistentiallyQuantifiedConjunctionImpl(Index index,
+                                                                               VariableList parameters,
+                                                                               LiteralList<Static> static_conditions,
+                                                                               LiteralList<Fluent> fluent_conditions,
+                                                                               LiteralList<Derived> derived_conditions,
+                                                                               GroundLiteralList<Static> nullary_static_conditions,
+                                                                               GroundLiteralList<Fluent> nullary_fluent_conditions,
+                                                                               GroundLiteralList<Derived> nullary_derived_conditions) :
     m_index(index),
     m_parameters(std::move(parameters)),
     m_static_conditions(std::move(static_conditions)),
@@ -42,12 +42,12 @@ UniversallyQuantifiedConjunctionImpl::UniversallyQuantifiedConjunctionImpl(Index
 {
 }
 
-Index UniversallyQuantifiedConjunctionImpl::get_index() const { return m_index; }
+Index ExistentiallyQuantifiedConjunctionImpl::get_index() const { return m_index; }
 
-const VariableList& UniversallyQuantifiedConjunctionImpl::get_parameters() const { return m_parameters; }
+const VariableList& ExistentiallyQuantifiedConjunctionImpl::get_parameters() const { return m_parameters; }
 
 template<PredicateTag P>
-const LiteralList<P>& UniversallyQuantifiedConjunctionImpl::get_literals() const
+const LiteralList<P>& ExistentiallyQuantifiedConjunctionImpl::get_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -67,12 +67,12 @@ const LiteralList<P>& UniversallyQuantifiedConjunctionImpl::get_literals() const
     }
 }
 
-template const LiteralList<Static>& UniversallyQuantifiedConjunctionImpl::get_literals<Static>() const;
-template const LiteralList<Fluent>& UniversallyQuantifiedConjunctionImpl::get_literals<Fluent>() const;
-template const LiteralList<Derived>& UniversallyQuantifiedConjunctionImpl::get_literals<Derived>() const;
+template const LiteralList<Static>& ExistentiallyQuantifiedConjunctionImpl::get_literals<Static>() const;
+template const LiteralList<Fluent>& ExistentiallyQuantifiedConjunctionImpl::get_literals<Fluent>() const;
+template const LiteralList<Derived>& ExistentiallyQuantifiedConjunctionImpl::get_literals<Derived>() const;
 
 template<PredicateTag P>
-const GroundLiteralList<P>& UniversallyQuantifiedConjunctionImpl::get_nullary_ground_literals() const
+const GroundLiteralList<P>& ExistentiallyQuantifiedConjunctionImpl::get_nullary_ground_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -92,13 +92,13 @@ const GroundLiteralList<P>& UniversallyQuantifiedConjunctionImpl::get_nullary_gr
     }
 }
 
-template const GroundLiteralList<Static>& UniversallyQuantifiedConjunctionImpl::get_nullary_ground_literals<Static>() const;
-template const GroundLiteralList<Fluent>& UniversallyQuantifiedConjunctionImpl::get_nullary_ground_literals<Fluent>() const;
-template const GroundLiteralList<Derived>& UniversallyQuantifiedConjunctionImpl::get_nullary_ground_literals<Derived>() const;
+template const GroundLiteralList<Static>& ExistentiallyQuantifiedConjunctionImpl::get_nullary_ground_literals<Static>() const;
+template const GroundLiteralList<Fluent>& ExistentiallyQuantifiedConjunctionImpl::get_nullary_ground_literals<Fluent>() const;
+template const GroundLiteralList<Derived>& ExistentiallyQuantifiedConjunctionImpl::get_nullary_ground_literals<Derived>() const;
 
-size_t UniversallyQuantifiedConjunctionImpl::get_arity() const { return m_parameters.size(); }
+size_t ExistentiallyQuantifiedConjunctionImpl::get_arity() const { return m_parameters.size(); }
 
-std::ostream& operator<<(std::ostream& out, const UniversallyQuantifiedConjunctionImpl& element)
+std::ostream& operator<<(std::ostream& out, const ExistentiallyQuantifiedConjunctionImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);

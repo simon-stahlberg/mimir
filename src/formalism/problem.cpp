@@ -72,7 +72,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_axioms(std::move(axioms)),
     m_static_goal_holds(false),
     m_problem_and_domain_derived_predicates(),
-    m_problem_and_domain_axioms()
+    m_problem_and_domain_axioms(),
+    m_ground_function_to_value()
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -132,6 +133,12 @@ ProblemImpl::ProblemImpl(Index index,
         {
             m_static_goal_holds = false;
         }
+    }
+
+    // Initialize ground function values
+    for (const auto numeric_fluent : m_numeric_fluents)
+    {
+        m_ground_function_to_value.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
     }
 
     for (const auto& literal : get_fluent_initial_literals())
@@ -219,6 +226,18 @@ bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }
 bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) const
 {
     return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
+}
+
+const GroundFunctionMap<ContinuousCost>& ProblemImpl::get_ground_function_to_value() const { return m_ground_function_to_value; }
+
+ContinuousCost ProblemImpl::get_ground_function_value(GroundFunction function) const
+{
+    auto it = m_ground_function_to_value.find(function);
+    if (it != m_ground_function_to_value.end())
+    {
+        return it->second;
+    }
+    throw std::runtime_error("ProblemImpl::get_ground_function_value: missing value for ground function: " + to_string(function));
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
