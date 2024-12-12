@@ -945,16 +945,6 @@ void init_pymimir(py::module_& m)
         .def("get_actions", &Plan::get_actions)
         .def("get_cost", &Plan::get_cost);
 
-    /* AssignmentSets */
-    auto bind_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
-    {
-        py::class_<AssignmentSet<Tag>>(m, class_name.c_str())
-            .def(py::init<size_t, PredicateList<Tag>, GroundAtomList<Tag>>(), py::arg("num_objects"), py::arg("predicates"), py::arg("ground_atoms"));
-    };
-    bind_assignment_set("StaticAssignmentSet", Static {});
-    bind_assignment_set("FluentAssignmentSet", Fluent {});
-    bind_assignment_set("DerivedAssignmentSet", Derived {});
-
     /* SatisficingBindingGenerator */
     py::class_<SatisficingBindingGenerator>(m, "SatisficingBindingGenerator")  //
         .def(py::init<std::shared_ptr<LiteralGrounder>, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>(),
