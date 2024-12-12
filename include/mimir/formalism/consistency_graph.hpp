@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_CONSISTENCY_GRAPH_HPP_
-#define MIMIR_SEARCH_GROUNDERS_CONSISTENCY_GRAPH_HPP_
+#ifndef MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
+#define MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
@@ -110,11 +110,7 @@ public:
     /// More specifically:
     ///  1. for action parameters, we set first to 0 and last to 0 + arity(action)
     ///  2. for universal effects, we set first to arity(action) and last to arity(action) + arity(effect)
-    StaticConsistencyGraph(Problem problem,
-                           size_t begin_parameter_index,
-                           size_t end_parameter_index,
-                           const LiteralList<Static>& static_conditions,
-                           const AssignmentSet<Static>& static_assignment_set);
+    StaticConsistencyGraph(Problem problem, size_t begin_parameter_index, size_t end_parameter_index, const LiteralList<Static>& static_conditions);
 
     /// @brief Get the vertices.
     const Vertices& get_vertices() const { return m_vertices; }
@@ -127,23 +123,6 @@ public:
 
     /// @brief Get the object_index indices partitioned by the parameter index.
     const std::vector<ObjectIndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
-};
-
-/// @brief The Graphs is a collection of StaticConsistenctGraphs:
-/// 1) one for the action precondition, and
-/// 2) one for each condition of a universally quantified conditional effect
-class Graphs
-{
-private:
-    StaticConsistencyGraph m_precondition;
-    // TODO: For universal effects, we do not need edges, lets keep it for simplicity now.
-    std::vector<StaticConsistencyGraph> m_conditional_effects;
-
-public:
-    Graphs(Problem problem, Action action, const AssignmentSet<Static>& static_assignment_set);
-
-    const StaticConsistencyGraph& get_precondition_graph() const;
-    const std::vector<StaticConsistencyGraph>& get_conditional_effect_graphs() const;
 };
 
 }

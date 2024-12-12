@@ -88,9 +88,6 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 
     /* 2. Initialize the condition grounders for each action schema. */
 
-    auto static_initial_atoms = to_ground_atoms(problem->get_static_initial_literals());
-    auto static_assignment_set = AssignmentSet<Static>(problem, problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
-
     for (const auto& action : problem->get_domain()->get_actions())
     {
         auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
@@ -101,8 +98,7 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
             conditional_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
                                                                                     action->get_arity(),
                                                                                     action->get_arity() + conditional_effect->get_arity(),
-                                                                                    conditional_effect->get_conditions<Static>(),
-                                                                                    static_assignment_set));
+                                                                                    conditional_effect->get_conditions<Static>()));
         }
 
         m_action_conditional_effects.emplace(action, std::move(conditional_effects));

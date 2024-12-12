@@ -18,10 +18,10 @@
 #ifndef MIMIR_SEARCH_GROUNDERS_ACTION_GROUNDER_HPP_
 #define MIMIR_SEARCH_GROUNDERS_ACTION_GROUNDER_HPP_
 
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/consistency_graph.hpp"
 #include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"

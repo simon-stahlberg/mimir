@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounders/assignment_set.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/term.hpp"

@@ -15,13 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_LIFTED_ASSIGNMENT_SET_HPP_
-#define MIMIR_SEARCH_GROUNDERS_LIFTED_ASSIGNMENT_SET_HPP_
+#ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
+#define MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/literal.hpp"
-#include "mimir/formalism/problem.hpp"
-#include "mimir/search/grounders/consistency_graph.hpp"
 
 #include <cassert>
 #include <limits>
@@ -138,14 +137,14 @@ template<PredicateTag P>
 class AssignmentSet
 {
 private:
-    Problem m_problem;
+    size_t m_num_objects;
 
     // The underlying function
     std::vector<std::vector<bool>> m_f;
 
 public:
     /// @brief Construct from a given set of ground atoms.
-    AssignmentSet(Problem problem, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms);
+    AssignmentSet(size_t num_objects, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms);
 
     /// @brief Insert ground atoms into the assignment set.
     void insert_ground_atom(GroundAtom<P> ground_atom);
@@ -168,10 +167,8 @@ public:
 };
 
 template<PredicateTag P>
-AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_problem(problem)
+AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_num_objects(num_objects)
 {
-    const auto num_objects = problem->get_objects().size();
-
     auto max_predicate_index = Index(0);
     for (const auto& predicate : predicates)
     {
@@ -182,7 +179,7 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
     for (const auto& predicate : predicates)
     {
         auto& assignment_set = m_f.at(predicate->get_index());
-        assignment_set.resize(num_assignments(predicate->get_arity(), num_objects));
+        assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
     }
 
     for (const auto& ground_atom : ground_atoms)
@@ -195,14 +192,14 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, num_objects)] = true;
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
                 const auto& second_object = arguments[second_index];
                 assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                    arity,
-                                                   num_objects)] = true;
+                                                   m_num_objects)] = true;
             }
         }
     }
@@ -211,8 +208,6 @@ AssignmentSet<P>::AssignmentSet(Problem problem, const PredicateList<P>& predica
 template<PredicateTag P>
 void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
-    const auto num_objects = m_problem->get_objects().size();
-
     const auto& arity = ground_atom->get_arity();
     const auto& predicate = ground_atom->get_predicate();
     const auto& arguments = ground_atom->get_objects();
@@ -221,23 +216,20 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
         const auto& first_object = arguments[first_index];
-        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, num_objects)] = true;
+        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
             assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                arity,
-                                               num_objects)] = true;
+                                               m_num_objects)] = true;
         }
     }
 }
 
 template<PredicateTag P, typename AssignmentIterator>
-bool consistent_literals_helper(const Problem& problem,
-                                const std::vector<std::vector<bool>>& assignment_sets,
-                                const LiteralList<P>& literals,
-                                const auto& element)
+bool consistent_literals_helper(size_t num_objects, const std::vector<std::vector<bool>>& assignment_sets, const LiteralList<P>& literals, const auto& element)
 {
     // If the type of "element" is "Vertex", then "AssignmentIterator" must be "VertexAssignmentIterator". Likewise for "Edge" and "EdgeAssignmentIterator".
     using ExpectedElementType =
@@ -256,7 +248,6 @@ bool consistent_literals_helper(const Problem& problem,
             continue;
         }
 
-        const auto num_objects = problem->get_objects().size();
         const auto& assignment_set = assignment_sets[literal->get_atom()->get_predicate()->get_index()];
         const auto& terms = literal->get_atom()->get_terms();
         auto assignment_iterator = AssignmentIterator(terms, element);
@@ -288,13 +279,13 @@ bool consistent_literals_helper(const Problem& problem,
 template<PredicateTag P>
 bool AssignmentSet<P>::consistent_literals(const LiteralList<P>& literals, const consistency_graph::Edge& edge) const
 {
-    return consistent_literals_helper<P, EdgeAssignmentIterator>(m_problem, m_f, literals, edge);
+    return consistent_literals_helper<P, EdgeAssignmentIterator>(m_num_objects, m_f, literals, edge);
 }
 
 template<PredicateTag P>
 bool AssignmentSet<P>::consistent_literals(const LiteralList<P>& literals, const consistency_graph::Vertex& vertex) const
 {
-    return consistent_literals_helper<P, VertexAssignmentIterator>(m_problem, m_f, literals, vertex);
+    return consistent_literals_helper<P, VertexAssignmentIterator>(m_num_objects, m_f, literals, vertex);
 }
 
 }

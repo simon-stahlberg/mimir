@@ -15,15 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounders/consistency_graph.hpp"
+#include "mimir/formalism/consistency_graph.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/grounders/assignment_set.hpp"
 
 #include <cstdint>
 
@@ -35,10 +35,11 @@ using mimir::operator<<;
 StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
                                                size_t begin_parameter_index,
                                                size_t end_parameter_index,
-                                               const LiteralList<Static>& static_conditions,
-                                               const AssignmentSet<Static>& static_assignment_set) :
+                                               const LiteralList<Static>& static_conditions) :
     m_problem(problem)
 {
+    const auto& static_assignment_set = m_problem->get_static_assignment_set();
+
     /* 1. Compute vertices */
 
     for (uint32_t parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
@@ -87,23 +88,6 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
     }
 }
 
-Graphs::Graphs(Problem problem, Action action, const AssignmentSet<Static>& static_assignment_set) :
-    m_precondition(StaticConsistencyGraph(problem, 0, action->get_arity(), action->get_conditions<Static>(), static_assignment_set))
-{
-    m_conditional_effects.reserve(action->get_conditional_effects().size());
-    for (const auto& conditional_effect : action->get_conditional_effects())
-    {
-        m_conditional_effects.push_back(StaticConsistencyGraph(problem,
-                                                               action->get_arity(),
-                                                               action->get_arity() + conditional_effect->get_arity(),
-                                                               conditional_effect->get_conditions<Static>(),
-                                                               static_assignment_set));
-    }
-}
-
-const StaticConsistencyGraph& Graphs::get_precondition_graph() const { return m_precondition; }
-
-const std::vector<StaticConsistencyGraph>& Graphs::get_conditional_effect_graphs() const { return m_conditional_effects; }
 }
 
 namespace mimir

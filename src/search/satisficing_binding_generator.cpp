@@ -211,14 +211,12 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
                                                          VariableList variables,
                                                          LiteralList<Static> static_conditions,
                                                          LiteralList<Fluent> fluent_conditions,
-                                                         LiteralList<Derived> derived_conditions,
-                                                         AssignmentSet<Static> static_assignment_set) :
+                                                         LiteralList<Derived> derived_conditions) :
     SatisficingBindingGenerator(std::move(literal_grounder),
                                 std::move(variables),
                                 std::move(static_conditions),
                                 std::move(fluent_conditions),
                                 std::move(derived_conditions),
-                                std::move(static_assignment_set),
                                 std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
 {
 }
@@ -228,19 +226,17 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
                                                          LiteralList<Static> static_conditions,
                                                          LiteralList<Fluent> fluent_conditions,
                                                          LiteralList<Derived> derived_conditions,
-                                                         AssignmentSet<Static> static_assignment_set,
                                                          std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
     m_literal_grounder(std::move(literal_grounder)),
     m_variables(std::move(variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
-    m_static_assignment_set(std::move(static_assignment_set)),
     m_event_handler(std::move(event_handler)),
     m_nullary_static_conditions(ground_nullary_literals(m_static_conditions, *m_literal_grounder)),
     m_nullary_fluent_conditions(ground_nullary_literals(m_fluent_conditions, *m_literal_grounder)),
     m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_literal_grounder)),
-    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions, m_static_assignment_set)
+    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions)
 {
 }
 
@@ -273,11 +269,11 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
 
     auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
-    auto fluent_assignment_set = AssignmentSet<Fluent>(problem, fluent_predicates, fluent_atoms);
+    auto fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), fluent_predicates, fluent_atoms);
 
     auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
     auto derived_atoms = pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
-    auto derived_assignment_set = AssignmentSet<Derived>(problem, derived_predicates, derived_atoms);
+    auto derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), derived_predicates, derived_atoms);
 
     for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
     {
@@ -331,8 +327,6 @@ const LiteralList<P>& SatisficingBindingGenerator::get_conditions() const
 template const LiteralList<Static>& SatisficingBindingGenerator::get_conditions<Static>() const;
 template const LiteralList<Fluent>& SatisficingBindingGenerator::get_conditions<Fluent>() const;
 template const LiteralList<Derived>& SatisficingBindingGenerator::get_conditions<Derived>() const;
-
-const AssignmentSet<Static>& SatisficingBindingGenerator::get_static_assignment_set() const { return m_static_assignment_set; }
 
 const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
 

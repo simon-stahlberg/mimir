@@ -41,22 +41,14 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
                                               m_grounder->get_problem()->get_problem_and_domain_derived_predicates()))
 {
     /* 3. Initialize condition grounders */
-    const auto problem = m_grounder->get_problem();
-    const auto pddl_repositories = m_grounder->get_pddl_repositories();
-
-    auto static_initial_atoms = GroundAtomList<Static> {};
-    to_ground_atoms(problem->get_static_initial_literals(), static_initial_atoms);
-    const auto static_assignment_set = AssignmentSet<Static>(problem, problem->get_domain()->get_predicates<Static>(), static_initial_atoms);
-
-    for (const auto& axiom : problem->get_problem_and_domain_axioms())
+    for (const auto& axiom : m_grounder->get_problem()->get_problem_and_domain_axioms())
     {
         m_condition_grounders.emplace(axiom,
                                       SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
                                                                   axiom->get_parameters(),
                                                                   axiom->get_conditions<Static>(),
                                                                   axiom->get_conditions<Fluent>(),
-                                                                  axiom->get_conditions<Derived>(),
-                                                                  static_assignment_set));
+                                                                  axiom->get_conditions<Derived>()));
     }
 }
 
@@ -70,11 +62,11 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
     auto pddl_repositories = m_grounder->get_pddl_repositories();
 
     // TODO: In principle, we could reuse the resulting assignment set from the lifted AAG but it is difficult to access here.
-    const auto fluent_assignment_set = AssignmentSet<Fluent>(problem,
+    const auto fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(),
                                                              problem->get_domain()->get_predicates<Fluent>(),
                                                              pddl_repositories->get_ground_atoms_from_indices<Fluent>(unextended_state.get_atoms<Fluent>()));
 
-    auto derived_assignment_set = AssignmentSet<Derived>(problem,
+    auto derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(),
                                                          problem->get_problem_and_domain_derived_predicates(),
                                                          pddl_repositories->get_ground_atoms_from_indices<Derived>(unextended_state.get_atoms<Derived>()));
 

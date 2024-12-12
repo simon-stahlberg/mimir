@@ -19,10 +19,10 @@
 #define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_HPP_
 
 #include "mimir/algorithms/generator.hpp"
+#include "mimir/formalism/assignment_set.hpp"
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/assignment_set.hpp"
-#include "mimir/search/grounders/consistency_graph.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/interface.hpp"
 
@@ -47,7 +47,6 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
 
-    AssignmentSet<Static> m_static_assignment_set;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
     /* Precomputed grounded conditions with zero arguments. */
@@ -80,15 +79,13 @@ public:
                                 VariableList variables,
                                 LiteralList<Static> static_conditions,
                                 LiteralList<Fluent> fluent_conditions,
-                                LiteralList<Derived> derived_conditions,
-                                AssignmentSet<Static> static_assignment_set);
+                                LiteralList<Derived> derived_conditions);
 
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                 VariableList variables,
                                 LiteralList<Static> static_conditions,
                                 LiteralList<Fluent> fluent_conditions,
                                 LiteralList<Derived> derived_conditions,
-                                AssignmentSet<Static> static_assignment_set,
                                 std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 
     mimir::generator<ObjectList>
@@ -106,7 +103,6 @@ public:
     const VariableList& get_variables() const;
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
-    const AssignmentSet<Static>& get_static_assignment_set() const;
     const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };

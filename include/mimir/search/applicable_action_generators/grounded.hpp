@@ -23,7 +23,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
-#include "mimir/search/grounders/match_tree.hpp"
+#include "mimir/search/match_tree.hpp"
 
 #include <variant>
 

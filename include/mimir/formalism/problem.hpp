@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_PROBLEM_HPP_
 
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
@@ -48,6 +49,9 @@ private:
     PredicateList<Derived> m_problem_and_domain_derived_predicates;
     AxiomList m_problem_and_domain_axioms;
     GroundFunctionMap<ContinuousCost> m_ground_function_to_value;
+    GroundAtomList<Static> m_static_initial_atoms;
+    GroundAtomList<Fluent> m_fluent_initial_atoms;
+    AssignmentSet<Static> m_static_assignment_set;
 
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
@@ -97,6 +101,9 @@ public:
     bool static_literal_holds(const GroundLiteral<Static> literal) const;
     const GroundFunctionMap<ContinuousCost>& get_ground_function_to_value() const;
     ContinuousCost get_ground_function_value(GroundFunction function) const;
+    const GroundAtomList<Static>& get_static_initial_atoms() const;
+    const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
+    const AssignmentSet<Static>& get_static_assignment_set() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

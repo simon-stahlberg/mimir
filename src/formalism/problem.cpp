@@ -31,6 +31,7 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
+#include "mimir/formalism/utils.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -73,7 +74,10 @@ ProblemImpl::ProblemImpl(Index index,
     m_static_goal_holds(false),
     m_problem_and_domain_derived_predicates(),
     m_problem_and_domain_axioms(),
-    m_ground_function_to_value()
+    m_ground_function_to_value(),
+    m_static_initial_atoms(to_ground_atoms(m_static_initial_literals)),
+    m_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
+    m_static_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>(), m_static_initial_atoms))
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -140,6 +144,10 @@ ProblemImpl::ProblemImpl(Index index,
     {
         m_ground_function_to_value.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
     }
+
+    /**
+     * Error checking
+     */
 
     for (const auto& literal : get_fluent_initial_literals())
     {
@@ -239,6 +247,12 @@ ContinuousCost ProblemImpl::get_ground_function_value(GroundFunction function) c
     }
     throw std::runtime_error("ProblemImpl::get_ground_function_value: missing value for ground function: " + to_string(function));
 }
+
+const GroundAtomList<Static>& ProblemImpl::get_static_initial_atoms() const { return m_static_initial_atoms; }
+
+const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_fluent_initial_atoms; }
+
+const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { return m_static_assignment_set; }
 
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
 {
