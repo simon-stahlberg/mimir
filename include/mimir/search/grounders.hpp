@@ -22,8 +22,6 @@
  * Include all specializations here
  */
 
-#include "mimir/formalism/assignment_set.hpp"
-#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/grounders/grounder.hpp"

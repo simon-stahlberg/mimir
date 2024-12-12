@@ -19,7 +19,6 @@
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/formalism/action.hpp"
-#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate_tag.hpp"

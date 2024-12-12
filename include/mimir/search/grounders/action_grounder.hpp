@@ -18,9 +18,9 @@
 #ifndef MIMIR_SEARCH_GROUNDERS_ACTION_GROUNDER_HPP_
 #define MIMIR_SEARCH_GROUNDERS_ACTION_GROUNDER_HPP_
 
-#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
+#include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
@@ -44,6 +44,7 @@ private:
     std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;
 
     // TODO: we can think about moving the consistency graph into the action schemas
+    // TODO: actually we could also only store the part of the consistency graph that we really need here.
     std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
 
 public:

@@ -17,7 +17,9 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/object.hpp"
+#include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -38,188 +40,74 @@ Assignment::Assignment(Index first_index, Index first_object, Index second_index
 {
 }
 
-size_t Assignment::size() const { return (first_object != MAX_VALUE ? 1 : 0) + (second_object != MAX_VALUE ? 1 : 0); }
-
-/*
- * VertexAssignmentIterator
+/**
+ * AssignmentSet
  */
 
-Index VertexAssignmentIterator::get_object_if_overlap(const Term& term)
+template<PredicateTag P>
+AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_num_objects(num_objects)
 {
-    if (const auto object = std::get_if<Object>(&term->get_variant()))
+    auto max_predicate_index = Index(0);
+    for (const auto& predicate : predicates)
     {
-        return (*object)->get_index();
+        max_predicate_index = std::max(max_predicate_index, predicate->get_index());
+    }
+    per_predicate_assignment_set.resize(max_predicate_index + 1);
+
+    for (const auto& predicate : predicates)
+    {
+        auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+        assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
     }
 
-    if (const auto variable = std::get_if<Variable>(&term->get_variant()))
+    for (const auto& ground_atom : ground_atoms)
     {
-        if (m_vertex.get_parameter_index() == (*variable)->get_parameter_index())
+        const auto& arity = ground_atom->get_arity();
+        const auto& predicate = ground_atom->get_predicate();
+        const auto& arguments = ground_atom->get_objects();
+        auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+
+        for (size_t first_index = 0; first_index < arity; ++first_index)
         {
-            return m_vertex.get_object_index();
-        }
-    }
+            const auto& first_object = arguments[first_index];
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
-    return UNDEFINED;
-}
-
-void VertexAssignmentIterator::find_next_binding()
-{
-    auto found = false;
-
-    for (size_t index = m_index + 1; index < m_terms.size(); ++index)
-    {
-        assert(index < m_terms.size());
-
-        auto object = get_object_if_overlap(m_terms[index]);
-
-        if (object != UNDEFINED)
-        {
-            m_index = index;
-            m_object = object;
-            found = true;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        m_index = UNDEFINED;
-        m_object = UNDEFINED;
-    }
-}
-
-VertexAssignmentIterator::VertexAssignmentIterator(const TermList& terms, const consistency_graph::Vertex& vertex) :
-    m_terms(terms),
-    m_vertex(vertex),
-    m_index(UNDEFINED),
-    m_object(UNDEFINED)
-{
-    find_next_binding();
-}
-
-bool VertexAssignmentIterator::has_next() const { return m_index < m_terms.size(); }
-
-Assignment VertexAssignmentIterator::next()
-{
-    if (!has_next())
-    {
-        throw std::out_of_range("No more bindings available");
-    }
-
-    auto binding = Assignment(m_index, m_object, UNDEFINED, UNDEFINED);
-    find_next_binding();
-    return binding;
-}
-
-/*
- * EdgeAssignmentIterator
- */
-
-Index EdgeAssignmentIterator::get_object_if_overlap(const Term& term)
-{
-    if (const auto object = std::get_if<Object>(&term->get_variant()))
-    {
-        return (*object)->get_index();
-    }
-
-    if (const auto variable = std::get_if<Variable>(&term->get_variant()))
-    {
-        const auto parameter_index = (*variable)->get_parameter_index();
-
-        if (m_edge.get_src().get_parameter_index() == parameter_index)
-        {
-            return m_edge.get_src().get_object_index();
-        }
-        else if (m_edge.get_dst().get_parameter_index() == parameter_index)
-        {
-            return m_edge.get_dst().get_object_index();
-        }
-    }
-
-    return UNDEFINED;
-}
-
-void EdgeAssignmentIterator::find_next_binding()
-{
-    if (m_second_index == UNDEFINED)
-    {
-        auto found_first = false;
-
-        for (size_t first_index = m_first_index + 1; first_index < m_terms.size(); ++first_index)
-        {
-            assert(first_index < m_terms.size());
-
-            auto first_object = get_object_if_overlap(m_terms[first_index]);
-
-            if (first_object != UNDEFINED)
+            for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
-                m_first_index = first_index;
-                m_first_object = first_object;
-                m_second_index = first_index;
-                found_first = true;
-                break;
+                const auto& second_object = arguments[second_index];
+                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                                                   arity,
+                                                   m_num_objects)] = true;
             }
         }
-
-        if (!found_first)
-        {
-            m_first_index = UNDEFINED;
-            m_first_object = UNDEFINED;
-            m_second_index = UNDEFINED;
-            m_second_object = UNDEFINED;
-        }
-    }
-
-    if (m_first_index != UNDEFINED)
-    {
-        auto found_second = false;
-
-        for (size_t second_index = m_second_index + 1; second_index < m_terms.size(); ++second_index)
-        {
-            assert(second_index < m_terms.size());
-
-            auto second_object = get_object_if_overlap(m_terms[second_index]);
-
-            if (second_object != UNDEFINED)
-            {
-                m_second_index = second_index;
-                m_second_object = second_object;
-                found_second = true;
-                break;
-            }
-        }
-
-        if (!found_second)
-        {
-            m_second_index = UNDEFINED;
-            m_second_object = UNDEFINED;
-        }
     }
 }
 
-EdgeAssignmentIterator::EdgeAssignmentIterator(const TermList& terms, const consistency_graph::Edge& edge) :
-    m_terms(terms),
-    m_edge(edge),
-    m_first_index(UNDEFINED),
-    m_second_index(UNDEFINED),
-    m_first_object(UNDEFINED),
-    m_second_object(UNDEFINED)
+template<PredicateTag P>
+void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
-    find_next_binding();
-}
+    const auto& arity = ground_atom->get_arity();
+    const auto& predicate = ground_atom->get_predicate();
+    const auto& arguments = ground_atom->get_objects();
+    auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
 
-bool EdgeAssignmentIterator::has_next() const { return m_first_index < m_terms.size(); }
-
-Assignment EdgeAssignmentIterator::next()
-{
-    if (!has_next())
+    for (size_t first_index = 0; first_index < arity; ++first_index)
     {
-        throw std::out_of_range("No more bindings available");
-    }
+        const auto& first_object = arguments[first_index];
+        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
-    auto binding = Assignment(m_first_index, m_first_object, m_second_index, m_second_object);
-    find_next_binding();
-    return binding;
+        for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
+        {
+            const auto& second_object = arguments[second_index];
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                                               arity,
+                                               m_num_objects)] = true;
+        }
+    }
 }
+
+template class AssignmentSet<Static>;
+template class AssignmentSet<Fluent>;
+template class AssignmentSet<Derived>;
 
 }

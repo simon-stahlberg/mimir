@@ -18,7 +18,6 @@
 #ifndef MIMIR_SEARCH_GROUNDERS_LITERAL_GROUNDER_HPP_
 #define MIMIR_SEARCH_GROUNDERS_LITERAL_GROUNDER_HPP_
 
-#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/declarations.hpp"

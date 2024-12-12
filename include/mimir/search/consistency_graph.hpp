@@ -15,31 +15,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
-#define MIMIR_FORMALISM_CONSISTENCY_GRAPH_HPP_
+#ifndef MIMIR_SEARCH_CONSISTENCY_GRAPH_HPP_
+#define MIMIR_SEARCH_CONSISTENCY_GRAPH_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <optional>
 #include <sstream>
 #include <vector>
 
-namespace mimir
-{
-template<PredicateTag P>
-class AssignmentSet;
-}
-
 namespace mimir::consistency_graph
 {
+/**
+ * Type aliases
+ */
 
 using ParameterIndex = size_t;
 using VertexIndex = size_t;
 using ObjectIndex = size_t;
 using VertexIndexList = std::vector<VertexIndex>;
 using ObjectIndexList = std::vector<ObjectIndex>;
+
+/**
+ * Vertex
+ */
 
 /// @brief A vertex [parameter_index/object_index] in the consistency graph.
 class Vertex
@@ -57,12 +59,20 @@ public:
     {
     }
 
-    bool operator==(const Vertex& other) const { return m_index == other.m_index; }
+    /// @brief Return true iff the vertex is consistent with all literals in and the assignment set.
+    ///
+    /// The meaning of the result being true is that the edge remains consistent.
+    template<PredicateTag P>
+    bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
     VertexIndex get_index() const { return m_index; }
     ParameterIndex get_parameter_index() const { return m_parameter_index; }
     ObjectIndex get_object_index() const { return m_object_index; }
 };
+
+/**
+ * Edge
+ */
 
 /// @brief An undirected edge {src,dst} in the consistency graph.
 class Edge
@@ -74,7 +84,15 @@ private:
 public:
     Edge(Vertex src, Vertex dst) : m_src(std::move(src)), m_dst(std::move(dst)) {}
 
-    bool operator==(const Edge& other) const { return m_src == other.m_src && m_dst == other.m_dst; }
+    /// @brief Return true iff the edge is consistent with all literals in and the assignment set.
+    ///
+    /// The meaning is that the assignment [x/o] is a legal assignment,
+    /// and therefore the vertex must be part of the consistency graph.
+    /// @param literals
+    /// @param consistent_vertex
+    /// @return
+    template<PredicateTag P>
+    bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
     const Vertex& get_src() const { return m_src; }
     const Vertex& get_dst() const { return m_dst; }
@@ -82,6 +100,10 @@ public:
 
 using Vertices = std::vector<Vertex>;
 using Edges = std::vector<Edge>;
+
+/**
+ * StaticConsistencyGraph
+ */
 
 /// @brief The StaticConsistencyGraph encodes the assignments to static conditions,
 /// and hence, it is an overapproximation of the actual consistency graph.

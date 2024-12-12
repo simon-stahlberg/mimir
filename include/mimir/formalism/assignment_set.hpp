@@ -18,7 +18,6 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 
-#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/literal.hpp"
 
@@ -45,57 +44,7 @@ struct Assignment
 
     Assignment(Index first_index, Index first_object, Index second_index, Index second_object);
 
-    size_t size() const;
-};
-
-class VertexAssignmentIterator
-{
-private:
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index UNDEFINED = std::numeric_limits<Index>::max();
-
-    const TermList& m_terms;
-    const consistency_graph::Vertex& m_vertex;
-
-    Index m_index;
-    Index m_object;
-
-    Index get_object_if_overlap(const Term& term);
-
-    void find_next_binding();
-
-public:
-    VertexAssignmentIterator(const TermList& terms, const consistency_graph::Vertex& vertex);
-
-    bool has_next() const;
-
-    Assignment next();
-};
-
-class EdgeAssignmentIterator
-{
-private:
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index UNDEFINED = std::numeric_limits<Index>::max();
-
-    const TermList& m_terms;
-    const consistency_graph::Edge& m_edge;
-
-    Index m_first_index;
-    Index m_second_index;
-    Index m_first_object;
-    Index m_second_object;
-
-    Index get_object_if_overlap(const Term& term);
-
-    void find_next_binding();
-
-public:
-    EdgeAssignmentIterator(const TermList& terms, const consistency_graph::Edge& edge);
-
-    bool has_next() const;
-
-    Assignment next();
+    size_t size() const { return (first_object != MAX_VALUE ? 1 : 0) + (second_object != MAX_VALUE ? 1 : 0); }
 };
 
 inline size_t get_assignment_rank(const Assignment& assignment, size_t arity, size_t num_objects)
@@ -140,7 +89,7 @@ private:
     size_t m_num_objects;
 
     // The underlying function
-    std::vector<std::vector<bool>> m_f;
+    std::vector<std::vector<bool>> per_predicate_assignment_set;
 
 public:
     /// @brief Construct from a given set of ground atoms.
@@ -149,144 +98,13 @@ public:
     /// @brief Insert ground atoms into the assignment set.
     void insert_ground_atom(GroundAtom<P> ground_atom);
 
-    /// @brief Return true iff all literals are consistent with
-    /// 1. the assignment set, and 2. the edge of the consistency graph.
-    ///
-    /// The meaning of the result being true is that the edge remains consistent.
-    bool consistent_literals(const LiteralList<P>& literals, const consistency_graph::Edge& consistent_edge) const;
+    /**
+     * Getters
+     */
 
-    /// @brief Return true iff all literals are consistent with
-    /// 1. the assignment set, and 2. the vertex of the consistency graph.
-    ///
-    /// The meaning is that the assignment [x/o] is a legal assignment,
-    /// and therefore the vertex must be part of the consistency graph.
-    /// @param literals
-    /// @param consistent_vertex
-    /// @return
-    bool consistent_literals(const LiteralList<P>& literals, const consistency_graph::Vertex& consistent_vertex) const;
+    size_t get_num_objects() const { return m_num_objects; }
+    const std::vector<std::vector<bool>>& get_per_predicate_assignment_set() const { return per_predicate_assignment_set; }
 };
-
-template<PredicateTag P>
-AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_num_objects(num_objects)
-{
-    auto max_predicate_index = Index(0);
-    for (const auto& predicate : predicates)
-    {
-        max_predicate_index = std::max(max_predicate_index, predicate->get_index());
-    }
-    m_f.resize(max_predicate_index + 1);
-
-    for (const auto& predicate : predicates)
-    {
-        auto& assignment_set = m_f.at(predicate->get_index());
-        assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
-    }
-
-    for (const auto& ground_atom : ground_atoms)
-    {
-        const auto& arity = ground_atom->get_arity();
-        const auto& predicate = ground_atom->get_predicate();
-        const auto& arguments = ground_atom->get_objects();
-        auto& assignment_set = m_f.at(predicate->get_index());
-
-        for (size_t first_index = 0; first_index < arity; ++first_index)
-        {
-            const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
-
-            for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
-            {
-                const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
-                                                   arity,
-                                                   m_num_objects)] = true;
-            }
-        }
-    }
-}
-
-template<PredicateTag P>
-void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
-{
-    const auto& arity = ground_atom->get_arity();
-    const auto& predicate = ground_atom->get_predicate();
-    const auto& arguments = ground_atom->get_objects();
-    auto& assignment_set = m_f.at(predicate->get_index());
-
-    for (size_t first_index = 0; first_index < arity; ++first_index)
-    {
-        const auto& first_object = arguments[first_index];
-        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
-
-        for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
-        {
-            const auto& second_object = arguments[second_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
-                                               arity,
-                                               m_num_objects)] = true;
-        }
-    }
-}
-
-template<PredicateTag P, typename AssignmentIterator>
-bool consistent_literals_helper(size_t num_objects, const std::vector<std::vector<bool>>& assignment_sets, const LiteralList<P>& literals, const auto& element)
-{
-    // If the type of "element" is "Vertex", then "AssignmentIterator" must be "VertexAssignmentIterator". Likewise for "Edge" and "EdgeAssignmentIterator".
-    using ExpectedElementType =
-        typename std::conditional<std::is_same<AssignmentIterator, EdgeAssignmentIterator>::value, consistency_graph::Edge, consistency_graph::Vertex>::type;
-    static_assert(std::is_same<AssignmentIterator, EdgeAssignmentIterator>::value || std::is_same<AssignmentIterator, VertexAssignmentIterator>::value,
-                  "Invalid AssignmentIterator type");
-    static_assert(std::is_same<decltype(element), const ExpectedElementType&>::value, "Mismatch between AssignmentIterator and element type");
-
-    for (const auto& literal : literals)
-    {
-        const auto arity = literal->get_atom()->get_predicate()->get_arity();
-        const auto negated = literal->is_negated();
-
-        if (negated && arity != 1 && arity != 2)
-        {
-            continue;
-        }
-
-        const auto& assignment_set = assignment_sets[literal->get_atom()->get_predicate()->get_index()];
-        const auto& terms = literal->get_atom()->get_terms();
-        auto assignment_iterator = AssignmentIterator(terms, element);
-
-        while (assignment_iterator.has_next())
-        {
-            const auto assignment = assignment_iterator.next();
-            assert(assignment.first_index < arity);
-            assert(assignment.first_index < assignment.second_index);
-
-            const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
-            const auto true_assignment = assignment_set[assignment_rank];
-
-            if (!negated && !true_assignment)
-            {
-                return false;
-            }
-
-            if (negated && true_assignment && (assignment.size() == arity))
-            {
-                return false;
-            }
-        }
-    }
-
-    return true;
-}
-
-template<PredicateTag P>
-bool AssignmentSet<P>::consistent_literals(const LiteralList<P>& literals, const consistency_graph::Edge& edge) const
-{
-    return consistent_literals_helper<P, EdgeAssignmentIterator>(m_num_objects, m_f, literals, edge);
-}
-
-template<PredicateTag P>
-bool AssignmentSet<P>::consistent_literals(const LiteralList<P>& literals, const consistency_graph::Vertex& vertex) const
-{
-    return consistent_literals_helper<P, VertexAssignmentIterator>(m_num_objects, m_f, literals, vertex);
-}
 
 }
 

@@ -118,8 +118,8 @@ SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assi
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
-        if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, vertex)
-            && derived_assignment_sets.consistent_literals(m_derived_conditions, vertex))
+        if (vertex.consistent_literals(m_fluent_conditions, fluent_assignment_sets)
+            && vertex.consistent_literals(m_derived_conditions, derived_assignment_sets))
         {
             auto binding = ObjectList { m_literal_grounder->get_pddl_repositories()->get_object(vertex.get_object_index()) };
 
@@ -152,7 +152,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
     //    and build the consistency graph as an adjacency matrix
     for (const auto& edge : m_static_consistency_graph.get_edges())
     {
-        if (fluent_assignment_sets.consistent_literals(m_fluent_conditions, edge) && derived_assignment_sets.consistent_literals(m_derived_conditions, edge))
+        if (edge.consistent_literals(m_fluent_conditions, fluent_assignment_sets) && edge.consistent_literals(m_derived_conditions, derived_assignment_sets))
         {
             const auto first_index = edge.get_src().get_index();
             const auto second_index = edge.get_dst().get_index();

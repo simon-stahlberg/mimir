@@ -20,8 +20,8 @@
 
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/formalism/assignment_set.hpp"
-#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/interface.hpp"

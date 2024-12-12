@@ -33,6 +33,7 @@
  */
 
 #include "mimir/formalism/action.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
@@ -72,6 +73,7 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/grounders.hpp"
 #include "mimir/search/heuristics.hpp"
