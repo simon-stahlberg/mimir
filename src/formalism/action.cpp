@@ -36,11 +36,13 @@ namespace mimir
 {
 ActionImpl::ActionImpl(Index index,
                        std::string name,
+                       size_t original_arity,
                        ExistentiallyQuantifiedConjunctiveCondition precondition,
                        EffectStrips strips_effect,
                        EffectConditionalList conditional_effects) :
     m_index(index),
     m_name(std::move(name)),
+    m_original_arity(original_arity),
     m_precondition(std::move(precondition)),
     m_strips_effect(std::move(strips_effect)),
     m_conditional_effects(std::move(conditional_effects))
@@ -55,7 +57,7 @@ Index ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
 
-size_t ActionImpl::get_original_arity() const { return m_precondition->get_original_arity(); }
+size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_precondition->get_parameters(); }
 

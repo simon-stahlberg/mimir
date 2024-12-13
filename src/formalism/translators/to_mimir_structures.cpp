@@ -645,9 +645,13 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
         fluent_literals = fluent_literals_;
         derived_literals = derived_literals_;
     }
+
+    // We sort the additional parameters to enforce some additional approximate syntactic equivalence.
+    auto translated_parameters = translate_common(action.get_parameters());
+    std::sort(translated_parameters.begin() + action.get_original_arity(), translated_parameters.end());
+
     auto existentially_quantified_conjunctive_condition =
-        m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(translate_common(action.get_parameters()),
-                                                                                         action.get_original_arity(),
+        m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(translated_parameters),
                                                                                          std::move(static_literals),
                                                                                          std::move(fluent_literals),
                                                                                          std::move(derived_literals));
@@ -662,13 +666,16 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
         conditional_effects = conditional_effects_;
     }
 
-    return m_pddl_repositories.get_or_create_action(action.get_name(), existentially_quantified_conjunctive_condition, strips_effect, conditional_effects);
+    return m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                    action.get_original_arity(),
+                                                    existentially_quantified_conjunctive_condition,
+                                                    strips_effect,
+                                                    conditional_effects);
 }
 
 Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
     auto parameters = translate_common(axiom.get_parameters());
-    const auto original_arity = parameters.size();
 
     const auto [static_literals, fluent_literals, derived_literals] = translate_lifted(*axiom.get_condition());
 
@@ -699,7 +706,6 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 
     auto existentially_quantified_conjunctive_condition =
         m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
-                                                                                         original_arity,
                                                                                          std::move(static_literals),
                                                                                          std::move(fluent_literals),
                                                                                          std::move(derived_literals));

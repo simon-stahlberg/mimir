@@ -254,13 +254,13 @@ public:
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
     ExistentiallyQuantifiedConjunctiveCondition get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
-                                                                                                             size_t original_arity,
                                                                                                              LiteralList<Static> static_conditions,
                                                                                                              LiteralList<Fluent> fluent_conditions,
                                                                                                              LiteralList<Derived> derived_conditions);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
+                                size_t original_arity,
                                 ExistentiallyQuantifiedConjunctiveCondition precondition,
                                 EffectStrips strips_effect,
                                 EffectConditionalList conditional_effects);

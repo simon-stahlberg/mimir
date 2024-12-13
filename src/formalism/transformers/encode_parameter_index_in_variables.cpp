@@ -140,6 +140,7 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
     const auto translated_conditional_effects = this->transform(action.get_conditional_effects());
 
     const auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                                                  action.get_original_arity(),
                                                                                   std::move(translated_precondition),
                                                                                   this->transform(*action.get_strips_effect()),
                                                                                   translated_conditional_effects);

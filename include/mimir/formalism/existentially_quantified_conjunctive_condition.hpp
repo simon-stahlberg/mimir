@@ -27,7 +27,6 @@ class ExistentiallyQuantifiedConjunctiveConditionImpl
 private:
     Index m_index;
     VariableList m_parameters;
-    size_t m_original_arity;
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
@@ -39,7 +38,6 @@ private:
 
     ExistentiallyQuantifiedConjunctiveConditionImpl(Index index,
                                                     VariableList parameters,
-                                                    size_t original_arity,
                                                     LiteralList<Static> static_conditions,
                                                     LiteralList<Fluent> fluent_conditions,
                                                     LiteralList<Derived> derived_conditions,
@@ -60,7 +58,6 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    size_t get_original_arity() const;
     template<PredicateTag P>
     const LiteralList<P>& get_literals() const;
     template<PredicateTag P>

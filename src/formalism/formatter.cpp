@@ -52,6 +52,15 @@ PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs
 
 void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out)
 {
+    if (!element.get_parameters().empty())
+    {
+        out << "(forall";
+        for (const auto& parameter : element.get_parameters())
+        {
+            std::cout << " ";
+            write(*parameter, out);
+        }
+    }
     if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty())
     {
         out << "()";
@@ -75,6 +84,10 @@ void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl&
             write(*condition, out);
         }
         out << ")";  // end and
+    }
+    if (!element.get_parameters().empty())
+    {
+        out << ")";  // end forall
     }
 }
 

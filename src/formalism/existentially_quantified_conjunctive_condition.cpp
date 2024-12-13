@@ -28,7 +28,6 @@ namespace mimir
 {
 ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunctiveConditionImpl(Index index,
                                                                                                  VariableList parameters,
-                                                                                                 size_t original_arity,
                                                                                                  LiteralList<Static> static_conditions,
                                                                                                  LiteralList<Fluent> fluent_conditions,
                                                                                                  LiteralList<Derived> derived_conditions,
@@ -37,7 +36,6 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
                                                                                                  GroundLiteralList<Derived> nullary_derived_conditions) :
     m_index(index),
     m_parameters(std::move(parameters)),
-    m_original_arity(original_arity),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
@@ -45,16 +43,11 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
     m_nullary_fluent_conditions(std::move(nullary_fluent_conditions)),
     m_nullary_derived_conditions(std::move(nullary_derived_conditions))
 {
-    assert(m_original_arity <= get_parameters().size());
-
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
 
-    assert(std::is_sorted(m_parameters.begin() + m_original_arity,
-                          m_parameters.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
@@ -66,8 +59,6 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
 Index ExistentiallyQuantifiedConjunctiveConditionImpl::get_index() const { return m_index; }
 
 const VariableList& ExistentiallyQuantifiedConjunctiveConditionImpl::get_parameters() const { return m_parameters; }
-
-size_t ExistentiallyQuantifiedConjunctiveConditionImpl::get_original_arity() const { return m_original_arity; }
 
 template<PredicateTag P>
 const LiteralList<P>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals() const

@@ -344,13 +344,11 @@ EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableLis
 
 ExistentiallyQuantifiedConjunctiveCondition
 PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
-                                                                               size_t original_arity,
                                                                                LiteralList<Static> static_conditions,
                                                                                LiteralList<Fluent> fluent_conditions,
                                                                                LiteralList<Derived> derived_conditions)
 {
     /* Canonize before uniqueness test */
-    std::sort(parameters.begin() + original_arity, parameters.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -361,7 +359,6 @@ PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(V
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl> {})
         .get_or_create(std::move(parameters),
-                       std::move(original_arity),
                        std::move(static_conditions),
                        std::move(fluent_conditions),
                        std::move(derived_conditions),
@@ -371,6 +368,7 @@ PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(V
 }
 
 Action PDDLRepositories::get_or_create_action(std::string name,
+                                              size_t original_arity,
                                               ExistentiallyQuantifiedConjunctiveCondition precondition,
                                               EffectStrips strips_effect,
                                               EffectConditionalList conditional_effects)
@@ -379,7 +377,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
     std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
-        .get_or_create(std::move(name), std::move(precondition), std::move(strips_effect), std::move(conditional_effects));
+        .get_or_create(std::move(name), original_arity, std::move(precondition), std::move(strips_effect), std::move(conditional_effects));
 }
 
 Axiom PDDLRepositories::get_or_create_axiom(ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> literal)

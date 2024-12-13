@@ -87,7 +87,6 @@ ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_im
     auto derived_literals = filter_positive_literals(this->transform(condition.get_literals<Derived>()));
 
     return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
-                                                                                                  condition.get_original_arity(),
                                                                                                   std::move(static_literals),
                                                                                                   std::move(fluent_literals),
                                                                                                   std::move(derived_literals));
@@ -135,7 +134,8 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 
     auto precondition = this->transform(*action.get_precondition());
 
-    auto delete_relaxed_action = this->m_pddl_repositories.get_or_create_action(action.get_name(), precondition, strips_effect, conditional_effects);
+    auto delete_relaxed_action =
+        this->m_pddl_repositories.get_or_create_action(action.get_name(), action.get_original_arity(), precondition, strips_effect, conditional_effects);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
 

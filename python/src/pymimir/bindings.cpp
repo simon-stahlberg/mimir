@@ -651,16 +651,26 @@ void init_pymimir(py::module_& m)
         .def("get_function_expression", &OptimizationMetricImpl::get_function_expression, py::return_value_policy::reference_internal)
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
+    py::class_<ExistentiallyQuantifiedConjunctiveConditionImpl>(m, "ExistentiallyQuantifiedConjunctiveCondition")  //
+        .def("get_parameters", &ExistentiallyQuantifiedConjunctiveConditionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_precondition", &ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_fluent_conditions",
+             &ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Fluent>,
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_derived_conditions",
+             &ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Derived>,
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy);
+
     py::class_<ActionImpl>(m, "Action")  //
         .def("__str__", [](const ActionImpl& self) { return to_string(self); })
         .def("__repr__", [](const ActionImpl& self) { return to_string(self); })
         .def("get_index", &ActionImpl::get_index)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::copy)
         .def("get_parameters", &ActionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_static_conditions", &ActionImpl::get_conditions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_fluent_conditions", &ActionImpl::get_conditions<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_derived_conditions", &ActionImpl::get_conditions<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_strips_effect", &ActionImpl::get_strips_effect, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_precondition", &ActionImpl::get_precondition, py::return_value_policy::reference_internal)
+        .def("get_strips_effect", &ActionImpl::get_strips_effect, py::return_value_policy::reference_internal)
         .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_arity", &ActionImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<ActionList>::value);  // Ensure return by reference + keep alive
@@ -670,10 +680,8 @@ void init_pymimir(py::module_& m)
         .def("__str__", [](const AxiomImpl& self) { return to_string(self); })
         .def("__repr__", [](const AxiomImpl& self) { return to_string(self); })
         .def("get_index", &AxiomImpl::get_index)
+        .def("get_precondition", &AxiomImpl::get_precondition, py::return_value_policy::reference_internal)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference_internal)
-        .def("get_static_conditions", &AxiomImpl::get_conditions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_fluent_conditions", &AxiomImpl::get_conditions<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_derived_conditions", &AxiomImpl::get_conditions<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_arity", &AxiomImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<AxiomList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<AxiomList>(m, "AxiomList");
@@ -737,6 +745,14 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
 
     py::class_<PDDLRepositories, std::shared_ptr<PDDLRepositories>>(m, "PDDLRepositories")  //
+        .def("get_or_create_existentially_quantified_conjunctive_condition",
+             py::overload_cast<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>(
+                 &PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition),
+             py::return_value_policy::reference_internal,
+             py::arg("parameters"),
+             py::arg("static_literals"),
+             py::arg("fluent_literals"),
+             py::arg("deried_literals"))
         .def(
             "get_static_ground_atoms",
             [](const PDDLRepositories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
@@ -947,12 +963,9 @@ void init_pymimir(py::module_& m)
 
     /* SatisficingBindingGenerator */
     py::class_<SatisficingBindingGenerator>(m, "SatisficingBindingGenerator")  //
-        .def(py::init<std::shared_ptr<LiteralGrounder>, VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>(),
+        .def(py::init<std::shared_ptr<LiteralGrounder>, ExistentiallyQuantifiedConjunctiveCondition>(),
              py::arg("literal_grounder"),
-             py::arg("parameters"),
-             py::arg("static_literals"),
-             py::arg("fluent_literals"),
-             py::arg("derived_literals"))
+             py::arg("existentially_quantified_conjunctive_condition"))
         .def("generate_ground_conjunctions",
              [](SatisficingBindingGenerator& self, State state, size_t max_num_groundings)
              {

@@ -27,6 +27,7 @@ class ActionImpl
 private:
     Index m_index;
     std::string m_name;
+    size_t m_original_arity;
     ExistentiallyQuantifiedConjunctiveCondition m_precondition;
     EffectStrips m_strips_effect;
     EffectConditionalList m_conditional_effects;
@@ -35,6 +36,7 @@ private:
 
     ActionImpl(Index index,
                std::string name,
+               size_t original_arity,
                ExistentiallyQuantifiedConjunctiveCondition precondition,
                EffectStrips strips_effect,
                EffectConditionalList conditional_effects);

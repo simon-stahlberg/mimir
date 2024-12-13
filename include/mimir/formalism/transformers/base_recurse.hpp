@@ -323,7 +323,6 @@ protected:
     ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {
         return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(this->transform(condition.get_parameters()),
-                                                                                                      condition.get_original_arity(),
                                                                                                       this->transform(condition.get_literals<Static>()),
                                                                                                       this->transform(condition.get_literals<Fluent>()),
                                                                                                       this->transform(condition.get_literals<Derived>()));
@@ -403,6 +402,7 @@ protected:
     Action transform_impl(const ActionImpl& action)
     {
         return this->m_pddl_repositories.get_or_create_action(action.get_name(),
+                                                              action.get_original_arity(),
                                                               this->transform(action.get_precondition()),
                                                               this->transform(action.get_strips_effect()),
                                                               this->transform(action.get_conditional_effects()));
