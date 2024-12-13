@@ -180,8 +180,8 @@ using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
 
-class ExistentiallyQuantifiedConjunctionImpl;
-using UniversallyQuantifiedConjunction = const ExistentiallyQuantifiedConjunctionImpl*;
+class ExistentiallyQuantifiedConjunctiveConditionImpl;
+using ExistentiallyQuantifiedConjunctiveCondition = const ExistentiallyQuantifiedConjunctiveConditionImpl*;
 
 class TermImpl;
 using Term = const TermImpl*;

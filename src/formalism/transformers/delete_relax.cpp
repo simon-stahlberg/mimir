@@ -79,6 +79,20 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
+ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
+{
+    auto parameters = this->transform(condition.get_parameters());
+    auto static_literals = filter_positive_literals(this->transform(condition.get_literals<Static>()));
+    auto fluent_literals = filter_positive_literals(this->transform(condition.get_literals<Fluent>()));
+    auto derived_literals = filter_positive_literals(this->transform(condition.get_literals<Derived>()));
+
+    return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
+                                                                                                  condition.get_original_arity(),
+                                                                                                  std::move(static_literals),
+                                                                                                  std::move(fluent_literals),
+                                                                                                  std::move(derived_literals));
+}
+
 EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effect)
 {
     return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()), this->transform(*effect.get_function_expression()));
@@ -119,19 +133,9 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
         return nullptr;
     }
 
-    auto parameters = this->transform(action.get_parameters());
-    auto static_conditions = filter_positive_literals(this->transform(action.get_conditions<Static>()));
-    auto fluent_conditions = filter_positive_literals(this->transform(action.get_conditions<Fluent>()));
-    auto derived_conditions = filter_positive_literals(this->transform(action.get_conditions<Derived>()));
+    auto precondition = this->transform(*action.get_precondition());
 
-    auto delete_relaxed_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
-                                                                                action.get_original_arity(),
-                                                                                parameters,
-                                                                                static_conditions,
-                                                                                fluent_conditions,
-                                                                                derived_conditions,
-                                                                                strips_effect,
-                                                                                conditional_effects);
+    auto delete_relaxed_action = this->m_pddl_repositories.get_or_create_action(action.get_name(), precondition, strips_effect, conditional_effects);
 
     m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
 
@@ -140,13 +144,10 @@ Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
 
 Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
 {
+    auto precondition = this->transform(*axiom.get_precondition());
     const auto literal = this->transform(*axiom.get_literal());
-    auto parameters = this->transform(axiom.get_parameters());
-    auto static_conditions = filter_positive_literals(this->transform(axiom.get_conditions<Static>()));
-    auto fluent_conditions = filter_positive_literals(this->transform(axiom.get_conditions<Fluent>()));
-    auto derived_conditions = filter_positive_literals(this->transform(axiom.get_conditions<Derived>()));
 
-    auto delete_relaxed_axiom = this->m_pddl_repositories.get_or_create_axiom(parameters, literal, static_conditions, fluent_conditions, derived_conditions);
+    auto delete_relaxed_axiom = this->m_pddl_repositories.get_or_create_axiom(precondition, literal);
 
     m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(&axiom);
 

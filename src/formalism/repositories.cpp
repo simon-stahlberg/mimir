@@ -59,13 +59,30 @@ PDDLTypeToRepository create_default_pddl_type_to_repository()
         boost::hana::make_pair(boost::hana::type_c<FunctionSkeletonImpl>, FunctionSkeletonRepository {}),
         boost::hana::make_pair(boost::hana::type_c<EffectStripsImpl>, EffectStripsRepository {}),
         boost::hana::make_pair(boost::hana::type_c<EffectConditionalImpl>, EffectUniversalRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<ExistentiallyQuantifiedConjunctionImpl>, UniversallyQuantifiedConjunctionRepository {}),
+        boost::hana::make_pair(boost::hana::type_c<ExistentiallyQuantifiedConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ActionImpl>, ActionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<AxiomImpl>, AxiomRepository {}),
         boost::hana::make_pair(boost::hana::type_c<OptimizationMetricImpl>, OptimizationMetricRepository {}),
         boost::hana::make_pair(boost::hana::type_c<NumericFluentImpl>, NumericFluentRepository {}),
         boost::hana::make_pair(boost::hana::type_c<DomainImpl>, DomainRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ProblemImpl>, ProblemRepository {}));
+}
+
+template<PredicateTag P>
+static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, PDDLRepositories& pddl_repositories)
+{
+    auto ground_literals = GroundLiteralList<P> {};
+    for (const auto& literal : literals)
+    {
+        if (literal->get_atom()->get_arity() != 0)
+            continue;
+
+        ground_literals.push_back(
+            pddl_repositories.get_or_create_ground_literal(literal->is_negated(),
+                                                           pddl_repositories.get_or_create_ground_atom(literal->get_atom()->get_predicate(), {})));
+    }
+
+    return ground_literals;
 }
 
 PDDLRepositories::PDDLRepositories() : m_repositories(create_default_pddl_type_to_repository()) {}
@@ -325,46 +342,49 @@ EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableLis
                        std::move(function_expression));
 }
 
-Action PDDLRepositories::get_or_create_action(std::string name,
-                                              size_t original_arity,
-                                              VariableList parameters,
-                                              LiteralList<Static> static_conditions,
-                                              LiteralList<Fluent> fluent_conditions,
-                                              LiteralList<Derived> derived_conditions,
-                                              EffectStrips strips_effect,
-                                              EffectConditionalList conditional_effects)
+ExistentiallyQuantifiedConjunctiveCondition
+PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
+                                                                               size_t original_arity,
+                                                                               LiteralList<Static> static_conditions,
+                                                                               LiteralList<Fluent> fluent_conditions,
+                                                                               LiteralList<Derived> derived_conditions)
 {
     /* Canonize before uniqueness test */
     std::sort(parameters.begin() + original_arity, parameters.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
-        .get_or_create(std::move(name),
+    auto nullary_static_conditions = ground_nullary_literals(static_conditions, *this);
+    auto nullary_fluent_conditions = ground_nullary_literals(fluent_conditions, *this);
+    auto nullary_derived_conditions = ground_nullary_literals(derived_conditions, *this);
+
+    return boost::hana::at_key(m_repositories, boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl> {})
+        .get_or_create(std::move(parameters),
                        std::move(original_arity),
-                       std::move(parameters),
                        std::move(static_conditions),
                        std::move(fluent_conditions),
                        std::move(derived_conditions),
-                       std::move(strips_effect),
-                       std::move(conditional_effects));
+                       std::move(nullary_static_conditions),
+                       std::move(nullary_fluent_conditions),
+                       std::move(nullary_derived_conditions));
 }
 
-Axiom PDDLRepositories::get_or_create_axiom(VariableList parameters,
-                                            Literal<Derived> literal,
-                                            LiteralList<Static> static_conditions,
-                                            LiteralList<Fluent> fluent_conditions,
-                                            LiteralList<Derived> derived_conditions)
+Action PDDLRepositories::get_or_create_action(std::string name,
+                                              ExistentiallyQuantifiedConjunctiveCondition precondition,
+                                              EffectStrips strips_effect,
+                                              EffectConditionalList conditional_effects)
 {
-    /* Canonize before uniqueness test. */
-    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    /* Canonize before uniqueness test */
+    std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {})
-        .get_or_create(std::move(parameters), std::move(literal), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions));
+    return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
+        .get_or_create(std::move(name), std::move(precondition), std::move(strips_effect), std::move(conditional_effects));
+}
+
+Axiom PDDLRepositories::get_or_create_axiom(ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> literal)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(precondition), std::move(literal));
 }
 
 OptimizationMetric PDDLRepositories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)

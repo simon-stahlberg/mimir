@@ -27,11 +27,7 @@ class ActionImpl
 private:
     Index m_index;
     std::string m_name;
-    size_t m_original_arity;
-    VariableList m_parameters;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
+    ExistentiallyQuantifiedConjunctiveCondition m_precondition;
     EffectStrips m_strips_effect;
     EffectConditionalList m_conditional_effects;
 
@@ -39,11 +35,7 @@ private:
 
     ActionImpl(Index index,
                std::string name,
-               size_t original_arity,
-               VariableList parameters,
-               LiteralList<Static> static_conditions,
-               LiteralList<Fluent> fluent_conditions,
-               LiteralList<Derived> derived_conditions,
+               ExistentiallyQuantifiedConjunctiveCondition precondition,
                EffectStrips strips_effect,
                EffectConditionalList conditional_effects);
 
@@ -62,8 +54,7 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    template<PredicateTag P>
-    const LiteralList<P>& get_conditions() const;
+    const ExistentiallyQuantifiedConjunctiveCondition& get_precondition() const;
     const EffectStrips& get_strips_effect() const;
     const EffectConditionalList& get_conditional_effects() const;
 

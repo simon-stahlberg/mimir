@@ -22,6 +22,7 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -43,13 +44,7 @@ namespace mimir
 {
 size_t UniquePDDLHasher<Action>::operator()(Action e) const
 {
-    return UniquePDDLHashCombiner()(e->get_name(),
-                                    e->get_parameters(),
-                                    e->get_conditions<Static>(),
-                                    e->get_conditions<Fluent>(),
-                                    e->get_conditions<Derived>(),
-                                    e->get_strips_effect(),
-                                    e->get_conditional_effects());
+    return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters(), e->get_precondition(), e->get_strips_effect(), e->get_conditional_effects());
 }
 
 template<PredicateTag P>
@@ -62,14 +57,7 @@ template size_t UniquePDDLHasher<const AtomImpl<Static>*>::operator()(const Atom
 template size_t UniquePDDLHasher<const AtomImpl<Fluent>*>::operator()(const AtomImpl<Fluent>* e) const;
 template size_t UniquePDDLHasher<const AtomImpl<Derived>*>::operator()(const AtomImpl<Derived>* e) const;
 
-size_t UniquePDDLHasher<Axiom>::operator()(Axiom e) const
-{
-    return UniquePDDLHashCombiner()(e->get_literal(),
-                                    e->get_parameters(),
-                                    e->get_conditions<Static>(),
-                                    e->get_conditions<Fluent>(),
-                                    e->get_conditions<Derived>());
-}
+size_t UniquePDDLHasher<Axiom>::operator()(Axiom e) const { return UniquePDDLHashCombiner()(e->get_literal(), e->get_precondition(), e->get_parameters()); }
 
 size_t UniquePDDLHasher<Domain>::operator()(Domain e) const
 {
@@ -94,6 +82,11 @@ size_t UniquePDDLHasher<EffectConditional>::operator()(EffectConditional e) cons
                                     e->get_conditions<Fluent>(),
                                     e->get_conditions<Derived>(),
                                     e->get_function_expression());
+}
+
+size_t UniquePDDLHasher<ExistentiallyQuantifiedConjunctiveCondition>::operator()(ExistentiallyQuantifiedConjunctiveCondition e) const
+{
+    return UniquePDDLHashCombiner()(e->get_parameters(), e->get_literals<Static>(), e->get_literals<Fluent>(), e->get_literals<Derived>());
 }
 
 size_t UniquePDDLHasher<FunctionExpressionNumber>::operator()(FunctionExpressionNumber e) const { return UniquePDDLHashCombiner()(e->get_number()); }

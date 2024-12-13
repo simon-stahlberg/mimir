@@ -17,6 +17,7 @@
 
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 
+#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
@@ -42,9 +43,9 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
         m_condition_grounders.emplace(axiom,
                                       SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
                                                                   axiom->get_parameters(),
-                                                                  axiom->get_conditions<Static>(),
-                                                                  axiom->get_conditions<Fluent>(),
-                                                                  axiom->get_conditions<Derived>()));
+                                                                  axiom->get_precondition()->get_literals<Static>(),
+                                                                  axiom->get_precondition()->get_literals<Fluent>(),
+                                                                  axiom->get_precondition()->get_literals<Derived>()));
     }
 }
 

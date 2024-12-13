@@ -124,6 +124,13 @@ protected:
         this->prepare(effect.get_effects());
         this->prepare(*effect.get_function_expression());
     }
+    void prepare_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
+    {
+        this->prepare(condition.get_parameters());
+        this->prepare(condition.get_literals<Static>());
+        this->prepare(condition.get_literals<Fluent>());
+        this->prepare(condition.get_literals<Derived>());
+    }
     void prepare_impl(const FunctionExpressionNumberImpl& function_expression) {}
     void prepare_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
     {
@@ -163,19 +170,13 @@ protected:
     }
     void prepare_impl(const ActionImpl& action)
     {
-        this->prepare(action.get_parameters());
-        this->prepare(action.get_conditions<Static>());
-        this->prepare(action.get_conditions<Fluent>());
-        this->prepare(action.get_conditions<Derived>());
-        this->prepare(action.get_strips_effect());
+        this->prepare(*action.get_precondition());
+        this->prepare(*action.get_strips_effect());
         this->prepare(action.get_conditional_effects());
     }
     void prepare_impl(const AxiomImpl& axiom)
     {
-        this->prepare(axiom.get_parameters());
-        this->prepare(axiom.get_conditions<Static>());
-        this->prepare(axiom.get_conditions<Fluent>());
-        this->prepare(axiom.get_conditions<Derived>());
+        this->prepare(*axiom.get_precondition());
         this->prepare(*axiom.get_literal());
     }
     void prepare_impl(const DomainImpl& domain)
@@ -319,6 +320,14 @@ protected:
                                                                           this->transform(effect.get_effects()),
                                                                           this->transform(*effect.get_function_expression()));
     }
+    ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
+    {
+        return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(this->transform(condition.get_parameters()),
+                                                                                                      condition.get_original_arity(),
+                                                                                                      this->transform(condition.get_literals<Static>()),
+                                                                                                      this->transform(condition.get_literals<Fluent>()),
+                                                                                                      this->transform(condition.get_literals<Derived>()));
+    }
     FunctionExpressionNumber transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {
         return this->m_pddl_repositories.get_or_create_function_expression_number(function_expression.get_number());
@@ -394,21 +403,13 @@ protected:
     Action transform_impl(const ActionImpl& action)
     {
         return this->m_pddl_repositories.get_or_create_action(action.get_name(),
-                                                              action.get_original_arity(),
-                                                              this->transform(action.get_parameters()),
-                                                              this->transform(action.get_conditions<Static>()),
-                                                              this->transform(action.get_conditions<Fluent>()),
-                                                              this->transform(action.get_conditions<Derived>()),
+                                                              this->transform(action.get_precondition()),
                                                               this->transform(action.get_strips_effect()),
                                                               this->transform(action.get_conditional_effects()));
     }
     Axiom transform_impl(const AxiomImpl& axiom)
     {
-        return this->m_pddl_repositories.get_or_create_axiom(this->transform(axiom.get_parameters()),
-                                                             this->transform(*axiom.get_literal()),
-                                                             this->transform(axiom.get_conditions<Static>()),
-                                                             this->transform(axiom.get_conditions<Fluent>()),
-                                                             this->transform(axiom.get_conditions<Derived>()));
+        return this->m_pddl_repositories.get_or_create_axiom(this->transform(*axiom.get_precondition()), this->transform(*axiom.get_literal()));
     }
     Domain transform_impl(const DomainImpl& domain)
     {

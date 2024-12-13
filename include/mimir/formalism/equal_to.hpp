@@ -71,6 +71,12 @@ struct UniquePDDLEqualTo<EffectConditional>
 };
 
 template<>
+struct UniquePDDLEqualTo<ExistentiallyQuantifiedConjunctiveCondition>
+{
+    bool operator()(ExistentiallyQuantifiedConjunctiveCondition l, ExistentiallyQuantifiedConjunctiveCondition r) const;
+};
+
+template<>
 struct UniquePDDLEqualTo<FunctionExpressionNumber>
 {
     bool operator()(FunctionExpressionNumber l, FunctionExpressionNumber r) const;

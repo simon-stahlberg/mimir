@@ -24,7 +24,7 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/existentially_quantified_conjunction.hpp"
+#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -84,7 +84,7 @@ using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl>;
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl>;
 using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
 using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
-using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ExistentiallyQuantifiedConjunctionImpl>;
+using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ExistentiallyQuantifiedConjunctiveConditionImpl>;
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
@@ -129,7 +129,7 @@ using PDDLTypeToRepository =
                      boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
                      boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
                      boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
-                     boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctionImpl>, UniversallyQuantifiedConjunctionRepository>,
+                     boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository>,
                      boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
                      boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
                      boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
@@ -252,22 +252,21 @@ public:
                                                        LiteralList<Fluent> effects,
                                                        FunctionExpression function_expression);
 
+    /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
+    ExistentiallyQuantifiedConjunctiveCondition get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
+                                                                                                             size_t original_arity,
+                                                                                                             LiteralList<Static> static_conditions,
+                                                                                                             LiteralList<Fluent> fluent_conditions,
+                                                                                                             LiteralList<Derived> derived_conditions);
+
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
-                                size_t original_arity,
-                                VariableList parameters,
-                                LiteralList<Static> static_conditions,
-                                LiteralList<Fluent> fluent_conditions,
-                                LiteralList<Derived> derived_conditions,
+                                ExistentiallyQuantifiedConjunctiveCondition precondition,
                                 EffectStrips strips_effect,
                                 EffectConditionalList conditional_effects);
 
     /// @brief Get or create a derived predicate for the given parameters.
-    Axiom get_or_create_axiom(VariableList parameters,
-                              Literal<Derived> literal,
-                              LiteralList<Static> static_condition,
-                              LiteralList<Fluent> fluent_condition,
-                              LiteralList<Derived> derived_conditions);
+    Axiom get_or_create_axiom(ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> effect_literal);
 
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);

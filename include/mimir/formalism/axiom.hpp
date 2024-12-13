@@ -26,20 +26,12 @@ class AxiomImpl
 {
 private:
     Index m_index;
-    VariableList m_parameters;
+    ExistentiallyQuantifiedConjunctiveCondition m_precondition;
     Literal<Derived> m_literal;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AxiomImpl(Index index,
-              VariableList parameters,
-              Literal<Derived> literal,
-              LiteralList<Static> static_conditions,
-              LiteralList<Fluent> fluent_conditions,
-              LiteralList<Derived> derived_conditions);
+    AxiomImpl(Index index, ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> literal);
 
     // Give access to the constructor.
     template<typename HolderType, typename Hash, typename EqualTo>
@@ -54,9 +46,8 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
+    const ExistentiallyQuantifiedConjunctiveCondition& get_precondition() const;
     const Literal<Derived>& get_literal() const;
-    template<PredicateTag P>
-    const LiteralList<P>& get_conditions() const;
 
     size_t get_arity() const;
 };

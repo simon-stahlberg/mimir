@@ -115,13 +115,9 @@ Axiom EncodeParameterIndexInVariables::transform_impl(const AxiomImpl& axiom)
         m_variable_to_parameter_index[axiom.get_parameters()[i]] = i;
     }
 
-    const auto translated_parameters = this->transform(axiom.get_parameters());
+    const auto translated_precondition = this->transform(*axiom.get_precondition());
 
-    const auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(translated_parameters,
-                                                                                this->transform(*axiom.get_literal()),
-                                                                                this->transform(axiom.get_conditions<Static>()),
-                                                                                this->transform(axiom.get_conditions<Fluent>()),
-                                                                                this->transform(axiom.get_conditions<Derived>()));
+    const auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(std::move(translated_precondition), this->transform(*axiom.get_literal()));
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();
@@ -139,16 +135,12 @@ Action EncodeParameterIndexInVariables::transform_impl(const ActionImpl& action)
         m_variable_to_parameter_index[action.get_parameters()[i]] = i;
     }
 
-    const auto translated_parameters = this->transform(action.get_parameters());
+    const auto translated_precondition = this->transform(*action.get_precondition());
 
     const auto translated_conditional_effects = this->transform(action.get_conditional_effects());
 
     const auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
-                                                                                  action.get_original_arity(),
-                                                                                  translated_parameters,
-                                                                                  this->transform(action.get_conditions<Static>()),
-                                                                                  this->transform(action.get_conditions<Fluent>()),
-                                                                                  this->transform(action.get_conditions<Derived>()),
+                                                                                  std::move(translated_precondition),
                                                                                   this->transform(*action.get_strips_effect()),
                                                                                   translated_conditional_effects);
 

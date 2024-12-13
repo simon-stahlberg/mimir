@@ -70,9 +70,18 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     negative_static_precondition.unset_all();
     positive_derived_precondition.unset_all();
     negative_derived_precondition.unset_all();
-    m_literal_grounder->ground_and_fill_bitset(axiom->get_conditions<Fluent>(), positive_fluent_precondition, negative_fluent_precondition, binding);
-    m_literal_grounder->ground_and_fill_bitset(axiom->get_conditions<Static>(), positive_static_precondition, negative_static_precondition, binding);
-    m_literal_grounder->ground_and_fill_bitset(axiom->get_conditions<Derived>(), positive_derived_precondition, negative_derived_precondition, binding);
+    m_literal_grounder->ground_and_fill_bitset(axiom->get_precondition()->get_literals<Fluent>(),
+                                               positive_fluent_precondition,
+                                               negative_fluent_precondition,
+                                               binding);
+    m_literal_grounder->ground_and_fill_bitset(axiom->get_precondition()->get_literals<Static>(),
+                                               positive_static_precondition,
+                                               negative_static_precondition,
+                                               binding);
+    m_literal_grounder->ground_and_fill_bitset(axiom->get_precondition()->get_literals<Derived>(),
+                                               positive_derived_precondition,
+                                               negative_derived_precondition,
+                                               binding);
 
     /* Effect */
 

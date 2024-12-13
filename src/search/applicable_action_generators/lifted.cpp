@@ -49,9 +49,9 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
         m_action_precondition_grounders.emplace(action,
                                                 SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
                                                                             action->get_parameters(),
-                                                                            action->get_conditions<Static>(),
-                                                                            action->get_conditions<Fluent>(),
-                                                                            action->get_conditions<Derived>()));
+                                                                            action->get_precondition()->get_literals<Static>(),
+                                                                            action->get_precondition()->get_literals<Fluent>(),
+                                                                            action->get_precondition()->get_literals<Derived>()));
     }
 }
 

@@ -20,6 +20,5 @@
 
 #include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
-#include "mimir/formalism/transformers/to_positive_normal_form.hpp"
 
 #endif

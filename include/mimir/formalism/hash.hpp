@@ -127,6 +127,12 @@ struct UniquePDDLHasher<EffectConditional>
 };
 
 template<>
+struct UniquePDDLHasher<ExistentiallyQuantifiedConjunctiveCondition>
+{
+    size_t operator()(ExistentiallyQuantifiedConjunctiveCondition e) const;
+};
+
+template<>
 struct UniquePDDLHasher<FunctionExpressionNumber>
 {
     size_t operator()(FunctionExpressionNumber e) const;

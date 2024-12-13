@@ -24,6 +24,7 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -35,35 +36,16 @@ namespace mimir
 {
 ActionImpl::ActionImpl(Index index,
                        std::string name,
-                       size_t original_arity,
-                       VariableList parameters,
-                       LiteralList<Static> static_conditions,
-                       LiteralList<Fluent> fluent_conditions,
-                       LiteralList<Derived> derived_conditions,
+                       ExistentiallyQuantifiedConjunctiveCondition precondition,
                        EffectStrips strips_effect,
                        EffectConditionalList conditional_effects) :
     m_index(index),
     m_name(std::move(name)),
-    m_original_arity(std::move(original_arity)),
-    m_parameters(std::move(parameters)),
-    m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions)),
-    m_derived_conditions(std::move(derived_conditions)),
+    m_precondition(std::move(precondition)),
     m_strips_effect(std::move(strips_effect)),
     m_conditional_effects(std::move(conditional_effects))
 {
-    assert(m_original_arity <= m_parameters.size());
-    assert(is_all_unique(m_parameters));
-    assert(is_all_unique(m_static_conditions));
-    assert(is_all_unique(m_fluent_conditions));
-    assert(is_all_unique(m_derived_conditions));
     assert(is_all_unique(m_conditional_effects));
-    assert(
-        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_conditional_effects.begin(),
                           m_conditional_effects.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -73,40 +55,17 @@ Index ActionImpl::get_index() const { return m_index; }
 
 const std::string& ActionImpl::get_name() const { return m_name; }
 
-size_t ActionImpl::get_original_arity() const { return m_original_arity; }
+size_t ActionImpl::get_original_arity() const { return m_precondition->get_original_arity(); }
 
-const VariableList& ActionImpl::get_parameters() const { return m_parameters; }
+const VariableList& ActionImpl::get_parameters() const { return m_precondition->get_parameters(); }
 
-template<PredicateTag P>
-const LiteralList<P>& ActionImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
-
-template const LiteralList<Static>& ActionImpl::get_conditions<Static>() const;
-template const LiteralList<Fluent>& ActionImpl::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& ActionImpl::get_conditions<Derived>() const;
+const ExistentiallyQuantifiedConjunctiveCondition& ActionImpl::get_precondition() const { return m_precondition; }
 
 const EffectStrips& ActionImpl::get_strips_effect() const { return m_strips_effect; }
 
 const EffectConditionalList& ActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
-size_t ActionImpl::get_arity() const { return m_parameters.size(); }
+size_t ActionImpl::get_arity() const { return get_parameters().size(); }
 
 std::ostream& operator<<(std::ostream& out, const ActionImpl& element)
 {

@@ -47,6 +47,7 @@ private:
 
     template<PredicateTag P>
     Literal<P> transform_impl(const LiteralImpl<P>& literal);
+    ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition);
     EffectStrips transform_impl(const EffectStripsImpl& effect);
     EffectConditional transform_impl(const EffectConditionalImpl& effect);
     Action transform_impl(const ActionImpl& action);

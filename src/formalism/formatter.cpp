@@ -23,7 +23,7 @@
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/existentially_quantified_conjunction.hpp"
+#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -50,7 +50,7 @@ namespace mimir
 
 PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs) : m_indent(indent), m_add_indent(add_indent), m_action_costs(action_costs) {}
 
-void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctionImpl& element, std::ostream& out)
+void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out)
 {
     if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty())
     {
@@ -94,24 +94,25 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     out << ")\n";
 
     out << std::string(m_indent, ' ') << ":conditions ";
-    if (element.get_conditions<Static>().empty() && element.get_conditions<Fluent>().empty() && element.get_conditions<Derived>().empty())
+    if (element.get_precondition()->get_literals<Static>().empty() && element.get_precondition()->get_literals<Fluent>().empty()
+        && element.get_precondition()->get_literals<Derived>().empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and";
-        for (const auto& condition : element.get_conditions<Static>())
+        for (const auto& condition : element.get_precondition()->get_literals<Static>())
         {
             out << " ";
             write(*condition, out);
         }
-        for (const auto& condition : element.get_conditions<Fluent>())
+        for (const auto& condition : element.get_precondition()->get_literals<Fluent>())
         {
             out << " ";
             write(*condition, out);
         }
-        for (const auto& condition : element.get_conditions<Derived>())
+        for (const auto& condition : element.get_precondition()->get_literals<Derived>())
         {
             out << " ";
             write(*condition, out);
@@ -178,17 +179,17 @@ void PDDLFormatter::write(const AxiomImpl& element, std::ostream& out)
     m_indent += m_add_indent;
 
     out << std::string(m_indent, ' ') << "(and";
-    for (const auto& condition : element.get_conditions<Static>())
+    for (const auto& condition : element.get_precondition()->get_literals<Static>())
     {
         out << " ";
         write(*condition, out);
     }
-    for (const auto& condition : element.get_conditions<Fluent>())
+    for (const auto& condition : element.get_precondition()->get_literals<Fluent>())
     {
         out << " ";
         write(*condition, out);
     }
-    for (const auto& condition : element.get_conditions<Derived>())
+    for (const auto& condition : element.get_precondition()->get_literals<Derived>())
     {
         out << " ";
         write(*condition, out);

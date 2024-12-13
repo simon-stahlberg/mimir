@@ -25,7 +25,6 @@ add_gtest(datasets_faithful_abstraction_test               "datasets/faithful_ab
 add_gtest(datasets_global_faithful_abstraction_test        "datasets/global_faithful_abstraction.cpp")
 add_gtest(datasets_state_space_test                        "datasets/state_space.cpp")
 
-add_gtest(formalism_to_positive_normal_form_test           "formalism/transformers/to_positive_normal_form.cpp")
 add_gtest(formalism_to_disjunctive_normal_form_test        "formalism/translators/to_disjunctive_normal_form.cpp")
 add_gtest(formalism_to_negation_normal_form_test           "formalism/translators/to_negation_normal_form.cpp")
 add_gtest(formalism_remove_types_test                      "formalism/translators/remove_types.cpp")

@@ -22,6 +22,7 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -45,8 +46,7 @@ bool UniquePDDLEqualTo<Action>::operator()(Action l, Action r) const
 {
     if (&l != &r)
     {
-        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters()) && (l->get_conditions<Static>() == r->get_conditions<Static>())
-               && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>()) && (l->get_conditions<Derived>() == r->get_conditions<Derived>())
+        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters()) && (l->get_precondition() == r->get_precondition())
                && (l->get_strips_effect() == r->get_strips_effect()) && (l->get_conditional_effects() == r->get_conditional_effects());
     }
     return true;
@@ -70,9 +70,7 @@ bool UniquePDDLEqualTo<Axiom>::operator()(Axiom l, Axiom r) const
 {
     if (&l != &r)
     {
-        return (l->get_literal() == r->get_literal()) && (l->get_parameters() == r->get_parameters())
-               && (l->get_conditions<Static>() == r->get_conditions<Static>()) && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>())
-               && (l->get_conditions<Derived>() == r->get_conditions<Derived>());
+        return (l->get_precondition() == r->get_precondition()) && (l->get_literal() == r->get_literal());
     }
     return true;
 }
@@ -105,6 +103,17 @@ bool UniquePDDLEqualTo<EffectConditional>::operator()(EffectConditional l, Effec
         return (l->get_effects() == r->get_effects()) && (l->get_parameters() == r->get_parameters())
                && (l->get_conditions<Static>() == r->get_conditions<Static>()) && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>())
                && (l->get_conditions<Derived>() == r->get_conditions<Derived>()) && (l->get_function_expression() == r->get_function_expression());
+    }
+    return true;
+}
+
+bool UniquePDDLEqualTo<ExistentiallyQuantifiedConjunctiveCondition>::operator()(ExistentiallyQuantifiedConjunctiveCondition l,
+                                                                                ExistentiallyQuantifiedConjunctiveCondition r) const
+{
+    if (&l != &r)
+    {
+        return (l->get_parameters() == r->get_parameters()) && (l->get_literals<Static>() == r->get_literals<Static>())
+               && (l->get_literals<Fluent>() == r->get_literals<Fluent>()) && (l->get_literals<Derived>() == r->get_literals<Derived>());
     }
     return true;
 }
