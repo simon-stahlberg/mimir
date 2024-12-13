@@ -21,14 +21,35 @@
 #include "mimir/algorithms/generator.hpp"
 
 #include <boost/dynamic_bitset.hpp>
+#include <optional>
 #include <vector>
 
 namespace mimir
 {
 
-// Find all cliques of size k in a k-partite graph
+/// @brief `KPKCInternalMemory` manages preallocated memory to be used with the KPKC algorithm.
+///
+/// The constructor initializes the correct memory layout.
+/// KPKC will verify the memory layout and throw an exception if incorrect.
+struct KPKCInternalMemory
+{
+    explicit KPKCInternalMemory(size_t k);
+
+    void verify_memory_layout(size_t k);
+
+    boost::dynamic_bitset<> partition_bits;
+    std::vector<size_t> partial_solution;
+    std::vector<std::vector<boost::dynamic_bitset<>>> k_compatible_vertices;
+};
+
+/// @brief Find all cliques of size k in a k-partite graph.
+/// @param adjacency_matrix is the adjacency matrix.
+/// @param partitions is the partitioning.
+/// @param memory preallocated memory, if not given, the algorithm will perform O(k^2) many allocations.
+/// @return a generator to enumerate all k-cliques.
 mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                          const std::vector<std::vector<size_t>>& partitions);
+                                                                                          const std::vector<std::vector<size_t>>& partitions,
+                                                                                          KPKCInternalMemory* memory = nullptr);
 
 }
 
