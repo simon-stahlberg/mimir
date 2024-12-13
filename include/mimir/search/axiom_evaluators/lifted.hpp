@@ -37,6 +37,12 @@ private:
 
     std::vector<AxiomPartition> m_partitioning;
 
+    // Preallocated memory for reuse.
+    GroundAtomList<Fluent> m_fluent_atoms;
+    GroundAtomList<Derived> m_derived_atoms;
+    AssignmentSet<Fluent> m_fluent_assignment_set;
+    AssignmentSet<Derived> m_derived_assignment_set;
+
 public:
     explicit LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder);
 

@@ -52,6 +52,8 @@ public:
     /// @brief Construct from a given set of ground atoms.
     AssignmentSet(size_t num_objects, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms);
 
+    void initialize(const GroundAtomList<P>& ground_atoms);
+
     /// @brief Insert ground atoms into the assignment set.
     void insert_ground_atom(GroundAtom<P> ground_atom);
 

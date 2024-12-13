@@ -60,6 +60,19 @@ AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& pred
         assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
     }
 
+    initialize(ground_atoms);
+}
+
+template<PredicateTag P>
+void AssignmentSet<P>::initialize(const GroundAtomList<P>& ground_atoms)
+{
+    /* Clear the assignment sets */
+    for (auto& assignment_set : per_predicate_assignment_set)
+    {
+        std::fill(assignment_set.begin(), assignment_set.end(), false);
+    }
+
+    /* Fill the assignment sets. */
     for (const auto& ground_atom : ground_atoms)
     {
         const auto& arity = ground_atom->get_arity();

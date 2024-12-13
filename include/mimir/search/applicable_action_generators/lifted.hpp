@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_LIFTED_HPP_
 
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
@@ -36,6 +37,12 @@ private:
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     std::unordered_map<Action, SatisficingBindingGenerator> m_action_precondition_grounders;
+
+    // Preallocated memory for reuse.
+    GroundAtomList<Fluent> m_fluent_atoms;
+    GroundAtomList<Derived> m_derived_atoms;
+    AssignmentSet<Fluent> m_fluent_assignment_set;
+    AssignmentSet<Derived> m_derived_assignment_set;
 
 public:
     /// @brief Simplest construction

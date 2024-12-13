@@ -41,7 +41,15 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
                                                                  std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_grounder(std::move(action_grounder)),
     m_event_handler(std::move(event_handler)),
-    m_action_precondition_grounders()
+    m_action_precondition_grounders(),
+    m_fluent_atoms(),
+    m_derived_atoms(),
+    m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(),
+                            m_grounder->get_problem()->get_domain()->get_predicates<Fluent>(),
+                            GroundAtomList<Fluent> {}),
+    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(),
+                             m_grounder->get_problem()->get_domain()->get_predicates<Derived>(),
+                             GroundAtomList<Derived> {})
 {
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : m_grounder->get_problem()->get_domain()->get_actions())
@@ -56,18 +64,13 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
     // Create the assignment sets that are shared by all action schemas.
 
-    const auto problem = m_grounder->get_problem();
     auto& pddl_repositories = m_grounder->get_pddl_repositories();
 
-    auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
-    auto fluent_atoms = pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
+    pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>(), m_fluent_atoms);
+    m_fluent_assignment_set.initialize(m_fluent_atoms);
 
-    auto fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), fluent_predicates, fluent_atoms);
-
-    auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
-
-    auto derived_atoms = pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
-    auto derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), derived_predicates, derived_atoms);
+    pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>(), m_derived_atoms);
+    m_derived_assignment_set.initialize(m_derived_atoms);
 
     // Get all applicable ground actions.
     // This is done by getting bindings in the given state using the precondition.
@@ -75,7 +78,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
-        for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
+        for (auto&& binding : condition_grounder.create_binding_generator(state, m_fluent_assignment_set, m_derived_assignment_set))
         {
             const auto num_ground_actions = m_grounder->get_num_ground_actions();
 

@@ -196,21 +196,6 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
     };
 }
 
-template<PredicateTag P>
-static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, LiteralGrounder& literal_grounder)
-{
-    auto ground_literals = GroundLiteralList<P> {};
-    for (const auto& literal : literals)
-    {
-        if (literal->get_atom()->get_arity() != 0)
-            continue;
-
-        ground_literals.push_back(literal_grounder.ground_literal(literal, {}));
-    }
-
-    return ground_literals;
-}
-
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                                          ExistentiallyQuantifiedConjunctiveCondition precondition) :
     SatisficingBindingGenerator(std::move(literal_grounder), precondition, std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
