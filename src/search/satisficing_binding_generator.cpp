@@ -17,7 +17,6 @@
 
 #include "mimir/search/satisficing_binding_generator.hpp"
 
-#include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -29,8 +28,6 @@
 #include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
-
-#include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
 namespace mimir
 {
@@ -146,20 +143,23 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
         co_return;
     }
 
-    const auto& vertices = m_static_consistency_graph.get_vertices();
+    /* Reset the full consistency graph graph. */
+    for (auto& row : m_full_consistency_graph)
+    {
+        row.reset();
+    }
 
-    std::vector<boost::dynamic_bitset<>> full_consistency_graph(vertices.size(), boost::dynamic_bitset<>(vertices.size()));
-
-    // D: Restrict statically consistent assignments based on the assignments in the current state
-    //    and build the consistency graph as an adjacency matrix
+    /* Build the full consistency graph.
+       Restricts statically consistent assignments based on the assignments in the current state and builds the consistency graph as an adjacency matrix
+    */
     for (const auto& edge : m_static_consistency_graph.get_edges())
     {
         if (edge.consistent_literals(m_fluent_conditions, fluent_assignment_sets) && edge.consistent_literals(m_derived_conditions, derived_assignment_sets))
         {
             const auto first_index = edge.get_src().get_index();
             const auto second_index = edge.get_dst().get_index();
-            auto& first_row = full_consistency_graph[first_index];
-            auto& second_row = full_consistency_graph[second_index];
+            auto& first_row = m_full_consistency_graph[first_index];
+            auto& second_row = m_full_consistency_graph[second_index];
             first_row[second_index] = 1;
             second_row[first_index] = 1;
         }
@@ -170,8 +170,8 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
     // parameters) tends to be very small.
 
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-
-    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(full_consistency_graph, partitions))
+    const auto& vertices = m_static_consistency_graph.get_vertices();
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions, &m_kpkc_memory))
     {
         auto binding = ObjectList(clique.size());
 
@@ -238,7 +238,9 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
     m_nullary_static_conditions(ground_nullary_literals(m_static_conditions, *m_literal_grounder)),
     m_nullary_fluent_conditions(ground_nullary_literals(m_fluent_conditions, *m_literal_grounder)),
     m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_literal_grounder)),
-    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions)
+    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions),
+    m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
+    m_kpkc_memory(m_variables.size())
 {
 }
 

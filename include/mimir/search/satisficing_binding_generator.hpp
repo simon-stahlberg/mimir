@@ -19,9 +19,12 @@
 #define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_HPP_
 
 #include "mimir/algorithms/generator.hpp"
+#include "mimir/algorithms/kpkc.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
+
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
 namespace mimir
 {
@@ -44,6 +47,10 @@ private:
     GroundLiteralList<Derived> m_nullary_derived_conditions;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
+
+    // preallocated memory for reuse
+    std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
+    KPKCInternalMemory m_kpkc_memory;
 
     template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);
