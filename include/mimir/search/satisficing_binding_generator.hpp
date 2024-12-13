@@ -33,18 +33,8 @@ class SatisficingBindingGenerator
 {
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
-
-    VariableList m_variables;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
-
+    ExistentiallyQuantifiedConjunctiveCondition m_precondition;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
-
-    /* Precomputed grounded conditions with zero arguments. */
-    GroundLiteralList<Static> m_nullary_static_conditions;
-    GroundLiteralList<Fluent> m_nullary_fluent_conditions;
-    GroundLiteralList<Derived> m_nullary_derived_conditions;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
@@ -71,17 +61,10 @@ private:
     general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
 public:
-    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                VariableList variables,
-                                LiteralList<Static> static_conditions,
-                                LiteralList<Fluent> fluent_conditions,
-                                LiteralList<Derived> derived_conditions);
+    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder, ExistentiallyQuantifiedConjunctiveCondition precondition);
 
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                VariableList variables,
-                                LiteralList<Static> static_conditions,
-                                LiteralList<Fluent> fluent_conditions,
-                                LiteralList<Derived> derived_conditions,
+                                ExistentiallyQuantifiedConjunctiveCondition precondition,
                                 std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 
     mimir::generator<ObjectList>
@@ -96,9 +79,7 @@ public:
 
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
 
-    const VariableList& get_variables() const;
-    template<PredicateTag P>
-    const LiteralList<P>& get_conditions() const;
+    const ExistentiallyQuantifiedConjunctiveCondition& get_precondition() const;
     const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };

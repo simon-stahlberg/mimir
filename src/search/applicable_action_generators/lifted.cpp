@@ -46,12 +46,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : m_grounder->get_problem()->get_domain()->get_actions())
     {
-        m_action_precondition_grounders.emplace(action,
-                                                SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
-                                                                            action->get_parameters(),
-                                                                            action->get_precondition()->get_literals<Static>(),
-                                                                            action->get_precondition()->get_literals<Fluent>(),
-                                                                            action->get_precondition()->get_literals<Derived>()));
+        m_action_precondition_grounders.emplace(action, SatisficingBindingGenerator(m_grounder->get_literal_grounder(), action->get_precondition()));
     }
 }
 

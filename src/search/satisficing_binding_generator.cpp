@@ -70,9 +70,9 @@ bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Stat
 
 bool SatisficingBindingGenerator::is_valid_binding(State state, const ObjectList& binding)
 {
-    return is_valid_static_binding(m_static_conditions, binding)               // We need to test all
-           && is_valid_dynamic_binding(m_fluent_conditions, state, binding)    // types of conditions
-           && is_valid_dynamic_binding(m_derived_conditions, state, binding);  // due to over-approx.
+    return is_valid_static_binding(m_precondition->get_literals<Static>(), binding)               // We need to test all
+           && is_valid_dynamic_binding(m_precondition->get_literals<Fluent>(), state, binding)    // types of conditions
+           && is_valid_dynamic_binding(m_precondition->get_literals<Derived>(), state, binding);  // due to over-approx.
 }
 
 template<PredicateTag P>
@@ -94,7 +94,8 @@ bool nullary_literals_hold(const GroundLiteralList<P>& literals, State state)
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
 bool SatisficingBindingGenerator::nullary_conditions_hold(State state) const
 {
-    return nullary_literals_hold(m_nullary_fluent_conditions, state) && nullary_literals_hold(m_nullary_derived_conditions, state);
+    return nullary_literals_hold(m_precondition->get_nullary_ground_literals<Fluent>(), state)
+           && nullary_literals_hold(m_precondition->get_nullary_ground_literals<Derived>(), state);
 }
 
 mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(State state)
@@ -117,8 +118,8 @@ SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assi
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
-        if (vertex.consistent_literals(m_fluent_conditions, fluent_assignment_sets)
-            && vertex.consistent_literals(m_derived_conditions, derived_assignment_sets))
+        if (vertex.consistent_literals(m_precondition->get_literals<Fluent>(), fluent_assignment_sets)
+            && vertex.consistent_literals(m_precondition->get_literals<Derived>(), derived_assignment_sets))
         {
             auto binding = ObjectList { m_literal_grounder->get_pddl_repositories()->get_object(vertex.get_object_index()) };
 
@@ -154,7 +155,8 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
     */
     for (const auto& edge : m_static_consistency_graph.get_edges())
     {
-        if (edge.consistent_literals(m_fluent_conditions, fluent_assignment_sets) && edge.consistent_literals(m_derived_conditions, derived_assignment_sets))
+        if (edge.consistent_literals(m_precondition->get_literals<Fluent>(), fluent_assignment_sets)
+            && edge.consistent_literals(m_precondition->get_literals<Derived>(), derived_assignment_sets))
         {
             const auto first_index = edge.get_src().get_index();
             const auto second_index = edge.get_dst().get_index();
@@ -210,35 +212,18 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
 }
 
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                         VariableList variables,
-                                                         LiteralList<Static> static_conditions,
-                                                         LiteralList<Fluent> fluent_conditions,
-                                                         LiteralList<Derived> derived_conditions) :
-    SatisficingBindingGenerator(std::move(literal_grounder),
-                                std::move(variables),
-                                std::move(static_conditions),
-                                std::move(fluent_conditions),
-                                std::move(derived_conditions),
-                                std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
+                                                         ExistentiallyQuantifiedConjunctiveCondition precondition) :
+    SatisficingBindingGenerator(std::move(literal_grounder), precondition, std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
 {
 }
 
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                         VariableList variables,
-                                                         LiteralList<Static> static_conditions,
-                                                         LiteralList<Fluent> fluent_conditions,
-                                                         LiteralList<Derived> derived_conditions,
+                                                         ExistentiallyQuantifiedConjunctiveCondition precondition,
                                                          std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
     m_literal_grounder(std::move(literal_grounder)),
-    m_variables(std::move(variables)),
-    m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions)),
-    m_derived_conditions(std::move(derived_conditions)),
+    m_precondition(precondition),
     m_event_handler(std::move(event_handler)),
-    m_nullary_static_conditions(ground_nullary_literals(m_static_conditions, *m_literal_grounder)),
-    m_nullary_fluent_conditions(ground_nullary_literals(m_fluent_conditions, *m_literal_grounder)),
-    m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_literal_grounder)),
-    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions),
+    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_precondition->get_parameters().size(), m_precondition->get_literals<Static>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
     m_kpkc_memory(m_static_consistency_graph.get_vertices_by_parameter_index())
 {
@@ -250,11 +235,11 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
 {
     if (nullary_conditions_hold(state))
     {
-        if (m_variables.size() == 0)
+        if (m_precondition->get_arity() == 0)
         {
             co_yield mimir::ranges::elements_of(nullary_case(state));
         }
-        else if (m_variables.size() == 1)
+        else if (m_precondition->get_arity() == 1)
         {
             co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
         }
@@ -282,19 +267,19 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
     for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
     {
         GroundLiteralList<Static> static_grounded_literals;
-        for (const auto& static_literal : get_conditions<Static>())
+        for (const auto& static_literal : m_precondition->get_literals<Static>())
         {
             static_grounded_literals.emplace_back(m_literal_grounder->ground_literal(static_literal, binding));
         }
 
         GroundLiteralList<Fluent> fluent_grounded_literals;
-        for (const auto& fluent_literal : get_conditions<Fluent>())
+        for (const auto& fluent_literal : m_precondition->get_literals<Fluent>())
         {
             fluent_grounded_literals.emplace_back(m_literal_grounder->ground_literal(fluent_literal, binding));
         }
 
         GroundLiteralList<Derived> derived_grounded_literals;
-        for (const auto& derived_literal : get_conditions<Derived>())
+        for (const auto& derived_literal : m_precondition->get_literals<Derived>())
         {
             derived_grounded_literals.emplace_back(m_literal_grounder->ground_literal(derived_literal, binding));
         }
@@ -305,32 +290,7 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
 
 const std::shared_ptr<LiteralGrounder>& SatisficingBindingGenerator::get_literal_grounder() const { return m_literal_grounder; }
 
-const VariableList& SatisficingBindingGenerator::get_variables() const { return m_variables; }
-
-template<PredicateTag P>
-const LiteralList<P>& SatisficingBindingGenerator::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
-
-template const LiteralList<Static>& SatisficingBindingGenerator::get_conditions<Static>() const;
-template const LiteralList<Fluent>& SatisficingBindingGenerator::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& SatisficingBindingGenerator::get_conditions<Derived>() const;
+const ExistentiallyQuantifiedConjunctiveCondition& SatisficingBindingGenerator::get_precondition() const { return m_precondition; }
 
 const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
 
@@ -339,10 +299,7 @@ const consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator::ge
 std::ostream& operator<<(std::ostream& out, const SatisficingBindingGenerator& condition_grounder)
 {
     out << "Condition Grounder:" << std::endl;
-    out << " - Variables: " << condition_grounder.get_variables() << std::endl;
-    out << " - Static Conditions: " << condition_grounder.get_conditions<Static>() << std::endl;
-    out << " - Fluent Conditions: " << condition_grounder.get_conditions<Fluent>() << std::endl;
-    out << " - Derived Conditions: " << condition_grounder.get_conditions<Derived>() << std::endl;
+    out << " - Precondition: " << condition_grounder.get_precondition() << std::endl;
     // TODO: There are some issues with the printers, perhaps move them in a single compilation unit.
     // out << " - Static Consistency Graph: " << std::tie(condition_grounder.get_static_consistency_graph(), *condition_grounder.get_pddl_repositories())
     //     << std::endl;

@@ -40,12 +40,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     /* 3. Initialize condition grounders */
     for (const auto& axiom : m_grounder->get_problem()->get_problem_and_domain_axioms())
     {
-        m_condition_grounders.emplace(axiom,
-                                      SatisficingBindingGenerator(m_grounder->get_literal_grounder(),
-                                                                  axiom->get_parameters(),
-                                                                  axiom->get_precondition()->get_literals<Static>(),
-                                                                  axiom->get_precondition()->get_literals<Fluent>(),
-                                                                  axiom->get_precondition()->get_literals<Derived>()));
+        m_condition_grounders.emplace(axiom, SatisficingBindingGenerator(m_grounder->get_literal_grounder(), axiom->get_precondition()));
     }
 }
 
