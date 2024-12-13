@@ -25,24 +25,67 @@
 namespace mimir
 {
 
-KPKCInternalMemory::KPKCInternalMemory(size_t k) :
-    partition_bits(k),
+KPKCInternalMemory::KPKCInternalMemory(const std::vector<std::vector<size_t>>& partitions) :
+    partition_bits(partitions.size()),
     partial_solution(),
-    k_compatible_vertices(std::vector<std::vector<boost::dynamic_bitset<>>>(k, std::vector<boost::dynamic_bitset<>>(k)))
+    k_compatible_vertices(partitions.size(), std::vector<boost::dynamic_bitset<>>(partitions.size()))
 {
-}
+    const auto k = partitions.size();
 
-void KPKCInternalMemory::verify_memory_layout(size_t k_)
-{
-    if (partition_bits.size() != k_)
+    for (size_t k1 = 0; k1 < k; ++k1)
     {
-        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected partition_bits of size " + std::to_string(k_));
+        for (size_t k2 = 0; k2 < k; ++k2)
+        {
+            k_compatible_vertices[k1][k2].resize(partitions[k2].size());
+        }
     }
 
-    if (k_compatible_vertices.size() != k_
-        && !std::all_of(k_compatible_vertices.begin(), k_compatible_vertices.end(), [k_](const auto& element) { return element.size() == k_; }))
+    initialize_memory(partitions);
+}
+
+void KPKCInternalMemory::initialize_memory(const std::vector<std::vector<size_t>>& partitions)
+{
+    verify_memory_layout(partitions);
+
+    const auto k = partitions.size();
+
+    for (std::size_t index = 0; index < k; ++index)
     {
-        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected k x k compatible_vertices.");
+        k_compatible_vertices.front()[index].set();
+    }
+    partition_bits.reset();
+    partial_solution.clear();
+}
+
+void KPKCInternalMemory::verify_memory_layout(const std::vector<std::vector<size_t>>& partitions)
+{
+    const auto k = partitions.size();
+
+    if (partition_bits.size() != k)
+    {
+        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected partition_bits of size " + std::to_string(k));
+    }
+
+    if (k_compatible_vertices.size() != k)
+    {
+        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected compatible_vertices to have first dimension of size " + std::to_string(k));
+    }
+
+    if (!std::all_of(k_compatible_vertices.begin(), k_compatible_vertices.end(), [k](const auto& element) { return element.size() == k; }))
+    {
+        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected compatible_vertices to have second dimension of size "
+                                 + std::to_string(k));
+    }
+
+    for (size_t k1 = 0; k1 < k; ++k1)
+    {
+        for (size_t k2 = 0; k2 < k; ++k2)
+        {
+            if (k_compatible_vertices[k1][k2].size() != partitions[k2].size())
+            {
+                throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected bitsets to match partition sizes.");
+            }
+        }
     }
 }
 
@@ -83,7 +126,9 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
         {
             // Update compatible vertices for the next recursion
             auto& compatible_vertices_next = memory.k_compatible_vertices[depth + 1];  // fetch next compatible vertices
-            compatible_vertices_next = compatible_vertices;                            // important to set next to cur, before the update.
+            // Important to set next to cur, before the update.
+            // The following line does not allocate/deallocate because the sizes are exactly the same.
+            compatible_vertices_next = compatible_vertices;
             size_t offset = 0;
             for (size_t partition = 0; partition < k; ++partition)
             {
@@ -129,25 +174,17 @@ mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_
                                                                                           const std::vector<std::vector<size_t>>& partitions,
                                                                                           KPKCInternalMemory* memory)
 {
-    const size_t k = partitions.size();
-
     /* Get and verify or create memory layout. */
     auto managed_memory = std::unique_ptr<KPKCInternalMemory> {};
     if (!memory)
     {
         // If no external data is provided, manage data internally
-        managed_memory = std::make_unique<KPKCInternalMemory>(k);
+        managed_memory = std::make_unique<KPKCInternalMemory>(partitions);
         memory = managed_memory.get();
     }
-    memory->verify_memory_layout(k);
 
     /* Initialize the memory. */
-    for (std::size_t index = 0; index < k; ++index)
-    {
-        memory->k_compatible_vertices[0][index].set(k, true);
-    }
-    memory->partition_bits.reset();
-    memory->partial_solution.clear();
+    memory->initialize_memory(partitions);
 
     /* Compute k-cliques. */
     for (const auto& result : find_all_k_cliques_in_k_partite_graph_helper(adjacency_matrix, partitions, *memory, 0))

@@ -169,8 +169,8 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
     // atoms in the state (compared to the number of possible atoms) lead to very sparse graphs, so the number of maximal cliques of maximum size (#
     // parameters) tends to be very small.
 
-    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
     const auto& vertices = m_static_consistency_graph.get_vertices();
+    const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
     for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions, &m_kpkc_memory))
     {
         auto binding = ObjectList(clique.size());
@@ -240,7 +240,7 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
     m_nullary_derived_conditions(ground_nullary_literals(m_derived_conditions, *m_literal_grounder)),
     m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_variables.size(), m_static_conditions),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
-    m_kpkc_memory(m_variables.size())
+    m_kpkc_memory(m_static_consistency_graph.get_vertices_by_parameter_index())
 {
 }
 

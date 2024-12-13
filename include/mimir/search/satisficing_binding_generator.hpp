@@ -48,7 +48,7 @@ private:
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
-    // preallocated memory for reuse
+    // Preallocated modified memory for reuse.
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
     KPKCInternalMemory m_kpkc_memory;
 

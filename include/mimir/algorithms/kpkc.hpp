@@ -33,9 +33,15 @@ namespace mimir
 /// KPKC will verify the memory layout and throw an exception if incorrect.
 struct KPKCInternalMemory
 {
-    explicit KPKCInternalMemory(size_t k);
+    explicit KPKCInternalMemory(const std::vector<std::vector<size_t>>& partitions);
 
-    void verify_memory_layout(size_t k);
+    /// @brief Verifies the memory layout to catch accidental modifications.
+    /// @param partitions
+    void verify_memory_layout(const std::vector<std::vector<size_t>>& partitions);
+
+    /// @brief Initializes the memory.
+    /// @param partitions
+    void initialize_memory(const std::vector<std::vector<size_t>>& partitions);
 
     boost::dynamic_bitset<> partition_bits;
     std::vector<size_t> partial_solution;
