@@ -29,6 +29,20 @@
 namespace mimir
 {
 
+class SatisficingBinderGeneratorWorkspace
+{
+public:
+    explicit SatisficingBinderGeneratorWorkspace(const consistency_graph::StaticConsistencyGraph& static_consistency_graph);
+
+private:
+    friend class SatisficingBindingGenerator;
+
+    void initialize_full_consistency_graph();
+
+    std::vector<boost::dynamic_bitset<>> full_consistency_graph;
+    KPKCWorkspace kpkc_memory;
+};
+
 class SatisficingBindingGenerator
 {
 private:
@@ -38,9 +52,7 @@ private:
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
-    // Preallocated modified memory for reuse.
-    std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
-    KPKCInternalMemory m_kpkc_memory;
+    SatisficingBinderGeneratorWorkspace m_workspace;
 
     template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);

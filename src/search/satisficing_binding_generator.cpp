@@ -32,6 +32,28 @@
 namespace mimir
 {
 
+/**
+ * SatisficingBinderGeneratorWorkspace
+ */
+
+SatisficingBinderGeneratorWorkspace::SatisficingBinderGeneratorWorkspace(const consistency_graph::StaticConsistencyGraph& static_consistency_graph) :
+    full_consistency_graph(static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(static_consistency_graph.get_vertices().size())),
+    kpkc_memory(static_consistency_graph.get_vertices_by_parameter_index())
+{
+}
+
+void SatisficingBinderGeneratorWorkspace::initialize_full_consistency_graph()
+{
+    for (auto& row : full_consistency_graph)
+    {
+        row.reset();
+    }
+}
+
+/**
+ * SatisficingBindingGenerator
+ */
+
 template<DynamicPredicateTag P>
 bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding)
 {
@@ -144,11 +166,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
         co_return;
     }
 
-    /* Reset the full consistency graph graph. */
-    for (auto& row : m_full_consistency_graph)
-    {
-        row.reset();
-    }
+    m_workspace.initialize_full_consistency_graph();
 
     /* Build the full consistency graph.
        Restricts statically consistent assignments based on the assignments in the current state and builds the consistency graph as an adjacency matrix
@@ -160,8 +178,8 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
         {
             const auto first_index = edge.get_src().get_index();
             const auto second_index = edge.get_dst().get_index();
-            auto& first_row = m_full_consistency_graph[first_index];
-            auto& second_row = m_full_consistency_graph[second_index];
+            auto& first_row = m_workspace.full_consistency_graph[first_index];
+            auto& second_row = m_workspace.full_consistency_graph[second_index];
             first_row[second_index] = 1;
             second_row[first_index] = 1;
         }
@@ -173,7 +191,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
 
     const auto& vertices = m_static_consistency_graph.get_vertices();
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions, &m_kpkc_memory))
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_workspace.full_consistency_graph, partitions, &m_workspace.kpkc_memory))
     {
         auto binding = ObjectList(clique.size());
 
@@ -209,8 +227,7 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
     m_precondition(precondition),
     m_event_handler(std::move(event_handler)),
     m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_precondition->get_parameters().size(), m_precondition->get_literals<Static>()),
-    m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
-    m_kpkc_memory(m_static_consistency_graph.get_vertices_by_parameter_index())
+    m_workspace(m_static_consistency_graph)
 {
 }
 
@@ -243,11 +260,13 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
 
     auto& fluent_predicates = problem->get_domain()->get_predicates<Fluent>();
     auto fluent_atoms = pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>());
-    auto fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), fluent_predicates, fluent_atoms);
+    auto fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), fluent_predicates);
+    fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
     auto& derived_predicates = problem->get_problem_and_domain_derived_predicates();
     auto derived_atoms = pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>());
-    auto derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), derived_predicates, derived_atoms);
+    auto derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), derived_predicates);
+    derived_assignment_set.insert_ground_atoms(derived_atoms);
 
     for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
     {

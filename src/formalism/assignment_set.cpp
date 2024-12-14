@@ -45,7 +45,7 @@ Assignment::Assignment(Index first_index, Index first_object, Index second_index
  */
 
 template<PredicateTag P>
-AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates, const GroundAtomList<P>& ground_atoms) : m_num_objects(num_objects)
+AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects)
 {
     auto max_predicate_index = Index(0);
     for (const auto& predicate : predicates)
@@ -59,20 +59,20 @@ AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& pred
         auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
         assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
     }
-
-    initialize(ground_atoms);
 }
 
 template<PredicateTag P>
-void AssignmentSet<P>::initialize(const GroundAtomList<P>& ground_atoms)
+void AssignmentSet<P>::clear()
 {
-    /* Clear the assignment sets */
     for (auto& assignment_set : per_predicate_assignment_set)
     {
         std::fill(assignment_set.begin(), assignment_set.end(), false);
     }
+}
 
-    /* Fill the assignment sets. */
+template<PredicateTag P>
+void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms)
+{
     for (const auto& ground_atom : ground_atoms)
     {
         const auto& arity = ground_atom->get_arity();

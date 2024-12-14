@@ -126,13 +126,13 @@ private:
     void get_applicable_elements_recursively(size_t node_index,
                                              const FlatBitset& fluent_ground_atoms,
                                              const FlatBitset& derived_ground_atoms,
-                                             std::vector<T>& out_applicable_elements);
+                                             std::vector<T>& out_applicable_elements) const;
 
 public:
     MatchTree();
     MatchTree(const std::vector<T>& elements, const std::vector<size_t>& fluent_ground_atoms_order, const std::vector<size_t>& derived_ground_atoms_order);
 
-    void get_applicable_elements(const FlatBitset& fluent_ground_atoms, const FlatBitset& derived_ground_atoms, std::vector<T>& out_applicable_elements);
+    void get_applicable_elements(const FlatBitset& fluent_ground_atoms, const FlatBitset& derived_ground_atoms, std::vector<T>& out_applicable_elements) const;
 
     size_t get_num_nodes() const;
 
@@ -272,7 +272,7 @@ template<typename T>
 void MatchTree<T>::get_applicable_elements_recursively(size_t node_index,
                                                        const FlatBitset& fluent_ground_atoms,
                                                        const FlatBitset& derived_ground_atoms,
-                                                       std::vector<T>& out_applicable_elements)
+                                                       std::vector<T>& out_applicable_elements) const
 {
     auto& node = m_nodes[node_index];
 
@@ -310,7 +310,7 @@ void MatchTree<T>::get_applicable_elements_recursively(size_t node_index,
 template<typename T>
 void MatchTree<T>::get_applicable_elements(const FlatBitset& fluent_ground_atoms,
                                            const FlatBitset& derived_ground_atoms,
-                                           std::vector<T>& out_applicable_elements)
+                                           std::vector<T>& out_applicable_elements) const
 {
     out_applicable_elements.clear();
 

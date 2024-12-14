@@ -27,13 +27,13 @@
 namespace mimir
 {
 
-/// @brief `KPKCInternalMemory` manages preallocated memory to be used with the KPKC algorithm.
+/// @brief `KPKCWorkspace` manages preallocated memory to be used with the KPKC algorithm.
 ///
 /// The constructor initializes the correct memory layout.
 /// KPKC will verify the memory layout and throw an exception if incorrect.
-struct KPKCInternalMemory
+struct KPKCWorkspace
 {
-    explicit KPKCInternalMemory(const std::vector<std::vector<size_t>>& partitions);
+    explicit KPKCWorkspace(const std::vector<std::vector<size_t>>& partitions);
 
     /// @brief Verifies the memory layout to catch accidental modifications.
     /// @param partitions
@@ -55,7 +55,7 @@ struct KPKCInternalMemory
 /// @return a generator to enumerate all k-cliques.
 mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                                                           const std::vector<std::vector<size_t>>& partitions,
-                                                                                          KPKCInternalMemory* memory = nullptr);
+                                                                                          KPKCWorkspace* memory = nullptr);
 
 }
 

@@ -26,6 +26,11 @@
 namespace mimir
 {
 
+class StateRepositoryWorkspace
+{
+    std::optional<StateImpl> m_state_builder;
+};
+
 class StateRepository
 {
 private:

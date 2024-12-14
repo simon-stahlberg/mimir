@@ -77,8 +77,10 @@ ProblemImpl::ProblemImpl(Index index,
     m_ground_function_to_value(),
     m_static_initial_atoms(to_ground_atoms(m_static_initial_literals)),
     m_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
-    m_static_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>(), m_static_initial_atoms))
+    m_static_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>()))
 {
+    m_static_assignment_set.insert_ground_atoms(m_static_initial_atoms);
+
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_static_initial_literals));

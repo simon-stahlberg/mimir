@@ -25,7 +25,7 @@
 namespace mimir
 {
 
-KPKCInternalMemory::KPKCInternalMemory(const std::vector<std::vector<size_t>>& partitions) :
+KPKCWorkspace::KPKCWorkspace(const std::vector<std::vector<size_t>>& partitions) :
     partition_bits(partitions.size()),
     partial_solution(),
     k_compatible_vertices(partitions.size(), std::vector<boost::dynamic_bitset<>>(partitions.size()))
@@ -43,7 +43,7 @@ KPKCInternalMemory::KPKCInternalMemory(const std::vector<std::vector<size_t>>& p
     initialize_memory(partitions);
 }
 
-void KPKCInternalMemory::initialize_memory(const std::vector<std::vector<size_t>>& partitions)
+void KPKCWorkspace::initialize_memory(const std::vector<std::vector<size_t>>& partitions)
 {
     verify_memory_layout(partitions);
 
@@ -57,23 +57,23 @@ void KPKCInternalMemory::initialize_memory(const std::vector<std::vector<size_t>
     partial_solution.clear();
 }
 
-void KPKCInternalMemory::verify_memory_layout(const std::vector<std::vector<size_t>>& partitions)
+void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<size_t>>& partitions)
 {
     const auto k = partitions.size();
 
     if (partition_bits.size() != k)
     {
-        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected partition_bits of size " + std::to_string(k));
+        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected partition_bits of size " + std::to_string(k));
     }
 
     if (k_compatible_vertices.size() != k)
     {
-        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected compatible_vertices to have first dimension of size " + std::to_string(k));
+        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have first dimension of size " + std::to_string(k));
     }
 
     if (!std::all_of(k_compatible_vertices.begin(), k_compatible_vertices.end(), [k](const auto& element) { return element.size() == k; }))
     {
-        throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected compatible_vertices to have second dimension of size "
+        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have second dimension of size "
                                  + std::to_string(k));
     }
 
@@ -83,7 +83,7 @@ void KPKCInternalMemory::verify_memory_layout(const std::vector<std::vector<size
         {
             if (k_compatible_vertices[k1][k2].size() != partitions[k2].size())
             {
-                throw std::runtime_error("KPKCInternalMemory::verify_memory_layout: expected bitsets to match partition sizes.");
+                throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected bitsets to match partition sizes.");
             }
         }
     }
@@ -91,7 +91,7 @@ void KPKCInternalMemory::verify_memory_layout(const std::vector<std::vector<size
 
 mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                                                           const std::vector<std::vector<size_t>>& partitions,
-                                                                                          KPKCInternalMemory& memory,
+                                                                                          KPKCWorkspace& memory,
                                                                                           size_t depth)
 {
     size_t k = partitions.size();
@@ -172,14 +172,14 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
 
 mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
                                                                                           const std::vector<std::vector<size_t>>& partitions,
-                                                                                          KPKCInternalMemory* memory)
+                                                                                          KPKCWorkspace* memory)
 {
     /* Get and verify or create memory layout. */
-    auto managed_memory = std::unique_ptr<KPKCInternalMemory> {};
+    auto managed_memory = std::unique_ptr<KPKCWorkspace> {};
     if (!memory)
     {
         // If no external data is provided, manage data internally
-        managed_memory = std::make_unique<KPKCInternalMemory>(partitions);
+        managed_memory = std::make_unique<KPKCWorkspace>(partitions);
         memory = managed_memory.get();
     }
 

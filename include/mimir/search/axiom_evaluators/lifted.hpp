@@ -37,12 +37,6 @@ private:
 
     std::vector<AxiomPartition> m_partitioning;
 
-    // Preallocated memory for reuse.
-    GroundAtomList<Fluent> m_fluent_atoms;
-    GroundAtomList<Derived> m_derived_atoms;
-    AssignmentSet<Fluent> m_fluent_assignment_set;
-    AssignmentSet<Derived> m_derived_assignment_set;
-
 public:
     explicit LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder);
 
@@ -55,7 +49,7 @@ public:
     LiftedAxiomEvaluator(LiftedAxiomEvaluator&& other) = delete;
     LiftedAxiomEvaluator& operator=(LiftedAxiomEvaluator&& other) = delete;
 
-    void generate_and_apply_axioms(StateImpl& unextended_state) override;
+    void generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace* workspace = nullptr) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

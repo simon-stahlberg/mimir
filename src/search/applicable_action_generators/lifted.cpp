@@ -20,6 +20,7 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
+#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 
@@ -41,15 +42,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
                                                                  std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler) :
     m_grounder(std::move(action_grounder)),
     m_event_handler(std::move(event_handler)),
-    m_action_precondition_grounders(),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(),
-                            m_grounder->get_problem()->get_domain()->get_predicates<Fluent>(),
-                            GroundAtomList<Fluent> {}),
-    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(),
-                             m_grounder->get_problem()->get_domain()->get_predicates<Derived>(),
-                             GroundAtomList<Derived> {})
+    m_action_precondition_grounders()
 {
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : m_grounder->get_problem()->get_domain()->get_actions())
@@ -58,33 +51,38 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     }
 }
 
-mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state)
+mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace* workspace)
 {
+    /* Initialize lifted workspace if necessary. */
+    auto managed_workspace = std::unique_ptr<ApplicableActionGeneratorWorkspace>(nullptr);
+    if (!workspace)
+    {
+        managed_workspace = std::make_unique<ApplicableActionGeneratorWorkspace>();
+        workspace = managed_workspace.get();
+    }
+    auto& lifted_workspace = managed_workspace->get_or_create_lifted_workspace(m_grounder->get_problem());
+
+    auto& fluent_assignment_set =
+        lifted_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem(),
+                                                             lifted_workspace.get_or_create_fluent_atoms(state, *m_grounder->get_pddl_repositories()));
+
+    auto& derived_assignment_set =
+        lifted_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem(),
+                                                              lifted_workspace.get_or_create_derived_atoms(state, *m_grounder->get_pddl_repositories()));
+
+    /* Generate applicable actions */
+
     m_event_handler->on_start_generating_applicable_actions();
-
-    // Create the assignment sets that are shared by all action schemas.
-
-    auto& pddl_repositories = m_grounder->get_pddl_repositories();
-
-    pddl_repositories->get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>(), m_fluent_atoms);
-    m_fluent_assignment_set.initialize(m_fluent_atoms);
-
-    pddl_repositories->get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>(), m_derived_atoms);
-    m_derived_assignment_set.initialize(m_derived_atoms);
-
-    // Get all applicable ground actions.
-    // This is done by getting bindings in the given state using the precondition.
-    // These bindings are then used to ground the actual action schemas.
 
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
-        for (auto&& binding : condition_grounder.create_binding_generator(state, m_fluent_assignment_set, m_derived_assignment_set))
+        for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
         {
             const auto num_ground_actions = m_grounder->get_num_ground_actions();
 
             const auto ground_action = m_grounder->ground_action(action, std::move(binding));
 
-            assert(ground_action->is_applicable(problem, state));
+            assert(ground_action->is_applicable(m_grounder->get_problem(), state));
 
             m_event_handler->on_ground_action(ground_action);
 

@@ -20,6 +20,7 @@
 #include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/state.hpp"
 
@@ -35,15 +36,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     m_event_handler(std::move(event_handler)),
     m_condition_grounders(),
     m_partitioning(compute_axiom_partitioning(m_grounder->get_problem()->get_problem_and_domain_axioms(),
-                                              m_grounder->get_problem()->get_problem_and_domain_derived_predicates())),
-    m_fluent_atoms(),
-    m_derived_atoms(),
-    m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(),
-                            m_grounder->get_problem()->get_domain()->get_predicates<Fluent>(),
-                            GroundAtomList<Fluent> {}),
-    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(),
-                             m_grounder->get_problem()->get_domain()->get_predicates<Derived>(),
-                             GroundAtomList<Derived> {})
+                                              m_grounder->get_problem()->get_problem_and_domain_derived_predicates()))
 {
     /* 3. Initialize condition grounders */
     for (const auto& axiom : m_grounder->get_problem()->get_problem_and_domain_axioms())
@@ -52,19 +45,30 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     }
 }
 
-void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state)
+void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace* workspace)
 {
+    /* Initialize lifted workspace if necessary. */
+    auto managed_workspace = std::unique_ptr<AxiomEvaluatorWorkspace>(nullptr);
+    if (!workspace)
+    {
+        managed_workspace = std::make_unique<AxiomEvaluatorWorkspace>();
+        workspace = managed_workspace.get();
+    }
+    auto& lifted_workspace = managed_workspace->get_or_create_lifted_workspace(m_grounder->get_problem());
+
     /* 1. Initialize assignment set */
 
     m_event_handler->on_start_generating_applicable_axioms();
 
     auto pddl_repositories = m_grounder->get_pddl_repositories();
 
-    pddl_repositories->get_ground_atoms_from_indices<Fluent>(unextended_state.get_atoms<Fluent>(), m_fluent_atoms);
-    m_fluent_assignment_set.initialize(m_fluent_atoms);
+    auto& fluent_assignment_set = lifted_workspace.get_or_create_fluent_assignment_set(
+        m_grounder->get_problem(),
+        lifted_workspace.get_or_create_fluent_atoms(&unextended_state, *m_grounder->get_pddl_repositories()));
 
-    pddl_repositories->get_ground_atoms_from_indices<Derived>(unextended_state.get_atoms<Derived>(), m_derived_atoms);
-    m_derived_assignment_set.initialize(m_derived_atoms);
+    auto& derived_assignment_set = lifted_workspace.get_or_create_derived_assignment_set(
+        m_grounder->get_problem(),
+        lifted_workspace.get_or_create_derived_atoms(&unextended_state, *m_grounder->get_pddl_repositories()));
 
     /* 2. Fixed point computation */
 
@@ -94,13 +98,13 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             {
                 auto& condition_grounder = m_condition_grounders.at(axiom);
 
-                for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, m_fluent_assignment_set, m_derived_assignment_set))
+                for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
                 {
                     const auto num_ground_axioms = m_grounder->get_num_ground_axioms();
 
                     const auto ground_axiom = m_grounder->ground_axiom(axiom, std::move(binding));
 
-                    assert(ground_axiom->is_applicable(problem, &unextended_state));
+                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), &unextended_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
@@ -133,7 +137,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
                     new_ground_atoms.push_back(new_ground_atom);
 
                     // Update the assignment set
-                    m_derived_assignment_set.insert_ground_atom(new_ground_atom);
+                    derived_assignment_set.insert_ground_atom(new_ground_atom);
 
                     // Retrieve relevant axioms
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
