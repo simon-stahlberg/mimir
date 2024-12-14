@@ -157,6 +157,7 @@ from _pymimir import (
     Grounder,
 
     SatisficingBindingGenerator,
+    SatisficingBindingGeneratorWorkspace,
 
     StaticAssignmentSet,
     FluentAssignmentSet,

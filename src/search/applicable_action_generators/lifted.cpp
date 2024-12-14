@@ -23,6 +23,7 @@
 #include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/workspaces.hpp"
 
 #include <boost/dynamic_bitset.hpp>
 #include <stdexcept>
@@ -55,13 +56,14 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 {
     auto& lifted_workspace = workspace.get_or_create_lifted_workspace(m_grounder->get_problem());
 
-    auto& fluent_atoms = lifted_workspace.get_or_create_fluent_atoms(state, *m_grounder->get_pddl_repositories());
-    auto& fluent_assignment_set = lifted_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
+    auto& assignment_set_workspace = lifted_workspace.get_or_create_assignment_set_workspace();
+    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(state, *m_grounder->get_pddl_repositories());
+    auto& fluent_assignment_set = assignment_set_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
     fluent_assignment_set.clear();
     fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_fluents = lifted_workspace.get_or_create_derived_atoms(state, *m_grounder->get_pddl_repositories());
-    auto& derived_assignment_set = lifted_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
+    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(state, *m_grounder->get_pddl_repositories());
+    auto& derived_assignment_set = assignment_set_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
     derived_assignment_set.clear();
     derived_assignment_set.insert_ground_atoms(derived_fluents);
 
@@ -71,7 +73,16 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
-        for (auto&& binding : condition_grounder.create_binding_generator(state, fluent_assignment_set, derived_assignment_set))
+        // We move this check here to avoid unnecessary creations of mimir::generator.
+        if (!nullary_conditions_hold(action->get_precondition(), state))
+        {
+            continue;
+        }
+
+        for (auto&& binding : condition_grounder.create_binding_generator(state,
+                                                                          fluent_assignment_set,
+                                                                          derived_assignment_set,
+                                                                          lifted_workspace.get_or_create_satisficing_binding_generator(action)))
         {
             const auto num_ground_actions = m_grounder->get_num_ground_actions();
 

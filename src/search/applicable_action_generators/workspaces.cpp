@@ -17,9 +17,6 @@
 
 #include "mimir/search/applicable_action_generators/workspaces.hpp"
 
-#include "mimir/formalism/repositories.hpp"
-#include "mimir/search/state.hpp"
-
 using namespace std::string_literals;
 
 namespace mimir
@@ -29,38 +26,19 @@ namespace mimir
  * LiftedApplicableActionGeneratorWorkspace
  */
 
-GroundAtomList<Fluent>& LiftedApplicableActionGeneratorWorkspace::get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories)
+AssignmentSetWorkspace& LiftedApplicableActionGeneratorWorkspace::get_or_create_assignment_set_workspace()
 {
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>(), fluent_atoms);
-
-    return fluent_atoms;
-}
-
-GroundAtomList<Derived>& LiftedApplicableActionGeneratorWorkspace::get_or_create_derived_atoms(State state, PDDLRepositories& pddl_repositories)
-{
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>(), derived_atoms);
-
-    return derived_atoms;
-}
-
-AssignmentSet<Fluent>& LiftedApplicableActionGeneratorWorkspace::get_or_create_fluent_assignment_set(Problem problem)
-{
-    if (!fluent_assignment_set.has_value())
+    if (!assignment_set_workspace.has_value())
     {
-        fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), problem->get_domain()->get_predicates<Fluent>());
+        assignment_set_workspace = AssignmentSetWorkspace();
     }
 
-    return fluent_assignment_set.value();
+    return assignment_set_workspace.value();
 }
 
-AssignmentSet<Derived>& LiftedApplicableActionGeneratorWorkspace::get_or_create_derived_assignment_set(Problem problem)
+SatisficingBindingGeneratorWorkspace& LiftedApplicableActionGeneratorWorkspace::get_or_create_satisficing_binding_generator(Action action)
 {
-    if (!derived_assignment_set.has_value())
-    {
-        derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), problem->get_domain()->get_predicates<Derived>());
-    }
-
-    return derived_assignment_set.value();
+    return satisficing_binding_generator_workspaces[action];
 }
 
 /**

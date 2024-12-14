@@ -819,6 +819,8 @@ void init_pymimir(py::module_& m)
         .def(py::init<>());
     py::class_<LiftedAxiomEvaluatorWorkspace>(m, "LiftedAxiomEvaluatorWorkspace")  //
         .def(py::init<>());
+    py::class_<SatisficingBindingGeneratorWorkspace>(m, "SatisficingBindingGeneratorWorkspace")  //
+        .def(py::init<>());
     py::class_<StateRepositoryWorkspace>(m, "StateRepositoryWorkspace")  //
         .def(py::init<>());
 
@@ -982,13 +984,13 @@ void init_pymimir(py::module_& m)
              py::arg("literal_grounder"),
              py::arg("existentially_quantified_conjunctive_condition"))
         .def("generate_ground_conjunctions",
-             [](SatisficingBindingGenerator& self, State state, size_t max_num_groundings)
+             [](SatisficingBindingGenerator& self, State state, SatisficingBindingGeneratorWorkspace& workspace, size_t max_num_groundings)
              {
                  auto result =
                      std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
 
                  auto count = size_t(0);
-                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state))
+                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state, workspace))
                  {
                      if (count >= max_num_groundings)
                      {

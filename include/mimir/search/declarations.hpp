@@ -62,6 +62,9 @@ class Grounder;
 /* DeleteRelaxedProblemExplorator */
 class DeleteRelaxedProblemExplorator;
 
+/* AssignmentSet */
+class AssignmentSetWorkspace;
+
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;
 class GroundedApplicableActionGenerator;

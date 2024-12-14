@@ -23,6 +23,7 @@
 #include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/workspaces.hpp"
 
 namespace mimir
 {
@@ -55,13 +56,14 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
 
     const auto& pddl_repositories = m_grounder->get_pddl_repositories();
 
-    auto& fluent_atoms = lifted_workspace.get_or_create_fluent_atoms(&unextended_state, *m_grounder->get_pddl_repositories());
-    auto& fluent_assignment_set = lifted_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
+    auto& assignment_set_workspace = lifted_workspace.get_or_create_assignment_set_workspace();
+    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(&unextended_state, *m_grounder->get_pddl_repositories());
+    auto& fluent_assignment_set = assignment_set_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
     fluent_assignment_set.clear();
     fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_fluents = lifted_workspace.get_or_create_derived_atoms(&unextended_state, *m_grounder->get_pddl_repositories());
-    auto& derived_assignment_set = lifted_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
+    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(&unextended_state, *m_grounder->get_pddl_repositories());
+    auto& derived_assignment_set = assignment_set_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
     derived_assignment_set.clear();
     derived_assignment_set.insert_ground_atoms(derived_fluents);
 
@@ -91,9 +93,18 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
             applicable_axioms.clear();
             for (const auto& axiom : relevant_axioms)
             {
+                // We move this check here to avoid unnecessary creations of mimir::generator.
+                if (!nullary_conditions_hold(axiom->get_precondition(), &unextended_state))
+                {
+                    continue;
+                }
+
                 auto& condition_grounder = m_condition_grounders.at(axiom);
 
-                for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state, fluent_assignment_set, derived_assignment_set))
+                for (auto&& binding : condition_grounder.create_binding_generator(&unextended_state,
+                                                                                  fluent_assignment_set,
+                                                                                  derived_assignment_set,
+                                                                                  lifted_workspace.get_or_create_satisficing_binding_generator(axiom)))
                 {
                     const auto num_ground_axioms = m_grounder->get_num_ground_axioms();
 

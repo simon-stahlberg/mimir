@@ -23,25 +23,42 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/workspaces.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
+#include <memory_resource>
 
 namespace mimir
 {
 
-class SatisficingBinderGeneratorWorkspace
-{
-public:
-    explicit SatisficingBinderGeneratorWorkspace(const consistency_graph::StaticConsistencyGraph& static_consistency_graph);
+/**
+ * SatisficingBindingGeneratorWorkspace
+ */
 
+class SatisficingBindingGeneratorWorkspace
+{
 private:
     friend class SatisficingBindingGenerator;
 
-    void initialize_full_consistency_graph();
+    std::vector<boost::dynamic_bitset<>>& get_or_create_full_consistency_graph(const consistency_graph::StaticConsistencyGraph& static_consistency_graph);
+    KPKCWorkspace& get_or_create_kpkc_workspace(const consistency_graph::StaticConsistencyGraph& static_consistency_graph);
+    AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
 
-    std::vector<boost::dynamic_bitset<>> full_consistency_graph;
-    KPKCWorkspace kpkc_memory;
+    std::optional<std::vector<boost::dynamic_bitset<>>> full_consistency_graph;
+    std::optional<KPKCWorkspace> kpkc_workspace;
+    std::optional<AssignmentSetWorkspace> assignment_set_workspace;
 };
+
+/**
+ * Utils
+ */
+
+/// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
+extern bool nullary_conditions_hold(ExistentiallyQuantifiedConjunctiveCondition precondition, State state);
+
+/**
+ * SatisficingBindingGenerator
+ */
 
 class SatisficingBindingGenerator
 {
@@ -52,8 +69,6 @@ private:
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
-    SatisficingBinderGeneratorWorkspace m_workspace;
-
     template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);
 
@@ -61,16 +76,15 @@ private:
 
     bool is_valid_binding(State state, const ObjectList& binding);
 
-    /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-    bool nullary_conditions_hold(State state) const;
-
     mimir::generator<ObjectList> nullary_case(State state);
 
     mimir::generator<ObjectList>
     unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
 
-    mimir::generator<ObjectList>
-    general_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
+    mimir::generator<ObjectList> general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                              const AssignmentSet<Derived>& derived_assignment_sets,
+                                              State state,
+                                              SatisficingBindingGeneratorWorkspace& workspace);
 
 public:
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder, ExistentiallyQuantifiedConjunctiveCondition precondition);
@@ -79,11 +93,13 @@ public:
                                 ExistentiallyQuantifiedConjunctiveCondition precondition,
                                 std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 
-    mimir::generator<ObjectList>
-    create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
+    mimir::generator<ObjectList> create_binding_generator(State state,
+                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                          const AssignmentSet<Derived>& derived_assignment_set,
+                                                          SatisficingBindingGeneratorWorkspace& workspace);
 
     mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-    create_ground_conjunction_generator(State state);
+    create_ground_conjunction_generator(State state, SatisficingBindingGeneratorWorkspace& workspace);
 
     /**
      * Getters

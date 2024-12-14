@@ -17,11 +17,6 @@
 
 #include "mimir/search/axiom_evaluators/workspaces.hpp"
 
-#include "mimir/formalism/repositories.hpp"
-#include "mimir/search/state.hpp"
-
-using namespace std::string_literals;
-
 namespace mimir
 {
 
@@ -29,38 +24,19 @@ namespace mimir
  * LiftedAxiomEvaluatorWorkspace
  */
 
-GroundAtomList<Fluent>& LiftedAxiomEvaluatorWorkspace::get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories)
+AssignmentSetWorkspace& LiftedAxiomEvaluatorWorkspace::get_or_create_assignment_set_workspace()
 {
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>(), fluent_atoms);
-
-    return fluent_atoms;
-}
-
-GroundAtomList<Derived>& LiftedAxiomEvaluatorWorkspace::get_or_create_derived_atoms(State state, PDDLRepositories& pddl_repositories)
-{
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>(), derived_atoms);
-
-    return derived_atoms;
-}
-
-AssignmentSet<Fluent>& LiftedAxiomEvaluatorWorkspace::get_or_create_fluent_assignment_set(Problem problem)
-{
-    if (!fluent_assignment_set.has_value())
+    if (!assignment_set_workspace.has_value())
     {
-        fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), problem->get_domain()->get_predicates<Fluent>());
+        assignment_set_workspace = AssignmentSetWorkspace();
     }
 
-    return fluent_assignment_set.value();
+    return assignment_set_workspace.value();
 }
 
-AssignmentSet<Derived>& LiftedAxiomEvaluatorWorkspace::get_or_create_derived_assignment_set(Problem problem)
+SatisficingBindingGeneratorWorkspace& LiftedAxiomEvaluatorWorkspace::get_or_create_satisficing_binding_generator(Axiom axiom)
 {
-    if (!derived_assignment_set.has_value())
-    {
-        derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), problem->get_domain()->get_predicates<Derived>());
-    }
-
-    return derived_assignment_set.value();
+    return satisficing_binding_generator_workspaces[axiom];
 }
 
 /**

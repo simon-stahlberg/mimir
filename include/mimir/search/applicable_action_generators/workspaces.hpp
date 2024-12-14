@@ -21,6 +21,8 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/satisficing_binding_generator.hpp"
+#include "mimir/search/workspaces.hpp"
 
 namespace mimir
 {
@@ -31,15 +33,11 @@ class LiftedApplicableActionGeneratorWorkspace
 private:
     friend class LiftedApplicableActionGenerator;
 
-    GroundAtomList<Fluent>& get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories);
-    GroundAtomList<Derived>& get_or_create_derived_atoms(State state, PDDLRepositories& pddl_repositories);
-    AssignmentSet<Fluent>& get_or_create_fluent_assignment_set(Problem problem);
-    AssignmentSet<Derived>& get_or_create_derived_assignment_set(Problem problem);
+    AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
+    SatisficingBindingGeneratorWorkspace& get_or_create_satisficing_binding_generator(Action action);
 
-    GroundAtomList<Fluent> fluent_atoms = GroundAtomList<Fluent>();
-    GroundAtomList<Derived> derived_atoms = GroundAtomList<Derived>();
-    std::optional<AssignmentSet<Fluent>> fluent_assignment_set;
-    std::optional<AssignmentSet<Derived>> derived_assignment_set;
+    std::optional<AssignmentSetWorkspace> assignment_set_workspace;
+    std::unordered_map<Action, SatisficingBindingGeneratorWorkspace> satisficing_binding_generator_workspaces;
 };
 
 /// @brief `LiftedApplicableActionGeneratorWorkspace` encapsulates internally used memory.
