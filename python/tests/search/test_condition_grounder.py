@@ -21,7 +21,8 @@ def test_condition_grounder():
     applicable_action_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
     axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
     state_repository = mm.StateRepository(axiom_evaluator)
-    initial_state = state_repository.get_or_create_initial_state()
+    state_repository_workspace = mm.StateRepositoryWorkspace()
+    initial_state = state_repository.get_or_create_initial_state(state_repository_workspace)
     goal_bindings = condition_grounder.generate_ground_conjunctions(initial_state, 1_000_000)
 
     del state_repository

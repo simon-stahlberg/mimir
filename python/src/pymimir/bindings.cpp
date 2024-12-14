@@ -712,7 +712,10 @@ void init_pymimir(py::module_& m)
     auto bind_assignment_set = [&]<typename Tag>(const std::string& class_name, Tag)
     {
         py::class_<AssignmentSet<Tag>>(m, class_name.c_str())
-            .def(py::init<size_t, PredicateList<Tag>, GroundAtomList<Tag>>(), py::arg("num_objects"), py::arg("predicates"), py::arg("ground_atoms"));
+            .def(py::init<size_t, PredicateList<Tag>>(), py::arg("num_objects"), py::arg("predicates"))
+            .def("clear", &AssignmentSet<Tag>::clear)
+            .def("insert_ground_atoms", &AssignmentSet<Tag>::insert_ground_atoms, py::arg("ground_atoms"))
+            .def("insert_ground_atom", &AssignmentSet<Tag>::insert_ground_atoms, py::arg("ground_atom"));
     };
     bind_assignment_set("StaticAssignmentSet", Static {});
     bind_assignment_set("FluentAssignmentSet", Fluent {});
@@ -806,6 +809,18 @@ void init_pymimir(py::module_& m)
         .value("SOLVED", SearchStatus::SOLVED)
         .value("UNSOLVABLE", SearchStatus::UNSOLVABLE)
         .export_values();
+
+    /* Workspaces */
+    py::class_<ApplicableActionGeneratorWorkspace>(m, "ApplicableActionGeneratorWorkspace")  //
+        .def(py::init<>());
+    py::class_<LiftedApplicableActionGeneratorWorkspace>(m, "LiftedApplicableActionGeneratorWorkspace")  //
+        .def(py::init<>());
+    py::class_<AxiomEvaluatorWorkspace>(m, "AxiomEvaluatorWorkspace")  //
+        .def(py::init<>());
+    py::class_<LiftedAxiomEvaluatorWorkspace>(m, "LiftedAxiomEvaluatorWorkspace")  //
+        .def(py::init<>());
+    py::class_<StateRepositoryWorkspace>(m, "StateRepositoryWorkspace")  //
+        .def(py::init<>());
 
     /* State */
     py::class_<StateImpl>(m, "State")  //
@@ -1045,18 +1060,19 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_repositories", &IApplicableActionGenerator::get_pddl_repositories, py::return_value_policy::copy)
         .def(
             "generate_applicable_actions",
-            [](IApplicableActionGenerator& self, State state)
+            [](IApplicableActionGenerator& self, State state, ApplicableActionGeneratorWorkspace& workspace)
             {
                 // TODO: pybind11 does not support std::generator. Is there a simple workaround WITHOUT introducing additional code?
                 auto actions = GroundActionList {};
-                for (const auto& action : self.create_applicable_action_generator(state))
+                for (const auto& action : self.create_applicable_action_generator(state, workspace))
                 {
                     actions.push_back(action);
                 }
                 return actions;
             },
             py::keep_alive<0, 1>(),
-            py::arg("state"))
+            py::arg("state"),
+            py::arg("applicable_action_generator_workspace"))
         .def("get_action_grounder", &IApplicableActionGenerator::get_action_grounder, py::return_value_policy::copy);
 
     // Lifted
@@ -1148,13 +1164,21 @@ void init_pymimir(py::module_& m)
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
         .def(py::init<std::shared_ptr<IAxiomEvaluator>>(), py::arg("axiom_evaluator"))
-        .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
-        .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
+        .def("get_or_create_initial_state",
+             &StateRepository::get_or_create_initial_state,
+             py::return_value_policy::reference_internal,
+             py::arg("state_repository_workspace"))
+        .def("get_or_create_state",
+             &StateRepository::get_or_create_state,
+             py::return_value_policy::reference_internal,
+             py::arg("atoms"),
+             py::arg("state_repository_workspace"))
         .def("get_or_create_successor_state",
              &StateRepository::get_or_create_successor_state,
              py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
              py::arg("state"),
-             py::arg("action"))
+             py::arg("action"),
+             py::arg("state_repository_workspace"))
         .def("get_state_count", &StateRepository::get_state_count)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepository::get_reached_fluent_ground_atoms_bitset, py::return_value_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepository::get_reached_derived_ground_atoms_bitset, py::return_value_policy::copy);

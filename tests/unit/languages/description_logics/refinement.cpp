@@ -88,11 +88,9 @@ TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
 
     const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder());
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    auto state_repository_workspace = StateRepositoryWorkspace();
-    auto state_space = StateSpace::create(applicable_action_generator, applicable_action_generator_workspace, state_repository, state_repository_workspace);
+    auto state_space = StateSpace::create(applicable_action_generator, state_repository);
     auto state_list = StateList();
     for (const auto& state_vertex : state_space.value().get_vertices())
     {

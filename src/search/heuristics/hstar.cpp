@@ -30,14 +30,7 @@ HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> appli
     state_space_options.use_unit_cost_one = false;
     state_space_options.remove_if_unsolvable = false;
 
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
-    auto state_repository_workspace = StateRepositoryWorkspace();
-    auto state_space = StateSpace::create(applicable_action_generator,
-                                          applicable_action_generator_workspace,
-                                          state_repository,
-                                          state_repository_workspace,
-                                          state_space_options)
-                           .value();
+    auto state_space = StateSpace::create(applicable_action_generator, state_repository, state_space_options).value();
     for (size_t state_index = 0; state_index < state_space.get_num_vertices(); ++state_index)
     {
         m_estimates.emplace(get_state(state_space.get_vertex(state_index)), state_space.get_goal_distance(state_index));

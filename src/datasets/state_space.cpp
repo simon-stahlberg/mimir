@@ -65,20 +65,19 @@ std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, co
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-    auto state_repository_workspace = StateRepositoryWorkspace();
-    return StateSpace::create(applicable_action_generator, applicable_action_generator_workspace, state_repository, state_repository_workspace, options);
+    return StateSpace::create(applicable_action_generator, state_repository, options);
 }
 
 std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                             ApplicableActionGeneratorWorkspace& applicable_action_generator_workspace,
                                              std::shared_ptr<StateRepository> state_repository,
-                                             StateRepositoryWorkspace& state_repository_workspace,
                                              const StateSpaceOptions& options)
 {
     const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
+
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
+    auto state_repository_workspace = StateRepositoryWorkspace();
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
@@ -225,17 +224,8 @@ StateSpace::create(const std::vector<std::tuple<std::shared_ptr<IApplicableActio
 
     for (const auto& [applicable_action_generator, state_repository] : memories)
     {
-        futures.push_back(pool.submit_task(
-            [applicable_action_generator, state_repository, state_space_options = options.state_space_options]
-            {
-                auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
-                auto state_repository_workspace = StateRepositoryWorkspace();
-                return StateSpace::create(applicable_action_generator,
-                                          applicable_action_generator_workspace,
-                                          state_repository,
-                                          state_repository_workspace,
-                                          state_space_options);
-            }));
+        futures.push_back(pool.submit_task([applicable_action_generator, state_repository, state_space_options = options.state_space_options]
+                                           { return StateSpace::create(applicable_action_generator, state_repository, state_space_options); }));
     }
 
     for (auto& future : futures)

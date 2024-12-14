@@ -15,7 +15,8 @@ def test_state_repository_ownership():
     grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
     axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
     state_repository = mm.StateRepository(axiom_evaluator)
-    initial_state = state_repository.get_or_create_initial_state()
+    state_repository_workspace = mm.StateRepositoryWorkspace()
+    initial_state = state_repository.get_or_create_initial_state(state_repository_workspace)
 
     del state_repository
 

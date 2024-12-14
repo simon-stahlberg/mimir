@@ -87,9 +87,7 @@ public:
     };
 
     static std::optional<ObjectGraphStaticSccPruningStrategy> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                                     ApplicableActionGeneratorWorkspace& applicable_action_generator_workspace,
                                                                      std::shared_ptr<StateRepository> state_repository,
-                                                                     StateRepositoryWorkspace& state_repository_workspace,
                                                                      const StateSpaceOptions& options = StateSpaceOptions());
 
     size_t get_num_components() const;

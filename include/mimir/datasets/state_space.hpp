@@ -104,9 +104,7 @@ public:
     /// @param options the options.
     /// @return StateSpace if construction is within the given options, and otherwise nullptr.
     static std::optional<StateSpace> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                            ApplicableActionGeneratorWorkspace& applicable_action_generator_workspace,
                                             std::shared_ptr<StateRepository> state_repository,
-                                            StateRepositoryWorkspace& state_repository_workspace,
                                             const StateSpaceOptions& options = StateSpaceOptions());
 
     /// @brief Convenience function when sharing parsers, applicable_action_generators, state_repositorys is not relevant.

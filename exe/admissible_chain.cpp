@@ -42,8 +42,7 @@ int main(int argc, char** argv)
     auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     auto state_repository_workspace = StateRepositoryWorkspace();
 
-    const auto state_space = std::make_shared<StateSpace>(std::move(
-        StateSpace::create(applicable_action_generator, applicable_action_generator_workspace, state_repository, state_repository_workspace).value()));
+    const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(applicable_action_generator, state_repository).value()));
 
     auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<Fluent>());
 
