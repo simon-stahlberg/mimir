@@ -22,5 +22,6 @@
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
+#include "mimir/search/applicable_action_generators/workspaces.hpp"
 
 #endif

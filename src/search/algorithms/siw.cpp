@@ -24,6 +24,7 @@
 #include "mimir/search/algorithms/siw/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
@@ -74,15 +75,17 @@ SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> appli
 {
     assert(applicable_action_generator && state_repository);
 
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
+    auto state_repository_workspace = StateRepositoryWorkspace();
+
     const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state(state_repository_workspace);
     const auto siw_event_handler = (siw_event_handler_.has_value()) ? siw_event_handler_.value() : std::make_shared<DefaultSIWAlgorithmEventHandler>();
     const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
     const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     const auto goal_strategy =
         (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
 
-    assert(applicable_action_generator && state_repository && iw_event_handler && brfs_event_handler && goal_strategy);
     if (max_arity >= MAX_ARITY)
     {
         throw std::runtime_error("siw::find_solution(...): max_arity (" + std::to_string(max_arity) + ") cannot be greater than or equal to MAX_ARITY ("

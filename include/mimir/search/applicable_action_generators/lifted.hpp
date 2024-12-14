@@ -53,7 +53,7 @@ public:
     LiftedApplicableActionGenerator(LiftedApplicableActionGenerator&& other) = delete;
     LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
 
-    mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace* workspaces = nullptr) override;
+    mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspaces) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

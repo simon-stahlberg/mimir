@@ -134,7 +134,9 @@ public:
     /// @param options the options.
     /// @return std::nullopt if discarded, or otherwise, a FaithfulAbstraction.
     static std::optional<FaithfulAbstraction> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                                     ApplicableActionGeneratorWorkspace& applicable_action_generator_workspace,
                                                      std::shared_ptr<StateRepository> state_repository,
+                                                     StateRepositoryWorkspace& state_repository_workspace,
                                                      const FaithfulAbstractionOptions& options = FaithfulAbstractionOptions());
 
     /// @brief Convenience function when sharing parsers, applicable_action_generators, state_repositorys is not relevant.

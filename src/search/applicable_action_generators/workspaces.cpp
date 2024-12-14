@@ -43,26 +43,22 @@ GroundAtomList<Derived>& LiftedApplicableActionGeneratorWorkspace::get_or_create
     return derived_atoms;
 }
 
-AssignmentSet<Fluent>& LiftedApplicableActionGeneratorWorkspace::get_or_create_fluent_assignment_set(Problem problem, GroundAtomList<Fluent>& fluent_atoms)
+AssignmentSet<Fluent>& LiftedApplicableActionGeneratorWorkspace::get_or_create_fluent_assignment_set(Problem problem)
 {
     if (!fluent_assignment_set.has_value())
     {
         fluent_assignment_set = AssignmentSet<Fluent>(problem->get_objects().size(), problem->get_domain()->get_predicates<Fluent>());
     }
 
-    fluent_assignment_set.value().insert_ground_atoms(fluent_atoms);
-
     return fluent_assignment_set.value();
 }
 
-AssignmentSet<Derived>& LiftedApplicableActionGeneratorWorkspace::get_or_create_derived_assignment_set(Problem problem, GroundAtomList<Derived>& derived_atoms)
+AssignmentSet<Derived>& LiftedApplicableActionGeneratorWorkspace::get_or_create_derived_assignment_set(Problem problem)
 {
     if (!derived_assignment_set.has_value())
     {
         derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), problem->get_domain()->get_predicates<Derived>());
     }
-
-    derived_assignment_set.value().insert_ground_atoms(derived_atoms);
 
     return derived_assignment_set.value();
 }

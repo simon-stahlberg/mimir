@@ -42,7 +42,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared
 {
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace* workspace)
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace&)
 {
     auto ground_actions = GroundActionList {};
     m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);

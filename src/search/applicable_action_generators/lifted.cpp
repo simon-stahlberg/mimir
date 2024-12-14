@@ -51,24 +51,19 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     }
 }
 
-mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace* workspace)
+mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
 {
-    /* Initialize lifted workspace if necessary. */
-    auto managed_workspace = std::unique_ptr<ApplicableActionGeneratorWorkspace>(nullptr);
-    if (!workspace)
-    {
-        managed_workspace = std::make_unique<ApplicableActionGeneratorWorkspace>();
-        workspace = managed_workspace.get();
-    }
-    auto& lifted_workspace = managed_workspace->get_or_create_lifted_workspace(m_grounder->get_problem());
+    auto& lifted_workspace = workspace.get_or_create_lifted_workspace(m_grounder->get_problem());
 
-    auto& fluent_assignment_set =
-        lifted_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem(),
-                                                             lifted_workspace.get_or_create_fluent_atoms(state, *m_grounder->get_pddl_repositories()));
+    auto& fluent_atoms = lifted_workspace.get_or_create_fluent_atoms(state, *m_grounder->get_pddl_repositories());
+    auto& fluent_assignment_set = lifted_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
+    fluent_assignment_set.clear();
+    fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_assignment_set =
-        lifted_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem(),
-                                                              lifted_workspace.get_or_create_derived_atoms(state, *m_grounder->get_pddl_repositories()));
+    auto& derived_fluents = lifted_workspace.get_or_create_derived_atoms(state, *m_grounder->get_pddl_repositories());
+    auto& derived_assignment_set = lifted_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
+    derived_assignment_set.clear();
+    derived_assignment_set.insert_ground_atoms(derived_fluents);
 
     /* Generate applicable actions */
 

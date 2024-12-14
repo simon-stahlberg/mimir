@@ -34,9 +34,15 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategySingleSCCTest)
     const auto parser = PDDLParser(domain_file, problem_file);
     const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder());
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator, state_repository).value();
+    auto state_repository_workspace = StateRepositoryWorkspace();
+    const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator,
+                                                                              applicable_action_generator_workspace,
+                                                                              state_repository,
+                                                                              state_repository_workspace)
+                                      .value();
 
     EXPECT_EQ(pruning_strategy.get_pruning_components().size(), 1);
     EXPECT_EQ(pruning_strategy.get_num_components(), 1);
@@ -49,9 +55,15 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategyMultiSCCTest)
     const auto parser = PDDLParser(domain_file, problem_file);
     const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder());
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator, state_repository).value();
+    auto state_repository_workspace = StateRepositoryWorkspace();
+    const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator,
+                                                                              applicable_action_generator_workspace,
+                                                                              state_repository,
+                                                                              state_repository_workspace)
+                                      .value();
 
     EXPECT_EQ(pruning_strategy.get_pruning_components().size(), 6);
     EXPECT_EQ(pruning_strategy.get_num_components(), 6);

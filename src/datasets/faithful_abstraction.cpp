@@ -92,13 +92,21 @@ FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& pro
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-    return FaithfulAbstraction::create(applicable_action_generator, state_repository, options);
+    auto state_repository_workspace = StateRepositoryWorkspace();
+    return FaithfulAbstraction::create(applicable_action_generator,
+                                       applicable_action_generator_workspace,
+                                       state_repository,
+                                       state_repository_workspace,
+                                       options);
 }
 
 std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                                               ApplicableActionGeneratorWorkspace& applicable_action_generator_workspace,
                                                                std::shared_ptr<StateRepository> state_repository,
+                                                               StateRepositoryWorkspace& state_repository_workspace,
                                                                const FaithfulAbstractionOptions& options)
 {
     const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
@@ -106,7 +114,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
-    auto initial_state = state_repository->get_or_create_initial_state();
+    auto initial_state = state_repository->get_or_create_initial_state(state_repository_workspace);
 
     if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
@@ -129,7 +137,11 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
         auto state_space_options = StateSpaceOptions();
         state_space_options.max_num_states = options.max_num_concrete_states;
         state_space_options.timeout_ms = options.timeout_ms;
-        auto scc_pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator, state_repository, state_space_options);
+        auto scc_pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator,
+                                                                                applicable_action_generator_workspace,
+                                                                                state_repository,
+                                                                                state_repository_workspace,
+                                                                                state_space_options);
         if (!scc_pruning_strategy.has_value())
         {
             return std::nullopt;
@@ -175,9 +187,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
             abstract_goal_states.insert(abstract_state_index);
         }
 
-        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state, applicable_action_generator_workspace))
         {
-            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action, state_repository_workspace);
 
             // Regenerate concrete state
             const auto concrete_successor_state_exists = concrete_to_abstract_state.count(successor_state);
@@ -432,8 +444,17 @@ FaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<IApplic
 
     for (const auto& [applicable_action_generator, state_repository] : memories)
     {
-        futures.push_back(pool.submit_task([applicable_action_generator, state_repository, fa_options = options.fa_options]
-                                           { return FaithfulAbstraction::create(applicable_action_generator, state_repository, fa_options); }));
+        futures.push_back(pool.submit_task(
+            [applicable_action_generator, state_repository, fa_options = options.fa_options]
+            {
+                auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
+                auto state_repository_workspace = StateRepositoryWorkspace();
+                return FaithfulAbstraction::create(applicable_action_generator,
+                                                   applicable_action_generator_workspace,
+                                                   state_repository,
+                                                   state_repository_workspace,
+                                                   fa_options);
+            }));
     }
 
     for (auto& future : futures)

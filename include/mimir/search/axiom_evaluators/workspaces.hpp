@@ -25,7 +25,7 @@
 namespace mimir
 {
 
-/// @brief `LiftedAxiomEvaluatorWorkspace` encapsulates
+/// @brief `LiftedAxiomEvaluatorWorkspace` encapsulates internally used memory.
 class LiftedAxiomEvaluatorWorkspace
 {
 private:
@@ -33,8 +33,8 @@ private:
 
     GroundAtomList<Fluent>& get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories);
     GroundAtomList<Derived>& get_or_create_derived_atoms(State state, PDDLRepositories& pddl_repositories);
-    AssignmentSet<Fluent>& get_or_create_fluent_assignment_set(Problem problem, GroundAtomList<Fluent>& fluent_atoms);
-    AssignmentSet<Derived>& get_or_create_derived_assignment_set(Problem problem, GroundAtomList<Derived>& derived_atoms);
+    AssignmentSet<Fluent>& get_or_create_fluent_assignment_set(Problem problem);
+    AssignmentSet<Derived>& get_or_create_derived_assignment_set(Problem problem);
 
     GroundAtomList<Fluent> fluent_atoms = GroundAtomList<Fluent>();
     GroundAtomList<Derived> derived_atoms = GroundAtomList<Derived>();
@@ -42,7 +42,7 @@ private:
     std::optional<AssignmentSet<Derived>> derived_assignment_set;
 };
 
-/// @brief `AxiomEvaluatorWorkspace` encapsulates
+/// @brief `AxiomEvaluatorWorkspace` encapsulates internally used memory.
 class AxiomEvaluatorWorkspace
 {
 private:

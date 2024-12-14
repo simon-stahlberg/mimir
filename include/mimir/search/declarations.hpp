@@ -30,6 +30,7 @@ namespace mimir
 
 // StateRepository
 class StateRepository;
+class StateRepositoryWorkspace;
 
 // GroundAction
 struct GroundActionImpl;
@@ -57,6 +58,9 @@ class FunctionGrounder;
 class ActionGrounder;
 class AxiomGrounder;
 class Grounder;
+
+/* DeleteRelaxedProblemExplorator */
+class DeleteRelaxedProblemExplorator;
 
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;

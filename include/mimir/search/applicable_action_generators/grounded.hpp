@@ -60,7 +60,7 @@ public:
     /// @param state is the state.
     /// @param workspace is the workspace. There is no specific workspace in the grounded case and it should not be initialized.
     /// @return a generator to yield the applicable actions for the given state.
-    mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace* workspace = nullptr) override;
+    mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

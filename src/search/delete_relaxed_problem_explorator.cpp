@@ -19,6 +19,7 @@
 
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
+#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
@@ -86,7 +87,10 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_grounder->get_axiom_grounder())),
     m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
-    auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state());
+    auto state_repository_workspace = StateRepositoryWorkspace();
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
+
+    auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace));
     auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
 
     // Keep track of changes
@@ -102,9 +106,11 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_tmp))
+        for (const auto& action :
+             m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_tmp, applicable_action_generator_workspace))
         {
-            const auto [succ_state, action_cost] = m_delete_free_state_repository.get_or_create_successor_state(&state_builder, action);
+            const auto [succ_state, action_cost] =
+                m_delete_free_state_repository.get_or_create_successor_state(&state_builder, action, state_repository_workspace);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())
             {
                 fluent_state_atoms.set(atom_index);
@@ -112,7 +118,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
         }
 
         // Create and all applicable axioms and apply them
-        m_delete_free_axiom_evalator->generate_and_apply_axioms(state_builder);
+        m_delete_free_axiom_evalator->generate_and_apply_axioms(state_builder, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
 
         auto num_atoms_after = fluent_state_atoms.count();
 

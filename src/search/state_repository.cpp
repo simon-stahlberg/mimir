@@ -24,16 +24,45 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
+#include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 
 namespace mimir
 {
+
+/**
+ * StateRepositoryWorkspace
+ */
+
+StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
+{
+    if (!m_state_builder.has_value())
+    {
+        m_state_builder = StateImpl();
+    }
+
+    return m_state_builder.value();
+}
+
+AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
+{
+    if (!m_axiom_evaluator_workspace.has_value())
+    {
+        m_axiom_evaluator_workspace = AxiomEvaluatorWorkspace();
+    }
+
+    return m_axiom_evaluator_workspace.value();
+}
+
+/**
+ * StateRepository
+ */
+
 StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_axioms().empty()
                                    || !m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
-    m_state_builder(),
     m_positive_applied_effects(),
     m_negative_applied_effects(),
     m_reached_fluent_atoms(),
@@ -41,7 +70,7 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
 {
 }
 
-State StateRepository::get_or_create_initial_state()
+State StateRepository::get_or_create_initial_state(StateRepositoryWorkspace& workspace)
 {
     auto ground_atoms = GroundAtomList<Fluent> {};
 
@@ -50,15 +79,17 @@ State StateRepository::get_or_create_initial_state()
         ground_atoms.push_back(literal->get_atom());
     }
 
-    return get_or_create_state(ground_atoms);
+    return get_or_create_state(ground_atoms, workspace);
 }
 
-State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
+State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace)
 {
+    auto& state_builder = workspace.get_or_create_state_builder();
+
     /* 1. Set state index */
 
     {
-        auto& state_index = m_state_builder.get_index();
+        auto& state_index = state_builder.get_index();
         const auto next_state_index = Index(m_states.size());
         state_index = next_state_index;
     }
@@ -66,7 +97,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     /* 2. Construct non-extended state */
 
     {
-        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
+        auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
         fluent_state_atoms.unset_all();
         for (const auto& atom : atoms)
         {
@@ -75,7 +106,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
         m_reached_fluent_atoms |= fluent_state_atoms;
 
         // Test whether there exists an extended state for the given non extended state
-        auto iter = m_states.find(m_state_builder);
+        auto iter = m_states.find(state_builder);
         if (iter != m_states.end())
         {
             return *iter;
@@ -88,32 +119,34 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
         // Return early if no axioms must be evaluated
         if (!m_problem_or_domain_has_axioms)
         {
-            const auto [iter2, inserted] = m_states.insert(m_state_builder);
+            const auto [iter2, inserted] = m_states.insert(state_builder);
             return *iter2;
         }
 
         // Evaluate axioms
-        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
+        auto& derived_state_atoms = state_builder.get_atoms<Derived>();
         derived_state_atoms.unset_all();
-        m_axiom_evaluator->generate_and_apply_axioms(m_state_builder);
+        m_axiom_evaluator->generate_and_apply_axioms(state_builder, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
         m_reached_derived_atoms |= derived_state_atoms;
     }
 
     // Cache and return the extended state.
-    return *m_states.insert(m_state_builder).first;
+    return *m_states.insert(state_builder).first;
 }
 
-std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action)
+std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace)
 {
+    auto& state_builder = workspace.get_or_create_state_builder();
+
     /* Accumulate state-dependent action cost. */
     auto action_cost = ContinuousCost(0);
 
     /* 1. Set the state index. */
 
     {
-        auto& state_index = m_state_builder.get_index();
+        auto& state_index = state_builder.get_index();
         const auto next_state_index = Index(m_states.size());
         state_index = next_state_index;
     }
@@ -148,7 +181,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         }
 
         // Modify fluent state atoms
-        auto& fluent_state_atoms = m_state_builder.get_atoms<Fluent>();
+        auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
         fluent_state_atoms = state->get_atoms<Fluent>();
         fluent_state_atoms -= m_negative_applied_effects;
         fluent_state_atoms |= m_positive_applied_effects;
@@ -157,7 +190,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         m_reached_fluent_atoms |= fluent_state_atoms;
 
         // Check if non-extended state exists in cache
-        const auto iter = m_states.find(m_state_builder);
+        const auto iter = m_states.find(state_builder);
         if (iter != m_states.end())
         {
             return std::make_pair(*iter, action_cost);
@@ -170,21 +203,21 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         // Return early if no axioms must be evaluated
         if (!m_problem_or_domain_has_axioms)
         {
-            const auto [iter2, inserted] = m_states.insert(m_state_builder);
+            const auto [iter2, inserted] = m_states.insert(state_builder);
             return std::make_pair(*iter2, action_cost);
         }
 
         // Evaluate axioms
-        auto& derived_state_atoms = m_state_builder.get_atoms<Derived>();
+        auto& derived_state_atoms = state_builder.get_atoms<Derived>();
         derived_state_atoms.unset_all();
-        m_axiom_evaluator->generate_and_apply_axioms(m_state_builder);
+        m_axiom_evaluator->generate_and_apply_axioms(state_builder, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
         m_reached_derived_atoms |= derived_state_atoms;
     }
 
     // Cache and return the extended state.
-    return std::make_pair(*m_states.insert(m_state_builder).first, action_cost);
+    return std::make_pair(*m_states.insert(state_builder).first, action_cost);
 }
 
 Problem StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }

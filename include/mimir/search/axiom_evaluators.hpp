@@ -22,5 +22,6 @@
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/axiom_evaluators/workspaces.hpp"
 
 #endif

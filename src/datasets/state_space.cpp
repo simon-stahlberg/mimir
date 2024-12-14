@@ -20,6 +20,7 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
@@ -64,20 +65,24 @@ std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, co
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
-    return StateSpace::create(applicable_action_generator, state_repository, options);
+    auto state_repository_workspace = StateRepositoryWorkspace();
+    return StateSpace::create(applicable_action_generator, applicable_action_generator_workspace, state_repository, state_repository_workspace, options);
 }
 
 std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+                                             ApplicableActionGeneratorWorkspace& applicable_action_generator_workspace,
                                              std::shared_ptr<StateRepository> state_repository,
+                                             StateRepositoryWorkspace& state_repository_workspace,
                                              const StateSpaceOptions& options)
 {
     const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
-    auto initial_state = state_repository->get_or_create_initial_state();
+    auto initial_state = state_repository->get_or_create_initial_state(state_repository_workspace);
 
     if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
@@ -106,9 +111,11 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
             goal_vertex_indices.insert(vertex_index);
         }
 
-        for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
+        for (const auto& action :
+             applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex), applicable_action_generator_workspace))
         {
-            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action);
+            const auto [successor_state, action_cost] =
+                state_repository->get_or_create_successor_state(mimir::get_state(vertex), action, state_repository_workspace);
             const auto it = state_to_vertex_index.find(successor_state);
             const bool exists = (it != state_to_vertex_index.end());
             if (exists)
@@ -218,8 +225,17 @@ StateSpace::create(const std::vector<std::tuple<std::shared_ptr<IApplicableActio
 
     for (const auto& [applicable_action_generator, state_repository] : memories)
     {
-        futures.push_back(pool.submit_task([applicable_action_generator, state_repository, state_space_options = options.state_space_options]
-                                           { return StateSpace::create(applicable_action_generator, state_repository, state_space_options); }));
+        futures.push_back(pool.submit_task(
+            [applicable_action_generator, state_repository, state_space_options = options.state_space_options]
+            {
+                auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
+                auto state_repository_workspace = StateRepositoryWorkspace();
+                return StateSpace::create(applicable_action_generator,
+                                          applicable_action_generator_workspace,
+                                          state_repository,
+                                          state_repository_workspace,
+                                          state_space_options);
+            }));
     }
 
     for (auto& future : futures)

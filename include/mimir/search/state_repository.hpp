@@ -20,6 +20,7 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
 
@@ -28,7 +29,15 @@ namespace mimir
 
 class StateRepositoryWorkspace
 {
+private:
+    friend class StateRepository;
+    friend class DeleteRelaxedProblemExplorator;
+
+    StateImpl& get_or_create_state_builder();
+    AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
+
     std::optional<StateImpl> m_state_builder;
+    std::optional<AxiomEvaluatorWorkspace> m_axiom_evaluator_workspace;
 };
 
 class StateRepository
@@ -37,8 +46,7 @@ private:
     std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< Provices access the axiom evaluator.
     bool m_problem_or_domain_has_axioms;                 ///< true iff the underlying problem or domain contains axioms.
 
-    StateImplSet m_states;      ///< Stores all created states.
-    StateImpl m_state_builder;  ///< temporary for state creation.
+    StateImplSet m_states;  ///< Stores all created states.
 
     FlatBitset m_positive_applied_effects;  ///< temporary to collect applied positive effects.
     FlatBitset m_negative_applied_effects;  ///< temporary to collect applied negative effects.
@@ -56,18 +64,18 @@ public:
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
-    State get_or_create_initial_state();
+    State get_or_create_initial_state(StateRepositoryWorkspace& workspace);
 
     /// @brief Get or create the extended state for a given set of grounded `atoms`.
     /// @param atoms the grounded atoms.
     /// @return the extended state.
-    State get_or_create_state(const GroundAtomList<Fluent>& atoms);
+    State get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace);
 
     /// @brief Get or creates the extended successor state when applying the given grounded `action` in the given `state`.
     /// @param state is the state.
     /// @param action is the grounded action.
     /// @return the extended successor state and the action cost.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace);
 
     /**
      * Getters

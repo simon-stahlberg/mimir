@@ -44,7 +44,7 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 {
 }
 
-void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace* workspace)
+void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace&)
 {
     auto applicable_axioms = GroundAxiomList {};
 

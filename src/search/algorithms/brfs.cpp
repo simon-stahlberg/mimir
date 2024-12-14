@@ -23,6 +23,7 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
@@ -73,7 +74,10 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 {
     assert(applicable_action_generator && state_repository);
 
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
+    auto state_repository_workspace = StateRepositoryWorkspace();
+
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state(state_repository_workspace);
     const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     const auto goal_strategy =
         (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
@@ -149,10 +153,10 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
         event_handler->on_expand_state(state, problem, pddl_repositories);
 
-        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state, applicable_action_generator_workspace))
         {
             /* Open state. */
-            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action, state_repository_workspace);
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
             event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);

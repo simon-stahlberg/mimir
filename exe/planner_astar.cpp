@@ -68,6 +68,7 @@ int main(int argc, char** argv)
     auto applicable_action_generator = std::shared_ptr<IApplicableActionGenerator>(nullptr);
     auto axiom_evaluator = std::shared_ptr<IAxiomEvaluator>(nullptr);
     auto state_repository = std::shared_ptr<StateRepository>(nullptr);
+
     if (grounded)
     {
         auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);

@@ -49,7 +49,7 @@ public:
     LiftedAxiomEvaluator(LiftedAxiomEvaluator&& other) = delete;
     LiftedAxiomEvaluator& operator=(LiftedAxiomEvaluator&& other) = delete;
 
-    void generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace* workspace = nullptr) override;
+    void generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace& workspace) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

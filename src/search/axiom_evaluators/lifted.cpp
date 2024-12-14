@@ -45,30 +45,25 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     }
 }
 
-void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace* workspace)
+void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace& workspace)
 {
-    /* Initialize lifted workspace if necessary. */
-    auto managed_workspace = std::unique_ptr<AxiomEvaluatorWorkspace>(nullptr);
-    if (!workspace)
-    {
-        managed_workspace = std::make_unique<AxiomEvaluatorWorkspace>();
-        workspace = managed_workspace.get();
-    }
-    auto& lifted_workspace = managed_workspace->get_or_create_lifted_workspace(m_grounder->get_problem());
+    auto& lifted_workspace = workspace.get_or_create_lifted_workspace(m_grounder->get_problem());
 
     /* 1. Initialize assignment set */
 
     m_event_handler->on_start_generating_applicable_axioms();
 
-    auto pddl_repositories = m_grounder->get_pddl_repositories();
+    const auto& pddl_repositories = m_grounder->get_pddl_repositories();
 
-    auto& fluent_assignment_set = lifted_workspace.get_or_create_fluent_assignment_set(
-        m_grounder->get_problem(),
-        lifted_workspace.get_or_create_fluent_atoms(&unextended_state, *m_grounder->get_pddl_repositories()));
+    auto& fluent_atoms = lifted_workspace.get_or_create_fluent_atoms(&unextended_state, *m_grounder->get_pddl_repositories());
+    auto& fluent_assignment_set = lifted_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
+    fluent_assignment_set.clear();
+    fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_assignment_set = lifted_workspace.get_or_create_derived_assignment_set(
-        m_grounder->get_problem(),
-        lifted_workspace.get_or_create_derived_atoms(&unextended_state, *m_grounder->get_pddl_repositories()));
+    auto& derived_fluents = lifted_workspace.get_or_create_derived_atoms(&unextended_state, *m_grounder->get_pddl_repositories());
+    auto& derived_assignment_set = lifted_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
+    derived_assignment_set.clear();
+    derived_assignment_set.insert_ground_atoms(derived_fluents);
 
     /* 2. Fixed point computation */
 
