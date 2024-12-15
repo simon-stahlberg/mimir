@@ -29,11 +29,11 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("combined-mimir-brfs")
+exp = Experiment("mimir-downward-astar-blind-eval")
 
-exp.add_fetcher("brfs-mimir-old-eval")
-exp.add_fetcher("brfs-mimir-eval")
+exp.add_fetcher("mimir-astar-blind-eval")
+exp.add_fetcher("downward-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["brfs-grounded-old", "brfs-lifted-old", "mimir-brfs-grounded", "mimir-brfs-lifted"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-astar-blind-grounded", "mimir-astar-blind-lifted"]))
 
 exp.run_steps()
