@@ -1,6 +1,10 @@
 # Building Mimir (C++)
 
-We assume that the user has a C++23 compiler and CMake set up on their machine. Instructions on how to install a C++23 compiler are below.
+Before building the project, ensure you have the following installed:
+
+1. **CMake** (version 3.21 or higher)
+2. **Python 3** and **Python 3 Development Headers**
+3. **C++20 Compiler**
 
 ## Installing the Dependencies
 
@@ -43,13 +47,7 @@ cmake --install build --prefix=<path/to/installation-directory>
 
 The compiled executables should now be in either the build directory or the installation directory.
 
-# Installing C++23 compliant compiler
-
-Unfortunately, Clang does not support the C++23 features that we are using, meaning that Mimir currently does not run on MacOS.
-
-## Installing GCC 14.2
-
-### From source:
+# Installing GCC From Source (Optional)
 
 1. Installing GMP
 
@@ -114,14 +112,4 @@ export PATH=${GCC_INSTALL_DIR}/bin:$PATH
 export LD_LIBRARY_PATH=${GCC_INSTALL_DIR}/lib64:$LD_LIBRARY_PATH
 export LIBRARY_PATH=${GCC_INSTALL_DIR}/lib64:$LIBRARY_PATH
 export CPATH=${GCC_INSTALL_DIR}/include:$CPATH
-```
-
-### Using package manager conda
-
-```console
-conda create --name gcc_env
-conda activate gcc_env
-conda install gxx=14.2.0 gcc=14.2.0 bzip2 xz zlib zstd
-g++ --version
-gcc --version
 ```
