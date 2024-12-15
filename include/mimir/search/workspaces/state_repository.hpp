@@ -38,8 +38,8 @@ private:
     StateImpl& get_or_create_state_builder();
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
-    std::optional<StateImpl> m_state_builder;
-    std::optional<AxiomEvaluatorWorkspace> m_axiom_evaluator_workspace;
+    std::optional<StateImpl> m_state_builder = std::nullopt;
+    std::optional<AxiomEvaluatorWorkspace> m_axiom_evaluator_workspace = std::nullopt;
 };
 
 }
