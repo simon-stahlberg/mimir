@@ -21,7 +21,6 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/heuristics/interface.hpp"
@@ -30,6 +29,7 @@
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
 namespace mimir
 {

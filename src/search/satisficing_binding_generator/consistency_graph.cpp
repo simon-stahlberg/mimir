@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/consistency_graph.hpp"
+#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"

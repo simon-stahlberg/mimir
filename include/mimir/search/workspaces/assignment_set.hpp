@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_WORKSPACES_HPP_
-#define MIMIR_SEARCH_WORKSPACES_HPP_
+#ifndef MIMIR_SEARCH_WORKSPACES_ASSIGNMENT_SET_HPP_
+#define MIMIR_SEARCH_WORKSPACES_ASSIGNMENT_SET_HPP_
 
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/search/declarations.hpp"
@@ -25,6 +25,9 @@ namespace mimir
 {
 
 /// @brief `AssignmentSetWorkspace` encapsulates internally used memory.
+///
+/// Users need to ensure that it is repeatedly used in the same context.
+/// The context is determined by the member function or free function that accepts the workspace.
 class AssignmentSetWorkspace
 {
 private:
@@ -39,8 +42,8 @@ private:
 
     GroundAtomList<Fluent> fluent_atoms = GroundAtomList<Fluent>();
     GroundAtomList<Derived> derived_atoms = GroundAtomList<Derived>();
-    std::optional<AssignmentSet<Fluent>> fluent_assignment_set;
-    std::optional<AssignmentSet<Derived>> derived_assignment_set;
+    std::optional<AssignmentSet<Fluent>> fluent_assignment_set = std::nullopt;
+    std::optional<AssignmentSet<Derived>> derived_assignment_set = std::nullopt;
 };
 
 }

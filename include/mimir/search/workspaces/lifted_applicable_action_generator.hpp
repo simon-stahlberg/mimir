@@ -15,19 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_WORKSPACES_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_WORKSPACES_HPP_
+#ifndef MIMIR_SEARCH_WORKSPACES_LIFTED_APPLICABLE_ACTION_GENERATOR_HPP_
+#define MIMIR_SEARCH_WORKSPACES_LIFTED_APPLICABLE_ACTION_GENERATOR_HPP_
 
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
-#include "mimir/search/workspaces.hpp"
+#include "mimir/search/workspaces/assignment_set.hpp"
+#include "mimir/search/workspaces/satisficing_binding_generator.hpp"
 
 namespace mimir
 {
 
 /// @brief `LiftedApplicableActionGeneratorWorkspace` encapsulates internally used memory.
+///
+/// Users need to ensure that it is repeatedly used in the same context.
+/// The context is determined by the member function or free function that accepts the workspace.
 class LiftedApplicableActionGeneratorWorkspace
 {
 private:
@@ -36,20 +39,9 @@ private:
     AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
     SatisficingBindingGeneratorWorkspace& get_or_create_satisficing_binding_generator(Action action);
 
-    std::optional<AssignmentSetWorkspace> assignment_set_workspace;
-    std::unordered_map<Action, SatisficingBindingGeneratorWorkspace> satisficing_binding_generator_workspaces;
-};
-
-/// @brief `LiftedApplicableActionGeneratorWorkspace` encapsulates internally used memory.
-class ApplicableActionGeneratorWorkspace
-{
-private:
-    friend class GroundedApplicableActionGenerator;
-    friend class LiftedApplicableActionGenerator;
-
-    std::optional<LiftedApplicableActionGeneratorWorkspace> lifted_workspace = std::nullopt;
-
-    LiftedApplicableActionGeneratorWorkspace& get_or_create_lifted_workspace(Problem problem);
+    std::optional<AssignmentSetWorkspace> assignment_set_workspace = std::nullopt;
+    std::unordered_map<Action, SatisficingBindingGeneratorWorkspace> satisficing_binding_generator_workspaces =
+        std::unordered_map<Action, SatisficingBindingGeneratorWorkspace>();
 };
 
 }

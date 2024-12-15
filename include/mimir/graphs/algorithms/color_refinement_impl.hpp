@@ -122,7 +122,6 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
             {
                 while (it != M_replaced.end() && old_color == std::get<0>(*it))
                 {
-                    auto current_color_class_size = size_t(1);
                     // Determine new color for (old_color, signature)
                     const auto& signature = std::get<1>(*it);
                     const auto new_color = ++ref_max_color;
@@ -139,7 +138,6 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
                         // Subroutine to assign new color to vertices with same signature.
                         while (it != M_replaced.end() && old_color == std::get<0>(*it) && signature == std::get<1>(*it))
                         {
-                            ++current_color_class_size;
                             auto hash = std::get<2>(*it);
                             ref_hash_to_color[hash] = new_color;
                             out_color_to_hashes[new_color].push_back(hash);

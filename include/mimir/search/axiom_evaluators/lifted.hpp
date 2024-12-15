@@ -22,7 +22,7 @@
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
+#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
 
 namespace mimir
 {

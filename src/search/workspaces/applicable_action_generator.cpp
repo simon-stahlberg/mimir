@@ -15,36 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/applicable_action_generators/workspaces.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
-using namespace std::string_literals;
+#include "mimir/search/workspaces/lifted_applicable_action_generator.hpp"
 
 namespace mimir
 {
-
-/**
- * LiftedApplicableActionGeneratorWorkspace
- */
-
-AssignmentSetWorkspace& LiftedApplicableActionGeneratorWorkspace::get_or_create_assignment_set_workspace()
-{
-    if (!assignment_set_workspace.has_value())
-    {
-        assignment_set_workspace = AssignmentSetWorkspace();
-    }
-
-    return assignment_set_workspace.value();
-}
-
-SatisficingBindingGeneratorWorkspace& LiftedApplicableActionGeneratorWorkspace::get_or_create_satisficing_binding_generator(Action action)
-{
-    return satisficing_binding_generator_workspaces[action];
-}
-
-/**
- * ApplicableActionGeneratorWorkspace
- */
-
 LiftedApplicableActionGeneratorWorkspace& ApplicableActionGeneratorWorkspace::get_or_create_lifted_workspace(Problem problem)
 {
     if (!lifted_workspace.has_value())
@@ -54,5 +30,4 @@ LiftedApplicableActionGeneratorWorkspace& ApplicableActionGeneratorWorkspace::ge
 
     return lifted_workspace.value();
 }
-
 }

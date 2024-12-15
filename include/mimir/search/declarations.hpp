@@ -95,6 +95,8 @@ class ILiftedAxiomEvaluatorEventHandler;
 class SatisficingBindingGenerator;
 class ISatisficingBindingGeneratorEventHandler;
 
+class SatisficingBindingGeneratorWorkspace;
+
 /* MatchTree */
 template<typename T>
 class MatchTree;

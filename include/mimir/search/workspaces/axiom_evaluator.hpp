@@ -15,30 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_WORKSPACES_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_WORKSPACES_HPP_
+#ifndef MIMIR_SEARCH_WORKSPACES_AXIOM_EVALUATOR_HPP_
+#define MIMIR_SEARCH_WORKSPACES_AXIOM_EVALUATOR_HPP_
 
-#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
-#include "mimir/search/workspaces.hpp"
+#include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
 
 namespace mimir
 {
-
-/// @brief `LiftedAxiomEvaluatorWorkspace` encapsulates internally used memory.
-class LiftedAxiomEvaluatorWorkspace
-{
-private:
-    friend class LiftedAxiomEvaluator;
-
-    AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
-    SatisficingBindingGeneratorWorkspace& get_or_create_satisficing_binding_generator(Axiom axiom);
-
-    std::optional<AssignmentSetWorkspace> assignment_set_workspace;
-    std::unordered_map<Axiom, SatisficingBindingGeneratorWorkspace> satisficing_binding_generator_workspaces;
-};
 
 /// @brief `AxiomEvaluatorWorkspace` encapsulates internally used memory.
 class AxiomEvaluatorWorkspace

@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_CONSISTENCY_GRAPH_HPP_
-#define MIMIR_SEARCH_CONSISTENCY_GRAPH_HPP_
+#ifndef MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_CONSISTENCY_GRAPH_HPP_
+#define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_CONSISTENCY_GRAPH_HPP_
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"

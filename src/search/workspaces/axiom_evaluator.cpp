@@ -15,14 +15,20 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
-
-#include "mimir/search/axiom_evaluators/grounded.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
-#include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/workspaces/axiom_evaluator.hpp"
+
 #include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
 
-#endif
+namespace mimir
+{
+
+LiftedAxiomEvaluatorWorkspace& AxiomEvaluatorWorkspace::get_or_create_lifted_workspace(Problem problem)
+{
+    if (!lifted_workspace.has_value())
+    {
+        lifted_workspace = LiftedAxiomEvaluatorWorkspace();
+    }
+
+    return lifted_workspace.value();
+}
+}

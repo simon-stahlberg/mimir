@@ -20,10 +20,10 @@
 #include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
-#include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/workspaces.hpp"
+#include "mimir/search/workspaces/axiom_evaluator.hpp"
+#include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
 
 namespace mimir
 {

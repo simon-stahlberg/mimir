@@ -15,14 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
+#include "mimir/search/workspaces/state_repository.hpp"
 
-#include "mimir/search/axiom_evaluators/grounded.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
-#include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
-#include "mimir/search/workspaces/axiom_evaluator.hpp"
-#include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
+namespace mimir
+{
+/**
+ * StateRepositoryWorkspace
+ */
 
-#endif
+StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
+{
+    if (!m_state_builder.has_value())
+    {
+        m_state_builder = StateImpl();
+    }
+
+    return m_state_builder.value();
+}
+
+AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
+{
+    if (!m_axiom_evaluator_workspace.has_value())
+    {
+        m_axiom_evaluator_workspace = AxiomEvaluatorWorkspace();
+    }
+
+    return m_axiom_evaluator_workspace.value();
+}
+
+}

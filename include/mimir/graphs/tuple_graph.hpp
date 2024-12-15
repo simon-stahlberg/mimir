@@ -99,6 +99,7 @@ public:
 
     const std::shared_ptr<StateSpace>& get_state_space() const;
     const std::shared_ptr<TupleIndexMapper>& get_tuple_index_mapper() const;
+    bool get_pruned_dominated_tuples() const;
     State get_root_state() const;
     const StaticDigraph& get_digraph() const;
     const IndexGroupedVector<const TupleGraphVertex>& get_vertices_grouped_by_distance() const;

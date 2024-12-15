@@ -15,17 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/workspaces.hpp"
+#include "mimir/search/workspaces/assignment_set.hpp"
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
 {
-
-/**
- * AssignmentSetWorkspace
- */
 
 GroundAtomList<Fluent>& AssignmentSetWorkspace::get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories)
 {

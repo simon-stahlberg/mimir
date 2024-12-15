@@ -21,9 +21,9 @@
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -383,10 +383,8 @@ const std::map<ContinuousCost, IndexList>& GlobalFaithfulAbstraction::get_states
 std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abstraction)
 {
     // 2. Header
-    out << "digraph {"
-        << "\n"
-        << "rankdir=\"LR\""
-        << "\n";
+    out << "digraph {" << "\n"
+        << "rankdir=\"LR\"" << "\n";
 
     // 3. Draw states
     for (size_t state_index = 0; state_index < abstraction.get_num_vertices(); ++state_index)
@@ -402,8 +400,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
         // label
         const auto& gfa_state = abstraction.get_vertices().at(state_index);
         out << "label=\"";
-        out << "state_index=" << gfa_state.get_vertex_index() << " "
-            << "global_state_index = " << gfa_state.get_global_index() << " "
+        out << "state_index=" << gfa_state.get_vertex_index() << " " << "global_state_index = " << gfa_state.get_global_index() << " "
             << "abstraction_index=" << gfa_state.get_faithful_abstraction_index() << " "
             << "abstract_state_index=" << gfa_state.get_faithful_abstraction_vertex_index() << "\n";
         const auto& fa_abstraction = abstraction.get_abstractions().at(gfa_state.get_faithful_abstraction_index());
@@ -440,8 +437,7 @@ std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abs
     for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->"
-            << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";

@@ -15,15 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/axiom_evaluators/workspaces.hpp"
+#include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
 
 namespace mimir
 {
-
-/**
- * LiftedAxiomEvaluatorWorkspace
- */
-
 AssignmentSetWorkspace& LiftedAxiomEvaluatorWorkspace::get_or_create_assignment_set_workspace()
 {
     if (!assignment_set_workspace.has_value())
@@ -38,19 +33,4 @@ SatisficingBindingGeneratorWorkspace& LiftedAxiomEvaluatorWorkspace::get_or_crea
 {
     return satisficing_binding_generator_workspaces[axiom];
 }
-
-/**
- * AxiomEvaluatorWorkspace
- */
-
-LiftedAxiomEvaluatorWorkspace& AxiomEvaluatorWorkspace::get_or_create_lifted_workspace(Problem problem)
-{
-    if (!lifted_workspace.has_value())
-    {
-        lifted_workspace = LiftedAxiomEvaluatorWorkspace();
-    }
-
-    return lifted_workspace.value();
-}
-
 }

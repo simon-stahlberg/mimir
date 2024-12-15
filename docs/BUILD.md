@@ -6,6 +6,8 @@ Before building the project, ensure you have the following installed:
 2. **Python 3** and **Python 3 Development Headers**
 3. **C++20 Compiler**
 
+If no C++20 compliant compiler is easily available, we provide install instructions for GCC 14.2.0 (Linux) from source at the bottom of the page.
+
 ## Installing the Dependencies
 
 Mimir depends on the following set of libraries:
@@ -47,7 +49,10 @@ cmake --install build --prefix=<path/to/installation-directory>
 
 The compiled executables should now be in either the build directory or the installation directory.
 
-# Installing GCC From Source (Optional)
+
+# Installing a C++20 Compiler From Source (Optional)
+
+Run the following sequence of commands to download, configure, build, and install GCC from source.
 
 1. Installing GMP
 

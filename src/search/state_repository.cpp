@@ -24,39 +24,11 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/action.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
+#include "mimir/search/workspaces/axiom_evaluator.hpp"
 
 namespace mimir
 {
-
-/**
- * StateRepositoryWorkspace
- */
-
-StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
-{
-    if (!m_state_builder.has_value())
-    {
-        m_state_builder = StateImpl();
-    }
-
-    return m_state_builder.value();
-}
-
-AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
-{
-    if (!m_axiom_evaluator_workspace.has_value())
-    {
-        m_axiom_evaluator_workspace = AxiomEvaluatorWorkspace();
-    }
-
-    return m_axiom_evaluator_workspace.value();
-}
-
-/**
- * StateRepository
- */
 
 StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),

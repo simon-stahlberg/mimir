@@ -152,6 +152,8 @@ const std::shared_ptr<StateSpace>& TupleGraph::get_state_space() const { return 
 
 const std::shared_ptr<TupleIndexMapper>& TupleGraph::get_tuple_index_mapper() const { return m_tuple_index_mapper; }
 
+bool TupleGraph::get_pruned_dominated_tuples() const { return m_prune_dominated_tuples; }
+
 State TupleGraph::get_root_state() const { return m_states_grouped_by_distance.front().front(); }
 
 const StaticDigraph& TupleGraph::get_digraph() const { return m_digraph; }

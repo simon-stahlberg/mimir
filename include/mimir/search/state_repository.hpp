@@ -20,25 +20,13 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/axiom_evaluators/workspaces.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
+#include "mimir/search/workspaces/axiom_evaluator.hpp"
+#include "mimir/search/workspaces/state_repository.hpp"
 
 namespace mimir
 {
-
-class StateRepositoryWorkspace
-{
-private:
-    friend class StateRepository;
-    friend class DeleteRelaxedProblemExplorator;
-
-    StateImpl& get_or_create_state_builder();
-    AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
-
-    std::optional<StateImpl> m_state_builder;
-    std::optional<AxiomEvaluatorWorkspace> m_axiom_evaluator_workspace;
-};
 
 class StateRepository
 {

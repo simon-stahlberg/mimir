@@ -19,12 +19,12 @@
 
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
 namespace mimir
 {

@@ -15,14 +15,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_HPP_
+#include "mimir/search/workspaces/lifted_applicable_action_generator.hpp"
 
-#include "mimir/search/axiom_evaluators/grounded.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
-#include "mimir/search/axiom_evaluators/lifted.hpp"
-#include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
-#include "mimir/search/workspaces/axiom_evaluator.hpp"
-#include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
+namespace mimir
+{
+AssignmentSetWorkspace& LiftedApplicableActionGeneratorWorkspace::get_or_create_assignment_set_workspace()
+{
+    if (!assignment_set_workspace.has_value())
+    {
+        assignment_set_workspace = AssignmentSetWorkspace();
+    }
 
-#endif
+    return assignment_set_workspace.value();
+}
+
+SatisficingBindingGeneratorWorkspace& LiftedApplicableActionGeneratorWorkspace::get_or_create_satisficing_binding_generator(Action action)
+{
+    return satisficing_binding_generator_workspaces[action];
+}
+}

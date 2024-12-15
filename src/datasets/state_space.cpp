@@ -20,9 +20,9 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
-#include "mimir/search/applicable_action_generators/workspaces.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -421,10 +421,8 @@ Index StateSpace::sample_vertex_index_with_goal_distance(ContinuousCost goal_dis
 std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
 {
     // 2. Header
-    out << "digraph {"
-        << "\n"
-        << "rankdir=\"LR\""
-        << "\n";
+    out << "digraph {" << "\n"
+        << "rankdir=\"LR\"" << "\n";
 
     // 3. Draw states
     for (Index vertex = 0; vertex < state_space.get_num_vertices(); ++vertex)
@@ -469,8 +467,7 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
     for (const auto& transition : state_space.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->"
-            << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"" << std::make_tuple(get_creating_action(transition), std::cref(*state_space.get_pddl_repositories()), PlanActionFormatterTag {})

@@ -22,7 +22,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generator.hpp"
+#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
 
 namespace mimir
 {

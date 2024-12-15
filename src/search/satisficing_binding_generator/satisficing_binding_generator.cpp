@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/satisficing_binding_generator.hpp"
+#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/assignment_set.hpp"
@@ -31,42 +31,6 @@
 
 namespace mimir
 {
-
-/**
- * SatisficingBindingGeneratorWorkspace
- */
-
-std::vector<boost::dynamic_bitset<>>&
-SatisficingBindingGeneratorWorkspace::get_or_create_full_consistency_graph(const consistency_graph::StaticConsistencyGraph& static_consistency_graph)
-{
-    if (!full_consistency_graph.has_value())
-    {
-        full_consistency_graph = std::vector<boost::dynamic_bitset<>>(static_consistency_graph.get_vertices().size(),
-                                                                      boost::dynamic_bitset<>(static_consistency_graph.get_vertices().size()));
-    }
-
-    return full_consistency_graph.value();
-}
-
-KPKCWorkspace& SatisficingBindingGeneratorWorkspace::get_or_create_kpkc_workspace(const consistency_graph::StaticConsistencyGraph& static_consistency_graph)
-{
-    if (!kpkc_workspace.has_value())
-    {
-        kpkc_workspace = KPKCWorkspace(static_consistency_graph.get_vertices_by_parameter_index());
-    }
-
-    return kpkc_workspace.value();
-}
-
-AssignmentSetWorkspace& SatisficingBindingGeneratorWorkspace::get_or_create_assignment_set_workspace()
-{
-    if (!assignment_set_workspace.has_value())
-    {
-        assignment_set_workspace = AssignmentSetWorkspace();
-    }
-
-    return assignment_set_workspace.value();
-}
 
 /**
  * Utils
