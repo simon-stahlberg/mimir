@@ -35,17 +35,19 @@ TEST(MimirTests, SearchStateRepositoryTest)
     PDDLParser parser(domain_file, problem_file);
     const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator = LiftedApplicableActionGenerator(grounder->get_action_grounder());
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     auto state_repository = StateRepository(axiom_evaluator);
     auto state_repository_workspace = StateRepositoryWorkspace();
     auto initial_state = state_repository.get_or_create_initial_state(state_repository_workspace);
 
+    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state, applicable_action_generator_workspace))
     {
         const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action, state_repository_workspace);
 
-        for (const auto& action2 : applicable_action_generator.create_applicable_action_generator(successor_state, applicable_action_generator_workspace))
+        // Attention!: we need to initialize another ApplicableActionGeneratorWorkspace because the outter one hasnt finished processing yet.
+        auto applicable_action_generator_workspace2 = ApplicableActionGeneratorWorkspace();
+        for (const auto& action2 : applicable_action_generator.create_applicable_action_generator(successor_state, applicable_action_generator_workspace2))
         {
             [[maybe_unused]] const auto [successor_state2, action_cost2] =
                 state_repository.get_or_create_successor_state(successor_state, action2, state_repository_workspace);

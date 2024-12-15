@@ -94,6 +94,12 @@ extern std::vector<T> uniquify_elements(const std::vector<T>& vec)
     return std::vector<T>(set.begin(), set.end());
 }
 
+template<typename Container>
+inline bool is_within_bounds(const Container& container, size_t index)
+{
+    return index < container.size();
+}
+
 }
 
 #endif
