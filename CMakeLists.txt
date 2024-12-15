@@ -55,7 +55,7 @@ else()
     if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto=auto -fcoroutines")
     elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "AppleClang")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -fcoroutines-ts")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto")  #  -fcoroutines-ts seems outdated
     endif()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -Wall -DNDEBUG")

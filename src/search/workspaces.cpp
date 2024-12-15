@@ -55,7 +55,7 @@ AssignmentSet<Derived>& AssignmentSetWorkspace::get_or_create_derived_assignment
 {
     if (!derived_assignment_set.has_value())
     {
-        derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), problem->get_domain()->get_predicates<Derived>());
+        derived_assignment_set = AssignmentSet<Derived>(problem->get_objects().size(), problem->get_problem_and_domain_derived_predicates());
     }
 
     return derived_assignment_set.value();
