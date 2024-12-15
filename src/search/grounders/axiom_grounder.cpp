@@ -26,8 +26,7 @@ AxiomGrounder::AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder) 
     m_literal_grounder(std::move(literal_grounder)),
     m_axioms(),
     m_axioms_by_index(),
-    m_axiom_builder(),
-    m_axiom_groundings()
+    m_per_axiom_data()
 {
 }
 
@@ -36,9 +35,9 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 
-    auto& groundings = m_axiom_groundings[axiom];
-    auto it = groundings.find(binding);
-    if (it != groundings.end())
+    auto& [axiom_builder, grounding_table] = m_per_axiom_data[axiom];
+    auto it = grounding_table.find(binding);
+    if (it != grounding_table.end())
     {
         return it->second;
     }
@@ -47,9 +46,9 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
 
     /* Header */
 
-    m_axiom_builder.get_index() = m_axioms.size();
-    m_axiom_builder.get_axiom() = axiom->get_index();
-    auto& objects = m_axiom_builder.get_object_indices();
+    axiom_builder.get_index() = m_axioms.size();
+    axiom_builder.get_axiom() = axiom->get_index();
+    auto& objects = axiom_builder.get_object_indices();
     objects.clear();
     for (const auto& obj : binding)
     {
@@ -57,7 +56,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     }
 
     /* Precondition */
-    auto& strips_precondition = m_axiom_builder.get_strips_precondition();
+    auto& strips_precondition = axiom_builder.get_strips_precondition();
     auto& positive_fluent_precondition = strips_precondition.get_positive_precondition<Fluent>();
     auto& negative_fluent_precondition = strips_precondition.get_negative_precondition<Fluent>();
     auto& positive_static_precondition = strips_precondition.get_positive_precondition<Static>();
@@ -95,10 +94,10 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
             m_literal_grounder->ground_literal(axiom->get_literal(), binding) :
             m_literal_grounder->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
-    m_axiom_builder.get_derived_effect().is_negated = false;
-    m_axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
+    axiom_builder.get_derived_effect().is_negated = false;
+    axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
 
-    const auto [iter, inserted] = m_axioms.insert(m_axiom_builder);
+    const auto [iter, inserted] = m_axioms.insert(axiom_builder);
     const auto grounded_axiom = *iter;
 
     if (inserted)
@@ -108,7 +107,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
 
     /* 3. Insert to groundings table */
 
-    groundings.emplace(std::move(binding), GroundAxiom(grounded_axiom));
+    grounding_table.emplace(std::move(binding), GroundAxiom(grounded_axiom));
 
     /* 4. Return the resulting ground axiom */
 

@@ -32,14 +32,16 @@ private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<FunctionGrounder> m_function_grounder;
 
+    // TODO: Store and index ground actions per lifted action?
+    // Will make multi threading way easier...
     GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
-    GroundActionImpl m_action_builder;
-    std::unordered_map<Action, GroundingTable<GroundAction>> m_action_groundings;
 
-    // TODO: we can think about moving the consistency graph into the action schemas
-    // TODO: actually we could also only store the part of the consistency graph that we really need here.
-    std::unordered_map<Action, std::vector<consistency_graph::StaticConsistencyGraph>> m_action_conditional_effects;
+    using PerActionData = std::tuple<GroundActionImpl,                                         ///< Builder
+                                     GroundingTable<GroundAction>,                             ///< Cache
+                                     std::vector<consistency_graph::StaticConsistencyGraph>>;  ///< Per cond effect object indices by parameter index
+
+    std::unordered_map<Action, PerActionData> m_per_action_datas;
 
 public:
     /// @brief Simplest construction

@@ -31,10 +31,15 @@ class AxiomGrounder
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
 
+    // TODO: Store and index ground axioms per lifted axiom?
+    // Will make multi threading way easier...
     GroundAxiomImplSet m_axioms;
     GroundAxiomList m_axioms_by_index;
-    GroundAxiomImpl m_axiom_builder;
-    std::unordered_map<Axiom, GroundingTable<GroundAxiom>> m_axiom_groundings;
+
+    using PerAxiomData = std::tuple<GroundAxiomImpl,               ///< Builder
+                                    GroundingTable<GroundAxiom>>;  ///< Cache
+
+    std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
 
 public:
     explicit AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder);

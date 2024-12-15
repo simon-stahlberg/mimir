@@ -78,30 +78,40 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
     m_function_grounder(std::move(function_grounder)),
     m_actions(),
     m_actions_by_index(),
-    m_action_builder(),
-    m_action_groundings(),
-    m_action_conditional_effects()
+    m_per_action_datas()
 {
     /* 1. Initialize ground function costs. */
 
     const auto problem = m_literal_grounder->get_problem();
 
-    /* 2. Initialize the condition grounders for each action schema. */
+    /* 2. Initialize the per_action_data for each action schema. */
 
     for (const auto& action : problem->get_domain()->get_actions())
     {
-        auto conditional_effects = std::vector<consistency_graph::StaticConsistencyGraph>();
-        conditional_effects.reserve(action->get_conditional_effects().size());
+        auto cond_effect_static_consistency_graphs = std::vector<consistency_graph::StaticConsistencyGraph>();
+        cond_effect_static_consistency_graphs.reserve(action->get_conditional_effects().size());
+
+        auto action_builder = GroundActionImpl();
+        size_t num_cond_effects = 0;  ///< Preallocate enough conditional effects to avoid frequent allocations during grounding.
 
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            conditional_effects.push_back(consistency_graph::StaticConsistencyGraph(problem,
-                                                                                    action->get_arity(),
-                                                                                    action->get_arity() + conditional_effect->get_arity(),
-                                                                                    conditional_effect->get_conditions<Static>()));
+            auto static_consistency_graph = consistency_graph::StaticConsistencyGraph(problem,
+                                                                                      action->get_arity(),
+                                                                                      action->get_arity() + conditional_effect->get_arity(),
+                                                                                      conditional_effect->get_conditions<Static>());
+
+            num_cond_effects +=
+                (conditional_effect->get_arity() > 0) ? get_size_cartesian_product(static_consistency_graph.get_objects_by_parameter_index()) : 1;
+
+            cond_effect_static_consistency_graphs.push_back(std::move(static_consistency_graph));
         }
 
-        m_action_conditional_effects.emplace(action, std::move(conditional_effects));
+        action_builder.get_conditional_effects().resize(num_cond_effects);
+
+        m_per_action_datas.emplace(
+            action,
+            std::make_tuple(std::move(action_builder), GroundingTable<GroundAction>(), std::move(cond_effect_static_consistency_graphs)));
     }
 }
 
@@ -111,9 +121,10 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
     /* 1. Check if grounding is cached */
 
-    auto& groundings = m_action_groundings[action];
-    auto it = groundings.find(binding);
-    if (it != groundings.end())
+    auto& [action_builder, grounding_table, cond_effect_static_consistency_graphs] = m_per_action_datas[action];
+
+    auto it = grounding_table.find(binding);
+    if (it != grounding_table.end())
     {
         return it->second;
     }
@@ -135,9 +146,9 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
     /* Header */
 
-    m_action_builder.get_index() = m_actions.size();
-    m_action_builder.get_action_index() = action->get_index();
-    auto& objects = m_action_builder.get_objects();
+    action_builder.get_index() = m_actions.size();
+    action_builder.get_action_index() = action->get_index();
+    auto& objects = action_builder.get_objects();
     objects.clear();
     for (const auto& obj : binding)
     {
@@ -145,7 +156,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     }
 
     /* Strips precondition */
-    auto& strips_precondition = m_action_builder.get_strips_precondition();
+    auto& strips_precondition = action_builder.get_strips_precondition();
     auto& positive_fluent_precondition = strips_precondition.get_positive_precondition<Fluent>();
     auto& negative_fluent_precondition = strips_precondition.get_negative_precondition<Fluent>();
     auto& positive_static_precondition = strips_precondition.get_positive_precondition<Static>();
@@ -172,7 +183,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                                                binding);
 
     /* Strips effects */
-    auto& strips_effect = m_action_builder.get_strips_effect();
+    auto& strips_effect = action_builder.get_strips_effect();
     auto& positive_effect = strips_effect.get_positive_effects();
     auto& negative_effect = strips_effect.get_negative_effects();
     positive_effect.unset_all();
@@ -185,39 +196,39 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
     /* Conditional effects */
     // Fetch data
-    auto& conditional_effects = m_action_builder.get_conditional_effects();
-    conditional_effects.clear();
+    auto& cond_effects = action_builder.get_conditional_effects();
 
     // We have copy the binding to extend it with objects for quantified effect variables
     // and at the same time we need to use the original binding as cache key.
-    auto binding_ext = binding;
+    auto binding_cond_effect = binding;
 
-    const auto num_lifted_conditional_effects = action->get_conditional_effects().size();
-    if (num_lifted_conditional_effects > 0)
+    const auto num_lifted_cond_effects = action->get_conditional_effects().size();
+    if (num_lifted_cond_effects > 0)
     {
-        const auto& conditional_effect_consistency_graphs = m_action_conditional_effects.at(action);
-        for (size_t i = 0; i < num_lifted_conditional_effects; ++i)
+        size_t j = 0;  ///< position in cond_effects
+
+        for (size_t i = 0; i < num_lifted_cond_effects; ++i)
         {
-            // Fetch data
             const auto& lifted_cond_effect = action->get_conditional_effects().at(i);
 
             if (lifted_cond_effect->get_arity() > 0)
             {
-                const auto& consistency_graph = conditional_effect_consistency_graphs.at(i);
-                const auto& objects_by_parameter_index = consistency_graph.get_objects_by_parameter_index();
+                const auto& cond_effect_static_consistency_graph = cond_effect_static_consistency_graphs.at(i);
+                const auto& objects_by_parameter_index = cond_effect_static_consistency_graph.get_objects_by_parameter_index();
 
-                // Create binding that also contains bindings of variables in quantified effect.
-                binding_ext.resize(binding.size() + lifted_cond_effect->get_arity());
+                // Resize binding to have additional space for all variables in quantified effect.
+                binding_cond_effect.resize(binding.size() + lifted_cond_effect->get_arity());
 
+                size_t count = 0;
                 for (const auto& binding_cond : create_cartesian_product_generator(objects_by_parameter_index))
                 {
-                    // Create binding
+                    // Create resulting conditional effect binding.
                     for (size_t pos = 0; pos < lifted_cond_effect->get_arity(); ++pos)
                     {
-                        binding_ext[binding.size() + pos] = get_pddl_repositories()->get_object(binding_cond[pos]);
+                        binding_cond_effect[binding.size() + pos] = get_pddl_repositories()->get_object(binding_cond[pos]);
                     }
 
-                    auto cond_effect_j = GroundEffectConditional();
+                    auto& cond_effect_j = cond_effects.at(j++);
                     auto& cond_positive_fluent_precondition_j = cond_effect_j.get_positive_precondition<Fluent>();
                     auto& cond_negative_fluent_precondition_j = cond_effect_j.get_negative_precondition<Fluent>();
                     auto& cond_positive_static_precondition_j = cond_effect_j.get_positive_precondition<Static>();
@@ -234,27 +245,28 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Fluent>(),
                                                                cond_positive_fluent_precondition_j,
                                                                cond_negative_fluent_precondition_j,
-                                                               binding_ext);
+                                                               binding_cond_effect);
                     m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Static>(),
                                                                cond_positive_static_precondition_j,
                                                                cond_negative_static_precondition_j,
-                                                               binding_ext);
+                                                               binding_cond_effect);
                     m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_conditions<Derived>(),
                                                                cond_positive_derived_precondition_j,
                                                                cond_negative_derived_precondition_j,
-                                                               binding_ext);
+                                                               binding_cond_effect);
 
-                    fill_effects(lifted_cond_effect->get_effects(), binding_ext, cond_simple_effect_j);
+                    fill_effects(lifted_cond_effect->get_effects(), binding_cond_effect, cond_simple_effect_j);
 
                     cond_effect_j.get_cost() =
                         GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
 
-                    conditional_effects.push_back(std::move(cond_effect_j));
+                    ++count;
                 }
+                assert(count == get_size_cartesian_product(objects_by_parameter_index));
             }
             else
             {
-                auto cond_effect = GroundEffectConditional();
+                auto& cond_effect = cond_effects.at(j++);
                 auto& cond_positive_fluent_precondition = cond_effect.get_positive_precondition<Fluent>();
                 auto& cond_negative_fluent_precondition = cond_effect.get_negative_precondition<Fluent>();
                 auto& cond_positive_static_precondition = cond_effect.get_positive_precondition<Static>();
@@ -285,13 +297,11 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
                 cond_effect.get_cost() =
                     GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
-
-                conditional_effects.push_back(std::move(cond_effect));
             }
         }
     }
 
-    const auto [iter, inserted] = m_actions.insert(m_action_builder);
+    const auto [iter, inserted] = m_actions.insert(action_builder);
     const auto grounded_action = *iter;
     if (inserted)
     {
@@ -300,7 +310,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
     /* 3. Insert to groundings table */
 
-    groundings.emplace(std::move(binding), GroundAction(grounded_action));
+    grounding_table.emplace(std::move(binding), GroundAction(grounded_action));
 
     /* 4. Return the resulting ground action */
 
