@@ -36,7 +36,7 @@ KPKCWorkspace::KPKCWorkspace(const std::vector<std::vector<size_t>>& partitions)
     {
         for (size_t k2 = 0; k2 < k; ++k2)
         {
-            k_compatible_vertices[k1][k2].resize(partitions[k2].size());
+            k_compatible_vertices.at(k1).at(k2).resize(partitions.at(k2).size());
         }
     }
 
@@ -51,7 +51,7 @@ void KPKCWorkspace::initialize_memory(const std::vector<std::vector<size_t>>& pa
 
     for (std::size_t index = 0; index < k; ++index)
     {
-        k_compatible_vertices.front()[index].set();
+        k_compatible_vertices.front().at(index).set();
     }
     partition_bits.reset();
     partial_solution.clear();
@@ -73,15 +73,14 @@ void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<size_t>>&
 
     if (!std::all_of(k_compatible_vertices.begin(), k_compatible_vertices.end(), [k](const auto& element) { return element.size() == k; }))
     {
-        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have second dimension of size "
-                                 + std::to_string(k));
+        throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have second dimension of size " + std::to_string(k));
     }
 
     for (size_t k1 = 0; k1 < k; ++k1)
     {
         for (size_t k2 = 0; k2 < k; ++k2)
         {
-            if (k_compatible_vertices[k1][k2].size() != partitions[k2].size())
+            if (k_compatible_vertices.at(k1).at(k2).size() != partitions.at(k2).size())
             {
                 throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected bitsets to match partition sizes.");
             }
@@ -97,13 +96,13 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
     size_t k = partitions.size();
     size_t best_set_bits = std::numeric_limits<size_t>::max();
     size_t best_partition = std::numeric_limits<size_t>::max();
-    auto& compatible_vertices = memory.k_compatible_vertices[depth];  // fetch current compatible vertices
+    auto& compatible_vertices = memory.k_compatible_vertices.at(depth);  // fetch current compatible vertices
 
     // Find the best partition to work with
     for (size_t partition = 0; partition < k; ++partition)
     {
-        auto num_set_bits = compatible_vertices[partition].count();
-        if (!memory.partition_bits[partition] && (num_set_bits < best_set_bits))
+        auto num_set_bits = compatible_vertices.at(partition).count();
+        if (!memory.partition_bits.at(partition) && (num_set_bits < best_set_bits))
         {
             best_set_bits = num_set_bits;
             best_partition = partition;
@@ -111,11 +110,11 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
     }
 
     // Iterate through compatible vertices in the best partition
-    size_t adjacent_index = compatible_vertices[best_partition].find_first();
-    while (adjacent_index < compatible_vertices[best_partition].size())
+    size_t adjacent_index = compatible_vertices.at(best_partition).find_first();
+    while (adjacent_index < compatible_vertices.at(best_partition).size())
     {
-        size_t vertex = partitions[best_partition][adjacent_index];
-        compatible_vertices[best_partition][adjacent_index] = 0;
+        size_t vertex = partitions.at(best_partition).at(adjacent_index);
+        compatible_vertices.at(best_partition).at(adjacent_index) = 0;
         memory.partial_solution.push_back(vertex);
 
         if (memory.partial_solution.size() == k)
@@ -125,30 +124,30 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
         else
         {
             // Update compatible vertices for the next recursion
-            auto& compatible_vertices_next = memory.k_compatible_vertices[depth + 1];  // fetch next compatible vertices
+            auto& compatible_vertices_next = memory.k_compatible_vertices.at(depth + 1);  // fetch next compatible vertices
             // Important to set next to cur, before the update.
             // The following line does not allocate/deallocate because the sizes are exactly the same.
             compatible_vertices_next = compatible_vertices;
             size_t offset = 0;
             for (size_t partition = 0; partition < k; ++partition)
             {
-                auto partition_size = compatible_vertices_next[partition].size();
-                if (!memory.partition_bits[partition])
+                auto partition_size = compatible_vertices_next.at(partition).size();
+                if (!memory.partition_bits.at(partition))
                 {
                     for (size_t index = 0; index < partition_size; ++index)
                     {
-                        compatible_vertices_next[partition][index] &= adjacency_matrix[vertex][index + offset];
+                        compatible_vertices_next.at(partition).at(index) &= adjacency_matrix.at(vertex).at(index + offset);
                     }
                 }
                 offset += partition_size;
             }
 
-            memory.partition_bits[best_partition] = 1;
+            memory.partition_bits.at(best_partition) = 1;
 
             size_t possible_additions = 0;
             for (size_t partition = 0; partition < k; ++partition)
             {
-                if (!memory.partition_bits[partition] && compatible_vertices[partition].any())
+                if (!memory.partition_bits.at(partition) && compatible_vertices.at(partition).any())
                 {
                     ++possible_additions;
                 }
@@ -162,11 +161,11 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
                 }
             }
 
-            memory.partition_bits[best_partition] = 0;
+            memory.partition_bits.at(best_partition) = 0;
         }
 
         memory.partial_solution.pop_back();
-        adjacent_index = compatible_vertices[best_partition].find_next(adjacent_index);
+        adjacent_index = compatible_vertices.at(best_partition).find_next(adjacent_index);
     }
 }
 
