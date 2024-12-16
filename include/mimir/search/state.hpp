@@ -35,8 +35,8 @@ namespace mimir
 struct StateImpl
 {
     Index m_index = Index(0);
-    FlatBitset m_fluent_atoms = FlatBitset();
-    FlatBitset m_derived_atoms = FlatBitset();
+    FlatIndexList m_fluent_atoms = FlatIndexList();
+    FlatIndexList m_derived_atoms = FlatIndexList();
 
     template<DynamicPredicateTag P>
     bool contains(GroundAtom<P> atom) const;
@@ -57,10 +57,10 @@ struct StateImpl
     Index get_index() const;
 
     template<DynamicPredicateTag P>
-    FlatBitset& get_atoms();
+    FlatIndexList& get_atoms();
 
     template<DynamicPredicateTag P>
-    const FlatBitset& get_atoms() const;
+    const FlatIndexList& get_atoms() const;
 };
 
 }

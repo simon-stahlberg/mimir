@@ -63,12 +63,12 @@ struct GroundAxiomImpl
 
     bool is_dynamically_applicable(State state) const;
 
-    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
+    bool is_statically_applicable(const FlatIndexList& static_positive_atoms) const;
 
     bool is_applicable(Problem problem, State state) const;
 
     template<PredicateTag P>
-    bool is_applicable(const FlatBitset& atoms) const;
+    bool is_applicable(const FlatIndexList& atoms) const;
 };
 
 }

@@ -35,7 +35,6 @@ private:
     ObjectList m_objects;
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
-    FlatBitset m_static_initial_positive_atoms;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
     NumericFluentList m_numeric_fluents;
     GroundLiteralList<Static> m_static_goal_condition;
@@ -45,13 +44,45 @@ private:
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
-    bool m_static_goal_holds;
+
+    /* Predicate */
     PredicateList<Derived> m_problem_and_domain_derived_predicates;
-    AxiomList m_problem_and_domain_axioms;
+
+    /* Initial state */
+    GroundAtomList<Static> m_positive_static_initial_atoms;
+    FlatBitset m_positive_static_initial_atoms_bitset;
+    FlatIndexList m_positive_static_initial_atoms_indices;
+    AssignmentSet<Static> m_positive_static_initial_assignment_set;
+
+    GroundAtomList<Fluent> m_positive_fluent_initial_atoms;
+
     GroundFunctionMap<ContinuousCost> m_ground_function_to_value;
-    GroundAtomList<Static> m_static_initial_atoms;
-    GroundAtomList<Fluent> m_fluent_initial_atoms;
-    AssignmentSet<Static> m_static_assignment_set;
+
+    /* Goal */
+    bool m_static_goal_holds;
+
+    GroundAtomList<Static> m_positive_static_goal_atoms;
+    GroundAtomList<Fluent> m_positive_fluent_goal_atoms;
+    GroundAtomList<Derived> m_positive_derived_goal_atoms;
+    FlatBitset m_positive_static_goal_atoms_bitset;
+    FlatBitset m_positive_fluent_goal_atoms_bitset;
+    FlatBitset m_positive_derived_goal_atoms_bitset;
+    FlatIndexList m_positive_static_goal_atoms_indices;
+    FlatIndexList m_positive_fluent_goal_atoms_indices;
+    FlatIndexList m_positive_derived_goal_atoms_indices;
+
+    GroundAtomList<Static> m_negative_static_goal_atoms;
+    GroundAtomList<Fluent> m_negative_fluent_goal_atoms;
+    GroundAtomList<Derived> m_negative_derived_goal_atoms;
+    FlatBitset m_negative_static_goal_atoms_bitset;
+    FlatBitset m_negative_fluent_goal_atoms_bitset;
+    FlatBitset m_negative_derived_goal_atoms_bitset;
+    FlatIndexList m_negative_static_goal_atoms_indices;
+    FlatIndexList m_negative_fluent_goal_atoms_indices;
+    FlatIndexList m_negative_derived_goal_atoms_indices;
+
+    /* Axioms */
+    AxiomList m_problem_and_domain_axioms;
 
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
@@ -87,23 +118,53 @@ public:
     const Requirements& get_requirements() const;
     const ObjectList& get_objects() const;
     const PredicateList<Derived>& get_derived_predicates() const;
-    const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
-    const FlatBitset& get_static_initial_positive_atoms_bitset() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
     const NumericFluentList& get_numeric_fluents() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
-    const AxiomList& get_problem_and_domain_axioms() const;
-    bool static_goal_holds() const;
-    bool static_literal_holds(const GroundLiteral<Static> literal) const;
+
+    /**
+     * Additional members
+     */
+
+    /* Predicate */
+    const PredicateList<Derived>& get_problem_and_domain_derived_predicates() const;
+
+    /* Initial state */
+    const GroundAtomList<Static>& get_static_initial_atoms() const;
+    const FlatBitset& get_static_initial_positive_atoms_bitset() const;
+    const FlatIndexList& get_static_initial_positive_atoms_indices() const;
+    const AssignmentSet<Static>& get_static_assignment_set() const;
+
+    const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
+
     const GroundFunctionMap<ContinuousCost>& get_ground_function_to_value() const;
     ContinuousCost get_ground_function_value(GroundFunction function) const;
-    const GroundAtomList<Static>& get_static_initial_atoms() const;
-    const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
-    const AssignmentSet<Static>& get_static_assignment_set() const;
+
+    /* Goal */
+    bool static_literal_holds(const GroundLiteral<Static> literal) const;  // TODO: probably can go in the future
+
+    bool static_goal_holds() const;
+
+    template<PredicateTag P>
+    const GroundAtomList<P>& get_positive_goal_atoms() const;
+    template<PredicateTag P>
+    const FlatBitset& get_positive_goal_atoms_bitset() const;
+    template<PredicateTag P>
+    const FlatIndexList& get_positive_goal_atoms_indices() const;
+
+    template<PredicateTag P>
+    const GroundAtomList<P>& get_negative_goal_atoms() const;
+    template<PredicateTag P>
+    const FlatBitset& get_negative_goal_atoms_bitset() const;
+    template<PredicateTag P>
+    const FlatIndexList& get_negative_goal_atoms_indices() const;
+
+    /* Axioms */
+    const AxiomList& get_problem_and_domain_axioms() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

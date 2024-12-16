@@ -97,7 +97,7 @@ Index& StateImpl::get_index() { return m_index; }
 Index StateImpl::get_index() const { return m_index; }
 
 template<DynamicPredicateTag P>
-FlatBitset& StateImpl::get_atoms()
+FlatIndexList& StateImpl::get_atoms()
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
@@ -113,11 +113,11 @@ FlatBitset& StateImpl::get_atoms()
     }
 }
 
-template FlatBitset& StateImpl::get_atoms<Fluent>();
-template FlatBitset& StateImpl::get_atoms<Derived>();
+template FlatIndexList& StateImpl::get_atoms<Fluent>();
+template FlatIndexList& StateImpl::get_atoms<Derived>();
 
 template<DynamicPredicateTag P>
-const FlatBitset& StateImpl::get_atoms() const
+const FlatIndexList& StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
@@ -133,8 +133,8 @@ const FlatBitset& StateImpl::get_atoms() const
     }
 }
 
-template const FlatBitset& StateImpl::get_atoms<Fluent>() const;
-template const FlatBitset& StateImpl::get_atoms<Derived>() const;
+template const FlatIndexList& StateImpl::get_atoms<Fluent>() const;
+template const FlatIndexList& StateImpl::get_atoms<Derived>() const;
 
 /**
  * Pretty printing
@@ -164,11 +164,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
               out_derived_ground_atoms.end(),
               [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State("
-       << "index=" << state->get_index() << ", "
-       << "fluent atoms=" << out_fluent_ground_atoms << ", "
-       << "static atoms=" << out_static_ground_atoms << ", "
-       << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
+       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }
