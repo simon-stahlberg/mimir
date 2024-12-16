@@ -46,6 +46,7 @@ class BrfsParser(Parser):
         self.add_pattern("num_expanded_until_last_g_layer", r"\[BrFS\] Number of expanded states until last g-layer: (\d+)", type=int)
         self.add_pattern("num_generated_until_last_g_layer", r"\[BrFS\] Number of generated states until last g-layer: (\d+)", type=int)
         self.add_pattern("num_pruned_until_last_g_layer", r"\[BrFS\] Number of pruned states until last g-layer: (\d+)", type=int)
+        self.add_pattern("memory_in_mb_used_for_states", r"Memory used for states: (\d+) MB.", type=int)
         self.add_pattern("cost", r"\[BrFS\] Plan cost: (.+)", type=float)
         self.add_pattern("length", r"\[BrFS\] Plan length: (.+)", type=int)
         self.add_pattern("exhausted", r"(\[BrFS\] Exhausted!)", type=str)

@@ -56,6 +56,7 @@ ATTRIBUTES = [
     "num_expanded_until_last_g_layer",
     "num_generated_until_last_g_layer",
     "num_pruned_until_last_g_layer",
+    "memory_in_mb_used_for_states",
     "cost",
     "length",
     "invalid_plan_reported",

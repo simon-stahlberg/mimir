@@ -38,9 +38,11 @@ struct StateImpl
     FlatIndexList m_fluent_atoms = FlatIndexList();
     FlatIndexList m_derived_atoms = FlatIndexList();
 
+    /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
     template<DynamicPredicateTag P>
     bool literal_holds(GroundLiteral<P> literal) const;
 
+    /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
     template<DynamicPredicateTag P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
