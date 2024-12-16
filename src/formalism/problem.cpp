@@ -311,7 +311,7 @@ const FlatBitset& ProblemImpl::get_static_initial_positive_atoms_bitset() const 
 
 const FlatIndexList& ProblemImpl::get_static_initial_positive_atoms_indices() const
 {
-    assert(std::is_sorted(m_positive_static_initial_atoms_indices.begin(), m_positive_static_initial_atoms_indices().end()));
+    assert(std::is_sorted(m_positive_static_initial_atoms_indices.begin(), m_positive_static_initial_atoms_indices.end()));
     return m_positive_static_initial_atoms_indices;
 }
 

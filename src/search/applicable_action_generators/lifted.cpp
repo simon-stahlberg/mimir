@@ -103,7 +103,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
             const auto ground_action = m_grounder->ground_action(action, std::move(binding));
 
-            assert(ground_action->is_applicable(m_grounder->get_problem(), state));
+            assert(ground_action->is_applicable(m_grounder->get_problem(), fluent_atom_indices, derived_atom_indices));
 
             m_event_handler->on_ground_action(ground_action);
 

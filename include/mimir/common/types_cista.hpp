@@ -69,31 +69,13 @@ inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
 
 inline bool is_supseteq(const FlatBitset& bitset, const FlatIndexList& vec)
 {
-    assert(std::is_sorted(vec.begin(), vec.end()));
-
-    // Use two iterators to traverse both vectors simultaneously
-    auto it1 = bitset.begin();
-    auto it2 = vec.begin();
-
-    while (it1 != bitset.end() && it2 != vec.end())
+    for (const auto& index : vec)
     {
-        if (*it1 < *it2)
+        if (!bitset.get(index))
         {
-            ++it1;
-        }
-        else if (*it2 < *it1)
-        {
-            // Element found in bitset that does not occur in vec!
             return false;
         }
-        else
-        {
-            // Common element found
-            ++it1;
-            ++it2;
-        }
     }
-
     return true;
 }
 

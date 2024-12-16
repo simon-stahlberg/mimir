@@ -43,7 +43,7 @@ namespace mimir
 template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
-    return literal->is_negated() != (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_atom()->get_index()) != get_atoms<P>().end());
+    return literal->is_negated() != contains(get_atoms<P>(), literal->get_atom()->get_index());
 }
 
 template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
@@ -84,10 +84,12 @@ FlatIndexList& StateImpl::get_atoms()
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_fluent_atoms.begin(), m_fluent_atoms.end()));
         return m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_derived_atoms.begin(), m_derived_atoms.end()));
         return m_derived_atoms;
     }
     else
@@ -104,10 +106,12 @@ const FlatIndexList& StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_fluent_atoms.begin(), m_fluent_atoms.end()));
         return m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_derived_atoms.begin(), m_derived_atoms.end()));
         return m_derived_atoms;
     }
     else

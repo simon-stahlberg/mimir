@@ -52,14 +52,17 @@ FlatIndexList& GroundConditionStrips::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
         return m_positive_derived_atoms;
     }
     else
@@ -77,14 +80,17 @@ const FlatIndexList& GroundConditionStrips::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
         return m_positive_derived_atoms;
     }
     else
@@ -102,14 +108,17 @@ FlatIndexList& GroundConditionStrips::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
         return m_negative_derived_atoms;
     }
     else
@@ -127,14 +136,17 @@ const FlatIndexList& GroundConditionStrips::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
         return m_negative_derived_atoms;
     }
     else
@@ -191,14 +203,17 @@ FlatIndexList& GroundEffectConditional::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
         return m_positive_derived_atoms;
     }
     else
@@ -216,14 +231,17 @@ const FlatIndexList& GroundEffectConditional::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
         return m_positive_derived_atoms;
     }
     else
@@ -241,14 +259,17 @@ FlatIndexList& GroundEffectConditional::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
         return m_negative_derived_atoms;
     }
     else
@@ -266,14 +287,17 @@ const FlatIndexList& GroundEffectConditional::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
+        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
+        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
         return m_negative_derived_atoms;
     }
     else

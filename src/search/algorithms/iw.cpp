@@ -650,8 +650,16 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
         {
             // Common fluent found
             a_atom_indices[0].push_back(*it1);
+            ++it1;
+            ++it2;
         }
     }
+    // Add the remaining atoms
+    for (; it1 != succ_state_fluent_atoms.end(); ++it1)
+    {
+        a_atom_indices[1].push_back(*it1);
+    }
+
     // Add place holder to generate tuples of size < arity
     a_atom_indices[0].push_back(tuple_index_mapper->get_num_atoms());
 
