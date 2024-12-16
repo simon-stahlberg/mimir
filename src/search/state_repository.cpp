@@ -185,12 +185,12 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         }
 
         // Modify fluent state atoms
-        insert_into_bitset(source_fluent_atoms, target_fluent_atoms);
+        target_fluent_atoms = source_fluent_atoms;
         target_fluent_atoms -= negative_applied_effects;
         target_fluent_atoms |= positive_applied_effects;
 
         // Update reached fluent atoms
-        insert_into_bitset(target_fluent_atoms, m_reached_fluent_atoms);
+        m_reached_fluent_atoms |= target_fluent_atoms;
 
         // Translate dense unextended into sparse unextended state.
         auto& target_fluent_state_atoms = state_builder.get_atoms<Fluent>();
@@ -219,7 +219,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         m_axiom_evaluator->generate_and_apply_axioms(target_fluent_atoms, target_derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
-        insert_into_bitset(target_derived_atoms, m_reached_derived_atoms);
+        m_reached_derived_atoms |= target_derived_atoms;
 
         // Translate dense extended into sparse extended state.
         auto& target_derived_state_atoms = state_builder.get_atoms<Derived>();
