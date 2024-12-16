@@ -18,21 +18,22 @@
 #include "mimir/search/workspaces/assignment_set.hpp"
 
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir
 {
 
-GroundAtomList<Fluent>& AssignmentSetWorkspace::get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories)
+GroundAtomList<Fluent>& AssignmentSetWorkspace::get_or_create_fluent_atoms(const FlatBitset& fluent_atoms_indices, PDDLRepositories& pddl_repositories)
 {
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>(), fluent_atoms);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(fluent_atoms_indices, fluent_atoms);
 
     return fluent_atoms;
 }
 
-GroundAtomList<Derived>& AssignmentSetWorkspace::get_or_create_derived_atoms(State state, PDDLRepositories& pddl_repositories)
+GroundAtomList<Derived>& AssignmentSetWorkspace::get_or_create_derived_atoms(const FlatBitset& derived_atom_indices, PDDLRepositories& pddl_repositories)
 {
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>(), derived_atoms);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(derived_atom_indices, derived_atoms);
 
     return derived_atoms;
 }

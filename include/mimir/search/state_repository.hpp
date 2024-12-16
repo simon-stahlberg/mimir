@@ -36,9 +36,6 @@ private:
 
     StateImplSet m_states;  ///< Stores all created states.
 
-    FlatBitset m_positive_applied_effects;  ///< temporary to collect applied positive effects.
-    FlatBitset m_negative_applied_effects;  ///< temporary to collect applied negative effects.
-
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 

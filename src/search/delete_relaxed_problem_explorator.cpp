@@ -21,6 +21,7 @@
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
@@ -90,8 +91,10 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     auto state_repository_workspace = StateRepositoryWorkspace();
     auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
 
-    auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace));
-    auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
+    auto initial_state = m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace);
+    auto fluent_atoms = FlatBitset();
+    auto derived_atoms = FlatBitset();
+    insert_into_bitset(initial_state->get_atoms<Fluent>(), fluent_atoms);
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -100,7 +103,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = fluent_state_atoms.count();
+        auto num_atoms_before = fluent_atoms.count();
 
         const auto state_tmp = state_builder;
 

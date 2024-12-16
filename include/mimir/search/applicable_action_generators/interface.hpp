@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_INTERFACE_HPP_
 
 #include "mimir/algorithms/generator.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
@@ -35,6 +36,9 @@ public:
 
     /// @brief Generate all applicable actions for a given state.
     virtual mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace) = 0;
+    /// @brief Generate all applicable actions for a bitset representation of a state.
+    virtual mimir::generator<GroundAction>
+    create_applicable_action_generator(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms, ApplicableActionGeneratorWorkspace& workspace) = 0;
 
     /// @brief Accumulate event handler statistics during search.
     virtual void on_finish_search_layer() = 0;

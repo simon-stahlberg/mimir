@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/workspaces/grounded_applicable_action_generator.hpp"
 #include "mimir/search/workspaces/lifted_applicable_action_generator.hpp"
 
 namespace mimir
@@ -36,8 +37,10 @@ private:
     friend class LiftedApplicableActionGenerator;
 
     std::optional<LiftedApplicableActionGeneratorWorkspace> lifted_workspace = std::nullopt;
+    std::optional<GroundedApplicableActionGeneratorWorkspace> grounded_workspace = std::nullopt;
 
-    LiftedApplicableActionGeneratorWorkspace& get_or_create_lifted_workspace(Problem problem);
+    LiftedApplicableActionGeneratorWorkspace& get_or_create_lifted_workspace();
+    GroundedApplicableActionGeneratorWorkspace& get_or_create_grounded_workspace();
 };
 
 }

@@ -120,6 +120,8 @@ struct GroundEffectConditional
     /* Utility */
     template<DynamicPredicateTag P>
     bool is_applicable(State state) const;
+    template<DynamicPredicateTag P>
+    bool is_applicable(DenseState state) const;
 
     bool is_dynamically_applicable(State state) const;
 

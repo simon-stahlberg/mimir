@@ -22,6 +22,8 @@
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
+#include "mimir/search/workspaces/grounded_applicable_action_generator.hpp"
 
 namespace mimir
 {
@@ -42,10 +44,23 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared
 {
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace&)
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
 {
+    auto& grounded_workspace = workspace.get_or_create_grounded_workspace();
+    auto& [fluent_bitset, derived_bitset] = grounded_workspace.get_or_create_bitsets();
+    fluent_bitset.unset_all();
+    derived_bitset.unset_all();
+    for (const auto& fluent_atom_index : state->get_atoms<Fluent>())
+    {
+        fluent_bitset.set(fluent_atom_index);
+    }
+    for (const auto& derived_atom_index : state->get_atoms<Derived>())
+    {
+        derived_bitset.set(derived_atom_index);
+    }
+
     auto ground_actions = GroundActionList {};
-    m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
+    m_match_tree.get_applicable_elements(fluent_bitset, derived_bitset, ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {

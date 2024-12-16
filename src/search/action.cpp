@@ -149,8 +149,8 @@ template const FlatIndexList& GroundConditionStrips::get_negative_precondition<D
 template<PredicateTag P>
 bool GroundConditionStrips::is_applicable(const FlatIndexList& atoms) const
 {
-    return atoms.is_superseteq(get_positive_precondition<P>())  //
-           && atoms.are_disjoint(get_negative_precondition<P>());
+    return is_supseteq(atoms, get_positive_precondition<P>())  //
+           && are_disjoint(atoms, get_negative_precondition<P>());
 }
 
 template bool GroundConditionStrips::is_applicable<Static>(const FlatIndexList& atoms) const;
@@ -175,7 +175,7 @@ bool GroundConditionStrips::is_statically_applicable(const FlatIndexList& static
 
 bool GroundConditionStrips::is_applicable(Problem problem, State state) const
 {
-    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms());
+    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_indices());
 }
 
 /* GroundEffectStrips */
@@ -307,7 +307,7 @@ bool GroundEffectConditional::is_applicable(State state) const
 {
     const auto& state_atoms = state->get_atoms<P>();
 
-    return is_superseteq(state_atoms, get_positive_precondition<P>())  //
+    return is_supseteq(state_atoms, get_positive_precondition<P>())  //
            && are_disjoint(state_atoms, get_negative_precondition<P>());
 }
 

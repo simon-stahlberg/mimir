@@ -20,10 +20,12 @@
 
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/containers/vector.h"
+#include "mimir/common/concepts.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
 
+#include <algorithm>
 #include <ostream>
 
 namespace mimir
@@ -73,6 +75,64 @@ inline bool is_superseteq(const FlatBitset& bitset, const FlatIndexList& list)
         }
     }
     return true;
+}
+
+inline bool is_supseteq(const FlatIndexList& vec1, const FlatIndexList& vec2)
+{
+    assert(std::is_sorted(vec1.begin(), vec1.end()));
+    assert(std::is_sorted(vec2.begin(), vec2.end()));
+
+    return std::includes(vec1.begin(), vec1.end(), vec2.begin(), vec2.end());
+}
+
+inline bool are_disjoint(const FlatIndexList& vec1, const FlatIndexList& vec2)
+{
+    assert(std::is_sorted(vec1.begin(), vec1.end()));
+    assert(std::is_sorted(vec2.begin(), vec2.end()));
+
+    // Use two iterators to traverse both vectors simultaneously
+    auto it1 = vec1.begin();
+    auto it2 = vec2.begin();
+
+    while (it1 != vec1.end() && it2 != vec2.end())
+    {
+        if (*it1 < *it2)
+        {
+            ++it1;
+        }
+        else if (*it2 < *it1)
+        {
+            ++it2;
+        }
+        else
+        {
+            // Common element found
+            return false;
+        }
+    }
+
+    // No common element found
+    return true;
+}
+
+template<typename Range>
+    requires IsConvertibleRangeOver<Range, Index>  //
+void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
+{
+    for (const auto& element : range)
+    {
+        ref_bitset.set(element);
+    }
+}
+
+template<typename Range>
+    requires IsConvertibleRangeOver<Range, Index>  //
+void insert_into_vector(const Range& range, FlatIndexList& ref_vec)
+{
+    for (const auto& element : range)
+    {
+        ref_vec.push_back(element);
+    }
 }
 
 }

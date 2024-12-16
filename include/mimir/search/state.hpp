@@ -50,6 +50,9 @@ struct StateImpl
     template<DynamicPredicateTag P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
+    template<DynamicPredicateTag P>
+    bool literals_hold(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const;
+
     /* Getters */
 
     Index& get_index();

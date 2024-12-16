@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_WORKSPACES_GROUNDED_APPLICABLE_ACTION_GENERATOR_HPP_
+#define MIMIR_SEARCH_WORKSPACES_GROUNDED_APPLICABLE_ACTION_GENERATOR_HPP_
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -25,28 +25,18 @@
 namespace mimir
 {
 
-/**
- * Dynamic interface class.
- */
-class IAxiomEvaluator
+/// @brief `GroundedApplicableActionGeneratorWorkspace` encapsulates internally used memory.
+///
+/// Users need to ensure that it is repeatedly used in the same context.
+/// The context is determined by the member function or free function that accepts the workspace.
+class GroundedApplicableActionGeneratorWorkspace
 {
-public:
-    virtual ~IAxiomEvaluator() = default;
+private:
+    friend class GroundedApplicableActionGenerator;
 
-    /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(const FlatBitset& fluent_atoms, FlatBitset& derived_atoms, AxiomEvaluatorWorkspace& workspace) = 0;
+    std::pair<FlatBitset, FlatBitset>& get_or_create_bitsets();
 
-    /// @brief Accumulate event handler statistics during search.
-    virtual void on_finish_search_layer() = 0;
-    virtual void on_end_search() = 0;
-
-    /**
-     * Getters
-     */
-
-    virtual Problem get_problem() const = 0;
-    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
-    virtual const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const = 0;
+    std::optional<std::pair<FlatBitset, FlatBitset>> bitsets = std::nullopt;
 };
 
 }

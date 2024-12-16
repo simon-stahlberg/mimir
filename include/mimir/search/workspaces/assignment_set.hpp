@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_WORKSPACES_ASSIGNMENT_SET_HPP_
 #define MIMIR_SEARCH_WORKSPACES_ASSIGNMENT_SET_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/search/declarations.hpp"
 
@@ -35,8 +36,8 @@ private:
     friend class LiftedApplicableActionGenerator;
     friend class SatisficingBindingGenerator;
 
-    GroundAtomList<Fluent>& get_or_create_fluent_atoms(State state, PDDLRepositories& pddl_repositories);
-    GroundAtomList<Derived>& get_or_create_derived_atoms(State state, PDDLRepositories& pddl_repositories);
+    GroundAtomList<Fluent>& get_or_create_fluent_atoms(const FlatBitset& fluent_atom_indices, PDDLRepositories& pddl_repositories);
+    GroundAtomList<Derived>& get_or_create_derived_atoms(const FlatBitset& derived_atom_indices, PDDLRepositories& pddl_repositories);
     AssignmentSet<Fluent>& get_or_create_fluent_assignment_set(Problem problem);
     AssignmentSet<Derived>& get_or_create_derived_assignment_set(Problem problem);
 

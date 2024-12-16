@@ -20,9 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
+#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 
 namespace mimir
 {

@@ -78,18 +78,18 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
     m_ground_function_to_value(),
     m_static_goal_holds(false),
-    m_positive_static_goal_atoms(),
-    m_positive_fluent_goal_atoms(),
-    m_positive_derived_goal_atoms(),
+    m_positive_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, true)),
+    m_positive_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, true)),
+    m_positive_derived_goal_atoms(filter_ground_atoms(m_derived_goal_condition, true)),
     m_positive_static_goal_atoms_bitset(),
     m_positive_fluent_goal_atoms_bitset(),
     m_positive_derived_goal_atoms_bitset(),
     m_positive_static_goal_atoms_indices(),
     m_positive_fluent_goal_atoms_indices(),
     m_positive_derived_goal_atoms_indices(),
-    m_negative_static_goal_atoms(),
-    m_negative_fluent_goal_atoms(),
-    m_negative_derived_goal_atoms(),
+    m_negative_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, false)),
+    m_negative_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, false)),
+    m_negative_derived_goal_atoms(filter_ground_atoms(m_derived_goal_condition, false)),
     m_negative_static_goal_atoms_bitset(),
     m_negative_fluent_goal_atoms_bitset(),
     m_negative_derived_goal_atoms_bitset(),
@@ -145,7 +145,12 @@ ProblemImpl::ProblemImpl(Index index,
             m_positive_static_initial_atoms_bitset.set(literal->get_atom()->get_index());
         }
     }
-    m_positive_static_initial_atoms_indices = FlatIndexList(m_positive_static_initial_atoms_bitset.begin(), m_positive_static_initial_atoms_bitset.end());
+
+    std::transform(m_positive_static_initial_atoms_bitset.begin(),
+                   m_positive_static_initial_atoms_bitset.end(),
+                   std::back_inserter(m_positive_static_initial_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
+
     m_positive_static_initial_assignment_set.insert_ground_atoms(m_positive_static_initial_atoms);
 
     for (const auto numeric_fluent : get_numeric_fluents())
@@ -170,6 +175,42 @@ ProblemImpl::ProblemImpl(Index index,
         literal->is_negated() ? m_negative_static_goal_atoms_bitset.set(literal->get_atom()->get_index()) :
                                 m_positive_static_goal_atoms_bitset.set(literal->get_atom()->get_index());
     }
+    std::transform(m_negative_static_goal_atoms_bitset.begin(),
+                   m_negative_static_goal_atoms_bitset.end(),
+                   std::back_inserter(m_negative_static_goal_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
+    std::transform(m_positive_static_goal_atoms_bitset.begin(),
+                   m_positive_static_goal_atoms_bitset.end(),
+                   std::back_inserter(m_positive_static_goal_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
+
+    for (const auto& literal : get_goal_condition<Fluent>())
+    {
+        literal->is_negated() ? m_negative_fluent_goal_atoms_bitset.set(literal->get_atom()->get_index()) :
+                                m_positive_fluent_goal_atoms_bitset.set(literal->get_atom()->get_index());
+    }
+    std::transform(m_negative_fluent_goal_atoms_bitset.begin(),
+                   m_negative_fluent_goal_atoms_bitset.end(),
+                   std::back_inserter(m_negative_fluent_goal_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
+    std::transform(m_positive_fluent_goal_atoms_bitset.begin(),
+                   m_positive_fluent_goal_atoms_bitset.end(),
+                   std::back_inserter(m_positive_fluent_goal_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
+
+    for (const auto& literal : get_goal_condition<Derived>())
+    {
+        literal->is_negated() ? m_negative_derived_goal_atoms_bitset.set(literal->get_atom()->get_index()) :
+                                m_positive_derived_goal_atoms_bitset.set(literal->get_atom()->get_index());
+    }
+    std::transform(m_negative_derived_goal_atoms_bitset.begin(),
+                   m_negative_derived_goal_atoms_bitset.end(),
+                   std::back_inserter(m_negative_derived_goal_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
+    std::transform(m_positive_derived_goal_atoms_bitset.begin(),
+                   m_positive_derived_goal_atoms_bitset.end(),
+                   std::back_inserter(m_positive_derived_goal_atoms_indices),
+                   [](unsigned long val) { return static_cast<Index>(val); });
 
     /* Axioms */
 
@@ -297,6 +338,156 @@ bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) cons
 {
     return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
+
+template<PredicateTag P>
+const GroundAtomList<P>& ProblemImpl::get_positive_goal_atoms() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_positive_static_goal_atoms;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_positive_fluent_goal_atoms;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_positive_derived_goal_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+    }
+}
+
+template const GroundAtomList<Static>& ProblemImpl::get_positive_goal_atoms<Static>() const;
+template const GroundAtomList<Fluent>& ProblemImpl::get_positive_goal_atoms<Fluent>() const;
+template const GroundAtomList<Derived>& ProblemImpl::get_positive_goal_atoms<Derived>() const;
+
+template<PredicateTag P>
+const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_positive_static_goal_atoms_bitset;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_positive_fluent_goal_atoms_bitset;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_positive_derived_goal_atoms_bitset;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+    }
+}
+
+template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Static>() const;
+template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Fluent>() const;
+template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Derived>() const;
+
+template<PredicateTag P>
+const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_positive_static_goal_atoms_indices;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_positive_fluent_goal_atoms_indices;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_positive_derived_goal_atoms_indices;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+    }
+}
+
+template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Static>() const;
+template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Fluent>() const;
+template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Derived>() const;
+
+template<PredicateTag P>
+const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_negative_static_goal_atoms;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_negative_fluent_goal_atoms;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_negative_derived_goal_atoms;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+    }
+}
+
+template const GroundAtomList<Static>& ProblemImpl::get_negative_goal_atoms<Static>() const;
+template const GroundAtomList<Fluent>& ProblemImpl::get_negative_goal_atoms<Fluent>() const;
+template const GroundAtomList<Derived>& ProblemImpl::get_negative_goal_atoms<Derived>() const;
+
+template<PredicateTag P>
+const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_negative_static_goal_atoms_bitset;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_negative_fluent_goal_atoms_bitset;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_negative_derived_goal_atoms_bitset;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+    }
+}
+
+template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Static>() const;
+template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Fluent>() const;
+template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Derived>() const;
+
+template<PredicateTag P>
+const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
+{
+    if constexpr (std::is_same_v<P, Static>)
+    {
+        return m_negative_static_goal_atoms_indices;
+    }
+    else if constexpr (std::is_same_v<P, Fluent>)
+    {
+        return m_negative_fluent_goal_atoms_indices;
+    }
+    else if constexpr (std::is_same_v<P, Derived>)
+    {
+        return m_negative_derived_goal_atoms_indices;
+    }
+    else
+    {
+        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+    }
+}
+
+template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Static>() const;
+template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Fluent>() const;
+template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Derived>() const;
 
 /* Axioms */
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }

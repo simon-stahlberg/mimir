@@ -92,6 +92,15 @@ bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals) const;
 template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
 
+template<DynamicPredicateTag P>
+bool StateImpl::literals_hold(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const
+{
+    return is_superseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+}
+
+template bool StateImpl::literals_hold<Fluent>(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const;
+template bool StateImpl::literals_hold<Derived>(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const;
+
 Index& StateImpl::get_index() { return m_index; }
 
 Index StateImpl::get_index() const { return m_index; }

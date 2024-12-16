@@ -23,8 +23,8 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
-#include "mimir/search/state.hpp"
 
 namespace mimir
 {
@@ -44,7 +44,7 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 {
 }
 
-void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state, AxiomEvaluatorWorkspace&)
+void GroundedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_atoms, FlatBitset& derived_atoms, AxiomEvaluatorWorkspace&)
 {
     auto applicable_axioms = GroundAxiomList {};
 
@@ -62,7 +62,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
             // TODO: For axioms, the same fluent branch is taken all the time.
             // Exploit this!
-            m_match_tree.get_applicable_elements(unextended_state.get_atoms<Fluent>(), unextended_state.get_atoms<Derived>(), applicable_axioms);
+            m_match_tree.get_applicable_elements(fluent_atoms, derived_atoms, applicable_axioms);
 
             /* Apply applicable axioms */
 
@@ -75,19 +75,19 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
                     continue;
                 }
 
-                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), &unextended_state));
+                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), fluent_atoms, derived_atoms));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
-                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_index))
+                if (!derived_atoms.get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     reached_partition_fixed_point = false;
                 }
 
-                unextended_state.get_atoms<Derived>().set(grounded_atom_index);
+                derived_atoms.set(grounded_atom_index);
             }
 
         } while (!reached_partition_fixed_point);

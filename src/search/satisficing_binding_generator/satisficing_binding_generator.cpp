@@ -25,6 +25,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
@@ -37,13 +38,13 @@ namespace mimir
  */
 
 template<PredicateTag P>
-static bool nullary_literals_hold(const GroundLiteralList<P>& literals, State state)
+static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const FlatBitset& atom_indices)
 {
     for (const auto& literal : literals)
     {
         assert(literal->get_atom()->get_arity() == 0);
 
-        if (!state->literal_holds(literal))
+        if (literal->is_negated() == atom_indices.get(literal->get_atom()->get_index()))
         {
             return false;
         }
@@ -52,10 +53,12 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, State st
     return true;
 }
 
-bool nullary_conditions_hold(ExistentiallyQuantifiedConjunctiveCondition precondition, State state)
+bool nullary_conditions_hold(ExistentiallyQuantifiedConjunctiveCondition precondition,
+                             const FlatBitset& fluent_atom_indices,
+                             const FlatBitset& derived_atom_indices)
 {
-    return nullary_literals_hold(precondition->get_nullary_ground_literals<Fluent>(), state)
-           && nullary_literals_hold(precondition->get_nullary_ground_literals<Derived>(), state);
+    return nullary_literals_hold(precondition->get_nullary_ground_literals<Fluent>(), fluent_atom_indices)
+           && nullary_literals_hold(precondition->get_nullary_ground_literals<Derived>(), derived_atom_indices);
 }
 
 /**
@@ -71,13 +74,13 @@ static void clear_full_consistency_graph(std::vector<boost::dynamic_bitset<>>& f
 }
 
 template<DynamicPredicateTag P>
-bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding)
+bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
         auto ground_literal = m_literal_grounder->ground_literal(literal, binding);
 
-        if (!state->literal_holds(ground_literal))
+        if (ground_literal->is_negated() == atom_indices.get(ground_literal->get_atom()->get_index()))
         {
             return false;
         }
@@ -85,9 +88,6 @@ bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>&
 
     return true;
 }
-
-template bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<Fluent>& literals, State state, const ObjectList& binding);
-template bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<Derived>& literals, State state, const ObjectList& binding);
 
 bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
@@ -106,19 +106,19 @@ bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Stat
     return true;
 }
 
-bool SatisficingBindingGenerator::is_valid_binding(State state, const ObjectList& binding)
+bool SatisficingBindingGenerator::is_valid_binding(const FlatBitset& fluent_atom_indices, const FlatBitset& derived_atom_indices, const ObjectList& binding)
 {
-    return is_valid_static_binding(m_precondition->get_literals<Static>(), binding)               // We need to test all
-           && is_valid_dynamic_binding(m_precondition->get_literals<Fluent>(), state, binding)    // types of conditions
-           && is_valid_dynamic_binding(m_precondition->get_literals<Derived>(), state, binding);  // due to over-approx.
+    return is_valid_static_binding(m_precondition->get_literals<Static>(), binding)                              // We need to test all
+           && is_valid_dynamic_binding(m_precondition->get_literals<Fluent>(), fluent_atom_indices, binding)     // types of conditions
+           && is_valid_dynamic_binding(m_precondition->get_literals<Derived>(), derived_atom_indices, binding);  // due to over-approx.
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(State state)
+mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(const FlatBitset& fluent_atom_indices, const FlatBitset& derived_atom_indices)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
 
-    if (is_valid_binding(state, binding))
+    if (is_valid_binding(fluent_atom_indices, derived_atom_indices, binding))
     {
         co_yield std::move(binding);
     }
@@ -128,8 +128,10 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(State sta
     }
 }
 
-mimir::generator<ObjectList>
-SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state)
+mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                                     const AssignmentSet<Derived>& derived_assignment_sets,
+                                                                     const FlatBitset& fluent_atom_indices,
+                                                                     const FlatBitset& derived_atom_indices)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
@@ -138,7 +140,7 @@ SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assi
         {
             auto binding = ObjectList { m_literal_grounder->get_pddl_repositories()->get_object(vertex.get_object_index()) };
 
-            if (is_valid_binding(state, binding))
+            if (is_valid_binding(fluent_atom_indices, derived_atom_indices, binding))
             {
                 co_yield std::move(binding);
             }
@@ -152,7 +154,8 @@ SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assi
 
 mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
                                                                        const AssignmentSet<Derived>& derived_assignment_sets,
-                                                                       State state,
+                                                                       const FlatBitset& fluent_atom_indices,
+                                                                       const FlatBitset& derived_atom_indices,
                                                                        SatisficingBindingGeneratorWorkspace& workspace)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
@@ -200,7 +203,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Ass
             binding[parameter_index] = m_literal_grounder->get_pddl_repositories()->get_object(object_index);
         }
 
-        if (this->is_valid_binding(state, binding))
+        if (this->is_valid_binding(fluent_atom_indices, derived_atom_indices, binding))
         {
             co_yield std::move(binding);
         }
@@ -227,7 +230,8 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
 {
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(State state,
+mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(const FlatBitset& fluent_atom_indices,
+                                                                                   const FlatBitset& derived_atom_indices,
                                                                                    const AssignmentSet<Fluent>& fluent_assignment_set,
                                                                                    const AssignmentSet<Derived>& derived_assignment_set,
                                                                                    SatisficingBindingGeneratorWorkspace& workspace)
@@ -239,39 +243,41 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
 
     if (m_precondition->get_arity() == 0)
     {
-        co_yield mimir::ranges::elements_of(nullary_case(state));
+        co_yield mimir::ranges::elements_of(nullary_case(fluent_atom_indices, derived_atom_indices));
     }
     else if (m_precondition->get_arity() == 1)
     {
-        co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
+        co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices));
     }
     else
     {
-        co_yield mimir::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state, workspace));
+        co_yield mimir::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices, workspace));
     }
 }
 
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-SatisficingBindingGenerator::create_ground_conjunction_generator(State state, SatisficingBindingGeneratorWorkspace& workspace)
+SatisficingBindingGenerator::create_ground_conjunction_generator(const FlatBitset& fluent_atom_indices,
+                                                                 const FlatBitset& derived_atom_indices,
+                                                                 SatisficingBindingGeneratorWorkspace& workspace)
 {
     // We have to check here to avoid unnecessary creations of mimir::generator.
-    if (!nullary_conditions_hold(m_precondition, state))
+    if (!nullary_conditions_hold(m_precondition, fluent_atom_indices, derived_atom_indices))
     {
         co_return;
     }
 
     auto& assignment_set_workspace = workspace.get_or_create_assignment_set_workspace();
-    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(state, *m_literal_grounder->get_pddl_repositories());
+    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(fluent_atom_indices, *m_literal_grounder->get_pddl_repositories());
     auto& fluent_assignment_set = assignment_set_workspace.get_or_create_fluent_assignment_set(m_literal_grounder->get_problem());
     fluent_assignment_set.clear();
     fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(state, *m_literal_grounder->get_pddl_repositories());
+    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(derived_atom_indices, *m_literal_grounder->get_pddl_repositories());
     auto& derived_assignment_set = assignment_set_workspace.get_or_create_derived_assignment_set(m_literal_grounder->get_problem());
     derived_assignment_set.clear();
     derived_assignment_set.insert_ground_atoms(derived_fluents);
 
-    for (const auto& binding : create_binding_generator(state, fluent_assignment_set, derived_assignment_set, workspace))
+    for (const auto& binding : create_binding_generator(fluent_atom_indices, derived_atom_indices, fluent_assignment_set, derived_assignment_set, workspace))
     {
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : m_precondition->get_literals<Static>())

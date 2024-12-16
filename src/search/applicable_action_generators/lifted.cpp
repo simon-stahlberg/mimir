@@ -54,7 +54,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
 
 mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
 {
-    auto& lifted_workspace = workspace.get_or_create_lifted_workspace(m_grounder->get_problem());
+    auto& lifted_workspace = workspace.get_or_create_lifted_workspace();
 
     auto& assignment_set_workspace = lifted_workspace.get_or_create_assignment_set_workspace();
     auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(state, *m_grounder->get_pddl_repositories());

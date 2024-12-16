@@ -22,7 +22,7 @@
 namespace mimir
 {
 
-LiftedAxiomEvaluatorWorkspace& AxiomEvaluatorWorkspace::get_or_create_lifted_workspace(Problem problem)
+LiftedAxiomEvaluatorWorkspace& AxiomEvaluatorWorkspace::get_or_create_lifted_workspace()
 {
     if (!lifted_workspace.has_value())
     {

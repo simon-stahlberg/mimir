@@ -163,21 +163,21 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     auto& negative_static_precondition = strips_precondition.get_negative_precondition<Static>();
     auto& positive_derived_precondition = strips_precondition.get_positive_precondition<Derived>();
     auto& negative_derived_precondition = strips_precondition.get_negative_precondition<Derived>();
-    positive_fluent_precondition.unset_all();
-    negative_fluent_precondition.unset_all();
-    positive_static_precondition.unset_all();
-    negative_static_precondition.unset_all();
-    positive_derived_precondition.unset_all();
-    negative_derived_precondition.unset_all();
-    m_literal_grounder->ground_and_fill_bitset(action->get_precondition()->get_literals<Fluent>(),
+    positive_fluent_precondition.clear();
+    negative_fluent_precondition.clear();
+    positive_static_precondition.clear();
+    negative_static_precondition.clear();
+    positive_derived_precondition.clear();
+    negative_derived_precondition.clear();
+    m_literal_grounder->ground_and_fill_vector(action->get_precondition()->get_literals<Fluent>(),
                                                positive_fluent_precondition,
                                                negative_fluent_precondition,
                                                binding);
-    m_literal_grounder->ground_and_fill_bitset(action->get_precondition()->get_literals<Static>(),
+    m_literal_grounder->ground_and_fill_vector(action->get_precondition()->get_literals<Static>(),
                                                positive_static_precondition,
                                                negative_static_precondition,
                                                binding);
-    m_literal_grounder->ground_and_fill_bitset(action->get_precondition()->get_literals<Derived>(),
+    m_literal_grounder->ground_and_fill_vector(action->get_precondition()->get_literals<Derived>(),
                                                positive_derived_precondition,
                                                negative_derived_precondition,
                                                binding);
@@ -186,11 +186,11 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     auto& strips_effect = action_builder.get_strips_effect();
     auto& positive_effect = strips_effect.get_positive_effects();
     auto& negative_effect = strips_effect.get_negative_effects();
-    positive_effect.unset_all();
-    negative_effect.unset_all();
+    positive_effect.clear();
+    negative_effect.clear();
     const auto& lifted_strips_effect = action->get_strips_effect();
     const auto& lifted_effect_literals = lifted_strips_effect->get_effects();
-    m_literal_grounder->ground_and_fill_bitset(lifted_effect_literals, positive_effect, negative_effect, binding);
+    m_literal_grounder->ground_and_fill_vector(lifted_effect_literals, positive_effect, negative_effect, binding);
     strips_effect.get_cost() =
         GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_strips_effect->get_function_expression());
 
@@ -219,7 +219,6 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                 // Resize binding to have additional space for all variables in quantified effect.
                 binding_cond_effect.resize(binding.size() + lifted_cond_effect->get_arity());
 
-                size_t count = 0;
                 for (const auto& binding_cond : create_cartesian_product_generator(objects_by_parameter_index))
                 {
                     // Create resulting conditional effect binding.
@@ -259,10 +258,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
                     cond_effect_j.get_cost() =
                         GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
-
-                    ++count;
                 }
-                assert(count == get_size_cartesian_product(objects_by_parameter_index));
             }
             else
             {

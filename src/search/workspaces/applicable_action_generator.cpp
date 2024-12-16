@@ -17,11 +17,9 @@
 
 #include "mimir/search/workspaces/applicable_action_generator.hpp"
 
-#include "mimir/search/workspaces/lifted_applicable_action_generator.hpp"
-
 namespace mimir
 {
-LiftedApplicableActionGeneratorWorkspace& ApplicableActionGeneratorWorkspace::get_or_create_lifted_workspace(Problem problem)
+LiftedApplicableActionGeneratorWorkspace& ApplicableActionGeneratorWorkspace::get_or_create_lifted_workspace()
 {
     if (!lifted_workspace.has_value())
     {
@@ -29,5 +27,15 @@ LiftedApplicableActionGeneratorWorkspace& ApplicableActionGeneratorWorkspace::ge
     }
 
     return lifted_workspace.value();
+}
+
+GroundedApplicableActionGeneratorWorkspace& ApplicableActionGeneratorWorkspace::get_or_create_grounded_workspace()
+{
+    if (!grounded_workspace.has_value())
+    {
+        grounded_workspace = GroundedApplicableActionGeneratorWorkspace();
+    }
+
+    return grounded_workspace.value();
 }
 }

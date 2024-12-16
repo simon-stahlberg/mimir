@@ -15,42 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/workspaces/state_repository.hpp"
+#include "mimir/search/workspaces/grounded_applicable_action_generator.hpp"
 
 namespace mimir
 {
-/**
- * StateRepositoryWorkspace
- */
-
-StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
-{
-    if (!state_builder.has_value())
-    {
-        state_builder = StateImpl();
-    }
-
-    return state_builder.value();
-}
-
-std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset>& StateRepositoryWorkspace::get_or_create_bitsets()
+std::pair<FlatBitset, FlatBitset>& GroundedApplicableActionGeneratorWorkspace::get_or_create_bitsets()
 {
     if (!bitsets.has_value())
     {
-        bitsets = std::make_tuple(FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset());
+        bitsets = std::make_pair(FlatBitset(), FlatBitset());
     }
 
     return bitsets.value();
 }
-
-AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
-{
-    if (!axiom_evaluator_workspace.has_value())
-    {
-        axiom_evaluator_workspace = AxiomEvaluatorWorkspace();
-    }
-
-    return axiom_evaluator_workspace.value();
-}
-
 }

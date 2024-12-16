@@ -58,6 +58,9 @@ using StateMap = std::unordered_map<State, T>;
 struct DenseStateImpl;
 using DenseState = const DenseStateImpl*;
 
+template<typename T>
+concept IsState = std::is_same_v<T, const StateImpl*> || std::is_same_v<T, DenseStateImpl*>;
+
 /* Grounders */
 class LiteralGrounder;
 class FunctionGrounder;

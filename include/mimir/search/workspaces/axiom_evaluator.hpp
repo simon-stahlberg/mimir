@@ -34,7 +34,7 @@ private:
 
     std::optional<LiftedAxiomEvaluatorWorkspace> lifted_workspace = std::nullopt;
 
-    LiftedAxiomEvaluatorWorkspace& get_or_create_lifted_workspace(Problem problem);
+    LiftedAxiomEvaluatorWorkspace& get_or_create_lifted_workspace();
 };
 
 }
