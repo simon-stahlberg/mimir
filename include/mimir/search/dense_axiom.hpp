@@ -22,7 +22,7 @@
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/search/dense_action.hpp"
 
 namespace mimir
 {
@@ -41,7 +41,7 @@ struct DenseGroundAxiomImpl
     Index m_index = Index(0);
     Index m_axiom_index = Index(0);
     FlatIndexList m_objects = FlatIndexList();
-    GroundConditionStrips m_strips_precondition = GroundConditionStrips();
+    DenseGroundConditionStrips m_strips_precondition = DenseGroundConditionStrips();
     DenseGroundEffectDerivedLiteral m_effect = DenseGroundEffectDerivedLiteral();
 
     Index& get_index();
@@ -54,8 +54,8 @@ struct DenseGroundAxiomImpl
     const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
-    GroundConditionStrips& get_strips_precondition();
-    const GroundConditionStrips& get_strips_precondition() const;
+    DenseGroundConditionStrips& get_strips_precondition();
+    const DenseGroundConditionStrips& get_strips_precondition() const;
 
     /* Effect*/
     DenseGroundEffectDerivedLiteral& get_derived_effect();

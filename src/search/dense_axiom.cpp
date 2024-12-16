@@ -55,9 +55,9 @@ FlatIndexList& DenseGroundAxiomImpl::get_object_indices() { return m_objects; }
 
 const FlatIndexList& DenseGroundAxiomImpl::get_object_indices() const { return m_objects; }
 
-GroundConditionStrips& DenseGroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
+DenseGroundConditionStrips& DenseGroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
 
-const GroundConditionStrips& DenseGroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
+const DenseGroundConditionStrips& DenseGroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
 
 DenseGroundEffectDerivedLiteral& DenseGroundAxiomImpl::get_derived_effect() { return m_effect; }
 
