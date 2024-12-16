@@ -243,16 +243,15 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
 
     if (m_precondition->get_arity() == 0)
     {
-        // TODO: switch to return instead of co_yield
-        co_yield mimir::ranges::elements_of(nullary_case(fluent_atom_indices, derived_atom_indices));
+        return nullary_case(fluent_atom_indices, derived_atom_indices);
     }
     else if (m_precondition->get_arity() == 1)
     {
-        co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices));
+        return unary_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices);
     }
     else
     {
-        co_yield mimir::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices, workspace));
+        return general_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices, workspace);
     }
 }
 
