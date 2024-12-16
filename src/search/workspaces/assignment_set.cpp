@@ -18,7 +18,6 @@
 #include "mimir/search/workspaces/assignment_set.hpp"
 
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
 namespace mimir

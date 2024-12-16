@@ -23,7 +23,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 
 namespace mimir

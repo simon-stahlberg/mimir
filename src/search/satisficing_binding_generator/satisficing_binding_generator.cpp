@@ -25,7 +25,6 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"

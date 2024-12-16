@@ -37,16 +37,12 @@ struct GroundActionImpl;
 using GroundAction = const GroundActionImpl*;
 using GroundActionList = std::vector<GroundAction>;
 using GroundActionSet = std::unordered_set<GroundAction>;
-struct DenseGroundActionImpl;
-using DenseGroundAction = const DenseGroundActionImpl*;
 
 // Axiom
 struct GroundAxiomImpl;
 using GroundAxiom = const GroundAxiomImpl*;
 using GroundAxiomList = std::vector<GroundAxiom>;
 using GroundAxiomSet = std::unordered_set<GroundAxiom>;
-struct DenseGroundAxiomImpl;
-using DenseGroundAxiom = const DenseGroundAxiomImpl*;
 
 // State
 struct StateImpl;
@@ -55,11 +51,6 @@ using StateList = std::vector<State>;
 using StateSet = std::unordered_set<State>;
 template<typename T>
 using StateMap = std::unordered_map<State, T>;
-struct DenseStateImpl;
-using DenseState = const DenseStateImpl*;
-
-template<typename T>
-concept IsState = std::is_same_v<T, const StateImpl*> || std::is_same_v<T, DenseStateImpl*>;
 
 /* Grounders */
 class LiteralGrounder;
