@@ -25,6 +25,7 @@ ATTRIBUTES = [
     "num_expanded_until_last_f_layer",
     "num_generated_until_last_f_layer",
     "cost",
+    "length",
     "invalid_plan_reported",
 ]
 
