@@ -46,6 +46,7 @@ class AStarParser(Parser):
         self.add_pattern("num_expanded_until_last_f_layer", r"\[AStar\] Number of expanded states until last f-layer: (\d+)", type=int)
         self.add_pattern("num_generated_until_last_f_layer", r"\[AStar\] Number of generated states until last f-layer: (\d+)", type=int)
         self.add_pattern("num_pruned_until_last_f_layer", r"\[AStar\] Number of pruned states until last f-layer: (\d+)", type=int)
+        self.add_pattern("memory_in_mb_used_for_states", r"Memory used for states: (\d+) MB.", type=int)
         self.add_pattern("cost", r"\[AStar\] Plan cost: (.+)", type=float)
         self.add_pattern("length", r"\[AStar\] Plan length: (.+)", type=int)
         self.add_pattern("exhausted", r"(\[AStar\] Exhausted!)", type=str)

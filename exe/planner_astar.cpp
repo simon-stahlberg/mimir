@@ -112,6 +112,8 @@ int main(int argc, char** argv)
 
     auto result = find_solution_astar(applicable_action_generator, state_repository, heuristic, std::nullopt, event_handler);
 
+    std::cout << "Memory used for states: " << (state_repository->get_num_bytes_used_for_states() / 1000000) << " MB." << std::endl;
+
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;

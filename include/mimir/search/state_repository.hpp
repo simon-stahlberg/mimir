@@ -87,6 +87,10 @@ public:
     /// @brief Get the underlying axiom evaluator.
     /// @return the axiom evaluator.
     const std::shared_ptr<IAxiomEvaluator>& get_axiom_evaluator() const;
+
+    /// @brief Get the total number of bytes used for storing the states.
+    /// @return the number of bytes for storing the states.
+    size_t get_num_bytes_used_for_states() const;
 };
 
 }
