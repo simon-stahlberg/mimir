@@ -28,7 +28,7 @@
 
 namespace mimir
 {
-void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) { m_action_costs_enabled = requirements.test(loki::RequirementEnum::ACTION_COSTS); }
+void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) {}
 void ToMimirStructures::prepare(const loki::TypeImpl& type) { prepare(type.get_bases()); }
 void ToMimirStructures::prepare(const loki::ObjectImpl& object) { prepare(object.get_bases()); }
 void ToMimirStructures::prepare(const loki::VariableImpl& variable) {}
@@ -199,6 +199,8 @@ void ToMimirStructures::prepare(const loki::DomainImpl& domain)
     prepare(domain.get_functions());
     prepare(domain.get_actions());
     prepare(domain.get_axioms());
+
+    m_action_costs_enabled = domain.get_requirements()->test(loki::RequirementEnum::ACTION_COSTS);
 }
 void ToMimirStructures::prepare(const loki::OptimizationMetricImpl& metric) { prepare(*metric.get_function_expression()); }
 void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
