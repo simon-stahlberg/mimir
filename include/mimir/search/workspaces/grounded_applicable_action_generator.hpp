@@ -36,7 +36,9 @@ private:
 
     std::pair<FlatBitset, FlatBitset>& get_or_create_bitsets();
 
-    std::optional<std::pair<FlatBitset, FlatBitset>> bitsets = std::nullopt;
+    std::optional<std::pair<FlatBitset,   ///< fluent atoms
+                            FlatBitset>>  ///< derived atoms
+        bitsets = std::nullopt;
 };
 
 }

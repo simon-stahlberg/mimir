@@ -41,35 +41,9 @@ namespace mimir
 /* State */
 
 template<DynamicPredicateTag P>
-bool StateImpl::contains(GroundAtom<P> atom) const
-{
-    return get_atoms<P>().get(atom->get_index());
-}
-
-template bool StateImpl::contains(GroundAtom<Fluent> atom) const;
-template bool StateImpl::contains(GroundAtom<Derived> atom) const;
-
-template<DynamicPredicateTag P>
-bool StateImpl::superset_of(const GroundAtomList<P>& atoms) const
-{
-    for (const auto& atom : atoms)
-    {
-        if (!contains(atom))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-template bool StateImpl::superset_of(const GroundAtomList<Fluent>& atoms) const;
-template bool StateImpl::superset_of(const GroundAtomList<Derived>& atoms) const;
-
-template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
-    return literal->is_negated() != contains(literal->get_atom());
+    return literal->is_negated() != (std::find(get_atoms<P>().begin(), get_atoms<P>().end(), literal->get_atom()->get_index()) != get_atoms<P>().end());
 }
 
 template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
@@ -93,13 +67,13 @@ template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals
 template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
 
 template<DynamicPredicateTag P>
-bool StateImpl::literals_hold(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const
+bool StateImpl::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
 {
-    return is_superseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
 }
 
-template bool StateImpl::literals_hold<Fluent>(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const;
-template bool StateImpl::literals_hold<Derived>(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const;
+template bool StateImpl::literals_hold<Fluent>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+template bool StateImpl::literals_hold<Derived>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
 Index& StateImpl::get_index() { return m_index; }
 

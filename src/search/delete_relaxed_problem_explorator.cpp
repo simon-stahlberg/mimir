@@ -105,25 +105,25 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
 
         auto num_atoms_before = fluent_atoms.count();
 
-        const auto state_tmp = state_builder;
-
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
         for (const auto& action :
-             m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_tmp, applicable_action_generator_workspace))
+             m_delete_free_applicable_action_generator->create_applicable_action_generator(fluent_atoms, derived_atoms, applicable_action_generator_workspace))
         {
             const auto [succ_state, action_cost] =
-                m_delete_free_state_repository.get_or_create_successor_state(&state_builder, action, state_repository_workspace);
+                m_delete_free_state_repository.get_or_create_successor_state(fluent_atoms, derived_atoms, action, state_repository_workspace);
             for (const auto atom_index : succ_state->get_atoms<Fluent>())
             {
-                fluent_state_atoms.set(atom_index);
+                fluent_atoms.set(atom_index);
             }
         }
 
         // Create and all applicable axioms and apply them
-        m_delete_free_axiom_evalator->generate_and_apply_axioms(state_builder, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
+        m_delete_free_axiom_evalator->generate_and_apply_axioms(fluent_atoms,
+                                                                derived_atoms,
+                                                                state_repository_workspace.get_or_create_axiom_evaluator_workspace());
 
-        auto num_atoms_after = fluent_state_atoms.count();
+        auto num_atoms_after = fluent_atoms.count();
 
         if (num_atoms_before != num_atoms_after)
         {

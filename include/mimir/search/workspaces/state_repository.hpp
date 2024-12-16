@@ -36,12 +36,14 @@ private:
     friend class DeleteRelaxedProblemExplorator;
 
     StateImpl& get_or_create_state_builder();
-    std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset>& get_or_create_bitsets();
+    std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset>& get_or_create_bitsets();
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
     std::optional<StateImpl> state_builder = std::nullopt;
-    std::optional<std::tuple<FlatBitset,   ///< temporary to store fluent atoms
-                             FlatBitset,   ///< temporary to store derived atoms
+    std::optional<std::tuple<FlatBitset,   ///< temporary to store source fluent atoms
+                             FlatBitset,   ///< temporary to store source derived atoms
+                             FlatBitset,   ///< temporary to store target fluent atoms
+                             FlatBitset,   ///< temporary to store target derived atoms
                              FlatBitset,   ///< temporary to collect applied positive effects.
                              FlatBitset>>  ///< temporary to collect applied negative effects.
         bitsets = std::nullopt;

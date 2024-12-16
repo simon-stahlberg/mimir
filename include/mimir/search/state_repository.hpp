@@ -61,6 +61,8 @@ public:
     /// @param action is the grounded action.
     /// @return the extended successor state and the action cost.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace);
+    std::pair<State, ContinuousCost>
+    get_or_create_successor_state(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms, GroundAction action, StateRepositoryWorkspace& workspace);
 
     /**
      * Getters

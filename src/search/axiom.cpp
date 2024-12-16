@@ -62,24 +62,20 @@ GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_eff
 
 const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_effect; }
 
-bool GroundAxiomImpl::is_dynamically_applicable(State state) const { return get_strips_precondition().is_dynamically_applicable(state); }
+bool GroundAxiomImpl::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+{
+    return get_strips_precondition().is_dynamically_applicable(fluent_atoms, derived_atoms);
+}
 
-bool GroundAxiomImpl::is_statically_applicable(const FlatIndexList& static_positive_atoms) const
+bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
 {
     return get_strips_precondition().is_statically_applicable(static_positive_atoms);
 }
 
-bool GroundAxiomImpl::is_applicable(Problem problem, State state) const { return get_strips_precondition().is_applicable(problem, state); }
-
-template<PredicateTag P>
-bool GroundAxiomImpl::is_applicable(const FlatIndexList& atoms) const
+bool GroundAxiomImpl::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
 {
-    return get_strips_precondition().template is_applicable<P>(atoms);
+    return get_strips_precondition().is_applicable(problem, fluent_atoms, derived_atoms);
 }
-
-template bool GroundAxiomImpl::is_applicable<Static>(const FlatIndexList& atoms) const;
-template bool GroundAxiomImpl::is_applicable<Fluent>(const FlatIndexList& atoms) const;
-template bool GroundAxiomImpl::is_applicable<Derived>(const FlatIndexList& atoms) const;
 
 /**
  * Pretty printing

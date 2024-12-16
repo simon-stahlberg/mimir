@@ -239,10 +239,11 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
        To avoid accidental errors, we ensure that we checked whether all nullary conditions are satisfied. */
-    assert(nullary_conditions_hold(m_precondition, state));
+    assert(nullary_conditions_hold(m_precondition, fluent_atom_indices, derived_atom_indices));
 
     if (m_precondition->get_arity() == 0)
     {
+        // TODO: switch to return instead of co_yield
         co_yield mimir::ranges::elements_of(nullary_case(fluent_atom_indices, derived_atom_indices));
     }
     else if (m_precondition->get_arity() == 1)

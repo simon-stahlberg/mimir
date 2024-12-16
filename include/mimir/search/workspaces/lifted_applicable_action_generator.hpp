@@ -38,10 +38,14 @@ private:
 
     AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
     SatisficingBindingGeneratorWorkspace& get_or_create_satisficing_binding_generator(Action action);
+    std::pair<FlatBitset, FlatBitset>& get_or_create_bitsets();
 
     std::optional<AssignmentSetWorkspace> assignment_set_workspace = std::nullopt;
     std::unordered_map<Action, SatisficingBindingGeneratorWorkspace> satisficing_binding_generator_workspaces =
         std::unordered_map<Action, SatisficingBindingGeneratorWorkspace>();
+    std::optional<std::pair<FlatBitset,   ///< fluent atoms
+                            FlatBitset>>  ///< derived atoms
+        bitsets = std::nullopt;
 };
 
 }

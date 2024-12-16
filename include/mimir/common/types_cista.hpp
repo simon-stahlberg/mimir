@@ -53,6 +53,8 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 
 using FlatIndexList = cista::offset::vector<Index>;
 
+inline bool contains(const FlatIndexList& vec, Index value) { return std::find(vec.begin(), vec.end(), value) != vec.end(); }
+
 inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
 {
     for (const auto index : list)
@@ -65,15 +67,33 @@ inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
     return true;
 }
 
-inline bool is_superseteq(const FlatBitset& bitset, const FlatIndexList& list)
+inline bool is_supseteq(const FlatBitset& bitset, const FlatIndexList& vec)
 {
-    for (const auto index : list)
+    assert(std::is_sorted(vec.begin(), vec.end()));
+
+    // Use two iterators to traverse both vectors simultaneously
+    auto it1 = bitset.begin();
+    auto it2 = vec.begin();
+
+    while (it1 != bitset.end() && it2 != vec.end())
     {
-        if (!bitset.get(index))
+        if (*it1 < *it2)
         {
+            ++it1;
+        }
+        else if (*it2 < *it1)
+        {
+            // Element found in bitset that does not occur in vec!
             return false;
         }
+        else
+        {
+            // Common element found
+            ++it1;
+            ++it2;
+        }
     }
+
     return true;
 }
 

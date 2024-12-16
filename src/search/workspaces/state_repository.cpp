@@ -33,11 +33,11 @@ StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
     return state_builder.value();
 }
 
-std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset>& StateRepositoryWorkspace::get_or_create_bitsets()
+std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset>& StateRepositoryWorkspace::get_or_create_bitsets()
 {
     if (!bitsets.has_value())
     {
-        bitsets = std::make_tuple(FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset());
+        bitsets = std::make_tuple(FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset());
     }
 
     return bitsets.value();

@@ -64,7 +64,11 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const G
 {
     // Find all states that satisfy the given set of atoms, then call more general function.
     auto states = StateList {};
-    auto fluent_atom_indices = FlatIndexList(fluent_atoms.begin(), fluent_atoms.end());
+    auto fluent_atom_indices = FlatIndexList();
+    for (const auto& atom : fluent_atoms)
+    {
+        fluent_atom_indices.push_back(atom->get_index());
+    }
     std::sort(fluent_atom_indices.begin(), fluent_atom_indices.end());
 
     for (const auto group : m_states_grouped_by_distance)

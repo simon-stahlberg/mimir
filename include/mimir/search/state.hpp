@@ -39,19 +39,13 @@ struct StateImpl
     FlatIndexList m_derived_atoms = FlatIndexList();
 
     template<DynamicPredicateTag P>
-    bool contains(GroundAtom<P> atom) const;
-
-    template<DynamicPredicateTag P>
-    bool superset_of(const GroundAtomList<P>& atoms) const;
-
-    template<DynamicPredicateTag P>
     bool literal_holds(GroundLiteral<P> literal) const;
 
     template<DynamicPredicateTag P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
     template<DynamicPredicateTag P>
-    bool literals_hold(const FlatBitset& positive_atoms, const FlatBitset& negative_atoms) const;
+    bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Getters */
 

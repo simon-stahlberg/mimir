@@ -50,21 +50,22 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
     auto& [fluent_bitset, derived_bitset] = grounded_workspace.get_or_create_bitsets();
     fluent_bitset.unset_all();
     derived_bitset.unset_all();
-    for (const auto& fluent_atom_index : state->get_atoms<Fluent>())
-    {
-        fluent_bitset.set(fluent_atom_index);
-    }
-    for (const auto& derived_atom_index : state->get_atoms<Derived>())
-    {
-        derived_bitset.set(derived_atom_index);
-    }
+    insert_into_bitset(state->get_atoms<Fluent>(), fluent_bitset);
+    insert_into_bitset(state->get_atoms<Derived>(), derived_bitset);
 
+    return create_applicable_action_generator(fluent_bitset, derived_bitset, workspace);
+}
+
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const FlatBitset& fluent_atoms,
+                                                                                                     const FlatBitset& derived_atoms,
+                                                                                                     ApplicableActionGeneratorWorkspace& workspace)
+{
     auto ground_actions = GroundActionList {};
-    m_match_tree.get_applicable_elements(fluent_bitset, derived_bitset, ground_actions);
+    m_match_tree.get_applicable_elements(fluent_atoms, derived_atoms, ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(ground_action->is_applicable(m_grounder->get_problem(), state));
+        assert(ground_action->is_applicable(m_grounder->get_problem(), fluent_atoms, derived_atoms));
 
         co_yield ground_action;
     }

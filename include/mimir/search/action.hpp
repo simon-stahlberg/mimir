@@ -48,17 +48,14 @@ struct GroundConditionStrips
     template<PredicateTag P>
     const FlatIndexList& get_negative_precondition() const;
 
-    template<DynamicPredicateTag P>
-    bool is_applicable(State state) const;
-
-    bool is_dynamically_applicable(State state) const;
-
-    bool is_statically_applicable(const FlatIndexList& static_positive_atoms) const;
-
-    bool is_applicable(Problem problem, State state) const;
-
     template<PredicateTag P>
-    bool is_applicable(const FlatIndexList& atoms) const;
+    bool is_applicable(const FlatBitset& atoms) const;
+
+    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+
+    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
+
+    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 };
 
 struct GroundEffectStrips
@@ -118,16 +115,14 @@ struct GroundEffectConditional
     const ContinuousCost& get_cost() const;
 
     /* Utility */
-    template<DynamicPredicateTag P>
-    bool is_applicable(State state) const;
-    template<DynamicPredicateTag P>
-    bool is_applicable(DenseState state) const;
+    template<PredicateTag P>
+    bool is_applicable(const FlatBitset& atoms) const;
 
-    bool is_dynamically_applicable(State state) const;
+    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 
     bool is_statically_applicable(Problem problem) const;
 
-    bool is_applicable(Problem problem, State state) const;
+    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 };
 
 using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditional>;
@@ -163,14 +158,11 @@ struct GroundActionImpl
     GroundEffectConditionalList& get_conditional_effects();
     const GroundEffectConditionalList& get_conditional_effects() const;
 
-    bool is_dynamically_applicable(State state) const;
+    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 
-    bool is_statically_applicable(const FlatIndexList& static_positive_atoms) const;
+    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
-    bool is_applicable(Problem problem, State state) const;
-
-    template<PredicateTag P>
-    bool is_applicable(const FlatIndexList& atoms) const;
+    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 };
 
 }

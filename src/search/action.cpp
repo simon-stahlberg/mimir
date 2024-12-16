@@ -19,6 +19,7 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/state.hpp"
 
@@ -147,35 +148,26 @@ template const FlatIndexList& GroundConditionStrips::get_negative_precondition<F
 template const FlatIndexList& GroundConditionStrips::get_negative_precondition<Derived>() const;
 
 template<PredicateTag P>
-bool GroundConditionStrips::is_applicable(const FlatIndexList& atoms) const
+bool GroundConditionStrips::is_applicable(const FlatBitset& atoms) const
 {
     return is_supseteq(atoms, get_positive_precondition<P>())  //
            && are_disjoint(atoms, get_negative_precondition<P>());
 }
 
-template bool GroundConditionStrips::is_applicable<Static>(const FlatIndexList& atoms) const;
-template bool GroundConditionStrips::is_applicable<Fluent>(const FlatIndexList& atoms) const;
-template bool GroundConditionStrips::is_applicable<Derived>(const FlatIndexList& atoms) const;
+template bool GroundConditionStrips::is_applicable<Static>(const FlatBitset& atoms) const;
+template bool GroundConditionStrips::is_applicable<Fluent>(const FlatBitset& atoms) const;
+template bool GroundConditionStrips::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-template<DynamicPredicateTag P>
-bool GroundConditionStrips::is_applicable(State state) const
-{
-    return is_applicable<P>(state->get_atoms<P>());
-}
-
-template bool GroundConditionStrips::is_applicable<Fluent>(State state) const;
-template bool GroundConditionStrips::is_applicable<Derived>(State state) const;
-
-bool GroundConditionStrips::is_dynamically_applicable(State state) const
+bool GroundConditionStrips::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
 {  //
-    return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
+    return is_applicable<Fluent>(fluent_atoms) && is_applicable<Derived>(derived_atoms);
 }
 
-bool GroundConditionStrips::is_statically_applicable(const FlatIndexList& static_positive_atoms) const { return is_applicable<Static>(static_positive_atoms); }
+bool GroundConditionStrips::is_statically_applicable(const FlatBitset& static_positive_atoms) const { return is_applicable<Static>(static_positive_atoms); }
 
-bool GroundConditionStrips::is_applicable(Problem problem, State state) const
+bool GroundConditionStrips::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
 {
-    return is_dynamically_applicable(state) && is_statically_applicable(problem->get_static_initial_positive_atoms_indices());
+    return is_dynamically_applicable(fluent_atoms, derived_atoms) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
 /* GroundEffectStrips */
@@ -302,34 +294,30 @@ ContinuousCost& GroundEffectConditional::get_cost() { return m_cost; }
 
 const ContinuousCost& GroundEffectConditional::get_cost() const { return m_cost; }
 
-template<DynamicPredicateTag P>
-bool GroundEffectConditional::is_applicable(State state) const
+template<PredicateTag P>
+bool GroundEffectConditional::is_applicable(const FlatBitset& atoms) const
 {
-    const auto& state_atoms = state->get_atoms<P>();
-
-    return is_supseteq(state_atoms, get_positive_precondition<P>())  //
-           && are_disjoint(state_atoms, get_negative_precondition<P>());
+    return is_supseteq(atoms, get_positive_precondition<P>())  //
+           && are_disjoint(atoms, get_negative_precondition<P>());
 }
 
-template bool GroundEffectConditional::is_applicable<Fluent>(State state) const;
-template bool GroundEffectConditional::is_applicable<Derived>(State state) const;
+template bool GroundEffectConditional::is_applicable<Static>(const FlatBitset& atoms) const;
+template bool GroundEffectConditional::is_applicable<Fluent>(const FlatBitset& atoms) const;
+template bool GroundEffectConditional::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-bool GroundEffectConditional::is_dynamically_applicable(State state) const
+bool GroundEffectConditional::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
 {  //
-    return is_applicable<Fluent>(state) && is_applicable<Derived>(state);
+    return is_applicable<Fluent>(fluent_atoms) && is_applicable<Derived>(derived_atoms);
 }
 
 bool GroundEffectConditional::is_statically_applicable(Problem problem) const
 {
-    const auto& static_initial_atoms = problem->get_static_initial_positive_atoms_bitset();
-
-    return is_superseteq(static_initial_atoms, get_positive_precondition<Static>())  //
-           && are_disjoint(static_initial_atoms, get_negative_precondition<Static>());
+    return is_applicable<Static>(problem->get_static_initial_positive_atoms_bitset());
 }
 
-bool GroundEffectConditional::is_applicable(Problem problem, State state) const
+bool GroundEffectConditional::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
 {
-    return is_dynamically_applicable(state) && is_statically_applicable(problem);
+    return is_dynamically_applicable(fluent_atoms, derived_atoms) && is_statically_applicable(problem);
 }
 
 /* GroundActionImpl */
@@ -358,24 +346,20 @@ GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() { retur
 
 const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
-bool GroundActionImpl::is_dynamically_applicable(State state) const { return get_strips_precondition().is_dynamically_applicable(state); }
+bool GroundActionImpl::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+{
+    return get_strips_precondition().is_dynamically_applicable(fluent_atoms, derived_atoms);
+}
 
-bool GroundActionImpl::is_statically_applicable(const FlatIndexList& static_positive_atoms) const
+bool GroundActionImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
 {
     return get_strips_precondition().is_statically_applicable(static_positive_atoms);
 }
 
-bool GroundActionImpl::is_applicable(Problem problem, State state) const { return get_strips_precondition().is_applicable(problem, state); }
-
-template<PredicateTag P>
-bool GroundActionImpl::is_applicable(const FlatIndexList& atoms) const
+bool GroundActionImpl::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
 {
-    return get_strips_precondition().template is_applicable<P>(atoms);
+    return get_strips_precondition().is_applicable(problem, fluent_atoms, derived_atoms);
 }
-
-template bool GroundActionImpl::is_applicable<Static>(const FlatIndexList& atoms) const;
-template bool GroundActionImpl::is_applicable<Fluent>(const FlatIndexList& atoms) const;
-template bool GroundActionImpl::is_applicable<Derived>(const FlatIndexList& atoms) const;
 
 /**
  * Pretty printing

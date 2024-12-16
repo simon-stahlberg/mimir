@@ -61,14 +61,11 @@ struct GroundAxiomImpl
     GroundEffectDerivedLiteral& get_derived_effect();
     const GroundEffectDerivedLiteral& get_derived_effect() const;
 
-    bool is_dynamically_applicable(State state) const;
+    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 
-    bool is_statically_applicable(const FlatIndexList& static_positive_atoms) const;
+    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
-    bool is_applicable(Problem problem, State state) const;
-
-    template<PredicateTag P>
-    bool is_applicable(const FlatIndexList& atoms) const;
+    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
 };
 
 }
