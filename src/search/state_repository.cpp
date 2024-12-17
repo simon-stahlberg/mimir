@@ -35,6 +35,7 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_axioms().empty()
                                    || !m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
+    m_axiom_evaluations(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms()
 {
@@ -61,6 +62,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     derived_atoms.unset_all();
     negative_applied_effects.unset_all();
     positive_applied_effects.unset_all();
+    state_builder.get_derived_atoms() = 0;
 
     /* 1. Set state index */
 
@@ -80,7 +82,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         m_reached_fluent_atoms |= fluent_atoms;
 
         // Translate dense unextended into sparse unextended state.
-        auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
+        auto& fluent_state_atoms = state_builder.get_fluent_atoms();
         fluent_state_atoms.clear();
         insert_into_vector(fluent_atoms, fluent_state_atoms);
         fluent_state_atoms.compress();
@@ -103,6 +105,9 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
             return *iter2;
         }
 
+        auto& axiom_evaluation = workspace.get_or_create_axiom_evaluation();
+        axiom_evaluation.clear();
+
         // Evaluate axioms
         m_axiom_evaluator->generate_and_apply_axioms(fluent_atoms, derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
 
@@ -110,10 +115,11 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         m_reached_derived_atoms |= derived_atoms;
 
         // Translate dense extended into sparse extended state.
-        auto& derived_state_atoms = state_builder.get_atoms<Derived>();
-        derived_state_atoms.clear();
-        insert_into_vector(derived_atoms, derived_state_atoms);
-        derived_state_atoms.compress();
+        insert_into_vector(derived_atoms, axiom_evaluation);
+        axiom_evaluation.compress();
+        const auto [iter, inserted] = m_axiom_evaluations.insert(axiom_evaluation);
+        auto& derived_state_atoms_ptr = state_builder.get_derived_atoms();
+        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
     }
 
     // Cache and return the extended state.
@@ -145,6 +151,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     target_derived_atoms.unset_all();
     negative_applied_effects.unset_all();
     positive_applied_effects.unset_all();
+    state_builder.get_derived_atoms() = 0;
 
     /* Accumulate state-dependent action cost. */
     auto action_cost = ContinuousCost(0);
@@ -195,7 +202,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         m_reached_fluent_atoms |= target_fluent_atoms;
 
         // Translate dense unextended into sparse unextended state.
-        auto& target_fluent_state_atoms = state_builder.get_atoms<Fluent>();
+        auto& target_fluent_state_atoms = state_builder.get_fluent_atoms();
         target_fluent_state_atoms.clear();
         insert_into_vector(target_fluent_atoms, target_fluent_state_atoms);
         target_fluent_state_atoms.compress();
@@ -218,6 +225,9 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
             return std::make_pair(*iter2, action_cost);
         }
 
+        auto& axiom_evaluation = workspace.get_or_create_axiom_evaluation();
+        axiom_evaluation.clear();
+
         // Evaluate axioms
         m_axiom_evaluator->generate_and_apply_axioms(target_fluent_atoms, target_derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
 
@@ -225,10 +235,11 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         m_reached_derived_atoms |= target_derived_atoms;
 
         // Translate dense extended into sparse extended state.
-        auto& target_derived_state_atoms = state_builder.get_atoms<Derived>();
-        target_derived_state_atoms.clear();
-        insert_into_vector(target_derived_atoms, target_derived_state_atoms);
-        target_derived_state_atoms.compress();
+        insert_into_vector(target_derived_atoms, axiom_evaluation);
+        axiom_evaluation.compress();
+        const auto [iter, inserted] = m_axiom_evaluations.insert(axiom_evaluation);
+        auto& derived_state_atoms_ptr = state_builder.get_derived_atoms();
+        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
     }
 
     // Cache and return the extended state.

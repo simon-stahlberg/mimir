@@ -43,6 +43,16 @@ std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitse
     return bitsets.value();
 }
 
+FlatIndexList& StateRepositoryWorkspace::get_or_create_axiom_evaluation()
+{
+    if (!axiom_evaluation.has_value())
+    {
+        axiom_evaluation = FlatIndexList();
+    }
+
+    return axiom_evaluation.value();
+}
+
 AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
 {
     if (!axiom_evaluator_workspace.has_value())

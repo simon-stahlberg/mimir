@@ -21,6 +21,7 @@
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/serialization.h"
 #include "cista/storage/unordered_set.h"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -36,7 +37,9 @@ struct StateImpl
 {
     Index m_index = Index(0);
     FlatIndexList m_fluent_atoms = FlatIndexList();
-    FlatIndexList m_derived_atoms = FlatIndexList();
+    uintptr_t m_derived_atoms = uintptr_t(0);
+
+    static const FlatIndexList s_empty_derived_atoms;
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
     template<DynamicPredicateTag P>
@@ -55,8 +58,8 @@ struct StateImpl
 
     Index get_index() const;
 
-    template<DynamicPredicateTag P>
-    FlatIndexList& get_atoms();
+    FlatIndexList& get_fluent_atoms();
+    uintptr_t& get_derived_atoms();
 
     template<DynamicPredicateTag P>
     const FlatIndexList& get_atoms() const;
@@ -82,6 +85,7 @@ namespace mimir
 {
 
 using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
+using AxiomEvaluationSet = cista::storage::UnorderedSet<FlatIndexList>;
 
 /**
  * Pretty printing

@@ -42,6 +42,8 @@ namespace mimir
 
 /* State */
 
+const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
+
 template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
@@ -81,27 +83,13 @@ Index& StateImpl::get_index() { return m_index; }
 
 Index StateImpl::get_index() const { return m_index; }
 
-template<DynamicPredicateTag P>
-FlatIndexList& StateImpl::get_atoms()
+FlatIndexList& StateImpl::get_fluent_atoms()
 {
-    if constexpr (std::is_same_v<P, Fluent>)
-    {
-        assert(std::is_sorted(m_fluent_atoms.begin(), m_fluent_atoms.end()));
-        return m_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        assert(std::is_sorted(m_derived_atoms.begin(), m_derived_atoms.end()));
-        return m_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
+    assert(std::is_sorted(static_cast<const StateImpl&>(*this).get_atoms<Fluent>().begin(), static_cast<const StateImpl&>(*this).get_atoms<Fluent>().end()));
+    return m_fluent_atoms;
 }
 
-template FlatIndexList& StateImpl::get_atoms<Fluent>();
-template FlatIndexList& StateImpl::get_atoms<Derived>();
+uintptr_t& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
 template<DynamicPredicateTag P>
 const FlatIndexList& StateImpl::get_atoms() const
@@ -113,8 +101,14 @@ const FlatIndexList& StateImpl::get_atoms() const
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        assert(std::is_sorted(m_derived_atoms.begin(), m_derived_atoms.end()));
-        return m_derived_atoms;
+        if (!m_derived_atoms)
+        {
+            return StateImpl::s_empty_derived_atoms;
+        }
+        // Here we know that m_derived_atoms is a valid pointer to a FlatIndexList.
+        const auto& derived_atoms = *reinterpret_cast<const FlatIndexList*>(m_derived_atoms);
+        assert(std::is_sorted(derived_atoms.begin(), derived_atoms.end()));
+        return derived_atoms;
     }
     else
     {

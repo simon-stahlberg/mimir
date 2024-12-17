@@ -37,6 +37,7 @@ private:
 
     StateImpl& get_or_create_state_builder();
     std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset>& get_or_create_bitsets();
+    FlatIndexList& get_or_create_axiom_evaluation();
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
     std::optional<StateImpl> state_builder = std::nullopt;
@@ -48,6 +49,7 @@ private:
                              FlatBitset>>  ///< temporary to collect applied negative effects.
         bitsets = std::nullopt;
     std::optional<AxiomEvaluatorWorkspace> axiom_evaluator_workspace = std::nullopt;
+    std::optional<FlatIndexList> axiom_evaluation = std::nullopt;
 };
 
 }

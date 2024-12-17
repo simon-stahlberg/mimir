@@ -34,7 +34,8 @@ private:
     std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< Provices access the axiom evaluator.
     bool m_problem_or_domain_has_axioms;                 ///< true iff the underlying problem or domain contains axioms.
 
-    StateImplSet m_states;  ///< Stores all created states.
+    StateImplSet m_states;                   ///< Stores all created states.
+    AxiomEvaluationSet m_axiom_evaluations;  ///< axiom evaluations.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
