@@ -164,11 +164,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
               out_derived_ground_atoms.end(),
               [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State("
-       << "index=" << state->get_index() << ", "
-       << "fluent atoms=" << out_fluent_ground_atoms << ", "
-       << "static atoms=" << out_static_ground_atoms << ", "
-       << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
+       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }

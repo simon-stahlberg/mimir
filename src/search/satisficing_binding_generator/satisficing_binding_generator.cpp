@@ -239,15 +239,15 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
 
     if (m_precondition->get_arity() == 0)
     {
-        co_yield mimir::ranges::elements_of(nullary_case(state));
+        return nullary_case(state);
     }
     else if (m_precondition->get_arity() == 1)
     {
-        co_yield mimir::ranges::elements_of(unary_case(fluent_assignment_set, derived_assignment_set, state));
+        return unary_case(fluent_assignment_set, derived_assignment_set, state);
     }
     else
     {
-        co_yield mimir::ranges::elements_of(general_case(fluent_assignment_set, derived_assignment_set, state, workspace));
+        return general_case(fluent_assignment_set, derived_assignment_set, state, workspace);
     }
 }
 
