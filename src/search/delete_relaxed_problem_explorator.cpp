@@ -109,12 +109,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
         for (const auto& action :
              m_delete_free_applicable_action_generator->create_applicable_action_generator(fluent_atoms, derived_atoms, applicable_action_generator_workspace))
         {
-            const auto [succ_state, action_cost] =
-                m_delete_free_state_repository.get_or_create_successor_state(fluent_atoms, derived_atoms, action, state_repository_workspace);
-            for (const auto atom_index : succ_state->get_atoms<Fluent>())
-            {
-                fluent_atoms.set(atom_index);
-            }
+            m_delete_free_state_repository.get_or_create_successor_state(fluent_atoms, derived_atoms, action, state_repository_workspace);
         }
 
         // Create and all applicable axioms and apply them

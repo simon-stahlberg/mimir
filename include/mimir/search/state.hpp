@@ -52,17 +52,22 @@ struct StateImpl
     template<DynamicPredicateTag P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
-    /* Getters */
-
-    Index& get_index();
+    /* Immutable Getters */
 
     Index get_index() const;
 
-    FlatIndexList& get_fluent_atoms();
-    uintptr_t& get_derived_atoms();
-
     template<DynamicPredicateTag P>
     const FlatIndexList& get_atoms() const;
+
+private:
+    /* Mutable Getters */
+
+    friend class StateRepository;  ///< Given exclusive write access to a state.
+
+    Index& get_index();
+
+    FlatIndexList& get_fluent_atoms();
+    uintptr_t& get_derived_atoms();
 };
 
 }

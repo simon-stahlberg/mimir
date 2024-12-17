@@ -79,17 +79,7 @@ bool StateImpl::literals_hold(const FlatIndexList& positive_atoms, const FlatInd
 template bool StateImpl::literals_hold<Fluent>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 template bool StateImpl::literals_hold<Derived>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
-Index& StateImpl::get_index() { return m_index; }
-
 Index StateImpl::get_index() const { return m_index; }
-
-FlatIndexList& StateImpl::get_fluent_atoms()
-{
-    assert(std::is_sorted(static_cast<const StateImpl&>(*this).get_atoms<Fluent>().begin(), static_cast<const StateImpl&>(*this).get_atoms<Fluent>().end()));
-    return m_fluent_atoms;
-}
-
-uintptr_t& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
 template<DynamicPredicateTag P>
 const FlatIndexList& StateImpl::get_atoms() const
@@ -105,7 +95,7 @@ const FlatIndexList& StateImpl::get_atoms() const
         {
             return StateImpl::s_empty_derived_atoms;
         }
-        // Here we know that m_derived_atoms is a valid pointer to a FlatIndexList.
+        // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
         const auto& derived_atoms = *reinterpret_cast<const FlatIndexList*>(m_derived_atoms);
         assert(std::is_sorted(derived_atoms.begin(), derived_atoms.end()));
         return derived_atoms;
@@ -118,6 +108,16 @@ const FlatIndexList& StateImpl::get_atoms() const
 
 template const FlatIndexList& StateImpl::get_atoms<Fluent>() const;
 template const FlatIndexList& StateImpl::get_atoms<Derived>() const;
+
+Index& StateImpl::get_index() { return m_index; }
+
+FlatIndexList& StateImpl::get_fluent_atoms()
+{
+    assert(std::is_sorted(static_cast<const StateImpl&>(*this).get_atoms<Fluent>().begin(), static_cast<const StateImpl&>(*this).get_atoms<Fluent>().end()));
+    return m_fluent_atoms;
+}
+
+uintptr_t& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
 /**
  * Pretty printing

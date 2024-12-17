@@ -56,13 +56,7 @@ State StateRepository::get_or_create_initial_state(StateRepositoryWorkspace& wor
 State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace)
 {
     auto& state_builder = workspace.get_or_create_state_builder();
-    auto& [fluent_atoms, derived_atoms, target_fluent_atoms, target_derived_atoms, negative_applied_effects, positive_applied_effects] =
-        workspace.get_or_create_bitsets();
-    fluent_atoms.unset_all();
-    derived_atoms.unset_all();
-    negative_applied_effects.unset_all();
-    positive_applied_effects.unset_all();
-    state_builder.get_derived_atoms() = 0;
+    auto& state_fluent_atoms = workspace.get_or_create_state_fluent_atoms();
 
     /* 1. Set state index */
 
@@ -75,17 +69,20 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     /* 2. Construct non-extended state */
 
     {
+        state_fluent_atoms.unset_all();
         for (const auto& atom : atoms)
         {
-            fluent_atoms.set(atom->get_index());
+            state_fluent_atoms.set(atom->get_index());
         }
-        m_reached_fluent_atoms |= fluent_atoms;
+
+        // Update reached fluent atoms
+        m_reached_fluent_atoms |= state_fluent_atoms;
 
         // Translate dense unextended into sparse unextended state.
-        auto& fluent_state_atoms = state_builder.get_fluent_atoms();
-        fluent_state_atoms.clear();
-        insert_into_vector(fluent_atoms, fluent_state_atoms);
-        fluent_state_atoms.compress();
+        auto& state_fluent_atoms_list = state_builder.get_fluent_atoms();
+        state_fluent_atoms_list.clear();
+        insert_into_vector(state_fluent_atoms, state_fluent_atoms_list);
+        state_fluent_atoms_list.compress();
 
         // Test whether there exists an extended state for the given non extended state
         auto iter = m_states.find(state_builder);
@@ -96,6 +93,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     }
 
     /* 3. Apply axioms to construct extended state. */
+    state_builder.get_derived_atoms() = 0;
 
     {
         // Return early if no axioms must be evaluated
@@ -105,19 +103,20 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
             return *iter2;
         }
 
-        auto& axiom_evaluation = workspace.get_or_create_axiom_evaluation();
-        axiom_evaluation.clear();
-
         // Evaluate axioms
-        m_axiom_evaluator->generate_and_apply_axioms(fluent_atoms, derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
+        auto& state_derived_atoms = workspace.get_or_create_state_derived_atoms();
+        state_derived_atoms.unset_all();
+        m_axiom_evaluator->generate_and_apply_axioms(state_fluent_atoms, state_derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
-        m_reached_derived_atoms |= derived_atoms;
+        m_reached_derived_atoms |= state_derived_atoms;
 
         // Translate dense extended into sparse extended state.
-        insert_into_vector(derived_atoms, axiom_evaluation);
-        axiom_evaluation.compress();
-        const auto [iter, inserted] = m_axiom_evaluations.insert(axiom_evaluation);
+        auto& state_derived_atoms_list = workspace.get_or_create_new_derived_atoms_list();
+        state_derived_atoms_list.clear();
+        insert_into_vector(state_derived_atoms, state_derived_atoms_list);
+        state_derived_atoms_list.compress();
+        const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms_list);
         auto& derived_state_atoms_ptr = state_builder.get_derived_atoms();
         derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
     }
@@ -128,30 +127,22 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
 
 std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace)
 {
-    auto& [source_fluent_atoms, source_derived_atoms, target_fluent_atoms, target_derived_atoms, negative_applied_effects, positive_applied_effects] =
-        workspace.get_or_create_bitsets();
+    auto& state_fluent_atoms = workspace.get_or_create_state_fluent_atoms();
+    auto& state_derived_atoms = workspace.get_or_create_state_derived_atoms();
+    state_fluent_atoms.unset_all();
+    state_derived_atoms.unset_all();
+    insert_into_bitset(state->get_atoms<Fluent>(), state_fluent_atoms);
+    insert_into_bitset(state->get_atoms<Derived>(), state_derived_atoms);
 
-    source_fluent_atoms.unset_all();
-    source_derived_atoms.unset_all();
-    insert_into_bitset(state->get_atoms<Fluent>(), source_fluent_atoms);
-    insert_into_bitset(state->get_atoms<Derived>(), source_derived_atoms);
-
-    return get_or_create_successor_state(source_fluent_atoms, source_derived_atoms, action, workspace);
+    return get_or_create_successor_state(state_fluent_atoms, state_derived_atoms, action, workspace);
 }
 
-std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(const FlatBitset& source_fluent_atoms,
-                                                                                const FlatBitset& source_derived_atoms,
+std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(FlatBitset& ref_state_fluent_atoms,
+                                                                                FlatBitset& ref_state_derived_atoms,
                                                                                 GroundAction action,
                                                                                 StateRepositoryWorkspace& workspace)
 {
     auto& state_builder = workspace.get_or_create_state_builder();
-    auto& [source_fluent_atoms_, source_derived_atoms_, target_fluent_atoms, target_derived_atoms, negative_applied_effects, positive_applied_effects] =
-        workspace.get_or_create_bitsets();
-    target_fluent_atoms.unset_all();
-    target_derived_atoms.unset_all();
-    negative_applied_effects.unset_all();
-    positive_applied_effects.unset_all();
-    state_builder.get_derived_atoms() = 0;
 
     /* Accumulate state-dependent action cost. */
     auto action_cost = ContinuousCost(0);
@@ -168,6 +159,11 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
 
     {
         // Apply STRIPS effect
+        auto& negative_applied_effects = workspace.get_or_create_applied_negative_effect_atoms();
+        auto& positive_applied_effects = workspace.get_or_create_applied_positive_effect_atoms();
+        negative_applied_effects.unset_all();
+        positive_applied_effects.unset_all();
+
         const auto& strips_action_effect = action->get_strips_effect();
         insert_into_bitset(strips_action_effect.get_negative_effects(), negative_applied_effects);
         insert_into_bitset(strips_action_effect.get_positive_effects(), positive_applied_effects);
@@ -176,7 +172,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         // Apply conditional effects
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            if (conditional_effect.is_applicable(m_axiom_evaluator->get_axiom_grounder()->get_problem(), source_fluent_atoms, source_derived_atoms))
+            if (conditional_effect.is_applicable(m_axiom_evaluator->get_axiom_grounder()->get_problem(), ref_state_fluent_atoms, ref_state_derived_atoms))
             {
                 for (const auto& effect_literal : conditional_effect.get_fluent_effect_literals())
                 {
@@ -194,18 +190,17 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         }
 
         // Modify fluent state atoms
-        target_fluent_atoms = source_fluent_atoms;
-        target_fluent_atoms -= negative_applied_effects;
-        target_fluent_atoms |= positive_applied_effects;
+        ref_state_fluent_atoms -= negative_applied_effects;
+        ref_state_fluent_atoms |= positive_applied_effects;
 
         // Update reached fluent atoms
-        m_reached_fluent_atoms |= target_fluent_atoms;
+        m_reached_fluent_atoms |= ref_state_fluent_atoms;
 
         // Translate dense unextended into sparse unextended state.
-        auto& target_fluent_state_atoms = state_builder.get_fluent_atoms();
-        target_fluent_state_atoms.clear();
-        insert_into_vector(target_fluent_atoms, target_fluent_state_atoms);
-        target_fluent_state_atoms.compress();
+        auto& successor_fluent_atoms_list = state_builder.get_fluent_atoms();
+        successor_fluent_atoms_list.clear();
+        insert_into_vector(ref_state_fluent_atoms, successor_fluent_atoms_list);
+        successor_fluent_atoms_list.compress();
 
         // Check if non-extended state exists in cache
         const auto iter = m_states.find(state_builder);
@@ -216,6 +211,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     }
 
     /* 3. Apply axioms to construct extended state. */
+    state_builder.get_derived_atoms() = 0;
 
     {
         // Return early if no axioms must be evaluated
@@ -225,19 +221,19 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
             return std::make_pair(*iter2, action_cost);
         }
 
-        auto& axiom_evaluation = workspace.get_or_create_axiom_evaluation();
-        axiom_evaluation.clear();
-
         // Evaluate axioms
-        m_axiom_evaluator->generate_and_apply_axioms(target_fluent_atoms, target_derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
+        ref_state_derived_atoms.unset_all();
+        m_axiom_evaluator->generate_and_apply_axioms(ref_state_fluent_atoms, ref_state_derived_atoms, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
-        m_reached_derived_atoms |= target_derived_atoms;
+        m_reached_derived_atoms |= ref_state_derived_atoms;
 
         // Translate dense extended into sparse extended state.
-        insert_into_vector(target_derived_atoms, axiom_evaluation);
-        axiom_evaluation.compress();
-        const auto [iter, inserted] = m_axiom_evaluations.insert(axiom_evaluation);
+        auto& successor_derived_atoms_list = workspace.get_or_create_new_derived_atoms_list();
+        successor_derived_atoms_list.clear();
+        insert_into_vector(ref_state_derived_atoms, successor_derived_atoms_list);
+        successor_derived_atoms_list.compress();
+        const auto [iter, inserted] = m_axiom_evaluations.insert(successor_derived_atoms_list);
         auto& derived_state_atoms_ptr = state_builder.get_derived_atoms();
         derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
     }

@@ -36,20 +36,24 @@ private:
     friend class DeleteRelaxedProblemExplorator;
 
     StateImpl& get_or_create_state_builder();
-    std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset>& get_or_create_bitsets();
-    FlatIndexList& get_or_create_axiom_evaluation();
+
+    FlatBitset& get_or_create_state_fluent_atoms();
+    FlatBitset& get_or_create_state_derived_atoms();
+    FlatBitset& get_or_create_applied_positive_effect_atoms();
+    FlatBitset& get_or_create_applied_negative_effect_atoms();
+
+    FlatIndexList& get_or_create_new_derived_atoms_list();
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
     std::optional<StateImpl> state_builder = std::nullopt;
-    std::optional<std::tuple<FlatBitset,   ///< temporary to store source fluent atoms
-                             FlatBitset,   ///< temporary to store source derived atoms
-                             FlatBitset,   ///< temporary to store target fluent atoms
-                             FlatBitset,   ///< temporary to store target derived atoms
-                             FlatBitset,   ///< temporary to collect applied positive effects.
-                             FlatBitset>>  ///< temporary to collect applied negative effects.
-        bitsets = std::nullopt;
+
+    std::optional<FlatBitset> new_fluent_atoms = std::nullopt;
+    std::optional<FlatBitset> new_derived_atoms = std::nullopt;
+    std::optional<FlatBitset> applied_positive_effect_atoms = std::nullopt;
+    std::optional<FlatBitset> applied_negative_effect_atoms = std::nullopt;
+
+    std::optional<FlatIndexList> new_derived_atoms_list = std::nullopt;
     std::optional<AxiomEvaluatorWorkspace> axiom_evaluator_workspace = std::nullopt;
-    std::optional<FlatIndexList> axiom_evaluation = std::nullopt;
 };
 
 }

@@ -33,24 +33,54 @@ StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
     return state_builder.value();
 }
 
-std::tuple<FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset, FlatBitset>& StateRepositoryWorkspace::get_or_create_bitsets()
+FlatBitset& StateRepositoryWorkspace::get_or_create_state_fluent_atoms()
 {
-    if (!bitsets.has_value())
+    if (!new_fluent_atoms.has_value())
     {
-        bitsets = std::make_tuple(FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset(), FlatBitset());
+        new_fluent_atoms = FlatBitset();
     }
 
-    return bitsets.value();
+    return new_fluent_atoms.value();
 }
 
-FlatIndexList& StateRepositoryWorkspace::get_or_create_axiom_evaluation()
+FlatBitset& StateRepositoryWorkspace::get_or_create_state_derived_atoms()
 {
-    if (!axiom_evaluation.has_value())
+    if (!new_derived_atoms.has_value())
     {
-        axiom_evaluation = FlatIndexList();
+        new_derived_atoms = FlatBitset();
     }
 
-    return axiom_evaluation.value();
+    return new_derived_atoms.value();
+}
+
+FlatBitset& StateRepositoryWorkspace::get_or_create_applied_positive_effect_atoms()
+{
+    if (!applied_positive_effect_atoms.has_value())
+    {
+        applied_positive_effect_atoms = FlatBitset();
+    }
+
+    return applied_positive_effect_atoms.value();
+}
+
+FlatBitset& StateRepositoryWorkspace::get_or_create_applied_negative_effect_atoms()
+{
+    if (!applied_negative_effect_atoms.has_value())
+    {
+        applied_negative_effect_atoms = FlatBitset();
+    }
+
+    return applied_negative_effect_atoms.value();
+}
+
+FlatIndexList& StateRepositoryWorkspace::get_or_create_new_derived_atoms_list()
+{
+    if (!new_derived_atoms_list.has_value())
+    {
+        new_derived_atoms_list = FlatIndexList();
+    }
+
+    return new_derived_atoms_list.value();
 }
 
 AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
