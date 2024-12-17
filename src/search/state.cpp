@@ -17,8 +17,10 @@
 
 #include "mimir/search/state.hpp"
 
+#include "mimir/algorithms/murmurhash3.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
 
@@ -27,7 +29,7 @@
 
 size_t cista::storage::DerefStdHasher<mimir::StateImpl>::operator()(const mimir::StateImpl* ptr) const
 {
-    return mimir::hash_combine(ptr->get_atoms<mimir::Fluent>());
+    return std::hash<mimir::FlatIndexList>()(ptr->get_atoms<mimir::Fluent>());
 }
 
 bool cista::storage::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const
