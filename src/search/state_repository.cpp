@@ -196,6 +196,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         auto& target_fluent_state_atoms = state_builder.get_atoms<Fluent>();
         target_fluent_state_atoms.clear();
         insert_into_vector(target_fluent_atoms, target_fluent_state_atoms);
+        target_fluent_state_atoms.compress();
 
         // Check if non-extended state exists in cache
         const auto iter = m_states.find(state_builder);
@@ -225,6 +226,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         auto& target_derived_state_atoms = state_builder.get_atoms<Derived>();
         target_derived_state_atoms.clear();
         insert_into_vector(target_derived_atoms, target_derived_state_atoms);
+        target_derived_state_atoms.compress();
     }
 
     // Cache and return the extended state.

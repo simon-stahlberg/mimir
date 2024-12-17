@@ -18,6 +18,7 @@ add_gtest(algorithms_memory_pool_test                      "algorithms/memory_po
 add_gtest(algorithms_nauty_test                            "algorithms/nauty.cpp")
 
 add_gtest(cista_dynamic_bitset_test                        "cista/dynamic_bitset.cpp")
+add_gtest(cista_flexible_index_vector_test                 "cista/flexible_index_vector.cpp")
 
 add_gtest(common_grouped_vector_test                       "common/grouped_vector.cpp")
 

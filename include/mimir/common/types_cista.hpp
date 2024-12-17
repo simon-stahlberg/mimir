@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_TYPES_CISTA_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/types.hpp"
@@ -51,7 +52,23 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 
 /* IndexList */
 
-using FlatIndexList = cista::offset::vector<Index>;
+using FlatIndexList = cista::offset::flexible_index_vector<Index>;
+// using FlatIndexList = cista::offset::vector<Index>;
+
+inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
+{
+    os << "[";
+    size_t i = 0;
+    for (const auto& element : set)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "]";
+    return os;
+}
 
 inline bool contains(const FlatIndexList& vec, Index value) { return std::find(vec.begin(), vec.end(), value) != vec.end(); }
 
