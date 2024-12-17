@@ -26,6 +26,26 @@
 namespace mimir::tests
 {
 
+TEST(CistaTests, CistaFlexibleIndexVectorEmptyTest)
+{
+    namespace data = cista::offset;
+
+    using Vector = data::flexible_index_vector<uint16_t>;
+
+    auto vec = Vector();
+    vec.compress();
+
+    std::vector<uint8_t> buf;
+    {  // Serialize.
+        buf = cista::serialize(vec);
+    }
+
+    // Deserialize.
+    const auto& deserialized = *cista::deserialize<Vector>(buf.begin().base(), buf.end().base());
+
+    EXPECT_EQ(buf.size(), 32);
+}
+
 TEST(CistaTests, CistaFlexibleIndexVectorTest)
 {
     namespace data = cista::offset;

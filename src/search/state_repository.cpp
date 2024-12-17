@@ -83,6 +83,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
         fluent_state_atoms.clear();
         insert_into_vector(fluent_atoms, fluent_state_atoms);
+        fluent_state_atoms.compress();
 
         // Test whether there exists an extended state for the given non extended state
         auto iter = m_states.find(state_builder);
@@ -112,6 +113,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         auto& derived_state_atoms = state_builder.get_atoms<Derived>();
         derived_state_atoms.clear();
         insert_into_vector(derived_atoms, derived_state_atoms);
+        derived_state_atoms.compress();
     }
 
     // Cache and return the extended state.
