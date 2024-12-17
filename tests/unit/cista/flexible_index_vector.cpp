@@ -79,6 +79,8 @@ TEST(CistaTests, CistaFlexibleIndexVectorTest)
     // Deserialize.
     const auto& deserialized = *cista::deserialize<Vector>(buf.begin().base(), buf.end().base());
 
+    std::cout << buf.size() << std::endl;
+
     EXPECT_EQ(deserialized.size(), 4);
     EXPECT_EQ(deserialized.blocks().size(), 2);
     EXPECT_EQ(deserialized[0], 1);

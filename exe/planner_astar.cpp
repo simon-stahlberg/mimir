@@ -113,6 +113,8 @@ int main(int argc, char** argv)
     auto result = find_solution_astar(applicable_action_generator, state_repository, heuristic, std::nullopt, event_handler);
 
     std::cout << "Memory used for states: " << (state_repository->get_num_bytes_used_for_states() / 1000000) << " MB." << std::endl;
+    std::cout << "Num registered states: " << state_repository->get_state_count() << std::endl;
+    std::cout << "Memory per state: " << (state_repository->get_num_bytes_used_for_states() / state_repository->get_state_count()) << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

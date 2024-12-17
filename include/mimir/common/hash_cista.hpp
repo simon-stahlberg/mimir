@@ -102,7 +102,7 @@ struct std::hash<cista::basic_flexible_index_vector<IndexType, Ptr>>
         size_t seed = vector.size();
         size_t hash[2] = { 0, 0 };
 
-        MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(uint64_t), seed, hash);
+        MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(IndexType), seed, hash);
 
         mimir::hash_combine(seed, hash[0]);
         mimir::hash_combine(seed, hash[1]);
