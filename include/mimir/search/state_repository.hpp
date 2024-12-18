@@ -31,11 +31,11 @@ namespace mimir
 class StateRepository
 {
 private:
-    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< Provices access the axiom evaluator.
-    bool m_problem_or_domain_has_axioms;                 ///< true iff the underlying problem or domain contains axioms.
+    std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< The axiom evaluator.
+    bool m_problem_or_domain_has_axioms;                 ///< flag that indicates whether axiom evaluation must trigger.
 
-    StateImplSet m_states;                   ///< Stores all created states.
-    AxiomEvaluationSet m_axiom_evaluations;  ///< axiom evaluations.
+    StateImplSet m_states;                   ///< Stores all created extended states.
+    AxiomEvaluationSet m_axiom_evaluations;  ///< Stores all axiom evaluations.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.

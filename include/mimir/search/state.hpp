@@ -39,7 +39,7 @@ struct StateImpl
     FlatIndexList m_fluent_atoms = FlatIndexList();
     uintptr_t m_derived_atoms = uintptr_t(0);
 
-    static const FlatIndexList s_empty_derived_atoms;
+    static const FlatIndexList s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
     template<DynamicPredicateTag P>

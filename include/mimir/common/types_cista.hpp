@@ -53,7 +53,6 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 /* IndexList */
 
 using FlatIndexList = cista::offset::flexible_index_vector<Index>;
-// using FlatIndexList = cista::offset::vector<Index>;
 
 inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
 {
@@ -70,8 +69,19 @@ inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
     return os;
 }
 
+/// @brief Check whether `value` exists in the given `vec`.
+/// Runs binary search to find a value in a vec.
+/// @param vec is the vector.
+/// @param value is the value.
+/// @return true iff the value exists in the vector.
 inline bool contains(const FlatIndexList& vec, Index value) { return std::find(vec.begin(), vec.end(), value) != vec.end(); }
 
+/// @brief
+/// We use this to test applicability of sparse actions/axioms in dense intermediate states.
+/// We could get rid of this if we avoid translation to dense state representation.
+/// @param bitset
+/// @param list
+/// @return
 inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
 {
     for (const auto index : list)
@@ -84,6 +94,12 @@ inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
     return true;
 }
 
+/// @brief
+/// We use this to test applicability of sparse actions/axioms in dense intermediate states.
+/// We could get rid of this if we avoid translation to dense state representation.
+/// @param bitset
+/// @param vec
+/// @return
 inline bool is_supseteq(const FlatBitset& bitset, const FlatIndexList& vec)
 {
     for (const auto& index : vec)
@@ -96,6 +112,11 @@ inline bool is_supseteq(const FlatBitset& bitset, const FlatIndexList& vec)
     return true;
 }
 
+/// @brief
+/// We use this to test applicability of actions/axioms in fully sparse representations.
+/// @param vec1
+/// @param vec2
+/// @return
 inline bool is_supseteq(const FlatIndexList& vec1, const FlatIndexList& vec2)
 {
     assert(std::is_sorted(vec1.begin(), vec1.end()));
@@ -104,6 +125,11 @@ inline bool is_supseteq(const FlatIndexList& vec1, const FlatIndexList& vec2)
     return std::includes(vec1.begin(), vec1.end(), vec2.begin(), vec2.end());
 }
 
+/// @brief
+/// We use this to test applicability of actions/axioms in fully sparse representations.
+/// @param vec1
+/// @param vec2
+/// @return
 inline bool are_disjoint(const FlatIndexList& vec1, const FlatIndexList& vec2)
 {
     assert(std::is_sorted(vec1.begin(), vec1.end()));
