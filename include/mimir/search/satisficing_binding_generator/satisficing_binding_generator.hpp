@@ -64,15 +64,15 @@ private:
 
     mimir::generator<ObjectList> nullary_case(const FlatBitset& fluent_atom_indices, const FlatBitset& derived_atom_indices);
 
-    mimir::generator<ObjectList> unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                            const AssignmentSet<Derived>& derived_assignment_sets,
-                                            const FlatBitset& fluent_atom_indices,
-                                            const FlatBitset& derived_atom_indices);
+    mimir::generator<ObjectList> unary_case(const FlatBitset& fluent_atom_indices,
+                                            const FlatBitset& derived_atom_indices,
+                                            const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                            const AssignmentSet<Derived>& derived_assignment_sets);
 
-    mimir::generator<ObjectList> general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                              const AssignmentSet<Derived>& derived_assignment_sets,
-                                              const FlatBitset& fluent_atom_indices,
+    mimir::generator<ObjectList> general_case(const FlatBitset& fluent_atom_indices,
                                               const FlatBitset& derived_atom_indices,
+                                              const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                              const AssignmentSet<Derived>& derived_assignment_sets,
                                               SatisficingBindingGeneratorWorkspace& workspace);
 
 public:

@@ -127,10 +127,10 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(const Fla
     }
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                     const AssignmentSet<Derived>& derived_assignment_sets,
-                                                                     const FlatBitset& fluent_atom_indices,
-                                                                     const FlatBitset& derived_atom_indices)
+mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const FlatBitset& fluent_atom_indices,
+                                                                     const FlatBitset& derived_atom_indices,
+                                                                     const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                                     const AssignmentSet<Derived>& derived_assignment_sets)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
@@ -151,10 +151,10 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const Assig
     }
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                       const AssignmentSet<Derived>& derived_assignment_sets,
-                                                                       const FlatBitset& fluent_atom_indices,
+mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const FlatBitset& fluent_atom_indices,
                                                                        const FlatBitset& derived_atom_indices,
+                                                                       const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                                       const AssignmentSet<Derived>& derived_assignment_sets,
                                                                        SatisficingBindingGeneratorWorkspace& workspace)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
@@ -246,11 +246,11 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
     }
     else if (m_precondition->get_arity() == 1)
     {
-        return unary_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices);
+        return unary_case(fluent_atom_indices, derived_atom_indices, fluent_assignment_set, derived_assignment_set);
     }
     else
     {
-        return general_case(fluent_assignment_set, derived_assignment_set, fluent_atom_indices, derived_atom_indices, workspace);
+        return general_case(fluent_atom_indices, derived_atom_indices, fluent_assignment_set, derived_assignment_set, workspace);
     }
 }
 
