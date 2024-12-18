@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/workspaces/axiom_evaluator.hpp"
 
@@ -36,6 +37,7 @@ private:
     friend class DeleteRelaxedProblemExplorator;
 
     StateImpl& get_or_create_state_builder();
+    DenseState& get_or_create_dense_state();
 
     FlatBitset& get_or_create_state_fluent_atoms();
     FlatBitset& get_or_create_state_derived_atoms();
@@ -46,6 +48,7 @@ private:
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
     std::optional<StateImpl> state_builder = std::nullopt;
+    std::optional<DenseState> dense_state = std::nullopt;
 
     std::optional<FlatBitset> new_fluent_atoms = std::nullopt;
     std::optional<FlatBitset> new_derived_atoms = std::nullopt;

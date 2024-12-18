@@ -38,8 +38,7 @@ public:
     virtual mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace) = 0;
 
     /// @brief Generate all applicable actions for a bitset representation of a state.
-    virtual mimir::generator<GroundAction>
-    create_applicable_action_generator(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms, ApplicableActionGeneratorWorkspace& workspace) = 0;
+    virtual mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state, ApplicableActionGeneratorWorkspace& workspace) = 0;
 
     /// @brief Accumulate event handler statistics during search.
     virtual void on_finish_search_layer() = 0;

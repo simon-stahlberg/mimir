@@ -21,6 +21,7 @@
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
@@ -91,9 +92,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
 
     auto initial_state = m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace);
-    auto fluent_atoms = FlatBitset();
-    auto derived_atoms = FlatBitset();
-    insert_into_bitset(initial_state->get_atoms<Fluent>(), fluent_atoms);
+
+    auto dense_state = DenseState(initial_state);
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -102,22 +102,20 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = fluent_atoms.count();
+        auto num_atoms_before = dense_state.get_atoms<Fluent>().count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
         for (const auto& action :
-             m_delete_free_applicable_action_generator->create_applicable_action_generator(fluent_atoms, derived_atoms, applicable_action_generator_workspace))
+             m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state, applicable_action_generator_workspace))
         {
-            m_delete_free_state_repository.get_or_create_successor_state(fluent_atoms, derived_atoms, action, state_repository_workspace);
+            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action, state_repository_workspace);
         }
 
         // Create and all applicable axioms and apply them
-        m_delete_free_axiom_evalator->generate_and_apply_axioms(fluent_atoms,
-                                                                derived_atoms,
-                                                                state_repository_workspace.get_or_create_axiom_evaluator_workspace());
+        m_delete_free_axiom_evalator->generate_and_apply_axioms(dense_state, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
 
-        auto num_atoms_after = fluent_atoms.count();
+        auto num_atoms_after = dense_state.get_atoms<Fluent>().count();
 
         if (num_atoms_before != num_atoms_after)
         {

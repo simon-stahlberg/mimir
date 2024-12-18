@@ -33,6 +33,16 @@ StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
     return state_builder.value();
 }
 
+DenseState& StateRepositoryWorkspace::get_or_create_dense_state()
+{
+    if (!dense_state.has_value())
+    {
+        dense_state = DenseState();
+    }
+
+    return dense_state.value();
+}
+
 FlatBitset& StateRepositoryWorkspace::get_or_create_state_fluent_atoms()
 {
     if (!new_fluent_atoms.has_value())

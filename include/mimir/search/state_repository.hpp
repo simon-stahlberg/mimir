@@ -73,8 +73,7 @@ public:
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and the action cost.
-    std::pair<State, ContinuousCost>
-    get_or_create_successor_state(FlatBitset& state_fluent_atoms, FlatBitset& state_derived_atoms, GroundAction action, StateRepositoryWorkspace& workspace);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action, StateRepositoryWorkspace& workspace);
 
     /**
      * Getters

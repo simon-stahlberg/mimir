@@ -20,6 +20,7 @@
 #include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/workspaces/axiom_evaluator.hpp"
 #include "mimir/search/workspaces/lifted_axiom_evaluator.hpp"
@@ -45,10 +46,11 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     }
 }
 
-void LiftedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_atom_indices,
-                                                     FlatBitset& derived_atom_indices,
-                                                     AxiomEvaluatorWorkspace& workspace)
+void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace& workspace)
 {
+    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+
     auto& lifted_workspace = workspace.get_or_create_lifted_workspace();
 
     /* 1. Initialize assignment set */
@@ -58,12 +60,12 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_at
     const auto& pddl_repositories = m_grounder->get_pddl_repositories();
 
     auto& assignment_set_workspace = lifted_workspace.get_or_create_assignment_set_workspace();
-    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(fluent_atom_indices, *m_grounder->get_pddl_repositories());
+    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(dense_fluent_atoms, *m_grounder->get_pddl_repositories());
     auto& fluent_assignment_set = assignment_set_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
     fluent_assignment_set.clear();
     fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(derived_atom_indices, *m_grounder->get_pddl_repositories());
+    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(dense_derived_atoms, *m_grounder->get_pddl_repositories());
     auto& derived_assignment_set = assignment_set_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
     derived_assignment_set.clear();
     derived_assignment_set.insert_ground_atoms(derived_fluents);
@@ -95,15 +97,15 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_at
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_precondition(), fluent_atom_indices, derived_atom_indices))
+                if (!nullary_conditions_hold(axiom->get_precondition(), dense_fluent_atoms, dense_derived_atoms))
                 {
                     continue;
                 }
 
                 auto& condition_grounder = m_condition_grounders.at(axiom);
 
-                for (auto&& binding : condition_grounder.create_binding_generator(fluent_atom_indices,
-                                                                                  derived_atom_indices,
+                for (auto&& binding : condition_grounder.create_binding_generator(dense_fluent_atoms,
+                                                                                  dense_derived_atoms,
                                                                                   fluent_assignment_set,
                                                                                   derived_assignment_set,
                                                                                   lifted_workspace.get_or_create_satisficing_binding_generator(axiom)))
@@ -112,7 +114,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_at
 
                     const auto ground_axiom = m_grounder->ground_axiom(axiom, std::move(binding));
 
-                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), fluent_atom_indices, derived_atom_indices));
+                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
@@ -134,7 +136,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_at
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
-                if (!derived_atom_indices.get(grounded_atom_index))
+                if (!dense_derived_atoms.get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     const auto new_ground_atom = pddl_repositories->get_ground_atom<Derived>(grounded_atom_index);
@@ -151,7 +153,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_at
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
                 }
 
-                derived_atom_indices.set(grounded_atom_index);
+                dense_derived_atoms.set(grounded_atom_index);
             }
         } while (!reached_partition_fixed_point);
     }

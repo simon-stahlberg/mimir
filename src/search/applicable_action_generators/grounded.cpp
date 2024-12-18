@@ -47,25 +47,21 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared
 mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
 {
     auto& grounded_workspace = workspace.get_or_create_grounded_workspace();
-    auto& [fluent_bitset, derived_bitset] = grounded_workspace.get_or_create_bitsets();
-    fluent_bitset.unset_all();
-    derived_bitset.unset_all();
-    insert_into_bitset(state->get_atoms<Fluent>(), fluent_bitset);
-    insert_into_bitset(state->get_atoms<Derived>(), derived_bitset);
+    auto& dense_state = grounded_workspace.get_or_create_dense_state();
+    DenseState::translate(state, dense_state);
 
-    return create_applicable_action_generator(fluent_bitset, derived_bitset, workspace);
+    return create_applicable_action_generator(dense_state, workspace);
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const FlatBitset& fluent_atoms,
-                                                                                                     const FlatBitset& derived_atoms,
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state,
                                                                                                      ApplicableActionGeneratorWorkspace& workspace)
 {
     auto ground_actions = GroundActionList {};
-    m_match_tree.get_applicable_elements(fluent_atoms, derived_atoms, ground_actions);
+    m_match_tree.get_applicable_elements(dense_state.get_atoms<Fluent>(), dense_state.get_atoms<Derived>(), ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(ground_action->is_applicable(m_grounder->get_problem(), fluent_atoms, derived_atoms));
+        assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state.get_atoms<Fluent>(), dense_state.get_atoms<Derived>()));
 
         co_yield ground_action;
     }

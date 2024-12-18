@@ -37,6 +37,6 @@ exp.add_fetcher("ipc-mimir-dense-astar-blind-eval")
 exp.add_fetcher("ipc-downward-astar-blind-eval")
 exp.add_fetcher("ipc-powerlifted-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-sparse-astar-blind-grounded", "mimir-dense-astar-blind-grounded", "mimir-sparse-astar-blind-lifted", "mimir-dense-astar-blind-lifted"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-sparse-astar-blind-grounded", "mimir-dense-astar-blind-grounded", "mimir-sparse-astar-blind-lifted", "mimir-dense-astar-blind-lifted", "powerlifted-astar-blind"]))
 
 exp.run_steps()

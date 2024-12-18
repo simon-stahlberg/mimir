@@ -43,4 +43,14 @@ std::pair<FlatBitset, FlatBitset>& LiftedApplicableActionGeneratorWorkspace::get
 
     return bitsets.value();
 }
+
+DenseState& LiftedApplicableActionGeneratorWorkspace::get_or_create_dense_state()
+{
+    if (!dense_state.has_value())
+    {
+        dense_state = DenseState();
+    }
+
+    return dense_state.value();
+}
 }

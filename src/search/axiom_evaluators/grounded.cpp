@@ -23,6 +23,7 @@
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 
 namespace mimir
@@ -43,8 +44,11 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 {
 }
 
-void GroundedAxiomEvaluator::generate_and_apply_axioms(const FlatBitset& fluent_atoms, FlatBitset& derived_atoms, AxiomEvaluatorWorkspace&)
+void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace&)
 {
+    auto& fluent_atoms = dense_state.get_atoms<Fluent>();
+    auto& derived_atoms = dense_state.get_atoms<Derived>();
+
     auto applicable_axioms = GroundAxiomList {};
 
     for (const auto& lifted_partition : m_partitioning)

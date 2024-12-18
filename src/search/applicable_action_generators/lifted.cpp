@@ -54,29 +54,25 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
 
 mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
 {
-    auto& lifted_workspace = workspace.get_or_create_lifted_workspace();
-    auto& [fluent_bitset, derived_bitset] = lifted_workspace.get_or_create_bitsets();
-    fluent_bitset.unset_all();
-    derived_bitset.unset_all();
-    insert_into_bitset(state->get_atoms<Fluent>(), fluent_bitset);
-    insert_into_bitset(state->get_atoms<Derived>(), derived_bitset);
+    auto& grounded_workspace = workspace.get_or_create_lifted_workspace();
+    auto& dense_state = grounded_workspace.get_or_create_dense_state();
+    DenseState::translate(state, dense_state);
 
-    return create_applicable_action_generator(fluent_bitset, derived_bitset, workspace);
+    return create_applicable_action_generator(dense_state, workspace);
 }
 
-mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(const FlatBitset& fluent_atom_indices,
-                                                                                                   const FlatBitset& derived_atom_indices,
+mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state,
                                                                                                    ApplicableActionGeneratorWorkspace& workspace)
 {
     auto& lifted_workspace = workspace.get_or_create_lifted_workspace();
 
     auto& assignment_set_workspace = lifted_workspace.get_or_create_assignment_set_workspace();
-    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(fluent_atom_indices, *m_grounder->get_pddl_repositories());
+    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(dense_state.get_atoms<Fluent>(), *m_grounder->get_pddl_repositories());
     auto& fluent_assignment_set = assignment_set_workspace.get_or_create_fluent_assignment_set(m_grounder->get_problem());
     fluent_assignment_set.clear();
     fluent_assignment_set.insert_ground_atoms(fluent_atoms);
 
-    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(derived_atom_indices, *m_grounder->get_pddl_repositories());
+    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(dense_state.get_atoms<Derived>(), *m_grounder->get_pddl_repositories());
     auto& derived_assignment_set = assignment_set_workspace.get_or_create_derived_assignment_set(m_grounder->get_problem());
     derived_assignment_set.clear();
     derived_assignment_set.insert_ground_atoms(derived_fluents);
@@ -88,13 +84,13 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(action->get_precondition(), fluent_atom_indices, derived_atom_indices))
+        if (!nullary_conditions_hold(action->get_precondition(), dense_state.get_atoms<Fluent>(), dense_state.get_atoms<Derived>()))
         {
             continue;
         }
 
-        for (auto&& binding : condition_grounder.create_binding_generator(fluent_atom_indices,
-                                                                          derived_atom_indices,
+        for (auto&& binding : condition_grounder.create_binding_generator(dense_state.get_atoms<Fluent>(),
+                                                                          dense_state.get_atoms<Derived>(),
                                                                           fluent_assignment_set,
                                                                           derived_assignment_set,
                                                                           lifted_workspace.get_or_create_satisficing_binding_generator(action)))
@@ -103,7 +99,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
             const auto ground_action = m_grounder->ground_action(action, std::move(binding));
 
-            assert(ground_action->is_applicable(m_grounder->get_problem(), fluent_atom_indices, derived_atom_indices));
+            assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state.get_atoms<Fluent>(), dense_state.get_atoms<Derived>()));
 
             m_event_handler->on_ground_action(ground_action);
 

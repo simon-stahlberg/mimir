@@ -28,4 +28,14 @@ std::pair<FlatBitset, FlatBitset>& GroundedApplicableActionGeneratorWorkspace::g
 
     return bitsets.value();
 }
+
+DenseState& GroundedApplicableActionGeneratorWorkspace::get_or_create_dense_state()
+{
+    if (!dense_state.has_value())
+    {
+        dense_state = DenseState();
+    }
+
+    return dense_state.value();
+}
 }
