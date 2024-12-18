@@ -56,12 +56,15 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
 mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state,
                                                                                                      ApplicableActionGeneratorWorkspace& workspace)
 {
+    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+
     auto ground_actions = GroundActionList {};
-    m_match_tree.get_applicable_elements(dense_state.get_atoms<Fluent>(), dense_state.get_atoms<Derived>(), ground_actions);
+    m_match_tree.get_applicable_elements(dense_fluent_atoms, dense_derived_atoms, ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state.get_atoms<Fluent>(), dense_state.get_atoms<Derived>()));
+        assert(ground_action->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
 
         co_yield ground_action;
     }

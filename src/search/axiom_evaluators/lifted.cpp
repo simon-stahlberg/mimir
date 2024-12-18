@@ -48,7 +48,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
 
 void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace& workspace)
 {
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
     auto& lifted_workspace = workspace.get_or_create_lifted_workspace();

@@ -45,7 +45,7 @@ else:
     SUITE = [
         "blocksworld-large-simple:p-100-2-goal-2.pddl",
     ]
-    TIME_LIMIT = 10
+    TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",
     "coverage",
