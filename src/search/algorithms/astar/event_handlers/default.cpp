@@ -65,7 +65,18 @@ void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, 
     std::cout << "[AStar] Search started." << std::endl;
 }
 
-void DefaultAStarAlgorithmEventHandler::on_end_search_impl() const { std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl; }
+void DefaultAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_bytes_for_unextended_state_portion,
+                                                           uint64_t num_bytes_for_extended_state_portion,
+                                                           uint64_t num_bytes_for_nodes,
+                                                           uint64_t num_bytes_for_actions,
+                                                           uint64_t num_bytes_for_axioms,
+                                                           uint64_t num_states,
+                                                           uint64_t num_nodes,
+                                                           uint64_t num_actions,
+                                                           uint64_t num_axioms) const
+{
+    std::cout << "[AStar] Search ended.\n" << m_statistics << std::endl;
+}
 
 void DefaultAStarAlgorithmEventHandler::on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const
 {

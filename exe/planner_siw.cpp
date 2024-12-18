@@ -84,7 +84,6 @@ int main(int argc, char** argv)
 
     std::cout << "Number of reached fluent atoms: " << (state_repository->get_reached_fluent_ground_atoms_bitset().count()) << std::endl;
     std::cout << "Number of reached derived atoms: " << (state_repository->get_reached_derived_ground_atoms_bitset().count()) << std::endl;
-    std::cout << "Memory used for states: " << (state_repository->get_num_bytes_used_for_states() / 1000000) << " MB." << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

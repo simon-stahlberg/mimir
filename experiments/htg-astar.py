@@ -29,7 +29,7 @@ class BaseReport(AbsoluteReport):
 
 DIR = Path(__file__).resolve().parent
 REPO = DIR.parent
-BENCHMARKS_DIR = os.environ["BENCHMARKS_PDDL_DOWNWARD"]
+BENCHMARKS_DIR = os.environ["BENCHMARKS_PDDL_HTG"]
 
 NODE = platform.node()
 REMOTE = re.match(r"tetralith\d+.nsc.liu.se|n\d+", NODE)
@@ -38,13 +38,12 @@ if REMOTE:
         setup=TetralithEnvironment.DEFAULT_SETUP,
         memory_per_cpu="8G",
         extra_options="#SBATCH --account=naiss2024-5-421")
-    SUITE = utils.SUITE_OPTIMAL
+    SUITE = utils.SUITE_HTG
     TIME_LIMIT = 30 * 60  # 30 minutes
 else:
     ENV = LocalEnvironment(processes=12)
     SUITE = [
-        "gripper:prob01.pddl",
-        "gripper:prob10.pddl",
+        "blocksworld-large-simple:p-100-2-goal-2.pddl",
     ]
     TIME_LIMIT = 10
 ATTRIBUTES = [

@@ -65,6 +65,7 @@ public:
     const GroundAxiomList& get_ground_axioms() const;
     GroundAxiom get_ground_axiom(Index axiom_index) const;
     size_t get_num_ground_axioms() const;
+    size_t get_num_bytes_used_for_axioms() const;
 };
 
 }  // namespace mimir

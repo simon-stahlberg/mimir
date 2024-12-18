@@ -71,7 +71,15 @@ public:
     virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on ending a search.
-    virtual void on_end_search() = 0;
+    virtual void on_end_search(uint64_t num_bytes_for_unextended_state_portion,
+                               uint64_t num_bytes_for_extended_state_portion,
+                               uint64_t num_bytes_for_nodes,
+                               uint64_t num_bytes_for_actions,
+                               uint64_t num_bytes_for_axioms,
+                               uint64_t num_states,
+                               uint64_t num_nodes,
+                               uint64_t num_actions,
+                               uint64_t num_axioms) = 0;
 
     /// @brief React on solving a search.
     virtual void on_solved(const Plan& plan, const PDDLRepositories& pddl_repositories) = 0;
@@ -195,13 +203,39 @@ public:
         }
     }
 
-    void on_end_search() override
+    void on_end_search(uint64_t num_bytes_for_unextended_state_portion,
+                       uint64_t num_bytes_for_extended_state_portion,
+                       uint64_t num_bytes_for_nodes,
+                       uint64_t num_bytes_for_actions,
+                       uint64_t num_bytes_for_axioms,
+                       uint64_t num_states,
+                       uint64_t num_nodes,
+                       uint64_t num_actions,
+                       uint64_t num_axioms) override
+
     {
         m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
+        m_statistics.set_num_bytes_for_unextended_state_portion(num_bytes_for_unextended_state_portion);
+        m_statistics.set_num_bytes_for_extended_state_portion(num_bytes_for_extended_state_portion);
+        m_statistics.set_num_bytes_for_nodes(num_bytes_for_nodes);
+        m_statistics.set_num_bytes_for_actions(num_bytes_for_actions);
+        m_statistics.set_num_bytes_for_axioms(num_bytes_for_axioms);
+        m_statistics.set_num_states(num_states);
+        m_statistics.set_num_nodes(num_nodes);
+        m_statistics.set_num_actions(num_actions);
+        m_statistics.set_num_axioms(num_axioms);
 
         if (!m_quiet)
         {
-            self().on_end_search_impl();
+            self().on_end_search_impl(num_bytes_for_unextended_state_portion,
+                                      num_bytes_for_extended_state_portion,
+                                      num_bytes_for_nodes,
+                                      num_bytes_for_actions,
+                                      num_bytes_for_axioms,
+                                      num_states,
+                                      num_nodes,
+                                      num_actions,
+                                      num_axioms);
         }
     }
 
@@ -276,7 +310,17 @@ public:
 
     virtual void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) {}
 
-    virtual void on_end_search_impl() {}
+    virtual void on_end_search_impl(uint64_t num_bytes_for_unextended_state_portion,
+                                    uint64_t num_bytes_for_extended_state_portion,
+                                    uint64_t num_bytes_for_nodes,
+                                    uint64_t num_bytes_for_actions,
+                                    uint64_t num_bytes_for_axioms,
+                                    uint64_t num_states,
+                                    uint64_t num_nodes,
+                                    uint64_t num_actions,
+                                    uint64_t num_axioms)
+    {
+    }
 
     virtual void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) {}
 
@@ -366,13 +410,29 @@ public:
         }
     }
 
-    void on_end_search() override
+    void on_end_search(uint64_t num_bytes_for_unextended_state_portion,
+                       uint64_t num_bytes_for_extended_state_portion,
+                       uint64_t num_bytes_for_nodes,
+                       uint64_t num_bytes_for_actions,
+                       uint64_t num_bytes_for_axioms,
+                       uint64_t num_states,
+                       uint64_t num_nodes,
+                       uint64_t num_actions,
+                       uint64_t num_axioms) override
     {
         m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
 
         if (!m_quiet)
         {
-            on_end_search_impl();
+            on_end_search_impl(num_bytes_for_unextended_state_portion,
+                               num_bytes_for_extended_state_portion,
+                               num_bytes_for_nodes,
+                               num_bytes_for_actions,
+                               num_bytes_for_axioms,
+                               num_states,
+                               num_nodes,
+                               num_actions,
+                               num_axioms);
         }
     }
 
