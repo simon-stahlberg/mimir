@@ -106,6 +106,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
+        // Attention2: we simply incrementally keep growing the derived atoms in the dense state.
         for (const auto& action :
              m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state, applicable_action_generator_workspace))
         {
@@ -115,6 +116,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
         // Create and all applicable axioms and apply them
         m_delete_free_axiom_evalator->generate_and_apply_axioms(dense_state, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
 
+        // Note: checking fluent atoms suffices because derived are implied by those.
         auto num_atoms_after = dense_state.get_atoms<Fluent>().count();
 
         if (num_atoms_before != num_atoms_after)

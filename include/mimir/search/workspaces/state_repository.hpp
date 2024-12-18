@@ -39,8 +39,6 @@ private:
     StateImpl& get_or_create_state_builder();
     DenseState& get_or_create_dense_state();
 
-    FlatBitset& get_or_create_state_fluent_atoms();
-    FlatBitset& get_or_create_state_derived_atoms();
     FlatBitset& get_or_create_applied_positive_effect_atoms();
     FlatBitset& get_or_create_applied_negative_effect_atoms();
 

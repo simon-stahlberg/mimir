@@ -119,26 +119,21 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     }
 
     /* 3. Apply axioms to construct extended state. */
-
     {
-        // Return early if no axioms must be evaluated
-        if (!m_problem_or_domain_has_axioms)
+        if (m_problem_or_domain_has_axioms)
         {
-            const auto [iter2, inserted] = m_states.insert(state_builder);
-            return *iter2;
+            // Evaluate axioms
+            assert(dense_derived_atoms.count() == 0);
+            m_axiom_evaluator->generate_and_apply_axioms(dense_state, workspace.get_or_create_axiom_evaluator_workspace());
+
+            update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
+
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
+
+            const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
+
+            update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
-
-        // Evaluate axioms
-
-        m_axiom_evaluator->generate_and_apply_axioms(dense_state, workspace.get_or_create_axiom_evaluator_workspace());
-
-        update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
-
-        translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
-
-        const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
-
-        update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
     }
 
     // Cache and return the extended state.
@@ -222,7 +217,6 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
     auto action_cost = ContinuousCost(0);
 
     /* 1. Set the state index. */
-
     {
         auto& state_index = state_builder.get_index();
         const auto next_state_index = Index(m_states.size());
@@ -230,9 +224,7 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
     }
 
     /* 2. Apply action effects to construct non-extended state. */
-
     {
-        // Apply STRIPS effect
         auto& negative_applied_effects = workspace.get_or_create_applied_negative_effect_atoms();
         auto& positive_applied_effects = workspace.get_or_create_applied_positive_effect_atoms();
         negative_applied_effects.unset_all();
@@ -262,26 +254,22 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
         }
     }
 
-    /* 3. Apply axioms to construct extended state. */
-
+    /* 3. If necessary, apply axioms to construct extended state. */
     {
-        // Return early if no axioms must be evaluated
-        if (!m_problem_or_domain_has_axioms)
+        if (m_problem_or_domain_has_axioms)
         {
-            const auto [iter2, inserted] = m_states.insert(state_builder);
-            return std::make_pair(*iter2, action_cost);
+            // Evaluate axioms
+            dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
+            m_axiom_evaluator->generate_and_apply_axioms(dense_state, workspace.get_or_create_axiom_evaluator_workspace());
+
+            update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
+
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
+
+            const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
+
+            update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
-
-        // Evaluate axioms
-        m_axiom_evaluator->generate_and_apply_axioms(dense_state, workspace.get_or_create_axiom_evaluator_workspace());
-
-        update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
-
-        translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
-
-        const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
-
-        update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
     }
 
     // Cache and return the extended state.

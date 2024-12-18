@@ -46,8 +46,8 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 
 void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace&)
 {
-    auto& fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
     auto applicable_axioms = GroundAxiomList {};
 
@@ -65,7 +65,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, 
 
             // TODO: For axioms, the same fluent branch is taken all the time.
             // Exploit this!
-            m_match_tree.get_applicable_elements(fluent_atoms, derived_atoms, applicable_axioms);
+            m_match_tree.get_applicable_elements(dense_fluent_atoms, dense_derived_atoms, applicable_axioms);
 
             /* Apply applicable axioms */
 
@@ -78,19 +78,19 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, 
                     continue;
                 }
 
-                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), fluent_atoms, derived_atoms));
+                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
-                if (!derived_atoms.get(grounded_atom_index))
+                if (!dense_derived_atoms.get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     reached_partition_fixed_point = false;
                 }
 
-                derived_atoms.set(grounded_atom_index);
+                dense_derived_atoms.set(grounded_atom_index);
             }
 
         } while (!reached_partition_fixed_point);
