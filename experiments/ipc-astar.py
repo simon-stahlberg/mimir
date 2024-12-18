@@ -59,11 +59,28 @@ ATTRIBUTES = [
     "num_expanded_until_last_f_layer",
     "num_generated_until_last_f_layer",
     "num_pruned_until_last_f_layer",
-    "num_relaxed_reachable_fluent_atoms",
-    "num_relaxed_reachable_derived_atoms",
+
     "num_reachable_fluent_atoms",
     "num_reachable_derived_atoms",
-    "memory_in_mb_used_for_states",
+
+    "memory_in_bytes_for_unextended_state_portions",
+    "memory_in_bytes_per_unextended_state_portion",
+    "memory_in_bytes_for_extended_state_portions",
+    "memory_in_bytes_per_extended_state_portion",
+    "memory_in_bytes_for_states",
+    "memory_in_bytes_per_state",
+    "memory_in_bytes_for_nodes",
+    "memory_in_bytes_per_node",
+    "memory_in_bytes_for_actions",
+    "memory_in_bytes_per_action",
+    "memory_in_bytes_for_axioms",
+    "memory_in_bytes_per_axiom",
+
+    "num_of_states",
+    "num_of_nodes",
+    "num_of_actions",
+    "num_of_axioms",
+
     "cost",
     "length",
     "invalid_plan_reported",
@@ -73,9 +90,8 @@ MEMORY_LIMIT = 8000
 
 # Create a new experiment.
 exp = Experiment(environment=ENV)
-# Add custom parser for FF.
-exp.add_parser(AStarParser())
 exp.add_parser(ErrorParser())
+exp.add_parser(AStarParser())
 
 PLANNER_DIR = REPO / "build" / "exe" / "planner_astar"
 

@@ -2,6 +2,7 @@
 
 from lab.parser import Parser
 
+
 def out_of_memory(content, props):
     props["out_of_memory"] = int("out_of_memory" in props)
 

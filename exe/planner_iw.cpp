@@ -79,9 +79,6 @@ int main(int argc, char** argv)
 
     auto result = find_solution_iw(applicable_action_generator, state_repository, std::nullopt, arity, iw_event_handler, brfs_event_handler);
 
-    std::cout << "Number of reached fluent atoms: " << (state_repository->get_reached_fluent_ground_atoms_bitset().count()) << std::endl;
-    std::cout << "Number of reached derived atoms: " << (state_repository->get_reached_derived_ground_atoms_bitset().count()) << std::endl;
-
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;

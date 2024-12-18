@@ -25,6 +25,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
+#include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
@@ -139,7 +140,17 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
             set_plan(search_nodes, applicable_action_generator->get_action_grounder()->get_ground_actions(), search_node, plan_actions);
             result.goal_state = state;
             result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
-            event_handler->on_end_search();
+            event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
+                                         state_repository->get_reached_derived_ground_atoms_bitset().count(),
+                                         state_repository->get_num_bytes_used_for_unextended_state_portion(),
+                                         state_repository->get_num_bytes_used_for_extended_state_portion(),
+                                         search_nodes.get_storage().capacity(),
+                                         applicable_action_generator->get_action_grounder()->get_num_bytes_used_for_actions(),
+                                         state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_bytes_used_for_axioms(),
+                                         state_repository->get_state_count(),
+                                         search_nodes.size(),
+                                         applicable_action_generator->get_action_grounder()->get_num_ground_actions(),
+                                         state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms());
             if (!event_handler->is_quiet())
             {
                 applicable_action_generator->on_end_search();
@@ -180,7 +191,17 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
         set_status(search_node, SearchNodeStatus::CLOSED);
     }
 
-    event_handler->on_end_search();
+    event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
+                                 state_repository->get_reached_derived_ground_atoms_bitset().count(),
+                                 state_repository->get_num_bytes_used_for_unextended_state_portion(),
+                                 state_repository->get_num_bytes_used_for_extended_state_portion(),
+                                 search_nodes.get_storage().capacity(),
+                                 applicable_action_generator->get_action_grounder()->get_num_bytes_used_for_actions(),
+                                 state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_bytes_used_for_axioms(),
+                                 state_repository->get_state_count(),
+                                 search_nodes.size(),
+                                 applicable_action_generator->get_action_grounder()->get_num_ground_actions(),
+                                 state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms());
     event_handler->on_exhausted();
 
     result.status = SearchStatus::EXHAUSTED;

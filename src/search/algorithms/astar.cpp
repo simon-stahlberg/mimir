@@ -181,10 +181,11 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
             set_plan(search_nodes, applicable_action_generator->get_action_grounder()->get_ground_actions(), search_node, plan_actions);
             result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
             result.goal_state = state;
+            std::cout << state_repository->get_num_bytes_used_for_extended_state_portion() << std::endl;
             event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
                                          state_repository->get_reached_derived_ground_atoms_bitset().count(),
-                                         state_repository->get_num_bytes_used_for_extended_state_portion(),
                                          state_repository->get_num_bytes_used_for_unextended_state_portion(),
+                                         state_repository->get_num_bytes_used_for_extended_state_portion(),
                                          search_nodes.get_storage().capacity(),
                                          applicable_action_generator->get_action_grounder()->get_num_bytes_used_for_actions(),
                                          state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_bytes_used_for_axioms(),
@@ -266,8 +267,8 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
     event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
                                  state_repository->get_reached_derived_ground_atoms_bitset().count(),
-                                 state_repository->get_num_bytes_used_for_extended_state_portion(),
                                  state_repository->get_num_bytes_used_for_unextended_state_portion(),
+                                 state_repository->get_num_bytes_used_for_extended_state_portion(),
                                  search_nodes.get_storage().capacity(),
                                  applicable_action_generator->get_action_grounder()->get_num_bytes_used_for_actions(),
                                  state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_bytes_used_for_axioms(),

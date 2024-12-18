@@ -18,6 +18,8 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_STATISTICS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_STATISTICS_HPP_
 
+#include "mimir/common/arithmetics.hpp"
+
 #include <chrono>
 #include <cstdint>
 #include <ostream>
@@ -67,6 +69,8 @@ public:
         m_num_expanded_until_f_value(),
         m_num_deadends_until_f_value(),
         m_num_pruned_until_f_value(),
+        m_num_reached_fluent_atoms(0),
+        m_num_reached_derived_atoms(0),
         m_num_bytes_for_unextended_state_portion(0),
         m_num_bytes_for_extended_state_portion(0),
         m_num_bytes_for_nodes(0),
@@ -78,6 +82,10 @@ public:
         m_num_axioms(0)
     {
     }
+
+    /**
+     * Setters
+     */
 
     /// @brief Store information for the layer
     void on_finish_f_layer(double f_value)
@@ -116,6 +124,10 @@ public:
     void set_num_actions(uint64_t num_actions) { m_num_actions = num_actions; }
     void set_num_axioms(uint64_t num_axioms) { m_num_axioms = num_axioms; }
 
+    /**
+     * Getters
+     */
+
     uint64_t get_num_generated() const { return m_num_generated; }
     uint64_t get_num_expanded() const { return m_num_expanded; }
     uint64_t get_num_deadends() const { return m_num_deadends; }
@@ -130,10 +142,6 @@ public:
         return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_search_start_time_point);
     }
 
-    const std::vector<uint64_t>& get_num_generated_until_f_value() const { return m_num_generated_until_f_value; }
-    const std::vector<uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }
-    const std::vector<uint64_t>& get_num_deadends_until_f_value() const { return m_num_deadends_until_f_value; }
-    const std::vector<uint64_t>& get_num_pruned_until_f_value() const { return m_num_pruned_until_f_value; }
     uint64_t get_num_reached_fluent_atoms() const { return m_num_reached_fluent_atoms; }
     uint64_t get_num_reached_derived_atoms() const { return m_num_reached_derived_atoms; }
     uint64_t get_num_bytes_for_unextended_state_portion() const { return m_num_bytes_for_unextended_state_portion; }
@@ -145,6 +153,11 @@ public:
     uint64_t get_num_nodes() const { return m_num_nodes; }
     uint64_t get_num_actions() const { return m_num_actions; }
     uint64_t get_num_axioms() const { return m_num_axioms; }
+
+    const std::vector<uint64_t>& get_num_generated_until_f_value() const { return m_num_generated_until_f_value; }
+    const std::vector<uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }
+    const std::vector<uint64_t>& get_num_deadends_until_f_value() const { return m_num_deadends_until_f_value; }
+    const std::vector<uint64_t>& get_num_pruned_until_f_value() const { return m_num_pruned_until_f_value; }
 };
 
 /**
@@ -159,8 +172,7 @@ using AStarAlgorithmStatisticsList = std::vector<AStarAlgorithmStatistics>;
 
 inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics& statistics)
 {
-    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms"
-       << "\n"
+    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
        << "[AStar] Number of generated states: " << statistics.get_num_generated() << "\n"
        << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"
@@ -173,30 +185,30 @@ inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics
        << "[AStar] Number of reached fluent atoms: " << statistics.get_num_reached_fluent_atoms() << "\n"
        << "[AStar] Number of reached derived atoms: " << statistics.get_num_reached_derived_atoms() << "\n"
        << "[AStar] Number of bytes for unextended state portions: " << statistics.get_num_bytes_for_unextended_state_portion() << "\n"
-       << "[AStar] Number of bytes per unextended state portion: " << ((statistics.get_num_bytes_for_unextended_state_portion()) / statistics.get_num_states())
-       << "\n"
+       << "[AStar] Number of bytes per unextended state portion: "
+       << divide_or_zero(statistics.get_num_bytes_for_unextended_state_portion(), statistics.get_num_states()) << "\n"
        << "[AStar] Number of bytes for extended state portions: " << statistics.get_num_bytes_for_extended_state_portion() << "\n"
-       << "[AStar] Number of bytes per extended state portion: " << (statistics.get_num_bytes_for_extended_state_portion() / statistics.get_num_states())
-       << "\n"
+       << "[AStar] Number of bytes per extended state portion: "
+       << divide_or_zero(statistics.get_num_bytes_for_extended_state_portion(), statistics.get_num_states()) << "\n"
        << "[AStar] Number of states: " << statistics.get_num_states() << "\n"
        << "[AStar] Number of bytes for states: "
        << statistics.get_num_bytes_for_unextended_state_portion() + statistics.get_num_bytes_for_extended_state_portion() << "\n"
        << "[AStar] Number of bytes per state: "
-       << ((statistics.get_num_bytes_for_unextended_state_portion() + statistics.get_num_bytes_for_extended_state_portion()) / statistics.get_num_states())
+       << divide_or_zero((statistics.get_num_bytes_for_unextended_state_portion() + statistics.get_num_bytes_for_extended_state_portion()),
+                         statistics.get_num_states())
        << "\n"
        << "[AStar] Number of nodes: " << statistics.get_num_nodes() << "\n"
        << "[AStar] Number of bytes for nodes: " << statistics.get_num_bytes_for_nodes() << "\n"
-       << "[AStar] Number of bytes per node: " << (statistics.get_num_bytes_for_nodes() / statistics.get_num_nodes()) << "\n"
+       << "[AStar] Number of bytes per node: " << divide_or_zero(statistics.get_num_bytes_for_nodes(), statistics.get_num_nodes()) << "\n"
        << "[AStar] Number of actions: " << statistics.get_num_actions() << "\n"
        << "[AStar] Number of bytes for actions: " << statistics.get_num_bytes_for_actions() << "\n"
-       << "[AStar] Number of bytes per action: " << (statistics.get_num_bytes_for_actions() / statistics.get_num_actions()) << "\n"
+       << "[AStar] Number of bytes per action: " << divide_or_zero(statistics.get_num_bytes_for_actions(), statistics.get_num_actions()) << "\n"
        << "[AStar] Number of axioms: " << statistics.get_num_axioms() << "\n"
        << "[AStar] Number of bytes for axioms: " << statistics.get_num_bytes_for_axioms() << "\n"
-       << "[AStar] Number of bytes per axiom: " << (statistics.get_num_bytes_for_axioms() / statistics.get_num_axioms()) << "\n"
+       << "[AStar] Number of bytes per axiom: " << divide_or_zero(statistics.get_num_bytes_for_axioms(), statistics.get_num_axioms()) << "\n"
        << "[AStar] Total number of bytes used: "
        << (statistics.get_num_bytes_for_unextended_state_portion() + statistics.get_num_bytes_for_extended_state_portion()
-           + statistics.get_num_bytes_for_nodes() + statistics.get_num_bytes_for_actions() + statistics.get_num_bytes_for_axioms())
-       << std::endl;
+           + statistics.get_num_bytes_for_nodes() + statistics.get_num_bytes_for_actions() + statistics.get_num_bytes_for_axioms());
 
     return os;
 }
