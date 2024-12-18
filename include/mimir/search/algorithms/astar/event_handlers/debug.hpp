@@ -58,7 +58,9 @@ private:
 
     void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const;
 
-    void on_end_search_impl(uint64_t num_bytes_for_unextended_state_portion,
+    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                            uint64_t num_reached_derived_atoms,
+                            uint64_t num_bytes_for_unextended_state_portion,
                             uint64_t num_bytes_for_extended_state_portion,
                             uint64_t num_bytes_for_nodes,
                             uint64_t num_bytes_for_actions,

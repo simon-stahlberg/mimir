@@ -42,6 +42,9 @@ private:
     std::vector<uint64_t> m_num_deadends_until_f_value;
     std::vector<uint64_t> m_num_pruned_until_f_value;
 
+    uint64_t m_num_reached_fluent_atoms;
+    uint64_t m_num_reached_derived_atoms;
+
     uint64_t m_num_bytes_for_unextended_state_portion;
     uint64_t m_num_bytes_for_extended_state_portion;
     uint64_t m_num_bytes_for_nodes;
@@ -92,6 +95,10 @@ public:
     void increment_num_pruned() { ++m_num_pruned; }
     void set_search_start_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point) { m_search_start_time_point = time_point; }
     void set_search_end_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point) { m_search_end_time_point = time_point; }
+
+    void set_num_reached_fluent_atoms(uint64_t num_reached_fluent_atoms) { m_num_reached_fluent_atoms = num_reached_fluent_atoms; }
+    void set_num_reached_derived_atoms(uint64_t num_reached_derived_atoms) { m_num_reached_derived_atoms = num_reached_derived_atoms; }
+
     void set_num_bytes_for_unextended_state_portion(uint64_t num_bytes_for_unextended_state_portion)
     {
         m_num_bytes_for_unextended_state_portion = num_bytes_for_unextended_state_portion;
@@ -127,6 +134,8 @@ public:
     const std::vector<uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }
     const std::vector<uint64_t>& get_num_deadends_until_f_value() const { return m_num_deadends_until_f_value; }
     const std::vector<uint64_t>& get_num_pruned_until_f_value() const { return m_num_pruned_until_f_value; }
+    uint64_t get_num_reached_fluent_atoms() const { return m_num_reached_fluent_atoms; }
+    uint64_t get_num_reached_derived_atoms() const { return m_num_reached_derived_atoms; }
     uint64_t get_num_bytes_for_unextended_state_portion() const { return m_num_bytes_for_unextended_state_portion; }
     uint64_t get_num_bytes_for_extended_state_portion() const { return m_num_bytes_for_extended_state_portion; }
     uint64_t get_num_bytes_for_nodes() const { return m_num_bytes_for_nodes; }
@@ -161,6 +170,8 @@ inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics
        << (statistics.get_num_expanded_until_f_value().empty() ? 0 : statistics.get_num_expanded_until_f_value().back()) << "\n"
        << "[AStar] Number of pruned states until last f-layer: "
        << (statistics.get_num_pruned_until_f_value().empty() ? 0 : statistics.get_num_pruned_until_f_value().back()) << "\n"
+       << "[AStar] Number of reached fluent atoms: " << statistics.get_num_reached_fluent_atoms() << "\n"
+       << "[AStar] Number of reached derived atoms: " << statistics.get_num_reached_derived_atoms() << "\n"
        << "[AStar] Number of bytes for unextended state portions: " << statistics.get_num_bytes_for_unextended_state_portion() << "\n"
        << "[AStar] Number of bytes per unextended state portion: " << ((statistics.get_num_bytes_for_unextended_state_portion()) / statistics.get_num_states())
        << "\n"
@@ -182,7 +193,7 @@ inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics
        << "[AStar] Number of axioms: " << statistics.get_num_axioms() << "\n"
        << "[AStar] Number of bytes for axioms: " << statistics.get_num_bytes_for_axioms() << "\n"
        << "[AStar] Number of bytes per axiom: " << (statistics.get_num_bytes_for_axioms() / statistics.get_num_axioms()) << "\n"
-       << "[AStar] Total memory usage: "
+       << "[AStar] Total number of bytes used: "
        << (statistics.get_num_bytes_for_unextended_state_portion() + statistics.get_num_bytes_for_extended_state_portion()
            + statistics.get_num_bytes_for_nodes() + statistics.get_num_bytes_for_actions() + statistics.get_num_bytes_for_axioms())
        << std::endl;

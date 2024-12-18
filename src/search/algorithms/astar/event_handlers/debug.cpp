@@ -72,7 +72,9 @@ void DebugAStarAlgorithmEventHandler::on_start_search_impl(State start_state, Pr
               << "[AStar] Initial: " << std::make_tuple(problem, start_state, std::cref(pddl_repositories)) << std::endl;
 }
 
-void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_bytes_for_unextended_state_portion,
+void DebugAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                                         uint64_t num_reached_derived_atoms,
+                                                         uint64_t num_bytes_for_unextended_state_portion,
                                                          uint64_t num_bytes_for_extended_state_portion,
                                                          uint64_t num_bytes_for_nodes,
                                                          uint64_t num_bytes_for_actions,

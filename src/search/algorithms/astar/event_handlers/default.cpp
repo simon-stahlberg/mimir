@@ -65,7 +65,9 @@ void DefaultAStarAlgorithmEventHandler::on_start_search_impl(State start_state, 
     std::cout << "[AStar] Search started." << std::endl;
 }
 
-void DefaultAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_bytes_for_unextended_state_portion,
+void DefaultAStarAlgorithmEventHandler::on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                                           uint64_t num_reached_derived_atoms,
+                                                           uint64_t num_bytes_for_unextended_state_portion,
                                                            uint64_t num_bytes_for_extended_state_portion,
                                                            uint64_t num_bytes_for_nodes,
                                                            uint64_t num_bytes_for_actions,

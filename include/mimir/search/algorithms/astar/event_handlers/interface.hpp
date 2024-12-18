@@ -71,7 +71,9 @@ public:
     virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on ending a search.
-    virtual void on_end_search(uint64_t num_bytes_for_unextended_state_portion,
+    virtual void on_end_search(uint64_t num_reached_fluent_atoms,
+                               uint64_t num_reached_derived_atoms,
+                               uint64_t num_bytes_for_unextended_state_portion,
                                uint64_t num_bytes_for_extended_state_portion,
                                uint64_t num_bytes_for_nodes,
                                uint64_t num_bytes_for_actions,
@@ -203,7 +205,9 @@ public:
         }
     }
 
-    void on_end_search(uint64_t num_bytes_for_unextended_state_portion,
+    void on_end_search(uint64_t num_reached_fluent_atoms,
+                       uint64_t num_reached_derived_atoms,
+                       uint64_t num_bytes_for_unextended_state_portion,
                        uint64_t num_bytes_for_extended_state_portion,
                        uint64_t num_bytes_for_nodes,
                        uint64_t num_bytes_for_actions,
@@ -215,6 +219,8 @@ public:
 
     {
         m_statistics.set_search_end_time_point(std::chrono::high_resolution_clock::now());
+        m_statistics.set_num_reached_fluent_atoms(num_reached_fluent_atoms);
+        m_statistics.set_num_reached_derived_atoms(num_reached_derived_atoms);
         m_statistics.set_num_bytes_for_unextended_state_portion(num_bytes_for_unextended_state_portion);
         m_statistics.set_num_bytes_for_extended_state_portion(num_bytes_for_extended_state_portion);
         m_statistics.set_num_bytes_for_nodes(num_bytes_for_nodes);
@@ -227,7 +233,9 @@ public:
 
         if (!m_quiet)
         {
-            self().on_end_search_impl(num_bytes_for_unextended_state_portion,
+            self().on_end_search_impl(num_reached_fluent_atoms,
+                                      num_reached_derived_atoms,
+                                      num_bytes_for_unextended_state_portion,
                                       num_bytes_for_extended_state_portion,
                                       num_bytes_for_nodes,
                                       num_bytes_for_actions,
@@ -310,7 +318,9 @@ public:
 
     virtual void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) {}
 
-    virtual void on_end_search_impl(uint64_t num_bytes_for_unextended_state_portion,
+    virtual void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                                    uint64_t num_reached_derived_atoms,
+                                    uint64_t num_bytes_for_unextended_state_portion,
                                     uint64_t num_bytes_for_extended_state_portion,
                                     uint64_t num_bytes_for_nodes,
                                     uint64_t num_bytes_for_actions,
@@ -410,7 +420,9 @@ public:
         }
     }
 
-    void on_end_search(uint64_t num_bytes_for_unextended_state_portion,
+    void on_end_search(uint64_t num_reached_fluent_atoms,
+                       uint64_t num_reached_derived_atoms,
+                       uint64_t num_bytes_for_unextended_state_portion,
                        uint64_t num_bytes_for_extended_state_portion,
                        uint64_t num_bytes_for_nodes,
                        uint64_t num_bytes_for_actions,
@@ -424,7 +436,9 @@ public:
 
         if (!m_quiet)
         {
-            on_end_search_impl(num_bytes_for_unextended_state_portion,
+            on_end_search_impl(num_reached_fluent_atoms,
+                               num_reached_derived_atoms,
+                               num_bytes_for_unextended_state_portion,
                                num_bytes_for_extended_state_portion,
                                num_bytes_for_nodes,
                                num_bytes_for_actions,
