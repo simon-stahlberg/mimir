@@ -32,9 +32,9 @@ ATTRIBUTES = [
 
 exp = Experiment("mimir-powerlifted-brfs-eval")
 
-exp.add_fetcher("mimir-brfs-eval")
+exp.add_fetcher("mimir-sparse-brfs-eval")
 exp.add_fetcher("powerlifted-brfs-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-brfs-grounded", "mimir-brfs-lifted", "powerlifted-brfs"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["mimir-sparse-brfs-grounded", "mimir-sparse-brfs-lifted", "powerlifted-brfs"]))
 
 exp.run_steps()

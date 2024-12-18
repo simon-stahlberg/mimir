@@ -32,9 +32,9 @@ ATTRIBUTES = [
 
 exp = Experiment("mimir-downward-astar-blind-eval")
 
-exp.add_fetcher("mimir-astar-blind-eval")
+exp.add_fetcher("mimir-sparse-astar-blind-eval")
 exp.add_fetcher("downward-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-astar-blind-grounded", "mimir-astar-blind-lifted"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-sparse-astar-blind-grounded", "mimir-sparse-astar-blind-lifted"]))
 
 exp.run_steps()
