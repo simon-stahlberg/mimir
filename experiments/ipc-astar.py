@@ -75,6 +75,7 @@ ATTRIBUTES = [
     "memory_in_bytes_per_action",
     "memory_in_bytes_for_axioms",
     "memory_in_bytes_per_axiom",
+    "total_memory_in_bytes",
 
     "num_of_states",
     "num_of_nodes",
