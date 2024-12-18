@@ -66,7 +66,7 @@ class CustomAStarAlgorithmEventHandler(mm.AStarAlgorithmEventHandlerBase):
     def on_start_search_impl(self, start_state : mm.State, problem : mm.Problem, pddl_repositories : mm.PDDLRepositories):
         pass
 
-    def on_end_search_impl(self):
+    def on_end_search_impl(self, num_reached_fluent_atoms : int, num_reached_derived_atoms: int, num_bytes_for_unextended_state_portion: int num_bytes_for_extended_state_portion: int, num_bytes_for_nodes: int, num_bytes_for_actions: int, num_bytes_for_axioms: int, num_states: int, num_nodes: int, num_actions: int, num_axioms: int):
         pass
 
     def on_solved_impl(self, ground_action_plan: List[mm.GroundAction], pddl_repositories: mm.PDDLRepositories):

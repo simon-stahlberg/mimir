@@ -310,7 +310,33 @@ public:
      * Note the trailing commas in the PYBIND11_OVERRIDE calls to name() and bark(). These are needed to portably implement a trampoline for a function that
      * does not take any arguments. For functions that take a nonzero number of arguments, the trailing comma must be omitted.
      */
-    void on_end_search_impl() override { PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_end_search_impl, ); }
+    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                            uint64_t num_reached_derived_atoms,
+                            uint64_t num_bytes_for_unextended_state_portion,
+                            uint64_t num_bytes_for_extended_state_portion,
+                            uint64_t num_bytes_for_nodes,
+                            uint64_t num_bytes_for_actions,
+                            uint64_t num_bytes_for_axioms,
+                            uint64_t num_states,
+                            uint64_t num_nodes,
+                            uint64_t num_actions,
+                            uint64_t num_axioms) override
+    {
+        PYBIND11_OVERRIDE(void,
+                          DynamicAStarAlgorithmEventHandlerBase,
+                          on_end_search_impl,
+                          num_reached_fluent_atoms,
+                          num_reached_derived_atoms,
+                          num_bytes_for_unextended_state_portion,
+                          num_bytes_for_extended_state_portion,
+                          num_bytes_for_nodes,
+                          num_bytes_for_actions,
+                          num_bytes_for_axioms,
+                          num_states,
+                          num_nodes,
+                          num_actions,
+                          num_axioms);
+    }
     void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) override
     {
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_solved_impl, plan, pddl_repositories);
@@ -1334,10 +1360,7 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &StateVertex::operator==)
         .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def(
-            "get_state",
-            [](const StateVertex& self) { return get_state(self); },
-            py::return_value_policy::reference_internal);
+        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::return_value_policy::reference_internal);
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
@@ -1347,10 +1370,7 @@ void init_pymimir(py::module_& m)
         .def("get_source", &GroundActionEdge::get_source)
         .def("get_target", &GroundActionEdge::get_target)
         .def("get_cost", [](const GroundActionEdge& self) { return get_cost(self); })
-        .def(
-            "get_creating_action",
-            [](const GroundActionEdge& self) { return get_creating_action(self); },
-            py::return_value_policy::reference_internal);
+        .def("get_creating_action", [](const GroundActionEdge& self) { return get_creating_action(self); }, py::return_value_policy::reference_internal);
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
@@ -1606,10 +1626,7 @@ void init_pymimir(py::module_& m)
             "get_representative_state",
             [](const FaithfulAbstractStateVertex& self) { return get_representative_state(self); },
             py::keep_alive<0, 1>())
-        .def(
-            "get_certificate",
-            [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); },
-            py::return_value_policy::reference_internal);
+        .def("get_certificate", [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); }, py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def("__str__",
@@ -1983,10 +2000,7 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def(
-            "get_states",
-            [](const TupleGraphVertex& self) { return StateList(self.get_states()); },
-            py::keep_alive<0, 1>());
+        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
@@ -2125,10 +2139,7 @@ void init_pymimir(py::module_& m)
 
     // ColorFunction
     py::class_<ColorFunction>(m, "ColorFunction")  //
-        .def(
-            "get_color_name",
-            [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); },
-            py::arg("color"));
+        .def("get_color_name", [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); }, py::arg("color"));
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, ColorFunction>(m, "ProblemColorFunction")  //
