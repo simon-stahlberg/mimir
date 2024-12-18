@@ -79,8 +79,6 @@ int main(int argc, char** argv)
 
     auto result = find_solution_iw(applicable_action_generator, state_repository, std::nullopt, arity, iw_event_handler, brfs_event_handler);
 
-    std::cout << "Memory used for states: " << (state_repository->get_num_bytes_used_for_states() / 1000000) << " MB." << std::endl;
-
     if (result.status == SearchStatus::SOLVED)
     {
         std::ofstream plan_file;

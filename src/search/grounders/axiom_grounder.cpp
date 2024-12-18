@@ -126,4 +126,6 @@ Problem AxiomGrounder::get_problem() const { return m_literal_grounder->get_prob
 const std::shared_ptr<PDDLRepositories>& AxiomGrounder::get_pddl_repositories() const { return m_literal_grounder->get_pddl_repositories(); }
 
 const std::shared_ptr<LiteralGrounder>& AxiomGrounder::get_literal_grounder() const { return m_literal_grounder; }
+
+size_t AxiomGrounder::get_num_bytes_used_for_axioms() const { return m_axioms.get_storage().capacity(); }
 }

@@ -330,4 +330,6 @@ const GroundActionList& ActionGrounder::get_ground_actions() const { return m_ac
 GroundAction ActionGrounder::get_ground_action(Index action_index) const { return m_actions_by_index.at(action_index); }
 
 size_t ActionGrounder::get_num_ground_actions() const { return m_actions_by_index.size(); }
+
+size_t ActionGrounder::get_num_bytes_used_for_actions() const { return m_actions.get_storage().capacity(); }
 }

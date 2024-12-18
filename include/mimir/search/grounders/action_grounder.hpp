@@ -20,9 +20,9 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
-#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/grounding_table.hpp"
+#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 
 namespace mimir
 {
@@ -69,6 +69,7 @@ public:
     const GroundActionList& get_ground_actions() const;
     GroundAction get_ground_action(Index action_index) const;
     size_t get_num_ground_actions() const;
+    size_t get_num_bytes_used_for_actions() const;
 };
 
 }  // namespace mimir

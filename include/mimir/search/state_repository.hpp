@@ -86,9 +86,13 @@ public:
     /// @return the axiom evaluator.
     const std::shared_ptr<IAxiomEvaluator>& get_axiom_evaluator() const;
 
-    /// @brief Get the total number of bytes used for storing the states.
-    /// @return the number of bytes for storing the states.
-    size_t get_num_bytes_used_for_states() const;
+    /// @brief Get the total number of bytes used for storing the unextended state portions.
+    /// @return the number of bytes for storing storing the unextended state portions.
+    size_t get_num_bytes_used_for_unextended_state_portion() const;
+
+    /// @brief Get the total number of bytes used for storing the extended state portions.
+    /// @return the number of bytes for storing storing the extended state portions.
+    size_t get_num_bytes_used_for_extended_state_portion() const;
 };
 
 }

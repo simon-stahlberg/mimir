@@ -58,7 +58,17 @@ private:
 
     void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const;
 
-    void on_end_search_impl() const;
+    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                            uint64_t num_reached_derived_atoms,
+                            uint64_t num_bytes_for_unextended_state_portion,
+                            uint64_t num_bytes_for_extended_state_portion,
+                            uint64_t num_bytes_for_nodes,
+                            uint64_t num_bytes_for_actions,
+                            uint64_t num_bytes_for_axioms,
+                            uint64_t num_states,
+                            uint64_t num_nodes,
+                            uint64_t num_actions,
+                            uint64_t num_axioms) const;
 
     void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const;
 

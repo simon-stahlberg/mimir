@@ -52,6 +52,16 @@ State StateRepository::get_or_create_initial_state(StateRepositoryWorkspace& wor
     return get_or_create_state(ground_atoms, workspace);
 }
 
+static void update_reached_fluent_atoms(const FlatBitset& state_fluent_atoms, FlatBitset& ref_reached_fluent_atoms)
+{
+    ref_reached_fluent_atoms |= state_fluent_atoms;
+}
+
+static void update_reached_derived_atoms(const FlatBitset& state_derived_atoms, FlatBitset& ref_reached_derived_atoms)
+{
+    ref_reached_derived_atoms |= state_derived_atoms;
+}
+
 State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace)
 {
     auto& state_builder = workspace.get_or_create_state_builder();
@@ -73,7 +83,8 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         {
             fluent_state_atoms.set(atom->get_index());
         }
-        m_reached_fluent_atoms |= fluent_state_atoms;
+
+        update_reached_fluent_atoms(fluent_state_atoms, m_reached_fluent_atoms);
 
         // Test whether there exists an extended state for the given non extended state
         auto iter = m_states.find(state_builder);
@@ -101,8 +112,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(&derived_state_atoms);
         m_axiom_evaluator->generate_and_apply_axioms(state_builder, workspace.get_or_create_axiom_evaluator_workspace());
 
-        // Update reached derived atoms
-        m_reached_derived_atoms |= derived_state_atoms;
+        update_reached_derived_atoms(derived_state_atoms, m_reached_derived_atoms);
 
         // Update address in state builder
         const auto [iter, inserted] = m_axiom_evaluations.insert(derived_state_atoms);
@@ -111,6 +121,12 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
 
     // Cache and return the extended state.
     return *m_states.insert(state_builder).first;
+}
+
+static void apply_action_effects(const FlatBitset& negative_applied_effects, const FlatBitset& positive_applied_effects, FlatBitset& ref_state_fluent_atoms)
+{
+    ref_state_fluent_atoms -= negative_applied_effects;
+    ref_state_fluent_atoms |= positive_applied_effects;
 }
 
 std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace)
@@ -162,11 +178,10 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         // Modify fluent state atoms
         auto& fluent_state_atoms = state_builder.get_fluent_atoms();
         fluent_state_atoms = state->get_atoms<Fluent>();
-        fluent_state_atoms -= negative_applied_effects;
-        fluent_state_atoms |= positive_applied_effects;
 
-        // Update reached fluent atoms
-        m_reached_fluent_atoms |= fluent_state_atoms;
+        apply_action_effects(negative_applied_effects, positive_applied_effects, fluent_state_atoms);
+
+        update_reached_fluent_atoms(fluent_state_atoms, m_reached_fluent_atoms);
 
         // Check if non-extended state exists in cache
         const auto iter = m_states.find(state_builder);
@@ -194,8 +209,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(&derived_state_atoms);
         m_axiom_evaluator->generate_and_apply_axioms(state_builder, workspace.get_or_create_axiom_evaluator_workspace());
 
-        // Update reached derived atoms
-        m_reached_derived_atoms |= derived_state_atoms;
+        update_reached_derived_atoms(derived_state_atoms, m_reached_derived_atoms);
 
         // Update address in state builder
         const auto [iter, inserted] = m_axiom_evaluations.insert(derived_state_atoms);
@@ -218,5 +232,7 @@ const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() con
 
 const std::shared_ptr<IAxiomEvaluator>& StateRepository::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepository::get_num_bytes_used_for_states() const { return m_states.get_storage().capacity(); }
+size_t StateRepository::get_num_bytes_used_for_unextended_state_portion() const { return m_states.get_storage().capacity(); }
+
+size_t StateRepository::get_num_bytes_used_for_extended_state_portion() const { return m_axiom_evaluations.get_storage().capacity(); }
 }
