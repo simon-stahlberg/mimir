@@ -12,6 +12,11 @@ def unsolvable(content, props):
 def invalid_plan_reported(content, props):
     props["invalid_plan_reported"] = int("val_plan_invalid" in props)
 
+def resolve_unexplained_errors(content, props):
+    print("unexplained_errors" in props, props["out_of_memory"], props["out_of_time"])
+    if "unexplained_errors" in props and (props["out_of_memory"] == 1 or props["out_of_time"] == 1):
+        del props["unexplained_errors"]
+
 class AStarParser(Parser):
     """
     Successful Run:
@@ -40,22 +45,43 @@ class AStarParser(Parser):
     """
     def __init__(self):
         super().__init__()
-        self.add_pattern("search_time", r"\[AStar\] Search time: (\d+)ms", type=int)
-        self.add_pattern("num_expanded", r"\[AStar\] Number of expanded states: (\d+)", type=int)
-        self.add_pattern("num_generated", r"\[AStar\] Number of generated states: (\d+)", type=int)
-        self.add_pattern("num_expanded_until_last_f_layer", r"\[AStar\] Number of expanded states until last f-layer: (\d+)", type=int)
-        self.add_pattern("num_generated_until_last_f_layer", r"\[AStar\] Number of generated states until last f-layer: (\d+)", type=int)
-        self.add_pattern("num_pruned_until_last_f_layer", r"\[AStar\] Number of pruned states until last f-layer: (\d+)", type=int)
-        self.add_pattern("memory_in_mb_used_for_states", r"Memory used for states: (\d+) MB.", type=int)
-        self.add_pattern("num_relaxed_reachable_fluent_atoms", r"\[GroundedApplicableActionGenerator\] Number of fluent grounded atoms reachable in delete-free problem: (\d+)", type=int)
-        self.add_pattern("num_relaxed_reachable_derived_atoms", r"\[GroundedApplicableActionGenerator\] Number of derived grounded atoms reachable in delete-free problem: (\d+)", type=int)
+        self.add_pattern("search_time", r"Search time: (\d+)ms", type=int)
+        self.add_pattern("num_expanded", r"Number of expanded states: (\d+)", type=int)
+        self.add_pattern("num_generated", r"Number of generated states: (\d+)", type=int)
+        self.add_pattern("num_expanded_until_last_f_layer", r"Number of expanded states until last f-layer: (\d+)", type=int)
+        self.add_pattern("num_generated_until_last_f_layer", r"Number of generated states until last f-layer: (\d+)", type=int)
+        self.add_pattern("num_pruned_until_last_f_layer", r"Number of pruned states until last f-layer: (\d+)", type=int)
+
         self.add_pattern("num_reachable_fluent_atoms", r"Number of reached fluent atoms: (\d+)", type=int)
         self.add_pattern("num_reachable_derived_atoms", r"Number of reached derived atoms: (\d+)", type=int)
-        self.add_pattern("cost", r"\[AStar\] Plan cost: (.+)", type=float)
-        self.add_pattern("length", r"\[AStar\] Plan length: (.+)", type=int)
-        self.add_pattern("exhausted", r"(\[AStar\] Exhausted!)", type=str)
+
+        self.add_pattern("memory_in_bytes_for_unextended_state_portions", r"Number of bytes for unextended state portions: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_per_unextended_state_portion", r"Number of bytes per unextended state portion: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_for_extended_state_portions", r"Number of bytes for extended state portions: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_per_extended_state_portion", r"Number of bytes per extended state portion: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_for_states", r"Number of bytes for states: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_per_state", r"Number of bytes per state: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_for_nodes", r"Number of bytes for nodes: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_per_node", r"Number of bytes per node: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_for_actions", r"Number of bytes for actions: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_per_action", r"Number of bytes per action: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_for_axioms", r"Number of bytes for axioms: (\d+)", type=int)
+        self.add_pattern("memory_in_bytes_per_axiom", r"Number of bytes per axiom: (\d+)", type=int)
+        self.add_pattern("total_memory_in_bytes", r"Total number of bytes used: (\d+)", type=int)
+
+        self.add_pattern("num_of_states", r"Number of states: (\d+)", type=int)
+        self.add_pattern("num_of_nodes", r"Number of nodes: (\d+)", type=int)
+        self.add_pattern("num_of_actions", r"Number of actions: (\d+)", type=int)
+        self.add_pattern("num_of_axioms", r"Number of axioms: (\d+)", type=int)
+
+        self.add_pattern("cost", r"Plan cost: (.+)", type=float)
+        self.add_pattern("length", r"Plan length: (.+)", type=int)
+        
+        self.add_pattern("exhausted", r"(Exhausted!)", type=str)
         self.add_pattern("val_plan_invalid", r"(Plan invalid)", type=str)
 
         self.add_function(coverage)
         self.add_function(unsolvable)
         self.add_function(invalid_plan_reported)
+
+        self.add_function(resolve_unexplained_errors)
