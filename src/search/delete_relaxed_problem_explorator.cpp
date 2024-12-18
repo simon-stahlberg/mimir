@@ -91,7 +91,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
 
     auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace));
-    auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
+    auto& fluent_state_atoms = state_builder.get_fluent_atoms();
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;

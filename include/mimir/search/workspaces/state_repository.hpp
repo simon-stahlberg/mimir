@@ -36,9 +36,19 @@ private:
     friend class DeleteRelaxedProblemExplorator;
 
     StateImpl& get_or_create_state_builder();
+
+    FlatBitset& get_or_create_applied_positive_effect_atoms();
+    FlatBitset& get_or_create_applied_negative_effect_atoms();
+
+    FlatBitset& get_or_create_new_derived_atoms();
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
     std::optional<StateImpl> m_state_builder = std::nullopt;
+
+    std::optional<FlatBitset> applied_positive_effect_atoms = std::nullopt;
+    std::optional<FlatBitset> applied_negative_effect_atoms = std::nullopt;
+
+    std::optional<FlatBitset> new_derived_atoms = std::nullopt;
     std::optional<AxiomEvaluatorWorkspace> m_axiom_evaluator_workspace = std::nullopt;
 };
 

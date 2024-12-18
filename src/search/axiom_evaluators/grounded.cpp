@@ -81,13 +81,13 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_sta
 
                 const auto grounded_atom_index = grounded_axiom->get_derived_effect().atom_index;
 
-                if (!unextended_state.get_atoms<Derived>().get(grounded_atom_index))
+                if (!unextended_state.get_derived_atoms().get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
                     reached_partition_fixed_point = false;
                 }
 
-                unextended_state.get_atoms<Derived>().set(grounded_atom_index);
+                unextended_state.get_derived_atoms().set(grounded_atom_index);
             }
 
         } while (!reached_partition_fixed_point);

@@ -33,6 +33,36 @@ StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
     return m_state_builder.value();
 }
 
+FlatBitset& StateRepositoryWorkspace::get_or_create_applied_positive_effect_atoms()
+{
+    if (!applied_positive_effect_atoms.has_value())
+    {
+        applied_positive_effect_atoms = FlatBitset();
+    }
+
+    return applied_positive_effect_atoms.value();
+}
+
+FlatBitset& StateRepositoryWorkspace::get_or_create_applied_negative_effect_atoms()
+{
+    if (!applied_negative_effect_atoms.has_value())
+    {
+        applied_negative_effect_atoms = FlatBitset();
+    }
+
+    return applied_negative_effect_atoms.value();
+}
+
+FlatBitset& StateRepositoryWorkspace::get_or_create_new_derived_atoms()
+{
+    if (!new_derived_atoms.has_value())
+    {
+        new_derived_atoms = FlatBitset();
+    }
+
+    return new_derived_atoms.value();
+}
+
 AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
 {
     if (!m_axiom_evaluator_workspace.has_value())

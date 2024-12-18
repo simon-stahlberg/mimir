@@ -149,7 +149,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(StateImpl& unextended_state
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
                 }
 
-                unextended_state.get_atoms<Derived>().set(grounded_atom_index);
+                unextended_state.get_derived_atoms().set(grounded_atom_index);
             }
         } while (!reached_partition_fixed_point);
     }

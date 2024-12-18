@@ -21,6 +21,7 @@
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/serialization.h"
 #include "cista/storage/unordered_set.h"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -36,7 +37,9 @@ struct StateImpl
 {
     Index m_index = Index(0);
     FlatBitset m_fluent_atoms = FlatBitset();
-    FlatBitset m_derived_atoms = FlatBitset();
+    uintptr_t m_derived_atoms = uintptr_t(0);
+
+    static const FlatBitset s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
 
     template<DynamicPredicateTag P>
     bool contains(GroundAtom<P> atom) const;
@@ -50,17 +53,20 @@ struct StateImpl
     template<DynamicPredicateTag P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
-    /* Getters */
-
-    Index& get_index();
+    /* Immutable Getters */
 
     Index get_index() const;
 
     template<DynamicPredicateTag P>
-    FlatBitset& get_atoms();
-
-    template<DynamicPredicateTag P>
     const FlatBitset& get_atoms() const;
+
+    /* Mutable Getters */
+
+    Index& get_index();
+
+    FlatBitset& get_fluent_atoms();
+    uintptr_t& get_derived_atoms_ptr();
+    FlatBitset& get_derived_atoms();
 };
 
 }
@@ -83,6 +89,7 @@ namespace mimir
 {
 
 using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
+using AxiomEvaluationSet = cista::storage::UnorderedSet<FlatBitset>;
 
 /**
  * Pretty printing

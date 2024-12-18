@@ -40,6 +40,8 @@ namespace mimir
 
 /* State */
 
+const FlatBitset StateImpl::s_empty_derived_atoms = FlatBitset();
+
 template<DynamicPredicateTag P>
 bool StateImpl::contains(GroundAtom<P> atom) const
 {
@@ -92,29 +94,7 @@ bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals) const;
 template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
 
-Index& StateImpl::get_index() { return m_index; }
-
 Index StateImpl::get_index() const { return m_index; }
-
-template<DynamicPredicateTag P>
-FlatBitset& StateImpl::get_atoms()
-{
-    if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
-
-template FlatBitset& StateImpl::get_atoms<Fluent>();
-template FlatBitset& StateImpl::get_atoms<Derived>();
 
 template<DynamicPredicateTag P>
 const FlatBitset& StateImpl::get_atoms() const
@@ -125,7 +105,12 @@ const FlatBitset& StateImpl::get_atoms() const
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        return m_derived_atoms;
+        if (!m_derived_atoms)
+        {
+            return StateImpl::s_empty_derived_atoms;
+        }
+        // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatBitset.
+        return *reinterpret_cast<const FlatBitset*>(m_derived_atoms);
     }
     else
     {
@@ -135,6 +120,19 @@ const FlatBitset& StateImpl::get_atoms() const
 
 template const FlatBitset& StateImpl::get_atoms<Fluent>() const;
 template const FlatBitset& StateImpl::get_atoms<Derived>() const;
+
+Index& StateImpl::get_index() { return m_index; }
+
+FlatBitset& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
+
+uintptr_t& StateImpl::get_derived_atoms_ptr() { return m_derived_atoms; }
+
+FlatBitset& StateImpl::get_derived_atoms()
+{
+    // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatBitset.
+    assert(m_derived_atoms);
+    return *reinterpret_cast<FlatBitset*>(m_derived_atoms);
+}
 
 /**
  * Pretty printing

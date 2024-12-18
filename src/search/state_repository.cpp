@@ -35,8 +35,6 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
     m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_axioms().empty()
                                    || !m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
-    m_positive_applied_effects(),
-    m_negative_applied_effects(),
     m_reached_fluent_atoms(),
     m_reached_derived_atoms()
 {
@@ -69,7 +67,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     /* 2. Construct non-extended state */
 
     {
-        auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
+        auto& fluent_state_atoms = state_builder.get_fluent_atoms();
         fluent_state_atoms.unset_all();
         for (const auto& atom : atoms)
         {
@@ -96,12 +94,19 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         }
 
         // Evaluate axioms
-        auto& derived_state_atoms = state_builder.get_atoms<Derived>();
+        auto& derived_state_atoms = workspace.get_or_create_new_derived_atoms();
         derived_state_atoms.unset_all();
+        // Point to workspace's derived_atoms in state builder
+        auto& derived_state_atoms_ptr = state_builder.get_derived_atoms_ptr();
+        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(&derived_state_atoms);
         m_axiom_evaluator->generate_and_apply_axioms(state_builder, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
         m_reached_derived_atoms |= derived_state_atoms;
+
+        // Update address in state builder
+        const auto [iter, inserted] = m_axiom_evaluations.insert(derived_state_atoms);
+        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
     }
 
     // Cache and return the extended state.
@@ -128,8 +133,10 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     {
         // Apply STRIPS effect
         const auto& strips_action_effect = action->get_strips_effect();
-        m_negative_applied_effects = strips_action_effect.get_negative_effects();
-        m_positive_applied_effects = strips_action_effect.get_positive_effects();
+        auto& negative_applied_effects = workspace.get_or_create_applied_negative_effect_atoms();
+        auto& positive_applied_effects = workspace.get_or_create_applied_positive_effect_atoms();
+        negative_applied_effects = strips_action_effect.get_negative_effects();
+        positive_applied_effects = strips_action_effect.get_positive_effects();
         action_cost += strips_action_effect.get_cost();
 
         // Apply conditional effects
@@ -141,11 +148,11 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
                 {
                     if (effect_literal.is_negated)
                     {
-                        m_negative_applied_effects.set(effect_literal.atom_index);
+                        negative_applied_effects.set(effect_literal.atom_index);
                     }
                     else
                     {
-                        m_positive_applied_effects.set(effect_literal.atom_index);
+                        positive_applied_effects.set(effect_literal.atom_index);
                     }
                 }
                 action_cost += conditional_effect.get_cost();
@@ -153,10 +160,10 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         }
 
         // Modify fluent state atoms
-        auto& fluent_state_atoms = state_builder.get_atoms<Fluent>();
+        auto& fluent_state_atoms = state_builder.get_fluent_atoms();
         fluent_state_atoms = state->get_atoms<Fluent>();
-        fluent_state_atoms -= m_negative_applied_effects;
-        fluent_state_atoms |= m_positive_applied_effects;
+        fluent_state_atoms -= negative_applied_effects;
+        fluent_state_atoms |= positive_applied_effects;
 
         // Update reached fluent atoms
         m_reached_fluent_atoms |= fluent_state_atoms;
@@ -180,12 +187,19 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         }
 
         // Evaluate axioms
-        auto& derived_state_atoms = state_builder.get_atoms<Derived>();
+        auto& derived_state_atoms = workspace.get_or_create_new_derived_atoms();
         derived_state_atoms.unset_all();
+        // Point to workspace's derived_atoms in state builder
+        auto& derived_state_atoms_ptr = state_builder.get_derived_atoms_ptr();
+        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(&derived_state_atoms);
         m_axiom_evaluator->generate_and_apply_axioms(state_builder, workspace.get_or_create_axiom_evaluator_workspace());
 
         // Update reached derived atoms
         m_reached_derived_atoms |= derived_state_atoms;
+
+        // Update address in state builder
+        const auto [iter, inserted] = m_axiom_evaluations.insert(derived_state_atoms);
+        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
     }
 
     // Cache and return the extended state.
