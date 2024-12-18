@@ -50,8 +50,6 @@ private:
     std::optional<StateImpl> state_builder = std::nullopt;
     std::optional<DenseState> dense_state = std::nullopt;
 
-    std::optional<FlatBitset> new_fluent_atoms = std::nullopt;
-    std::optional<FlatBitset> new_derived_atoms = std::nullopt;
     std::optional<FlatBitset> applied_positive_effect_atoms = std::nullopt;
     std::optional<FlatBitset> applied_negative_effect_atoms = std::nullopt;
 

@@ -43,26 +43,6 @@ DenseState& StateRepositoryWorkspace::get_or_create_dense_state()
     return dense_state.value();
 }
 
-FlatBitset& StateRepositoryWorkspace::get_or_create_state_fluent_atoms()
-{
-    if (!new_fluent_atoms.has_value())
-    {
-        new_fluent_atoms = FlatBitset();
-    }
-
-    return new_fluent_atoms.value();
-}
-
-FlatBitset& StateRepositoryWorkspace::get_or_create_state_derived_atoms()
-{
-    if (!new_derived_atoms.has_value())
-    {
-        new_derived_atoms = FlatBitset();
-    }
-
-    return new_derived_atoms.value();
-}
-
 FlatBitset& StateRepositoryWorkspace::get_or_create_applied_positive_effect_atoms()
 {
     if (!applied_positive_effect_atoms.has_value())

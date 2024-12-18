@@ -35,12 +35,7 @@ class GroundedApplicableActionGeneratorWorkspace
 private:
     friend class GroundedApplicableActionGenerator;
 
-    std::pair<FlatBitset, FlatBitset>& get_or_create_bitsets();
     DenseState& get_or_create_dense_state();
-
-    std::optional<std::pair<FlatBitset,   ///< fluent atoms
-                            FlatBitset>>  ///< derived atoms
-        bitsets = std::nullopt;
 
     std::optional<DenseState> dense_state = std::nullopt;
 };

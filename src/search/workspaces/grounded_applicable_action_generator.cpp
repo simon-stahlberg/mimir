@@ -19,16 +19,6 @@
 
 namespace mimir
 {
-std::pair<FlatBitset, FlatBitset>& GroundedApplicableActionGeneratorWorkspace::get_or_create_bitsets()
-{
-    if (!bitsets.has_value())
-    {
-        bitsets = std::make_pair(FlatBitset(), FlatBitset());
-    }
-
-    return bitsets.value();
-}
-
 DenseState& GroundedApplicableActionGeneratorWorkspace::get_or_create_dense_state()
 {
     if (!dense_state.has_value())

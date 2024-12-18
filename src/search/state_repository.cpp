@@ -69,13 +69,20 @@ static void update_reached_derived_atoms(const FlatBitset& state_derived_atoms, 
     ref_reached_derived_atoms |= state_derived_atoms;
 }
 
+static void update_derived_atoms_ptr(const FlatIndexList& state_derived_atoms, uintptr_t& state_derived_atoms_ptr)
+{
+    state_derived_atoms_ptr = reinterpret_cast<uintptr_t>(&state_derived_atoms);
+}
+
 State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace)
 {
     auto& state_builder = workspace.get_or_create_state_builder();
     auto& state_fluent_atoms = state_builder.get_fluent_atoms();
     auto& state_derived_atoms = workspace.get_or_create_new_derived_atoms_list();
+    auto& state_derived_atoms_ptr = state_builder.get_derived_atoms();
     state_fluent_atoms.clear();
     state_derived_atoms.clear();
+    state_derived_atoms_ptr = uintptr_t(0);
 
     auto& dense_state = workspace.get_or_create_dense_state();
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
@@ -112,7 +119,6 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     }
 
     /* 3. Apply axioms to construct extended state. */
-    state_builder.get_derived_atoms() = 0;
 
     {
         // Return early if no axioms must be evaluated
@@ -131,8 +137,8 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
 
         const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
-        auto& derived_state_atoms_ptr = state_builder.get_derived_atoms();
-        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
+
+        update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
     }
 
     // Cache and return the extended state.
@@ -274,8 +280,8 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
         translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
 
         const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
-        auto& derived_state_atoms_ptr = state_builder.get_derived_atoms();
-        derived_state_atoms_ptr = reinterpret_cast<uintptr_t>(*iter);
+
+        update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
     }
 
     // Cache and return the extended state.
