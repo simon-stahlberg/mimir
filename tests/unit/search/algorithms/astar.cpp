@@ -69,7 +69,7 @@ public:
         {
             case HeuristicType::BLIND:
             {
-                m_heuristic = std::make_shared<BlindHeuristic>();
+                m_heuristic = std::make_shared<BlindHeuristic>(m_grounder->get_problem());
                 break;
             }
             case HeuristicType::HSTAR:
@@ -132,7 +132,7 @@ public:
         {
             case HeuristicType::BLIND:
             {
-                m_heuristic = std::make_shared<BlindHeuristic>();
+                m_heuristic = std::make_shared<BlindHeuristic>(m_grounder->get_problem());
                 break;
             }
             case HeuristicType::HSTAR:

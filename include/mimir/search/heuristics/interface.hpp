@@ -32,7 +32,7 @@ class IHeuristic
 public:
     virtual ~IHeuristic() = default;
 
-    virtual double compute_heuristic(State state) = 0;
+    virtual double compute_heuristic(State state, bool is_goal_state) = 0;
 };
 
 }

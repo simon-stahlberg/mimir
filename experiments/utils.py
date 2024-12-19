@@ -65,7 +65,8 @@ SUITE_OPTIMAL_STRIPS = [
     "visitall-opt11-strips", 
     "visitall-opt14-strips", 
     "woodworking-opt08-strips", 
-    "woodworking-opt11-strips", "zenotravel"
+    "woodworking-opt11-strips", 
+    "zenotravel"
 ]
 
 SUITE_OPTIMAL_ADL = [

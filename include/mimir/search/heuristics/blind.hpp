@@ -27,7 +27,12 @@ namespace mimir
 class BlindHeuristic : public IHeuristic
 {
 public:
-    double compute_heuristic(State state) override { return 0.; }
+    explicit BlindHeuristic(Problem problem) : m_min_cost_value(0.) {}
+
+    double compute_heuristic(State state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_cost_value; }
+
+private:
+    double m_min_cost_value;
 };
 
 }

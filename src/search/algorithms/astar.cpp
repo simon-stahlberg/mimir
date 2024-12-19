@@ -83,6 +83,17 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
     const auto pruning_strategy = (pruning_strategy_.has_value()) ? pruning_strategy_.value() : std::make_shared<NoStatePruning>();
 
     auto result = SearchResult();
+
+    /* Test static goal. */
+
+    if (!goal_strategy->test_static_goal())
+    {
+        event_handler->on_unsolvable();
+
+        result.status = SearchStatus::UNSOLVABLE;
+        return result;
+    }
+
     auto default_search_node = AStarSearchNodeImpl { SearchNodeStatus::NEW,
                                                      std::numeric_limits<Index>::max(),
                                                      std::numeric_limits<Index>::max(),
@@ -97,7 +108,7 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
     event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     const auto start_g_value = ContinuousCost(0);
-    const auto start_h_value = heuristic->compute_heuristic(start_state);
+    const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
     const auto start_f_value = start_g_value + start_h_value;
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
@@ -108,16 +119,6 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
     /* Test whether start state is deadend. */
 
     if (get_status(start_search_node) == SearchNodeStatus::DEAD_END)
-    {
-        event_handler->on_unsolvable();
-
-        result.status = SearchStatus::UNSOLVABLE;
-        return result;
-    }
-
-    /* Test static goal. */
-
-    if (!goal_strategy->test_static_goal())
     {
         event_handler->on_unsolvable();
 
@@ -146,7 +147,7 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
 
-        if (get_status(search_node) == SearchNodeStatus::CLOSED)
+        if (get_status(search_node) == SearchNodeStatus::CLOSED || get_status(search_node) == SearchNodeStatus::DEAD_END)
         {
             continue;
         }
@@ -175,7 +176,7 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
         /* Test whether state achieves the dynamic goal. */
 
-        if (goal_strategy->test_dynamic_goal(state))
+        if (get_status(search_node) == SearchNodeStatus::GOAL)
         {
             auto plan_actions = GroundActionList {};
             set_plan(search_nodes, applicable_action_generator->get_action_grounder()->get_ground_actions(), search_node, plan_actions);
@@ -239,7 +240,12 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                 if (is_new_successor_state)
                 {
                     // Compute heuristic if state is new.
-                    const auto successor_h_value = heuristic->compute_heuristic(successor_state);
+                    const auto successor_is_goal_state = goal_strategy->test_dynamic_goal(successor_state);
+                    if (successor_is_goal_state)
+                    {
+                        set_status(successor_search_node, SearchNodeStatus::GOAL);
+                    }
+                    const auto successor_h_value = heuristic->compute_heuristic(successor_state, successor_is_goal_state);
                     set_h_value(successor_search_node, successor_h_value);
 
                     if (successor_h_value == std::numeric_limits<ContinuousCost>::infinity())
@@ -248,6 +254,12 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                         continue;
                     }
                 }
+
+                if (get_status(successor_search_node) == SearchNodeStatus::DEAD_END)
+                {
+                    continue;
+                }
+
                 event_handler->on_generate_state_relaxed(successor_state, action, action_cost, problem, pddl_repositories);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);

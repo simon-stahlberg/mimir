@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     auto heuristic = std::shared_ptr<IHeuristic>(nullptr);
     if (heuristic_type == 0)
     {
-        heuristic = std::make_shared<BlindHeuristic>();
+        heuristic = std::make_shared<BlindHeuristic>(parser.get_problem());
     }
     assert(heuristic);
 

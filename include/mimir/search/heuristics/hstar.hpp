@@ -31,7 +31,7 @@ class HStarHeuristic : public IHeuristic
 public:
     HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
 
-    double compute_heuristic(State state) override;
+    double compute_heuristic(State state, bool is_goal_state) override;
 
 private:
     StateMap<double> m_estimates;

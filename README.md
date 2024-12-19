@@ -46,6 +46,9 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   Mimir uses the [Loki](https://github.com/drexlerd/Loki) parser for handling PDDL files.
   Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input.
 
+- **PDDL Normalization:**
+  The library implements a normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
+
 - **Lifted Successor Generator:**
   The library implements a lifted successor generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516).
   This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
@@ -56,9 +59,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State Representation:**
-  States are represented using a bitset that encodes the truth values of ground atoms.
-  While modern grounded planners often use Finite Domain Representation (FDR/SAS+), this approach is challenging to adopt in a lifted setting.
-  Given that both grounded and lifted settings are supported by the library, the bitset representation ensures consistency across both approaches.
+  States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step uses the largest identifies the largest required unsigned integral type (`uint8_t`, `uint16_t`, `uint32_t`) needed to store all ground atoms.
 
 - **State-Dependent Action Costs (SDAC):**
   State-dependent action costs play a crucial role in accurately modeling real-world problems. For example, in a logistics domain, the cost of moving between locations may depend on factors such as the available vehicles, the terrain, or the load carried by a vehicle. Mimir supports all `:action-costs` features, allowing modelers to write complex cost expressions directly into conditional effects.
