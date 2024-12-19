@@ -34,8 +34,9 @@
     "num_generated_until_last_f_layer": 670753555,
     "problem": "prob02.pddl",
     "run_dir": "runs-00001-00100/00002",
-    "search_time": 876701.102,
+    "search_time": 1016746.7609999999,
     "time_limit": 1800,
+    "total_time": 1016.750952,
     "unsolvable": 0
   },
   "downward-astar-blind-assembly-prob03.pddl": {
@@ -499,14 +500,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 21,
-    "num_expanded_until_last_f_layer": 16,
-    "num_generated": 116,
-    "num_generated_until_last_f_layer": 87,
+    "num_expanded": 180,
+    "num_expanded_until_last_f_layer": 101,
+    "num_generated": 1817,
+    "num_generated_until_last_f_layer": 935,
     "problem": "p01.pddl",
     "run_dir": "runs-00001-00100/00031",
-    "search_time": 3.999,
+    "search_time": 1.423,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p02.pddl": {
@@ -522,14 +524,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 36,
-    "num_expanded_until_last_f_layer": 24,
-    "num_generated": 264,
-    "num_generated_until_last_f_layer": 168,
+    "num_expanded": 188,
+    "num_expanded_until_last_f_layer": 101,
+    "num_generated": 2060,
+    "num_generated_until_last_f_layer": 997,
     "problem": "p02.pddl",
     "run_dir": "runs-00001-00100/00032",
-    "search_time": 6.625,
+    "search_time": 1.242,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p03.pddl": {
@@ -545,14 +548,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 36,
-    "num_expanded_until_last_f_layer": 24,
-    "num_generated": 264,
-    "num_generated_until_last_f_layer": 168,
+    "num_expanded": 188,
+    "num_expanded_until_last_f_layer": 101,
+    "num_generated": 2060,
+    "num_generated_until_last_f_layer": 997,
     "problem": "p03.pddl",
     "run_dir": "runs-00001-00100/00033",
-    "search_time": 5.824,
+    "search_time": 1.338,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p04.pddl": {
@@ -568,14 +572,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 36,
-    "num_expanded_until_last_f_layer": 24,
-    "num_generated": 236,
-    "num_generated_until_last_f_layer": 150,
+    "num_expanded": 188,
+    "num_expanded_until_last_f_layer": 101,
+    "num_generated": 1908,
+    "num_generated_until_last_f_layer": 935,
     "problem": "p04.pddl",
     "run_dir": "runs-00001-00100/00034",
-    "search_time": 5.322,
+    "search_time": 1.237,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p05.pddl": {
@@ -591,14 +596,15 @@
     "invalid_plan_reported": 0,
     "length": 12,
     "memory_limit": 8000,
-    "num_expanded": 12959,
-    "num_expanded_until_last_f_layer": 7056,
-    "num_generated": 316006,
-    "num_generated_until_last_f_layer": 166088,
+    "num_expanded": 212888,
+    "num_expanded_until_last_f_layer": 77515,
+    "num_generated": 7560140,
+    "num_generated_until_last_f_layer": 2333719,
     "problem": "p05.pddl",
     "run_dir": "runs-00001-00100/00035",
-    "search_time": 140.05100000000002,
+    "search_time": 3290.963,
     "time_limit": 1800,
+    "total_time": 3.307488,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p06.pddl": {
@@ -614,14 +620,15 @@
     "invalid_plan_reported": 0,
     "length": 12,
     "memory_limit": 8000,
-    "num_expanded": 12959,
-    "num_expanded_until_last_f_layer": 7056,
-    "num_generated": 432977,
-    "num_generated_until_last_f_layer": 230510,
+    "num_expanded": 212888,
+    "num_expanded_until_last_f_layer": 77515,
+    "num_generated": 9393520,
+    "num_generated_until_last_f_layer": 2919493,
     "problem": "p06.pddl",
     "run_dir": "runs-00001-00100/00036",
-    "search_time": 197.63400000000001,
+    "search_time": 3674.423,
     "time_limit": 1800,
+    "total_time": 3.702112,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p07.pddl": {
@@ -637,14 +644,15 @@
     "invalid_plan_reported": 0,
     "length": 11,
     "memory_limit": 8000,
-    "num_expanded": 12688,
-    "num_expanded_until_last_f_layer": 7437,
-    "num_generated": 272046,
-    "num_generated_until_last_f_layer": 150815,
+    "num_expanded": 228738,
+    "num_expanded_until_last_f_layer": 81550,
+    "num_generated": 6460597,
+    "num_generated_until_last_f_layer": 2046202,
     "problem": "p07.pddl",
     "run_dir": "runs-00001-00100/00037",
-    "search_time": 127.96199999999999,
+    "search_time": 3009.467,
     "time_limit": 1800,
+    "total_time": 3.025287,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p08.pddl": {
@@ -660,14 +668,15 @@
     "invalid_plan_reported": 0,
     "length": 12,
     "memory_limit": 8000,
-    "num_expanded": 3793,
-    "num_expanded_until_last_f_layer": 2841,
-    "num_generated": 80044,
-    "num_generated_until_last_f_layer": 58654,
+    "num_expanded": 144968,
+    "num_expanded_until_last_f_layer": 65647,
+    "num_generated": 4637030,
+    "num_generated_until_last_f_layer": 1813819,
     "problem": "p08.pddl",
     "run_dir": "runs-00001-00100/00038",
-    "search_time": 37.491,
+    "search_time": 1363.757,
     "time_limit": 1800,
+    "total_time": 1.370826,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-opt18-adl-p09.pddl": {
@@ -688,8 +697,7 @@
   },
   "downward-astar-blind-caldera-opt18-adl-p10.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 15.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "caldera-opt18-adl",
     "id": [
       "downward-astar-blind",
@@ -697,14 +705,9 @@
       "p10.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 15,
     "memory_limit": 8000,
-    "num_expanded": 54318430,
-    "num_expanded_until_last_f_layer": 32244991,
-    "num_generated_until_last_f_layer": 1302710749,
     "problem": "p10.pddl",
     "run_dir": "runs-00001-00100/00040",
-    "search_time": 872713.3189999999,
     "time_limit": 1800,
     "unsolvable": 0
   },
@@ -726,8 +729,7 @@
   },
   "downward-astar-blind-caldera-opt18-adl-p12.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 16.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "caldera-opt18-adl",
     "id": [
       "downward-astar-blind",
@@ -735,14 +737,9 @@
       "p12.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 16,
     "memory_limit": 8000,
-    "num_expanded": 46292178,
-    "num_expanded_until_last_f_layer": 28375734,
-    "num_generated_until_last_f_layer": 1381392854,
     "problem": "p12.pddl",
     "run_dir": "runs-00001-00100/00042",
-    "search_time": 837033.434,
     "time_limit": 1800,
     "unsolvable": 0
   },
@@ -887,14 +884,15 @@
     "invalid_plan_reported": 0,
     "length": 20,
     "memory_limit": 8000,
-    "num_expanded": 482,
-    "num_expanded_until_last_f_layer": 449,
-    "num_generated": 721,
-    "num_generated_until_last_f_layer": 689,
+    "num_expanded": 1830,
+    "num_expanded_until_last_f_layer": 1637,
+    "num_generated": 3617,
+    "num_generated_until_last_f_layer": 3425,
     "problem": "p01.pddl",
     "run_dir": "runs-00001-00100/00051",
-    "search_time": 6.868,
+    "search_time": 6.499,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p02.pddl": {
@@ -910,14 +908,15 @@
     "invalid_plan_reported": 0,
     "length": 20,
     "memory_limit": 8000,
-    "num_expanded": 683,
-    "num_expanded_until_last_f_layer": 637,
-    "num_generated": 966,
-    "num_generated_until_last_f_layer": 921,
+    "num_expanded": 2654,
+    "num_expanded_until_last_f_layer": 2368,
+    "num_generated": 4609,
+    "num_generated_until_last_f_layer": 4324,
     "problem": "p02.pddl",
     "run_dir": "runs-00001-00100/00052",
-    "search_time": 7.949,
+    "search_time": 7.845,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p03.pddl": {
@@ -933,14 +932,15 @@
     "invalid_plan_reported": 0,
     "length": 20,
     "memory_limit": 8000,
-    "num_expanded": 621,
-    "num_expanded_until_last_f_layer": 576,
-    "num_generated": 904,
-    "num_generated_until_last_f_layer": 860,
+    "num_expanded": 2477,
+    "num_expanded_until_last_f_layer": 2192,
+    "num_generated": 4432,
+    "num_generated_until_last_f_layer": 4148,
     "problem": "p03.pddl",
     "run_dir": "runs-00001-00100/00053",
-    "search_time": 8.639000000000001,
+    "search_time": 6.531000000000001,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p04.pddl": {
@@ -956,14 +956,15 @@
     "invalid_plan_reported": 0,
     "length": 20,
     "memory_limit": 8000,
-    "num_expanded": 645,
-    "num_expanded_until_last_f_layer": 596,
-    "num_generated": 928,
-    "num_generated_until_last_f_layer": 880,
+    "num_expanded": 2533,
+    "num_expanded_until_last_f_layer": 2244,
+    "num_generated": 4488,
+    "num_generated_until_last_f_layer": 4200,
     "problem": "p04.pddl",
     "run_dir": "runs-00001-00100/00054",
-    "search_time": 7.739,
+    "search_time": 7.941,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p05.pddl": {
@@ -979,14 +980,15 @@
     "invalid_plan_reported": 0,
     "length": 38,
     "memory_limit": 8000,
-    "num_expanded": 2956524,
-    "num_expanded_until_last_f_layer": 2782003,
-    "num_generated": 3767213,
-    "num_generated_until_last_f_layer": 3592693,
+    "num_expanded": 28031076,
+    "num_expanded_until_last_f_layer": 24980368,
+    "num_generated": 39554051,
+    "num_generated_until_last_f_layer": 36503344,
     "problem": "p05.pddl",
     "run_dir": "runs-00001-00100/00055",
-    "search_time": 11202.222000000002,
+    "search_time": 117971.234,
     "time_limit": 1800,
+    "total_time": 117.985843,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p06.pddl": {
@@ -1002,14 +1004,15 @@
     "invalid_plan_reported": 0,
     "length": 38,
     "memory_limit": 8000,
-    "num_expanded": 4788878,
-    "num_expanded_until_last_f_layer": 4488130,
-    "num_generated": 6024511,
-    "num_generated_until_last_f_layer": 5723764,
+    "num_expanded": 50904365,
+    "num_expanded_until_last_f_layer": 44793943,
+    "num_generated": 67780603,
+    "num_generated_until_last_f_layer": 61670182,
     "problem": "p06.pddl",
     "run_dir": "runs-00001-00100/00056",
-    "search_time": 22654.547000000002,
+    "search_time": 214871.257,
     "time_limit": 1800,
+    "total_time": 214.883311,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p07.pddl": {
@@ -1025,14 +1028,15 @@
     "invalid_plan_reported": 0,
     "length": 37,
     "memory_limit": 8000,
-    "num_expanded": 3090893,
-    "num_expanded_until_last_f_layer": 2835626,
-    "num_generated": 4007200,
-    "num_generated_until_last_f_layer": 3751934,
+    "num_expanded": 25195074,
+    "num_expanded_until_last_f_layer": 21930153,
+    "num_generated": 35647125,
+    "num_generated_until_last_f_layer": 32382205,
     "problem": "p07.pddl",
     "run_dir": "runs-00001-00100/00057",
-    "search_time": 12271.519,
+    "search_time": 99657.376,
     "time_limit": 1800,
+    "total_time": 99.666142,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p08.pddl": {
@@ -1048,14 +1052,15 @@
     "invalid_plan_reported": 0,
     "length": 38,
     "memory_limit": 8000,
-    "num_expanded": 766724,
-    "num_expanded_until_last_f_layer": 712200,
-    "num_generated": 1054282,
-    "num_generated_until_last_f_layer": 999759,
+    "num_expanded": 9888797,
+    "num_expanded_until_last_f_layer": 8728374,
+    "num_generated": 16040713,
+    "num_generated_until_last_f_layer": 14880291,
     "problem": "p08.pddl",
     "run_dir": "runs-00001-00100/00058",
-    "search_time": 2584.631,
+    "search_time": 38386.76,
     "time_limit": 1800,
+    "total_time": 38.395392,
     "unsolvable": 0
   },
   "downward-astar-blind-caldera-split-opt18-adl-p09.pddl": {
@@ -1343,14 +1348,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 2614299,
-    "num_expanded_until_last_f_layer": 1843314,
-    "num_generated": 11259194,
-    "num_generated_until_last_f_layer": 8110693,
+    "num_expanded": 4455570,
+    "num_expanded_until_last_f_layer": 3057065,
+    "num_generated": 19123192,
+    "num_generated_until_last_f_layer": 13427697,
     "problem": "testing05A_easy.pddl",
     "run_dir": "runs-00001-00100/00076",
-    "search_time": 8451.176,
+    "search_time": 15272.109999999999,
     "time_limit": 1800,
+    "total_time": 15.278032,
     "unsolvable": 0
   },
   "downward-astar-blind-cavediving-14-adl-testing06A_easy.pddl": {
@@ -1366,14 +1372,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 2614299,
-    "num_expanded_until_last_f_layer": 1843314,
-    "num_generated": 11259194,
-    "num_generated_until_last_f_layer": 8110693,
+    "num_expanded": 4455570,
+    "num_expanded_until_last_f_layer": 3057065,
+    "num_generated": 19123192,
+    "num_generated_until_last_f_layer": 13427697,
     "problem": "testing06A_easy.pddl",
     "run_dir": "runs-00001-00100/00077",
-    "search_time": 8179.368,
+    "search_time": 14092.92,
     "time_limit": 1800,
+    "total_time": 14.098332,
     "unsolvable": 0
   },
   "downward-astar-blind-cavediving-14-adl-testing07_easy.pddl": {
@@ -1389,14 +1396,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 5125525,
-    "num_expanded_until_last_f_layer": 3646629,
-    "num_generated": 22303233,
-    "num_generated_until_last_f_layer": 16181900,
+    "num_expanded": 8733357,
+    "num_expanded_until_last_f_layer": 6054354,
+    "num_generated": 37850209,
+    "num_generated_until_last_f_layer": 26794732,
     "problem": "testing07_easy.pddl",
     "run_dir": "runs-00001-00100/00078",
-    "search_time": 16709.250999999997,
+    "search_time": 31418.520999999997,
     "time_limit": 1800,
+    "total_time": 31.424252,
     "unsolvable": 0
   },
   "downward-astar-blind-cavediving-14-adl-testing08_easy.pddl": {
@@ -1412,14 +1420,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 2614299,
-    "num_expanded_until_last_f_layer": 1843314,
-    "num_generated": 11259194,
-    "num_generated_until_last_f_layer": 8110693,
+    "num_expanded": 4455570,
+    "num_expanded_until_last_f_layer": 3057065,
+    "num_generated": 19123192,
+    "num_generated_until_last_f_layer": 13427697,
     "problem": "testing08_easy.pddl",
     "run_dir": "runs-00001-00100/00079",
-    "search_time": 9160.391000000001,
+    "search_time": 14204.262999999999,
     "time_limit": 1800,
+    "total_time": 14.209876,
     "unsolvable": 0
   },
   "downward-astar-blind-cavediving-14-adl-testing09_easy.pddl": {
@@ -1563,14 +1572,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 8080293,
-    "num_expanded_until_last_f_layer": 5609455,
-    "num_generated": 34704628,
-    "num_generated_until_last_f_layer": 24544086,
+    "num_expanded": 13590982,
+    "num_expanded_until_last_f_layer": 9189650,
+    "num_generated": 57892335,
+    "num_generated_until_last_f_layer": 39983190,
     "problem": "testing18A_easy.pddl",
     "run_dir": "runs-00001-00100/00089",
-    "search_time": 25341.239,
+    "search_time": 46532.98,
     "time_limit": 1800,
+    "total_time": 46.539849,
     "unsolvable": 0
   },
   "downward-astar-blind-cavediving-14-adl-testing18_easy.pddl": {
@@ -1586,14 +1596,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 15250047,
-    "num_expanded_until_last_f_layer": 10094598,
-    "num_generated": 66383867,
-    "num_generated_until_last_f_layer": 45241062,
+    "num_expanded": 26932152,
+    "num_expanded_until_last_f_layer": 17184983,
+    "num_generated": 116337340,
+    "num_generated_until_last_f_layer": 76498368,
     "problem": "testing18_easy.pddl",
     "run_dir": "runs-00001-00100/00088",
-    "search_time": 60711.255000000005,
+    "search_time": 107130.156,
     "time_limit": 1800,
+    "total_time": 107.138361,
     "unsolvable": 0
   },
   "downward-astar-blind-cavediving-14-adl-testing20A_easy.pddl": {
@@ -1609,14 +1620,15 @@
     "invalid_plan_reported": 0,
     "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 4129371,
-    "num_expanded_until_last_f_layer": 2829927,
-    "num_generated": 17573138,
-    "num_generated_until_last_f_layer": 12305064,
+    "num_expanded": 6950471,
+    "num_expanded_until_last_f_layer": 4632175,
+    "num_generated": 29343187,
+    "num_generated_until_last_f_layer": 20041854,
     "problem": "testing20A_easy.pddl",
     "run_dir": "runs-00001-00100/00090",
-    "search_time": 13923.817,
+    "search_time": 26108.773,
     "time_limit": 1800,
+    "total_time": 26.11552,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-2-1-2.pddl": {
@@ -1632,14 +1644,15 @@
     "invalid_plan_reported": 0,
     "length": 12,
     "memory_limit": 8000,
-    "num_expanded": 8057,
-    "num_expanded_until_last_f_layer": 7924,
-    "num_generated": 198874,
-    "num_generated_until_last_f_layer": 195934,
+    "num_expanded": 10047,
+    "num_expanded_until_last_f_layer": 9851,
+    "num_generated": 249702,
+    "num_generated_until_last_f_layer": 245400,
     "problem": "p2-2-2-1-2.pddl",
     "run_dir": "runs-00001-00100/00091",
-    "search_time": 180.458,
+    "search_time": 230.85500000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-2-2-1.pddl": {
@@ -1655,14 +1668,15 @@
     "invalid_plan_reported": 0,
     "length": 10,
     "memory_limit": 8000,
-    "num_expanded": 64507,
-    "num_expanded_until_last_f_layer": 58608,
-    "num_generated": 1134288,
-    "num_generated_until_last_f_layer": 1048172,
+    "num_expanded": 79447,
+    "num_expanded_until_last_f_layer": 71472,
+    "num_generated": 1398660,
+    "num_generated_until_last_f_layer": 1281912,
     "problem": "p2-2-2-2-1.pddl",
     "run_dir": "runs-00001-00100/00092",
-    "search_time": 793.199,
+    "search_time": 1036.177,
     "time_limit": 1800,
+    "total_time": 1.041018,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-3-1-2.pddl": {
@@ -1678,14 +1692,15 @@
     "invalid_plan_reported": 0,
     "length": 18,
     "memory_limit": 8000,
-    "num_expanded": 46092,
-    "num_expanded_until_last_f_layer": 38147,
-    "num_generated": 1095689,
-    "num_generated_until_last_f_layer": 906617,
+    "num_expanded": 67163,
+    "num_expanded_until_last_f_layer": 58966,
+    "num_generated": 1610205,
+    "num_generated_until_last_f_layer": 1415757,
     "problem": "p2-2-3-1-2.pddl",
     "run_dir": "runs-00001-00100/00093",
-    "search_time": 993.834,
+    "search_time": 1207.346,
     "time_limit": 1800,
+    "total_time": 1.21169,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-3-2-1.pddl": {
@@ -1701,14 +1716,15 @@
     "invalid_plan_reported": 0,
     "length": 16,
     "memory_limit": 8000,
-    "num_expanded": 40044,
-    "num_expanded_until_last_f_layer": 39431,
-    "num_generated": 952787,
-    "num_generated_until_last_f_layer": 938999,
+    "num_expanded": 57848,
+    "num_expanded_until_last_f_layer": 56470,
+    "num_generated": 1389543,
+    "num_generated_until_last_f_layer": 1358853,
     "problem": "p2-2-3-2-1.pddl",
     "run_dir": "runs-00001-00100/00094",
-    "search_time": 844.967,
+    "search_time": 1286.78,
     "time_limit": 1800,
+    "total_time": 1.291679,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-3-2-2.pddl": {
@@ -1724,14 +1740,15 @@
     "invalid_plan_reported": 0,
     "length": 18,
     "memory_limit": 8000,
-    "num_expanded": 46092,
-    "num_expanded_until_last_f_layer": 38147,
-    "num_generated": 1095689,
-    "num_generated_until_last_f_layer": 906617,
+    "num_expanded": 67160,
+    "num_expanded_until_last_f_layer": 58966,
+    "num_generated": 1610127,
+    "num_generated_until_last_f_layer": 1415757,
     "problem": "p2-2-3-2-2.pddl",
     "run_dir": "runs-00001-00100/00095",
-    "search_time": 895.861,
+    "search_time": 1604.6180000000002,
     "time_limit": 1800,
+    "total_time": 1.609756,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-4-1-2.pddl": {
@@ -1747,14 +1764,15 @@
     "invalid_plan_reported": 0,
     "length": 22,
     "memory_limit": 8000,
-    "num_expanded": 278855,
-    "num_expanded_until_last_f_layer": 237790,
-    "num_generated": 6521296,
-    "num_generated_until_last_f_layer": 5535616,
+    "num_expanded": 463072,
+    "num_expanded_until_last_f_layer": 406161,
+    "num_generated": 10903044,
+    "num_generated_until_last_f_layer": 9510648,
     "problem": "p2-2-4-1-2.pddl",
     "run_dir": "runs-00001-00100/00096",
-    "search_time": 6163.728,
+    "search_time": 11668.402,
     "time_limit": 1800,
+    "total_time": 11.674791,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-4-2-1.pddl": {
@@ -1770,14 +1788,15 @@
     "invalid_plan_reported": 0,
     "length": 22,
     "memory_limit": 8000,
-    "num_expanded": 278855,
-    "num_expanded_until_last_f_layer": 237790,
-    "num_generated": 6521296,
-    "num_generated_until_last_f_layer": 5535616,
+    "num_expanded": 463063,
+    "num_expanded_until_last_f_layer": 406161,
+    "num_generated": 10902810,
+    "num_generated_until_last_f_layer": 9510648,
     "problem": "p2-2-4-2-1.pddl",
     "run_dir": "runs-00001-00100/00097",
-    "search_time": 5817.111,
+    "search_time": 11402.967,
     "time_limit": 1800,
+    "total_time": 11.410622,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-2-5-2-2.pddl": {
@@ -1841,14 +1860,15 @@
     "invalid_plan_reported": 0,
     "length": 15,
     "memory_limit": 8000,
-    "num_expanded": 227518,
-    "num_expanded_until_last_f_layer": 227421,
-    "num_generated": 6398477,
-    "num_generated_until_last_f_layer": 6396077,
+    "num_expanded": 266486,
+    "num_expanded_until_last_f_layer": 266293,
+    "num_generated": 7518900,
+    "num_generated_until_last_f_layer": 7514388,
     "problem": "p2-3-2-3-1.pddl",
     "run_dir": "runs-00101-00200/00101",
-    "search_time": 4735.361,
+    "search_time": 5977.103999999999,
     "time_limit": 1800,
+    "total_time": 5.983478,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-3-3-3-1.pddl": {
@@ -1864,14 +1884,15 @@
     "invalid_plan_reported": 0,
     "length": 17,
     "memory_limit": 8000,
-    "num_expanded": 2739205,
-    "num_expanded_until_last_f_layer": 2719056,
-    "num_generated": 74335544,
-    "num_generated_until_last_f_layer": 73751804,
+    "num_expanded": 3790247,
+    "num_expanded_until_last_f_layer": 3725417,
+    "num_generated": 104804185,
+    "num_generated_until_last_f_layer": 102930893,
     "problem": "p2-3-3-3-1.pddl",
     "run_dir": "runs-00101-00200/00102",
-    "search_time": 57206.577000000005,
+    "search_time": 83045.826,
     "time_limit": 1800,
+    "total_time": 83.052672,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p2-3-4-3-1.pddl": {
@@ -1951,14 +1972,15 @@
     "invalid_plan_reported": 0,
     "length": 14,
     "memory_limit": 8000,
-    "num_expanded": 64984,
-    "num_expanded_until_last_f_layer": 64943,
-    "num_generated": 7689240,
-    "num_generated_until_last_f_layer": 7684680,
+    "num_expanded": 77170,
+    "num_expanded_until_last_f_layer": 77001,
+    "num_generated": 9140965,
+    "num_generated_until_last_f_layer": 9122949,
     "problem": "p3-3-2-3-1.pddl",
     "run_dir": "runs-00101-00200/00107",
-    "search_time": 9179.119999999999,
+    "search_time": 12040.293,
     "time_limit": 1800,
+    "total_time": 12.051523,
     "unsolvable": 0
   },
   "downward-astar-blind-citycar-opt14-adl-p3-3-2-3-2.pddl": {
@@ -2028,8 +2050,9 @@
     "num_generated_until_last_f_layer": 130438,
     "problem": "p01.pddl",
     "run_dir": "runs-00101-00200/00111",
-    "search_time": 634.32,
+    "search_time": 600.974,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p02.pddl": {
@@ -2051,8 +2074,9 @@
     "num_generated_until_last_f_layer": 1325520,
     "problem": "p02.pddl",
     "run_dir": "runs-00101-00200/00112",
-    "search_time": 9119.160000000002,
+    "search_time": 10046.637,
     "time_limit": 1800,
+    "total_time": 10.149987,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p03.pddl": {
@@ -2074,8 +2098,9 @@
     "num_generated_until_last_f_layer": 16478190,
     "problem": "p03.pddl",
     "run_dir": "runs-00101-00200/00113",
-    "search_time": 144120.842,
+    "search_time": 161301.749,
     "time_limit": 1800,
+    "total_time": 161.518649,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p04.pddl": {
@@ -2161,8 +2186,9 @@
     "num_generated_until_last_f_layer": 7697576,
     "problem": "p08.pddl",
     "run_dir": "runs-00101-00200/00118",
-    "search_time": 77572.97099999999,
+    "search_time": 70304.653,
     "time_limit": 1800,
+    "total_time": 70.481658,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p09.pddl": {
@@ -2184,8 +2210,9 @@
     "num_generated_until_last_f_layer": 29813348,
     "problem": "p09.pddl",
     "run_dir": "runs-00101-00200/00119",
-    "search_time": 327105.875,
+    "search_time": 326420.751,
     "time_limit": 1800,
+    "total_time": 326.693374,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p10.pddl": {
@@ -2271,8 +2298,9 @@
     "num_generated_until_last_f_layer": 3793352,
     "problem": "p14.pddl",
     "run_dir": "runs-00101-00200/00124",
-    "search_time": 48990.905,
+    "search_time": 48762.148,
     "time_limit": 1800,
+    "total_time": 48.956851,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p15.pddl": {
@@ -2294,8 +2322,9 @@
     "num_generated_until_last_f_layer": 13348216,
     "problem": "p15.pddl",
     "run_dir": "runs-00101-00200/00125",
-    "search_time": 213214.542,
+    "search_time": 212548.069,
     "time_limit": 1800,
+    "total_time": 212.916123,
     "unsolvable": 0
   },
   "downward-astar-blind-folding-opt23-adl-p16.pddl": {
@@ -2397,8 +2426,9 @@
     "num_generated_until_last_f_layer": 22119,
     "problem": "p01.pddl",
     "run_dir": "runs-00101-00200/00131",
-    "search_time": 278.14,
+    "search_time": 114.566,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-labyrinth-opt23-adl-p02.pddl": {
@@ -2718,14 +2748,15 @@
     "invalid_plan_reported": 0,
     "length": 4,
     "memory_limit": 8000,
-    "num_expanded": 294,
-    "num_expanded_until_last_f_layer": 167,
-    "num_generated": 4080,
-    "num_generated_until_last_f_layer": 2568,
+    "num_expanded": 607,
+    "num_expanded_until_last_f_layer": 230,
+    "num_generated": 13488,
+    "num_generated_until_last_f_layer": 5592,
     "problem": "maintenance-1-3-010-010-2-000.pddl",
     "run_dir": "runs-00101-00200/00151",
-    "search_time": 4.764,
+    "search_time": 5.727,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-maintenance-opt14-adl-maintenance-1-3-010-010-2-001.pddl": {
@@ -2741,14 +2772,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 8140,
-    "num_expanded_until_last_f_layer": 6416,
-    "num_generated": 80706,
-    "num_generated_until_last_f_layer": 70368,
+    "num_expanded": 19444,
+    "num_expanded_until_last_f_layer": 13452,
+    "num_generated": 293943,
+    "num_generated_until_last_f_layer": 222051,
     "problem": "maintenance-1-3-010-010-2-001.pddl",
     "run_dir": "runs-00101-00200/00152",
-    "search_time": 28.502,
+    "search_time": 81.43599999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-maintenance-opt14-adl-maintenance-1-3-010-010-2-002.pddl": {
@@ -2764,14 +2796,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 8603,
-    "num_expanded_until_last_f_layer": 5610,
-    "num_generated": 125340,
-    "num_generated_until_last_f_layer": 89436,
+    "num_expanded": 11107,
+    "num_expanded_until_last_f_layer": 7097,
+    "num_generated": 193992,
+    "num_generated_until_last_f_layer": 133857,
     "problem": "maintenance-1-3-010-010-2-002.pddl",
     "run_dir": "runs-00101-00200/00153",
-    "search_time": 42.351,
+    "search_time": 63.32,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-maintenance-opt14-adl-maintenance-1-3-015-020-2-001.pddl": {
@@ -2787,14 +2820,15 @@
     "invalid_plan_reported": 0,
     "length": 11,
     "memory_limit": 8000,
-    "num_expanded": 31713350,
-    "num_expanded_until_last_f_layer": 21567871,
-    "num_generated": 499831449,
-    "num_generated_until_last_f_layer": 378085713,
+    "num_expanded": 52116659,
+    "num_expanded_until_last_f_layer": 33015076,
+    "num_generated": 955588779,
+    "num_generated_until_last_f_layer": 669065049,
     "problem": "maintenance-1-3-015-020-2-001.pddl",
     "run_dir": "runs-00101-00200/00154",
-    "search_time": 152982.211,
+    "search_time": 310454.973,
     "time_limit": 1800,
+    "total_time": 310.458226,
     "unsolvable": 0
   },
   "downward-astar-blind-maintenance-opt14-adl-maintenance-1-3-015-020-2-002.pddl": {
@@ -2810,14 +2844,15 @@
     "invalid_plan_reported": 0,
     "length": 9,
     "memory_limit": 8000,
-    "num_expanded": 1774063,
-    "num_expanded_until_last_f_layer": 1178114,
-    "num_generated": 32078355,
-    "num_generated_until_last_f_layer": 23139135,
+    "num_expanded": 3638017,
+    "num_expanded_until_last_f_layer": 2253272,
+    "num_generated": 86262750,
+    "num_generated_until_last_f_layer": 57183126,
     "problem": "maintenance-1-3-015-020-2-002.pddl",
     "run_dir": "runs-00101-00200/00155",
-    "search_time": 9373.283000000001,
+    "search_time": 23511.37,
     "time_limit": 1800,
+    "total_time": 23.513951,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f1-0.pddl": {
@@ -2839,8 +2874,9 @@
     "num_generated_until_last_f_layer": 15,
     "problem": "f1-0.pddl",
     "run_dir": "runs-00101-00200/00156",
-    "search_time": 3.424,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f1-1.pddl": {
@@ -2862,8 +2898,9 @@
     "num_generated_until_last_f_layer": 15,
     "problem": "f1-1.pddl",
     "run_dir": "runs-00101-00200/00157",
-    "search_time": 2.992,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f1-2.pddl": {
@@ -2885,8 +2922,9 @@
     "num_generated_until_last_f_layer": 15,
     "problem": "f1-2.pddl",
     "run_dir": "runs-00101-00200/00158",
-    "search_time": 3.173,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f1-3.pddl": {
@@ -2908,8 +2946,9 @@
     "num_generated_until_last_f_layer": 15,
     "problem": "f1-3.pddl",
     "run_dir": "runs-00101-00200/00159",
-    "search_time": 3.165,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f1-4.pddl": {
@@ -2931,8 +2970,9 @@
     "num_generated_until_last_f_layer": 15,
     "problem": "f1-4.pddl",
     "run_dir": "runs-00101-00200/00160",
-    "search_time": 4.392,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f10-0.pddl": {
@@ -2954,8 +2994,9 @@
     "num_generated_until_last_f_layer": 1728178,
     "problem": "f10-0.pddl",
     "run_dir": "runs-00201-00300/00201",
-    "search_time": 1702.915,
+    "search_time": 2012.131,
     "time_limit": 1800,
+    "total_time": 2.018929,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f10-1.pddl": {
@@ -2977,8 +3018,9 @@
     "num_generated_until_last_f_layer": 1768356,
     "problem": "f10-1.pddl",
     "run_dir": "runs-00201-00300/00202",
-    "search_time": 1697.9089999999999,
+    "search_time": 1899.027,
     "time_limit": 1800,
+    "total_time": 1.906017,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f10-2.pddl": {
@@ -2999,8 +3041,9 @@
     "num_generated_until_last_f_layer": 959627,
     "problem": "f10-2.pddl",
     "run_dir": "runs-00201-00300/00203",
-    "search_time": 1060.7740000000001,
+    "search_time": 1064.303,
     "time_limit": 1800,
+    "total_time": 1.07128,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f10-3.pddl": {
@@ -3022,8 +3065,9 @@
     "num_generated_until_last_f_layer": 1080689,
     "problem": "f10-3.pddl",
     "run_dir": "runs-00201-00300/00204",
-    "search_time": 1189.12,
+    "search_time": 1266.317,
     "time_limit": 1800,
+    "total_time": 1.273293,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f10-4.pddl": {
@@ -3045,8 +3089,9 @@
     "num_generated_until_last_f_layer": 1386633,
     "problem": "f10-4.pddl",
     "run_dir": "runs-00201-00300/00205",
-    "search_time": 1492.085,
+    "search_time": 1565.8799999999999,
     "time_limit": 1800,
+    "total_time": 1.572869,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f11-0.pddl": {
@@ -3068,8 +3113,9 @@
     "num_generated_until_last_f_layer": 996176,
     "problem": "f11-0.pddl",
     "run_dir": "runs-00201-00300/00206",
-    "search_time": 1082.0069999999998,
+    "search_time": 970.994,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f11-1.pddl": {
@@ -3091,8 +3137,9 @@
     "num_generated_until_last_f_layer": 4009980,
     "problem": "f11-1.pddl",
     "run_dir": "runs-00201-00300/00207",
-    "search_time": 4336.229,
+    "search_time": 4056.751,
     "time_limit": 1800,
+    "total_time": 4.063482,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f11-2.pddl": {
@@ -3114,8 +3161,9 @@
     "num_generated_until_last_f_layer": 3608145,
     "problem": "f11-2.pddl",
     "run_dir": "runs-00201-00300/00208",
-    "search_time": 4107.789000000001,
+    "search_time": 3722.399,
     "time_limit": 1800,
+    "total_time": 3.728482,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f11-3.pddl": {
@@ -3137,8 +3185,9 @@
     "num_generated_until_last_f_layer": 4281797,
     "problem": "f11-3.pddl",
     "run_dir": "runs-00201-00300/00209",
-    "search_time": 4658.075,
+    "search_time": 5080.748,
     "time_limit": 1800,
+    "total_time": 5.090482,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f11-4.pddl": {
@@ -3160,8 +3209,9 @@
     "num_generated_until_last_f_layer": 4549423,
     "problem": "f11-4.pddl",
     "run_dir": "runs-00201-00300/00210",
-    "search_time": 5113.527,
+    "search_time": 4455.107,
     "time_limit": 1800,
+    "total_time": 4.46155,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f12-0.pddl": {
@@ -3183,8 +3233,9 @@
     "num_generated_until_last_f_layer": 15748020,
     "problem": "f12-0.pddl",
     "run_dir": "runs-00201-00300/00211",
-    "search_time": 18550.438,
+    "search_time": 20720.210000000003,
     "time_limit": 1800,
+    "total_time": 20.729254,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f12-1.pddl": {
@@ -3206,8 +3257,9 @@
     "num_generated_until_last_f_layer": 28696887,
     "problem": "f12-1.pddl",
     "run_dir": "runs-00201-00300/00212",
-    "search_time": 38033.772,
+    "search_time": 41515.148,
     "time_limit": 1800,
+    "total_time": 41.523936,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f12-2.pddl": {
@@ -3229,8 +3281,9 @@
     "num_generated_until_last_f_layer": 8315243,
     "problem": "f12-2.pddl",
     "run_dir": "runs-00201-00300/00213",
-    "search_time": 10387.733,
+    "search_time": 11650.097,
     "time_limit": 1800,
+    "total_time": 11.659079,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f12-3.pddl": {
@@ -3252,8 +3305,9 @@
     "num_generated_until_last_f_layer": 14654972,
     "problem": "f12-3.pddl",
     "run_dir": "runs-00201-00300/00214",
-    "search_time": 18445.201,
+    "search_time": 20716.047,
     "time_limit": 1800,
+    "total_time": 20.724651,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f12-4.pddl": {
@@ -3275,8 +3329,9 @@
     "num_generated_until_last_f_layer": 14167379,
     "problem": "f12-4.pddl",
     "run_dir": "runs-00201-00300/00215",
-    "search_time": 17201.89,
+    "search_time": 19099.937,
     "time_limit": 1800,
+    "total_time": 19.108925,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f13-0.pddl": {
@@ -3298,8 +3353,9 @@
     "num_generated_until_last_f_layer": 44117012,
     "problem": "f13-0.pddl",
     "run_dir": "runs-00201-00300/00216",
-    "search_time": 70583.58200000001,
+    "search_time": 67092.467,
     "time_limit": 1800,
+    "total_time": 67.102049,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f13-1.pddl": {
@@ -3321,8 +3377,9 @@
     "num_generated_until_last_f_layer": 15098915,
     "problem": "f13-1.pddl",
     "run_dir": "runs-00201-00300/00217",
-    "search_time": 21345.115,
+    "search_time": 18213.902000000002,
     "time_limit": 1800,
+    "total_time": 18.221705,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f13-2.pddl": {
@@ -3344,8 +3401,9 @@
     "num_generated_until_last_f_layer": 100999458,
     "problem": "f13-2.pddl",
     "run_dir": "runs-00201-00300/00218",
-    "search_time": 139482.67200000002,
+    "search_time": 126495.013,
     "time_limit": 1800,
+    "total_time": 126.502496,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f13-3.pddl": {
@@ -3367,8 +3425,9 @@
     "num_generated_until_last_f_layer": 76177733,
     "problem": "f13-3.pddl",
     "run_dir": "runs-00201-00300/00219",
-    "search_time": 101355.902,
+    "search_time": 112194.68000000001,
     "time_limit": 1800,
+    "total_time": 112.203673,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f13-4.pddl": {
@@ -3390,8 +3449,9 @@
     "num_generated_until_last_f_layer": 4590666,
     "problem": "f13-4.pddl",
     "run_dir": "runs-00201-00300/00220",
-    "search_time": 5941.77,
+    "search_time": 6401.753000000001,
     "time_limit": 1800,
+    "total_time": 6.410382,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f14-0.pddl": {
@@ -3413,8 +3473,9 @@
     "num_generated_until_last_f_layer": 118285463,
     "problem": "f14-0.pddl",
     "run_dir": "runs-00201-00300/00221",
-    "search_time": 201748.236,
+    "search_time": 170833.071,
     "time_limit": 1800,
+    "total_time": 170.842068,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f14-1.pddl": {
@@ -3436,8 +3497,9 @@
     "num_generated_until_last_f_layer": 63049446,
     "problem": "f14-1.pddl",
     "run_dir": "runs-00201-00300/00222",
-    "search_time": 89659.95599999999,
+    "search_time": 97486.627,
     "time_limit": 1800,
+    "total_time": 97.49844,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f14-2.pddl": {
@@ -3459,8 +3521,9 @@
     "num_generated_until_last_f_layer": 238897845,
     "problem": "f14-2.pddl",
     "run_dir": "runs-00201-00300/00223",
-    "search_time": 401538.06100000005,
+    "search_time": 357513.28,
     "time_limit": 1800,
+    "total_time": 357.522875,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f14-3.pddl": {
@@ -3482,8 +3545,9 @@
     "num_generated_until_last_f_layer": 101450235,
     "problem": "f14-3.pddl",
     "run_dir": "runs-00201-00300/00224",
-    "search_time": 161313.84,
+    "search_time": 146759.782,
     "time_limit": 1800,
+    "total_time": 146.769263,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f14-4.pddl": {
@@ -3505,8 +3569,9 @@
     "num_generated_until_last_f_layer": 180621333,
     "problem": "f14-4.pddl",
     "run_dir": "runs-00201-00300/00225",
-    "search_time": 276632.565,
+    "search_time": 303708.83400000003,
     "time_limit": 1800,
+    "total_time": 303.719929,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f15-0.pddl": {
@@ -3528,8 +3593,9 @@
     "num_generated_until_last_f_layer": 259966936,
     "problem": "f15-0.pddl",
     "run_dir": "runs-00201-00300/00226",
-    "search_time": 488410.122,
+    "search_time": 502888.864,
     "time_limit": 1800,
+    "total_time": 502.900995,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f15-1.pddl": {
@@ -3551,8 +3617,9 @@
     "num_generated_until_last_f_layer": 238943366,
     "problem": "f15-1.pddl",
     "run_dir": "runs-00201-00300/00227",
-    "search_time": 419774.136,
+    "search_time": 442434.161,
     "time_limit": 1800,
+    "total_time": 442.447993,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f15-2.pddl": {
@@ -3574,8 +3641,9 @@
     "num_generated_until_last_f_layer": 36401310,
     "problem": "f15-2.pddl",
     "run_dir": "runs-00201-00300/00228",
-    "search_time": 54974.899,
+    "search_time": 61159.975000000006,
     "time_limit": 1800,
+    "total_time": 61.171837,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f15-3.pddl": {
@@ -3597,8 +3665,9 @@
     "num_generated_until_last_f_layer": 253636922,
     "problem": "f15-3.pddl",
     "run_dir": "runs-00201-00300/00229",
-    "search_time": 395493.16099999996,
+    "search_time": 409835.086,
     "time_limit": 1800,
+    "total_time": 409.846506,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f15-4.pddl": {
@@ -3620,8 +3689,9 @@
     "num_generated_until_last_f_layer": 33467669,
     "problem": "f15-4.pddl",
     "run_dir": "runs-00201-00300/00230",
-    "search_time": 45457.003,
+    "search_time": 54185.612,
     "time_limit": 1800,
+    "total_time": 54.198124,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f16-0.pddl": {
@@ -3643,8 +3713,9 @@
     "num_generated_until_last_f_layer": 325237267,
     "problem": "f16-0.pddl",
     "run_dir": "runs-00201-00300/00231",
-    "search_time": 620590.739,
+    "search_time": 651184.129,
     "time_limit": 1800,
+    "total_time": 651.196256,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f16-1.pddl": {
@@ -3666,8 +3737,9 @@
     "num_generated_until_last_f_layer": 141747164,
     "problem": "f16-1.pddl",
     "run_dir": "runs-00201-00300/00232",
-    "search_time": 229123.987,
+    "search_time": 255116.827,
     "time_limit": 1800,
+    "total_time": 255.131031,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f16-2.pddl": {
@@ -3689,8 +3761,9 @@
     "num_generated_until_last_f_layer": 795790210,
     "problem": "f16-2.pddl",
     "run_dir": "runs-00201-00300/00233",
-    "search_time": 1507378.216,
+    "search_time": 1351753.2980000002,
     "time_limit": 1800,
+    "total_time": 1351.765745,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f16-3.pddl": {
@@ -3712,8 +3785,9 @@
     "num_generated_until_last_f_layer": 131990623,
     "problem": "f16-3.pddl",
     "run_dir": "runs-00201-00300/00234",
-    "search_time": 231333.038,
+    "search_time": 259173.93199999997,
     "time_limit": 1800,
+    "total_time": 259.189264,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f16-4.pddl": {
@@ -3734,8 +3808,9 @@
     "num_generated_until_last_f_layer": 743321599,
     "problem": "f16-4.pddl",
     "run_dir": "runs-00201-00300/00235",
-    "search_time": 1396760.254,
+    "search_time": 1349548.549,
     "time_limit": 1800,
+    "total_time": 1349.561092,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f17-0.pddl": {
@@ -3772,8 +3847,9 @@
     "num_generated_until_last_f_layer": 333530899,
     "problem": "f17-1.pddl",
     "run_dir": "runs-00201-00300/00237",
-    "search_time": 631109.274,
+    "search_time": 604856.128,
     "time_limit": 1800,
+    "total_time": 604.869013,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f17-2.pddl": {
@@ -3795,8 +3871,9 @@
     "num_generated_until_last_f_layer": 754137020,
     "problem": "f17-2.pddl",
     "run_dir": "runs-00201-00300/00238",
-    "search_time": 1293430.513,
+    "search_time": 1451444.4840000002,
     "time_limit": 1800,
+    "total_time": 1451.458474,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f17-3.pddl": {
@@ -3834,8 +3911,9 @@
     "num_generated_until_last_f_layer": 380331944,
     "problem": "f17-4.pddl",
     "run_dir": "runs-00201-00300/00240",
-    "search_time": 767414.429,
+    "search_time": 798945.875,
     "time_limit": 1800,
+    "total_time": 798.96,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f18-0.pddl": {
@@ -4017,8 +4095,9 @@
     "num_generated_until_last_f_layer": 93,
     "problem": "f2-0.pddl",
     "run_dir": "runs-00101-00200/00161",
-    "search_time": 3.664,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f2-1.pddl": {
@@ -4040,8 +4119,9 @@
     "num_generated_until_last_f_layer": 127,
     "problem": "f2-1.pddl",
     "run_dir": "runs-00101-00200/00162",
-    "search_time": 3.333,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f2-2.pddl": {
@@ -4063,8 +4143,9 @@
     "num_generated_until_last_f_layer": 127,
     "problem": "f2-2.pddl",
     "run_dir": "runs-00101-00200/00163",
-    "search_time": 3.478,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f2-3.pddl": {
@@ -4086,8 +4167,9 @@
     "num_generated_until_last_f_layer": 100,
     "problem": "f2-3.pddl",
     "run_dir": "runs-00101-00200/00164",
-    "search_time": 3.15,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f2-4.pddl": {
@@ -4109,8 +4191,9 @@
     "num_generated_until_last_f_layer": 93,
     "problem": "f2-4.pddl",
     "run_dir": "runs-00101-00200/00165",
-    "search_time": 3.199,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f20-0.pddl": {
@@ -4179,8 +4262,9 @@
     "num_generated_until_last_f_layer": 22764323,
     "problem": "f20-3.pddl",
     "run_dir": "runs-00201-00300/00254",
-    "search_time": 64307.175,
+    "search_time": 57461.251,
     "time_limit": 1800,
+    "total_time": 57.477895,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f20-4.pddl": {
@@ -4265,8 +4349,9 @@
     "num_generated_until_last_f_layer": 41,
     "problem": "f21-3.pddl",
     "run_dir": "runs-00201-00300/00259",
-    "search_time": 23.649,
+    "search_time": 3.9779999999999998,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f21-4.pddl": {
@@ -4479,8 +4564,9 @@
     "num_generated_until_last_f_layer": 2269,
     "problem": "f24-1.pddl",
     "run_dir": "runs-00201-00300/00272",
-    "search_time": 34.327999999999996,
+    "search_time": 6.398,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f24-2.pddl": {
@@ -4581,8 +4667,9 @@
     "num_generated_until_last_f_layer": 2470,
     "problem": "f25-2.pddl",
     "run_dir": "runs-00201-00300/00278",
-    "search_time": 31.534,
+    "search_time": 7.418,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f25-3.pddl": {
@@ -4747,8 +4834,9 @@
     "num_generated_until_last_f_layer": 2913,
     "problem": "f27-2.pddl",
     "run_dir": "runs-00201-00300/00288",
-    "search_time": 37.559000000000005,
+    "search_time": 13.391,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f27-3.pddl": {
@@ -4962,8 +5050,9 @@
     "num_generated_until_last_f_layer": 559,
     "problem": "f3-0.pddl",
     "run_dir": "runs-00101-00200/00166",
-    "search_time": 3.6,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f3-1.pddl": {
@@ -4985,8 +5074,9 @@
     "num_generated_until_last_f_layer": 707,
     "problem": "f3-1.pddl",
     "run_dir": "runs-00101-00200/00167",
-    "search_time": 3.655,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f3-2.pddl": {
@@ -5008,8 +5098,9 @@
     "num_generated_until_last_f_layer": 568,
     "problem": "f3-2.pddl",
     "run_dir": "runs-00101-00200/00168",
-    "search_time": 4.0600000000000005,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f3-3.pddl": {
@@ -5031,8 +5122,9 @@
     "num_generated_until_last_f_layer": 680,
     "problem": "f3-3.pddl",
     "run_dir": "runs-00101-00200/00169",
-    "search_time": 5.9639999999999995,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f3-4.pddl": {
@@ -5054,8 +5146,9 @@
     "num_generated_until_last_f_layer": 643,
     "problem": "f3-4.pddl",
     "run_dir": "runs-00101-00200/00170",
-    "search_time": 4.207,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f30-0.pddl": {
@@ -5108,8 +5201,9 @@
     "num_generated_until_last_f_layer": 59,
     "problem": "f30-2.pddl",
     "run_dir": "runs-00301-00400/00303",
-    "search_time": 50.428,
+    "search_time": 11.827,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 1
   },
   "downward-astar-blind-miconic-fulladl-f30-3.pddl": {
@@ -5163,8 +5257,9 @@
     "num_generated_until_last_f_layer": 2656,
     "problem": "f4-0.pddl",
     "run_dir": "runs-00101-00200/00171",
-    "search_time": 4.662,
+    "search_time": 1.7619999999999998,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f4-1.pddl": {
@@ -5186,8 +5281,9 @@
     "num_generated_until_last_f_layer": 2353,
     "problem": "f4-1.pddl",
     "run_dir": "runs-00101-00200/00172",
-    "search_time": 4.7330000000000005,
+    "search_time": 1.5870000000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f4-2.pddl": {
@@ -5209,8 +5305,9 @@
     "num_generated_until_last_f_layer": 5442,
     "problem": "f4-2.pddl",
     "run_dir": "runs-00101-00200/00173",
-    "search_time": 4.979,
+    "search_time": 2.993,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f4-3.pddl": {
@@ -5232,8 +5329,9 @@
     "num_generated_until_last_f_layer": 5435,
     "problem": "f4-3.pddl",
     "run_dir": "runs-00101-00200/00174",
-    "search_time": 5.979,
+    "search_time": 3.079,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f4-4.pddl": {
@@ -5255,8 +5353,9 @@
     "num_generated_until_last_f_layer": 5442,
     "problem": "f4-4.pddl",
     "run_dir": "runs-00101-00200/00175",
-    "search_time": 6.747999999999999,
+    "search_time": 2.897,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f5-0.pddl": {
@@ -5278,8 +5377,9 @@
     "num_generated_until_last_f_layer": 6120,
     "problem": "f5-0.pddl",
     "run_dir": "runs-00101-00200/00176",
-    "search_time": 10.964,
+    "search_time": 4.688999999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f5-1.pddl": {
@@ -5301,8 +5401,9 @@
     "num_generated_until_last_f_layer": 13892,
     "problem": "f5-1.pddl",
     "run_dir": "runs-00101-00200/00177",
-    "search_time": 14.095999999999998,
+    "search_time": 11.684,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f5-2.pddl": {
@@ -5324,8 +5425,9 @@
     "num_generated_until_last_f_layer": 6073,
     "problem": "f5-2.pddl",
     "run_dir": "runs-00101-00200/00178",
-    "search_time": 7.939,
+    "search_time": 4.487,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f5-3.pddl": {
@@ -5347,8 +5449,9 @@
     "num_generated_until_last_f_layer": 9062,
     "problem": "f5-3.pddl",
     "run_dir": "runs-00101-00200/00179",
-    "search_time": 10.667,
+    "search_time": 6.913,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f5-4.pddl": {
@@ -5370,8 +5473,9 @@
     "num_generated_until_last_f_layer": 4760,
     "problem": "f5-4.pddl",
     "run_dir": "runs-00101-00200/00180",
-    "search_time": 6.585,
+    "search_time": 4.179,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f6-0.pddl": {
@@ -5393,8 +5497,9 @@
     "num_generated_until_last_f_layer": 17247,
     "problem": "f6-0.pddl",
     "run_dir": "runs-00101-00200/00181",
-    "search_time": 17.7,
+    "search_time": 13.143,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f6-1.pddl": {
@@ -5416,8 +5521,9 @@
     "num_generated_until_last_f_layer": 11573,
     "problem": "f6-1.pddl",
     "run_dir": "runs-00101-00200/00182",
-    "search_time": 12.62,
+    "search_time": 9.657,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f6-2.pddl": {
@@ -5439,8 +5545,9 @@
     "num_generated_until_last_f_layer": 41076,
     "problem": "f6-2.pddl",
     "run_dir": "runs-00101-00200/00183",
-    "search_time": 33.525,
+    "search_time": 27.522000000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f6-3.pddl": {
@@ -5462,8 +5569,9 @@
     "num_generated_until_last_f_layer": 46261,
     "problem": "f6-3.pddl",
     "run_dir": "runs-00101-00200/00184",
-    "search_time": 37.469,
+    "search_time": 31.976,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f6-4.pddl": {
@@ -5485,8 +5593,9 @@
     "num_generated_until_last_f_layer": 19930,
     "problem": "f6-4.pddl",
     "run_dir": "runs-00101-00200/00185",
-    "search_time": 20.584000000000003,
+    "search_time": 13.958,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f7-0.pddl": {
@@ -5508,8 +5617,9 @@
     "num_generated_until_last_f_layer": 101970,
     "problem": "f7-0.pddl",
     "run_dir": "runs-00101-00200/00186",
-    "search_time": 79.83500000000001,
+    "search_time": 76.48,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f7-1.pddl": {
@@ -5531,8 +5641,9 @@
     "num_generated_until_last_f_layer": 211969,
     "problem": "f7-1.pddl",
     "run_dir": "runs-00101-00200/00187",
-    "search_time": 163.923,
+    "search_time": 146.07500000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f7-2.pddl": {
@@ -5554,8 +5665,9 @@
     "num_generated_until_last_f_layer": 73658,
     "problem": "f7-2.pddl",
     "run_dir": "runs-00101-00200/00188",
-    "search_time": 60.221,
+    "search_time": 59.177,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f7-3.pddl": {
@@ -5577,8 +5689,9 @@
     "num_generated_until_last_f_layer": 144391,
     "problem": "f7-3.pddl",
     "run_dir": "runs-00101-00200/00189",
-    "search_time": 111.00999999999999,
+    "search_time": 119.787,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f7-4.pddl": {
@@ -5600,8 +5713,9 @@
     "num_generated_until_last_f_layer": 57439,
     "problem": "f7-4.pddl",
     "run_dir": "runs-00101-00200/00190",
-    "search_time": 47.605000000000004,
+    "search_time": 48.298,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f8-0.pddl": {
@@ -5623,8 +5737,9 @@
     "num_generated_until_last_f_layer": 349161,
     "problem": "f8-0.pddl",
     "run_dir": "runs-00101-00200/00191",
-    "search_time": 307.24800000000005,
+    "search_time": 312.755,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f8-1.pddl": {
@@ -5646,8 +5761,9 @@
     "num_generated_until_last_f_layer": 122020,
     "problem": "f8-1.pddl",
     "run_dir": "runs-00101-00200/00192",
-    "search_time": 96.564,
+    "search_time": 95.5,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f8-2.pddl": {
@@ -5669,8 +5785,9 @@
     "num_generated_until_last_f_layer": 215623,
     "problem": "f8-2.pddl",
     "run_dir": "runs-00101-00200/00193",
-    "search_time": 157.70999999999998,
+    "search_time": 188.40699999999998,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f8-3.pddl": {
@@ -5692,8 +5809,9 @@
     "num_generated_until_last_f_layer": 461392,
     "problem": "f8-3.pddl",
     "run_dir": "runs-00101-00200/00194",
-    "search_time": 407.414,
+    "search_time": 441.741,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f8-4.pddl": {
@@ -5715,8 +5833,9 @@
     "num_generated_until_last_f_layer": 247652,
     "problem": "f8-4.pddl",
     "run_dir": "runs-00101-00200/00195",
-    "search_time": 208.74599999999998,
+    "search_time": 203.926,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f9-0.pddl": {
@@ -5738,8 +5857,9 @@
     "num_generated_until_last_f_layer": 237126,
     "problem": "f9-0.pddl",
     "run_dir": "runs-00101-00200/00196",
-    "search_time": 194.312,
+    "search_time": 203.307,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f9-1.pddl": {
@@ -5761,8 +5881,9 @@
     "num_generated_until_last_f_layer": 668747,
     "problem": "f9-1.pddl",
     "run_dir": "runs-00101-00200/00197",
-    "search_time": 549.271,
+    "search_time": 542.318,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f9-2.pddl": {
@@ -5784,8 +5905,9 @@
     "num_generated_until_last_f_layer": 879655,
     "problem": "f9-2.pddl",
     "run_dir": "runs-00101-00200/00198",
-    "search_time": 754.838,
+    "search_time": 659.1479999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f9-3.pddl": {
@@ -5807,8 +5929,9 @@
     "num_generated_until_last_f_layer": 1346859,
     "problem": "f9-3.pddl",
     "run_dir": "runs-00101-00200/00199",
-    "search_time": 1202.8229999999999,
+    "search_time": 1318.074,
     "time_limit": 1800,
+    "total_time": 1.323285,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-fulladl-f9-4.pddl": {
@@ -5830,8 +5953,9 @@
     "num_generated_until_last_f_layer": 650497,
     "problem": "f9-4.pddl",
     "run_dir": "runs-00101-00200/00200",
-    "search_time": 550.9119999999999,
+    "search_time": 605.898,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s1-0.pddl": {
@@ -5853,8 +5977,9 @@
     "num_generated_until_last_f_layer": 6,
     "problem": "s1-0.pddl",
     "run_dir": "runs-00301-00400/00306",
-    "search_time": 3.093,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s1-1.pddl": {
@@ -5876,8 +6001,9 @@
     "num_generated_until_last_f_layer": 6,
     "problem": "s1-1.pddl",
     "run_dir": "runs-00301-00400/00307",
-    "search_time": 3.476,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s1-2.pddl": {
@@ -5899,8 +6025,9 @@
     "num_generated_until_last_f_layer": 6,
     "problem": "s1-2.pddl",
     "run_dir": "runs-00301-00400/00308",
-    "search_time": 2.976,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s1-3.pddl": {
@@ -5922,8 +6049,9 @@
     "num_generated_until_last_f_layer": 6,
     "problem": "s1-3.pddl",
     "run_dir": "runs-00301-00400/00309",
-    "search_time": 3.385,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s1-4.pddl": {
@@ -5945,8 +6073,9 @@
     "num_generated_until_last_f_layer": 6,
     "problem": "s1-4.pddl",
     "run_dir": "runs-00301-00400/00310",
-    "search_time": 3.33,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s10-0.pddl": {
@@ -5968,8 +6097,9 @@
     "num_generated_until_last_f_layer": 5397800,
     "problem": "s10-0.pddl",
     "run_dir": "runs-00301-00400/00351",
-    "search_time": 1201.011,
+    "search_time": 1208.562,
     "time_limit": 1800,
+    "total_time": 1.212582,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s10-1.pddl": {
@@ -5991,8 +6121,9 @@
     "num_generated_until_last_f_layer": 3038830,
     "problem": "s10-1.pddl",
     "run_dir": "runs-00301-00400/00352",
-    "search_time": 610.479,
+    "search_time": 660.818,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s10-2.pddl": {
@@ -6014,8 +6145,9 @@
     "num_generated_until_last_f_layer": 5952896,
     "problem": "s10-2.pddl",
     "run_dir": "runs-00301-00400/00353",
-    "search_time": 1198.5,
+    "search_time": 1326.4009999999998,
     "time_limit": 1800,
+    "total_time": 1.330717,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s10-3.pddl": {
@@ -6037,8 +6169,9 @@
     "num_generated_until_last_f_layer": 7552236,
     "problem": "s10-3.pddl",
     "run_dir": "runs-00301-00400/00354",
-    "search_time": 1595.1709999999998,
+    "search_time": 1699.14,
     "time_limit": 1800,
+    "total_time": 1.70552,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s10-4.pddl": {
@@ -6060,8 +6193,9 @@
     "num_generated_until_last_f_layer": 4502372,
     "problem": "s10-4.pddl",
     "run_dir": "runs-00301-00400/00355",
-    "search_time": 929.338,
+    "search_time": 809.894,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s11-0.pddl": {
@@ -6083,8 +6217,9 @@
     "num_generated_until_last_f_layer": 25094356,
     "problem": "s11-0.pddl",
     "run_dir": "runs-00301-00400/00356",
-    "search_time": 4879.522,
+    "search_time": 4826.338,
     "time_limit": 1800,
+    "total_time": 4.830755,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s11-1.pddl": {
@@ -6106,8 +6241,9 @@
     "num_generated_until_last_f_layer": 11611542,
     "problem": "s11-1.pddl",
     "run_dir": "runs-00301-00400/00357",
-    "search_time": 2382.66,
+    "search_time": 2196.581,
     "time_limit": 1800,
+    "total_time": 2.200142,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s11-2.pddl": {
@@ -6129,8 +6265,9 @@
     "num_generated_until_last_f_layer": 20033536,
     "problem": "s11-2.pddl",
     "run_dir": "runs-00301-00400/00358",
-    "search_time": 3920.9480000000003,
+    "search_time": 3322.825,
     "time_limit": 1800,
+    "total_time": 3.326411,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s11-3.pddl": {
@@ -6152,8 +6289,9 @@
     "num_generated_until_last_f_layer": 13700074,
     "problem": "s11-3.pddl",
     "run_dir": "runs-00301-00400/00359",
-    "search_time": 2621.082,
+    "search_time": 2663.0389999999998,
     "time_limit": 1800,
+    "total_time": 2.667758,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s11-4.pddl": {
@@ -6175,8 +6313,9 @@
     "num_generated_until_last_f_layer": 8999780,
     "problem": "s11-4.pddl",
     "run_dir": "runs-00301-00400/00360",
-    "search_time": 1847.206,
+    "search_time": 1943.558,
     "time_limit": 1800,
+    "total_time": 1.948242,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s12-0.pddl": {
@@ -6198,8 +6337,9 @@
     "num_generated_until_last_f_layer": 24413376,
     "problem": "s12-0.pddl",
     "run_dir": "runs-00301-00400/00361",
-    "search_time": 4535.972,
+    "search_time": 4838.125,
     "time_limit": 1800,
+    "total_time": 4.84231,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s12-1.pddl": {
@@ -6221,8 +6361,9 @@
     "num_generated_until_last_f_layer": 71606992,
     "problem": "s12-1.pddl",
     "run_dir": "runs-00301-00400/00362",
-    "search_time": 14359.166,
+    "search_time": 13566.955,
     "time_limit": 1800,
+    "total_time": 13.572714,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s12-2.pddl": {
@@ -6244,8 +6385,9 @@
     "num_generated_until_last_f_layer": 66497280,
     "problem": "s12-2.pddl",
     "run_dir": "runs-00301-00400/00363",
-    "search_time": 12655.036,
+    "search_time": 12537.651,
     "time_limit": 1800,
+    "total_time": 12.541438,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s12-3.pddl": {
@@ -6267,8 +6409,9 @@
     "num_generated_until_last_f_layer": 49172805,
     "problem": "s12-3.pddl",
     "run_dir": "runs-00301-00400/00364",
-    "search_time": 9787.841999999999,
+    "search_time": 10368.094,
     "time_limit": 1800,
+    "total_time": 10.374562,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s12-4.pddl": {
@@ -6290,8 +6433,9 @@
     "num_generated_until_last_f_layer": 75743513,
     "problem": "s12-4.pddl",
     "run_dir": "runs-00301-00400/00365",
-    "search_time": 14740.100999999999,
+    "search_time": 14550.676,
     "time_limit": 1800,
+    "total_time": 14.555059,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s13-0.pddl": {
@@ -6313,8 +6457,9 @@
     "num_generated_until_last_f_layer": 129532500,
     "problem": "s13-0.pddl",
     "run_dir": "runs-00301-00400/00366",
-    "search_time": 24150.623,
+    "search_time": 21566.874,
     "time_limit": 1800,
+    "total_time": 21.570474,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s13-1.pddl": {
@@ -6336,8 +6481,9 @@
     "num_generated_until_last_f_layer": 91704910,
     "problem": "s13-1.pddl",
     "run_dir": "runs-00301-00400/00367",
-    "search_time": 18635.707,
+    "search_time": 15061.667,
     "time_limit": 1800,
+    "total_time": 15.065247,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s13-2.pddl": {
@@ -6359,8 +6505,9 @@
     "num_generated_until_last_f_layer": 158654070,
     "problem": "s13-2.pddl",
     "run_dir": "runs-00301-00400/00368",
-    "search_time": 30132.586,
+    "search_time": 33561.715,
     "time_limit": 1800,
+    "total_time": 33.566359,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s13-3.pddl": {
@@ -6382,8 +6529,9 @@
     "num_generated_until_last_f_layer": 83819730,
     "problem": "s13-3.pddl",
     "run_dir": "runs-00301-00400/00369",
-    "search_time": 16871.684999999998,
+    "search_time": 15553.644999999999,
     "time_limit": 1800,
+    "total_time": 15.558393,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s13-4.pddl": {
@@ -6405,8 +6553,9 @@
     "num_generated_until_last_f_layer": 122603208,
     "problem": "s13-4.pddl",
     "run_dir": "runs-00301-00400/00370",
-    "search_time": 22458.722999999998,
+    "search_time": 22681.725,
     "time_limit": 1800,
+    "total_time": 22.686319,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s14-0.pddl": {
@@ -6428,8 +6577,9 @@
     "num_generated_until_last_f_layer": 398548664,
     "problem": "s14-0.pddl",
     "run_dir": "runs-00301-00400/00371",
-    "search_time": 73729.19,
+    "search_time": 82819.182,
     "time_limit": 1800,
+    "total_time": 82.824267,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s14-1.pddl": {
@@ -6451,8 +6601,9 @@
     "num_generated_until_last_f_layer": 637141992,
     "problem": "s14-1.pddl",
     "run_dir": "runs-00301-00400/00372",
-    "search_time": 118279.378,
+    "search_time": 141056.146,
     "time_limit": 1800,
+    "total_time": 141.061287,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s14-2.pddl": {
@@ -6474,8 +6625,9 @@
     "num_generated_until_last_f_layer": 1214614620,
     "problem": "s14-2.pddl",
     "run_dir": "runs-00301-00400/00373",
-    "search_time": 241047.305,
+    "search_time": 256723.469,
     "time_limit": 1800,
+    "total_time": 256.728761,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s14-3.pddl": {
@@ -6497,8 +6649,9 @@
     "num_generated_until_last_f_layer": 220773908,
     "problem": "s14-3.pddl",
     "run_dir": "runs-00301-00400/00374",
-    "search_time": 39770.19,
+    "search_time": 39635.026000000005,
     "time_limit": 1800,
+    "total_time": 39.640157,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s14-4.pddl": {
@@ -6520,8 +6673,9 @@
     "num_generated_until_last_f_layer": 1014410304,
     "problem": "s14-4.pddl",
     "run_dir": "runs-00301-00400/00375",
-    "search_time": 170887.291,
+    "search_time": 166880.795,
     "time_limit": 1800,
+    "total_time": 166.885452,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s15-0.pddl": {
@@ -6543,8 +6697,9 @@
     "num_generated_until_last_f_layer": 525741174,
     "problem": "s15-0.pddl",
     "run_dir": "runs-00301-00400/00376",
-    "search_time": 93994.858,
+    "search_time": 81361.581,
     "time_limit": 1800,
+    "total_time": 81.366469,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s15-1.pddl": {
@@ -6564,8 +6719,9 @@
     "num_expanded_until_last_f_layer": 126311208,
     "problem": "s15-1.pddl",
     "run_dir": "runs-00301-00400/00377",
-    "search_time": 723114.0329999999,
+    "search_time": 756183.46,
     "time_limit": 1800,
+    "total_time": 756.188609,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s15-2.pddl": {
@@ -6587,8 +6743,9 @@
     "num_generated_until_last_f_layer": 1911847280,
     "problem": "s15-2.pddl",
     "run_dir": "runs-00301-00400/00378",
-    "search_time": 356050.275,
+    "search_time": 374499.612,
     "time_limit": 1800,
+    "total_time": 374.504691,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s15-3.pddl": {
@@ -6610,8 +6767,9 @@
     "num_generated_until_last_f_layer": 1881306520,
     "problem": "s15-3.pddl",
     "run_dir": "runs-00301-00400/00379",
-    "search_time": 336965.652,
+    "search_time": 312053.217,
     "time_limit": 1800,
+    "total_time": 312.058154,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s15-4.pddl": {
@@ -6633,8 +6791,9 @@
     "num_generated_until_last_f_layer": 790785375,
     "problem": "s15-4.pddl",
     "run_dir": "runs-00301-00400/00380",
-    "search_time": 145476.237,
+    "search_time": 146569.96000000002,
     "time_limit": 1800,
+    "total_time": 146.575215,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s16-0.pddl": {
@@ -6656,8 +6815,9 @@
     "num_generated_until_last_f_layer": 4880776,
     "problem": "s16-0.pddl",
     "run_dir": "runs-00301-00400/00381",
-    "search_time": 803673.2220000001,
+    "search_time": 781433.43,
     "time_limit": 1800,
+    "total_time": 781.438729,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s16-1.pddl": {
@@ -6679,8 +6839,9 @@
     "num_generated_until_last_f_layer": 1809629652,
     "problem": "s16-1.pddl",
     "run_dir": "runs-00301-00400/00382",
-    "search_time": 326784.34099999996,
+    "search_time": 324358.502,
     "time_limit": 1800,
+    "total_time": 324.363622,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s16-2.pddl": {
@@ -6718,8 +6879,9 @@
     "num_generated_until_last_f_layer": 1631087712,
     "problem": "s16-3.pddl",
     "run_dir": "runs-00301-00400/00384",
-    "search_time": 295340.22099999996,
+    "search_time": 258939.324,
     "time_limit": 1800,
+    "total_time": 258.944443,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s16-4.pddl": {
@@ -6741,8 +6903,9 @@
     "num_generated_until_last_f_layer": 1988047264,
     "problem": "s16-4.pddl",
     "run_dir": "runs-00301-00400/00385",
-    "search_time": 1154044.374,
+    "search_time": 1044011.2919999999,
     "time_limit": 1800,
+    "total_time": 1044.015874,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s17-0.pddl": {
@@ -6812,8 +6975,9 @@
     "num_generated_until_last_f_layer": 1632887504,
     "problem": "s17-3.pddl",
     "run_dir": "runs-00301-00400/00389",
-    "search_time": 1085270.4859999998,
+    "search_time": 1062588.5829999999,
     "time_limit": 1800,
+    "total_time": 1062.594047,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s17-4.pddl": {
@@ -6833,8 +6997,9 @@
     "num_expanded_until_last_f_layer": 110420788,
     "problem": "s17-4.pddl",
     "run_dir": "runs-00301-00400/00390",
-    "search_time": 679004.2039999999,
+    "search_time": 728754.99,
     "time_limit": 1800,
+    "total_time": 728.761255,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s18-0.pddl": {
@@ -7016,8 +7181,9 @@
     "num_generated_until_last_f_layer": 57,
     "problem": "s2-0.pddl",
     "run_dir": "runs-00301-00400/00311",
-    "search_time": 3.7030000000000003,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s2-1.pddl": {
@@ -7039,8 +7205,9 @@
     "num_generated_until_last_f_layer": 79,
     "problem": "s2-1.pddl",
     "run_dir": "runs-00301-00400/00312",
-    "search_time": 3.155,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s2-2.pddl": {
@@ -7062,8 +7229,9 @@
     "num_generated_until_last_f_layer": 79,
     "problem": "s2-2.pddl",
     "run_dir": "runs-00301-00400/00313",
-    "search_time": 3.048,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s2-3.pddl": {
@@ -7085,8 +7253,9 @@
     "num_generated_until_last_f_layer": 61,
     "problem": "s2-3.pddl",
     "run_dir": "runs-00301-00400/00314",
-    "search_time": 3.513,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s2-4.pddl": {
@@ -7108,8 +7277,9 @@
     "num_generated_until_last_f_layer": 57,
     "problem": "s2-4.pddl",
     "run_dir": "runs-00301-00400/00315",
-    "search_time": 3.821,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s20-0.pddl": {
@@ -7931,8 +8101,9 @@
     "num_generated_until_last_f_layer": 406,
     "problem": "s3-0.pddl",
     "run_dir": "runs-00301-00400/00316",
-    "search_time": 3.835,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s3-1.pddl": {
@@ -7954,8 +8125,9 @@
     "num_generated_until_last_f_layer": 518,
     "problem": "s3-1.pddl",
     "run_dir": "runs-00301-00400/00317",
-    "search_time": 3.406,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s3-2.pddl": {
@@ -7977,8 +8149,9 @@
     "num_generated_until_last_f_layer": 412,
     "problem": "s3-2.pddl",
     "run_dir": "runs-00301-00400/00318",
-    "search_time": 3.229,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s3-3.pddl": {
@@ -8000,8 +8173,9 @@
     "num_generated_until_last_f_layer": 500,
     "problem": "s3-3.pddl",
     "run_dir": "runs-00301-00400/00319",
-    "search_time": 3.369,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s3-4.pddl": {
@@ -8023,8 +8197,9 @@
     "num_generated_until_last_f_layer": 472,
     "problem": "s3-4.pddl",
     "run_dir": "runs-00301-00400/00320",
-    "search_time": 3.9830000000000005,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s30-0.pddl": {
@@ -8126,8 +8301,9 @@
     "num_generated_until_last_f_layer": 2050,
     "problem": "s4-0.pddl",
     "run_dir": "runs-00301-00400/00321",
-    "search_time": 3.9490000000000003,
+    "search_time": 1.1540000000000001,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s4-1.pddl": {
@@ -8149,8 +8325,9 @@
     "num_generated_until_last_f_layer": 1986,
     "problem": "s4-1.pddl",
     "run_dir": "runs-00301-00400/00322",
-    "search_time": 3.786,
+    "search_time": 1.238,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s4-2.pddl": {
@@ -8172,8 +8349,9 @@
     "num_generated_until_last_f_layer": 4153,
     "problem": "s4-2.pddl",
     "run_dir": "runs-00301-00400/00323",
-    "search_time": 4.428,
+    "search_time": 2.0709999999999997,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s4-3.pddl": {
@@ -8195,8 +8373,9 @@
     "num_generated_until_last_f_layer": 4153,
     "problem": "s4-3.pddl",
     "run_dir": "runs-00301-00400/00324",
-    "search_time": 4.7410000000000005,
+    "search_time": 1.7260000000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s4-4.pddl": {
@@ -8218,8 +8397,9 @@
     "num_generated_until_last_f_layer": 4153,
     "problem": "s4-4.pddl",
     "run_dir": "runs-00301-00400/00325",
-    "search_time": 7.172000000000001,
+    "search_time": 2.106,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s5-0.pddl": {
@@ -8241,8 +8421,9 @@
     "num_generated_until_last_f_layer": 9588,
     "problem": "s5-0.pddl",
     "run_dir": "runs-00301-00400/00326",
-    "search_time": 9.086,
+    "search_time": 3.434,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s5-1.pddl": {
@@ -8264,8 +8445,9 @@
     "num_generated_until_last_f_layer": 13091,
     "problem": "s5-1.pddl",
     "run_dir": "runs-00301-00400/00327",
-    "search_time": 7.066,
+    "search_time": 4.7299999999999995,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s5-2.pddl": {
@@ -8287,8 +8469,9 @@
     "num_generated_until_last_f_layer": 4375,
     "problem": "s5-2.pddl",
     "run_dir": "runs-00301-00400/00328",
-    "search_time": 6.341,
+    "search_time": 2.155,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s5-3.pddl": {
@@ -8310,8 +8493,9 @@
     "num_generated_until_last_f_layer": 15216,
     "problem": "s5-3.pddl",
     "run_dir": "runs-00301-00400/00329",
-    "search_time": 7.88,
+    "search_time": 4.3629999999999995,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s5-4.pddl": {
@@ -8333,8 +8517,9 @@
     "num_generated_until_last_f_layer": 11032,
     "problem": "s5-4.pddl",
     "run_dir": "runs-00301-00400/00330",
-    "search_time": 7.361000000000001,
+    "search_time": 4.042,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s6-0.pddl": {
@@ -8356,8 +8541,9 @@
     "num_generated_until_last_f_layer": 28780,
     "problem": "s6-0.pddl",
     "run_dir": "runs-00301-00400/00331",
-    "search_time": 13.114,
+    "search_time": 9.431999999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s6-1.pddl": {
@@ -8379,8 +8565,9 @@
     "num_generated_until_last_f_layer": 37876,
     "problem": "s6-1.pddl",
     "run_dir": "runs-00301-00400/00332",
-    "search_time": 13.363999999999999,
+    "search_time": 10.081,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s6-2.pddl": {
@@ -8402,8 +8589,9 @@
     "num_generated_until_last_f_layer": 61632,
     "problem": "s6-2.pddl",
     "run_dir": "runs-00301-00400/00333",
-    "search_time": 20.632,
+    "search_time": 14.699,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s6-3.pddl": {
@@ -8425,8 +8613,9 @@
     "num_generated_until_last_f_layer": 19178,
     "problem": "s6-3.pddl",
     "run_dir": "runs-00301-00400/00334",
-    "search_time": 8.129000000000001,
+    "search_time": 6.067,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s6-4.pddl": {
@@ -8448,8 +8637,9 @@
     "num_generated_until_last_f_layer": 42768,
     "problem": "s6-4.pddl",
     "run_dir": "runs-00301-00400/00335",
-    "search_time": 15.705,
+    "search_time": 11.334,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s7-0.pddl": {
@@ -8471,8 +8661,9 @@
     "num_generated_until_last_f_layer": 64076,
     "problem": "s7-0.pddl",
     "run_dir": "runs-00301-00400/00336",
-    "search_time": 19.352,
+    "search_time": 15.646,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s7-1.pddl": {
@@ -8494,8 +8685,9 @@
     "num_generated_until_last_f_layer": 272368,
     "problem": "s7-1.pddl",
     "run_dir": "runs-00301-00400/00337",
-    "search_time": 70.284,
+    "search_time": 57.433,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s7-2.pddl": {
@@ -8517,8 +8709,9 @@
     "num_generated_until_last_f_layer": 88658,
     "problem": "s7-2.pddl",
     "run_dir": "runs-00301-00400/00338",
-    "search_time": 24.736,
+    "search_time": 23.111,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s7-3.pddl": {
@@ -8540,8 +8733,9 @@
     "num_generated_until_last_f_layer": 87275,
     "problem": "s7-3.pddl",
     "run_dir": "runs-00301-00400/00339",
-    "search_time": 26.556,
+    "search_time": 23.415,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s7-4.pddl": {
@@ -8563,8 +8757,9 @@
     "num_generated_until_last_f_layer": 233118,
     "problem": "s7-4.pddl",
     "run_dir": "runs-00301-00400/00340",
-    "search_time": 57.326,
+    "search_time": 59.186,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s8-0.pddl": {
@@ -8586,8 +8781,9 @@
     "num_generated_until_last_f_layer": 421304,
     "problem": "s8-0.pddl",
     "run_dir": "runs-00301-00400/00341",
-    "search_time": 96.88199999999999,
+    "search_time": 101.473,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s8-1.pddl": {
@@ -8609,8 +8805,9 @@
     "num_generated_until_last_f_layer": 746418,
     "problem": "s8-1.pddl",
     "run_dir": "runs-00301-00400/00342",
-    "search_time": 164.336,
+    "search_time": 148.37300000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s8-2.pddl": {
@@ -8632,8 +8829,9 @@
     "num_generated_until_last_f_layer": 557710,
     "problem": "s8-2.pddl",
     "run_dir": "runs-00301-00400/00343",
-    "search_time": 130.5,
+    "search_time": 140.695,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s8-3.pddl": {
@@ -8655,8 +8853,9 @@
     "num_generated_until_last_f_layer": 652256,
     "problem": "s8-3.pddl",
     "run_dir": "runs-00301-00400/00344",
-    "search_time": 146.534,
+    "search_time": 143.19299999999998,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s8-4.pddl": {
@@ -8678,8 +8877,9 @@
     "num_generated_until_last_f_layer": 409283,
     "problem": "s8-4.pddl",
     "run_dir": "runs-00301-00400/00345",
-    "search_time": 93.43700000000001,
+    "search_time": 87.634,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s9-0.pddl": {
@@ -8701,8 +8901,9 @@
     "num_generated_until_last_f_layer": 1699821,
     "problem": "s9-0.pddl",
     "run_dir": "runs-00301-00400/00346",
-    "search_time": 350.27799999999996,
+    "search_time": 345.86499999999995,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s9-1.pddl": {
@@ -8724,8 +8925,9 @@
     "num_generated_until_last_f_layer": 2034240,
     "problem": "s9-1.pddl",
     "run_dir": "runs-00301-00400/00347",
-    "search_time": 433.06600000000003,
+    "search_time": 417.221,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s9-2.pddl": {
@@ -8747,8 +8949,9 @@
     "num_generated_until_last_f_layer": 2319876,
     "problem": "s9-2.pddl",
     "run_dir": "runs-00301-00400/00348",
-    "search_time": 504.89300000000003,
+    "search_time": 480.899,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s9-3.pddl": {
@@ -8770,8 +8973,9 @@
     "num_generated_until_last_f_layer": 698058,
     "problem": "s9-3.pddl",
     "run_dir": "runs-00301-00400/00349",
-    "search_time": 145.534,
+    "search_time": 159.17600000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-miconic-simpleadl-s9-4.pddl": {
@@ -8793,8 +8997,9 @@
     "num_generated_until_last_f_layer": 711606,
     "problem": "s9-4.pddl",
     "run_dir": "runs-00301-00400/00350",
-    "search_time": 161.614,
+    "search_time": 142.91899999999998,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p01.pddl": {
@@ -8816,8 +9021,9 @@
     "num_generated_until_last_f_layer": 64,
     "problem": "p01.pddl",
     "run_dir": "runs-00401-00500/00456",
-    "search_time": 4.191000000000001,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p02.pddl": {
@@ -8839,8 +9045,9 @@
     "num_generated_until_last_f_layer": 85,
     "problem": "p02.pddl",
     "run_dir": "runs-00401-00500/00457",
-    "search_time": 4.407,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p03.pddl": {
@@ -8862,8 +9069,9 @@
     "num_generated_until_last_f_layer": 220,
     "problem": "p03.pddl",
     "run_dir": "runs-00401-00500/00458",
-    "search_time": 6.556,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p04.pddl": {
@@ -8885,8 +9093,9 @@
     "num_generated_until_last_f_layer": 823,
     "problem": "p04.pddl",
     "run_dir": "runs-00401-00500/00459",
-    "search_time": 7.712,
+    "search_time": 1.627,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p05.pddl": {
@@ -8908,8 +9117,9 @@
     "num_generated_until_last_f_layer": 1025,
     "problem": "p05.pddl",
     "run_dir": "runs-00401-00500/00460",
-    "search_time": 11.647,
+    "search_time": 1.8439999999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p06.pddl": {
@@ -8931,8 +9141,9 @@
     "num_generated_until_last_f_layer": 6640,
     "problem": "p06.pddl",
     "run_dir": "runs-00401-00500/00461",
-    "search_time": 18.303,
+    "search_time": 9.376000000000001,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p07.pddl": {
@@ -8954,8 +9165,9 @@
     "num_generated_until_last_f_layer": 53642,
     "problem": "p07.pddl",
     "run_dir": "runs-00401-00500/00462",
-    "search_time": 101.167,
+    "search_time": 87.514,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p08.pddl": {
@@ -8977,8 +9189,9 @@
     "num_generated_until_last_f_layer": 86673,
     "problem": "p08.pddl",
     "run_dir": "runs-00401-00500/00463",
-    "search_time": 139.12,
+    "search_time": 119.767,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p09.pddl": {
@@ -9000,8 +9213,9 @@
     "num_generated_until_last_f_layer": 724361,
     "problem": "p09.pddl",
     "run_dir": "runs-00401-00500/00464",
-    "search_time": 1434.5110000000002,
+    "search_time": 1367.76,
     "time_limit": 1800,
+    "total_time": 1.405478,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p10.pddl": {
@@ -9023,8 +9237,9 @@
     "num_generated_until_last_f_layer": 2919544,
     "problem": "p10.pddl",
     "run_dir": "runs-00401-00500/00465",
-    "search_time": 5262.251,
+    "search_time": 4736.197,
     "time_limit": 1800,
+    "total_time": 4.768197,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p11.pddl": {
@@ -9046,8 +9261,9 @@
     "num_generated_until_last_f_layer": 169199991,
     "problem": "p11.pddl",
     "run_dir": "runs-00401-00500/00466",
-    "search_time": 387445.797,
+    "search_time": 449839.05299999996,
     "time_limit": 1800,
+    "total_time": 449.925911,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p12.pddl": {
@@ -9069,8 +9285,9 @@
     "num_generated_until_last_f_layer": 90542383,
     "problem": "p12.pddl",
     "run_dir": "runs-00401-00500/00467",
-    "search_time": 211501.574,
+    "search_time": 228281.06600000002,
     "time_limit": 1800,
+    "total_time": 228.354858,
     "unsolvable": 0
   },
   "downward-astar-blind-nurikabe-opt18-adl-p13.pddl": {
@@ -9220,8 +9437,9 @@
     "num_generated_until_last_f_layer": 32,
     "problem": "p01.pddl",
     "run_dir": "runs-00501-00600/00506",
-    "search_time": 5.6899999999999995,
+    "search_time": 1.047,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p02.pddl": {
@@ -9243,8 +9461,9 @@
     "num_generated_until_last_f_layer": 273,
     "problem": "p02.pddl",
     "run_dir": "runs-00501-00600/00507",
-    "search_time": 6.689,
+    "search_time": 3.2520000000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p03.pddl": {
@@ -9266,8 +9485,9 @@
     "num_generated_until_last_f_layer": 641,
     "problem": "p03.pddl",
     "run_dir": "runs-00501-00600/00508",
-    "search_time": 10.594,
+    "search_time": 6.404,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p04.pddl": {
@@ -9289,8 +9509,9 @@
     "num_generated_until_last_f_layer": 6641,
     "problem": "p04.pddl",
     "run_dir": "runs-00501-00600/00509",
-    "search_time": 42.047000000000004,
+    "search_time": 38.056,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p05.pddl": {
@@ -9312,8 +9533,9 @@
     "num_generated_until_last_f_layer": 17141,
     "problem": "p05.pddl",
     "run_dir": "runs-00501-00600/00510",
-    "search_time": 80.935,
+    "search_time": 86.544,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p06.pddl": {
@@ -9335,8 +9557,9 @@
     "num_generated_until_last_f_layer": 66,
     "problem": "p06.pddl",
     "run_dir": "runs-00501-00600/00511",
-    "search_time": 18.536,
+    "search_time": 15.301,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p07.pddl": {
@@ -9358,8 +9581,9 @@
     "num_generated_until_last_f_layer": 298851,
     "problem": "p07.pddl",
     "run_dir": "runs-00501-00600/00512",
-    "search_time": 1077.634,
+    "search_time": 1202.101,
     "time_limit": 1800,
+    "total_time": 1.206451,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p08.pddl": {
@@ -9381,8 +9605,9 @@
     "num_generated_until_last_f_layer": 299153,
     "problem": "p08.pddl",
     "run_dir": "runs-00501-00600/00513",
-    "search_time": 1318.516,
+    "search_time": 1156.8229999999999,
     "time_limit": 1800,
+    "total_time": 1.161188,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p09.pddl": {
@@ -9404,8 +9629,9 @@
     "num_generated_until_last_f_layer": 11477,
     "problem": "p09.pddl",
     "run_dir": "runs-00501-00600/00514",
-    "search_time": 640.304,
+    "search_time": 565.722,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p10.pddl": {
@@ -9427,8 +9653,9 @@
     "num_generated_until_last_f_layer": 14437,
     "problem": "p10.pddl",
     "run_dir": "runs-00501-00600/00515",
-    "search_time": 379.45099999999996,
+    "search_time": 415.971,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p11.pddl": {
@@ -9450,8 +9677,9 @@
     "num_generated_until_last_f_layer": 387675,
     "problem": "p11.pddl",
     "run_dir": "runs-00501-00600/00516",
-    "search_time": 3418.585,
+    "search_time": 3723.551,
     "time_limit": 1800,
+    "total_time": 3.729133,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p12.pddl": {
@@ -9473,8 +9701,9 @@
     "num_generated_until_last_f_layer": 21097,
     "problem": "p12.pddl",
     "run_dir": "runs-00501-00600/00517",
-    "search_time": 1756.8490000000002,
+    "search_time": 1779.54,
     "time_limit": 1800,
+    "total_time": 1.78439,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p13.pddl": {
@@ -9496,8 +9725,9 @@
     "num_generated_until_last_f_layer": 1557369,
     "problem": "p13.pddl",
     "run_dir": "runs-00501-00600/00518",
-    "search_time": 16263.642999999998,
+    "search_time": 18060.317000000003,
     "time_limit": 1800,
+    "total_time": 18.065868,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p14.pddl": {
@@ -9519,8 +9749,9 @@
     "num_generated_until_last_f_layer": 592006,
     "problem": "p14.pddl",
     "run_dir": "runs-00501-00600/00519",
-    "search_time": 7705.294,
+    "search_time": 7201.380999999999,
     "time_limit": 1800,
+    "total_time": 7.207785,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p15.pddl": {
@@ -9542,8 +9773,9 @@
     "num_generated_until_last_f_layer": 3037633,
     "problem": "p15.pddl",
     "run_dir": "runs-00501-00600/00520",
-    "search_time": 84951.248,
+    "search_time": 81179.214,
     "time_limit": 1800,
+    "total_time": 81.185126,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p16.pddl": {
@@ -9565,8 +9797,9 @@
     "num_generated_until_last_f_layer": 1312457,
     "problem": "p16.pddl",
     "run_dir": "runs-00501-00600/00521",
-    "search_time": 30714.529,
+    "search_time": 30662.05,
     "time_limit": 1800,
+    "total_time": 30.667701,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p17.pddl": {
@@ -9588,8 +9821,9 @@
     "num_generated_until_last_f_layer": 1659657,
     "problem": "p17.pddl",
     "run_dir": "runs-00501-00600/00522",
-    "search_time": 58195.669,
+    "search_time": 65012.073000000004,
     "time_limit": 1800,
+    "total_time": 65.019297,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p18.pddl": {
@@ -9611,8 +9845,9 @@
     "num_generated_until_last_f_layer": 48877,
     "problem": "p18.pddl",
     "run_dir": "runs-00501-00600/00523",
-    "search_time": 6783.678,
+    "search_time": 5855.5289999999995,
     "time_limit": 1800,
+    "total_time": 5.861475,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p19.pddl": {
@@ -9634,8 +9869,9 @@
     "num_generated_until_last_f_layer": 3143457,
     "problem": "p19.pddl",
     "run_dir": "runs-00501-00600/00524",
-    "search_time": 121227.069,
+    "search_time": 124320.721,
     "time_limit": 1800,
+    "total_time": 124.328653,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p20.pddl": {
@@ -9657,8 +9893,9 @@
     "num_generated_until_last_f_layer": 16996417,
     "problem": "p20.pddl",
     "run_dir": "runs-00501-00600/00525",
-    "search_time": 360806.65699999995,
+    "search_time": 330696.44299999997,
     "time_limit": 1800,
+    "total_time": 330.703982,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p21.pddl": {
@@ -9680,8 +9917,9 @@
     "num_generated_until_last_f_layer": 1402957,
     "problem": "p21.pddl",
     "run_dir": "runs-00501-00600/00526",
-    "search_time": 143338.266,
+    "search_time": 149866.539,
     "time_limit": 1800,
+    "total_time": 149.875512,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p22.pddl": {
@@ -9703,8 +9941,9 @@
     "num_generated_until_last_f_layer": 449132,
     "problem": "p22.pddl",
     "run_dir": "runs-00501-00600/00527",
-    "search_time": 12750.16,
+    "search_time": 12715.769999999999,
     "time_limit": 1800,
+    "total_time": 12.726148,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p23.pddl": {
@@ -9758,8 +9997,9 @@
     "num_generated_until_last_f_layer": 4710097,
     "problem": "p25.pddl",
     "run_dir": "runs-00501-00600/00530",
-    "search_time": 199711.47400000002,
+    "search_time": 200523.822,
     "time_limit": 1800,
+    "total_time": 200.533632,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-opt08-adl-p26.pddl": {
@@ -9861,8 +10101,9 @@
     "num_generated_until_last_f_layer": 15647,
     "problem": "p01.pddl",
     "run_dir": "runs-00401-00500/00476",
-    "search_time": 17.826,
+    "search_time": 14.366999999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p02.pddl": {
@@ -9884,8 +10125,9 @@
     "num_generated_until_last_f_layer": 18690,
     "problem": "p02.pddl",
     "run_dir": "runs-00401-00500/00477",
-    "search_time": 20.253,
+    "search_time": 17.826,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p03.pddl": {
@@ -9907,8 +10149,9 @@
     "num_generated_until_last_f_layer": 15647,
     "problem": "p03.pddl",
     "run_dir": "runs-00401-00500/00478",
-    "search_time": 15.785,
+    "search_time": 15.369000000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p04.pddl": {
@@ -9930,8 +10173,9 @@
     "num_generated_until_last_f_layer": 15647,
     "problem": "p04.pddl",
     "run_dir": "runs-00401-00500/00479",
-    "search_time": 16.979000000000003,
+    "search_time": 14.860999999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p05.pddl": {
@@ -9953,8 +10197,9 @@
     "num_generated_until_last_f_layer": 15647,
     "problem": "p05.pddl",
     "run_dir": "runs-00401-00500/00480",
-    "search_time": 18.229,
+    "search_time": 12.621,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p06.pddl": {
@@ -9976,8 +10221,9 @@
     "num_generated_until_last_f_layer": 4023199,
     "problem": "p06.pddl",
     "run_dir": "runs-00401-00500/00481",
-    "search_time": 3801.587,
+    "search_time": 3764.339,
     "time_limit": 1800,
+    "total_time": 3.768673,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p07.pddl": {
@@ -9999,8 +10245,9 @@
     "num_generated_until_last_f_layer": 3788163,
     "problem": "p07.pddl",
     "run_dir": "runs-00401-00500/00482",
-    "search_time": 3550.741,
+    "search_time": 3927.558,
     "time_limit": 1800,
+    "total_time": 3.932674,
     "unsolvable": 0
   },
   "downward-astar-blind-openstacks-p08.pddl": {
@@ -10390,8 +10637,9 @@
     "num_generated_until_last_f_layer": 24544,
     "problem": "p01-opt2.pddl",
     "run_dir": "runs-00501-00600/00536",
-    "search_time": 83.49199999999999,
+    "search_time": 63.75699999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-optical-telegraphs-p02-opt3.pddl": {
@@ -10413,8 +10661,9 @@
     "num_generated_until_last_f_layer": 5449626,
     "problem": "p02-opt3.pddl",
     "run_dir": "runs-00501-00600/00537",
-    "search_time": 22164.0,
+    "search_time": 19615.533,
     "time_limit": 1800,
+    "total_time": 19.622355,
     "unsolvable": 0
   },
   "downward-astar-blind-optical-telegraphs-p03-opt4.pddl": {
@@ -11172,8 +11421,9 @@
     "num_generated_until_last_f_layer": 196,
     "problem": "p01-phil2.pddl",
     "run_dir": "runs-00501-00600/00584",
-    "search_time": 3.78,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-philosophers-p02-phil3.pddl": {
@@ -11195,8 +11445,9 @@
     "num_generated_until_last_f_layer": 3996,
     "problem": "p02-phil3.pddl",
     "run_dir": "runs-00501-00600/00585",
-    "search_time": 11.553,
+    "search_time": 6.241,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-philosophers-p03-phil4.pddl": {
@@ -11218,8 +11469,9 @@
     "num_generated_until_last_f_layer": 69952,
     "problem": "p03-phil4.pddl",
     "run_dir": "runs-00501-00600/00586",
-    "search_time": 110.499,
+    "search_time": 119.923,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-philosophers-p04-phil5.pddl": {
@@ -11241,8 +11493,9 @@
     "num_generated_until_last_f_layer": 1208890,
     "problem": "p04-phil5.pddl",
     "run_dir": "runs-00501-00600/00587",
-    "search_time": 1966.591,
+    "search_time": 2205.951,
     "time_limit": 1800,
+    "total_time": 2.210386,
     "unsolvable": 0
   },
   "downward-astar-blind-philosophers-p05-phil6.pddl": {
@@ -11264,8 +11517,9 @@
     "num_generated_until_last_f_layer": 20182878,
     "problem": "p05-phil6.pddl",
     "run_dir": "runs-00501-00600/00588",
-    "search_time": 32875.547,
+    "search_time": 31283.912,
     "time_limit": 1800,
+    "total_time": 31.287474,
     "unsolvable": 0
   },
   "downward-astar-blind-philosophers-p06-phil7.pddl": {
@@ -11287,8 +11541,9 @@
     "num_generated_until_last_f_layer": 331895018,
     "problem": "p06-phil7.pddl",
     "run_dir": "runs-00501-00600/00589",
-    "search_time": 717727.059,
+    "search_time": 712001.723,
     "time_limit": 1800,
+    "total_time": 712.006898,
     "unsolvable": 0
   },
   "downward-astar-blind-philosophers-p07-phil8.pddl": {
@@ -11976,14 +12231,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 90,
-    "num_expanded_until_last_f_layer": 88,
-    "num_generated": 433,
-    "num_generated_until_last_f_layer": 425,
+    "num_expanded": 461,
+    "num_expanded_until_last_f_layer": 459,
+    "num_generated": 4517,
+    "num_generated_until_last_f_layer": 4503,
     "problem": "p01-s29-n2-l5-f30.pddl",
     "run_dir": "runs-00601-00700/00632",
-    "search_time": 3.837,
+    "search_time": 4.198,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p02-s46-n3-l5-f50.pddl": {
@@ -12005,8 +12261,9 @@
     "num_generated_until_last_f_layer": 22333,
     "problem": "p02-s46-n3-l5-f50.pddl",
     "run_dir": "runs-00601-00700/00633",
-    "search_time": 33.802,
+    "search_time": 33.169,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p03-s53-n4-l3-f30.pddl": {
@@ -12028,8 +12285,9 @@
     "num_generated_until_last_f_layer": 2482650,
     "problem": "p03-s53-n4-l3-f30.pddl",
     "run_dir": "runs-00601-00700/00634",
-    "search_time": 4884.420999999999,
+    "search_time": 5632.81,
     "time_limit": 1800,
+    "total_time": 5.637909,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p04-s66-n5-l2-f50.pddl": {
@@ -12045,14 +12303,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 6733,
-    "num_expanded_until_last_f_layer": 2731,
-    "num_generated": 104836,
-    "num_generated_until_last_f_layer": 42810,
+    "num_expanded": 8613,
+    "num_expanded_until_last_f_layer": 3442,
+    "num_generated": 149502,
+    "num_generated_until_last_f_layer": 59957,
     "problem": "p04-s66-n5-l2-f50.pddl",
     "run_dir": "runs-00601-00700/00635",
-    "search_time": 154.878,
+    "search_time": 276.383,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p05-s71-n5-l3-f70.pddl": {
@@ -12068,14 +12327,15 @@
     "invalid_plan_reported": 0,
     "length": 8,
     "memory_limit": 8000,
-    "num_expanded": 71777,
-    "num_expanded_until_last_f_layer": 35077,
-    "num_generated": 752614,
-    "num_generated_until_last_f_layer": 378061,
+    "num_expanded": 92369,
+    "num_expanded_until_last_f_layer": 44338,
+    "num_generated": 1035050,
+    "num_generated_until_last_f_layer": 509080,
     "problem": "p05-s71-n5-l3-f70.pddl",
     "run_dir": "runs-00601-00700/00636",
-    "search_time": 1124.5400000000002,
+    "search_time": 1794.791,
     "time_limit": 1800,
+    "total_time": 1.798638,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p06-s74-n5-l4-f50.pddl": {
@@ -12091,14 +12351,15 @@
     "invalid_plan_reported": 0,
     "length": 9,
     "memory_limit": 8000,
-    "num_expanded": 250219,
-    "num_expanded_until_last_f_layer": 240160,
-    "num_generated": 3025397,
-    "num_generated_until_last_f_layer": 2845289,
+    "num_expanded": 512655,
+    "num_expanded_until_last_f_layer": 495828,
+    "num_generated": 7261638,
+    "num_generated_until_last_f_layer": 6910016,
     "problem": "p06-s74-n5-l4-f50.pddl",
     "run_dir": "runs-00601-00700/00637",
-    "search_time": 5000.3060000000005,
+    "search_time": 16661.193,
     "time_limit": 1800,
+    "total_time": 16.666104,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p07-s81-n6-l2-f30.pddl": {
@@ -12114,14 +12375,15 @@
     "invalid_plan_reported": 0,
     "length": 12,
     "memory_limit": 8000,
-    "num_expanded": 2773423,
-    "num_expanded_until_last_f_layer": 2440039,
-    "num_generated": 29478787,
-    "num_generated_until_last_f_layer": 25388687,
+    "num_expanded": 5980870,
+    "num_expanded_until_last_f_layer": 5268744,
+    "num_generated": 70119479,
+    "num_generated_until_last_f_layer": 60281197,
     "problem": "p07-s81-n6-l2-f30.pddl",
     "run_dir": "runs-00601-00700/00638",
-    "search_time": 55733.097,
+    "search_time": 123611.171,
     "time_limit": 1800,
+    "total_time": 123.615969,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p08-s87-n6-l3-f70.pddl": {
@@ -12139,12 +12401,13 @@
     "memory_limit": 8000,
     "num_expanded": 5,
     "num_expanded_until_last_f_layer": 2,
-    "num_generated": 90,
-    "num_generated_until_last_f_layer": 34,
+    "num_generated": 102,
+    "num_generated_until_last_f_layer": 38,
     "problem": "p08-s87-n6-l3-f70.pddl",
     "run_dir": "runs-00601-00700/00639",
-    "search_time": 5.5329999999999995,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p09-s90-n6-l4-f50.pddl": {
@@ -12160,14 +12423,15 @@
     "invalid_plan_reported": 0,
     "length": 8,
     "memory_limit": 8000,
-    "num_expanded": 301954,
-    "num_expanded_until_last_f_layer": 271153,
-    "num_generated": 5074616,
-    "num_generated_until_last_f_layer": 4530600,
+    "num_expanded": 629900,
+    "num_expanded_until_last_f_layer": 571164,
+    "num_generated": 13079540,
+    "num_generated_until_last_f_layer": 11791999,
     "problem": "p09-s90-n6-l4-f50.pddl",
     "run_dir": "runs-00601-00700/00640",
-    "search_time": 13513.475,
+    "search_time": 40855.621999999996,
     "time_limit": 1800,
+    "total_time": 40.8615,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p10-s93-n6-l5-f30.pddl": {
@@ -12199,14 +12463,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 61594,
-    "num_expanded_until_last_f_layer": 9000,
-    "num_generated": 1820136,
-    "num_generated_until_last_f_layer": 266897,
+    "num_expanded": 67406,
+    "num_expanded_until_last_f_layer": 9736,
+    "num_generated": 2056494,
+    "num_generated_until_last_f_layer": 297708,
     "problem": "p11-s100-n7-l3-f10.pddl",
     "run_dir": "runs-00601-00700/00642",
-    "search_time": 6968.999,
+    "search_time": 8800.855,
     "time_limit": 1800,
+    "total_time": 8.810008,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p12-s103-n7-l3-f70.pddl": {
@@ -12222,14 +12487,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 56527,
-    "num_expanded_until_last_f_layer": 56490,
-    "num_generated": 1034852,
-    "num_generated_until_last_f_layer": 1033801,
+    "num_expanded": 89124,
+    "num_expanded_until_last_f_layer": 89083,
+    "num_generated": 1924664,
+    "num_generated_until_last_f_layer": 1923337,
     "problem": "p12-s103-n7-l3-f70.pddl",
     "run_dir": "runs-00601-00700/00643",
-    "search_time": 2575.4790000000003,
+    "search_time": 5665.229,
     "time_limit": 1800,
+    "total_time": 5.671215,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p13-s106-n7-l4-f50.pddl": {
@@ -12245,14 +12511,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 17429,
-    "num_expanded_until_last_f_layer": 8490,
-    "num_generated": 416035,
-    "num_generated_until_last_f_layer": 196604,
+    "num_expanded": 23807,
+    "num_expanded_until_last_f_layer": 11612,
+    "num_generated": 654433,
+    "num_generated_until_last_f_layer": 310098,
     "problem": "p13-s106-n7-l4-f50.pddl",
     "run_dir": "runs-00601-00700/00644",
-    "search_time": 1330.424,
+    "search_time": 2037.388,
     "time_limit": 1800,
+    "total_time": 2.042479,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p14-s112-n8-l2-f10.pddl": {
@@ -12274,8 +12541,9 @@
     "num_generated_until_last_f_layer": 174533749,
     "problem": "p14-s112-n8-l2-f10.pddl",
     "run_dir": "runs-00601-00700/00645",
-    "search_time": 1019281.53,
+    "search_time": 1109228.495,
     "time_limit": 1800,
+    "total_time": 1109.237665,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p15-s114-n8-l2-f50.pddl": {
@@ -12307,14 +12575,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 28184,
-    "num_expanded_until_last_f_layer": 10543,
-    "num_generated": 695630,
-    "num_generated_until_last_f_layer": 256390,
+    "num_expanded": 38178,
+    "num_expanded_until_last_f_layer": 14135,
+    "num_generated": 1079576,
+    "num_generated_until_last_f_layer": 393334,
     "problem": "p16-s119-n8-l3-f70.pddl",
     "run_dir": "runs-00601-00700/00647",
-    "search_time": 2297.8990000000003,
+    "search_time": 4536.388,
     "time_limit": 1800,
+    "total_time": 4.54415,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p17-s129-n9-l2-f30.pddl": {
@@ -12362,14 +12631,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 341462,
-    "num_expanded_until_last_f_layer": 130657,
-    "num_generated": 8746166,
-    "num_generated_until_last_f_layer": 3335070,
+    "num_expanded": 376689,
+    "num_expanded_until_last_f_layer": 143711,
+    "num_generated": 9936358,
+    "num_generated_until_last_f_layer": 3777426,
     "problem": "p19-s144-n10-l2-f10.pddl",
     "run_dir": "runs-00601-00700/00650",
-    "search_time": 41589.83,
+    "search_time": 44679.986,
     "time_limit": 1800,
+    "total_time": 44.68697,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-large-p20-s149-n10-l3-f30.pddl": {
@@ -12887,8 +13157,9 @@
     "num_generated_until_last_f_layer": 158,
     "problem": "p01-s17-n2-l2-f30.pddl",
     "run_dir": "runs-00601-00700/00682",
-    "search_time": 4.155,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p02-s23-n2-l3-f70.pddl": {
@@ -12906,12 +13177,13 @@
     "memory_limit": 8000,
     "num_expanded": 5,
     "num_expanded_until_last_f_layer": 2,
-    "num_generated": 38,
-    "num_generated_until_last_f_layer": 14,
+    "num_generated": 41,
+    "num_generated_until_last_f_layer": 15,
     "problem": "p02-s23-n2-l3-f70.pddl",
     "run_dir": "runs-00601-00700/00683",
-    "search_time": 3.2720000000000002,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p03-s28-n2-l5-f10.pddl": {
@@ -12927,14 +13199,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 434,
-    "num_expanded_until_last_f_layer": 105,
-    "num_generated": 5139,
-    "num_generated_until_last_f_layer": 1236,
+    "num_expanded": 519,
+    "num_expanded_until_last_f_layer": 120,
+    "num_generated": 6622,
+    "num_generated_until_last_f_layer": 1520,
     "problem": "p03-s28-n2-l5-f10.pddl",
     "run_dir": "runs-00601-00700/00684",
-    "search_time": 9.547,
+    "search_time": 7.0569999999999995,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p04-s31-n2-l5-f70.pddl": {
@@ -12950,14 +13223,15 @@
     "invalid_plan_reported": 0,
     "length": 4,
     "memory_limit": 8000,
-    "num_expanded": 20,
-    "num_expanded_until_last_f_layer": 17,
-    "num_generated": 244,
-    "num_generated_until_last_f_layer": 214,
+    "num_expanded": 23,
+    "num_expanded_until_last_f_layer": 20,
+    "num_generated": 346,
+    "num_generated_until_last_f_layer": 310,
     "problem": "p04-s31-n2-l5-f70.pddl",
     "run_dir": "runs-00601-00700/00685",
-    "search_time": 4.33,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p05-s34-n3-l2-f50.pddl": {
@@ -12979,8 +13253,9 @@
     "num_generated_until_last_f_layer": 1882,
     "problem": "p05-s34-n3-l2-f50.pddl",
     "run_dir": "runs-00601-00700/00686",
-    "search_time": 6.001,
+    "search_time": 2.782,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p06-s37-n3-l3-f30.pddl": {
@@ -12996,14 +13271,15 @@
     "invalid_plan_reported": 0,
     "length": 10,
     "memory_limit": 8000,
-    "num_expanded": 16634,
-    "num_expanded_until_last_f_layer": 14862,
-    "num_generated": 158679,
-    "num_generated_until_last_f_layer": 134746,
+    "num_expanded": 26953,
+    "num_expanded_until_last_f_layer": 23883,
+    "num_generated": 274499,
+    "num_generated_until_last_f_layer": 230765,
     "problem": "p06-s37-n3-l3-f30.pddl",
     "run_dir": "runs-00601-00700/00687",
-    "search_time": 150.65,
+    "search_time": 246.782,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p07-s38-n3-l3-f50.pddl": {
@@ -13021,12 +13297,13 @@
     "memory_limit": 8000,
     "num_expanded": 7,
     "num_expanded_until_last_f_layer": 2,
-    "num_generated": 103,
-    "num_generated_until_last_f_layer": 23,
+    "num_generated": 108,
+    "num_generated_until_last_f_layer": 24,
     "problem": "p07-s38-n3-l3-f50.pddl",
     "run_dir": "runs-00601-00700/00688",
-    "search_time": 4.204000000000001,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p08-s40-n3-l4-f10.pddl": {
@@ -13048,8 +13325,9 @@
     "num_generated_until_last_f_layer": 17,
     "problem": "p08-s40-n3-l4-f10.pddl",
     "run_dir": "runs-00601-00700/00689",
-    "search_time": 6.0,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p09-s42-n3-l4-f50.pddl": {
@@ -13065,14 +13343,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 106,
-    "num_expanded_until_last_f_layer": 77,
-    "num_generated": 877,
-    "num_generated_until_last_f_layer": 607,
+    "num_expanded": 139,
+    "num_expanded_until_last_f_layer": 104,
+    "num_generated": 1401,
+    "num_generated_until_last_f_layer": 1003,
     "problem": "p09-s42-n3-l4-f50.pddl",
     "run_dir": "runs-00601-00700/00690",
-    "search_time": 4.325,
+    "search_time": 2.181,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p10-s45-n3-l5-f30.pddl": {
@@ -13088,14 +13367,15 @@
     "invalid_plan_reported": 0,
     "length": 9,
     "memory_limit": 8000,
-    "num_expanded": 39131,
-    "num_expanded_until_last_f_layer": 26982,
-    "num_generated": 392510,
-    "num_generated_until_last_f_layer": 271137,
+    "num_expanded": 149666,
+    "num_expanded_until_last_f_layer": 96306,
+    "num_generated": 1948043,
+    "num_generated_until_last_f_layer": 1235431,
     "problem": "p10-s45-n3-l5-f30.pddl",
     "run_dir": "runs-00601-00700/00691",
-    "search_time": 511.34599999999995,
+    "search_time": 2952.329,
     "time_limit": 1800,
+    "total_time": 2.956552,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p11-s46-n3-l5-f50.pddl": {
@@ -13117,8 +13397,9 @@
     "num_generated_until_last_f_layer": 22333,
     "problem": "p11-s46-n3-l5-f50.pddl",
     "run_dir": "runs-00601-00700/00692",
-    "search_time": 31.223999999999997,
+    "search_time": 34.338,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p12-s50-n4-l2-f50.pddl": {
@@ -13134,14 +13415,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 11610,
-    "num_expanded_until_last_f_layer": 11607,
-    "num_generated": 155017,
-    "num_generated_until_last_f_layer": 154992,
+    "num_expanded": 13805,
+    "num_expanded_until_last_f_layer": 13802,
+    "num_generated": 195919,
+    "num_generated_until_last_f_layer": 195893,
     "problem": "p12-s50-n4-l2-f50.pddl",
     "run_dir": "runs-00601-00700/00693",
-    "search_time": 210.084,
+    "search_time": 349.98699999999997,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p13-s53-n4-l3-f30.pddl": {
@@ -13163,8 +13445,9 @@
     "num_generated_until_last_f_layer": 2482650,
     "problem": "p13-s53-n4-l3-f30.pddl",
     "run_dir": "runs-00601-00700/00694",
-    "search_time": 4893.128,
+    "search_time": 5644.718,
     "time_limit": 1800,
+    "total_time": 5.64932,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p14-s55-n4-l3-f70.pddl": {
@@ -13180,14 +13463,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 1066,
-    "num_expanded_until_last_f_layer": 1064,
-    "num_generated": 11742,
-    "num_generated_until_last_f_layer": 11723,
+    "num_expanded": 2816,
+    "num_expanded_until_last_f_layer": 2814,
+    "num_generated": 48268,
+    "num_generated_until_last_f_layer": 48242,
     "problem": "p14-s55-n4-l3-f70.pddl",
     "run_dir": "runs-00601-00700/00695",
-    "search_time": 18.011,
+    "search_time": 69.586,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p15-s56-n4-l4-f10.pddl": {
@@ -13209,8 +13493,9 @@
     "num_generated_until_last_f_layer": 8517899,
     "problem": "p15-s56-n4-l4-f10.pddl",
     "run_dir": "runs-00601-00700/00696",
-    "search_time": 46272.912,
+    "search_time": 48846.772000000004,
     "time_limit": 1800,
+    "total_time": 48.852241,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p16-s60-n4-l5-f10.pddl": {
@@ -13232,8 +13517,9 @@
     "num_generated_until_last_f_layer": 70419,
     "problem": "p16-s60-n4-l5-f10.pddl",
     "run_dir": "runs-00601-00700/00697",
-    "search_time": 574.934,
+    "search_time": 588.664,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p17-s61-n4-l5-f30.pddl": {
@@ -13249,14 +13535,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 783,
-    "num_expanded_until_last_f_layer": 296,
-    "num_generated": 14883,
-    "num_generated_until_last_f_layer": 5381,
+    "num_expanded": 1163,
+    "num_expanded_until_last_f_layer": 431,
+    "num_generated": 27708,
+    "num_generated_until_last_f_layer": 9841,
     "problem": "p17-s61-n4-l5-f30.pddl",
     "run_dir": "runs-00601-00700/00698",
-    "search_time": 29.041,
+    "search_time": 50.554,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p18-s62-n4-l5-f50.pddl": {
@@ -13272,14 +13559,15 @@
     "invalid_plan_reported": 0,
     "length": 8,
     "memory_limit": 8000,
-    "num_expanded": 39012,
-    "num_expanded_until_last_f_layer": 36914,
-    "num_generated": 439128,
-    "num_generated_until_last_f_layer": 409971,
+    "num_expanded": 92116,
+    "num_expanded_until_last_f_layer": 88294,
+    "num_generated": 1325896,
+    "num_generated_until_last_f_layer": 1258219,
     "problem": "p18-s62-n4-l5-f50.pddl",
     "run_dir": "runs-00601-00700/00699",
-    "search_time": 616.629,
+    "search_time": 2216.949,
     "time_limit": 1800,
+    "total_time": 2.221362,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p19-s66-n5-l2-f50.pddl": {
@@ -13295,14 +13583,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 6733,
-    "num_expanded_until_last_f_layer": 2731,
-    "num_generated": 104836,
-    "num_generated_until_last_f_layer": 42810,
+    "num_expanded": 8613,
+    "num_expanded_until_last_f_layer": 3442,
+    "num_generated": 149502,
+    "num_generated_until_last_f_layer": 59957,
     "problem": "p19-s66-n5-l2-f50.pddl",
     "run_dir": "runs-00601-00700/00700",
-    "search_time": 152.429,
+    "search_time": 228.19400000000002,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p20-s69-n5-l3-f30.pddl": {
@@ -13318,14 +13607,15 @@
     "invalid_plan_reported": 0,
     "length": 11,
     "memory_limit": 8000,
-    "num_expanded": 5739684,
-    "num_expanded_until_last_f_layer": 5033569,
-    "num_generated": 79816745,
-    "num_generated_until_last_f_layer": 68659774,
+    "num_expanded": 10317932,
+    "num_expanded_until_last_f_layer": 9086320,
+    "num_generated": 157394339,
+    "num_generated_until_last_f_layer": 135981569,
     "problem": "p20-s69-n5-l3-f30.pddl",
     "run_dir": "runs-00701-00800/00701",
-    "search_time": 196805.00699999998,
+    "search_time": 433632.39499999996,
     "time_limit": 1800,
+    "total_time": 433.637654,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p21-s72-n5-l4-f10.pddl": {
@@ -13357,14 +13647,15 @@
     "invalid_plan_reported": 0,
     "length": 9,
     "memory_limit": 8000,
-    "num_expanded": 250219,
-    "num_expanded_until_last_f_layer": 240160,
-    "num_generated": 3025397,
-    "num_generated_until_last_f_layer": 2845289,
+    "num_expanded": 512655,
+    "num_expanded_until_last_f_layer": 495828,
+    "num_generated": 7261638,
+    "num_generated_until_last_f_layer": 6910016,
     "problem": "p22-s74-n5-l4-f50.pddl",
     "run_dir": "runs-00701-00800/00703",
-    "search_time": 5466.695,
+    "search_time": 16249.573999999999,
     "time_limit": 1800,
+    "total_time": 16.254266,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p23-s76-n5-l5-f10.pddl": {
@@ -13380,14 +13671,15 @@
     "invalid_plan_reported": 0,
     "length": 9,
     "memory_limit": 8000,
-    "num_expanded": 1906745,
-    "num_expanded_until_last_f_layer": 551218,
-    "num_generated": 31333200,
-    "num_generated_until_last_f_layer": 9284664,
+    "num_expanded": 3941782,
+    "num_expanded_until_last_f_layer": 1028080,
+    "num_generated": 72634703,
+    "num_generated_until_last_f_layer": 19472745,
     "problem": "p23-s76-n5-l5-f10.pddl",
     "run_dir": "runs-00701-00800/00704",
-    "search_time": 93252.314,
+    "search_time": 208649.884,
     "time_limit": 1800,
+    "total_time": 208.655536,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p24-s77-n5-l5-f30.pddl": {
@@ -13405,12 +13697,13 @@
     "memory_limit": 8000,
     "num_expanded": 5,
     "num_expanded_until_last_f_layer": 2,
-    "num_generated": 92,
-    "num_generated_until_last_f_layer": 34,
+    "num_generated": 104,
+    "num_generated_until_last_f_layer": 38,
     "problem": "p24-s77-n5-l5-f30.pddl",
     "run_dir": "runs-00701-00800/00705",
-    "search_time": 5.069,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p25-s81-n6-l2-f30.pddl": {
@@ -13426,20 +13719,20 @@
     "invalid_plan_reported": 0,
     "length": 12,
     "memory_limit": 8000,
-    "num_expanded": 2773423,
-    "num_expanded_until_last_f_layer": 2440039,
-    "num_generated": 29478787,
-    "num_generated_until_last_f_layer": 25388687,
+    "num_expanded": 5980870,
+    "num_expanded_until_last_f_layer": 5268744,
+    "num_generated": 70119479,
+    "num_generated_until_last_f_layer": 60281197,
     "problem": "p25-s81-n6-l2-f30.pddl",
     "run_dir": "runs-00701-00800/00706",
-    "search_time": 55954.078,
+    "search_time": 138252.672,
     "time_limit": 1800,
+    "total_time": 138.258525,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p26-s85-n6-l3-f30.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 13.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "psr-middle",
     "id": [
       "downward-astar-blind",
@@ -13447,15 +13740,9 @@
       "p26-s85-n6-l3-f30.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 13,
     "memory_limit": 8000,
-    "num_expanded": 15816783,
-    "num_expanded_until_last_f_layer": 15169165,
-    "num_generated": 164908200,
-    "num_generated_until_last_f_layer": 156334927,
     "problem": "p26-s85-n6-l3-f30.pddl",
     "run_dir": "runs-00701-00800/00707",
-    "search_time": 371639.68999999994,
     "time_limit": 1800,
     "unsolvable": 0
   },
@@ -13478,8 +13765,9 @@
     "num_generated_until_last_f_layer": 274262756,
     "problem": "p27-s86-n6-l3-f50.pddl",
     "run_dir": "runs-00701-00800/00708",
-    "search_time": 785783.156,
+    "search_time": 814907.696,
     "time_limit": 1800,
+    "total_time": 814.912882,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p28-s88-n6-l4-f10.pddl": {
@@ -13501,8 +13789,9 @@
     "num_generated_until_last_f_layer": 718402,
     "problem": "p28-s88-n6-l4-f10.pddl",
     "run_dir": "runs-00701-00800/00709",
-    "search_time": 4980.292,
+    "search_time": 4890.565,
     "time_limit": 1800,
+    "total_time": 4.898876,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p29-s89-n6-l4-f30.pddl": {
@@ -13534,14 +13823,15 @@
     "invalid_plan_reported": 0,
     "length": 8,
     "memory_limit": 8000,
-    "num_expanded": 301954,
-    "num_expanded_until_last_f_layer": 271153,
-    "num_generated": 5074616,
-    "num_generated_until_last_f_layer": 4530600,
+    "num_expanded": 629900,
+    "num_expanded_until_last_f_layer": 571164,
+    "num_generated": 13079540,
+    "num_generated_until_last_f_layer": 11791999,
     "problem": "p30-s90-n6-l4-f50.pddl",
     "run_dir": "runs-00701-00800/00711",
-    "search_time": 13106.923,
+    "search_time": 37193.057,
     "time_limit": 1800,
+    "total_time": 37.198005,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p31-s92-n6-l5-f10.pddl": {
@@ -13563,8 +13853,9 @@
     "num_generated_until_last_f_layer": 891636,
     "problem": "p31-s92-n6-l5-f10.pddl",
     "run_dir": "runs-00701-00800/00712",
-    "search_time": 19875.264000000003,
+    "search_time": 20053.006,
     "time_limit": 1800,
+    "total_time": 20.059378,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p32-s93-n6-l5-f30.pddl": {
@@ -13596,14 +13887,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 61594,
-    "num_expanded_until_last_f_layer": 9000,
-    "num_generated": 1820136,
-    "num_generated_until_last_f_layer": 266897,
+    "num_expanded": 67406,
+    "num_expanded_until_last_f_layer": 9736,
+    "num_generated": 2056494,
+    "num_generated_until_last_f_layer": 297708,
     "problem": "p33-s100-n7-l3-f10.pddl",
     "run_dir": "runs-00701-00800/00714",
-    "search_time": 6959.645,
+    "search_time": 7154.645,
     "time_limit": 1800,
+    "total_time": 7.160188,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p34-s102-n7-l3-f50.pddl": {
@@ -13635,14 +13927,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 56527,
-    "num_expanded_until_last_f_layer": 56490,
-    "num_generated": 1034852,
-    "num_generated_until_last_f_layer": 1033801,
+    "num_expanded": 89124,
+    "num_expanded_until_last_f_layer": 89083,
+    "num_generated": 1924664,
+    "num_generated_until_last_f_layer": 1923337,
     "problem": "p35-s103-n7-l3-f70.pddl",
     "run_dir": "runs-00701-00800/00716",
-    "search_time": 2531.5150000000003,
+    "search_time": 6350.876,
     "time_limit": 1800,
+    "total_time": 6.357445,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p36-s106-n7-l4-f50.pddl": {
@@ -13658,14 +13951,15 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 17429,
-    "num_expanded_until_last_f_layer": 8490,
-    "num_generated": 416035,
-    "num_generated_until_last_f_layer": 196604,
+    "num_expanded": 23807,
+    "num_expanded_until_last_f_layer": 11612,
+    "num_generated": 654433,
+    "num_generated_until_last_f_layer": 310098,
     "problem": "p36-s106-n7-l4-f50.pddl",
     "run_dir": "runs-00701-00800/00717",
-    "search_time": 1258.9889999999998,
+    "search_time": 2561.439,
     "time_limit": 1800,
+    "total_time": 2.570514,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p37-s108-n7-l5-f10.pddl": {
@@ -13719,8 +14013,9 @@
     "num_generated_until_last_f_layer": 174533749,
     "problem": "p39-s112-n8-l2-f10.pddl",
     "run_dir": "runs-00701-00800/00720",
-    "search_time": 943740.187,
+    "search_time": 1074085.226,
     "time_limit": 1800,
+    "total_time": 1074.094224,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p40-s114-n8-l2-f50.pddl": {
@@ -13784,14 +14079,15 @@
     "invalid_plan_reported": 0,
     "length": 9,
     "memory_limit": 8000,
-    "num_expanded": 3768030,
-    "num_expanded_until_last_f_layer": 2243474,
-    "num_generated": 55306520,
-    "num_generated_until_last_f_layer": 33539339,
+    "num_expanded": 7607565,
+    "num_expanded_until_last_f_layer": 4444108,
+    "num_generated": 132404806,
+    "num_generated_until_last_f_layer": 78567236,
     "problem": "p43-s123-n8-l4-f70.pddl",
     "run_dir": "runs-00701-00800/00724",
-    "search_time": 181508.67299999998,
+    "search_time": 526385.969,
     "time_limit": 1800,
+    "total_time": 526.392605,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p44-s131-n9-l2-f70.pddl": {
@@ -13813,8 +14109,9 @@
     "num_generated_until_last_f_layer": 52050442,
     "problem": "p44-s131-n9-l2-f70.pddl",
     "run_dir": "runs-00701-00800/00725",
-    "search_time": 463311.37799999997,
+    "search_time": 524207.72699999996,
     "time_limit": 1800,
+    "total_time": 524.217236,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p45-s132-n9-l3-f10.pddl": {
@@ -13836,8 +14133,9 @@
     "num_generated_until_last_f_layer": 73730239,
     "problem": "p45-s132-n9-l3-f10.pddl",
     "run_dir": "runs-00701-00800/00726",
-    "search_time": 658773.72,
+    "search_time": 708640.1540000001,
     "time_limit": 1800,
+    "total_time": 708.649192,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p46-s135-n9-l3-f70.pddl": {
@@ -13853,14 +14151,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 876,
-    "num_expanded_until_last_f_layer": 869,
-    "num_generated": 24089,
-    "num_generated_until_last_f_layer": 24001,
+    "num_expanded": 1008,
+    "num_expanded_until_last_f_layer": 1001,
+    "num_generated": 30539,
+    "num_generated_until_last_f_layer": 30445,
     "problem": "p46-s135-n9-l3-f70.pddl",
     "run_dir": "runs-00701-00800/00727",
-    "search_time": 99.968,
+    "search_time": 149.44199999999998,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p47-s139-n9-l4-f70.pddl": {
@@ -13876,14 +14175,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 1236,
-    "num_expanded_until_last_f_layer": 1142,
-    "num_generated": 41757,
-    "num_generated_until_last_f_layer": 37998,
+    "num_expanded": 1392,
+    "num_expanded_until_last_f_layer": 1292,
+    "num_generated": 50949,
+    "num_generated_until_last_f_layer": 46650,
     "problem": "p47-s139-n9-l4-f70.pddl",
     "run_dir": "runs-00701-00800/00728",
-    "search_time": 188.578,
+    "search_time": 270.208,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p48-s144-n10-l2-f10.pddl": {
@@ -13899,14 +14199,15 @@
     "invalid_plan_reported": 0,
     "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 341462,
-    "num_expanded_until_last_f_layer": 130657,
-    "num_generated": 8746166,
-    "num_generated_until_last_f_layer": 3335070,
+    "num_expanded": 376689,
+    "num_expanded_until_last_f_layer": 143711,
+    "num_generated": 9936358,
+    "num_generated_until_last_f_layer": 3777426,
     "problem": "p48-s144-n10-l2-f10.pddl",
     "run_dir": "runs-00701-00800/00729",
-    "search_time": 41650.962999999996,
+    "search_time": 47711.626000000004,
     "time_limit": 1800,
+    "total_time": 47.718418,
     "unsolvable": 0
   },
   "downward-astar-blind-psr-middle-p49-s149-n10-l3-f30.pddl": {
@@ -13960,8 +14261,9 @@
     "num_generated_until_last_f_layer": 14260,
     "problem": "p01.pddl",
     "run_dir": "runs-00701-00800/00732",
-    "search_time": 26.629,
+    "search_time": 10.241999999999999,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p02.pddl": {
@@ -13983,8 +14285,9 @@
     "num_generated_until_last_f_layer": 195137936,
     "problem": "p02.pddl",
     "run_dir": "runs-00701-00800/00733",
-    "search_time": 93163.287,
+    "search_time": 102305.642,
     "time_limit": 1800,
+    "total_time": 102.648714,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p03.pddl": {
@@ -14038,8 +14341,9 @@
     "num_generated_until_last_f_layer": 1654,
     "problem": "p05.pddl",
     "run_dir": "runs-00701-00800/00736",
-    "search_time": 26.144000000000002,
+    "search_time": 4.329000000000001,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p06.pddl": {
@@ -14061,8 +14365,9 @@
     "num_generated_until_last_f_layer": 45562,
     "problem": "p06.pddl",
     "run_dir": "runs-00701-00800/00737",
-    "search_time": 92.502,
+    "search_time": 62.295,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p07.pddl": {
@@ -14084,8 +14389,9 @@
     "num_generated_until_last_f_layer": 114932,
     "problem": "p07.pddl",
     "run_dir": "runs-00701-00800/00738",
-    "search_time": 183.664,
+    "search_time": 150.71499999999997,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p08.pddl": {
@@ -14107,8 +14413,9 @@
     "num_generated_until_last_f_layer": 452944,
     "problem": "p08.pddl",
     "run_dir": "runs-00701-00800/00739",
-    "search_time": 560.8969999999999,
+    "search_time": 595.992,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p09.pddl": {
@@ -14130,8 +14437,9 @@
     "num_generated_until_last_f_layer": 5749478,
     "problem": "p09.pddl",
     "run_dir": "runs-00701-00800/00740",
-    "search_time": 6086.295,
+    "search_time": 8546.694000000001,
     "time_limit": 1800,
+    "total_time": 8.810291,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p10.pddl": {
@@ -14153,8 +14461,9 @@
     "num_generated_until_last_f_layer": 193996,
     "problem": "p10.pddl",
     "run_dir": "runs-00701-00800/00741",
-    "search_time": 501.78000000000003,
+    "search_time": 382.887,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p11.pddl": {
@@ -14176,8 +14485,9 @@
     "num_generated_until_last_f_layer": 381877112,
     "problem": "p11.pddl",
     "run_dir": "runs-00701-00800/00742",
-    "search_time": 306407.334,
+    "search_time": 459212.86199999996,
     "time_limit": 1800,
+    "total_time": 460.075779,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p12.pddl": {
@@ -14199,8 +14509,9 @@
     "num_generated_until_last_f_layer": 87078602,
     "problem": "p12.pddl",
     "run_dir": "runs-00701-00800/00743",
-    "search_time": 86810.01999999999,
+    "search_time": 114037.81,
     "time_limit": 1800,
+    "total_time": 114.906693,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p13.pddl": {
@@ -14254,8 +14565,9 @@
     "num_generated_until_last_f_layer": 2320968,
     "problem": "p15.pddl",
     "run_dir": "runs-00701-00800/00746",
-    "search_time": 8588.558,
+    "search_time": 8442.755,
     "time_limit": 1800,
+    "total_time": 9.685861,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p16.pddl": {
@@ -14309,8 +14621,9 @@
     "num_generated_until_last_f_layer": 55523136,
     "problem": "p18.pddl",
     "run_dir": "runs-00701-00800/00749",
-    "search_time": 192247.896,
+    "search_time": 212641.606,
     "time_limit": 1800,
+    "total_time": 215.091342,
     "unsolvable": 0
   },
   "downward-astar-blind-recharging-robots-opt23-adl-p19.pddl": {
@@ -14364,8 +14677,9 @@
     "num_generated_until_last_f_layer": 6276314,
     "problem": "p01.pddl",
     "run_dir": "runs-00701-00800/00752",
-    "search_time": 124104.351,
+    "search_time": 109634.66699999999,
     "time_limit": 1800,
+    "total_time": 109.672025,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p02.pddl": {
@@ -14387,8 +14701,9 @@
     "num_generated_until_last_f_layer": 21161219,
     "problem": "p02.pddl",
     "run_dir": "runs-00701-00800/00753",
-    "search_time": 387243.17100000003,
+    "search_time": 386590.719,
     "time_limit": 1800,
+    "total_time": 386.633304,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p03.pddl": {
@@ -14410,8 +14725,9 @@
     "num_generated_until_last_f_layer": 38074638,
     "problem": "p03.pddl",
     "run_dir": "runs-00701-00800/00754",
-    "search_time": 695503.8570000001,
+    "search_time": 607207.139,
     "time_limit": 1800,
+    "total_time": 607.246668,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p04.pddl": {
@@ -14433,8 +14749,9 @@
     "num_generated_until_last_f_layer": 67658495,
     "problem": "p04.pddl",
     "run_dir": "runs-00701-00800/00755",
-    "search_time": 1304945.99,
+    "search_time": 1200975.728,
     "time_limit": 1800,
+    "total_time": 1201.014522,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p05.pddl": {
@@ -14504,8 +14821,9 @@
     "num_generated_until_last_f_layer": 67658495,
     "problem": "p08.pddl",
     "run_dir": "runs-00701-00800/00759",
-    "search_time": 1100104.939,
+    "search_time": 1037259.213,
     "time_limit": 1800,
+    "total_time": 1037.30577,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p09.pddl": {
@@ -14543,8 +14861,9 @@
     "num_generated_until_last_f_layer": 38074638,
     "problem": "p10.pddl",
     "run_dir": "runs-00701-00800/00761",
-    "search_time": 670199.522,
+    "search_time": 708946.3859999999,
     "time_limit": 1800,
+    "total_time": 708.989729,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p11.pddl": {
@@ -14566,8 +14885,9 @@
     "num_generated_until_last_f_layer": 8668762,
     "problem": "p11.pddl",
     "run_dir": "runs-00701-00800/00762",
-    "search_time": 87804.494,
+    "search_time": 89411.083,
     "time_limit": 1800,
+    "total_time": 89.430323,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p12.pddl": {
@@ -14589,8 +14909,9 @@
     "num_generated_until_last_f_layer": 31450286,
     "problem": "p12.pddl",
     "run_dir": "runs-00701-00800/00763",
-    "search_time": 307166.64400000003,
+    "search_time": 330598.758,
     "time_limit": 1800,
+    "total_time": 330.626776,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p13.pddl": {
@@ -14612,8 +14933,9 @@
     "num_generated_until_last_f_layer": 3927768,
     "problem": "p13.pddl",
     "run_dir": "runs-00701-00800/00764",
-    "search_time": 55357.273,
+    "search_time": 61270.674999999996,
     "time_limit": 1800,
+    "total_time": 61.307964,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p14.pddl": {
@@ -14651,8 +14973,9 @@
     "num_generated_until_last_f_layer": 292618,
     "problem": "p15.pddl",
     "run_dir": "runs-00701-00800/00766",
-    "search_time": 5308.558,
+    "search_time": 5838.901,
     "time_limit": 1800,
+    "total_time": 5.885527,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p16.pddl": {
@@ -14674,8 +14997,9 @@
     "num_generated_until_last_f_layer": 15654368,
     "problem": "p16.pddl",
     "run_dir": "runs-00701-00800/00767",
-    "search_time": 286636.708,
+    "search_time": 286981.789,
     "time_limit": 1800,
+    "total_time": 287.024117,
     "unsolvable": 0
   },
   "downward-astar-blind-ricochet-robots-opt23-adl-p17.pddl": {
@@ -14761,8 +15085,9 @@
     "num_generated_until_last_f_layer": 0,
     "problem": "p01.pddl",
     "run_dir": "runs-00701-00800/00772",
-    "search_time": 10.342,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p02.pddl": {
@@ -14784,8 +15109,9 @@
     "num_generated_until_last_f_layer": 12,
     "problem": "p02.pddl",
     "run_dir": "runs-00701-00800/00773",
-    "search_time": 10.593,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p03.pddl": {
@@ -14807,8 +15133,9 @@
     "num_generated_until_last_f_layer": 156,
     "problem": "p03.pddl",
     "run_dir": "runs-00701-00800/00774",
-    "search_time": 12.071,
+    "search_time": 2.112,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p04.pddl": {
@@ -14830,8 +15157,9 @@
     "num_generated_until_last_f_layer": 1524,
     "problem": "p04.pddl",
     "run_dir": "runs-00701-00800/00775",
-    "search_time": 32.942,
+    "search_time": 23.389,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p05.pddl": {
@@ -14853,8 +15181,9 @@
     "num_generated_until_last_f_layer": 14340,
     "problem": "p05.pddl",
     "run_dir": "runs-00701-00800/00776",
-    "search_time": 203.591,
+    "search_time": 185.175,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p06.pddl": {
@@ -14876,8 +15205,9 @@
     "num_generated_until_last_f_layer": 134472,
     "problem": "p06.pddl",
     "run_dir": "runs-00701-00800/00777",
-    "search_time": 3992.997,
+    "search_time": 4868.551,
     "time_limit": 1800,
+    "total_time": 4.879595,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p07.pddl": {
@@ -14899,8 +15229,9 @@
     "num_generated_until_last_f_layer": 1260552,
     "problem": "p07.pddl",
     "run_dir": "runs-00701-00800/00778",
-    "search_time": 18434.724,
+    "search_time": 16630.783,
     "time_limit": 1800,
+    "total_time": 16.640978,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p08.pddl": {
@@ -14922,8 +15253,9 @@
     "num_generated_until_last_f_layer": 11807112,
     "problem": "p08.pddl",
     "run_dir": "runs-00701-00800/00779",
-    "search_time": 166518.798,
+    "search_time": 184221.823,
     "time_limit": 1800,
+    "total_time": 184.232651,
     "unsolvable": 0
   },
   "downward-astar-blind-rubiks-cube-opt23-adl-p09.pddl": {
@@ -15611,14 +15943,15 @@
     "invalid_plan_reported": 0,
     "length": 2,
     "memory_limit": 8000,
-    "num_expanded": 29,
+    "num_expanded": 35,
     "num_expanded_until_last_f_layer": 1,
-    "num_generated": 552,
+    "num_generated": 666,
     "num_generated_until_last_f_layer": 44,
     "problem": "probschedule-2-0.pddl",
     "run_dir": "runs-00701-00800/00792",
-    "search_time": 3.877,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-2-1.pddl": {
@@ -15634,14 +15967,15 @@
     "invalid_plan_reported": 0,
     "length": 2,
     "memory_limit": 8000,
-    "num_expanded": 15,
+    "num_expanded": 17,
     "num_expanded_until_last_f_layer": 1,
-    "num_generated": 284,
+    "num_generated": 322,
     "num_generated_until_last_f_layer": 44,
     "problem": "probschedule-2-1.pddl",
     "run_dir": "runs-00701-00800/00793",
-    "search_time": 5.261,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-2-2.pddl": {
@@ -15663,8 +15997,9 @@
     "num_generated_until_last_f_layer": 44,
     "problem": "probschedule-2-2.pddl",
     "run_dir": "runs-00701-00800/00794",
-    "search_time": 4.239,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-20-0.pddl": {
@@ -16160,14 +16495,15 @@
     "invalid_plan_reported": 0,
     "length": 4,
     "memory_limit": 8000,
-    "num_expanded": 1073,
-    "num_expanded_until_last_f_layer": 696,
-    "num_generated": 16858,
-    "num_generated_until_last_f_layer": 13358,
+    "num_expanded": 2260,
+    "num_expanded_until_last_f_layer": 1290,
+    "num_generated": 34531,
+    "num_generated_until_last_f_layer": 24130,
     "problem": "probschedule-3-0.pddl",
     "run_dir": "runs-00701-00800/00795",
-    "search_time": 11.94,
+    "search_time": 23.66,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-3-1.pddl": {
@@ -16183,14 +16519,15 @@
     "invalid_plan_reported": 0,
     "length": 2,
     "memory_limit": 8000,
-    "num_expanded": 15,
+    "num_expanded": 17,
     "num_expanded_until_last_f_layer": 1,
-    "num_generated": 533,
+    "num_generated": 607,
     "num_generated_until_last_f_layer": 66,
     "problem": "probschedule-3-1.pddl",
     "run_dir": "runs-00701-00800/00796",
-    "search_time": 4.727,
+    "search_time": 1,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-3-2.pddl": {
@@ -16206,14 +16543,15 @@
     "invalid_plan_reported": 0,
     "length": 4,
     "memory_limit": 8000,
-    "num_expanded": 791,
-    "num_expanded_until_last_f_layer": 695,
-    "num_generated": 13696,
-    "num_generated_until_last_f_layer": 13215,
+    "num_expanded": 1394,
+    "num_expanded_until_last_f_layer": 1235,
+    "num_generated": 23699,
+    "num_generated_until_last_f_layer": 23155,
     "problem": "probschedule-3-2.pddl",
     "run_dir": "runs-00701-00800/00797",
-    "search_time": 12.86,
+    "search_time": 17.703,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-30-0.pddl": {
@@ -16709,14 +17047,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 16181,
-    "num_expanded_until_last_f_layer": 11220,
-    "num_generated": 397129,
-    "num_generated_until_last_f_layer": 276662,
+    "num_expanded": 47894,
+    "num_expanded_until_last_f_layer": 33228,
+    "num_generated": 1177014,
+    "num_generated_until_last_f_layer": 837871,
     "problem": "probschedule-4-0.pddl",
     "run_dir": "runs-00701-00800/00798",
-    "search_time": 191.213,
+    "search_time": 972.343,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-4-1.pddl": {
@@ -16732,14 +17071,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 53543,
-    "num_expanded_until_last_f_layer": 10285,
-    "num_generated": 1692480,
-    "num_generated_until_last_f_layer": 261577,
+    "num_expanded": 264956,
+    "num_expanded_until_last_f_layer": 32215,
+    "num_generated": 8971230,
+    "num_generated_until_last_f_layer": 804947,
     "problem": "probschedule-4-1.pddl",
     "run_dir": "runs-00701-00800/00799",
-    "search_time": 813.203,
+    "search_time": 7201.879,
     "time_limit": 1800,
+    "total_time": 7.205938,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-4-2.pddl": {
@@ -16755,14 +17095,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 49808,
-    "num_expanded_until_last_f_layer": 8983,
-    "num_generated": 1563335,
-    "num_generated_until_last_f_layer": 228088,
+    "num_expanded": 306077,
+    "num_expanded_until_last_f_layer": 32047,
+    "num_generated": 10484689,
+    "num_generated_until_last_f_layer": 795468,
     "problem": "probschedule-4-2.pddl",
     "run_dir": "runs-00701-00800/00800",
-    "search_time": 637.207,
+    "search_time": 7933.37,
     "time_limit": 1800,
+    "total_time": 7.939674,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-40-0.pddl": {
@@ -17258,14 +17599,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 100329,
-    "num_expanded_until_last_f_layer": 22733,
-    "num_generated": 3532916,
-    "num_generated_until_last_f_layer": 790269,
+    "num_expanded": 535220,
+    "num_expanded_until_last_f_layer": 74066,
+    "num_generated": 19793678,
+    "num_generated_until_last_f_layer": 2540365,
     "problem": "probschedule-5-0.pddl",
     "run_dir": "runs-00801-00900/00801",
-    "search_time": 1553.453,
+    "search_time": 12991.690999999999,
     "time_limit": 1800,
+    "total_time": 12.995523,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-5-1.pddl": {
@@ -17281,20 +17623,20 @@
     "invalid_plan_reported": 0,
     "length": 6,
     "memory_limit": 8000,
-    "num_expanded": 317151,
-    "num_expanded_until_last_f_layer": 209289,
-    "num_generated": 12948037,
-    "num_generated_until_last_f_layer": 8339801,
+    "num_expanded": 1507750,
+    "num_expanded_until_last_f_layer": 959754,
+    "num_generated": 66545439,
+    "num_generated_until_last_f_layer": 39940683,
     "problem": "probschedule-5-1.pddl",
     "run_dir": "runs-00801-00900/00802",
-    "search_time": 5649.773999999999,
+    "search_time": 38746.636000000006,
     "time_limit": 1800,
+    "total_time": 38.750608,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-5-2.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 7.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "schedule",
     "id": [
       "downward-astar-blind",
@@ -17302,15 +17644,9 @@
       "probschedule-5-2.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 4781368,
-    "num_expanded_until_last_f_layer": 1575958,
-    "num_generated": 163161921,
-    "num_generated_until_last_f_layer": 60610725,
     "problem": "probschedule-5-2.pddl",
     "run_dir": "runs-00801-00900/00803",
-    "search_time": 60856.767,
     "time_limit": 1800,
     "unsolvable": 0
   },
@@ -17412,8 +17748,7 @@
   },
   "downward-astar-blind-schedule-probschedule-6-0.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 7.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "schedule",
     "id": [
       "downward-astar-blind",
@@ -17421,22 +17756,15 @@
       "probschedule-6-0.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 16906528,
-    "num_expanded_until_last_f_layer": 3606969,
-    "num_generated": 770650641,
-    "num_generated_until_last_f_layer": 182865047,
     "problem": "probschedule-6-0.pddl",
     "run_dir": "runs-00801-00900/00804",
-    "search_time": 311249.157,
     "time_limit": 1800,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-6-1.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 7.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "schedule",
     "id": [
       "downward-astar-blind",
@@ -17444,15 +17772,9 @@
       "probschedule-6-1.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 7,
     "memory_limit": 8000,
-    "num_expanded": 12121484,
-    "num_expanded_until_last_f_layer": 4234929,
-    "num_generated": 544043951,
-    "num_generated_until_last_f_layer": 207733063,
     "problem": "probschedule-6-1.pddl",
     "run_dir": "runs-00801-00900/00805",
-    "search_time": 240944.179,
     "time_limit": 1800,
     "unsolvable": 0
   },
@@ -17469,14 +17791,15 @@
     "invalid_plan_reported": 0,
     "length": 5,
     "memory_limit": 8000,
-    "num_expanded": 219237,
-    "num_expanded_until_last_f_layer": 40875,
-    "num_generated": 9924704,
-    "num_generated_until_last_f_layer": 1879992,
+    "num_expanded": 1019266,
+    "num_expanded_until_last_f_layer": 134954,
+    "num_generated": 43041028,
+    "num_generated_until_last_f_layer": 5957927,
     "problem": "probschedule-6-2.pddl",
     "run_dir": "runs-00801-00900/00806",
-    "search_time": 4190.231,
+    "search_time": 36470.05,
     "time_limit": 1800,
+    "total_time": 36.47427,
     "unsolvable": 0
   },
   "downward-astar-blind-schedule-probschedule-7-0.pddl": {
@@ -17642,8 +17965,9 @@
     "num_generated_until_last_f_layer": 301662,
     "problem": "p01.pddl",
     "run_dir": "runs-00901-01000/00942",
-    "search_time": 400.989,
+    "search_time": 412.26,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p02.pddl": {
@@ -17659,14 +17983,15 @@
     "invalid_plan_reported": 0,
     "length": 19,
     "memory_limit": 8000,
-    "num_expanded": 2357843,
-    "num_expanded_until_last_f_layer": 1895154,
-    "num_generated": 20224043,
-    "num_generated_until_last_f_layer": 16206122,
+    "num_expanded": 2395109,
+    "num_expanded_until_last_f_layer": 1920566,
+    "num_generated": 20500484,
+    "num_generated_until_last_f_layer": 16394274,
     "problem": "p02.pddl",
     "run_dir": "runs-00901-01000/00943",
-    "search_time": 18512.768,
+    "search_time": 21872.726,
     "time_limit": 1800,
+    "total_time": 21.887878,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p03.pddl": {
@@ -17682,14 +18007,15 @@
     "invalid_plan_reported": 0,
     "length": 14,
     "memory_limit": 8000,
-    "num_expanded": 943877,
-    "num_expanded_until_last_f_layer": 716467,
-    "num_generated": 8542469,
-    "num_generated_until_last_f_layer": 6483617,
+    "num_expanded": 952540,
+    "num_expanded_until_last_f_layer": 722154,
+    "num_generated": 8613328,
+    "num_generated_until_last_f_layer": 6529372,
     "problem": "p03.pddl",
     "run_dir": "runs-00901-01000/00944",
-    "search_time": 9995.431999999999,
+    "search_time": 10781.257,
     "time_limit": 1800,
+    "total_time": 10.798004,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p04.pddl": {
@@ -17711,8 +18037,9 @@
     "num_generated_until_last_f_layer": 79284370,
     "problem": "p04.pddl",
     "run_dir": "runs-00901-01000/00945",
-    "search_time": 110507.255,
+    "search_time": 106932.294,
     "time_limit": 1800,
+    "total_time": 106.945545,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p05.pddl": {
@@ -17744,14 +18071,15 @@
     "invalid_plan_reported": 0,
     "length": 22,
     "memory_limit": 8000,
-    "num_expanded": 11048333,
-    "num_expanded_until_last_f_layer": 8957979,
-    "num_generated": 107070718,
-    "num_generated_until_last_f_layer": 86571980,
+    "num_expanded": 11063680,
+    "num_expanded_until_last_f_layer": 8968257,
+    "num_generated": 107186176,
+    "num_generated_until_last_f_layer": 86647932,
     "problem": "p06.pddl",
     "run_dir": "runs-00901-01000/00947",
-    "search_time": 119981.602,
+    "search_time": 125281.474,
     "time_limit": 1800,
+    "total_time": 125.296036,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p07.pddl": {
@@ -17837,8 +18165,9 @@
     "num_generated_until_last_f_layer": 739239,
     "problem": "p11.pddl",
     "run_dir": "runs-00901-01000/00952",
-    "search_time": 1556.154,
+    "search_time": 1369.557,
     "time_limit": 1800,
+    "total_time": 1.388133,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p12.pddl": {
@@ -17854,14 +18183,15 @@
     "invalid_plan_reported": 0,
     "length": 10,
     "memory_limit": 8000,
-    "num_expanded": 421746,
-    "num_expanded_until_last_f_layer": 340228,
-    "num_generated": 4373729,
-    "num_generated_until_last_f_layer": 3564204,
+    "num_expanded": 422016,
+    "num_expanded_until_last_f_layer": 340498,
+    "num_generated": 4375700,
+    "num_generated_until_last_f_layer": 3566175,
     "problem": "p12.pddl",
     "run_dir": "runs-00901-01000/00953",
-    "search_time": 5060.9349999999995,
+    "search_time": 5411.349999999999,
     "time_limit": 1800,
+    "total_time": 5.433052,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p13.pddl": {
@@ -17877,14 +18207,15 @@
     "invalid_plan_reported": 0,
     "length": 18,
     "memory_limit": 8000,
-    "num_expanded": 19747853,
-    "num_expanded_until_last_f_layer": 15644596,
-    "num_generated": 215066597,
-    "num_generated_until_last_f_layer": 170418742,
+    "num_expanded": 20170484,
+    "num_expanded_until_last_f_layer": 15986064,
+    "num_generated": 219314944,
+    "num_generated_until_last_f_layer": 173867096,
     "problem": "p13.pddl",
     "run_dir": "runs-00901-01000/00954",
-    "search_time": 221902.916,
+    "search_time": 239459.971,
     "time_limit": 1800,
+    "total_time": 239.481149,
     "unsolvable": 0
   },
   "downward-astar-blind-settlers-opt18-adl-p14.pddl": {
@@ -18018,8 +18349,9 @@
     "num_generated_until_last_f_layer": 74721,
     "problem": "p01.pddl",
     "run_dir": "runs-00901-01000/00962",
-    "search_time": 144.751,
+    "search_time": 105.141,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-slitherlink-opt23-adl-p02.pddl": {
@@ -18339,14 +18671,15 @@
     "invalid_plan_reported": 0,
     "length": 13,
     "memory_limit": 8000,
-    "num_expanded": 3513,
-    "num_expanded_until_last_f_layer": 3320,
-    "num_generated": 22136,
-    "num_generated_until_last_f_layer": 21506,
+    "num_expanded": 82119,
+    "num_expanded_until_last_f_layer": 72260,
+    "num_generated": 283256,
+    "num_generated_until_last_f_layer": 261841,
     "problem": "p01.pddl",
     "run_dir": "runs-00901-01000/00982",
-    "search_time": 16.241,
+    "search_time": 313.858,
     "time_limit": 1800,
+    "total_time": 1,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p02.pddl": {
@@ -18362,20 +18695,20 @@
     "invalid_plan_reported": 0,
     "length": 17,
     "memory_limit": 8000,
-    "num_expanded": 19516,
-    "num_expanded_until_last_f_layer": 19417,
-    "num_generated": 139131,
-    "num_generated_until_last_f_layer": 138790,
+    "num_expanded": 1562263,
+    "num_expanded_until_last_f_layer": 1533092,
+    "num_generated": 5569604,
+    "num_generated_until_last_f_layer": 5546518,
     "problem": "p02.pddl",
     "run_dir": "runs-00901-01000/00983",
-    "search_time": 71.659,
+    "search_time": 7516.174999999999,
     "time_limit": 1800,
+    "total_time": 7.520739,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p03.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 20.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "trucks",
     "id": [
       "downward-astar-blind",
@@ -18383,22 +18716,15 @@
       "p03.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 20,
     "memory_limit": 8000,
-    "num_expanded": 216756,
-    "num_expanded_until_last_f_layer": 211505,
-    "num_generated": 2635073,
-    "num_generated_until_last_f_layer": 2605584,
     "problem": "p03.pddl",
     "run_dir": "runs-00901-01000/00984",
-    "search_time": 1248.7740000000001,
     "time_limit": 1800,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p04.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 23.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "trucks",
     "id": [
       "downward-astar-blind",
@@ -18406,22 +18732,15 @@
       "p04.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 1211837,
-    "num_expanded_until_last_f_layer": 1198748,
-    "num_generated": 16092456,
-    "num_generated_until_last_f_layer": 16018856,
     "problem": "p04.pddl",
     "run_dir": "runs-00901-01000/00985",
-    "search_time": 8369.478000000001,
     "time_limit": 1800,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p05.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 25.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "trucks",
     "id": [
       "downward-astar-blind",
@@ -18429,22 +18748,15 @@
       "p05.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 25,
     "memory_limit": 8000,
-    "num_expanded": 11357222,
-    "num_expanded_until_last_f_layer": 10903061,
-    "num_generated": 251528360,
-    "num_generated_until_last_f_layer": 247151592,
     "problem": "p05.pddl",
     "run_dir": "runs-00901-01000/00986",
-    "search_time": 123357.03700000001,
     "time_limit": 1800,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p06.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 30.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "trucks",
     "id": [
       "downward-astar-blind",
@@ -18452,22 +18764,15 @@
       "p06.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 30,
     "memory_limit": 8000,
-    "num_expanded": 64164513,
-    "num_expanded_until_last_f_layer": 63804556,
-    "num_generated": 1477416532,
-    "num_generated_until_last_f_layer": 1474705694,
     "problem": "p06.pddl",
     "run_dir": "runs-00901-01000/00987",
-    "search_time": 782195.015,
     "time_limit": 1800,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p07.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 23.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "trucks",
     "id": [
       "downward-astar-blind",
@@ -18475,22 +18780,15 @@
       "p07.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 23,
     "memory_limit": 8000,
-    "num_expanded": 6052870,
-    "num_expanded_until_last_f_layer": 6030762,
-    "num_generated": 77310290,
-    "num_generated_until_last_f_layer": 77173087,
     "problem": "p07.pddl",
     "run_dir": "runs-00901-01000/00988",
-    "search_time": 46493.86,
     "time_limit": 1800,
     "unsolvable": 0
   },
   "downward-astar-blind-trucks-p08.pddl": {
     "algorithm": "downward-astar-blind",
-    "cost": 25.0,
-    "coverage": 1,
+    "coverage": 0,
     "domain": "trucks",
     "id": [
       "downward-astar-blind",
@@ -18498,15 +18796,9 @@
       "p08.pddl"
     ],
     "invalid_plan_reported": 0,
-    "length": 25,
     "memory_limit": 8000,
-    "num_expanded": 87913434,
-    "num_expanded_until_last_f_layer": 84243062,
-    "num_generated": 2074740107,
-    "num_generated_until_last_f_layer": 2035296684,
     "problem": "p08.pddl",
     "run_dir": "runs-00901-01000/00989",
-    "search_time": 1070264.834,
     "time_limit": 1800,
     "unsolvable": 0
   },

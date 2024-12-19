@@ -166,16 +166,6 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
             f_value = search_node_f_value;
         }
 
-        /* Test whether state is a deadend. */
-
-        if (get_status(search_node) == SearchNodeStatus::DEAD_END)
-        {
-            event_handler->on_unsolvable();
-
-            result.status = SearchStatus::UNSOLVABLE;
-            return result;
-        }
-
         /* Test whether state achieves the dynamic goal. */
 
         if (get_status(search_node) == SearchNodeStatus::GOAL)

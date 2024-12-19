@@ -27,6 +27,6 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 
 ## Notes on Comparison
 
-- Fast Downward and Mimir counts number of generated state differently. In Fast Downward, the number of generated states is the number of unique states, while in Mimir we count the number of all states that were generated after applying an action, including duplicates.
+- Fast Downward and Mimir counts number of generated state differently. Mimir does currently not filter useless actions that when applied result in the same state again, e.g., `move(rooma, rooma)` in the Gripper domain.
 
 - Powerlifted reports search time as total time and hence, we added the translator time on top to obtain the search time to obtain the total time.

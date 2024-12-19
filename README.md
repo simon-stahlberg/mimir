@@ -59,7 +59,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State Representation:**
-  States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step uses the largest identifies the largest required unsigned integral type (`uint8_t`, `uint16_t`, `uint32_t`) needed to store all ground atoms.
+  States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest required unsigned integral type (`uint8_t`, `uint16_t`, `uint32_t`) needed to store all ground atoms.
 
 - **State-Dependent Action Costs (SDAC):**
   State-dependent action costs play a crucial role in accurately modeling real-world problems. For example, in a logistics domain, the cost of moving between locations may depend on factors such as the available vehicles, the terrain, or the load carried by a vehicle. Mimir supports all `:action-costs` features, allowing modelers to write complex cost expressions directly into conditional effects.
