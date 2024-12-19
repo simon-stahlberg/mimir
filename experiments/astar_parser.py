@@ -17,6 +17,12 @@ def resolve_unexplained_errors(content, props):
     if "unexplained_errors" in props and (props["out_of_memory"] == 1 or props["out_of_time"] == 1):
         del props["unexplained_errors"]
 
+def ensure_minimum_times(content, props):
+    for attr in ["search_time", "total_time"]:
+        time = props.get(attr, None)
+        if time is not None:
+            props[attr] = max(time, 10)  # the parser in fd uses 0.01s, but we use milliseconds => 0.01 * 1000 = 10
+
 class AStarParser(Parser):
     """
     Successful Run:
@@ -86,3 +92,4 @@ class AStarParser(Parser):
         self.add_function(invalid_plan_reported)
 
         self.add_function(resolve_unexplained_errors)
+        self.add_function(ensure_minimum_times)
