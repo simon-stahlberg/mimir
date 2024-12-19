@@ -54,6 +54,7 @@ ATTRIBUTES = [
     "out_of_memory",
     "out_of_time",
     "search_time",
+    "total_time",
     "num_generated",
     "num_expanded",
     "num_expanded_until_last_f_layer",

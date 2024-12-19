@@ -46,6 +46,7 @@ class AStarParser(Parser):
     def __init__(self):
         super().__init__()
         self.add_pattern("search_time", r"Search time: (\d+)ms", type=int)
+        self.add_pattern("total_time", r"Total time: (\d+)ms", type=int)
         self.add_pattern("num_expanded", r"Number of expanded states: (\d+)", type=int)
         self.add_pattern("num_generated", r"Number of generated states: (\d+)", type=int)
         self.add_pattern("num_expanded_until_last_f_layer", r"Number of expanded states until last f-layer: (\d+)", type=int)
