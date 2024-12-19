@@ -21,7 +21,7 @@ def ensure_minimum_times(content, props):
     for attr in ["search_time", "total_time"]:
         time = props.get(attr, None)
         if time is not None:
-            props[attr] = max(time, 10)  # the parser in fd uses 0.01s, but we use milliseconds => 0.01 * 1000 = 10
+            props[attr] = max(time, 0.01) 
 
 class AStarParser(Parser):
     """
