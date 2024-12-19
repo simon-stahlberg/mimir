@@ -15,27 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
-#define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
+#include "mimir/search/heuristics/blind.hpp"
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/search/declarations.hpp"
-#include "mimir/search/heuristics/interface.hpp"
+#include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/requirements.hpp"
 
 namespace mimir
 {
-
-class BlindHeuristic : public IHeuristic
+BlindHeuristic::BlindHeuristic(Problem problem) :
+    m_min_action_cost_value((problem->get_domain()->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS)) ? 0. : 1.)
 {
-public:
-    explicit BlindHeuristic(Problem problem);
-
-    double compute_heuristic(State state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_action_cost_value; }
-
-private:
-    double m_min_action_cost_value;
-};
-
+    // TODO: try to infer tighter upper bounds on the m_min_action_cost_value
 }
-
-#endif
+}
