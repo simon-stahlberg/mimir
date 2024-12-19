@@ -55,10 +55,10 @@ public:
 
     double operator()(const FunctionExpressionMultiOperatorImpl& expr)
     {
-        auto result = ContinuousCost(0);
-        for (const auto& child_expr : expr.get_function_expressions())
+        auto result = (*this)(*expr.get_function_expressions().front());
+        for (size_t i = 1; i < expr.get_function_expressions().size(); ++i)
         {
-            result = evaluate_multi(expr.get_multi_operator(), result, (*this)(*child_expr));
+            result = evaluate_multi(expr.get_multi_operator(), result, (*this)(*expr.get_function_expressions()[i]));
         }
 
         return result;

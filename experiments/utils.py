@@ -1,5 +1,4 @@
 
-
 SUITE_OPTIMAL_STRIPS = [
     "agricola-opt18-strips", 
     "airport", 
