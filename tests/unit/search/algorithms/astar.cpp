@@ -179,8 +179,8 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedHStarGripperTest)
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Zero because AStar never enters a new f-layer.
-    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 0);
-    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().back(), 0);
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 0);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 0);
 }
 
 TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
@@ -196,8 +196,8 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedHStarGripperTest)
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Zero because AStar never enters a new f-layer.
-    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 0);
-    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().back(), 0);
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 0);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 0);
 }
 
 TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
@@ -213,8 +213,8 @@ TEST(MimirTests, SearchAlgorithmsAStarGroundedBlindGripperTest)
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Identical to the BrFs result because domain has unit cost 1.
-    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 44);
-    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().back(), 12);
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 24);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 6);
 }
 
 TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
@@ -230,8 +230,8 @@ TEST(MimirTests, SearchAlgorithmsAStarLiftedBlindGripperTest)
     const auto& astar_statistics = astar.get_algorithm_statistics();
 
     // Identical to the BrFs result because domain has unit cost 1.
-    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().back(), 44);
-    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().back(), 12);
+    EXPECT_EQ(astar_statistics.get_num_generated_until_f_value().rbegin()->second, 24);
+    EXPECT_EQ(astar_statistics.get_num_expanded_until_f_value().rbegin()->second, 6);
 }
 
 }

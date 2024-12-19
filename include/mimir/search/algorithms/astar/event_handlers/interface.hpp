@@ -179,7 +179,9 @@ public:
         if (!m_quiet)
         {
             assert(!m_statistics.get_num_expanded_until_f_value().empty());
-            self().on_finish_f_layer_impl(f_value, m_statistics.get_num_expanded_until_f_value().back(), m_statistics.get_num_generated_until_f_value().back());
+            self().on_finish_f_layer_impl(f_value,
+                                          m_statistics.get_num_expanded_until_f_value().rbegin()->second,
+                                          m_statistics.get_num_generated_until_f_value().rbegin()->second);
         }
     }
 
@@ -394,7 +396,9 @@ public:
         if (!m_quiet)
         {
             assert(!m_statistics.get_num_expanded_until_f_value().empty());
-            on_finish_f_layer_impl(f_value, m_statistics.get_num_expanded_until_f_value().back(), m_statistics.get_num_generated_until_f_value().back());
+            on_finish_f_layer_impl(f_value,
+                                   m_statistics.get_num_expanded_until_f_value().end()->second,
+                                   m_statistics.get_num_generated_until_f_value().end()->second);
         }
     }
 

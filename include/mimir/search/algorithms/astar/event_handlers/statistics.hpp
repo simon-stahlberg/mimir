@@ -22,6 +22,7 @@
 
 #include <chrono>
 #include <cstdint>
+#include <map>
 #include <ostream>
 #include <vector>
 
@@ -38,11 +39,10 @@ private:
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_start_time_point;
     std::chrono::time_point<std::chrono::high_resolution_clock> m_search_end_time_point;
 
-    std::vector<double> m_f_values;
-    std::vector<uint64_t> m_num_generated_until_f_value;
-    std::vector<uint64_t> m_num_expanded_until_f_value;
-    std::vector<uint64_t> m_num_deadends_until_f_value;
-    std::vector<uint64_t> m_num_pruned_until_f_value;
+    std::map<double, uint64_t> m_num_generated_until_f_value;
+    std::map<double, uint64_t> m_num_expanded_until_f_value;
+    std::map<double, uint64_t> m_num_deadends_until_f_value;
+    std::map<double, uint64_t> m_num_pruned_until_f_value;
 
     uint64_t m_num_reached_fluent_atoms;
     uint64_t m_num_reached_derived_atoms;
@@ -64,7 +64,6 @@ public:
         m_num_expanded(0),
         m_num_deadends(0),
         m_num_pruned(0),
-        m_f_values(),
         m_num_generated_until_f_value(),
         m_num_expanded_until_f_value(),
         m_num_deadends_until_f_value(),
@@ -90,11 +89,10 @@ public:
     /// @brief Store information for the layer
     void on_finish_f_layer(double f_value)
     {
-        m_f_values.push_back(f_value);
-        m_num_generated_until_f_value.push_back(m_num_generated);
-        m_num_expanded_until_f_value.push_back(m_num_expanded);
-        m_num_deadends_until_f_value.push_back(m_num_deadends);
-        m_num_pruned_until_f_value.push_back(m_num_pruned);
+        m_num_generated_until_f_value.emplace(f_value, m_num_generated);
+        m_num_expanded_until_f_value.emplace(f_value, m_num_expanded);
+        m_num_deadends_until_f_value.emplace(f_value, m_num_deadends);
+        m_num_pruned_until_f_value.emplace(f_value, m_num_pruned);
     }
 
     void increment_num_generated() { ++m_num_generated; }
@@ -154,10 +152,10 @@ public:
     uint64_t get_num_actions() const { return m_num_actions; }
     uint64_t get_num_axioms() const { return m_num_axioms; }
 
-    const std::vector<uint64_t>& get_num_generated_until_f_value() const { return m_num_generated_until_f_value; }
-    const std::vector<uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }
-    const std::vector<uint64_t>& get_num_deadends_until_f_value() const { return m_num_deadends_until_f_value; }
-    const std::vector<uint64_t>& get_num_pruned_until_f_value() const { return m_num_pruned_until_f_value; }
+    const std::map<double, uint64_t>& get_num_generated_until_f_value() const { return m_num_generated_until_f_value; }
+    const std::map<double, uint64_t>& get_num_expanded_until_f_value() const { return m_num_expanded_until_f_value; }
+    const std::map<double, uint64_t>& get_num_deadends_until_f_value() const { return m_num_deadends_until_f_value; }
+    const std::map<double, uint64_t>& get_num_pruned_until_f_value() const { return m_num_pruned_until_f_value; }
 };
 
 /**
@@ -177,11 +175,11 @@ inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics
        << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"
        << "[AStar] Number of generated states until last f-layer: "
-       << (statistics.get_num_generated_until_f_value().empty() ? 0 : statistics.get_num_generated_until_f_value().back()) << "\n"
+       << (statistics.get_num_generated_until_f_value().empty() ? 0 : statistics.get_num_generated_until_f_value().rbegin()->second) << "\n"
        << "[AStar] Number of expanded states until last f-layer: "
-       << (statistics.get_num_expanded_until_f_value().empty() ? 0 : statistics.get_num_expanded_until_f_value().back()) << "\n"
+       << (statistics.get_num_expanded_until_f_value().empty() ? 0 : statistics.get_num_expanded_until_f_value().rbegin()->second) << "\n"
        << "[AStar] Number of pruned states until last f-layer: "
-       << (statistics.get_num_pruned_until_f_value().empty() ? 0 : statistics.get_num_pruned_until_f_value().back()) << "\n"
+       << (statistics.get_num_pruned_until_f_value().empty() ? 0 : statistics.get_num_pruned_until_f_value().rbegin()->second) << "\n"
        << "[AStar] Number of reached fluent atoms: " << statistics.get_num_reached_fluent_atoms() << "\n"
        << "[AStar] Number of reached derived atoms: " << statistics.get_num_reached_derived_atoms() << "\n"
        << "[AStar] Number of bytes for unextended state portions: " << statistics.get_num_bytes_for_unextended_state_portion() << "\n"
