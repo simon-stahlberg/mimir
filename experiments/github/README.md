@@ -1,15 +1,19 @@
 
 # Experiments
 
-We compare Mimir against two state-of-the-art planning systems [Fast Downward](https://github.com/aibasel/downward) and [Powerlifted](https://github.com/abcorrea/powerlifted) on three benchmark sets. The outline is as follows: first, we describe some important technical details of each planner and configurations. Second, we discuss the benchmark sets that were used. Last, we discuss some details on how to correctly interpret the data that we produced.
+We compare Mimir against two state-of-the-art planning systems [Fast Downward](https://github.com/aibasel/downward) and [Powerlifted](https://github.com/abcorrea/powerlifted) on three benchmark sets. The outline is as follows: first, we describe the objectives of our experimental evaluation. Second, we describe some important technical details of each planner and configurations. Third, we discuss the benchmark sets that were used. Last, we discuss some details on how to correctly interpret the data that we produced.
+
+## Objectives
+
+Our experimental evaluation aims to get an understanding of the effectiveness of the internal data structures and algorithms used to efficiently search through the state space by iteratively expanding states in order to find the goal of a given planning problem. The performance depends primarily on the planners ability to compactly store states, search nodes, ground actions, and ground axioms, as well as efficiently generating the applicable actions for a given state. 
+
+Our evaluation uses uninformed AStar search with a blind heuristic that requires each system to expand a large number of states to stress test each planner under high memory and efficiency requirements.
 
 ## Planners
 
 1. Fast Downward is optimized for grounded planning. The state representation in Fast Downward is a dense representation. More specifically it uses mutex analysis to translate propositional ground planning problems to finite-domain representation (FDR/SAS+). We turn off the additional preprocessing of computing irrelevant variables by setting the flag `--keep-unimportant-variables` to obtain equivalent search behavior.
 2. Powerlifted is optimized for lifted planning. The state representation in Powerlifted is a sparse vector representation.
-3. Mimir is optimized for lifted planning but additionally has a grounded mode. The state representation in Mimir is a sparse vector representation with dynamic compression to smallest required unsigned integer type.
-
-All experiments use a resource limit of 8 Gigabytes of memory and 30 minutes time.
+3. Mimir is optimized for lifted planning but additionally has a grounded mode. The state representation in Mimir is a sparse vector representation with dynamic compression to smallest required unsigned integer type. Mimir utilizes the high performance zero-copy serialization library (cista)[https://github.com/felixguendling/cista] to store states, search nodes, grounded actions and axioms as sequence of bytes in large segmented buffers.
 
 ## Benchmarks
 
@@ -25,8 +29,16 @@ The optimal STRIPS benchmarks from the IPC use a simple PDDL fragment, which inc
 
 The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, which additionally includes `:adl` and implies `:disjunctive-preconditions`, `:quantified-preconditions`, `:conditional-effects`. Similarly as in the STRIPS case, these benchmarks are often easy to ground and are available in the same [Github](https://github.com/aibasel/downward-benchmarks) repository.
 
+## Resources
+
+All experiments use a resource limit of 8 Gigabytes of memory and 30 minutes time.
+
 ## Notes on Comparison
 
 - Fast Downward and Mimir counts number of generated state differently. Mimir does currently not filter useless actions that when applied result in the same state again, e.g., `move(rooma, rooma)` in the Gripper domain.
 
 - Powerlifted reports search time as total time and hence, we added the translator time on top to obtain the search time to obtain the total time.
+
+## Conclusions
+
+
