@@ -25,7 +25,7 @@ We use the following performance metrics to compare the planners':
 ## Planner Configurations
 
 1. `Fast-Downward` is one of the most widely used planners that works exclusively on the grounded problem representation. The state representation in Fast-Downward is a dense finite-domain representation (FDR/SAS+) obtained through a preprocessing step called mutex analysis. Additionally, Fast-downward applied an additional pruning of unimportant variables to prune the search space. To obtain comparable search behavior regarding state expansions, we turn off the computation of irrelevant variables by setting the flag `--keep-unimportant-variables`.
-2. `Powerlifted` is one of the most widely used planners that work on the lifted problem representation. The state representation in Powerlifted is a sparse vector representation.
+2. `Powerlifted` is one of the most widely used planners that work on the lifted problem representation. The state representation in Powerlifted is a sparse vector representation. Powerlifted does not support `:negative-preconditions`.
 3. Mimir is designed to work on grounded and lifted problem representations while being optimized for the lifted representation. We denote its lifted configuration as `Mimir-lifted` and its grounded configuration as `Mimir-grounded.` The state representation in Mimir is a sparse vector representation with dynamic compression to the smallest required unsigned integer type. 
 
 ## Benchmarks
@@ -77,13 +77,13 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **365** |            2085 |          **325** |
-| Mimir-grounded    |         328  |        **1469** |              646 |
+| Mimir-grounded    |          328 |        **1469** |              646 |
 | Powerlifted       |            x |               x |                x |
 | Mimir-lifted      |          293 |            5667 |             4367 |
 
 Observations:
 - Fast-Downward's preprocessing step results in the most compact state representation in easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. The preprocessing step causes a slight decline in total time compared to Mimir.
-- Powerlifted has the best runtime performance in hard-to-ground benchmarks but lower coverage than Mimir, most likely due to a worse state representation. Powerlifted does not support the PDDL extensions used in the IPC ADL benchmarks. Therefore, we marked it as x.
+- Powerlifted has the best runtime performance in hard-to-ground benchmarks but lower coverage than Mimir because it does not not support the PDDL extensions used in ADL benchmarks (explicitly marked as x in the ADL table) and negative preconditions. In the unsupported domains in hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 70, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores.
 - Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time in hard-to-ground benchmark.
 - Overall, the planners complement each other nicely. Fast-Downward performs strongest in easy-to-ground benchmarks, while Mimir and Powerlifted perform strongest on hard-to-ground benchmarks.
 
@@ -96,27 +96,26 @@ Observations:
 | Powerlifted       |          129 |         **197** |              120 |
 | Mimir-lifted      |      **136** |             342 |              176 |
 
-1. Optimal-STRIPS %%TODO%%
+1. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **752** |            1273 |          **261** |
-| Mimir-grounded    |          680 |         **973** |              424 |
-| Powerlifted       |          539 |            6958 |             6050 |
-| Mimir-lifted      |          656 |            2959 |             2029 |
+| Fast-Downward     |      **702** |             607 |           **88** |
+| Mimir-grounded    |          654 |         **341** |              129 |
+| Powerlifted       |          454 |            2113 |             1868 |
+| Mimir-lifted      |          679 |             916 |              583 |
 
-3. Optimal-ADL %%TODO%%
+3. Optimal-ADL
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **365** |            2085 |          **325** |
-| Mimir-grounded    |         328  |        **1469** |              646 |
+| Fast-Downward     |      **318** |            1222 |          **132** |
+| Mimir-grounded    |          301 |         **792** |              285 |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |          293 |            5667 |             4367 |
+| Mimir-lifted      |          252 |            2566 |             1840 |
 
-Observations:
-
+The observations remain identical to the 30 minutes experiment.
 
 ## Conclusions
 
-We conclude that Fast-Downward is the strongest planner in the grounded setting. Powerlifted is a strong planner in hard-to-ground tasks but performs significantly worse on easy-to-ground tasks regarding coverage, search time, and total time in the IPC STRIPS benchmarks. Mimir performs strongly in hard-to-ground and easy-to-ground benchmarks, making it an overall strong competitor. Most importantly, its capability of running in lifted or grounded mode makes it a highly flexible system that can easily adapt to benchmark requirements. Furthermore, Mimir's lifted mode supports an expressive fragment of PDDL, including ADL.
+We conclude that Fast-Downward performs best in the grounded setting. Powerlifted is a strong planner in hard-to-ground tasks but performs significantly worse on easy-to-ground tasks regarding coverage, search time, and total time in the IPC STRIPS benchmarks. Mimir performs strongly in hard-to-ground and easy-to-ground benchmarks, making it an overall strong competitor. Most importantly, its capability of running in lifted or grounded mode makes it a highly flexible system that can easily adapt to benchmark requirements. Furthermore, Mimir's lifted mode supports an expressive fragment of PDDL, including ADL specifications.
