@@ -3,7 +3,7 @@
 
 We compare Mimir against two state-of-the-art planning systems [Fast Downward](https://github.com/aibasel/downward) and [Powerlifted](https://github.com/abcorrea/powerlifted) on three benchmark sets. The outline is as follows: first, we describe the objectives of our experimental evaluation. Second, we describe some important technical details of each planner and configurations. Third, we discuss the benchmark sets that were used. Last, we discuss some details on how to correctly interpret the data that we produced.
 
-## Evaluaton Objectives
+## Evaluation Objectives
 
 Our experimental evaluation aims to get an understanding of the effectiveness of the internal data structures and algorithms used to efficiently search through the state space by iteratively expanding states in order to find the goal of a given planning problem. The performance depends primarily on the planners ability to compactly store states, search nodes, ground actions, and ground axioms, as well as efficiently generating the applicable actions for a given state.
 
@@ -55,7 +55,7 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 | :---------------- | -----------: |     ----: |
 | Fast-Downward     |          126 |      3132 |
 | Mimir-grounded    |          106 |      4179 |
-| Powerlifted       |          135 |    *344** |
+| Powerlifted       |          135 |    **344** |
 | Mimir-lifted      |      **155** |       606 |
 
 1. International Planning Competition (IPC) - Optimal STRIPS
@@ -77,7 +77,7 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 | Mimir-lifted      |          293 |      5667 |
 
 Observations:
-- Fast-Downward does not have the overall best runtime performance due its extensive preprocessing in Python. However, its preprocessing results in a very compact state representation in the case where grounding is possible, resulting in overall highest coverage on the IPC STRIPS and ADL benchmarks.
+- Fast-Downward does not have the overall best runtime performance, most likely due to its extensive preprocessing in Python. However, its preprocessing results in a very compact state representation in the case where grounding is possible, resulting in strong memory efficiency and overall highest coverage on the IPC STRIPS and ADL benchmarks.
 - Powerlifted has the best runtime performance in Hard-to-Ground benchmarks but lower coverage compared to Mimir, most likely as a result of a worse state representation.
 - Mimir has the highest coverage on Hard-To-Ground tasks and best runtime performance on the IPC STRIPS and ADL benchmarks.
 
