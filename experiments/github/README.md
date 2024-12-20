@@ -13,13 +13,13 @@ Our evaluation uses uninformed AStar search with a blind heuristic. While fairne
 
 To compare planners under resource constraints and test their ability to operate efficiently within both time and memory limitations, all experiments are limited to:
 
-- Memory limit: 8 GB
-- Time limit: 30 minutes
+- `Memory limit`: 8 GB
+- `Time limit`: 30 minutes
 
 To evaluate the planners performances we use the following performance metrics:
 
-- Coverage: the total number of solved problems
-- Time: the geometric mean over the total time in milliseconds needed to solve all problems (considering only problems solved by all configurations)
+- `Coverage`: the total number of solved problems
+- `Time`: the geometric mean over the total time in milliseconds needed to solve all problems (considering only problems solved by all configurations)
 
 ## Planner Configurations
 
@@ -29,15 +29,15 @@ To evaluate the planners performances we use the following performance metrics:
 
 ## Benchmarks
 
-1. Hard-to-Ground (HTG)
+1. `Hard-to-Ground` (HTG)
 
 Hard to ground benchmarks result in often infeasibly large numbers of ground atoms and/or ground actions/axioms. We use a compilation of hard to ground benchmarks available on [GitHub](https://github.com/abcorrea/htg-domains).
 
-2. International Planning Competition (IPC) - Optimal STRIPS
+2. `Optimal-STRIPS` from the international planning competition (IPC)
 
 The optimal STRIPS benchmarks from the IPC use a simple PDDL fragment, which includes `:strips`, `:action-costs`, `:typing`, `:negative-preconditions`, `:equality`. Additionally, these bencharks are often easy to ground, with only a small number of reached ground atoms, actions, and axioms. We use a compilation of the IPC benchmarks available on [Github](https://github.com/aibasel/downward-benchmarks).
 
-3. International Planning Competition (IPC) - Optimal ADL
+3. `Optimal-ADL` from the international planning competition (IPC)
 
 The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, which additionally includes `:adl` and implies `:disjunctive-preconditions`, `:quantified-preconditions`, `:conditional-effects`. Similarly as in the STRIPS case, these benchmarks are often easy to ground and are available in the same [Github](https://github.com/aibasel/downward-benchmarks) repository.
 
@@ -49,7 +49,9 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 
 ## Experimental Results
 
-1. Hard-to-Ground (HTG)
+It follows the performance metric scores `Coverage` and `Time` for all grounded configurations `Fast-Downward`, `Mimir-grounded` and lifted configurations `Powerlifted` and `Mimir-lifted` on the three benchmark sets `Hard-to-Ground`, `Optimal-STRIPS`, and `Optimal-ADL`.
+
+1. Hard-to-Ground
 
 | Item              |     Coverage |      Time |
 | :---------------- | -----------: |     ----: |
@@ -58,7 +60,7 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 | Powerlifted       |          135 |    **344** |
 | Mimir-lifted      |      **155** |       606 |
 
-1. International Planning Competition (IPC) - Optimal STRIPS
+1. Optimal-STRIPS
 
 | Item              |     Coverage |      Time |
 | :---------------- | -----------: |     ----: |
@@ -67,7 +69,7 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 | Powerlifted       |          539 |      6958 |
 | Mimir-lifted      |          656 |      2959 |
 
-3. International Planning Competition (IPC) - Optimal ADL
+3. Optimal-ADL
 
 | Item              |     Coverage |      Time |
 | :---------------- | -----------: |     ----: |
@@ -77,10 +79,10 @@ The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, whi
 | Mimir-lifted      |          293 |      5667 |
 
 Observations:
-- Fast-Downward does not have the overall best runtime performance, most likely due to its extensive preprocessing in Python. However, its preprocessing results in a very compact state representation in the case where grounding is possible, resulting in strong memory efficiency and overall highest coverage on the IPC STRIPS and ADL benchmarks.
-- Powerlifted has the best runtime performance in Hard-to-Ground benchmarks but lower coverage compared to Mimir, most likely as a result of a worse state representation.
+- Fast-Downward does not have the overall best runtime performance, most likely due to its extensive preprocessing in Python. However, its preprocessing results in a very compact state representation, resulting in strong memory efficiency and overall highest coverage on the IPC STRIPS and ADL benchmarks.
+- Powerlifted has the best runtime performance in Hard-to-Ground benchmarks but lower coverage compared to Mimir, most likely as a result of a worse state representation. Powerlifted does not support the PDDL extensions that were used in the IPC ADL benchmarks, therefore, we marked it as "x".
 - Mimir has the highest coverage on Hard-To-Ground tasks and best runtime performance on the IPC STRIPS and ADL benchmarks.
 
 ## Conclusions
 
-We conclude that Fast-Downward performs best when grounding is successful. Powerlifted is a strong planner in hard to ground tasks but falls behind on easy to ground tasks of the IPC STRIPS benchmarks. Mimirs capability of running in the grounded and lifted mode, while performing strongly in hard to ground as well as easy to ground cases, makes it an overall strong competitor. Furthermore, Mimir supports a large fragment of PDDL, including ADL, which is not supported by Powerlifted.
+We conclude that Fast-Downward is a strong planner in the grounded setting. Powerlifted is a strong planner in hard to ground tasks but performs significantly worse on easy to ground tasks in terms of coverage and runtime in the IPC STRIPS benchmarks. Mimirs performs strongly in hard to ground and easy to ground benchmarks, making it an overall strong competitor. Most importantly, its capability of running in lifted or grounded mode makes it a highly flexible system that can effectively adapt to benchmark requirements. Furthermore, Mimir supports a large fragment of PDDL, including ADL, which is not supported by Powerlifted.
