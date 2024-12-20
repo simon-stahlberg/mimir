@@ -119,19 +119,6 @@ FlatIndexList& StateImpl::get_fluent_atoms()
 
 uintptr_t& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
-Index& StateImpl::get_index() { return m_index; }
-
-FlatBitset& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
-
-uintptr_t& StateImpl::get_derived_atoms_ptr() { return m_derived_atoms; }
-
-FlatBitset& StateImpl::get_derived_atoms()
-{
-    // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatBitset.
-    assert(m_derived_atoms);
-    return *reinterpret_cast<FlatBitset*>(m_derived_atoms);
-}
-
 /**
  * Pretty printing
  */
@@ -160,8 +147,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
               out_derived_ground_atoms.end(),
               [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
-       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State("
+       << "index=" << state->get_index() << ", "
+       << "fluent atoms=" << out_fluent_ground_atoms << ", "
+       << "static atoms=" << out_static_ground_atoms << ", "
+       << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }

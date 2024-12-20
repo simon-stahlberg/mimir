@@ -198,12 +198,6 @@ static void collect_applied_conditional_effects(GroundAction action,
     }
 }
 
-static void apply_action_effects(const FlatBitset& negative_applied_effects, const FlatBitset& positive_applied_effects, FlatBitset& ref_state_fluent_atoms)
-{
-    ref_state_fluent_atoms -= negative_applied_effects;
-    ref_state_fluent_atoms |= positive_applied_effects;
-}
-
 std::pair<State, ContinuousCost>
 StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action, StateRepositoryWorkspace& workspace)
 {

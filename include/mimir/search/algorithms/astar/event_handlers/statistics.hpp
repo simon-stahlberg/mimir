@@ -58,20 +58,6 @@ private:
     uint64_t m_num_actions;
     uint64_t m_num_axioms;
 
-    uint64_t m_num_reached_fluent_atoms;
-    uint64_t m_num_reached_derived_atoms;
-
-    uint64_t m_num_bytes_for_unextended_state_portion;
-    uint64_t m_num_bytes_for_extended_state_portion;
-    uint64_t m_num_bytes_for_nodes;
-    uint64_t m_num_bytes_for_actions;
-    uint64_t m_num_bytes_for_axioms;
-
-    uint64_t m_num_states;
-    uint64_t m_num_nodes;
-    uint64_t m_num_actions;
-    uint64_t m_num_axioms;
-
 public:
     AStarAlgorithmStatistics() :
         m_num_generated(0),
@@ -184,7 +170,8 @@ using AStarAlgorithmStatisticsList = std::vector<AStarAlgorithmStatistics>;
 
 inline std::ostream& operator<<(std::ostream& os, const AStarAlgorithmStatistics& statistics)
 {
-    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms" << "\n"
+    os << "[AStar] Search time: " << statistics.get_search_time_ms().count() << "ms"
+       << "\n"
        << "[AStar] Number of generated states: " << statistics.get_num_generated() << "\n"
        << "[AStar] Number of expanded states: " << statistics.get_num_expanded() << "\n"
        << "[AStar] Number of pruned states: " << statistics.get_num_pruned() << "\n"
