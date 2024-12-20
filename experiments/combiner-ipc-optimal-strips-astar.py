@@ -34,8 +34,8 @@ exp = Experiment("github/ipc-optimal-strips-astar-blind/combined_results")
 
 exp.add_fetcher("github/ipc-optimal-strips-astar-blind/downward-ipc-optimal-strips-astar-blind-eval")
 exp.add_fetcher("github/ipc-optimal-strips-astar-blind/powerlifted-ipc-optimal-strips-astar-blind-eval")
-exp.add_fetcher("github/ipc-optimal-strips-astar-blind/mimir-ipc-optimal-strips-astar-blind-eval")
+exp.add_fetcher("github/ipc-optimal-strips-astar-blind/mimir-sparse-ipc-optimal-strips-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "powerlifted-astar-blind", "mimir-grounded-sparse-astar-blind","mimir-lifted-sparse-astar-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind"]))
 
 exp.run_steps()

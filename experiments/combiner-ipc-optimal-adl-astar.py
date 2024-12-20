@@ -33,7 +33,7 @@ ATTRIBUTES = [
 exp = Experiment("github/ipc-optimal-adl-astar-blind/combined_results")
 
 exp.add_fetcher("github/ipc-optimal-adl-astar-blind/downward-ipc-optimal-adl-astar-blind-eval")
-exp.add_fetcher("github/ipc-optimal-adl-astar-blind/mimir-ipc-optimal-adl-astar-blind-eval")
+exp.add_fetcher("github/ipc-optimal-adl-astar-blind/mimir-sparse-ipc-optimal-adl-astar-blind-eval")
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind","mimir-lifted-sparse-astar-blind"]))
 

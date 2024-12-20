@@ -37,6 +37,6 @@ exp.add_fetcher("github/htg-astar-blind/mimir-sparse-htg-astar-blind-eval")
 exp.add_fetcher("github/htg-astar-blind/downward-htg-astar-blind-eval")
 exp.add_fetcher("github/htg-astar-blind/powerlifted-htg-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "mimir-grounded-dense-astar-blind", "mimir-lifted-sparse-astar-blind", "mimir-lifted-dense-astar-blind", "powerlifted-astar-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "mimir-grounded-dense-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind", "mimir-lifted-dense-astar-blind"]))
 
 exp.run_steps()
