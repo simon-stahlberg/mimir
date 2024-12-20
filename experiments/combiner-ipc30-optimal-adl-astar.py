@@ -31,13 +31,11 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("github/htg-astar-blind/combined_results")
+exp = Experiment("github/30/ipc-optimal-adl-astar-blind/combined_results")
 
-exp.add_fetcher("github/htg-astar-blind/mimir-sparse-htg-astar-blind-eval")
-#exp.add_fetcher("github/htg-astar-blind/htg-mimir-dense-astar-blind-eval")
-exp.add_fetcher("github/htg-astar-blind/downward-htg-astar-blind-eval")
-exp.add_fetcher("github/htg-astar-blind/powerlifted-htg-astar-blind-eval")
+exp.add_fetcher("github/30/ipc-optimal-adl-astar-blind/downward-ipc-optimal-adl-astar-blind-eval")
+exp.add_fetcher("github/30/ipc-optimal-adl-astar-blind/mimir-sparse-ipc-optimal-adl-astar-blind-eval")
 
-exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "mimir-grounded-dense-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind", "mimir-lifted-dense-astar-blind"]))
+exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind","mimir-lifted-sparse-astar-blind"]))
 
 exp.run_steps()
