@@ -83,3 +83,9 @@ _deps
 *.exe
 *.out
 *.app
+
+# Benchmarks
+*.pddl linguist-vendored
+
+# Experiments
+*.html linguist-vendored
