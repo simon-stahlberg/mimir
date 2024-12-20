@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 #define MIMIR_SEARCH_HEURISTICS_BLIND_HPP_
 
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 
@@ -27,7 +28,12 @@ namespace mimir
 class BlindHeuristic : public IHeuristic
 {
 public:
-    double compute_heuristic(State state) override { return 0.; }
+    explicit BlindHeuristic(Problem problem);
+
+    double compute_heuristic(State state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_action_cost_value; }
+
+private:
+    double m_min_action_cost_value;
 };
 
 }

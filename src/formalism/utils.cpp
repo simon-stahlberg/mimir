@@ -48,4 +48,34 @@ GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals)
 template GroundAtomList<Static> to_ground_atoms(const GroundLiteralList<Static>& literals);
 template GroundAtomList<Fluent> to_ground_atoms(const GroundLiteralList<Fluent>& literals);
 template GroundAtomList<Derived> to_ground_atoms(const GroundLiteralList<Derived>& literals);
+
+template<PredicateTag P>
+void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, GroundAtomList<P>& out_ground_atoms)
+{
+    out_ground_atoms.clear();
+
+    for (const auto& literal : literals)
+    {
+        if (literal->is_negated() != polarity)
+        {
+            out_ground_atoms.push_back(literal->get_atom());
+        }
+    }
+}
+
+template void filter_ground_atoms(const GroundLiteralList<Static>& literals, bool polarity, GroundAtomList<Static>& out_ground_atoms);
+template void filter_ground_atoms(const GroundLiteralList<Fluent>& literals, bool polarity, GroundAtomList<Fluent>& out_ground_atoms);
+template void filter_ground_atoms(const GroundLiteralList<Derived>& literals, bool polarity, GroundAtomList<Derived>& out_ground_atoms);
+
+template<PredicateTag P>
+GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity)
+{
+    GroundAtomList<P> ground_atoms;
+    filter_ground_atoms(literals, polarity, ground_atoms);
+    return ground_atoms;
+}
+
+template GroundAtomList<Static> filter_ground_atoms(const GroundLiteralList<Static>& literals, bool polarity);
+template GroundAtomList<Fluent> filter_ground_atoms(const GroundLiteralList<Fluent>& literals, bool polarity);
+template GroundAtomList<Derived> filter_ground_atoms(const GroundLiteralList<Derived>& literals, bool polarity);
 }

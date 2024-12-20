@@ -22,6 +22,7 @@
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 
@@ -166,6 +167,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
     auto next_abstract_state_index = Index { 1 };
     stop_watch.start();
 
+    auto goal_test = ProblemGoal(problem);
+
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
         const auto state = lifo_queue.back();
@@ -173,7 +176,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
 
         lifo_queue.pop_back();
 
-        if (state->literals_hold(problem->get_goal_condition<Fluent>()) && state->literals_hold(problem->get_goal_condition<Derived>()))
+        if (goal_test.test_dynamic_goal(state))
         {
             abstract_goal_states.insert(abstract_state_index);
         }
@@ -643,10 +646,8 @@ const std::map<ContinuousCost, IndexList>& FaithfulAbstraction::get_vertex_indic
 std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstraction)
 {
     // 2. Header
-    out << "digraph {"
-        << "\n"
-        << "rankdir=\"LR\""
-        << "\n";
+    out << "digraph {" << "\n"
+        << "rankdir=\"LR\"" << "\n";
 
     // 3. Draw states
     for (size_t vertex = 0; vertex < abstraction.get_num_vertices(); ++vertex)
@@ -695,8 +696,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
     for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->"
-            << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";

@@ -34,6 +34,17 @@
 namespace mimir
 {
 
+// TODO: get rid of this by using FlatIndexList in the pruning strategy
+static FlatBitset to_bitset(const FlatIndexList& vec)
+{
+    auto bitset = FlatBitset();
+    for (const auto& index : vec)
+    {
+        bitset.set(index);
+    }
+    return bitset;
+}
+
 /* ObjectGraphStaticPruningStrategy */
 
 ObjectGraphStaticSccPruningStrategy::ObjectGraphStaticSccPruningStrategy(size_t num_components,
@@ -249,8 +260,8 @@ ObjectGraphStaticSccPruningStrategy::create(std::shared_ptr<IApplicableActionGen
         auto group = partitioning.at(group_index);
 
         // Reuse memory.
-        always_true_fluent_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second))->get_atoms<Fluent>();
-        always_true_derived_atoms = get_state(state_space->get_graph().get_vertices().at(group.front().second))->get_atoms<Derived>();
+        always_true_fluent_atoms = to_bitset(get_state(state_space->get_graph().get_vertices().at(group.front().second))->get_atoms<Fluent>());
+        always_true_derived_atoms = to_bitset(get_state(state_space->get_graph().get_vertices().at(group.front().second))->get_atoms<Derived>());
         always_false_fluent_atoms.unset_all();
         always_false_derived_atoms.unset_all();
 
@@ -261,10 +272,10 @@ ObjectGraphStaticSccPruningStrategy::create(std::shared_ptr<IApplicableActionGen
         for (const auto& [group_index, state_index] : group)
         {
             const auto& state = get_state(state_space->get_graph().get_vertices().at(state_index));
-            always_true_fluent_atoms &= state->get_atoms<Fluent>();
-            always_true_derived_atoms &= state->get_atoms<Derived>();
-            always_false_fluent_atoms -= state->get_atoms<Fluent>();
-            always_false_derived_atoms -= state->get_atoms<Derived>();
+            always_true_fluent_atoms &= to_bitset(state->get_atoms<Fluent>());
+            always_true_derived_atoms &= to_bitset(state->get_atoms<Derived>());
+            always_false_fluent_atoms -= to_bitset(state->get_atoms<Fluent>());
+            always_false_derived_atoms -= to_bitset(state->get_atoms<Derived>());
         }
 
         /* 2. Initialize prunable objects to all objects.

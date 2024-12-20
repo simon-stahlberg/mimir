@@ -17,6 +17,7 @@
 
 #include "mimir/mimir.hpp"
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 
@@ -29,6 +30,8 @@ int main(int argc, char** argv)
         std::cout << "Usage: planner_astar <domain:str> <problem:str> <plan:str> <heuristic_type:int> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
+
+    const auto start_time = std::chrono::high_resolution_clock::now();
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
@@ -106,11 +109,14 @@ int main(int argc, char** argv)
     auto heuristic = std::shared_ptr<IHeuristic>(nullptr);
     if (heuristic_type == 0)
     {
-        heuristic = std::make_shared<BlindHeuristic>();
+        heuristic = std::make_shared<BlindHeuristic>(parser.get_problem());
     }
     assert(heuristic);
 
     auto result = find_solution_astar(applicable_action_generator, state_repository, heuristic, std::nullopt, event_handler);
+
+    std::cout << "[AStar] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
+              << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

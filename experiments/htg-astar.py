@@ -45,7 +45,7 @@ else:
     SUITE = [
         "blocksworld-large-simple:p-100-2-goal-2.pddl",
     ]
-    TIME_LIMIT = 10
+    TIME_LIMIT = 3
 ATTRIBUTES = [
     "run_dir",
     "coverage",
@@ -53,6 +53,7 @@ ATTRIBUTES = [
     "out_of_memory",
     "out_of_time",
     "search_time",
+    "total_time",
     "num_generated",
     "num_expanded",
     "num_expanded_until_last_f_layer",
@@ -116,7 +117,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-sparse-astar-blind-grounded")
+    run.set_property("algorithm", "mimir-grounded-sparse-astar-blind")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -124,7 +125,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-sparse-astar-blind-grounded", task.domain, task.problem])
+    run.set_property("id", ["mimir-grounded-sparse-astar-blind", task.domain, task.problem])
 
     ################ Lifted ################
     run = exp.add_run()
@@ -142,7 +143,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # 'domain', 'problem', 'algorithm', 'coverage'.
     run.set_property("domain", task.domain)
     run.set_property("problem", task.problem)
-    run.set_property("algorithm", "mimir-sparse-astar-blind-lifted")
+    run.set_property("algorithm", "mimir-lifted-sparse-astar-blind")
     # BaseReport needs the following properties:
     # 'time_limit', 'memory_limit'.
     run.set_property("time_limit", TIME_LIMIT)
@@ -150,7 +151,7 @@ for task in suites.build_suite(BENCHMARKS_DIR, SUITE):
     # Every run has to have a unique id in the form of a list.
     # The algorithm name is only really needed when there are
     # multiple algorithms.
-    run.set_property("id", ["mimir-sparse-astar-blind-lifted", task.domain, task.problem])
+    run.set_property("id", ["mimir-lifted-sparse-astar-blind", task.domain, task.problem])
 
 # Add step that writes experiment files to disk.
 exp.add_step("build", exp.build)

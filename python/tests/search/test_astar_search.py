@@ -22,7 +22,7 @@ class CustomGoalCountHeuristic(mm.IHeuristic):
 
         self.num_goal_literals = len(self.problem.get_fluent_goal_condition()) + len(self.problem.get_derived_goal_condition())
 
-    def compute_heuristic(self, state : mm.State) -> float:
+    def compute_heuristic(self, state : mm.State, is_goal_state: bool) -> float:
         num_satisfied_goal_literals = 0
         for literal in self.problem.get_fluent_goal_condition():
             if state.literal_holds(literal):

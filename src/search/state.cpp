@@ -17,8 +17,10 @@
 
 #include "mimir/search/state.hpp"
 
+#include "mimir/algorithms/murmurhash3.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
 
@@ -27,7 +29,7 @@
 
 size_t cista::storage::DerefStdHasher<mimir::StateImpl>::operator()(const mimir::StateImpl* ptr) const
 {
-    return mimir::hash_combine(ptr->get_atoms<mimir::Fluent>());
+    return std::hash<mimir::FlatIndexList>()(ptr->get_atoms<mimir::Fluent>());
 }
 
 bool cista::storage::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const
@@ -40,38 +42,12 @@ namespace mimir
 
 /* State */
 
-const FlatBitset StateImpl::s_empty_derived_atoms = FlatBitset();
-
-template<DynamicPredicateTag P>
-bool StateImpl::contains(GroundAtom<P> atom) const
-{
-    return get_atoms<P>().get(atom->get_index());
-}
-
-template bool StateImpl::contains(GroundAtom<Fluent> atom) const;
-template bool StateImpl::contains(GroundAtom<Derived> atom) const;
-
-template<DynamicPredicateTag P>
-bool StateImpl::superset_of(const GroundAtomList<P>& atoms) const
-{
-    for (const auto& atom : atoms)
-    {
-        if (!contains(atom))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-template bool StateImpl::superset_of(const GroundAtomList<Fluent>& atoms) const;
-template bool StateImpl::superset_of(const GroundAtomList<Derived>& atoms) const;
+const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
 
 template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
-    return literal->is_negated() != contains(literal->get_atom());
+    return literal->is_negated() != contains(get_atoms<P>(), literal->get_atom()->get_index());
 }
 
 template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
@@ -94,13 +70,23 @@ bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals) const;
 template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
 
+template<DynamicPredicateTag P>
+bool StateImpl::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
+{
+    return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
+}
+
+template bool StateImpl::literals_hold<Fluent>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+template bool StateImpl::literals_hold<Derived>(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
+
 Index StateImpl::get_index() const { return m_index; }
 
 template<DynamicPredicateTag P>
-const FlatBitset& StateImpl::get_atoms() const
+const FlatIndexList& StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
+        assert(std::is_sorted(m_fluent_atoms.begin(), m_fluent_atoms.end()));
         return m_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
@@ -109,8 +95,10 @@ const FlatBitset& StateImpl::get_atoms() const
         {
             return StateImpl::s_empty_derived_atoms;
         }
-        // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatBitset.
-        return *reinterpret_cast<const FlatBitset*>(m_derived_atoms);
+        // StateRepository ensures that m_derived_atoms is a valid pointer to a FlatIndexList.
+        const auto& derived_atoms = *reinterpret_cast<const FlatIndexList*>(m_derived_atoms);
+        assert(std::is_sorted(derived_atoms.begin(), derived_atoms.end()));
+        return derived_atoms;
     }
     else
     {
@@ -118,8 +106,18 @@ const FlatBitset& StateImpl::get_atoms() const
     }
 }
 
-template const FlatBitset& StateImpl::get_atoms<Fluent>() const;
-template const FlatBitset& StateImpl::get_atoms<Derived>() const;
+template const FlatIndexList& StateImpl::get_atoms<Fluent>() const;
+template const FlatIndexList& StateImpl::get_atoms<Derived>() const;
+
+Index& StateImpl::get_index() { return m_index; }
+
+FlatIndexList& StateImpl::get_fluent_atoms()
+{
+    assert(std::is_sorted(static_cast<const StateImpl&>(*this).get_atoms<Fluent>().begin(), static_cast<const StateImpl&>(*this).get_atoms<Fluent>().end()));
+    return m_fluent_atoms;
+}
+
+uintptr_t& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
 Index& StateImpl::get_index() { return m_index; }
 

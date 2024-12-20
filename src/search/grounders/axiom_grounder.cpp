@@ -63,21 +63,21 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     auto& negative_static_precondition = strips_precondition.get_negative_precondition<Static>();
     auto& positive_derived_precondition = strips_precondition.get_positive_precondition<Derived>();
     auto& negative_derived_precondition = strips_precondition.get_negative_precondition<Derived>();
-    positive_fluent_precondition.unset_all();
-    negative_fluent_precondition.unset_all();
-    positive_static_precondition.unset_all();
-    negative_static_precondition.unset_all();
-    positive_derived_precondition.unset_all();
-    negative_derived_precondition.unset_all();
-    m_literal_grounder->ground_and_fill_bitset(axiom->get_precondition()->get_literals<Fluent>(),
+    positive_fluent_precondition.clear();
+    negative_fluent_precondition.clear();
+    positive_static_precondition.clear();
+    negative_static_precondition.clear();
+    positive_derived_precondition.clear();
+    negative_derived_precondition.clear();
+    m_literal_grounder->ground_and_fill_vector(axiom->get_precondition()->get_literals<Fluent>(),
                                                positive_fluent_precondition,
                                                negative_fluent_precondition,
                                                binding);
-    m_literal_grounder->ground_and_fill_bitset(axiom->get_precondition()->get_literals<Static>(),
+    m_literal_grounder->ground_and_fill_vector(axiom->get_precondition()->get_literals<Static>(),
                                                positive_static_precondition,
                                                negative_static_precondition,
                                                binding);
-    m_literal_grounder->ground_and_fill_bitset(axiom->get_precondition()->get_literals<Derived>(),
+    m_literal_grounder->ground_and_fill_vector(axiom->get_precondition()->get_literals<Derived>(),
                                                positive_derived_precondition,
                                                negative_derived_precondition,
                                                binding);
@@ -119,13 +119,13 @@ const GroundAxiomList& AxiomGrounder::get_ground_axioms() const { return m_axiom
 
 GroundAxiom AxiomGrounder::get_ground_axiom(Index axiom_index) const { return m_axioms_by_index.at(axiom_index); }
 
-size_t AxiomGrounder::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
-
 Problem AxiomGrounder::get_problem() const { return m_literal_grounder->get_problem(); }
 
 const std::shared_ptr<PDDLRepositories>& AxiomGrounder::get_pddl_repositories() const { return m_literal_grounder->get_pddl_repositories(); }
 
 const std::shared_ptr<LiteralGrounder>& AxiomGrounder::get_literal_grounder() const { return m_literal_grounder; }
+
+size_t AxiomGrounder::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
 
 size_t AxiomGrounder::get_num_bytes_used_for_axioms() const { return m_axioms.get_storage().capacity(); }
 }

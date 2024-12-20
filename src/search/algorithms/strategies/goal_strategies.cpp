@@ -26,6 +26,8 @@ bool ProblemGoal::test_static_goal() { return m_problem->static_goal_holds(); }
 
 bool ProblemGoal::test_dynamic_goal(State state)
 {
-    return state->literals_hold(m_problem->get_goal_condition<Fluent>()) && state->literals_hold(m_problem->get_goal_condition<Derived>());
+    // This uses the efficient check.
+    return state->literals_hold<Fluent>(m_problem->get_positive_goal_atoms_indices<Fluent>(), m_problem->get_negative_goal_atoms_indices<Fluent>())
+           && state->literals_hold<Derived>(m_problem->get_positive_goal_atoms_indices<Derived>(), m_problem->get_negative_goal_atoms_indices<Derived>());
 }
 }

@@ -391,6 +391,15 @@ void serialize(Ctx& c, basic_dynamic_bitset<Block, Ptr> const* origin, offset_t 
     serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
 }
 
+template<typename Ctx, std::unsigned_integral IndexType, template<typename> typename Ptr>
+void serialize(Ctx& c, basic_flexible_index_vector<IndexType, Ptr> const* origin, offset_t const pos)
+{
+    using Type = basic_flexible_index_vector<IndexType, Ptr>;
+    serialize(c, &origin->type_, pos + cista_member_offset(Type, type_));
+    serialize(c, &origin->size_, pos + cista_member_offset(Type, size_));
+    serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
+}
+
 template<typename Ctx, typename T, std::size_t Size>
 void serialize(Ctx& c, array<T, Size> const* origin, offset_t const pos)
 {
@@ -1023,6 +1032,15 @@ template<typename Ctx, typename Block, template<typename> typename Ptr, typename
 void recurse(Ctx&, basic_dynamic_bitset<Block, Ptr>* el, Fn&& fn)
 {
     fn(&el->default_bit_value_);
+    fn(&el->blocks_);
+}
+
+// --- FLEXIBLE_INDEX_VECTOR ---
+template<typename Ctx, std::unsigned_integral IndexType, template<typename> typename Ptr, typename Fn>
+void recurse(Ctx&, basic_flexible_index_vector<IndexType, Ptr>* el, Fn&& fn)
+{
+    fn(&el->type_);
+    fn(&el->size_);
     fn(&el->blocks_);
 }
 

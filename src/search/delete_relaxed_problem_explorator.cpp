@@ -21,6 +21,7 @@
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
@@ -90,8 +91,9 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     auto state_repository_workspace = StateRepositoryWorkspace();
     auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
 
-    auto state_builder = StateImpl(*m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace));
-    auto& fluent_state_atoms = state_builder.get_fluent_atoms();
+    auto initial_state = m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace);
+
+    auto dense_state = DenseState(initial_state);
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -100,27 +102,22 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = fluent_state_atoms.count();
-
-        const auto state_tmp = state_builder;
+        auto num_atoms_before = dense_state.get_atoms<Fluent>().count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
+        // Attention2: we simply incrementally keep growing the derived atoms in the dense state.
         for (const auto& action :
-             m_delete_free_applicable_action_generator->create_applicable_action_generator(&state_tmp, applicable_action_generator_workspace))
+             m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state, applicable_action_generator_workspace))
         {
-            const auto [succ_state, action_cost] =
-                m_delete_free_state_repository.get_or_create_successor_state(&state_builder, action, state_repository_workspace);
-            for (const auto atom_index : succ_state->get_atoms<Fluent>())
-            {
-                fluent_state_atoms.set(atom_index);
-            }
+            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action, state_repository_workspace);
         }
 
         // Create and all applicable axioms and apply them
-        m_delete_free_axiom_evalator->generate_and_apply_axioms(state_builder, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
+        m_delete_free_axiom_evalator->generate_and_apply_axioms(dense_state, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
 
-        auto num_atoms_after = fluent_state_atoms.count();
+        // Note: checking fluent atoms suffices because derived are implied by those.
+        auto num_atoms_after = dense_state.get_atoms<Fluent>().count();
 
         if (num_atoms_before != num_atoms_after)
         {

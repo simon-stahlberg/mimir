@@ -118,6 +118,8 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
     auto g_value = DiscreteCost(0);
 
+    event_handler->on_finish_g_layer();
+
     while (!queue.empty())
     {
         const auto state = queue.front();
@@ -128,10 +130,10 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
         if (get_g_value(search_node) > g_value)
         {
-            g_value = get_g_value(search_node);
             applicable_action_generator->on_finish_search_layer();
             state_repository->get_axiom_evaluator()->on_finish_search_layer();
             event_handler->on_finish_g_layer();
+            g_value = get_g_value(search_node);
         }
 
         if (goal_strategy->test_dynamic_goal(state))

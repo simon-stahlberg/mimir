@@ -22,6 +22,8 @@
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
+#include "mimir/search/workspaces/applicable_action_generator.hpp"
+#include "mimir/search/workspaces/grounded_applicable_action_generator.hpp"
 
 namespace mimir
 {
@@ -42,14 +44,27 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared
 {
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace&)
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
 {
+    auto& grounded_workspace = workspace.get_or_create_grounded_workspace();
+    auto& dense_state = grounded_workspace.get_or_create_dense_state();
+    DenseState::translate(state, dense_state);
+
+    return create_applicable_action_generator(dense_state, workspace);
+}
+
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state,
+                                                                                                     ApplicableActionGeneratorWorkspace& workspace)
+{
+    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+
     auto ground_actions = GroundActionList {};
-    m_match_tree.get_applicable_elements(state->get_atoms<Fluent>(), state->get_atoms<Derived>(), ground_actions);
+    m_match_tree.get_applicable_elements(dense_fluent_atoms, dense_derived_atoms, ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(ground_action->is_applicable(m_grounder->get_problem(), state));
+        assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state));
 
         co_yield ground_action;
     }

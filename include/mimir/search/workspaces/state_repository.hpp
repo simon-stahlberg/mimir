@@ -20,6 +20,7 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/workspaces/axiom_evaluator.hpp"
 
@@ -36,20 +37,22 @@ private:
     friend class DeleteRelaxedProblemExplorator;
 
     StateImpl& get_or_create_state_builder();
+    DenseState& get_or_create_dense_state();
 
     FlatBitset& get_or_create_applied_positive_effect_atoms();
     FlatBitset& get_or_create_applied_negative_effect_atoms();
 
-    FlatBitset& get_or_create_new_derived_atoms();
+    FlatIndexList& get_or_create_new_derived_atoms_list();
     AxiomEvaluatorWorkspace& get_or_create_axiom_evaluator_workspace();
 
-    std::optional<StateImpl> m_state_builder = std::nullopt;
+    std::optional<StateImpl> state_builder = std::nullopt;
+    std::optional<DenseState> dense_state = std::nullopt;
 
     std::optional<FlatBitset> applied_positive_effect_atoms = std::nullopt;
     std::optional<FlatBitset> applied_negative_effect_atoms = std::nullopt;
 
-    std::optional<FlatBitset> new_derived_atoms = std::nullopt;
-    std::optional<AxiomEvaluatorWorkspace> m_axiom_evaluator_workspace = std::nullopt;
+    std::optional<FlatIndexList> new_derived_atoms_list = std::nullopt;
+    std::optional<AxiomEvaluatorWorkspace> axiom_evaluator_workspace = std::nullopt;
 };
 
 }

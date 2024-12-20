@@ -64,16 +64,18 @@ std::optional<TupleVertexIndexList> TupleGraph::compute_admissible_chain(const G
 {
     // Find all states that satisfy the given set of atoms, then call more general function.
     auto states = StateList {};
-    auto fluent_atom_bitset = FlatBitset();
+    auto fluent_atom_indices = FlatIndexList();
     for (const auto& atom : fluent_atoms)
     {
-        fluent_atom_bitset.set(atom->get_index());
+        fluent_atom_indices.push_back(atom->get_index());
     }
+    std::sort(fluent_atom_indices.begin(), fluent_atom_indices.end());
+
     for (const auto group : m_states_grouped_by_distance)
     {
         for (const auto& state : group)
         {
-            if (state->get_atoms<Fluent>().is_superseteq(fluent_atom_bitset))
+            if (is_supseteq(state->get_atoms<Fluent>(), fluent_atom_indices))
             {
                 states.push_back(state);
             }
@@ -654,8 +656,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
     auto atom_indices = AtomIndexList {};
 
     out << "digraph {\n"
-        << "rankdir=\"LR\""
-        << "\n";
+        << "rankdir=\"LR\"" << "\n";
 
     // 3. Tuple nodes.
     for (const auto& vertex : tuple_graph.get_vertices_grouped_by_distance().front())
@@ -703,8 +704,7 @@ std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph)
         {
             for (const auto& succ_vertex : tuple_graph.get_digraph().get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
             {
-                out << "t" << vertex.get_index() << "->"
-                    << "t" << succ_vertex.get_index() << "\n";
+                out << "t" << vertex.get_index() << "->" << "t" << succ_vertex.get_index() << "\n";
             }
         }
         out << "}\n";

@@ -36,37 +36,38 @@ namespace mimir
 struct StateImpl
 {
     Index m_index = Index(0);
-    FlatBitset m_fluent_atoms = FlatBitset();
+    FlatIndexList m_fluent_atoms = FlatIndexList();
     uintptr_t m_derived_atoms = uintptr_t(0);
 
-    static const FlatBitset s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
+    static const FlatIndexList s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
 
-    template<DynamicPredicateTag P>
-    bool contains(GroundAtom<P> atom) const;
-
-    template<DynamicPredicateTag P>
-    bool superset_of(const GroundAtomList<P>& atoms) const;
-
+    /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
     template<DynamicPredicateTag P>
     bool literal_holds(GroundLiteral<P> literal) const;
 
+    /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
     template<DynamicPredicateTag P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
+
+    template<DynamicPredicateTag P>
+    bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
     template<DynamicPredicateTag P>
-    const FlatBitset& get_atoms() const;
+    const FlatIndexList& get_atoms() const;
 
+private:
     /* Mutable Getters */
+
+    friend class StateRepository;  ///< Given exclusive write access to a state.
 
     Index& get_index();
 
-    FlatBitset& get_fluent_atoms();
-    uintptr_t& get_derived_atoms_ptr();
-    FlatBitset& get_derived_atoms();
+    FlatIndexList& get_fluent_atoms();
+    uintptr_t& get_derived_atoms();
 };
 
 }
@@ -89,7 +90,7 @@ namespace mimir
 {
 
 using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
-using AxiomEvaluationSet = cista::storage::UnorderedSet<FlatBitset>;
+using AxiomEvaluationSet = cista::storage::UnorderedSet<FlatIndexList>;
 
 /**
  * Pretty printing

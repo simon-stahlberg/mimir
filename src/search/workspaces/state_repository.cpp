@@ -25,12 +25,52 @@ namespace mimir
 
 StateImpl& StateRepositoryWorkspace::get_or_create_state_builder()
 {
-    if (!m_state_builder.has_value())
+    if (!state_builder.has_value())
     {
-        m_state_builder = StateImpl();
+        state_builder = StateImpl();
     }
 
-    return m_state_builder.value();
+    return state_builder.value();
+}
+
+DenseState& StateRepositoryWorkspace::get_or_create_dense_state()
+{
+    if (!dense_state.has_value())
+    {
+        dense_state = DenseState();
+    }
+
+    return dense_state.value();
+}
+
+FlatBitset& StateRepositoryWorkspace::get_or_create_applied_positive_effect_atoms()
+{
+    if (!applied_positive_effect_atoms.has_value())
+    {
+        applied_positive_effect_atoms = FlatBitset();
+    }
+
+    return applied_positive_effect_atoms.value();
+}
+
+FlatBitset& StateRepositoryWorkspace::get_or_create_applied_negative_effect_atoms()
+{
+    if (!applied_negative_effect_atoms.has_value())
+    {
+        applied_negative_effect_atoms = FlatBitset();
+    }
+
+    return applied_negative_effect_atoms.value();
+}
+
+FlatIndexList& StateRepositoryWorkspace::get_or_create_new_derived_atoms_list()
+{
+    if (!new_derived_atoms_list.has_value())
+    {
+        new_derived_atoms_list = FlatIndexList();
+    }
+
+    return new_derived_atoms_list.value();
 }
 
 FlatBitset& StateRepositoryWorkspace::get_or_create_applied_positive_effect_atoms()
@@ -65,12 +105,12 @@ FlatBitset& StateRepositoryWorkspace::get_or_create_new_derived_atoms()
 
 AxiomEvaluatorWorkspace& StateRepositoryWorkspace::get_or_create_axiom_evaluator_workspace()
 {
-    if (!m_axiom_evaluator_workspace.has_value())
+    if (!axiom_evaluator_workspace.has_value())
     {
-        m_axiom_evaluator_workspace = AxiomEvaluatorWorkspace();
+        axiom_evaluator_workspace = AxiomEvaluatorWorkspace();
     }
 
-    return m_axiom_evaluator_workspace.value();
+    return axiom_evaluator_workspace.value();
 }
 
 }

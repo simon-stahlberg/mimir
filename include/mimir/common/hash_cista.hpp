@@ -19,8 +19,10 @@
 #define MIMIR_COMMON_HASH_CISTA_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/tuple.h"
 #include "cista/containers/vector.h"
+#include "mimir/algorithms/murmurhash3.hpp"
 #include "mimir/common/hash.hpp"
 
 /* DynamicBitset */
@@ -61,8 +63,8 @@ struct std::hash<cista::tuple<Ts...>>
     {
         constexpr std::size_t seed = sizeof...(Ts);
 
-        [&]<std::size_t... Is>(std::index_sequence<Is...>) { (mimir::hash_combine(seed, cista::get<Is>(tuple)), ...); }
-        (std::make_index_sequence<sizeof...(Ts)> {});
+        [&]<std::size_t... Is>(std::index_sequence<Is...>)
+        { (mimir::hash_combine(seed, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
 
         return seed;
     }
@@ -78,10 +80,34 @@ struct std::hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Al
     size_t operator()(const Type& vector) const
     {
         size_t seed = vector.size();
-        for (const auto& element : vector)
-        {
-            mimir::hash_combine(seed, element);
-        }
+        size_t hash[2] = { 0, 0 };
+
+        MurmurHash3_x64_128(vector.data(), vector.size() * sizeof(T), seed, hash);
+
+        mimir::hash_combine(seed, hash[0]);
+        mimir::hash_combine(seed, hash[1]);
+
+        return seed;
+    }
+};
+
+/* FlexibleIndexVector */
+
+template<std::unsigned_integral IndexType, template<typename> typename Ptr>
+struct std::hash<cista::basic_flexible_index_vector<IndexType, Ptr>>
+{
+    using Type = cista::basic_flexible_index_vector<IndexType, Ptr>;
+
+    size_t operator()(const Type& vector) const
+    {
+        size_t seed = vector.size();
+        size_t hash[2] = { 0, 0 };
+
+        ::MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(IndexType), seed, hash);
+
+        mimir::hash_combine(seed, hash[0]);
+        mimir::hash_combine(seed, hash[1]);
+
         return seed;
     }
 };

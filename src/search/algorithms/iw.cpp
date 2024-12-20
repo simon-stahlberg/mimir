@@ -630,10 +630,36 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::begin
     a_atom_indices[1].clear();
     const auto& state_fluent_atoms = state->get_atoms<Fluent>();
     const auto& succ_state_fluent_atoms = succ_state->get_atoms<Fluent>();
-    for (const auto& fluent_atom : succ_state_fluent_atoms)
+
+    auto it1 = succ_state_fluent_atoms.begin();
+    auto it2 = state_fluent_atoms.begin();
+
+    while (it1 != succ_state_fluent_atoms.end() && it2 != state_fluent_atoms.end())
     {
-        state_fluent_atoms.get(fluent_atom) ? a_atom_indices[0].push_back(fluent_atom) : a_atom_indices[1].push_back(fluent_atom);
+        if (*it1 < *it2)
+        {
+            // Fluent only occurs in succ_state_fluent_atoms
+            a_atom_indices[1].push_back(*it1);
+            ++it1;
+        }
+        else if (*it2 < *it1)
+        {
+            ++it2;
+        }
+        else
+        {
+            // Common fluent found
+            a_atom_indices[0].push_back(*it1);
+            ++it1;
+            ++it2;
+        }
     }
+    // Add the remaining atoms
+    for (; it1 != succ_state_fluent_atoms.end(); ++it1)
+    {
+        a_atom_indices[1].push_back(*it1);
+    }
+
     // Add place holder to generate tuples of size < arity
     a_atom_indices[0].push_back(tuple_index_mapper->get_num_atoms());
 

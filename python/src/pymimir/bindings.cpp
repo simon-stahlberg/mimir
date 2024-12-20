@@ -220,13 +220,13 @@ public:
     using IHeuristic::IHeuristic;
 
     /* Trampoline (need one for each virtual function) */
-    double compute_heuristic(State state) override
+    double compute_heuristic(State state, bool is_goal_state) override
     {
         PYBIND11_OVERRIDE_PURE(double,            /* Return type */
                                IHeuristic,        /* Parent class */
                                compute_heuristic, /* Name of function in C++ (must match Python name) */
-                               state              /* Argument(s) */
-        );
+                               state,             /* Argument(s) */
+                               is_goal_state);
     }
 };
 
@@ -856,10 +856,6 @@ void init_pymimir(py::module_& m)
         .def("__eq__", [](const StateImpl& lhs, const StateImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
         .def("get_fluent_atoms", py::overload_cast<>(&StateImpl::get_atoms<Fluent>, py::const_), py::return_value_policy::copy)
         .def("get_derived_atoms", py::overload_cast<>(&StateImpl::get_atoms<Derived>, py::const_), py::return_value_policy::copy)
-        .def("contains", py::overload_cast<GroundAtom<Fluent>>(&StateImpl::contains<Fluent>, py::const_), py::arg("atom"))
-        .def("contains", py::overload_cast<GroundAtom<Derived>>(&StateImpl::contains<Derived>, py::const_), py::arg("atom"))
-        .def("superset_of", py::overload_cast<const GroundAtomList<Fluent>&>(&StateImpl::superset_of<Fluent>, py::const_), py::arg("atoms"))
-        .def("superset_of", py::overload_cast<const GroundAtomList<Derived>&>(&StateImpl::superset_of<Derived>, py::const_), py::arg("atoms"))
         .def("literal_holds", py::overload_cast<GroundLiteral<Fluent>>(&StateImpl::literal_holds<Fluent>, py::const_), py::arg("literal"))
         .def("literal_holds", py::overload_cast<GroundLiteral<Derived>>(&StateImpl::literal_holds<Derived>, py::const_), py::arg("literal"))
         .def("literals_hold", py::overload_cast<const GroundLiteralList<Fluent>&>(&StateImpl::literals_hold<Fluent>, py::const_), py::arg("literals"))
@@ -908,13 +904,7 @@ void init_pymimir(py::module_& m)
              py::return_value_policy::copy)
         .def("get_derived_negative_condition",
              py::overload_cast<>(&GroundConditionStrips::get_negative_precondition<Derived>, py::const_),
-             py::return_value_policy::copy)
-        .def("is_dynamically_applicable", &GroundConditionStrips::is_dynamically_applicable, py::arg("state"))
-        .def(
-            "is_applicable",
-            [](const GroundConditionStrips& self, Problem problem, State state) { return self.is_applicable(problem, state); },
-            py::arg("problem"),
-            py::arg("state"));
+             py::return_value_policy::copy);
     py::class_<GroundEffectConditional>(m, "GroundEffectConditional")
         .def("get_fluent_positive_condition",
              py::overload_cast<>(&GroundEffectConditional::get_positive_precondition<Fluent>, py::const_),
@@ -1202,7 +1192,7 @@ void init_pymimir(py::module_& m)
              py::arg("atoms"),
              py::arg("state_repository_workspace"))
         .def("get_or_create_successor_state",
-             &StateRepository::get_or_create_successor_state,
+             py::overload_cast<State, GroundAction, StateRepositoryWorkspace&>(&StateRepository::get_or_create_successor_state),
              py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
              py::arg("state"),
              py::arg("action"),
@@ -1213,7 +1203,7 @@ void init_pymimir(py::module_& m)
 
     /* Heuristics */
     py::class_<IHeuristic, IPyHeuristic, std::shared_ptr<IHeuristic>>(m, "IHeuristic").def(py::init<>());
-    py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<>());
+    py::class_<BlindHeuristic, IHeuristic, std::shared_ptr<BlindHeuristic>>(m, "BlindHeuristic").def(py::init<Problem>());
 
     /* Algorithms */
 

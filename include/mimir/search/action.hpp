@@ -29,49 +29,46 @@ namespace mimir
 {
 struct GroundConditionStrips
 {
-    FlatBitset m_positive_static_atoms = FlatBitset();
-    FlatBitset m_negative_static_atoms = FlatBitset();
-    FlatBitset m_positive_fluent_atoms = FlatBitset();
-    FlatBitset m_negative_fluent_atoms = FlatBitset();
-    FlatBitset m_positive_derived_atoms = FlatBitset();
-    FlatBitset m_negative_derived_atoms = FlatBitset();
+    FlatIndexList m_positive_static_atoms = FlatIndexList();
+    FlatIndexList m_negative_static_atoms = FlatIndexList();
+    FlatIndexList m_positive_fluent_atoms = FlatIndexList();
+    FlatIndexList m_negative_fluent_atoms = FlatIndexList();
+    FlatIndexList m_positive_derived_atoms = FlatIndexList();
+    FlatIndexList m_negative_derived_atoms = FlatIndexList();
 
     template<PredicateTag P>
-    FlatBitset& get_positive_precondition();
+    FlatIndexList& get_positive_precondition();
 
     template<PredicateTag P>
-    const FlatBitset& get_positive_precondition() const;
+    const FlatIndexList& get_positive_precondition() const;
 
     template<PredicateTag P>
-    FlatBitset& get_negative_precondition();
+    FlatIndexList& get_negative_precondition();
 
     template<PredicateTag P>
-    const FlatBitset& get_negative_precondition() const;
-
-    template<DynamicPredicateTag P>
-    bool is_applicable(State state) const;
-
-    bool is_dynamically_applicable(State state) const;
-
-    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
-
-    bool is_applicable(Problem problem, State state) const;
+    const FlatIndexList& get_negative_precondition() const;
 
     template<PredicateTag P>
     bool is_applicable(const FlatBitset& atoms) const;
+
+    bool is_dynamically_applicable(const DenseState& dense_state) const;
+
+    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
+
+    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
 struct GroundEffectStrips
 {
-    FlatBitset m_positive_effects = FlatBitset();
-    FlatBitset m_negative_effects = FlatBitset();
+    FlatIndexList m_positive_effects = FlatIndexList();
+    FlatIndexList m_negative_effects = FlatIndexList();
     ContinuousCost m_cost = ContinuousCost(0.0);
 
-    FlatBitset& get_positive_effects();
-    const FlatBitset& get_positive_effects() const;
+    FlatIndexList& get_positive_effects();
+    const FlatIndexList& get_positive_effects() const;
 
-    FlatBitset& get_negative_effects();
-    const FlatBitset& get_negative_effects() const;
+    FlatIndexList& get_negative_effects();
+    const FlatIndexList& get_negative_effects() const;
 
     ContinuousCost& get_cost();
     const ContinuousCost& get_cost() const;
@@ -118,14 +115,14 @@ struct GroundEffectConditional
     const ContinuousCost& get_cost() const;
 
     /* Utility */
-    template<DynamicPredicateTag P>
-    bool is_applicable(State state) const;
+    template<PredicateTag P>
+    bool is_applicable(const FlatBitset& atoms) const;
 
-    bool is_dynamically_applicable(State state) const;
+    bool is_dynamically_applicable(const DenseState& dense_state) const;
 
     bool is_statically_applicable(Problem problem) const;
 
-    bool is_applicable(Problem problem, State state) const;
+    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
 using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditional>;
@@ -161,14 +158,11 @@ struct GroundActionImpl
     GroundEffectConditionalList& get_conditional_effects();
     const GroundEffectConditionalList& get_conditional_effects() const;
 
-    bool is_dynamically_applicable(State state) const;
+    bool is_dynamically_applicable(const DenseState& dense_state) const;
 
     bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
-    bool is_applicable(Problem problem, State state) const;
-
-    template<PredicateTag P>
-    bool is_applicable(const FlatBitset& atoms) const;
+    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
 }

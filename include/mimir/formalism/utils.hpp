@@ -27,9 +27,15 @@ namespace mimir
 template<PredicateTag P>
 extern void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms);
 
-/// @brief Translates a ground literal list into a list of ground atoms.
 template<PredicateTag P>
 extern GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals);
+
+/// @brief Filters ground atoms with the given polarity from the literals.
+template<PredicateTag P>
+extern void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, GroundAtomList<P>& out_ground_atoms);
+
+template<PredicateTag P>
+extern GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity);
 
 }
 

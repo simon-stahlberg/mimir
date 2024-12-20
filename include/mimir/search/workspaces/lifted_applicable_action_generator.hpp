@@ -21,6 +21,7 @@
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/workspaces/assignment_set.hpp"
 #include "mimir/search/workspaces/satisficing_binding_generator.hpp"
 
@@ -38,10 +39,12 @@ private:
 
     AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
     SatisficingBindingGeneratorWorkspace& get_or_create_satisficing_binding_generator(Action action);
+    DenseState& get_or_create_dense_state();
 
     std::optional<AssignmentSetWorkspace> assignment_set_workspace = std::nullopt;
     std::unordered_map<Action, SatisficingBindingGeneratorWorkspace> satisficing_binding_generator_workspaces =
         std::unordered_map<Action, SatisficingBindingGeneratorWorkspace>();
+    std::optional<DenseState> dense_state = std::nullopt;
 };
 
 }

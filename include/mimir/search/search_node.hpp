@@ -33,6 +33,7 @@ enum SearchNodeStatus
     OPEN = 1,
     CLOSED = 2,
     DEAD_END = 3,
+    GOAL = 4,
 };
 
 template<typename... SearchNodeProperties>

@@ -52,6 +52,8 @@ using StateSet = std::unordered_set<State>;
 template<typename T>
 using StateMap = std::unordered_map<State, T>;
 
+struct DenseState;
+
 /* Grounders */
 class LiteralGrounder;
 class FunctionGrounder;

@@ -35,7 +35,7 @@ namespace mimir
  */
 
 /// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
-extern bool nullary_conditions_hold(ExistentiallyQuantifiedConjunctiveCondition precondition, State state);
+extern bool nullary_conditions_hold(ExistentiallyQuantifiedConjunctiveCondition precondition, const DenseState& dense_state);
 
 /**
  * SatisficingBindingGenerator
@@ -45,26 +45,29 @@ class SatisficingBindingGenerator
 {
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
-    ExistentiallyQuantifiedConjunctiveCondition m_precondition;
+    ExistentiallyQuantifiedConjunctiveCondition m_precondition;  // const
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
-    consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
+    consistency_graph::StaticConsistencyGraph m_static_consistency_graph;  // const
 
+    /**
+     * Here we need to distinguish between sparse and dense states.
+     */
     template<DynamicPredicateTag P>
-    bool is_valid_dynamic_binding(const LiteralList<P>& literals, State state, const ObjectList& binding);
+    bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
 
     bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
 
-    bool is_valid_binding(State state, const ObjectList& binding);
+    bool is_valid_binding(const DenseState& dense_state, const ObjectList& binding);
 
-    mimir::generator<ObjectList> nullary_case(State state);
+    mimir::generator<ObjectList> nullary_case(const DenseState& dense_state);
 
     mimir::generator<ObjectList>
-    unary_case(const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets, State state);
+    unary_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
 
-    mimir::generator<ObjectList> general_case(const AssignmentSet<Fluent>& fluent_assignment_sets,
+    mimir::generator<ObjectList> general_case(const DenseState& dense_state,
+                                              const AssignmentSet<Fluent>& fluent_assignment_sets,
                                               const AssignmentSet<Derived>& derived_assignment_sets,
-                                              State state,
                                               SatisficingBindingGeneratorWorkspace& workspace);
 
 public:
@@ -79,8 +82,16 @@ public:
                                                           const AssignmentSet<Derived>& derived_assignment_set,
                                                           SatisficingBindingGeneratorWorkspace& workspace);
 
+    mimir::generator<ObjectList> create_binding_generator(const DenseState& dense_state,
+                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                          const AssignmentSet<Derived>& derived_assignment_set,
+                                                          SatisficingBindingGeneratorWorkspace& workspace);
+
     mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
     create_ground_conjunction_generator(State state, SatisficingBindingGeneratorWorkspace& workspace);
+
+    mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    create_ground_conjunction_generator(const DenseState& dense_state, SatisficingBindingGeneratorWorkspace& workspace);
 
     /**
      * Getters

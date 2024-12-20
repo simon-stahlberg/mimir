@@ -19,11 +19,14 @@
 #define MIMIR_COMMON_TYPES_CISTA_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
+#include "mimir/common/concepts.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/predicate_tag.hpp"
 
+#include <algorithm>
 #include <ostream>
 
 namespace mimir
@@ -49,8 +52,36 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 
 /* IndexList */
 
-using FlatIndexList = cista::offset::vector<Index>;
+using FlatIndexList = cista::offset::flexible_index_vector<Index>;
 
+inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
+{
+    os << "[";
+    size_t i = 0;
+    for (const auto& element : set)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "]";
+    return os;
+}
+
+/// @brief Check whether `value` exists in the given `vec`.
+/// Runs binary search to find a value in a vec.
+/// @param vec is the vector.
+/// @param value is the value.
+/// @return true iff the value exists in the vector.
+inline bool contains(const FlatIndexList& vec, Index value) { return std::find(vec.begin(), vec.end(), value) != vec.end(); }
+
+/// @brief
+/// We use this to test applicability of sparse actions/axioms in dense intermediate states.
+/// We could get rid of this if we avoid translation to dense state representation.
+/// @param bitset
+/// @param list
+/// @return
 inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
 {
     for (const auto index : list)
@@ -63,9 +94,15 @@ inline bool are_disjoint(const FlatBitset& bitset, const FlatIndexList& list)
     return true;
 }
 
-inline bool is_superseteq(const FlatBitset& bitset, const FlatIndexList& list)
+/// @brief
+/// We use this to test applicability of sparse actions/axioms in dense intermediate states.
+/// We could get rid of this if we avoid translation to dense state representation.
+/// @param bitset
+/// @param vec
+/// @return
+inline bool is_supseteq(const FlatBitset& bitset, const FlatIndexList& vec)
 {
-    for (const auto index : list)
+    for (const auto& index : vec)
     {
         if (!bitset.get(index))
         {
@@ -73,6 +110,74 @@ inline bool is_superseteq(const FlatBitset& bitset, const FlatIndexList& list)
         }
     }
     return true;
+}
+
+/// @brief
+/// We use this to test applicability of actions/axioms in fully sparse representations.
+/// @param vec1
+/// @param vec2
+/// @return
+inline bool is_supseteq(const FlatIndexList& vec1, const FlatIndexList& vec2)
+{
+    assert(std::is_sorted(vec1.begin(), vec1.end()));
+    assert(std::is_sorted(vec2.begin(), vec2.end()));
+
+    return std::includes(vec1.begin(), vec1.end(), vec2.begin(), vec2.end());
+}
+
+/// @brief
+/// We use this to test applicability of actions/axioms in fully sparse representations.
+/// @param vec1
+/// @param vec2
+/// @return
+inline bool are_disjoint(const FlatIndexList& vec1, const FlatIndexList& vec2)
+{
+    assert(std::is_sorted(vec1.begin(), vec1.end()));
+    assert(std::is_sorted(vec2.begin(), vec2.end()));
+
+    // Use two iterators to traverse both vectors simultaneously
+    auto it1 = vec1.begin();
+    auto it2 = vec2.begin();
+
+    while (it1 != vec1.end() && it2 != vec2.end())
+    {
+        if (*it1 < *it2)
+        {
+            ++it1;
+        }
+        else if (*it2 < *it1)
+        {
+            ++it2;
+        }
+        else
+        {
+            // Common element found
+            return false;
+        }
+    }
+
+    // No common element found
+    return true;
+}
+
+template<typename Range>
+    requires IsConvertibleRangeOver<Range, Index>  //
+void insert_into_bitset(const Range& range, FlatBitset& ref_bitset)
+{
+    for (const auto& element : range)
+    {
+        ref_bitset.set(element);
+    }
+}
+
+template<typename Range>
+    requires IsConvertibleRangeOver<Range, Index>  //
+void insert_into_vector(const Range& range, FlatIndexList& ref_vec)
+{
+    for (const auto& element : range)
+    {
+        ref_vec.push_back(element);
+    }
 }
 
 }

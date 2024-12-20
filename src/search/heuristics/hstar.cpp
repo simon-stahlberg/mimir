@@ -37,6 +37,6 @@ HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> appli
     }
 }
 
-double HStarHeuristic::compute_heuristic(State state) { return m_estimates.at(state); }
+double HStarHeuristic::compute_heuristic(State state, bool is_goal_state) { return m_estimates.at(state); }
 
 }

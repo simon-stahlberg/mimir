@@ -20,6 +20,7 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
+#include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/workspaces/applicable_action_generator.hpp"
@@ -98,14 +99,15 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
     auto lifo_queue = std::deque<StateVertex>();
     lifo_queue.push_back(graph.get_vertices().at(initial_vertex_index));
 
+    auto goal_test = ProblemGoal(problem);
+
     stop_watch.start();
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
         const auto vertex = lifo_queue.back();
         const auto vertex_index = vertex.get_index();
         lifo_queue.pop_back();
-        if (mimir::get_state(vertex)->literals_hold(problem->get_goal_condition<Fluent>())
-            && mimir::get_state(vertex)->literals_hold(problem->get_goal_condition<Derived>()))
+        if (goal_test.test_dynamic_goal(mimir::get_state(vertex)))
         {
             goal_vertex_indices.insert(vertex_index);
         }
