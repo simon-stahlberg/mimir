@@ -49,8 +49,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   The library implements a normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
 
 - **Lifted Successor Generator:**
-  The library implements a lifted successor generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516).
-  This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
+  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
 
 - **Grounded Successor Generator:**
   Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
