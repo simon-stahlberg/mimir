@@ -37,8 +37,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   Through its Python interface, users can access both grounded and lifted successor generators, as well as an implementation of a state repository.
 
 - **Efficiency:**
-  Mimir can also be included as a library in C++ projects, which is recommended for optimal performance.
-  While this library is optimized, it is designed with readability and ease of use in mind, some planners may outperform it in terms of raw state expansion speed and memory usage.
+  Mimir can also be included as a library in C++ projects, which is recommended for optimal performance. This library is optimized for lifted planning but our experiments show that the grounded mode is also competitive with state-of-the-art planners. Our experimental evaluation is available [here](https://github.com/simon-stahlberg/mimir/tree/main/experiments/github).
 
 ## Technical Overview
 
