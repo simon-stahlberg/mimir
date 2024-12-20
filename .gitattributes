@@ -1,0 +1,6 @@
+
+# Benchmarks
+*.pddl linguist-vendored
+
+# Experiments
+*.html linguist-vendored
