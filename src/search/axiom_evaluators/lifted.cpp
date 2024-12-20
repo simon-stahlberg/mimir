@@ -97,15 +97,14 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, Ax
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_precondition(), dense_fluent_atoms, dense_derived_atoms))
+                if (!nullary_conditions_hold(axiom->get_precondition(), dense_state))
                 {
                     continue;
                 }
 
                 auto& condition_grounder = m_condition_grounders.at(axiom);
 
-                for (auto&& binding : condition_grounder.create_binding_generator(dense_fluent_atoms,
-                                                                                  dense_derived_atoms,
+                for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
                                                                                   fluent_assignment_set,
                                                                                   derived_assignment_set,
                                                                                   lifted_workspace.get_or_create_satisficing_binding_generator(axiom)))
@@ -114,7 +113,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, Ax
 
                     const auto ground_axiom = m_grounder->ground_axiom(axiom, std::move(binding));
 
-                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
+                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), dense_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 

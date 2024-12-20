@@ -42,6 +42,16 @@ KPKCWorkspace& SatisficingBindingGeneratorWorkspace::get_or_create_kpkc_workspac
     return kpkc_workspace.value();
 }
 
+DenseState& SatisficingBindingGeneratorWorkspace::get_or_create_dense_state()
+{
+    if (!dense_state.has_value())
+    {
+        dense_state = DenseState();
+    }
+
+    return dense_state.value();
+}
+
 AssignmentSetWorkspace& SatisficingBindingGeneratorWorkspace::get_or_create_assignment_set_workspace()
 {
     if (!assignment_set_workspace.has_value())

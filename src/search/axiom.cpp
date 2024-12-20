@@ -62,9 +62,9 @@ GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_eff
 
 const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_effect; }
 
-bool GroundAxiomImpl::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundAxiomImpl::is_dynamically_applicable(const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_dynamically_applicable(fluent_atoms, derived_atoms);
+    return get_strips_precondition().is_dynamically_applicable(dense_state);
 }
 
 bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
@@ -72,9 +72,9 @@ bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive
     return get_strips_precondition().is_statically_applicable(static_positive_atoms);
 }
 
-bool GroundAxiomImpl::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundAxiomImpl::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_applicable(problem, fluent_atoms, derived_atoms);
+    return get_strips_precondition().is_applicable(problem, dense_state);
 }
 
 /**

@@ -167,15 +167,14 @@ static void collect_applied_strips_effects(GroundAction action,
 
 static void collect_applied_conditional_effects(GroundAction action,
                                                 Problem problem,
-                                                const FlatBitset& state_fluent_atoms,
-                                                const FlatBitset& state_derived_atoms,
+                                                const DenseState& dense_state,
                                                 FlatBitset& ref_negative_applied_effects,
                                                 FlatBitset& ref_positive_applied_effects,
                                                 ContinuousCost& ref_action_cost)
 {
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        if (conditional_effect.is_applicable(problem, state_fluent_atoms, state_derived_atoms))
+        if (conditional_effect.is_applicable(problem, dense_state))
         {
             for (const auto& effect_literal : conditional_effect.get_fluent_effect_literals())
             {
@@ -234,8 +233,7 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
 
         collect_applied_conditional_effects(action,
                                             m_axiom_evaluator->get_axiom_grounder()->get_problem(),
-                                            dense_fluent_atoms,
-                                            dense_derived_atoms,
+                                            dense_state,
                                             negative_applied_effects,
                                             positive_applied_effects,
                                             action_cost);

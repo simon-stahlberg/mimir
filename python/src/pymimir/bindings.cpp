@@ -904,13 +904,7 @@ void init_pymimir(py::module_& m)
              py::return_value_policy::copy)
         .def("get_derived_negative_condition",
              py::overload_cast<>(&GroundConditionStrips::get_negative_precondition<Derived>, py::const_),
-             py::return_value_policy::copy)
-        .def("is_dynamically_applicable", &GroundConditionStrips::is_dynamically_applicable, py::arg("state"))
-        .def(
-            "is_applicable",
-            [](const GroundConditionStrips& self, Problem problem, State state) { return self.is_applicable(problem, state); },
-            py::arg("problem"),
-            py::arg("state"));
+             py::return_value_policy::copy);
     py::class_<GroundEffectConditional>(m, "GroundEffectConditional")
         .def("get_fluent_positive_condition",
              py::overload_cast<>(&GroundEffectConditional::get_positive_precondition<Fluent>, py::const_),
@@ -1198,7 +1192,7 @@ void init_pymimir(py::module_& m)
              py::arg("atoms"),
              py::arg("state_repository_workspace"))
         .def("get_or_create_successor_state",
-             &StateRepository::get_or_create_successor_state,
+             py::overload_cast<State, GroundAction, StateRepositoryWorkspace&>(&StateRepository::get_or_create_successor_state),
              py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
              py::arg("state"),
              py::arg("action"),
@@ -1356,7 +1350,10 @@ void init_pymimir(py::module_& m)
         .def("__eq__", &StateVertex::operator==)
         .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_state",
+            [](const StateVertex& self) { return get_state(self); },
+            py::return_value_policy::reference_internal);
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
@@ -1366,7 +1363,10 @@ void init_pymimir(py::module_& m)
         .def("get_source", &GroundActionEdge::get_source)
         .def("get_target", &GroundActionEdge::get_target)
         .def("get_cost", [](const GroundActionEdge& self) { return get_cost(self); })
-        .def("get_creating_action", [](const GroundActionEdge& self) { return get_creating_action(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_creating_action",
+            [](const GroundActionEdge& self) { return get_creating_action(self); },
+            py::return_value_policy::reference_internal);
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
@@ -1622,7 +1622,10 @@ void init_pymimir(py::module_& m)
             "get_representative_state",
             [](const FaithfulAbstractStateVertex& self) { return get_representative_state(self); },
             py::keep_alive<0, 1>())
-        .def("get_certificate", [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_certificate",
+            [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); },
+            py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def("__str__",
@@ -1996,7 +1999,10 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
+        .def(
+            "get_states",
+            [](const TupleGraphVertex& self) { return StateList(self.get_states()); },
+            py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
@@ -2135,7 +2141,10 @@ void init_pymimir(py::module_& m)
 
     // ColorFunction
     py::class_<ColorFunction>(m, "ColorFunction")  //
-        .def("get_color_name", [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); }, py::arg("color"));
+        .def(
+            "get_color_name",
+            [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); },
+            py::arg("color"));
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, ColorFunction>(m, "ProblemColorFunction")  //

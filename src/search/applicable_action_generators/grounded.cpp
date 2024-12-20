@@ -64,7 +64,7 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(ground_action->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
+        assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state));
 
         co_yield ground_action;
     }

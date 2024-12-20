@@ -21,6 +21,7 @@
 #include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>
@@ -170,16 +171,16 @@ template bool GroundConditionStrips::is_applicable<Static>(const FlatBitset& ato
 template bool GroundConditionStrips::is_applicable<Fluent>(const FlatBitset& atoms) const;
 template bool GroundConditionStrips::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-bool GroundConditionStrips::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundConditionStrips::is_dynamically_applicable(const DenseState& dense_state) const
 {  //
-    return is_applicable<Fluent>(fluent_atoms) && is_applicable<Derived>(derived_atoms);
+    return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>());
 }
 
 bool GroundConditionStrips::is_statically_applicable(const FlatBitset& static_positive_atoms) const { return is_applicable<Static>(static_positive_atoms); }
 
-bool GroundConditionStrips::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundConditionStrips::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return is_dynamically_applicable(fluent_atoms, derived_atoms) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
+    return is_dynamically_applicable(dense_state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
 /* GroundEffectStrips */
@@ -329,9 +330,9 @@ template bool GroundEffectConditional::is_applicable<Static>(const FlatBitset& a
 template bool GroundEffectConditional::is_applicable<Fluent>(const FlatBitset& atoms) const;
 template bool GroundEffectConditional::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-bool GroundEffectConditional::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundEffectConditional::is_dynamically_applicable(const DenseState& dense_state) const
 {  //
-    return is_applicable<Fluent>(fluent_atoms) && is_applicable<Derived>(derived_atoms);
+    return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>());
 }
 
 bool GroundEffectConditional::is_statically_applicable(Problem problem) const
@@ -339,9 +340,9 @@ bool GroundEffectConditional::is_statically_applicable(Problem problem) const
     return is_applicable<Static>(problem->get_static_initial_positive_atoms_bitset());
 }
 
-bool GroundEffectConditional::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundEffectConditional::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return is_dynamically_applicable(fluent_atoms, derived_atoms) && is_statically_applicable(problem);
+    return is_dynamically_applicable(dense_state) && is_statically_applicable(problem);
 }
 
 /* GroundActionImpl */
@@ -370,9 +371,9 @@ GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() { retur
 
 const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
 
-bool GroundActionImpl::is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundActionImpl::is_dynamically_applicable(const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_dynamically_applicable(fluent_atoms, derived_atoms);
+    return get_strips_precondition().is_dynamically_applicable(dense_state);
 }
 
 bool GroundActionImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
@@ -380,9 +381,9 @@ bool GroundActionImpl::is_statically_applicable(const FlatBitset& static_positiv
     return get_strips_precondition().is_statically_applicable(static_positive_atoms);
 }
 
-bool GroundActionImpl::is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const
+bool GroundActionImpl::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_applicable(problem, fluent_atoms, derived_atoms);
+    return get_strips_precondition().is_applicable(problem, dense_state);
 }
 
 /**
@@ -453,9 +454,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrip
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition;
+    os << "positive static precondition=" << positive_static_precondition << ", "
+       << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", "
+       << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", "
+       << "negative derived precondition=" << negative_derived_precondition;
 
     return os;
 }
@@ -474,7 +478,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects;
+    os << "delete effects=" << negative_simple_effects << ", "
+       << "add effects=" << positive_simple_effects;
 
     return os;
 }
@@ -506,9 +511,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditio
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition << ", "
+    os << "positive static precondition=" << positive_static_precondition << ", "
+       << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", "
+       << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", "
+       << "negative derived precondition=" << negative_derived_precondition << ", "
        << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_repositories));
 
     return os;
@@ -535,7 +543,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
        << "binding=" << binding << ", "                                                            //
        << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "               //
        << std::make_tuple(strips_effect, std::cref(pddl_repositories))                             //
-       << ", " << "conditional_effects=[";
+       << ", "
+       << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
     {
         os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";

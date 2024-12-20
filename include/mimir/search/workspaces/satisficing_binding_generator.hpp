@@ -21,6 +21,7 @@
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 #include "mimir/search/workspaces/assignment_set.hpp"
 
@@ -40,10 +41,12 @@ private:
 
     std::vector<boost::dynamic_bitset<>>& get_or_create_full_consistency_graph(const consistency_graph::StaticConsistencyGraph& static_consistency_graph);
     KPKCWorkspace& get_or_create_kpkc_workspace(const consistency_graph::StaticConsistencyGraph& static_consistency_graph);
+    DenseState& get_or_create_dense_state();
     AssignmentSetWorkspace& get_or_create_assignment_set_workspace();
 
     std::optional<std::vector<boost::dynamic_bitset<>>> full_consistency_graph = std::nullopt;
     std::optional<KPKCWorkspace> kpkc_workspace = std::nullopt;
+    std::optional<DenseState> dense_state = std::nullopt;
     std::optional<AssignmentSetWorkspace> assignment_set_workspace = std::nullopt;
 };
 

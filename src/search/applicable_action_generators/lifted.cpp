@@ -87,13 +87,12 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     for (auto& [action, condition_grounder] : m_action_precondition_grounders)
     {
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(action->get_precondition(), dense_fluent_atoms, dense_derived_atoms))
+        if (!nullary_conditions_hold(action->get_precondition(), dense_state))
         {
             continue;
         }
 
-        for (auto&& binding : condition_grounder.create_binding_generator(dense_fluent_atoms,
-                                                                          dense_derived_atoms,
+        for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
                                                                           fluent_assignment_set,
                                                                           derived_assignment_set,
                                                                           lifted_workspace.get_or_create_satisficing_binding_generator(action)))
@@ -102,7 +101,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
             const auto ground_action = m_grounder->ground_action(action, std::move(binding));
 
-            assert(ground_action->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
+            assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state));
 
             m_event_handler->on_ground_action(ground_action);
 

@@ -51,11 +51,11 @@ struct GroundConditionStrips
     template<PredicateTag P>
     bool is_applicable(const FlatBitset& atoms) const;
 
-    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+    bool is_dynamically_applicable(const DenseState& dense_state) const;
 
     bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
-    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
 struct GroundEffectStrips
@@ -118,11 +118,11 @@ struct GroundEffectConditional
     template<PredicateTag P>
     bool is_applicable(const FlatBitset& atoms) const;
 
-    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+    bool is_dynamically_applicable(const DenseState& dense_state) const;
 
     bool is_statically_applicable(Problem problem) const;
 
-    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
 using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditional>;
@@ -158,11 +158,11 @@ struct GroundActionImpl
     GroundEffectConditionalList& get_conditional_effects();
     const GroundEffectConditionalList& get_conditional_effects() const;
 
-    bool is_dynamically_applicable(const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+    bool is_dynamically_applicable(const DenseState& dense_state) const;
 
     bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
-    bool is_applicable(Problem problem, const FlatBitset& fluent_atoms, const FlatBitset& derived_atoms) const;
+    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
 }

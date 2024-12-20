@@ -46,7 +46,7 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 
 void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace&)
 {
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
     auto applicable_axioms = GroundAxiomList {};
@@ -78,7 +78,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, 
                     continue;
                 }
 
-                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), dense_fluent_atoms, dense_derived_atoms));
+                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), dense_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 
