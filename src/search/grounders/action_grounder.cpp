@@ -55,13 +55,11 @@ public:
 
     double operator()(const FunctionExpressionMultiOperatorImpl& expr)
     {
-        auto result = (*this)(*expr.get_function_expressions().front());
-        for (size_t i = 1; i < expr.get_function_expressions().size(); ++i)
-        {
-            result = evaluate_multi(expr.get_multi_operator(), result, (*this)(*expr.get_function_expressions()[i]));
-        }
-
-        return result;
+        const auto op = expr.get_multi_operator();
+        return std::accumulate(std::next(expr.get_function_expressions().begin()),  // Start from the second expression
+                               expr.get_function_expressions().end(),
+                               (*this)(*expr.get_function_expressions().front()),  // Initial bounds
+                               [this, op](const auto& value, const auto& child_expr) { return evaluate_multi(op, value, (*this)(*child_expr)); });
     }
 
     double operator()(const FunctionExpressionMinusImpl& expr) { return -(*this)(*expr.get_function_expression()); }

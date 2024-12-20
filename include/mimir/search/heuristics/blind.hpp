@@ -33,6 +33,11 @@ public:
     double compute_heuristic(State state, bool is_goal_state) override { return is_goal_state ? 0. : m_min_action_cost_value; }
 
 private:
+    /* If the lower bound on the action costs is non-zero we can use a nonzero heuristic estimate for non-goal states,
+       resulting in pushing goal states to the front in states with the same g-value.
+       Note that our approximation method throws an exception if it encounters division by zero.
+       If that ever happens, we might want to catch the exception and simply use 0.0
+    */
     double m_min_action_cost_value;
 };
 

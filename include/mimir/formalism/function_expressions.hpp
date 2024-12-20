@@ -205,12 +205,14 @@ public:
  * Arithmetic operations
  */
 
-inline double evaluate_binary(const loki::BinaryOperatorEnum& op, const double val_left, const double val_right)
+inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, double val_right)
 {
     switch (op)
     {
         case loki::BinaryOperatorEnum::DIV:
         {
+            if (val_right == 0.)
+                throw std::logic_error("Division by zero is undefined.");
             return val_left / val_right;
         }
         case loki::BinaryOperatorEnum::MINUS:
@@ -232,7 +234,7 @@ inline double evaluate_binary(const loki::BinaryOperatorEnum& op, const double v
     }
 }
 
-inline double evaluate_multi(const loki::MultiOperatorEnum& op, const double val_left, const double val_right)
+inline double evaluate_multi(loki::MultiOperatorEnum op, double val_left, double val_right)
 {
     switch (op)
     {
@@ -249,6 +251,30 @@ inline double evaluate_multi(const loki::MultiOperatorEnum& op, const double val
             throw std::logic_error("Evaluation of multi operator is undefined.");
         }
     }
+}
+
+inline std::pair<double, double>
+evaluate_binary_bounds(loki::BinaryOperatorEnum op, std::pair<double, double> lower_upper_lhs, std::pair<double, double> lower_upper_rhs)
+{
+    const auto [lower_lhs, upper_lhs] = lower_upper_lhs;
+    const auto [lower_rhs, upper_rhs] = lower_upper_rhs;
+    const auto alternative1 = evaluate_binary(op, lower_lhs, lower_rhs);
+    const auto alternative2 = evaluate_binary(op, upper_lhs, lower_rhs);
+    const auto alternative3 = evaluate_binary(op, lower_lhs, upper_rhs);
+    const auto alternative4 = evaluate_binary(op, upper_lhs, upper_rhs);
+    return std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+}
+
+inline std::pair<double, double>
+evaluate_multi_bounds(loki::MultiOperatorEnum op, std::pair<double, double> lower_upper_lhs, std::pair<double, double> lower_upper_rhs)
+{
+    const auto [lower_lhs, upper_lhs] = lower_upper_lhs;
+    const auto [lower_rhs, upper_rhs] = lower_upper_rhs;
+    const auto alternative1 = evaluate_multi(op, lower_lhs, lower_rhs);
+    const auto alternative2 = evaluate_multi(op, upper_lhs, lower_rhs);
+    const auto alternative3 = evaluate_multi(op, lower_lhs, upper_rhs);
+    const auto alternative4 = evaluate_multi(op, upper_lhs, upper_rhs);
+    return std::minmax({ alternative1, alternative2, alternative3, alternative4 });
 }
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);
