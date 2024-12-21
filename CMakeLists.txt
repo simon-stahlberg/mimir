@@ -116,11 +116,6 @@ if(Nauty_FOUND)
   message(STATUS "Found Nauty: ${NAUTY_LIBRARY} ${NAUTY_INCLUDE_DIR}")
 endif()
 
-find_package(fmt REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
-if(fmt_FOUND)
-  include_directories(${fmt_INCLUDE_DIRS})
-  message(STATUS "Found fmt: ${fmt_DIR} (found version ${fmt_VERSION})")
-endif()
 
 ##############################################################
 # Add library and executable targets

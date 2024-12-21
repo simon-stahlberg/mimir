@@ -25,10 +25,12 @@
 #include <mimir/mimir.hpp>
 
 // STL includes
+#include <chrono>
 #include <fstream>
 #include <iostream>
 
 using namespace mimir;
+
 int main(int argc, char** argv)
 {
     if (argc != 6)
@@ -36,6 +38,8 @@ int main(int argc, char** argv)
         std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
+
+    const auto start_time = std::chrono::high_resolution_clock::now();
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
@@ -46,6 +50,29 @@ int main(int argc, char** argv)
     std::cout << "Parsing PDDL files..." << std::endl;
 
     auto parser = PDDLParser(domain_file_path, problem_file_path);
+
+    if (debug)
+    {
+        std::cout << "Domain:" << std::endl;
+        std::cout << *parser.get_domain() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Problem:" << std::endl;
+        std::cout << *parser.get_problem() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Static Predicates:" << std::endl;
+        std::cout << parser.get_domain()->get_predicates<Static>() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Fluent Predicates:" << std::endl;
+        std::cout << parser.get_domain()->get_predicates<Fluent>() << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "Derived Predicates:" << std::endl;
+        std::cout << parser.get_domain()->get_predicates<Derived>() << std::endl;
+        std::cout << std::endl;
+    }
 
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator = std::shared_ptr<IApplicableActionGenerator>(nullptr);
@@ -86,6 +113,9 @@ int main(int argc, char** argv)
                                    std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
     auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, event_handler);
+
+    std::cout << "[BrFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
+              << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

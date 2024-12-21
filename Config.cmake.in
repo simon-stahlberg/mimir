@@ -36,18 +36,6 @@ if(Boost_FOUND)
   message(STATUS "Found Boost: ${Boost_DIR} (found version ${Boost_VERSION})")
 endif()
 
-
-# -----
-# Fmt
-# -----
-
-find_dependency(fmt REQUIRED)
-if(fmt_FOUND)
-  include_directories(${fmt_INCLUDE_DIRS})
-  message(STATUS "Found fmt: ${fmt_DIR} (found version ${fmt_VERSION})")
-endif()
-
-
 # ---
 # Zlib
 # ---

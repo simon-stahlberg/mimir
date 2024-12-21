@@ -53,17 +53,17 @@ FlatIndexList& GroundConditionStrips::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
+        assert(std::is_sorted(m_positive_static_atoms.cbegin(), m_positive_static_atoms.cend()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
+        assert(std::is_sorted(m_positive_fluent_atoms.cbegin(), m_positive_fluent_atoms.cend()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
+        assert(std::is_sorted(m_positive_derived_atoms.cbegin(), m_positive_derived_atoms.cend()));
         return m_positive_derived_atoms;
     }
     else
@@ -109,17 +109,17 @@ FlatIndexList& GroundConditionStrips::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
+        assert(std::is_sorted(m_negative_static_atoms.cbegin(), m_negative_static_atoms.cend()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
+        assert(std::is_sorted(m_negative_fluent_atoms.cbegin(), m_negative_fluent_atoms.cend()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
+        assert(std::is_sorted(m_negative_derived_atoms.cbegin(), m_negative_derived_atoms.cend()));
         return m_negative_derived_atoms;
     }
     else
@@ -204,17 +204,17 @@ FlatIndexList& GroundEffectConditional::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
+        assert(std::is_sorted(m_positive_static_atoms.cbegin(), m_positive_static_atoms.cend()));
         return m_positive_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
+        assert(std::is_sorted(m_positive_fluent_atoms.cbegin(), m_positive_fluent_atoms.cend()));
         return m_positive_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
+        assert(std::is_sorted(m_positive_derived_atoms.cbegin(), m_positive_derived_atoms.cend()));
         return m_positive_derived_atoms;
     }
     else
@@ -260,17 +260,17 @@ FlatIndexList& GroundEffectConditional::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
-        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
+        assert(std::is_sorted(m_negative_static_atoms.cbegin(), m_negative_static_atoms.cend()));
         return m_negative_static_atoms;
     }
     else if constexpr (std::is_same_v<P, Fluent>)
     {
-        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
+        assert(std::is_sorted(m_negative_fluent_atoms.cbegin(), m_negative_fluent_atoms.cend()));
         return m_negative_fluent_atoms;
     }
     else if constexpr (std::is_same_v<P, Derived>)
     {
-        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
+        assert(std::is_sorted(m_negative_derived_atoms.cbegin(), m_negative_derived_atoms.cend()));
         return m_negative_derived_atoms;
     }
     else
@@ -454,12 +454,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrip
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", "
-       << "negative derived precondition=" << negative_derived_precondition;
+    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition;
 
     return os;
 }
@@ -478,8 +475,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", "
-       << "add effects=" << positive_simple_effects;
+    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects;
 
     return os;
 }
@@ -511,12 +507,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditio
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", "
-       << "negative derived precondition=" << negative_derived_precondition << ", "
+    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition << ", "
        << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_repositories));
 
     return os;
@@ -543,8 +536,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
        << "binding=" << binding << ", "                                                            //
        << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "               //
        << std::make_tuple(strips_effect, std::cref(pddl_repositories))                             //
-       << ", "
-       << "conditional_effects=[";
+       << ", " << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
     {
         os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";

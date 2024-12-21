@@ -25,8 +25,8 @@ We use the following performance metrics to compare the planners':
 ## 3. Planner Configurations
 
 1. `Fast-Downward` is one of the most widely used planners that works exclusively on the grounded problem representation. The state representation in Fast-Downward is a dense finite-domain representation (FDR/SAS+) obtained through a preprocessing step called mutex analysis. Additionally, Fast-downward applied an additional pruning of unimportant variables to prune the search space. To obtain comparable search behavior regarding state expansions, we turn off the computation of irrelevant variables by setting the flag `--keep-unimportant-variables`.
-2. `Powerlifted` is one of the most widely used planners that work on the lifted problem representation. The state representation in Powerlifted is a sparse vector representation. Powerlifted does not support `:negative-preconditions`.
-3. Mimir is designed to work on grounded and lifted problem representations while being optimized for the lifted representation. We denote its lifted configuration as `Mimir-lifted` and its grounded configuration as `Mimir-grounded.` The state representation in Mimir is a sparse vector representation with dynamic compression to the smallest required unsigned integer type. 
+2. `Powerlifted` is one of the most widely used planners that work on the lifted problem representation. The state representation in Powerlifted is a sparse vector representation. Powerlifted does not support `:negative-preconditions`, `:conditional-effects`, `existential-quantifiers`, `universal-quantifiers`. We will discuss its impact on the experimental results for a fair comparison.
+3. Mimir is designed to work on grounded and lifted problem representations while being optimized for the lifted representation. We denote its lifted configuration as `Mimir-lifted` and its grounded configuration as `Mimir-grounded.` The state representation in Mimir is a sparse vector representation with dynamic compression to the smallest required bitwidth. Additionally, Mimir statically separates static, fluent, and derived atoms during preprocessing, mostly to avoid accidentally mixing them up during programming.
 
 ## 4. Benchmarks
 
@@ -82,10 +82,10 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Mimir-lifted      |          293 |            5667 |             4367 |
 
 Observations:
-- Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. The preprocessing step causes a decline in total time compared to Mimir.
-- Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because it does not not support the PDDL extensions used in ADL benchmarks (explicitly marked as x in the ADL table) and negative preconditions. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 70, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
+- Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. We suspect that the slight improvements in search time are directly correlated with its memory efficiency resulting in better cache utilization. Fast-Downward's preprocessing step causes a significant decline in total time compared to Mimir.
+- Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because of its limited support in PDDL features. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 70, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
 - Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks.
-- Overall, the planners complement each other nicely. Fast-Downward performs strongest on easy-to-ground benchmarks, while Mimir and Powerlifted perform strongest on hard-to-ground benchmarks.
+- Overall, the planners complement each other nicely. Fast-Downward performs strongest on easy-to-ground benchmarks, while Mimir and Powerlifted perform similarly and strongest on hard-to-ground benchmarks.
 
 ### Time limit 5 Minutes:
 
@@ -114,8 +114,8 @@ Observations:
 | Powerlifted       |            x |               x |                x |
 | Mimir-lifted      |          253 |            2395 |             1668 |
 
-The observations remain identical to the 30 minutes experiment.
+The observations remain almost identical to the 30 minutes experiment.
 
 ## 7. Conclusions
 
-Fast-Downward has an advantage in easy-to-ground benchmarks due to its compact state representation. Powerlifted is a strong planner on hard-to-ground benchmarks but performs significantly worse on easy-to-ground benchmarks regarding coverage, search time, and total time. Mimir performs strongly on hard-to-ground and easy-to-ground benchmarks overall. Most importantly, its capability of running in lifted or grounded mode makes it a highly flexible library that can easily adapt to benchmark requirements. Furthermore, Mimir supports an expressive fragment of PDDL, including ADL specifications or state-dependent action costs (SDAC).
+Fast-Downward has an advantage in easy-to-ground benchmarks due to its compact state representation. Powerlifted is a strong planner on hard-to-ground benchmarks but performs significantly worse on easy-to-ground benchmarks regarding coverage, search time, and total time. Mimir performs strongly on hard-to-ground and easy-to-ground benchmarks overall. Most importantly, its capability of running in lifted or grounded mode makes it a highly flexible library that can easily adapt to benchmark requirements. As demonstrated in our experiments, Mimir supports an expressive fragment of PDDL, including ADL specifications or state-dependent action costs (SDAC).

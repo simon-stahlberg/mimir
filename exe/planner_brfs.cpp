@@ -17,6 +17,7 @@
 
 #include "mimir/mimir.hpp"
 
+#include <chrono>
 #include <fstream>
 #include <iostream>
 
@@ -29,6 +30,8 @@ int main(int argc, char** argv)
         std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
+
+    const auto start_time = std::chrono::high_resolution_clock::now();
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
@@ -102,6 +105,9 @@ int main(int argc, char** argv)
                                    std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
     auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, event_handler);
+
+    std::cout << "[BrFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
+              << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
     {

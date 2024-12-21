@@ -30,14 +30,10 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   Additionally, Mimir simplifies the testing of trained models, allowing you to handle both training and evaluation without the need for an external planner.
 
 - **Flexibility:**
-  Although Mimir is tailored for learning-based planning, it also includes C++ implementations of search algorithms such as A*.
-  The Python bindings allow the development of heuristics directly in Python.
-  This facilitates rapid prototyping and the use of popular libraries such as NumPy.
-  Mimir not only offers built-in implementations of search algorithms but also allows users to develop custom search algorithms directly in Python.
-  Through its Python interface, users can access both grounded and lifted successor generators, as well as an implementation of a state repository.
+  Although Mimir is tailored for learning-based planning, it also includes C++ implementations of search algorithms such as A*. The Python bindings allow the development of heuristics directly in Python. This facilitates rapid prototyping and the use of popular libraries such as NumPy. Mimir not only offers built-in implementations of search algorithms but also allows users to develop custom search algorithms directly in Python. Through its Python interface, users can access both grounded and lifted successor generators, as well as an implementation of a state repository.
 
 - **Efficiency:**
-  Mimir can also be included as a library in C++ projects, which is recommended for optimal performance. This library is optimized for lifted planning but our experiments show that the grounded mode is also competitive with state-of-the-art planners. Our experimental evaluation is available [here](https://github.com/simon-stahlberg/mimir/tree/main/experiments/github).
+  Mimir can also be included as a library in C++ projects, which is recommended for optimal performance. This library is optimized for lifted planning but our experiments show that the grounded mode is competitive with state-of-the-art planners. Our experimental evaluation is available [here](https://github.com/simon-stahlberg/mimir/tree/main/experiments/github).
 
 ## Technical Overview
 

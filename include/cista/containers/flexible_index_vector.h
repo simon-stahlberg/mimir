@@ -183,6 +183,10 @@ public:
         return blocks_.end();
     }
 
+    // We sometimes need const iterators in assertions, we cannot ensured uncompressed here.
+    const_iterator cbegin() { return const_iterator(bit_width_, size_, blocks_, true); }
+    const_iterator cend() { return const_iterator(bit_width_, size_, blocks_, false); }
+
     /**
      * Modifiers
      */

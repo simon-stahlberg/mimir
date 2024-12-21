@@ -113,7 +113,7 @@ Index& StateImpl::get_index() { return m_index; }
 
 FlatIndexList& StateImpl::get_fluent_atoms()
 {
-    assert(std::is_sorted(static_cast<const StateImpl&>(*this).get_atoms<Fluent>().begin(), static_cast<const StateImpl&>(*this).get_atoms<Fluent>().end()));
+    assert(std::is_sorted(get_atoms<Fluent>().begin(), get_atoms<Fluent>().end()));
     return m_fluent_atoms;
 }
 
@@ -147,11 +147,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
               out_derived_ground_atoms.end(),
               [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State("
-       << "index=" << state->get_index() << ", "
-       << "fluent atoms=" << out_fluent_ground_atoms << ", "
-       << "static atoms=" << out_static_ground_atoms << ", "
-       << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
+       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }
