@@ -35,8 +35,8 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
 - **Efficiency:**
   Mimir can also be included as a library in C++ projects, which is recommended for optimal performance. This library is optimized for lifted planning but our experiments show that the grounded mode is competitive with state-of-the-art planners. Our experimental evaluation is available [here](https://github.com/simon-stahlberg/mimir/tree/main/experiments/github).
 
-- **Accuracy:**
-  Mimir heavily utilizes flat data structures such as Cista and Unordered_dense to obtain accurate memory usage predictions allowing you to write more efficient sequential portfolio planners that reuse previously acquired information instead of starting entirely from scratch.
+- **Predictability:**
+  Mimir heavily utilizes flat contiguous data structures to obtain accurate memory usage predictions, allowing you to write more efficient sequential portfolio planners that reuse previously acquired information instead of starting entirely from scratch.
 
 ## Technical Overview
 
@@ -48,7 +48,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   The library implements a normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
 
 - **Lifted Successor Generator:**
-  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away.
+  The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away in the normalization step.
 
 - **Grounded Successor Generator:**
   Delete relaxation is used to identify a set of grounded actions that may be applicable in potential successor states.
@@ -56,10 +56,10 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   While this grounding process often results in significant performance improvements, it may not always be feasible in practice.
 
 - **State Representation:**
-  States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest required bitwidth needed to store all ground atoms. Internally, we unpack states into dense bitset representations for constant time randomized access.
+  States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest bit-width required to store all ground atoms. Internally, we unpack states into dense bitset representations for constant time randomized access.
 
 - **Ground Action and Axiom Representations:**
-  Ground action preconditions and effects, as well as ground axiom preconditions are represented using a compressed sparse vector representation similar as with states. However, we do not unpack them, as having unpacked states suffices for efficient applicability checks.
+  Ground action preconditions, effects, and ground axiom preconditions are represented using a compressed sparse vector representation similar to states. However, we do not unpack them, as having unpacked states suffices for efficient applicability checks.
 
 - **State-Dependent Action Costs (SDAC):**
   State-dependent action costs play a crucial role in accurately modeling real-world problems. For example, in a logistics domain, the cost of moving between locations may depend on factors such as the available vehicles, the terrain, or the load carried by a vehicle. Mimir supports all `:action-costs` features, allowing modelers to write complex cost expressions directly into conditional effects.
