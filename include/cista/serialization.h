@@ -395,7 +395,7 @@ template<typename Ctx, std::unsigned_integral IndexType, template<typename> type
 void serialize(Ctx& c, basic_flexible_index_vector<IndexType, Ptr> const* origin, offset_t const pos)
 {
     using Type = basic_flexible_index_vector<IndexType, Ptr>;
-    serialize(c, &origin->type_, pos + cista_member_offset(Type, type_));
+    serialize(c, &origin->bit_width_, pos + cista_member_offset(Type, bit_width_));
     serialize(c, &origin->size_, pos + cista_member_offset(Type, size_));
     serialize(c, &origin->blocks_, pos + cista_member_offset(Type, blocks_));
 }
@@ -1039,7 +1039,7 @@ void recurse(Ctx&, basic_dynamic_bitset<Block, Ptr>* el, Fn&& fn)
 template<typename Ctx, std::unsigned_integral IndexType, template<typename> typename Ptr, typename Fn>
 void recurse(Ctx&, basic_flexible_index_vector<IndexType, Ptr>* el, Fn&& fn)
 {
-    fn(&el->type_);
+    fn(&el->bit_width_);
     fn(&el->size_);
     fn(&el->blocks_);
 }

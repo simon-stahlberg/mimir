@@ -54,6 +54,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     {
         objects.push_back(obj->get_index());
     }
+    objects.compress();
 
     /* Precondition */
     auto& strips_precondition = axiom_builder.get_strips_precondition();
@@ -81,6 +82,12 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
                                                positive_derived_precondition,
                                                negative_derived_precondition,
                                                binding);
+    positive_fluent_precondition.compress();
+    negative_fluent_precondition.compress();
+    positive_static_precondition.compress();
+    negative_static_precondition.compress();
+    positive_derived_precondition.compress();
+    negative_derived_precondition.compress();
 
     /* Effect */
 

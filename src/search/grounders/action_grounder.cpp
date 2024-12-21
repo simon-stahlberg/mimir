@@ -152,6 +152,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     {
         objects.push_back(obj->get_index());
     }
+    objects.compress();
 
     /* Strips precondition */
     auto& strips_precondition = action_builder.get_strips_precondition();
@@ -179,6 +180,12 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                                                positive_derived_precondition,
                                                negative_derived_precondition,
                                                binding);
+    positive_fluent_precondition.compress();
+    negative_fluent_precondition.compress();
+    positive_static_precondition.compress();
+    negative_static_precondition.compress();
+    positive_derived_precondition.compress();
+    negative_derived_precondition.compress();
 
     /* Strips effects */
     auto& strips_effect = action_builder.get_strips_effect();
@@ -189,6 +196,9 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     const auto& lifted_strips_effect = action->get_strips_effect();
     const auto& lifted_effect_literals = lifted_strips_effect->get_effects();
     m_literal_grounder->ground_and_fill_vector(lifted_effect_literals, positive_effect, negative_effect, binding);
+    positive_effect.compress();
+    negative_effect.compress();
+
     strips_effect.get_cost() =
         GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_strips_effect->get_function_expression());
 
@@ -251,6 +261,12 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                                                                cond_positive_derived_precondition_j,
                                                                cond_negative_derived_precondition_j,
                                                                binding_cond_effect);
+                    cond_positive_fluent_precondition_j.compress();
+                    cond_negative_fluent_precondition_j.compress();
+                    cond_positive_static_precondition_j.compress();
+                    cond_negative_static_precondition_j.compress();
+                    cond_positive_derived_precondition_j.compress();
+                    cond_negative_derived_precondition_j.compress();
 
                     fill_effects(lifted_cond_effect->get_effects(), binding_cond_effect, cond_simple_effect_j);
 
@@ -286,6 +302,12 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                                                            cond_positive_derived_precondition,
                                                            cond_negative_derived_precondition,
                                                            binding);
+                cond_positive_fluent_precondition.compress();
+                cond_negative_fluent_precondition.compress();
+                cond_positive_static_precondition.compress();
+                cond_negative_static_precondition.compress();
+                cond_positive_derived_precondition.compress();
+                cond_negative_derived_precondition.compress();
 
                 fill_effects(lifted_cond_effect->get_effects(), binding, cond_simple_effect);
 
