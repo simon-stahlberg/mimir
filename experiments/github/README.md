@@ -91,28 +91,28 @@ Observations:
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |          113 |            2552 |               67 |
-| Mimir-grounded    |           98 |            3115 |           **49** |
-| Powerlifted       |          129 |         **197** |              120 |
-| Mimir-lifted      |      **136** |             342 |              176 |
+| Fast-Downward     |          113 |            2425 |               62 |
+| Mimir-grounded    |           99 |            2552 |           **42** |
+| Powerlifted       |          129 |         **186** |              113 |
+| Mimir-lifted      |      **138** |             331 |              156 |
 
 1. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **702** |             607 |           **88** |
-| Mimir-grounded    |          654 |         **341** |              129 |
+| Mimir-grounded    |          664 |         **299** |              103 |
 | Powerlifted       |          454 |            2113 |             1868 |
-| Mimir-lifted      |          579 |             916 |              583 |
+| Mimir-lifted      |          581 |             881 |              539 |
 
 3. Optimal-ADL
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **318** |            1222 |          **132** |
-| Mimir-grounded    |          301 |         **792** |              285 |
+| Fast-Downward     |      **318** |            1227 |          **132** |
+| Mimir-grounded    |          308 |         **656** |              213 |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |          252 |            2566 |             1840 |
+| Mimir-lifted      |          253 |            2395 |             1668 |
 
 The observations remain identical to the 30 minutes experiment.
 
