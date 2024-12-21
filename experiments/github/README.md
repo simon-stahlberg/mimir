@@ -103,7 +103,7 @@ Observations:
 | Fast-Downward     |      **702** |             607 |           **88** |
 | Mimir-grounded    |          654 |         **341** |              129 |
 | Powerlifted       |          454 |            2113 |             1868 |
-| Mimir-lifted      |          679 |             916 |              583 |
+| Mimir-lifted      |          579 |             916 |              583 |
 
 3. Optimal-ADL
 
