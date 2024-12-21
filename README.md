@@ -45,7 +45,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   Loki defines the grammar using the [Boost](https://www.boost.org/) library, enabling it to generate highly informative error messages for syntactically incorrect input.
 
 - **PDDL Normalization:**
-  The library implements a normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
+  The library implements a normalization step of the input PDDL, mostly based on the method presented in section four of the paper [*"Concise finite-domain representations for PDDL planning tasks by Malte Helmert (AIJ 2009)"*](https://ai.dmi.unibas.ch/papers/helmert-aij2009.pdf).
 
 - **Lifted Successor Generator:**
   The library implements a lifted applicable action generator based on the method presented in the paper [*"Lifted Successor Generation by Maximum Clique Enumeration"* by Simon Ståhlberg (ECAI 2023)](https://ebooks.iospress.nl/doi/10.3233/FAIA230516). This generator natively supports `:strips` and `:negative-preconditions`, while other precondition features are compiled away in the normalization step.

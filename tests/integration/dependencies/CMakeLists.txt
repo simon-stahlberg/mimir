@@ -5,6 +5,7 @@ project(mimir-integration)
 # Dependencies
 ##############################################################
 
+add_subdirectory(abseil)
 add_subdirectory(boost)
 add_subdirectory(fmt)
 add_subdirectory(unordered_dense)

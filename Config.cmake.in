@@ -84,6 +84,17 @@ if(unordered_dense_FOUND)
 endif()
 
 
+# -----------
+# abseil
+# -----------
+
+find_dependency(absl CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(absl_FOUND)
+  include_directories(${absl_INCLUDE_DIRS})
+  message(STATUS "Found absl: ${absl_DIR} (found version ${absl_VERSION})")
+endif()
+
+
 ############
 # Components
 ############

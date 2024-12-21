@@ -130,6 +130,12 @@ if(unordered_dense_FOUND)
   message(STATUS "Found unordered_dense: ${unordered_dense_DIR} (found version ${unordered_dense_VERSION})")
 endif()
 
+find_package(absl CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(absl_FOUND)
+  include_directories(${absl_INCLUDE_DIRS})
+  message(STATUS "Found absl: ${absl_DIR} (found version ${absl_VERSION})")
+endif()
+
 
 ##############################################################
 # Add library and executable targets
