@@ -198,7 +198,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Den
             binding[parameter_index] = m_literal_grounder->get_pddl_repositories()->get_object(object_index);
         }
 
-        if (this->is_valid_binding(dense_state, binding))
+        if (is_valid_binding(dense_state, binding))
         {
             co_yield std::move(binding);
         }

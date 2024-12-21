@@ -16,6 +16,7 @@ Mimir depends on the following set of libraries:
 - [Boost](https://www.boost.org/) header-only libraries (Fusion, Spirit x3, Container, BGL),
 - [Cista](https://github.com/felixguendling/cista/) for zero-copy serialization,
 - [Nauty and Traces](https://users.cecs.anu.edu.au/~bdm/nauty/) for graph isomorphism testing,
+- [Unordered_dense](https://github.com/martinus/unordered_dense) for unordered map and set stored in contiguous memory,
 - [GoogleBenchmark](https://github.com/google/benchmark) for automated performance benchmarking, and
 - [GoogleTest](https://github.com/google/googletest) for unit testing.
 

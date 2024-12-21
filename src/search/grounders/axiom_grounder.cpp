@@ -134,5 +134,19 @@ const std::shared_ptr<LiteralGrounder>& AxiomGrounder::get_literal_grounder() co
 
 size_t AxiomGrounder::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
 
-size_t AxiomGrounder::get_num_bytes_used_for_axioms() const { return m_axioms.get_storage().capacity(); }
+size_t AxiomGrounder::get_estimated_memory_usage_in_bytes_for_axioms() const
+{
+    const auto usage1 = m_axioms.get_estimated_memory_usage_in_bytes();
+    const auto usage2 = m_axioms_by_index.capacity() * sizeof(GroundAxiom);
+    auto usage3 = size_t(0);
+    // TODO: add memory usage of m_per_axiom_data
+    for (const auto& [axiom, action_data] : m_per_axiom_data)
+    {
+        const auto& [axiom_builder, grounding_table] = action_data;
+        // TODO: add memory usage of axiom_builder
+        usage3 += grounding_table.values().capacity() * sizeof(typename std::decay_t<decltype(grounding_table.values())>::value_type);
+    }
+
+    return usage1 + usage2 + usage3;
+}
 }

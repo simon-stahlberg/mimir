@@ -35,6 +35,9 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
 - **Efficiency:**
   Mimir can also be included as a library in C++ projects, which is recommended for optimal performance. This library is optimized for lifted planning but our experiments show that the grounded mode is competitive with state-of-the-art planners. Our experimental evaluation is available [here](https://github.com/simon-stahlberg/mimir/tree/main/experiments/github).
 
+- **Accuracy:**
+  Mimir heavily utilizes flat data structures such as Cista and Unordered_dense to obtain accurate memory usage predictions allowing you to write more efficient sequential portfolio planners that reuse previously acquired information instead of starting entirely from scratch.
+
 ## Technical Overview
 
 - **PDDL Parser:**

@@ -124,6 +124,13 @@ if(fmt_FOUND)
 endif()
 
 
+find_package(unordered_dense CONFIG REQUIRED PATHS ${CMAKE_PREFIX_PATH} NO_DEFAULT_PATH)
+if(unordered_dense_FOUND)
+  include_directories(${unordered_dense_INCLUDE_DIRS})
+  message(STATUS "Found unordered_dense: ${unordered_dense_DIR} (found version ${unordered_dense_VERSION})")
+endif()
+
+
 ##############################################################
 # Add library and executable targets
 ##############################################################

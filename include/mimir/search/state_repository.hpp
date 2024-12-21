@@ -100,11 +100,11 @@ public:
 
     /// @brief Get the total number of bytes used for storing the unextended state portions.
     /// @return the number of bytes for storing storing the unextended state portions.
-    size_t get_num_bytes_used_for_unextended_state_portion() const;
+    size_t get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const;
 
     /// @brief Get the total number of bytes used for storing the extended state portions.
     /// @return the number of bytes for storing storing the extended state portions.
-    size_t get_num_bytes_used_for_extended_state_portion() const;
+    size_t get_estimated_memory_usage_in_bytes_for_extended_state_portion() const;
 };
 
 }

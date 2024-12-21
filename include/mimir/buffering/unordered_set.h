@@ -21,7 +21,7 @@
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
 
-#include <loki/details/utils/robin_hood.h>
+#include <ankerl/unordered_dense.h>
 #include <unordered_set>
 #include <utility>
 
@@ -56,14 +56,11 @@ private:
     // Persistent storage
     ByteBufferSegmented m_storage;
 
-    // Data to be accessed
-    robin_hood::unordered_set<const T*, Hash, Equal> m_elements;
+    // Data to be accessed, we use ankerl::unordered_dense because it stores the data in contiguous memory.
+    ankerl::unordered_dense::set<const T*, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
-
-    using iterator = typename robin_hood::unordered_set<const T*, Hash, Equal>::iterator;
-    using const_iterator = typename robin_hood::unordered_set<const T*, Hash, Equal>::const_iterator;
 
 public:
     explicit UnorderedSet(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) {}
@@ -76,10 +73,10 @@ public:
      * Iterators
      */
 
-    iterator begin() { return m_elements.begin(); }
-    const_iterator begin() const { return m_elements.begin(); }
-    iterator end() { return m_elements.end(); }
-    const_iterator end() const { return m_elements.end(); }
+    auto begin() { return m_elements.begin(); }
+    auto begin() const { return m_elements.begin(); }
+    auto end() { return m_elements.end(); }
+    auto end() const { return m_elements.end(); }
 
     /**
      * Capacity
@@ -99,7 +96,7 @@ public:
     }
 
     template<cista::mode Mode = cista::mode::NONE>
-    std::pair<const_iterator, bool> insert(const T& element)
+    auto insert(const T& element)
     {
         /* Check whether element exists already. */
         auto it = m_elements.find(&element);
@@ -140,7 +137,12 @@ public:
     auto find(const T& key) const { return m_elements.find(&key); }
     bool contains(const T& key) const { return m_elements.contains(&key); }
 
-    const ByteBufferSegmented& get_storage() const { return m_storage; }
+    size_t get_estimated_memory_usage_in_bytes() const
+    {
+        const auto usage1 = m_storage.capacity();
+        const auto usage2 = m_elements.values().capacity() * sizeof(typename std::decay_t<decltype(m_elements.values())>::value_type);
+        return usage1 + usage2;
+    }
 };
 
 }

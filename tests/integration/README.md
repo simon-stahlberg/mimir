@@ -12,7 +12,8 @@ Awesome-Planner depends on the following set of libraries:
 - [Boost](https://www.boost.org/) header-only libraries (Fusion, Spirit x3, Container, BGL),
 - [Cista](https://github.com/felixguendling/cista/) for zero-copy serialization,
 - [Mimir](https://github.com/simon-stahlberg/mimir) for planning functionality,
-- [Nauty and Traces](https://users.cecs.anu.edu.au/~bdm/nauty/) for graph isomorphism testing,
+- [Nauty and Traces](https://users.cecs.anu.edu.au/~bdm/nauty/) for graph isomorphism testing, and
+- [Unordered_dense](https://github.com/martinus/unordered_dense) for unordered map and set stored in contiguous memory
 
 Run the following sequence of commands to download, configure, build, and install all dependencies:
 

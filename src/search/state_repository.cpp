@@ -286,7 +286,10 @@ const FlatBitset& StateRepository::get_reached_derived_ground_atoms_bitset() con
 
 const std::shared_ptr<IAxiomEvaluator>& StateRepository::get_axiom_evaluator() const { return m_axiom_evaluator; }
 
-size_t StateRepository::get_num_bytes_used_for_unextended_state_portion() const { return m_states.get_storage().capacity(); }
+size_t StateRepository::get_estimated_memory_usage_in_bytes_for_unextended_state_portion() const { return m_states.get_estimated_memory_usage_in_bytes(); }
 
-size_t StateRepository::get_num_bytes_used_for_extended_state_portion() const { return m_axiom_evaluations.get_storage().capacity(); }
+size_t StateRepository::get_estimated_memory_usage_in_bytes_for_extended_state_portion() const
+{
+    return m_axiom_evaluations.get_estimated_memory_usage_in_bytes();
+}
 }

@@ -79,8 +79,6 @@ public:
         return (*this)[pos];
     }
 
-    const ByteBufferSegmented& get_storage() const { return m_storage; }
-
     /**
      * Capacity
      */
@@ -122,6 +120,8 @@ public:
         m_storage.clear();
         m_elements.clear();
     }
+
+    size_t get_estimated_memory_usage_in_bytes() const { return m_storage.capacity() + m_elements.capacity() * sizeof(T*); }
 };
 
 }

@@ -23,6 +23,8 @@
 #include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 
+#include <bit>
+
 namespace mimir
 {
 
@@ -347,5 +349,22 @@ GroundAction ActionGrounder::get_ground_action(Index action_index) const { retur
 
 size_t ActionGrounder::get_num_ground_actions() const { return m_actions_by_index.size(); }
 
-size_t ActionGrounder::get_num_bytes_used_for_actions() const { return m_actions.get_storage().capacity(); }
+size_t ActionGrounder::get_estimated_memory_usage_in_bytes_for_actions() const
+{
+    const auto usage1 = m_actions.get_estimated_memory_usage_in_bytes();
+    const auto usage2 = m_actions_by_index.capacity() * sizeof(GroundAction);
+    auto usage3 = size_t(0);
+    // TODO: add memory usage of m_per_action_datas
+    for (const auto& [action, action_data] : m_per_action_datas)
+    {
+        const auto& [action_builder, grounding_table, static_consistency_graph] = action_data;
+        // TODO: add memory usage of action_builder
+
+        usage3 += grounding_table.values().capacity() * sizeof(typename std::decay_t<decltype(grounding_table.values())>::value_type);
+
+        // TODO: add memory usage of static_consistency_graph
+    }
+
+    return usage1 + usage2 + usage3;
+}
 }
