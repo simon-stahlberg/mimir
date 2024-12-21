@@ -118,4 +118,12 @@ The observations remain almost identical to the 30 minutes experiment.
 
 ## 7. Conclusions
 
-Fast-Downward has an advantage in easy-to-ground benchmarks due to its compact state representation. Powerlifted is a strong planner on hard-to-ground benchmarks but performs significantly worse on easy-to-ground benchmarks regarding coverage, search time, and total time. Mimir performs strongly on hard-to-ground and easy-to-ground benchmarks overall. Most importantly, its capability of running in lifted or grounded mode makes it a highly flexible library that can easily adapt to benchmark requirements. As demonstrated in our experiments, Mimir supports an expressive fragment of PDDL, including ADL specifications or state-dependent action costs (SDAC).
+On easy-to-ground benchmarks, Fast-Downward has the most efficient state representation to generate the largest amount of states. Mimir-grounded has a comparable runtime score. Powerlifted scores significantly lower than Mimir-lifted, which seems out of reach, even when extending its PDDL support.
+
+On hard-to-ground benchmarks, Powerlifted is a strong planner with the lowest total time. Mimir-lifted has the highest coverage score and comparable runtime performance.
+
+Our experiments demonstrate that a single library can efficiently combine lifted and grounded planning with expressive extensions such as conditional effects, existential quantifiers, and universal quantifiers.
+
+## 8. Future Work
+
+In the future, we plan on further extending the supported PDDL fragments towards probabilistic, nondeterministic, and numeric planning. 
