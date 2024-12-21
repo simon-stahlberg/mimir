@@ -20,8 +20,9 @@
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
+#include "mimir/common/memory.hpp"
 
-#include <ankerl/unordered_dense.h>
+#include <absl/container/flat_hash_set.h>
 #include <unordered_set>
 #include <utility>
 
@@ -56,8 +57,8 @@ private:
     // Persistent storage
     ByteBufferSegmented m_storage;
 
-    // Data to be accessed, we use ankerl::unordered_dense because it stores the data in contiguous memory.
-    ankerl::unordered_dense::set<const T*, Hash, Equal> m_elements;
+    // Data to be accessed, we use absl::flat_hash_set because it stores the data in contiguous memory.
+    absl::flat_hash_set<const T*, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
@@ -140,7 +141,7 @@ public:
     size_t get_estimated_memory_usage_in_bytes() const
     {
         const auto usage1 = m_storage.capacity();
-        const auto usage2 = m_elements.values().capacity() * sizeof(typename std::decay_t<decltype(m_elements.values())>::value_type);
+        const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);
         return usage1 + usage2;
     }
 };

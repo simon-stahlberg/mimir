@@ -13,7 +13,7 @@ Awesome-Planner depends on the following set of libraries:
 - [Cista](https://github.com/felixguendling/cista/) for zero-copy serialization,
 - [Mimir](https://github.com/simon-stahlberg/mimir) for planning functionality,
 - [Nauty and Traces](https://users.cecs.anu.edu.au/~bdm/nauty/) for graph isomorphism testing, and
-- [Unordered_dense](https://github.com/martinus/unordered_dense) for unordered map and set stored in contiguous memory
+- [Abseil](https://github.com/abseil/abseil-cpp) for flat containers,
 
 Run the following sequence of commands to download, configure, build, and install all dependencies:
 

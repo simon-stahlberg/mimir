@@ -39,7 +39,7 @@ target_link_libraries(core Nauty::Nauty)
 target_link_libraries(core Boost::iostreams ZLIB::ZLIB)
 target_link_libraries(core fmt::fmt)
 target_link_libraries(core -pthread)
-target_link_libraries(core unordered_dense::unordered_dense)
+target_link_libraries(core absl::flat_hash_set absl::flat_hash_map)
 
 # Use include depending on building or using from installed location
 target_include_directories(core

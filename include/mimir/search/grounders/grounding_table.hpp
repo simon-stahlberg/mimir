@@ -4,13 +4,13 @@
 #include "mimir/common/hash.hpp"
 #include "mimir/formalism/declarations.hpp"
 
-#include <ankerl/unordered_dense.h>
+#include <absl/container/flat_hash_map.h>
 
 namespace mimir
 {
 
 template<typename T>
-using GroundingTable = ankerl::unordered_dense::map<ObjectList, T, Hash<ObjectList>>;
+using GroundingTable = absl::flat_hash_map<ObjectList, T, Hash<ObjectList>>;
 
 template<typename T>
 using GroundingTableList = std::vector<GroundingTable<T>>;

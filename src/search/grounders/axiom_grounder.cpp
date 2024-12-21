@@ -17,6 +17,8 @@
 
 #include "mimir/search/grounders/axiom_grounder.hpp"
 
+#include "mimir/common/memory.hpp"
+#include "mimir/formalism/object.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
 
@@ -144,7 +146,7 @@ size_t AxiomGrounder::get_estimated_memory_usage_in_bytes_for_axioms() const
     {
         const auto& [axiom_builder, grounding_table] = action_data;
         // TODO: add memory usage of axiom_builder
-        usage3 += grounding_table.values().capacity() * sizeof(typename std::decay_t<decltype(grounding_table.values())>::value_type);
+        usage3 += get_memory_usage_in_bytes(grounding_table);
     }
 
     return usage1 + usage2 + usage3;
