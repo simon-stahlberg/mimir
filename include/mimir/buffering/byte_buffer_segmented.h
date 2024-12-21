@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CISTA_STORAGE_BYTE_BUFFER_SEGMENTED_HPP_
-#define CISTA_STORAGE_BYTE_BUFFER_SEGMENTED_HPP_
+#ifndef MIMIR_BUFFERING_BYTE_BUFFER_SEGMENTED_HPP_
+#define MIMIR_BUFFERING_BYTE_BUFFER_SEGMENTED_HPP_
 
 #include <cassert>
 #include <cstddef>
@@ -25,7 +25,7 @@
 #include <stdexcept>
 #include <vector>
 
-namespace cista::storage
+namespace mimir::buffering
 {
 
 class ByteBufferSegmented
@@ -46,7 +46,7 @@ private:
     {
         if (required_bytes > m_maximum_num_bytes_per_segment)
         {
-            throw std::out_of_range("ByteBufferSegmented::increase_capacity: tried to increase capacity beyond maximum bytes per segment: "
+            throw std::out_of_range("mimir::buffering::ByteBufferSegmented::increase_capacity: tried to increase capacity beyond maximum bytes per segment: "
                                     + std::to_string(required_bytes) + " > " + std::to_string(m_maximum_num_bytes_per_segment));
         }
 
@@ -84,7 +84,7 @@ public:
     {
         if (data == nullptr)
         {
-            throw std::invalid_argument("cista::storage::ByteBufferSegmented::write(): data cannot be null");
+            throw std::invalid_argument("mimir::buffering::ByteBufferSegmented::write(): data cannot be null");
         }
 
         if (amount > (m_num_bytes_per_segment - m_current_segment_position))

@@ -73,7 +73,7 @@ TEST(MimirTests, SearchSearchNodeVectorTest)
     set_creating_action(&node2, 5);
     set_property<0>(&node2, 9.99);
 
-    auto vec = cista::storage::Vector<SearchNodeType>();
+    auto vec = mimir::buffering::Vector<SearchNodeType>();
     vec.push_back(node1);
     vec.push_back(node2);
 

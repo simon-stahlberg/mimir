@@ -18,8 +18,8 @@
 #ifndef MIMIR_SEARCH_ACTION_HPP_
 #define MIMIR_SEARCH_ACTION_HPP_
 
-#include "cista/storage/unordered_set.h"
-#include "cista/storage/vector.h"
+#include "mimir/buffering/unordered_set.h"
+#include "mimir/buffering/vector.h"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -164,17 +164,16 @@ struct GroundActionImpl
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
-
 }
 
 template<>
-struct cista::storage::DerefStdHasher<mimir::GroundActionImpl>
+struct mimir::buffering::DerefStdHasher<mimir::GroundActionImpl>
 {
     size_t operator()(const mimir::GroundActionImpl* ptr) const;
 };
 
 template<>
-struct cista::storage::DerefStdEqualTo<mimir::GroundActionImpl>
+struct mimir::buffering::DerefStdEqualTo<mimir::GroundActionImpl>
 {
     bool operator()(const mimir::GroundActionImpl* lhs, const mimir::GroundActionImpl* rhs) const;
 };
@@ -186,7 +185,7 @@ namespace mimir
  * Mimir types
  */
 
-using GroundActionImplSet = cista::storage::UnorderedSet<GroundActionImpl>;
+using GroundActionImplSet = mimir::buffering::UnorderedSet<GroundActionImpl>;
 
 /**
  * Pretty printing

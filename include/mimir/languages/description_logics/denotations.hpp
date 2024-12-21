@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 
-#include "cista/storage/unordered_set.h"
+#include "mimir/buffering/unordered_set.h"
 #include "mimir/common/equal_to.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/hash_cista.hpp"
@@ -31,7 +31,6 @@
 
 namespace mimir::dl
 {
-
 template<ConstructorTag D>
 struct DenotationImpl
 {
@@ -63,16 +62,15 @@ struct DenotationImpl<Role>
 /// This stores a computed denotation for a single state.
 using ConstructorTagToDenotationType =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationImpl<Concept>>, boost::hana::pair<boost::hana::type<Role>, DenotationImpl<Role>>>;
-
 }
 
 template<mimir::dl::ConstructorTag D>
-struct cista::storage::DerefStdHasher<mimir::dl::DenotationImpl<D>>
+struct mimir::buffering::DerefStdHasher<mimir::dl::DenotationImpl<D>>
 {
     size_t operator()(const mimir::dl::DenotationImpl<D>* ptr) const { return mimir::hash_combine(ptr->get_data()); }
 };
 template<mimir::dl::ConstructorTag D>
-struct cista::storage::DerefStdEqualTo<mimir::dl::DenotationImpl<D>>
+struct mimir::buffering::DerefStdEqualTo<mimir::dl::DenotationImpl<D>>
 {
     bool operator()(const mimir::dl::DenotationImpl<D>* lhs, const mimir::dl::DenotationImpl<D>* rhs) const { return lhs->get_data() == rhs->get_data(); }
 };
@@ -81,7 +79,7 @@ namespace mimir::dl
 {
 
 template<ConstructorTag D>
-using DenotationImplSet = cista::storage::UnorderedSet<DenotationImpl<D>>;
+using DenotationImplSet = mimir::buffering::UnorderedSet<DenotationImpl<D>>;
 
 }
 

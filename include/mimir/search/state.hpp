@@ -20,7 +20,7 @@
 
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/serialization.h"
-#include "cista/storage/unordered_set.h"
+#include "mimir/buffering/unordered_set.h"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
@@ -29,7 +29,6 @@
 
 namespace mimir
 {
-
 /// @brief `StateImpl` encapsulates the fluent and derived atoms of a planning state.
 /// We refer to the fluent atoms as the non-extended state
 /// and the fluent and derived atoms as the extended state.
@@ -69,19 +68,18 @@ private:
     FlatIndexList& get_fluent_atoms();
     uintptr_t& get_derived_atoms();
 };
-
 }
 
 // Only hash/compare the non-extended portion of a state, and the problem.
 // The extended portion is always equal for the same non-extended portion.
 // We use it for the unique state construction in the `StateRepository`.
 template<>
-struct cista::storage::DerefStdHasher<mimir::StateImpl>
+struct mimir::buffering::DerefStdHasher<mimir::StateImpl>
 {
     size_t operator()(const mimir::StateImpl* ptr) const;
 };
 template<>
-struct cista::storage::DerefStdEqualTo<mimir::StateImpl>
+struct mimir::buffering::DerefStdEqualTo<mimir::StateImpl>
 {
     bool operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const;
 };
@@ -89,8 +87,8 @@ struct cista::storage::DerefStdEqualTo<mimir::StateImpl>
 namespace mimir
 {
 
-using StateImplSet = cista::storage::UnorderedSet<StateImpl>;
-using AxiomEvaluationSet = cista::storage::UnorderedSet<FlatIndexList>;
+using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
+using AxiomEvaluationSet = mimir::buffering::UnorderedSet<FlatIndexList>;
 
 /**
  * Pretty printing

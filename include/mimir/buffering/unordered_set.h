@@ -15,16 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CISTA_STORAGE_UNORDERED_SET_HPP_
-#define CISTA_STORAGE_UNORDERED_SET_HPP_
+#ifndef MIMIR_BUFFERING_UNORDERED_SET_HPP_
+#define MIMIR_BUFFERING_UNORDERED_SET_HPP_
 
 #include "cista/serialization.h"
-#include "cista/storage/byte_buffer_segmented.h"
+#include "mimir/buffering/byte_buffer_segmented.h"
 
+#include <loki/details/utils/robin_hood.h>
 #include <unordered_set>
 #include <utility>
 
-namespace cista::storage
+namespace mimir::buffering
 {
 /// @brief `DerefStdHasher` is a hash function tailored towards `UnorderedSet`
 /// which should always accept const pointer types and computes a hash for the object pointed to.
@@ -56,13 +57,13 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed
-    std::unordered_set<const T*, Hash, Equal> m_elements;
+    robin_hood::unordered_set<const T*, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
 
-    using iterator = typename std::unordered_set<const T*, Hash, Equal>::iterator;
-    using const_iterator = typename std::unordered_set<const T*, Hash, Equal>::const_iterator;
+    using iterator = typename robin_hood::unordered_set<const T*, Hash, Equal>::iterator;
+    using const_iterator = typename robin_hood::unordered_set<const T*, Hash, Equal>::const_iterator;
 
 public:
     explicit UnorderedSet(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) {}
@@ -116,14 +117,14 @@ public:
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
         if (m_buf.size() % alignof(T) != 0)
         {
-            throw std::logic_error("cista::storage::UnorderedSet::insert: serialized buffer before write does not satisfy alignment requirements.");
+            throw std::logic_error("mimir::buffering::UnorderedSet::insert: serialized buffer before write does not satisfy alignment requirements.");
         }
 
         /* Write the data to the storage and return it. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
         if (reinterpret_cast<uintptr_t>(begin) % alignof(T) != 0)
         {
-            throw std::logic_error("cista::storage::UnorderedSet::insert: serialized buffer after write does not satisfy alignment requirements.");
+            throw std::logic_error("mimir::buffering::UnorderedSet::insert: serialized buffer after write does not satisfy alignment requirements.");
         }
 
         /* Add the deserialized element to the unordered_set and return it. */

@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATION_REPOSITORIES_HPP_
 
-#include "cista/storage/unordered_set.h"
+#include "mimir/buffering/unordered_set.h"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/denotations.hpp"
 

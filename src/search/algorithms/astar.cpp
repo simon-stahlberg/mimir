@@ -50,7 +50,7 @@ static ContinuousCost get_g_value(ConstAStarSearchNode node) { return get_proper
 static ContinuousCost get_h_value(ConstAStarSearchNode node) { return get_property<1>(node); }
 
 static AStarSearchNode
-get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, cista::storage::Vector<AStarSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, mimir::buffering::Vector<AStarSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {
@@ -99,7 +99,7 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                                                      std::numeric_limits<Index>::max(),
                                                      std::numeric_limits<ContinuousCost>::infinity(),
                                                      ContinuousCost(0) };
-    auto search_nodes = cista::storage::Vector<AStarSearchNodeImpl>();
+    auto search_nodes = mimir::buffering::Vector<AStarSearchNodeImpl>();
 
     auto openlist = PriorityQueue<State>();
 

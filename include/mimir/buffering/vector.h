@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef CISTA_STORAGE_VECTOR_HPP_
-#define CISTA_STORAGE_VECTOR_HPP_
+#ifndef MIMIR_BUFFERING_VECTOR_HPP_
+#define MIMIR_BUFFERING_VECTOR_HPP_
 
 #include "cista/serialization.h"
-#include "cista/storage/byte_buffer_segmented.h"
+#include "mimir/buffering/byte_buffer_segmented.h"
 
-namespace cista::storage
+namespace mimir::buffering
 {
 
 /// @brief `Vector` is a container that stores buffers of a cista container of type T.
@@ -44,7 +44,7 @@ private:
     {
         if (pos >= size())
         {
-            throw std::out_of_range("cista::storage::Vector::range_check: pos (which is " + std::to_string(pos) + ") >= this->size() (which is "
+            throw std::out_of_range("mimir::buffering::Vector::range_check: pos (which is " + std::to_string(pos) + ") >= this->size() (which is "
                                     + std::to_string(size()) + ")");
         }
     }
@@ -104,14 +104,14 @@ public:
         m_buf.buf_.insert(m_buf.buf_.end(), num_padding, 0);
         if (m_buf.size() % alignof(T) != 0)
         {
-            throw std::logic_error("cista::storage::Vector::insert: serialized buffer before write does not satisfy alignment requirements.");
+            throw std::logic_error("mimir::buffering::Vector::insert: serialized buffer before write does not satisfy alignment requirements.");
         }
 
         /* Write the data to the storage. */
         auto begin = m_storage.write(m_buf.base(), m_buf.size());
         if (reinterpret_cast<uintptr_t>(begin) % alignof(T) != 0)
         {
-            throw std::logic_error("cista::storage::Vector::insert: serialized buffer after write does not satisfy alignment requirements.");
+            throw std::logic_error("mimir::buffering::Vector::insert: serialized buffer after write does not satisfy alignment requirements.");
         }
 
         /* Add the deserialized element to the vector. */

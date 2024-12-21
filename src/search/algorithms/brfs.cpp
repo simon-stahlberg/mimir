@@ -53,7 +53,7 @@ static void set_g_value(BrFSSearchNode node, DiscreteCost g_value) { return set_
 static DiscreteCost get_g_value(ConstBrFSSearchNode node) { return get_property<0>(node); }
 
 static BrFSSearchNode
-get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, cista::storage::Vector<BrFSSearchNodeImpl>& search_nodes)
+get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, mimir::buffering::Vector<BrFSSearchNodeImpl>& search_nodes)
 {
     while (state_index >= search_nodes.size())
     {
@@ -87,7 +87,7 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
     auto result = SearchResult();
     auto default_search_node =
         BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), std::numeric_limits<Index>::max(), DiscreteCost(0) };
-    auto search_nodes = cista::storage::Vector<BrFSSearchNodeImpl>();
+    auto search_nodes = mimir::buffering::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
     const auto problem = applicable_action_generator->get_problem();

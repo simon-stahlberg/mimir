@@ -71,13 +71,13 @@ struct GroundAxiomImpl
 }
 
 template<>
-struct cista::storage::DerefStdHasher<mimir::GroundAxiomImpl>
+struct mimir::buffering::DerefStdHasher<mimir::GroundAxiomImpl>
 {
     size_t operator()(const mimir::GroundAxiomImpl* ptr) const;
 };
 
 template<>
-struct cista::storage::DerefStdEqualTo<mimir::GroundAxiomImpl>
+struct mimir::buffering::DerefStdEqualTo<mimir::GroundAxiomImpl>
 {
     bool operator()(const mimir::GroundAxiomImpl* lhs, const mimir::GroundAxiomImpl* rhs) const;
 };
@@ -89,7 +89,7 @@ namespace mimir
  * Mimir types
  */
 
-using GroundAxiomImplSet = cista::storage::UnorderedSet<GroundAxiomImpl>;
+using GroundAxiomImplSet = mimir::buffering::UnorderedSet<GroundAxiomImpl>;
 
 /**
  * Pretty printing

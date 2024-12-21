@@ -21,14 +21,14 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-size_t cista::storage::DerefStdHasher<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* ptr) const
+size_t mimir::buffering::DerefStdHasher<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* ptr) const
 {
     const auto axiom = ptr->get_axiom_index();
     const auto& objects = ptr->get_object_indices();
     return mimir::hash_combine(axiom, objects);
 }
 
-bool cista::storage::DerefStdEqualTo<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* lhs, const mimir::GroundAxiomImpl* rhs) const
+bool mimir::buffering::DerefStdEqualTo<mimir::GroundAxiomImpl>::operator()(const mimir::GroundAxiomImpl* lhs, const mimir::GroundAxiomImpl* rhs) const
 {
     const auto axiom_left = lhs->get_axiom_index();
     const auto& objects_left = lhs->get_object_indices();

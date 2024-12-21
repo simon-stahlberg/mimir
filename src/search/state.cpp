@@ -27,12 +27,12 @@
 #include <ostream>
 #include <tuple>
 
-size_t cista::storage::DerefStdHasher<mimir::StateImpl>::operator()(const mimir::StateImpl* ptr) const
+size_t mimir::buffering::DerefStdHasher<mimir::StateImpl>::operator()(const mimir::StateImpl* ptr) const
 {
     return std::hash<mimir::FlatIndexList>()(ptr->get_atoms<mimir::Fluent>());
 }
 
-bool cista::storage::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const
+bool mimir::buffering::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const
 {
     return lhs->get_atoms<mimir::Fluent>() == rhs->get_atoms<mimir::Fluent>();
 }

@@ -20,7 +20,7 @@
 
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/serialization.h"
-#include "cista/storage/unordered_set.h"
+#include "mimir/buffering/unordered_set.h"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
