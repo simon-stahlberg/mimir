@@ -37,6 +37,7 @@ add_library(mimir::core ALIAS core)
 target_link_libraries(core loki::parsers)
 target_link_libraries(core Nauty::Nauty)
 target_link_libraries(core Boost::iostreams ZLIB::ZLIB)
+target_link_libraries(core fmt::fmt)
 target_link_libraries(core -pthread)
 
 # Use include depending on building or using from installed location
