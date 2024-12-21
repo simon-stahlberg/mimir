@@ -23,7 +23,7 @@ if (NOT abseil_FOUND)
     endforeach()
     ExternalProject_Add(
         abseil
-        GIT_REPOSITORY git@github.com:abseil/abseil-cpp.git
+        GIT_REPOSITORY https://github.com/abseil/abseil-cpp.git
         GIT_TAG 5913446e0c0f8c1976627654956c3553e1519d2c
         PREFIX ${CMAKE_BINARY_DIR}/abseil
         CMAKE_ARGS ${CMAKE_ARGS}
