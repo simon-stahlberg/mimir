@@ -59,31 +59,31 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |          126 |            3132 |              102 |
-| Mimir-grounded    |          106 |            4179 |           **87** |
+| Mimir-grounded    |          106 |            3769 |           **77** |
 | Powerlifted       |          135 |         **344** |              217 |
-| Mimir-lifted      |      **155** |             606 |              321 |
+| Mimir-lifted      |      **156** |             547 |              278 |
 
 1. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **752** |            1273 |          **261** |
-| Mimir-grounded    |          680 |         **973** |              424 |
+| Mimir-grounded    |          681 |         **789** |              334 |
 | Powerlifted       |          539 |            6958 |             6050 |
-| Mimir-lifted      |          656 |            2959 |             2029 |
+| Mimir-lifted      |          663 |            2601 |             1754 |
 
 3. Optimal-ADL
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **365** |            2085 |          **325** |
-| Mimir-grounded    |          328 |        **1469** |              646 |
+| Fast-Downward     |      **365** |            2156 |          **346** |
+| Mimir-grounded    |          330 |        **1302** |              540 |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |          293 |            5667 |             4367 |
+| Mimir-lifted      |          294 |            5436 |             4132 |
 
 Observations:
 - Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. We suspect that the slight improvements in search time are directly correlated with its memory efficiency resulting in better cache utilization. Fast-Downward's preprocessing step causes a significant decline in total time compared to Mimir.
-- Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because of its limited support in PDDL features. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 70, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
+- Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because of its limited support in PDDL features. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 72, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
 - Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks.
 - Overall, the planners complement each other nicely. Fast-Downward performs strongest on easy-to-ground benchmarks, while Mimir and Powerlifted perform similarly and strongest on hard-to-ground benchmarks.
 
