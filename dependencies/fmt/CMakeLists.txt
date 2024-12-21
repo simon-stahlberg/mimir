@@ -6,7 +6,7 @@ include(ExternalProject)
 
 message(STATUS "Dependency \"fmt\"...")
 
-# Attempt to find the installed googletest library
+# Attempt to find the installed fmt library
 find_package(fmt QUIET PATHS ${CMAKE_INSTALL_PREFIX} NO_DEFAULT_PATH)
 
 if (NOT fmt_FOUND)
@@ -27,6 +27,6 @@ if (NOT fmt_FOUND)
             CMAKE_ARGS ${CMAKE_ARGS}
     )
 else ()
-    message(STATUS "googletest is already installed.")
+    message(STATUS "fmt is already installed.")
 endif ()
 
