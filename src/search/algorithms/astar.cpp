@@ -160,10 +160,10 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
         if (search_node_f_value > f_value)
         {
+            f_value = search_node_f_value;
             applicable_action_generator->on_finish_search_layer();
             state_repository->get_axiom_evaluator()->on_finish_search_layer();
             event_handler->on_finish_f_layer(f_value);
-            f_value = search_node_f_value;
         }
 
         /* Test whether state achieves the dynamic goal. */
