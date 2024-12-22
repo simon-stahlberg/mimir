@@ -30,9 +30,9 @@ namespace mimir::dl
 
 /* Concepts */
 
-size_t UniqueDLHasher<ConceptBot>::operator()(ConceptBot e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<ConceptBot>::operator()(ConceptBot e) const { return 0; }
 
-size_t UniqueDLHasher<ConceptTop>::operator()(ConceptTop e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<ConceptTop>::operator()(ConceptTop e) const { return 0; }
 
 template<PredicateTag P>
 size_t UniqueDLHasher<ConceptAtomicState<P>>::operator()(ConceptAtomicState<P> e) const
@@ -84,7 +84,7 @@ size_t UniqueDLHasher<ConceptNominal>::operator()(ConceptNominal e) const { retu
 
 /* Roles */
 
-size_t UniqueDLHasher<RoleUniversal>::operator()(RoleUniversal e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<RoleUniversal>::operator()(RoleUniversal e) const { return 0; }
 
 template<PredicateTag P>
 size_t UniqueDLHasher<RoleAtomicState<P>>::operator()(RoleAtomicState<P> e) const
@@ -157,9 +157,9 @@ template size_t UniqueDLHasher<grammar::ConstructorOrNonTerminal<Role>>::operato
 
 /* Concepts */
 
-size_t UniqueDLHasher<grammar::ConceptBot>::operator()(grammar::ConceptBot e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<grammar::ConceptBot>::operator()(grammar::ConceptBot e) const { return 0; }
 
-size_t UniqueDLHasher<grammar::ConceptTop>::operator()(grammar::ConceptTop e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<grammar::ConceptTop>::operator()(grammar::ConceptTop e) const { return 0; }
 
 template<PredicateTag P>
 size_t UniqueDLHasher<grammar::ConceptAtomicState<P>>::operator()(grammar::ConceptAtomicState<P> e) const
@@ -217,7 +217,7 @@ size_t UniqueDLHasher<grammar::ConceptNominal>::operator()(grammar::ConceptNomin
 
 /* Roles */
 
-size_t UniqueDLHasher<grammar::RoleUniversal>::operator()(grammar::RoleUniversal e) const { return mimir::hash_combine(e); }
+size_t UniqueDLHasher<grammar::RoleUniversal>::operator()(grammar::RoleUniversal e) const { return 0; }
 
 template<PredicateTag P>
 size_t UniqueDLHasher<grammar::RoleAtomicState<P>>::operator()(grammar::RoleAtomicState<P> e) const

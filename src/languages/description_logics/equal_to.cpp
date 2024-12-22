@@ -29,23 +29,9 @@ namespace mimir::dl
 
 /* Concepts */
 
-bool UniqueDLEqualTo<ConceptBot>::operator()(ConceptBot l, ConceptBot r) const
-{
-    if (&l != &r)
-    {
-        return false;
-    }
-    return true;
-}
+bool UniqueDLEqualTo<ConceptBot>::operator()(ConceptBot l, ConceptBot r) const { return true; }
 
-bool UniqueDLEqualTo<ConceptTop>::operator()(ConceptTop l, ConceptTop r) const
-{
-    if (&l != &r)
-    {
-        return false;
-    }
-    return true;
-}
+bool UniqueDLEqualTo<ConceptTop>::operator()(ConceptTop l, ConceptTop r) const { return true; }
 
 template<PredicateTag P>
 bool UniqueDLEqualTo<ConceptAtomicState<P>>::operator()(ConceptAtomicState<P> l, ConceptAtomicState<P> r) const
@@ -149,14 +135,7 @@ bool UniqueDLEqualTo<ConceptNominal>::operator()(ConceptNominal l, ConceptNomina
 
 /* Roles */
 
-bool UniqueDLEqualTo<RoleUniversal>::operator()(RoleUniversal l, RoleUniversal r) const
-{
-    if (&l != &r)
-    {
-        return false;
-    }
-    return true;
-}
+bool UniqueDLEqualTo<RoleUniversal>::operator()(RoleUniversal l, RoleUniversal r) const { return true; }
 
 template<PredicateTag P>
 bool UniqueDLEqualTo<RoleAtomicState<P>>::operator()(RoleAtomicState<P> l, RoleAtomicState<P> r) const
@@ -314,23 +293,9 @@ template bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<Role>>::operator
 
 /* Concepts */
 
-bool UniqueDLEqualTo<grammar::ConceptBot>::operator()(grammar::ConceptBot l, grammar::ConceptBot r) const
-{
-    if (&l != &r)
-    {
-        return false;
-    }
-    return true;
-}
+bool UniqueDLEqualTo<grammar::ConceptBot>::operator()(grammar::ConceptBot l, grammar::ConceptBot r) const { return true; }
 
-bool UniqueDLEqualTo<grammar::ConceptTop>::operator()(grammar::ConceptTop l, grammar::ConceptTop r) const
-{
-    if (&l != &r)
-    {
-        return false;
-    }
-    return true;
-}
+bool UniqueDLEqualTo<grammar::ConceptTop>::operator()(grammar::ConceptTop l, grammar::ConceptTop r) const { return true; }
 
 template<PredicateTag P>
 bool UniqueDLEqualTo<grammar::ConceptAtomicState<P>>::operator()(grammar::ConceptAtomicState<P> l, grammar::ConceptAtomicState<P> r) const
@@ -444,14 +409,7 @@ bool UniqueDLEqualTo<grammar::ConceptNominal>::operator()(grammar::ConceptNomina
 
 /* Roles */
 
-bool UniqueDLEqualTo<grammar::RoleUniversal>::operator()(grammar::RoleUniversal l, grammar::RoleUniversal r) const
-{
-    if (&l != &r)
-    {
-        return false;
-    }
-    return true;
-}
+bool UniqueDLEqualTo<grammar::RoleUniversal>::operator()(grammar::RoleUniversal l, grammar::RoleUniversal r) const { return true; }
 
 template<PredicateTag P>
 bool UniqueDLEqualTo<grammar::RoleAtomicState<P>>::operator()(grammar::RoleAtomicState<P> l, grammar::RoleAtomicState<P> r) const
