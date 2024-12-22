@@ -18,14 +18,11 @@
 #ifndef MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 #define MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 
-#include "mimir/common/equal_to_cista.hpp"
-#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/workspaces/axiom_evaluator.hpp"
-#include "mimir/search/workspaces/state_repository.hpp"
+#include "mimir/search/workspaces/state_repository.hpp"  ///< We put this in the header to reduce includes
 
 namespace mimir
 {

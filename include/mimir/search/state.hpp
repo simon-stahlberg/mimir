@@ -18,8 +18,6 @@
 #ifndef MIMIR_SEARCH_STATE_HPP_
 #define MIMIR_SEARCH_STATE_HPP_
 
-#include "cista/containers/dynamic_bitset.h"
-#include "cista/serialization.h"
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/common/equal_to_cista.hpp"
 #include "mimir/common/hash_cista.hpp"

@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/equal_to.hpp"
-#include "mimir/formalism/hash.hpp"
 
 namespace mimir
 {

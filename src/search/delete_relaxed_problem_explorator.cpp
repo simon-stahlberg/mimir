@@ -26,6 +26,7 @@
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
 #include "mimir/search/workspaces/applicable_action_generator.hpp"
+#include "mimir/search/workspaces/state_repository.hpp"
 
 namespace mimir
 {

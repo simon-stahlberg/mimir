@@ -26,6 +26,7 @@
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/workspaces/axiom_evaluator.hpp"
+#include "mimir/search/workspaces/state_repository.hpp"
 
 namespace mimir
 {
