@@ -52,7 +52,7 @@ private:
     /* We encode selector and generator nodes in a single type */
     struct GeneratorOrSelectorNode
     {
-        static const size_t MAX_VALUE = (size_t) -1;
+        static const size_t MAX_VALUE;
 
         size_t first_data;
         size_t second_data;
@@ -118,26 +118,45 @@ private:
     std::vector<GeneratorOrSelectorNode> m_nodes;
     std::vector<T> m_elements;
 
+    std::vector<NodeIndex> m_evaluate_stack;
+
+    // TODO: make this iterative to avoid stack overflow in hard to ground domains.
+    // Additionally, we need to sort the elements by precondition literals and orderings first,
+    // allowing us to work on subranges instead of copying the data all the time...
     NodeIndex build_recursively(const size_t order_pos,
                                 const std::vector<T>& elements,
                                 const std::vector<size_t>& fluent_ground_atoms_order,
                                 const std::vector<size_t>& derived_ground_atoms_order);
 
-    void get_applicable_elements_recursively(size_t node_index,
-                                             const FlatBitset& fluent_ground_atoms,
-                                             const FlatBitset& derived_ground_atoms,
-                                             std::vector<T>& out_applicable_elements) const;
-
 public:
     MatchTree();
     MatchTree(const std::vector<T>& elements, const std::vector<size_t>& fluent_ground_atoms_order, const std::vector<size_t>& derived_ground_atoms_order);
 
-    void get_applicable_elements(const FlatBitset& fluent_ground_atoms, const FlatBitset& derived_ground_atoms, std::vector<T>& out_applicable_elements) const;
+    void get_applicable_elements(const FlatBitset& fluent_ground_atoms, const FlatBitset& derived_ground_atoms, std::vector<T>& out_applicable_elements);
 
     size_t get_num_nodes() const;
 
     void print() const;
 };
+
+template<typename T>
+const size_t MatchTree<T>::GeneratorOrSelectorNode::MAX_VALUE = static_cast<size_t>(-1);
+
+template<typename T>
+MatchTree<T>::MatchTree()
+{
+    m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(0, 0, NodeType::GENERATOR));
+}
+
+template<typename T>
+MatchTree<T>::MatchTree(const std::vector<T>& elements,
+                        const std::vector<size_t>& fluent_ground_atoms_order,
+                        const std::vector<size_t>& derived_ground_atoms_order)
+{
+    [[maybe_unused]] const auto root_node_index = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
+
+    assert(root_node_index == 0);
+}
 
 template<typename T>
 MatchTree<T>::NodeIndex MatchTree<T>::MatchTree::build_recursively(const size_t order_pos,
@@ -253,71 +272,55 @@ void MatchTree<T>::print() const
 }
 
 template<typename T>
-MatchTree<T>::MatchTree()
+void MatchTree<T>::get_applicable_elements(const FlatBitset& fluent_ground_atoms,
+                                           const FlatBitset& derived_ground_atoms,
+                                           std::vector<T>& out_applicable_elements)
 {
-    m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(0, 0, NodeType::GENERATOR));
-}
+    out_applicable_elements.clear();
+    m_evaluate_stack.clear();
 
-template<typename T>
-MatchTree<T>::MatchTree(const std::vector<T>& elements,
-                        const std::vector<size_t>& fluent_ground_atoms_order,
-                        const std::vector<size_t>& derived_ground_atoms_order)
-{
-    [[maybe_unused]] const auto root_node_index = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
+    assert(!m_nodes.empty());
+    m_evaluate_stack.push_back(0);
 
-    assert(root_node_index == 0);
-}
-
-template<typename T>
-void MatchTree<T>::get_applicable_elements_recursively(size_t node_index,
-                                                       const FlatBitset& fluent_ground_atoms,
-                                                       const FlatBitset& derived_ground_atoms,
-                                                       std::vector<T>& out_applicable_elements) const
-{
-    auto& node = m_nodes[node_index];
-
-    if (node.is_selector_node())
+    while (!m_evaluate_stack.empty())
     {
-        if (node.has_dontcare_succ())
-        {
-            get_applicable_elements_recursively(node.get_dontcare_succ(), fluent_ground_atoms, derived_ground_atoms, out_applicable_elements);
-        }
+        const auto node_index = m_evaluate_stack.back();
+        m_evaluate_stack.pop_back();
 
-        const bool is_atom_true = (node.get_node_type() == NodeType::FLUENT_SELECTOR) ? fluent_ground_atoms.get(node.get_ground_atom_index()) :
-                                                                                        derived_ground_atoms.get(node.get_ground_atom_index());
+        const auto& node = m_nodes[node_index];
 
-        if (is_atom_true)
+        if (node.is_selector_node())
         {
-            if (node.has_true_succ())
+            const bool is_atom_true = (node.get_node_type() == NodeType::FLUENT_SELECTOR) ? fluent_ground_atoms.get(node.get_ground_atom_index()) :
+                                                                                            derived_ground_atoms.get(node.get_ground_atom_index());
+
+            if (is_atom_true)
             {
-                get_applicable_elements_recursively(node.get_true_succ(), fluent_ground_atoms, derived_ground_atoms, out_applicable_elements);
+                if (node.has_true_succ())
+                {
+                    m_evaluate_stack.push_back(node.get_true_succ());
+                }
+            }
+            else
+            {
+                if (node.has_false_succ())
+                {
+                    m_evaluate_stack.push_back(node.get_false_succ());
+                }
+            }
+
+            if (node.has_dontcare_succ())
+            {
+                m_evaluate_stack.push_back(node.get_dontcare_succ());
             }
         }
         else
         {
-            if (node.has_false_succ())
-            {
-                get_applicable_elements_recursively(node.get_false_succ(), fluent_ground_atoms, derived_ground_atoms, out_applicable_elements);
-            }
+            out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + node.get_begin(), m_elements.begin() + node.get_end());
         }
     }
-    else
-    {
-        out_applicable_elements.insert(out_applicable_elements.end(), m_elements.begin() + node.get_begin(), m_elements.begin() + node.get_end());
-    }
 }
 
-template<typename T>
-void MatchTree<T>::get_applicable_elements(const FlatBitset& fluent_ground_atoms,
-                                           const FlatBitset& derived_ground_atoms,
-                                           std::vector<T>& out_applicable_elements) const
-{
-    out_applicable_elements.clear();
-
-    assert(!m_nodes.empty());
-
-    get_applicable_elements_recursively(0, fluent_ground_atoms, derived_ground_atoms, out_applicable_elements);
-}
 }
 
 #endif
