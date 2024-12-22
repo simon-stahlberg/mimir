@@ -20,8 +20,6 @@
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
-#include "mimir/common/equal_to_cista.hpp"
-#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/memory.hpp"
 
 #include <absl/container/flat_hash_set.h>
@@ -44,7 +42,7 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed, we use absl::flat_hash_set because it stores the data in contiguous memory.
-    std::unordered_set<loki::ObserverPtr<const T>, Hash, Equal> m_elements;
+    absl::flat_hash_set<loki::ObserverPtr<const T>, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
@@ -127,8 +125,8 @@ public:
     size_t get_estimated_memory_usage_in_bytes() const
     {
         const auto usage1 = m_storage.capacity();
-        // const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);
-        return usage1;  // + usage2;
+        const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);
+        return usage1 + usage2;
     }
 };
 

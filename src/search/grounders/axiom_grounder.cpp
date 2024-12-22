@@ -146,9 +146,9 @@ size_t AxiomGrounder::get_estimated_memory_usage_in_bytes_for_axioms() const
     {
         const auto& [axiom_builder, grounding_table] = action_data;
         // TODO: add memory usage of axiom_builder
-        // usage3 += get_memory_usage_in_bytes(grounding_table);
+        usage3 += get_memory_usage_in_bytes(grounding_table);
     }
 
-    return usage1 + usage2;  // + usage3;
+    return usage1 + usage2 + usage3;
 }
 }
