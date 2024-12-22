@@ -44,9 +44,9 @@ Denotation<D> DenotationRepository<D>::insert(Constructor<D> constructor, size_t
     const auto [it, inserted] = m_storage.insert(denotation);
     if (inserted)
     {
-        m_cached_dynamic_denotations.emplace(Key { constructor, state_index }, Denotation<D>(*it));
+        m_cached_dynamic_denotations.emplace(Key { constructor, state_index }, Denotation<D>(it->get()));
     }
-    return Denotation<D>(*it);
+    return Denotation<D>(it->get());
 }
 
 template<ConstructorTag D>

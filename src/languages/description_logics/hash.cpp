@@ -21,258 +21,345 @@
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 
-namespace mimir::dl
-{
-
-/**
- * DL constructors
- */
-
 /* Concepts */
 
-size_t UniqueDLHasher<ConceptBot>::operator()(ConceptBot e) const { return 0; }
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptBotImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptBotImpl> ptr) const { return 0; }
 
-size_t UniqueDLHasher<ConceptTop>::operator()(ConceptTop e) const { return 0; }
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptTopImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptTopImpl> ptr) const { return 0; }
 
-template<PredicateTag P>
-size_t UniqueDLHasher<ConceptAtomicState<P>>::operator()(ConceptAtomicState<P> e) const
+template<mimir::PredicateTag P>
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return mimir::hash_combine(ptr->get_predicate());
 }
 
-template size_t UniqueDLHasher<ConceptAtomicState<Static>>::operator()(ConceptAtomicState<Static> e) const;
-template size_t UniqueDLHasher<ConceptAtomicState<Fluent>>::operator()(ConceptAtomicState<Fluent> e) const;
-template size_t UniqueDLHasher<ConceptAtomicState<Derived>>::operator()(ConceptAtomicState<Derived> e) const;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<mimir::Derived>>>;
 
-template<PredicateTag P>
-size_t UniqueDLHasher<ConceptAtomicGoal<P>>::operator()(ConceptAtomicGoal<P> e) const
+template<mimir::PredicateTag P>
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->is_negated(), e->get_predicate());
+    return mimir::hash_combine(ptr->is_negated(), ptr->get_predicate());
 }
 
-template size_t UniqueDLHasher<ConceptAtomicGoal<Static>>::operator()(ConceptAtomicGoal<Static> e) const;
-template size_t UniqueDLHasher<ConceptAtomicGoal<Fluent>>::operator()(ConceptAtomicGoal<Fluent> e) const;
-template size_t UniqueDLHasher<ConceptAtomicGoal<Derived>>::operator()(ConceptAtomicGoal<Derived> e) const;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<mimir::Derived>>>;
 
-size_t UniqueDLHasher<ConceptIntersection>::operator()(ConceptIntersection e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_concept_left(), e->get_concept_right());
+    return mimir::hash_combine(ptr->get_concept_left(), ptr->get_concept_right());
 }
 
-size_t UniqueDLHasher<ConceptUnion>::operator()(ConceptUnion e) const { return mimir::hash_combine(e->get_concept_left(), e->get_concept_right()); }
-
-size_t UniqueDLHasher<ConceptNegation>::operator()(ConceptNegation e) const { return mimir::hash_combine(e->get_concept()); }
-
-size_t UniqueDLHasher<ConceptValueRestriction>::operator()(ConceptValueRestriction e) const { return mimir::hash_combine(e->get_role(), e->get_concept()); }
-
-size_t UniqueDLHasher<ConceptExistentialQuantification>::operator()(ConceptExistentialQuantification e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptUnionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role(), e->get_concept());
+    return mimir::hash_combine(ptr->get_concept_left(), ptr->get_concept_right());
 }
 
-size_t UniqueDLHasher<ConceptRoleValueMapContainment>::operator()(ConceptRoleValueMapContainment e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptNegationImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptNegationImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+    return mimir::hash_combine(ptr->get_concept());
 }
 
-size_t UniqueDLHasher<ConceptRoleValueMapEquality>::operator()(ConceptRoleValueMapEquality e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_left(), e->get_role_right());
+    return mimir::hash_combine(ptr->get_role(), ptr->get_concept());
 }
 
-size_t UniqueDLHasher<ConceptNominal>::operator()(ConceptNominal e) const { return mimir::hash_combine(e->get_object()); }
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role(), ptr->get_concept());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_left(), ptr->get_role_right());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_left(), ptr->get_role_right());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::ConceptNominalImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptNominalImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_object());
+}
 
 /* Roles */
 
-size_t UniqueDLHasher<RoleUniversal>::operator()(RoleUniversal e) const { return 0; }
-
-template<PredicateTag P>
-size_t UniqueDLHasher<RoleAtomicState<P>>::operator()(RoleAtomicState<P> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleUniversalImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleUniversalImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return 0;
 }
 
-template size_t UniqueDLHasher<RoleAtomicState<Static>>::operator()(RoleAtomicState<Static> e) const;
-template size_t UniqueDLHasher<RoleAtomicState<Fluent>>::operator()(RoleAtomicState<Fluent> e) const;
-template size_t UniqueDLHasher<RoleAtomicState<Derived>>::operator()(RoleAtomicState<Derived> e) const;
-
-template<PredicateTag P>
-size_t UniqueDLHasher<RoleAtomicGoal<P>>::operator()(RoleAtomicGoal<P> e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>>>::operator()(loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->is_negated(), e->get_predicate());
+    return mimir::hash_combine(ptr->get_predicate());
 }
 
-template size_t UniqueDLHasher<RoleAtomicGoal<Static>>::operator()(RoleAtomicGoal<Static> e) const;
-template size_t UniqueDLHasher<RoleAtomicGoal<Fluent>>::operator()(RoleAtomicGoal<Fluent> e) const;
-template size_t UniqueDLHasher<RoleAtomicGoal<Derived>>::operator()(RoleAtomicGoal<Derived> e) const;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<mimir::Derived>>>;
 
-size_t UniqueDLHasher<RoleIntersection>::operator()(RoleIntersection e) const { return mimir::hash_combine(e->get_role_left(), e->get_role_right()); }
-
-size_t UniqueDLHasher<RoleUnion>::operator()(RoleUnion e) const { return mimir::hash_combine(e->get_role_left(), e->get_role_right()); }
-
-size_t UniqueDLHasher<RoleComplement>::operator()(RoleComplement e) const { return mimir::hash_combine(e->get_role()); }
-
-size_t UniqueDLHasher<RoleInverse>::operator()(RoleInverse e) const { return mimir::hash_combine(e->get_role()); }
-
-size_t UniqueDLHasher<RoleComposition>::operator()(RoleComposition e) const { return mimir::hash_combine(e->get_role_left(), e->get_role_right()); }
-
-size_t UniqueDLHasher<RoleTransitiveClosure>::operator()(RoleTransitiveClosure e) const { return mimir::hash_combine(e->get_role()); }
-
-size_t UniqueDLHasher<RoleReflexiveTransitiveClosure>::operator()(RoleReflexiveTransitiveClosure e) const { return mimir::hash_combine(e->get_role()); }
-
-size_t UniqueDLHasher<RoleRestriction>::operator()(RoleRestriction e) const { return mimir::hash_combine(e->get_role(), e->get_concept()); }
-
-size_t UniqueDLHasher<RoleIdentity>::operator()(RoleIdentity e) const { return mimir::hash_combine(e->get_concept()); }
-
-/**
- * DL grammar constructors
- */
-
-template<ConstructorTag D>
-size_t UniqueDLHasher<grammar::DerivationRule<D>>::operator()(grammar::DerivationRule<D> e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>>>::operator()(loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->get_non_terminal(), e->get_constructor_or_non_terminals());
+    return mimir::hash_combine(ptr->is_negated(), ptr->get_predicate());
 }
 
-template size_t UniqueDLHasher<grammar::DerivationRule<Concept>>::operator()(grammar::DerivationRule<Concept> e) const;
-template size_t UniqueDLHasher<grammar::DerivationRule<Role>>::operator()(grammar::DerivationRule<Role> e) const;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<mimir::Derived>>>;
 
-template<ConstructorTag D>
-size_t UniqueDLHasher<grammar::NonTerminal<D>>::operator()(grammar::NonTerminal<D> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_name());
+    return mimir::hash_combine(ptr->get_role_left(), ptr->get_role_right());
 }
 
-template size_t UniqueDLHasher<grammar::NonTerminal<Concept>>::operator()(grammar::NonTerminal<Concept> e) const;
-template size_t UniqueDLHasher<grammar::NonTerminal<Role>>::operator()(grammar::NonTerminal<Role> e) const;
-
-template<ConstructorTag D>
-size_t UniqueDLHasher<grammar::ConstructorOrNonTerminal<D>>::operator()(grammar::ConstructorOrNonTerminal<D> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleUnionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_constructor_or_non_terminal());
+    return mimir::hash_combine(ptr->get_role_left(), ptr->get_role_right());
 }
 
-template size_t UniqueDLHasher<grammar::ConstructorOrNonTerminal<Concept>>::operator()(grammar::ConstructorOrNonTerminal<Concept> e) const;
-template size_t UniqueDLHasher<grammar::ConstructorOrNonTerminal<Role>>::operator()(grammar::ConstructorOrNonTerminal<Role> e) const;
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleComplementImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleComplementImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleInverseImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleInverseImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleCompositionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleCompositionImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_left(), ptr->get_role_right());
+}
+
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role(), ptr->get_concept());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::RoleIdentityImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleIdentityImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_concept());
+}
+
+/* DL Grammar Constructors */
+
+template<mimir::dl::ConstructorTag D>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>> ptr) const
+{
+    return mimir::hash_combine(ptr->get_non_terminal(), ptr->get_constructor_or_non_terminals());
+}
+
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<mimir::dl::Concept>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<mimir::dl::Role>>>;
+
+template<mimir::dl::ConstructorTag D>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>> ptr) const
+{
+    return mimir::hash_combine(ptr->get_name());
+}
+
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<mimir::dl::Concept>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<mimir::dl::Role>>>;
+
+template<mimir::dl::ConstructorTag D>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>> ptr) const
+{
+    return mimir::hash_combine(ptr->get_constructor_or_non_terminal());
+}
+
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<mimir::dl::Concept>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<mimir::dl::Role>>>;
 
 /* Concepts */
 
-size_t UniqueDLHasher<grammar::ConceptBot>::operator()(grammar::ConceptBot e) const { return 0; }
-
-size_t UniqueDLHasher<grammar::ConceptTop>::operator()(grammar::ConceptTop e) const { return 0; }
-
-template<PredicateTag P>
-size_t UniqueDLHasher<grammar::ConceptAtomicState<P>>::operator()(grammar::ConceptAtomicState<P> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return 0;
 }
 
-template size_t UniqueDLHasher<grammar::ConceptAtomicState<Static>>::operator()(grammar::ConceptAtomicState<Static> e) const;
-template size_t UniqueDLHasher<grammar::ConceptAtomicState<Fluent>>::operator()(grammar::ConceptAtomicState<Fluent> e) const;
-template size_t UniqueDLHasher<grammar::ConceptAtomicState<Derived>>::operator()(grammar::ConceptAtomicState<Derived> e) const;
-
-template<PredicateTag P>
-size_t UniqueDLHasher<grammar::ConceptAtomicGoal<P>>::operator()(grammar::ConceptAtomicGoal<P> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl> ptr) const
 {
-    return mimir::hash_combine(e->is_negated(), e->get_predicate());
+    return 0;
 }
 
-template size_t UniqueDLHasher<grammar::ConceptAtomicGoal<Static>>::operator()(grammar::ConceptAtomicGoal<Static> e) const;
-template size_t UniqueDLHasher<grammar::ConceptAtomicGoal<Fluent>>::operator()(grammar::ConceptAtomicGoal<Fluent> e) const;
-template size_t UniqueDLHasher<grammar::ConceptAtomicGoal<Derived>>::operator()(grammar::ConceptAtomicGoal<Derived> e) const;
-
-size_t UniqueDLHasher<grammar::ConceptIntersection>::operator()(grammar::ConceptIntersection e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->get_concept_or_non_terminal_left(), e->get_concept_or_non_terminal_right());
+    return mimir::hash_combine(ptr->get_predicate());
 }
 
-size_t UniqueDLHasher<grammar::ConceptUnion>::operator()(grammar::ConceptUnion e) const
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<mimir::Derived>>>;
+
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->get_concept_or_non_terminal_left(), e->get_concept_or_non_terminal_right());
+    return mimir::hash_combine(ptr->is_negated(), ptr->get_predicate());
 }
 
-size_t UniqueDLHasher<grammar::ConceptNegation>::operator()(grammar::ConceptNegation e) const { return mimir::hash_combine(e->get_concept_or_non_terminal()); }
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<mimir::Derived>>>;
 
-size_t UniqueDLHasher<grammar::ConceptValueRestriction>::operator()(grammar::ConceptValueRestriction e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal(), e->get_concept_or_non_terminal());
+    return mimir::hash_combine(ptr->get_concept_or_non_terminal_left(), ptr->get_concept_or_non_terminal_right());
 }
 
-size_t UniqueDLHasher<grammar::ConceptExistentialQuantification>::operator()(grammar::ConceptExistentialQuantification e) const
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal(), e->get_concept_or_non_terminal());
+    return mimir::hash_combine(ptr->get_concept_or_non_terminal_left(), ptr->get_concept_or_non_terminal_right());
 }
 
-size_t UniqueDLHasher<grammar::ConceptRoleValueMapContainment>::operator()(grammar::ConceptRoleValueMapContainment e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal_left(), e->get_role_or_non_terminal_right());
+    return mimir::hash_combine(ptr->get_concept_or_non_terminal());
 }
 
-size_t UniqueDLHasher<grammar::ConceptRoleValueMapEquality>::operator()(grammar::ConceptRoleValueMapEquality e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal_left(), e->get_role_or_non_terminal_right());
+    return mimir::hash_combine(ptr->get_role_or_non_terminal(), ptr->get_concept_or_non_terminal());
 }
 
-size_t UniqueDLHasher<grammar::ConceptNominal>::operator()(grammar::ConceptNominal e) const { return mimir::hash_combine(e->get_object()); }
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_or_non_terminal(), ptr->get_concept_or_non_terminal());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_or_non_terminal_left(), ptr->get_role_or_non_terminal_right());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_or_non_terminal_left(), ptr->get_role_or_non_terminal_right());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_object());
+}
 
 /* Roles */
 
-size_t UniqueDLHasher<grammar::RoleUniversal>::operator()(grammar::RoleUniversal e) const { return 0; }
-
-template<PredicateTag P>
-size_t UniqueDLHasher<grammar::RoleAtomicState<P>>::operator()(grammar::RoleAtomicState<P> e) const
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_predicate());
+    return 0;
 }
 
-template size_t UniqueDLHasher<grammar::RoleAtomicState<Static>>::operator()(grammar::RoleAtomicState<Static> e) const;
-template size_t UniqueDLHasher<grammar::RoleAtomicState<Fluent>>::operator()(grammar::RoleAtomicState<Fluent> e) const;
-template size_t UniqueDLHasher<grammar::RoleAtomicState<Derived>>::operator()(grammar::RoleAtomicState<Derived> e) const;
-
-template<PredicateTag P>
-size_t UniqueDLHasher<grammar::RoleAtomicGoal<P>>::operator()(grammar::RoleAtomicGoal<P> e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->is_negated(), e->get_predicate());
+    return mimir::hash_combine(ptr->get_predicate());
 }
 
-template size_t UniqueDLHasher<grammar::RoleAtomicGoal<Static>>::operator()(grammar::RoleAtomicGoal<Static> e) const;
-template size_t UniqueDLHasher<grammar::RoleAtomicGoal<Fluent>>::operator()(grammar::RoleAtomicGoal<Fluent> e) const;
-template size_t UniqueDLHasher<grammar::RoleAtomicGoal<Derived>>::operator()(grammar::RoleAtomicGoal<Derived> e) const;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<mimir::Derived>>>;
 
-size_t UniqueDLHasher<grammar::RoleIntersection>::operator()(grammar::RoleIntersection e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal_left(), e->get_role_or_non_terminal_right());
+    return mimir::hash_combine(ptr->is_negated(), ptr->get_predicate());
 }
 
-size_t UniqueDLHasher<grammar::RoleUnion>::operator()(grammar::RoleUnion e) const
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<mimir::Derived>>>;
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal_left(), e->get_role_or_non_terminal_right());
+    return mimir::hash_combine(ptr->get_role_or_non_terminal_left(), ptr->get_role_or_non_terminal_right());
 }
 
-size_t UniqueDLHasher<grammar::RoleComplement>::operator()(grammar::RoleComplement e) const { return mimir::hash_combine(e->get_role_or_non_terminal()); }
-
-size_t UniqueDLHasher<grammar::RoleInverse>::operator()(grammar::RoleInverse e) const { return mimir::hash_combine(e->get_role_or_non_terminal()); }
-
-size_t UniqueDLHasher<grammar::RoleComposition>::operator()(grammar::RoleComposition e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal_left(), e->get_role_or_non_terminal_right());
+    return mimir::hash_combine(ptr->get_role_or_non_terminal_left(), ptr->get_role_or_non_terminal_right());
 }
 
-size_t UniqueDLHasher<grammar::RoleTransitiveClosure>::operator()(grammar::RoleTransitiveClosure e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal());
+    return mimir::hash_combine(ptr->get_role_or_non_terminal());
 }
 
-size_t UniqueDLHasher<grammar::RoleReflexiveTransitiveClosure>::operator()(grammar::RoleReflexiveTransitiveClosure e) const
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal());
+    return mimir::hash_combine(ptr->get_role_or_non_terminal());
 }
 
-size_t UniqueDLHasher<grammar::RoleRestriction>::operator()(grammar::RoleRestriction e) const
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl> ptr) const
 {
-    return mimir::hash_combine(e->get_role_or_non_terminal(), e->get_concept_or_non_terminal());
+    return mimir::hash_combine(ptr->get_role_or_non_terminal_left(), ptr->get_role_or_non_terminal_right());
 }
 
-size_t UniqueDLHasher<grammar::RoleIdentity>::operator()(grammar::RoleIdentity e) const { return mimir::hash_combine(e->get_concept_or_non_terminal()); }
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_or_non_terminal());
+}
 
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_or_non_terminal());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_role_or_non_terminal(), ptr->get_concept_or_non_terminal());
+}
+
+size_t
+std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_concept_or_non_terminal());
 }

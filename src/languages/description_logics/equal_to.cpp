@@ -20,508 +20,418 @@
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 
-namespace mimir::dl
-{
-
 /**
  * DL constructors
  */
 
 /* Concepts */
 
-bool UniqueDLEqualTo<ConceptBot>::operator()(ConceptBot l, ConceptBot r) const { return true; }
-
-bool UniqueDLEqualTo<ConceptTop>::operator()(ConceptTop l, ConceptTop r) const { return true; }
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<ConceptAtomicState<P>>::operator()(ConceptAtomicState<P> l, ConceptAtomicState<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptBotImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptBotImpl> lhs,
+                                                                                   loki::ObserverPtr<const mimir::dl::ConceptBotImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_predicate() == r->get_predicate());
-    }
     return true;
 }
 
-template bool UniqueDLEqualTo<ConceptAtomicState<Static>>::operator()(ConceptAtomicState<Static> l, ConceptAtomicState<Static> r) const;
-template bool UniqueDLEqualTo<ConceptAtomicState<Fluent>>::operator()(ConceptAtomicState<Fluent> l, ConceptAtomicState<Fluent> r) const;
-template bool UniqueDLEqualTo<ConceptAtomicState<Derived>>::operator()(ConceptAtomicState<Derived> l, ConceptAtomicState<Derived> r) const;
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<ConceptAtomicGoal<P>>::operator()(ConceptAtomicGoal<P> l, ConceptAtomicGoal<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptTopImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptTopImpl> lhs,
+                                                                                   loki::ObserverPtr<const mimir::dl::ConceptTopImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
-    }
     return true;
 }
 
-template bool UniqueDLEqualTo<ConceptAtomicGoal<Static>>::operator()(ConceptAtomicGoal<Static> l, ConceptAtomicGoal<Static> r) const;
-template bool UniqueDLEqualTo<ConceptAtomicGoal<Fluent>>::operator()(ConceptAtomicGoal<Fluent> l, ConceptAtomicGoal<Fluent> r) const;
-template bool UniqueDLEqualTo<ConceptAtomicGoal<Derived>>::operator()(ConceptAtomicGoal<Derived> l, ConceptAtomicGoal<Derived> r) const;
-
-bool UniqueDLEqualTo<ConceptIntersection>::operator()(ConceptIntersection l, ConceptIntersection r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept_left() == r->get_concept_left()) && (l->get_concept_right() == r->get_concept_right());
-    }
-    return true;
+    return (lhs->get_predicate() == rhs->get_predicate());
 }
 
-bool UniqueDLEqualTo<ConceptUnion>::operator()(ConceptUnion l, ConceptUnion r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<mimir::Derived>>>;
+
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept_left() == r->get_concept_left()) && (l->get_concept_right() == r->get_concept_right());
-    }
-    return true;
+    return (lhs->is_negated() == rhs->is_negated()) && (lhs->get_predicate() == rhs->get_predicate());
 }
 
-bool UniqueDLEqualTo<ConceptNegation>::operator()(ConceptNegation l, ConceptNegation r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept() == r->get_concept());
-    }
-    return true;
+    return (lhs->get_concept_left() == rhs->get_concept_left()) && (lhs->get_concept_right() == rhs->get_concept_right());
 }
 
-bool UniqueDLEqualTo<ConceptValueRestriction>::operator()(ConceptValueRestriction l, ConceptValueRestriction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptUnionImpl> lhs,
+                                                                                     loki::ObserverPtr<const mimir::dl::ConceptUnionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
-    }
-    return true;
+    return (lhs->get_concept_left() == rhs->get_concept_left()) && (lhs->get_concept_right() == rhs->get_concept_right());
 }
 
-bool UniqueDLEqualTo<ConceptExistentialQuantification>::operator()(ConceptExistentialQuantification l, ConceptExistentialQuantification r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptNegationImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptNegationImpl> lhs,
+                                                                                        loki::ObserverPtr<const mimir::dl::ConceptNegationImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
-    }
-    return true;
+    return (lhs->get_concept() == rhs->get_concept());
 }
 
-bool UniqueDLEqualTo<ConceptRoleValueMapContainment>::operator()(ConceptRoleValueMapContainment l, ConceptRoleValueMapContainment r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role()) && (lhs->get_concept() == rhs->get_concept());
 }
 
-bool UniqueDLEqualTo<ConceptRoleValueMapEquality>::operator()(ConceptRoleValueMapEquality l, ConceptRoleValueMapEquality r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role()) && (lhs->get_concept() == rhs->get_concept());
 }
 
-bool UniqueDLEqualTo<ConceptNominal>::operator()(ConceptNominal l, ConceptNominal r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_object() == r->get_object());
-    }
-    return true;
+    return (lhs->get_role_left() == rhs->get_role_left()) && (lhs->get_role_right() == rhs->get_role_right());
+}
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl> rhs) const
+{
+    return (lhs->get_role_left() == rhs->get_role_left()) && (lhs->get_role_right() == rhs->get_role_right());
+}
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::ConceptNominalImpl>>::operator()(loki::ObserverPtr<const mimir::dl::ConceptNominalImpl> lhs,
+                                                                                       loki::ObserverPtr<const mimir::dl::ConceptNominalImpl> rhs) const
+{
+    return (lhs->get_object() == rhs->get_object());
 }
 
 /* Roles */
 
-bool UniqueDLEqualTo<RoleUniversal>::operator()(RoleUniversal l, RoleUniversal r) const { return true; }
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<RoleAtomicState<P>>::operator()(RoleAtomicState<P> l, RoleAtomicState<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleUniversalImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleUniversalImpl> lhs,
+                                                                                      loki::ObserverPtr<const mimir::dl::RoleUniversalImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_predicate() == r->get_predicate());
-    }
     return true;
 }
 
-template bool UniqueDLEqualTo<RoleAtomicState<Static>>::operator()(RoleAtomicState<Static> l, RoleAtomicState<Static> r) const;
-template bool UniqueDLEqualTo<RoleAtomicState<Fluent>>::operator()(RoleAtomicState<Fluent> l, RoleAtomicState<Fluent> r) const;
-template bool UniqueDLEqualTo<RoleAtomicState<Derived>>::operator()(RoleAtomicState<Derived> l, RoleAtomicState<Derived> r) const;
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<RoleAtomicGoal<P>>::operator()(RoleAtomicGoal<P> l, RoleAtomicGoal<P> r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>>>::operator()(loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>> lhs,
+                                                                                           loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
-    }
-    return true;
+    return (lhs->get_predicate() == rhs->get_predicate());
 }
 
-template bool UniqueDLEqualTo<RoleAtomicGoal<Static>>::operator()(RoleAtomicGoal<Static> l, RoleAtomicGoal<Static> r) const;
-template bool UniqueDLEqualTo<RoleAtomicGoal<Fluent>>::operator()(RoleAtomicGoal<Fluent> l, RoleAtomicGoal<Fluent> r) const;
-template bool UniqueDLEqualTo<RoleAtomicGoal<Derived>>::operator()(RoleAtomicGoal<Derived> l, RoleAtomicGoal<Derived> r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<mimir::Derived>>>;
 
-bool UniqueDLEqualTo<RoleIntersection>::operator()(RoleIntersection l, RoleIntersection r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>>>::operator()(loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>> lhs,
+                                                                                          loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
-    }
-    return true;
+    return (lhs->is_negated() == rhs->is_negated()) && (lhs->get_predicate() == rhs->get_predicate());
 }
 
-bool UniqueDLEqualTo<RoleUnion>::operator()(RoleUnion l, RoleUnion r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl> lhs,
+                                                                                         loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
-    }
-    return true;
+    return (lhs->get_role_left() == rhs->get_role_left()) && (lhs->get_role_right() == rhs->get_role_right());
 }
 
-bool UniqueDLEqualTo<RoleComplement>::operator()(RoleComplement l, RoleComplement r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleUnionImpl> lhs,
+                                                                                  loki::ObserverPtr<const mimir::dl::RoleUnionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role());
-    }
-    return true;
+    return (lhs->get_role_left() == rhs->get_role_left()) && (lhs->get_role_right() == rhs->get_role_right());
 }
 
-bool UniqueDLEqualTo<RoleInverse>::operator()(RoleInverse l, RoleInverse r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleComplementImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleComplementImpl> lhs,
+                                                                                       loki::ObserverPtr<const mimir::dl::RoleComplementImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role());
 }
 
-bool UniqueDLEqualTo<RoleComposition>::operator()(RoleComposition l, RoleComposition r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleInverseImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleInverseImpl> lhs,
+                                                                                    loki::ObserverPtr<const mimir::dl::RoleInverseImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_left() == r->get_role_left()) && (l->get_role_right() == r->get_role_right());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role());
 }
 
-bool UniqueDLEqualTo<RoleTransitiveClosure>::operator()(RoleTransitiveClosure l, RoleTransitiveClosure r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleCompositionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleCompositionImpl> lhs,
+                                                                                        loki::ObserverPtr<const mimir::dl::RoleCompositionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role());
-    }
-    return true;
+    return (lhs->get_role_left() == rhs->get_role_left()) && (lhs->get_role_right() == rhs->get_role_right());
 }
 
-bool UniqueDLEqualTo<RoleReflexiveTransitiveClosure>::operator()(RoleReflexiveTransitiveClosure l, RoleReflexiveTransitiveClosure r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role());
 }
 
-bool UniqueDLEqualTo<RoleRestriction>::operator()(RoleRestriction l, RoleRestriction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role() == r->get_role()) && (l->get_concept() == r->get_concept());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role());
 }
 
-bool UniqueDLEqualTo<RoleIdentity>::operator()(RoleIdentity l, RoleIdentity r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl> lhs,
+                                                                                        loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept() == r->get_concept());
-    }
-    return true;
+    return (lhs->get_role() == rhs->get_role()) && (lhs->get_concept() == rhs->get_concept());
+}
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::RoleIdentityImpl>>::operator()(loki::ObserverPtr<const mimir::dl::RoleIdentityImpl> lhs,
+                                                                                     loki::ObserverPtr<const mimir::dl::RoleIdentityImpl> rhs) const
+{
+    return (lhs->get_concept() == rhs->get_concept());
 }
 
 /**
  * DL grammar constructors
  */
 
-template<ConstructorTag D>
-bool UniqueDLEqualTo<grammar::DerivationRule<D>>::operator()(grammar::DerivationRule<D> l, grammar::DerivationRule<D> r) const
+template<mimir::dl::ConstructorTag D>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_non_terminal() == r->get_non_terminal()) && (l->get_constructor_or_non_terminals() == r->get_constructor_or_non_terminals());
-    }
-    return true;
+    return (lhs->get_non_terminal() == rhs->get_non_terminal()) && (lhs->get_constructor_or_non_terminals() == rhs->get_constructor_or_non_terminals());
 }
 
-template bool UniqueDLEqualTo<grammar::DerivationRule<Concept>>::operator()(grammar::DerivationRule<Concept> l, grammar::DerivationRule<Concept> r) const;
-template bool UniqueDLEqualTo<grammar::DerivationRule<Role>>::operator()(grammar::DerivationRule<Role> l, grammar::DerivationRule<Role> r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<mimir::dl::Concept>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<mimir::dl::Role>>>;
 
-template<ConstructorTag D>
-bool UniqueDLEqualTo<grammar::NonTerminal<D>>::operator()(grammar::NonTerminal<D> l, grammar::NonTerminal<D> r) const
+template<mimir::dl::ConstructorTag D>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name());
 }
 
-template bool UniqueDLEqualTo<grammar::NonTerminal<Concept>>::operator()(grammar::NonTerminal<Concept> l, grammar::NonTerminal<Concept> r) const;
-template bool UniqueDLEqualTo<grammar::NonTerminal<Role>>::operator()(grammar::NonTerminal<Role> l, grammar::NonTerminal<Role> r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<mimir::dl::Concept>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<mimir::dl::Role>>>;
 
-template<ConstructorTag D>
-bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<D>>::operator()(grammar::ConstructorOrNonTerminal<D> l, grammar::ConstructorOrNonTerminal<D> r) const
+template<mimir::dl::ConstructorTag D>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_constructor_or_non_terminal() == r->get_constructor_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_constructor_or_non_terminal() == rhs->get_constructor_or_non_terminal());
 }
 
-template bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<Concept>>::operator()(grammar::ConstructorOrNonTerminal<Concept> l,
-                                                                                      grammar::ConstructorOrNonTerminal<Concept> r) const;
-template bool UniqueDLEqualTo<grammar::ConstructorOrNonTerminal<Role>>::operator()(grammar::ConstructorOrNonTerminal<Role> l,
-                                                                                   grammar::ConstructorOrNonTerminal<Role> r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<mimir::dl::Concept>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<mimir::dl::Role>>>;
 
 /* Concepts */
 
-bool UniqueDLEqualTo<grammar::ConceptBot>::operator()(grammar::ConceptBot l, grammar::ConceptBot r) const { return true; }
-
-bool UniqueDLEqualTo<grammar::ConceptTop>::operator()(grammar::ConceptTop l, grammar::ConceptTop r) const { return true; }
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<grammar::ConceptAtomicState<P>>::operator()(grammar::ConceptAtomicState<P> l, grammar::ConceptAtomicState<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_predicate() == r->get_predicate());
-    }
     return true;
 }
 
-template bool UniqueDLEqualTo<grammar::ConceptAtomicState<Static>>::operator()(grammar::ConceptAtomicState<Static> l,
-                                                                               grammar::ConceptAtomicState<Static> r) const;
-template bool UniqueDLEqualTo<grammar::ConceptAtomicState<Fluent>>::operator()(grammar::ConceptAtomicState<Fluent> l,
-                                                                               grammar::ConceptAtomicState<Fluent> r) const;
-template bool UniqueDLEqualTo<grammar::ConceptAtomicState<Derived>>::operator()(grammar::ConceptAtomicState<Derived> l,
-                                                                                grammar::ConceptAtomicState<Derived> r) const;
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<P>>::operator()(grammar::ConceptAtomicGoal<P> l, grammar::ConceptAtomicGoal<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
-    }
     return true;
 }
 
-template bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<Static>>::operator()(grammar::ConceptAtomicGoal<Static> l, grammar::ConceptAtomicGoal<Static> r) const;
-template bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<Fluent>>::operator()(grammar::ConceptAtomicGoal<Fluent> l, grammar::ConceptAtomicGoal<Fluent> r) const;
-template bool UniqueDLEqualTo<grammar::ConceptAtomicGoal<Derived>>::operator()(grammar::ConceptAtomicGoal<Derived> l,
-                                                                               grammar::ConceptAtomicGoal<Derived> r) const;
-
-bool UniqueDLEqualTo<grammar::ConceptIntersection>::operator()(grammar::ConceptIntersection l, grammar::ConceptIntersection r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept_or_non_terminal_left() == r->get_concept_or_non_terminal_left())
-               && (l->get_concept_or_non_terminal_right() == r->get_concept_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->get_predicate() == rhs->get_predicate());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptUnion>::operator()(grammar::ConceptUnion l, grammar::ConceptUnion r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<mimir::Derived>>>;
+
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept_or_non_terminal_left() == r->get_concept_or_non_terminal_left())
-               && (l->get_concept_or_non_terminal_right() == r->get_concept_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->is_negated() == rhs->is_negated()) && (lhs->get_predicate() == rhs->get_predicate());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptNegation>::operator()(grammar::ConceptNegation l, grammar::ConceptNegation r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_concept_or_non_terminal_left() == rhs->get_concept_or_non_terminal_left())
+           && (lhs->get_concept_or_non_terminal_right() == rhs->get_concept_or_non_terminal_right());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptValueRestriction>::operator()(grammar::ConceptValueRestriction l, grammar::ConceptValueRestriction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal()) && (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_concept_or_non_terminal_left() == rhs->get_concept_or_non_terminal_left())
+           && (lhs->get_concept_or_non_terminal_right() == rhs->get_concept_or_non_terminal_right());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptExistentialQuantification>::operator()(grammar::ConceptExistentialQuantification l,
-                                                                            grammar::ConceptExistentialQuantification r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal()) && (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_concept_or_non_terminal() == rhs->get_concept_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptRoleValueMapContainment>::operator()(grammar::ConceptRoleValueMapContainment l,
-                                                                          grammar::ConceptRoleValueMapContainment r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
-               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal()) && (lhs->get_concept_or_non_terminal() == rhs->get_concept_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptRoleValueMapEquality>::operator()(grammar::ConceptRoleValueMapEquality l, grammar::ConceptRoleValueMapEquality r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
-               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal()) && (lhs->get_concept_or_non_terminal() == rhs->get_concept_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::ConceptNominal>::operator()(grammar::ConceptNominal l, grammar::ConceptNominal r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_object() == r->get_object());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal_left() == rhs->get_role_or_non_terminal_left())
+           && (lhs->get_role_or_non_terminal_right() == rhs->get_role_or_non_terminal_right());
+}
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl> rhs) const
+{
+    return (lhs->get_role_or_non_terminal_left() == rhs->get_role_or_non_terminal_left())
+           && (lhs->get_role_or_non_terminal_right() == rhs->get_role_or_non_terminal_right());
+}
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl> rhs) const
+{
+    return (lhs->get_object() == rhs->get_object());
 }
 
 /* Roles */
 
-bool UniqueDLEqualTo<grammar::RoleUniversal>::operator()(grammar::RoleUniversal l, grammar::RoleUniversal r) const { return true; }
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<grammar::RoleAtomicState<P>>::operator()(grammar::RoleAtomicState<P> l, grammar::RoleAtomicState<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_predicate() == r->get_predicate());
-    }
     return true;
 }
 
-template bool UniqueDLEqualTo<grammar::RoleAtomicState<Static>>::operator()(grammar::RoleAtomicState<Static> l, grammar::RoleAtomicState<Static> r) const;
-template bool UniqueDLEqualTo<grammar::RoleAtomicState<Fluent>>::operator()(grammar::RoleAtomicState<Fluent> l, grammar::RoleAtomicState<Fluent> r) const;
-template bool UniqueDLEqualTo<grammar::RoleAtomicState<Derived>>::operator()(grammar::RoleAtomicState<Derived> l, grammar::RoleAtomicState<Derived> r) const;
-
-template<PredicateTag P>
-bool UniqueDLEqualTo<grammar::RoleAtomicGoal<P>>::operator()(grammar::RoleAtomicGoal<P> l, grammar::RoleAtomicGoal<P> r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->is_negated() == r->is_negated()) && (l->get_predicate() == r->get_predicate());
-    }
-    return true;
+    return (lhs->get_predicate() == rhs->get_predicate());
 }
 
-template bool UniqueDLEqualTo<grammar::RoleAtomicGoal<Static>>::operator()(grammar::RoleAtomicGoal<Static> l, grammar::RoleAtomicGoal<Static> r) const;
-template bool UniqueDLEqualTo<grammar::RoleAtomicGoal<Fluent>>::operator()(grammar::RoleAtomicGoal<Fluent> l, grammar::RoleAtomicGoal<Fluent> r) const;
-template bool UniqueDLEqualTo<grammar::RoleAtomicGoal<Derived>>::operator()(grammar::RoleAtomicGoal<Derived> l, grammar::RoleAtomicGoal<Derived> r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<mimir::Derived>>>;
 
-bool UniqueDLEqualTo<grammar::RoleIntersection>::operator()(grammar::RoleIntersection l, grammar::RoleIntersection r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
-               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->is_negated() == rhs->is_negated()) && (lhs->get_predicate() == rhs->get_predicate());
 }
 
-bool UniqueDLEqualTo<grammar::RoleUnion>::operator()(grammar::RoleUnion l, grammar::RoleUnion r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
-               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal_left() == rhs->get_role_or_non_terminal_left())
+           && (lhs->get_role_or_non_terminal_right() == rhs->get_role_or_non_terminal_right());
 }
 
-bool UniqueDLEqualTo<grammar::RoleComplement>::operator()(grammar::RoleComplement l, grammar::RoleComplement r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl>>::operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl> lhs,
+                                                                                           loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal_left() == rhs->get_role_or_non_terminal_left())
+           && (lhs->get_role_or_non_terminal_right() == rhs->get_role_or_non_terminal_right());
 }
 
-bool UniqueDLEqualTo<grammar::RoleInverse>::operator()(grammar::RoleInverse l, grammar::RoleInverse r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::RoleComposition>::operator()(grammar::RoleComposition l, grammar::RoleComposition r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal_left() == r->get_role_or_non_terminal_left())
-               && (l->get_role_or_non_terminal_right() == r->get_role_or_non_terminal_right());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::RoleTransitiveClosure>::operator()(grammar::RoleTransitiveClosure l, grammar::RoleTransitiveClosure r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal_left() == rhs->get_role_or_non_terminal_left())
+           && (lhs->get_role_or_non_terminal_right() == rhs->get_role_or_non_terminal_right());
 }
 
-bool UniqueDLEqualTo<grammar::RoleReflexiveTransitiveClosure>::operator()(grammar::RoleReflexiveTransitiveClosure l,
-                                                                          grammar::RoleReflexiveTransitiveClosure r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::RoleRestriction>::operator()(grammar::RoleRestriction l, grammar::RoleRestriction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_role_or_non_terminal() == r->get_role_or_non_terminal()) && (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal());
 }
 
-bool UniqueDLEqualTo<grammar::RoleIdentity>::operator()(grammar::RoleIdentity l, grammar::RoleIdentity r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_concept_or_non_terminal() == r->get_concept_or_non_terminal());
-    }
-    return true;
+    return (lhs->get_role_or_non_terminal() == rhs->get_role_or_non_terminal()) && (lhs->get_concept_or_non_terminal() == rhs->get_concept_or_non_terminal());
 }
 
+bool std::equal_to<loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl>>::operator()(
+    loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl> lhs,
+    loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl> rhs) const
+{
+    return (lhs->get_concept_or_non_terminal() == rhs->get_concept_or_non_terminal());
 }

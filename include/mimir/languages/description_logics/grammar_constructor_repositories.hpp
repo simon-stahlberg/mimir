@@ -34,7 +34,7 @@ namespace mimir::dl::grammar
  */
 
 template<typename T>
-using SegmentedDLRepository = loki::SegmentedRepository<T, UniqueDLHasher<const T*>, UniqueDLEqualTo<const T*>>;
+using SegmentedDLRepository = loki::SegmentedRepository<T>;
 
 template<ConstructorTag D>
 using NonTerminalFactory = SegmentedDLRepository<NonTerminalImpl<D>>;

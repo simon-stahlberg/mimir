@@ -25,6 +25,7 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
+#include <loki/details/utils/observer_ptr.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -65,14 +66,17 @@ using ConstructorTagToDenotationType =
 }
 
 template<mimir::dl::ConstructorTag D>
-struct mimir::buffering::DerefStdHasher<mimir::dl::DenotationImpl<D>>
+struct std::hash<loki::ObserverPtr<const mimir::dl::DenotationImpl<D>>>
 {
-    size_t operator()(const mimir::dl::DenotationImpl<D>* ptr) const { return mimir::hash_combine(ptr->get_data()); }
+    size_t operator()(loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> ptr) const { return mimir::hash_combine(ptr->get_data()); }
 };
 template<mimir::dl::ConstructorTag D>
-struct mimir::buffering::DerefStdEqualTo<mimir::dl::DenotationImpl<D>>
+struct std::equal_to<loki::ObserverPtr<const mimir::dl::DenotationImpl<D>>>
 {
-    bool operator()(const mimir::dl::DenotationImpl<D>* lhs, const mimir::dl::DenotationImpl<D>* rhs) const { return lhs->get_data() == rhs->get_data(); }
+    bool operator()(loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> lhs, loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> rhs) const
+    {
+        return lhs->get_data() == rhs->get_data();
+    }
 };
 
 namespace mimir::dl

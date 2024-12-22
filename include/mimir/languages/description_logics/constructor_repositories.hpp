@@ -29,7 +29,7 @@ namespace mimir::dl
 {
 
 template<typename T>
-using SegmentedDLRepository = loki::SegmentedRepository<T, UniqueDLHasher<const T*>, UniqueDLEqualTo<const T*>>;
+using SegmentedDLRepository = loki::SegmentedRepository<T>;
 
 using ConceptBotRepository = SegmentedDLRepository<ConceptBotImpl>;
 using ConceptTopRepository = SegmentedDLRepository<ConceptTopImpl>;

@@ -62,7 +62,7 @@
  * Languages
  */
 
-// #include "mimir/languages/description_logics.hpp"
+#include "mimir/languages/description_logics.hpp"
 
 /**
  * Search

@@ -23,389 +23,327 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <loki/details/utils/observer_ptr.hpp>
 #include <ranges>
 #include <utility>
 #include <variant>
 
-namespace mimir::dl
-{
-
-/// @brief `UniqueDLHasher` is used to compare newly created dl constructors for uniqueness.
-/// Since the children are unique, it suffices to create a combined hash from nested pointers.
-template<typename T>
-struct UniqueDLHasher
-{
-    size_t operator()(const T& element) const { return std::hash<T>()(element); }
-};
-
-struct UniqueDLHashCombiner
-{
-public:
-    template<typename T>
-    void operator()(size_t& seed, const T& value) const
-    {
-        seed ^= UniqueDLHasher<T>()(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-    }
-
-    void operator()(size_t& seed, const std::size_t& value) const { seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2); }
-
-    template<typename... Types>
-    size_t operator()(const Types&... args) const
-    {
-        size_t seed = 0;
-        ((*this)(seed, args), ...);
-        return seed;
-    }
-};
-
-/// Spezialization for std::ranges::forward_range.
-template<typename ForwardRange>
-requires std::ranges::forward_range<ForwardRange>
-struct UniqueDLHasher<ForwardRange>
-{
-    size_t operator()(const ForwardRange& range) const
-    {
-        std::size_t aggregated_hash = 0;
-        for (const auto& item : range)
-        {
-            UniqueDLHashCombiner()(aggregated_hash, item);
-        }
-        return aggregated_hash;
-    }
-};
-
-/// Spezialization for std::variant.
-template<typename... Ts>
-struct UniqueDLHasher<std::variant<Ts...>>
-{
-    size_t operator()(const std::variant<Ts...>& variant) const
-    {
-        return std::visit([](const auto& arg) { return UniqueDLHasher<decltype(arg)>()(arg); }, variant);
-    }
-};
-
-/**
- * DL constructors
- */
-
 /* Concepts */
 
 template<>
-struct UniqueDLHasher<ConceptBot>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptBotImpl>>
 {
-    size_t operator()(ConceptBot e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptBotImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptTop>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptTopImpl>>
 {
-    size_t operator()(ConceptTop e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptTopImpl> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<ConceptAtomicState<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>>>
 {
-    size_t operator()(ConceptAtomicState<P> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptAtomicStateImpl<P>> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<ConceptAtomicGoal<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>>>
 {
-    size_t operator()(ConceptAtomicGoal<P> e) const;
-};
-
-template<>
-struct UniqueDLHasher<ConceptIntersection>
-{
-    size_t operator()(ConceptIntersection e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptAtomicGoalImpl<P>> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptUnion>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl>>
 {
-    size_t operator()(ConceptUnion e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptIntersectionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptNegation>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptUnionImpl>>
 {
-    size_t operator()(ConceptNegation e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptUnionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptValueRestriction>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptNegationImpl>>
 {
-    size_t operator()(ConceptValueRestriction e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptNegationImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptExistentialQuantification>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl>>
 {
-    size_t operator()(ConceptExistentialQuantification e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptValueRestrictionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptRoleValueMapContainment>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl>>
 {
-    size_t operator()(ConceptRoleValueMapContainment e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptExistentialQuantificationImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptRoleValueMapEquality>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl>>
 {
-    size_t operator()(ConceptRoleValueMapEquality e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapContainmentImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<ConceptNominal>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl>>
 {
-    size_t operator()(ConceptNominal e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptRoleValueMapEqualityImpl> ptr) const;
+};
+
+template<>
+struct std::hash<loki::ObserverPtr<const mimir::dl::ConceptNominalImpl>>
+{
+    size_t operator()(loki::ObserverPtr<const mimir::dl::ConceptNominalImpl> ptr) const;
 };
 
 /* Roles */
 
 template<>
-struct UniqueDLHasher<RoleUniversal>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleUniversalImpl>>
 {
-    size_t operator()(RoleUniversal e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleUniversalImpl> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<RoleAtomicState<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>>>
 {
-    size_t operator()(RoleAtomicState<P> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleAtomicStateImpl<P>> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<RoleAtomicGoal<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>>>
 {
-    size_t operator()(RoleAtomicGoal<P> e) const;
-};
-
-template<>
-struct UniqueDLHasher<RoleIntersection>
-{
-    size_t operator()(RoleIntersection e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleAtomicGoalImpl<P>> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleUnion>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl>>
 {
-    size_t operator()(RoleUnion e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleIntersectionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleComplement>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleUnionImpl>>
 {
-    size_t operator()(RoleComplement e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleUnionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleInverse>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleComplementImpl>>
 {
-    size_t operator()(RoleInverse e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleComplementImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleComposition>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleInverseImpl>>
 {
-    size_t operator()(RoleComposition e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleInverseImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleTransitiveClosure>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleCompositionImpl>>
 {
-    size_t operator()(RoleTransitiveClosure e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleCompositionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleReflexiveTransitiveClosure>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl>>
 {
-    size_t operator()(RoleReflexiveTransitiveClosure e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleTransitiveClosureImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleRestriction>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl>>
 {
-    size_t operator()(RoleRestriction e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleReflexiveTransitiveClosureImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<RoleIdentity>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl>>
 {
-    size_t operator()(RoleIdentity e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleRestrictionImpl> ptr) const;
+};
+
+template<>
+struct std::hash<loki::ObserverPtr<const mimir::dl::RoleIdentityImpl>>
+{
+    size_t operator()(loki::ObserverPtr<const mimir::dl::RoleIdentityImpl> ptr) const;
 };
 
 /**
  * DL grammar constructors
  */
 
-template<ConstructorTag D>
-struct UniqueDLHasher<grammar::DerivationRule<D>>
+template<mimir::dl::ConstructorTag D>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>>>
 {
-    size_t operator()(grammar::DerivationRule<D> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::DerivationRuleImpl<D>> ptr) const;
 };
 
-template<ConstructorTag D>
-struct UniqueDLHasher<grammar::NonTerminal<D>>
+template<mimir::dl::ConstructorTag D>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>>>
 {
-    size_t operator()(grammar::NonTerminal<D> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::NonTerminalImpl<D>> ptr) const;
 };
 
-template<ConstructorTag D>
-struct UniqueDLHasher<grammar::ConstructorOrNonTerminal<D>>
+template<mimir::dl::ConstructorTag D>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>>>
 {
-    size_t operator()(grammar::ConstructorOrNonTerminal<D> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConstructorOrNonTerminalImpl<D>> ptr) const;
 };
 
 /* Concepts */
 
 template<>
-struct UniqueDLHasher<grammar::ConceptBot>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl>>
 {
-    size_t operator()(grammar::ConceptBot e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptBotImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptTop>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl>>
 {
-    size_t operator()(grammar::ConceptTop e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptTopImpl> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<grammar::ConceptAtomicState<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>>>
 {
-    size_t operator()(grammar::ConceptAtomicState<P> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicStateImpl<P>> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<grammar::ConceptAtomicGoal<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>>>
 {
-    size_t operator()(grammar::ConceptAtomicGoal<P> e) const;
-};
-
-template<>
-struct UniqueDLHasher<grammar::ConceptIntersection>
-{
-    size_t operator()(grammar::ConceptIntersection e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptAtomicGoalImpl<P>> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptUnion>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl>>
 {
-    size_t operator()(grammar::ConceptUnion e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptIntersectionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptNegation>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl>>
 {
-    size_t operator()(grammar::ConceptNegation e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptUnionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptValueRestriction>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl>>
 {
-    size_t operator()(grammar::ConceptValueRestriction e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptNegationImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptExistentialQuantification>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl>>
 {
-    size_t operator()(grammar::ConceptExistentialQuantification e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptValueRestrictionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptRoleValueMapContainment>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl>>
 {
-    size_t operator()(grammar::ConceptRoleValueMapContainment e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptExistentialQuantificationImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptRoleValueMapEquality>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl>>
 {
-    size_t operator()(grammar::ConceptRoleValueMapEquality e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapContainmentImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::ConceptNominal>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl>>
 {
-    size_t operator()(grammar::ConceptNominal e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptRoleValueMapEqualityImpl> ptr) const;
+};
+
+template<>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl>>
+{
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::ConceptNominalImpl> ptr) const;
 };
 
 /* Roles */
 
 template<>
-struct UniqueDLHasher<grammar::RoleUniversal>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl>>
 {
-    size_t operator()(grammar::RoleUniversal e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleUniversalImpl> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<grammar::RoleAtomicState<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>>>
 {
-    size_t operator()(grammar::RoleAtomicState<P> e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicStateImpl<P>> ptr) const;
 };
 
-template<PredicateTag P>
-struct UniqueDLHasher<grammar::RoleAtomicGoal<P>>
+template<mimir::PredicateTag P>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>>>
 {
-    size_t operator()(grammar::RoleAtomicGoal<P> e) const;
-};
-
-template<>
-struct UniqueDLHasher<grammar::RoleIntersection>
-{
-    size_t operator()(grammar::RoleIntersection e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleAtomicGoalImpl<P>> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleUnion>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl>>
 {
-    size_t operator()(grammar::RoleUnion e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleIntersectionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleComplement>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl>>
 {
-    size_t operator()(grammar::RoleComplement e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleUnionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleInverse>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl>>
 {
-    size_t operator()(grammar::RoleInverse e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleComplementImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleComposition>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl>>
 {
-    size_t operator()(grammar::RoleComposition e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleInverseImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleTransitiveClosure>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl>>
 {
-    size_t operator()(grammar::RoleTransitiveClosure e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleCompositionImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleReflexiveTransitiveClosure>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl>>
 {
-    size_t operator()(grammar::RoleReflexiveTransitiveClosure e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleTransitiveClosureImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleRestriction>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl>>
 {
-    size_t operator()(grammar::RoleRestriction e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleReflexiveTransitiveClosureImpl> ptr) const;
 };
 
 template<>
-struct UniqueDLHasher<grammar::RoleIdentity>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl>>
 {
-    size_t operator()(grammar::RoleIdentity e) const;
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleRestrictionImpl> ptr) const;
 };
 
-}
+template<>
+struct std::hash<loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl>>
+{
+    size_t operator()(loki::ObserverPtr<const mimir::dl::grammar::RoleIdentityImpl> ptr) const;
+};
 
 #endif
