@@ -47,6 +47,7 @@ private:
         FLUENT_SELECTOR,
         DERIVED_SELECTOR,
         GENERATOR,
+        UNDFINED,
     };
 
     /* We encode selector and generator nodes in a single type */
@@ -63,6 +64,8 @@ private:
         /* Common */
 
         NodeType get_node_type() const noexcept { return type; }
+
+        GeneratorOrSelectorNode() : first_data(-1), second_data(-1), third_data(-1), fourth_data(-1), type(NodeType::UNDFINED) {}
 
         /* Selector specific accessors */
 
@@ -148,14 +151,117 @@ MatchTree<T>::MatchTree()
     m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(0, 0, NodeType::GENERATOR));
 }
 
+using SelectorIterator = std::pair<size_t, size_t>;
+using SelectorIterators = std::tuple<SelectorIterator, SelectorIterator, SelectorIterator>;
+using SelectorIteratorsList = std::vector<SelectorIterators>;
+
+template<DynamicPredicateTag P, typename T>
+void sort_by_precondition(const std::vector<T>& elements,
+                          const std::vector<size_t>& ground_atoms_order,
+                          std::vector<std::pair<size_t, size_t>>& ref_forward_backward_jumps,
+                          SelectorIteratorsList& ref_iterators,
+                          std::vector<T>& ref_sorted_elements)
+{
+    for (size_t fluent_index : ground_atoms_order)
+    {
+        auto positive_elements = std::vector<T> {};
+        auto negative_elements = std::vector<T> {};
+
+        auto pos = size_t(0);
+        while (pos < ref_forward_backward_jumps.size())
+        {
+            pos += ref_forward_backward_jumps[pos].first;
+
+            const auto& element = elements[pos];
+
+            if (contains(element->get_strips_precondition().template get_positive_precondition<Fluent>(), fluent_index))
+            {
+                positive_elements.push_back(element);
+                ref_forward_backward_jumps[pos - ref_forward_backward_jumps[pos].second].first += ref_forward_backward_jumps[pos].first;
+                ref_forward_backward_jumps[pos + ref_forward_backward_jumps[pos].first].second -= ref_forward_backward_jumps[pos].second;
+            }
+            else if (contains(element->get_strips_precondition().template get_negative_precondition<Fluent>(), fluent_index))
+            {
+                negative_elements.push_back(element);
+                ref_forward_backward_jumps[pos - ref_forward_backward_jumps[pos].second].first += ref_forward_backward_jumps[pos].first;
+                ref_forward_backward_jumps[pos + ref_forward_backward_jumps[pos].first].second -= ref_forward_backward_jumps[pos].second;
+            }
+        }
+
+        // Append elements with positive precondition and their begin and end iterators
+        ref_iterators.push_back(std::make_tuple(ref_sorted_elements.size(), ref_sorted_elements.size() + positive_elements.size()));
+        ref_sorted_elements.insert(ref_sorted_elements.end(), positive_elements.begin(), positive_elements.end());
+
+        // Append elements with negative precondition and their begin and end iterators
+        ref_iterators.push_back(std::make_tuple(ref_sorted_elements.size(), ref_sorted_elements.size() + negative_elements.size()));
+        ref_sorted_elements.insert(ref_sorted_elements.end(), negative_elements.begin(), negative_elements.end());
+
+        // Append elements without precondition and their begin and end iterators
+        ref_iterators.push_back(std::make_tuple(ref_sorted_elements.size(), ref_sorted_elements.size() + elements.size()));
+    }
+}
+
+template<typename T>
+std::tuple<std::vector<T>, SelectorIteratorsList, SelectorIteratorsList> sort_by_precondition(const std::vector<T>& elements,
+                                                                                              const std::vector<size_t>& fluent_ground_atoms_order,
+                                                                                              const std::vector<size_t>& derived_ground_atoms_order)
+{
+    auto sorted_elements = std::vector<T> {};
+    auto forward_backward_jumps = std::vector<std::pair<size_t, size_t>>(elements.size() + 1, std::make_pair(1, 1));
+
+    auto fluent_iterators = SelectorIteratorsList();
+    auto derived_iterators = SelectorIteratorsList();
+
+    sort_by_precondition<Fluent>(elements, fluent_ground_atoms_order, forward_backward_jumps, fluent_iterators, sorted_elements);
+    sort_by_precondition<Derived>(elements, derived_ground_atoms_order, forward_backward_jumps, derived_iterators, sorted_elements);
+
+    return std::make_tuple(std::move(sorted_elements), std::move(fluent_iterators), std::move(derived_iterators));
+}
+
+static bool is_empty_selector_iterators(const SelectorIterators& iterators)
+{
+    const auto& [positive_iters, negative_iters, dontcare_iters] = iterators;
+    return (positive_iters.second == positive_iters.first)     //
+           && (negative_iters.second == negative_iters.first)  //
+           && (dontcare_iters.second == dontcare_iters.first);
+}
+
 template<typename T>
 MatchTree<T>::MatchTree(const std::vector<T>& elements,
                         const std::vector<size_t>& fluent_ground_atoms_order,
                         const std::vector<size_t>& derived_ground_atoms_order)
 {
-    [[maybe_unused]] const auto root_node_index = build_recursively(0, elements, fluent_ground_atoms_order, derived_ground_atoms_order);
+    auto [sorted_elements, fluent_iterators, derived_iterators] = sort_by_precondition(elements, fluent_ground_atoms_order, derived_ground_atoms_order);
 
-    assert(root_node_index == 0);
+    m_elements = std::move(sorted_elements);
+
+    const auto num_fluent_atoms = fluent_ground_atoms_order.size();
+    const auto num_derived_atoms = derived_ground_atoms_order.size();
+    const auto end_pos = num_fluent_atoms + num_derived_atoms;
+
+    m_nodes.push_back(GeneratorOrSelectorNode());
+
+    auto stack = std::vector<std::pair<size_t, NodeIndex>>();
+    stack.emplace_back(0, 0);
+
+    while (!stack.empty())
+    {
+        const auto [order_pos, node_index] = stack.back();
+
+        bool is_fluent = (order_pos < num_fluent_atoms);
+
+        const auto& iterators = (is_fluent) ? fluent_iterators.at(order_pos) : derived_iterators.at(order_pos);
+
+        assert(!is_empty_selector_iterators(iterators));
+
+        if (order_pos == end_pos)
+        {
+            const auto node_index = MatchTree::NodeIndex { m_nodes.size() };
+            m_nodes.push_back(MatchTree::GeneratorOrSelectorNode(m_elements.size(), m_elements.size() + elements.size(), NodeType::GENERATOR));
+            m_elements.insert(m_elements.end(), elements.begin(), elements.end());
+            return node_index;
+        }
+    }
 }
 
 template<typename T>
