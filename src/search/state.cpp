@@ -27,16 +27,6 @@
 #include <ostream>
 #include <tuple>
 
-size_t mimir::buffering::DerefStdHasher<mimir::StateImpl>::operator()(const mimir::StateImpl* ptr) const
-{
-    return std::hash<mimir::FlatIndexList>()(ptr->get_atoms<mimir::Fluent>());
-}
-
-bool mimir::buffering::DerefStdEqualTo<mimir::StateImpl>::operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const
-{
-    return lhs->get_atoms<mimir::Fluent>() == rhs->get_atoms<mimir::Fluent>();
-}
-
 namespace mimir
 {
 
@@ -152,4 +142,15 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
 
     return os;
 }
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::StateImpl>>::operator()(loki::ObserverPtr<const mimir::StateImpl> ptr) const
+{
+    return std::hash<mimir::FlatIndexList>()(ptr->get_atoms<mimir::Fluent>());
+}
+
+size_t std::equal_to<loki::ObserverPtr<const mimir::StateImpl>>::operator()(loki::ObserverPtr<const mimir::StateImpl> lhs,
+                                                                            loki::ObserverPtr<const mimir::StateImpl> rhs) const
+{
+    return lhs->get_atoms<mimir::Fluent>() == rhs->get_atoms<mimir::Fluent>();
 }

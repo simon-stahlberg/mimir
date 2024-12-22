@@ -21,217 +21,213 @@
 #include "mimir/formalism/declarations.hpp"
 
 #include <functional>
+#include <loki/details/utils/observer_ptr.hpp>
 #include <variant>
 
-namespace mimir
+template<>
+struct std::equal_to<loki::ObserverPtr<const mimir::ActionImpl>>
 {
+    bool operator()(loki::ObserverPtr<const mimir::ActionImpl> lhs, loki::ObserverPtr<const mimir::ActionImpl> rhs) const;
+};
 
-/// @brief `UniquePDDLEqualTo` is used to compare newly created PDDL objects for uniqueness.
-/// Since the children are unique, it suffices to compare nested pointers.
-template<typename T>
-struct UniquePDDLEqualTo
+template<mimir::PredicateTag P>
+struct std::equal_to<loki::ObserverPtr<const mimir::AtomImpl<P>>>
 {
-    bool operator()(const T& l, const T& r) const { return std::equal_to<T>()(l, r); }
+    bool operator()(loki::ObserverPtr<const mimir::AtomImpl<P>> lhs, loki::ObserverPtr<const mimir::AtomImpl<P>> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Action>
+struct std::equal_to<loki::ObserverPtr<const mimir::AxiomImpl>>
 {
-    bool operator()(Action l, Action r) const;
-};
-
-template<PredicateTag P>
-struct UniquePDDLEqualTo<Atom<P>>
-{
-    bool operator()(Atom<P> l, Atom<P> r) const;
+    bool operator()(loki::ObserverPtr<const mimir::AxiomImpl> lhs, loki::ObserverPtr<const mimir::AxiomImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Axiom>
+struct std::equal_to<loki::ObserverPtr<const mimir::DomainImpl>>
 {
-    bool operator()(Axiom l, Axiom r) const;
+    bool operator()(loki::ObserverPtr<const mimir::DomainImpl> lhs, loki::ObserverPtr<const mimir::DomainImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Domain>
+struct std::equal_to<loki::ObserverPtr<const mimir::EffectStripsImpl>>
 {
-    bool operator()(Domain l, Domain r) const;
+    bool operator()(loki::ObserverPtr<const mimir::EffectStripsImpl> lhs, loki::ObserverPtr<const mimir::EffectStripsImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<EffectStrips>
+struct std::equal_to<loki::ObserverPtr<const mimir::EffectConditionalImpl>>
 {
-    bool operator()(EffectStrips l, EffectStrips r) const;
+    bool operator()(loki::ObserverPtr<const mimir::EffectConditionalImpl> lhs, loki::ObserverPtr<const mimir::EffectConditionalImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<EffectConditional>
+struct std::equal_to<loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl>>
 {
-    bool operator()(EffectConditional l, EffectConditional r) const;
+    bool operator()(loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl> lhs,
+                    loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<ExistentiallyQuantifiedConjunctiveCondition>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl>>
 {
-    bool operator()(ExistentiallyQuantifiedConjunctiveCondition l, ExistentiallyQuantifiedConjunctiveCondition r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl> lhs, loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionExpressionNumber>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl>>
 {
-    bool operator()(FunctionExpressionNumber l, FunctionExpressionNumber r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl> lhs,
+                    loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionExpressionBinaryOperator>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl>>
 {
-    bool operator()(FunctionExpressionBinaryOperator l, FunctionExpressionBinaryOperator r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl> lhs,
+                    loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionExpressionMultiOperator>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl>>
 {
-    bool operator()(FunctionExpressionMultiOperator l, FunctionExpressionMultiOperator r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl> lhs, loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionExpressionMinus>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl>>
 {
-    bool operator()(FunctionExpressionMinus l, FunctionExpressionMinus r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl> lhs,
+                    loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionExpressionFunction>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionImpl>>
 {
-    bool operator()(FunctionExpressionFunction l, FunctionExpressionFunction r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionExpressionImpl> lhs, loki::ObserverPtr<const mimir::FunctionExpressionImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionExpression>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionSkeletonImpl>>
 {
-    bool operator()(FunctionExpression l, FunctionExpression r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionSkeletonImpl> lhs, loki::ObserverPtr<const mimir::FunctionSkeletonImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<FunctionSkeleton>
+struct std::equal_to<loki::ObserverPtr<const mimir::FunctionImpl>>
 {
-    bool operator()(FunctionSkeleton l, FunctionSkeleton r) const;
+    bool operator()(loki::ObserverPtr<const mimir::FunctionImpl> lhs, loki::ObserverPtr<const mimir::FunctionImpl> rhs) const;
+};
+
+template<mimir::PredicateTag P>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundAtomImpl<P>>>
+{
+    bool operator()(loki::ObserverPtr<const mimir::GroundAtomImpl<P>> lhs, loki::ObserverPtr<const mimir::GroundAtomImpl<P>> rhs) const;
+};
+template<>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl>>
+{
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl> lhs,
+                    loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Function>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl>>
 {
-    bool operator()(Function l, Function r) const;
-};
-
-template<PredicateTag P>
-struct UniquePDDLEqualTo<GroundAtom<P>>
-{
-    bool operator()(GroundAtom<P> l, GroundAtom<P> r) const;
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl> lhs,
+                    loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunctionExpressionNumber>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl>>
 {
-    bool operator()(GroundFunctionExpressionNumber l, GroundFunctionExpressionNumber r) const;
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl> lhs,
+                    loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunctionExpressionBinaryOperator>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl>>
 {
-    bool operator()(GroundFunctionExpressionBinaryOperator l, GroundFunctionExpressionBinaryOperator r) const;
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl> lhs,
+                    loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunctionExpressionMultiOperator>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl>>
 {
-    bool operator()(GroundFunctionExpressionMultiOperator l, GroundFunctionExpressionMultiOperator r) const;
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl> lhs,
+                    loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunctionExpressionMinus>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl>>
 {
-    bool operator()(GroundFunctionExpressionMinus l, GroundFunctionExpressionMinus r) const;
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl> lhs, loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunctionExpressionFunction>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionImpl>>
 {
-    bool operator()(GroundFunctionExpressionFunction l, GroundFunctionExpressionFunction r) const;
+    bool operator()(loki::ObserverPtr<const mimir::GroundFunctionImpl> lhs, loki::ObserverPtr<const mimir::GroundFunctionImpl> rhs) const;
+};
+
+template<mimir::PredicateTag P>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundLiteralImpl<P>>>
+{
+    bool operator()(loki::ObserverPtr<const mimir::GroundLiteralImpl<P>> lhs, loki::ObserverPtr<const mimir::GroundLiteralImpl<P>> rhs) const;
+};
+
+template<mimir::PredicateTag P>
+struct std::equal_to<loki::ObserverPtr<const mimir::LiteralImpl<P>>>
+{
+    bool operator()(loki::ObserverPtr<const mimir::LiteralImpl<P>> lhs, loki::ObserverPtr<const mimir::LiteralImpl<P>> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunctionExpression>
+struct std::equal_to<loki::ObserverPtr<const mimir::OptimizationMetricImpl>>
 {
-    bool operator()(GroundFunctionExpression l, GroundFunctionExpression r) const;
+    bool operator()(loki::ObserverPtr<const mimir::OptimizationMetricImpl> lhs, loki::ObserverPtr<const mimir::OptimizationMetricImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<GroundFunction>
+struct std::equal_to<loki::ObserverPtr<const mimir::NumericFluentImpl>>
 {
-    bool operator()(GroundFunction l, GroundFunction r) const;
-};
-
-template<PredicateTag P>
-struct UniquePDDLEqualTo<GroundLiteral<P>>
-{
-    bool operator()(GroundLiteral<P> l, GroundLiteral<P> r) const;
-};
-
-template<PredicateTag P>
-struct UniquePDDLEqualTo<Literal<P>>
-{
-    bool operator()(Literal<P> l, Literal<P> r) const;
+    bool operator()(loki::ObserverPtr<const mimir::NumericFluentImpl> lhs, loki::ObserverPtr<const mimir::NumericFluentImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<OptimizationMetric>
+struct std::equal_to<loki::ObserverPtr<const mimir::ObjectImpl>>
 {
-    bool operator()(OptimizationMetric l, OptimizationMetric r) const;
+    bool operator()(loki::ObserverPtr<const mimir::ObjectImpl> lhs, loki::ObserverPtr<const mimir::ObjectImpl> rhs) const;
+};
+
+template<mimir::PredicateTag P>
+struct std::equal_to<loki::ObserverPtr<const mimir::PredicateImpl<P>>>
+{
+    bool operator()(loki::ObserverPtr<const mimir::PredicateImpl<P>> lhs, loki::ObserverPtr<const mimir::PredicateImpl<P>> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<NumericFluent>
+struct std::equal_to<loki::ObserverPtr<const mimir::ProblemImpl>>
 {
-    bool operator()(NumericFluent l, NumericFluent r) const;
+    bool operator()(loki::ObserverPtr<const mimir::ProblemImpl> lhs, loki::ObserverPtr<const mimir::ProblemImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Object>
+struct std::equal_to<loki::ObserverPtr<const mimir::RequirementsImpl>>
 {
-    bool operator()(Object l, Object r) const;
-};
-
-template<PredicateTag P>
-struct UniquePDDLEqualTo<Predicate<P>>
-{
-    bool operator()(Predicate<P> l, Predicate<P> r) const;
+    bool operator()(loki::ObserverPtr<const mimir::RequirementsImpl> lhs, loki::ObserverPtr<const mimir::RequirementsImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Problem>
+struct std::equal_to<loki::ObserverPtr<const mimir::TermImpl>>
 {
-    bool operator()(Problem l, Problem r) const;
+    bool operator()(loki::ObserverPtr<const mimir::TermImpl> lhs, loki::ObserverPtr<const mimir::TermImpl> rhs) const;
 };
 
 template<>
-struct UniquePDDLEqualTo<Requirements>
+struct std::equal_to<loki::ObserverPtr<const mimir::VariableImpl>>
 {
-    bool operator()(Requirements l, Requirements r) const;
+    bool operator()(loki::ObserverPtr<const mimir::VariableImpl> lhs, loki::ObserverPtr<const mimir::VariableImpl> rhs) const;
 };
-
-template<>
-struct UniquePDDLEqualTo<Term>
-{
-    bool operator()(Term l, Term r) const;
-};
-
-template<>
-struct UniquePDDLEqualTo<Variable>
-{
-    bool operator()(Variable l, Variable r) const;
-};
-
-}
 
 #endif

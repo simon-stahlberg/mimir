@@ -114,7 +114,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         auto iter = m_states.find(state_builder);
         if (iter != m_states.end())
         {
-            return *iter;
+            return iter->get();
         }
     }
 
@@ -137,7 +137,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
     }
 
     // Cache and return the extended state.
-    return *m_states.insert(state_builder).first;
+    return m_states.insert(state_builder).first->get();
 }
 
 static void apply_action_effects(const FlatBitset& negative_applied_effects, const FlatBitset& positive_applied_effects, FlatBitset& ref_state_fluent_atoms)
@@ -248,7 +248,7 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
         const auto iter = m_states.find(state_builder);
         if (iter != m_states.end())
         {
-            return std::make_pair(*iter, action_cost);
+            return std::make_pair(iter->get(), action_cost);
         }
     }
 
@@ -271,7 +271,7 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
     }
 
     // Cache and return the extended state.
-    return std::make_pair(*m_states.insert(state_builder).first, action_cost);
+    return std::make_pair(m_states.insert(state_builder).first->get(), action_cost);
 }
 
 Problem StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }

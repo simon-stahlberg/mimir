@@ -21,6 +21,7 @@
 #include "cista/containers/dynamic_bitset.h"
 #include "cista/serialization.h"
 #include "mimir/buffering/unordered_set.h"
+#include "mimir/common/equal_to_cista.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
@@ -68,20 +69,22 @@ private:
     FlatIndexList& get_fluent_atoms();
     uintptr_t& get_derived_atoms();
 };
+
 }
 
 // Only hash/compare the non-extended portion of a state, and the problem.
 // The extended portion is always equal for the same non-extended portion.
 // We use it for the unique state construction in the `StateRepository`.
 template<>
-struct mimir::buffering::DerefStdHasher<mimir::StateImpl>
+struct std::hash<loki::ObserverPtr<const mimir::StateImpl>>
 {
-    size_t operator()(const mimir::StateImpl* ptr) const;
+    size_t operator()(loki::ObserverPtr<const mimir::StateImpl> ptr) const;
 };
+
 template<>
-struct mimir::buffering::DerefStdEqualTo<mimir::StateImpl>
+struct std::equal_to<loki::ObserverPtr<const mimir::StateImpl>>
 {
-    bool operator()(const mimir::StateImpl* lhs, const mimir::StateImpl* rhs) const;
+    size_t operator()(loki::ObserverPtr<const mimir::StateImpl> lhs, loki::ObserverPtr<const mimir::StateImpl> rhs) const;
 };
 
 namespace mimir

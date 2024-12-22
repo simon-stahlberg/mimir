@@ -74,6 +74,8 @@ struct Hash<std::pair<T1, T2>>
     size_t operator()(const std::pair<T1, T2>& pair) const { return mimir::hash_combine(pair.first, pair.second); }
 };
 
+/// @brief Hash specialization for a tuple.
+/// @tparam ...Ts
 template<typename... Ts>
 struct Hash<std::tuple<Ts...>>
 {
@@ -82,6 +84,23 @@ struct Hash<std::tuple<Ts...>>
         size_t aggregated_hash = sizeof...(Ts);
         std::apply([&aggregated_hash](const Ts&... args) { (hash_combine(aggregated_hash, args), ...); }, tuple);
         return aggregated_hash;
+    }
+};
+
+/// @brief Hash specialization for a variant.
+/// @tparam ...Ts
+template<typename... Ts>
+struct Hash<std::variant<Ts...>>
+{
+    size_t operator()(const std::variant<Ts...>& variant) const
+    {
+        return std::visit(
+            [](const auto& arg)
+            {
+                using DecayedType = std::decay_t<decltype(arg)>;
+                return Hash<DecayedType>()(arg);
+            },
+            variant);
     }
 };
 

@@ -67,24 +67,22 @@ struct GroundAxiomImpl
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
-
 }
 
 template<>
-struct mimir::buffering::DerefStdHasher<mimir::GroundAxiomImpl>
+struct std::hash<loki::ObserverPtr<const mimir::GroundAxiomImpl>>
 {
-    size_t operator()(const mimir::GroundAxiomImpl* ptr) const;
+    size_t operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> ptr) const;
 };
 
 template<>
-struct mimir::buffering::DerefStdEqualTo<mimir::GroundAxiomImpl>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundAxiomImpl>>
 {
-    bool operator()(const mimir::GroundAxiomImpl* lhs, const mimir::GroundAxiomImpl* rhs) const;
+    size_t operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> lhs, loki::ObserverPtr<const mimir::GroundAxiomImpl> rhs) const;
 };
 
 namespace mimir
 {
-
 /**
  * Mimir types
  */

@@ -27,14 +27,15 @@
 #include <ostream>
 #include <tuple>
 
-size_t mimir::buffering::DerefStdHasher<mimir::GroundActionImpl>::operator()(const mimir::GroundActionImpl* ptr) const
+size_t std::hash<loki::ObserverPtr<const mimir::GroundActionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundActionImpl> ptr) const
 {
     const auto action = ptr->get_action_index();
     const auto& objects = ptr->get_object_indices();
     return mimir::hash_combine(action, objects);
 }
 
-bool mimir::buffering::DerefStdEqualTo<mimir::GroundActionImpl>::operator()(const mimir::GroundActionImpl* lhs, const mimir::GroundActionImpl* rhs) const
+size_t std::equal_to<loki::ObserverPtr<const mimir::GroundActionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundActionImpl> lhs,
+                                                                                   loki::ObserverPtr<const mimir::GroundActionImpl> rhs) const
 {
     const auto action_left = lhs->get_action_index();
     const auto& objects_left = lhs->get_object_indices();

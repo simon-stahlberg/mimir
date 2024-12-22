@@ -321,7 +321,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     }
 
     const auto [iter, inserted] = m_actions.insert(action_builder);
-    const auto grounded_action = *iter;
+    const auto grounded_action = iter->get();
     if (inserted)
     {
         m_actions_by_index.push_back(grounded_action);
@@ -361,11 +361,11 @@ size_t ActionGrounder::get_estimated_memory_usage_in_bytes_for_actions() const
         const auto& [action_builder, grounding_table, static_consistency_graph] = action_data;
         // TODO: add memory usage of action_builder
 
-        usage3 += get_memory_usage_in_bytes(grounding_table);
+        // usage3 += get_memory_usage_in_bytes(grounding_table);
 
         // TODO: add memory usage of static_consistency_graph
     }
 
-    return usage1 + usage2 + usage3;
+    return usage1 + usage2;  // + usage3;
 }
 }

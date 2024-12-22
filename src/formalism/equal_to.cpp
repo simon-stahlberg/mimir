@@ -22,6 +22,7 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/equal_to.hpp"
 #include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
@@ -40,328 +41,259 @@
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+// Explicit empty function definitions for all equal_to specializations
+
+bool std::equal_to<loki::ObserverPtr<const mimir::ActionImpl>>::operator()(loki::ObserverPtr<const mimir::ActionImpl> lhs,
+                                                                           loki::ObserverPtr<const mimir::ActionImpl> rhs) const
 {
-bool UniquePDDLEqualTo<Action>::operator()(Action l, Action r) const
-{
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters()) && (l->get_precondition() == r->get_precondition())
-               && (l->get_strips_effect() == r->get_strips_effect()) && (l->get_conditional_effects() == r->get_conditional_effects());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name()) && (lhs->get_parameters() == rhs->get_parameters()) && (lhs->get_precondition() == rhs->get_precondition())
+           && (lhs->get_strips_effect() == rhs->get_strips_effect()) && (lhs->get_conditional_effects() == rhs->get_conditional_effects());
 }
 
-template<PredicateTag P>
-bool UniquePDDLEqualTo<Atom<P>>::operator()(Atom<P> l, Atom<P> r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::AtomImpl<P>>>::operator()(loki::ObserverPtr<const mimir::AtomImpl<P>> lhs,
+                                                                            loki::ObserverPtr<const mimir::AtomImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_predicate() == r->get_predicate()) && (l->get_terms() == r->get_terms());
-    }
-    return true;
+    return (lhs->get_predicate() == rhs->get_predicate()) && (lhs->get_terms() == rhs->get_terms());
 }
 
-template bool UniquePDDLEqualTo<const AtomImpl<Static>*>::operator()(const AtomImpl<Static>* l, const AtomImpl<Static>* r) const;
-template bool UniquePDDLEqualTo<const AtomImpl<Fluent>*>::operator()(const AtomImpl<Fluent>* l, const AtomImpl<Fluent>* r) const;
-template bool UniquePDDLEqualTo<const AtomImpl<Derived>*>::operator()(const AtomImpl<Derived>* l, const AtomImpl<Derived>* r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::AtomImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::AtomImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::AtomImpl<mimir::Derived>>>;
 
-bool UniquePDDLEqualTo<Axiom>::operator()(Axiom l, Axiom r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::AxiomImpl>>::operator()(loki::ObserverPtr<const mimir::AxiomImpl> lhs,
+                                                                          loki::ObserverPtr<const mimir::AxiomImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_precondition() == r->get_precondition()) && (l->get_literal() == r->get_literal());
-    }
-    return true;
+    return (lhs->get_precondition() == rhs->get_precondition()) && (lhs->get_literal() == rhs->get_literal());
 }
 
-bool UniquePDDLEqualTo<Domain>::operator()(Domain l, Domain r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::DomainImpl>>::operator()(loki::ObserverPtr<const mimir::DomainImpl> lhs,
+                                                                           loki::ObserverPtr<const mimir::DomainImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name()) && (l->get_requirements() == r->get_requirements()) && (l->get_constants() == r->get_constants())
-               && (l->get_predicates<Static>() == r->get_predicates<Static>()) && (l->get_predicates<Fluent>() == r->get_predicates<Fluent>())
-               && (l->get_predicates<Derived>() == r->get_predicates<Derived>()) && (l->get_functions() == r->get_functions())
-               && (l->get_actions() == r->get_actions()) && (l->get_axioms() == r->get_axioms());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name()) && (lhs->get_requirements() == rhs->get_requirements()) && (lhs->get_constants() == rhs->get_constants())
+           && (lhs->get_predicates<mimir::Static>() == rhs->get_predicates<mimir::Static>())
+           && (lhs->get_predicates<mimir::Fluent>() == rhs->get_predicates<mimir::Fluent>())
+           && (lhs->get_predicates<mimir::Derived>() == rhs->get_predicates<mimir::Derived>()) && (lhs->get_functions() == rhs->get_functions())
+           && (lhs->get_actions() == rhs->get_actions()) && (lhs->get_axioms() == rhs->get_axioms());
 }
 
-bool UniquePDDLEqualTo<EffectStrips>::operator()(EffectStrips l, EffectStrips r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::EffectStripsImpl>>::operator()(loki::ObserverPtr<const mimir::EffectStripsImpl> lhs,
+                                                                                 loki::ObserverPtr<const mimir::EffectStripsImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_effects() == r->get_effects()) && (l->get_function_expression() == r->get_function_expression());
-    }
-    return true;
+    return (lhs->get_effects() == rhs->get_effects()) && (lhs->get_function_expression() == rhs->get_function_expression());
 }
 
-bool UniquePDDLEqualTo<EffectConditional>::operator()(EffectConditional l, EffectConditional r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::EffectConditionalImpl>>::operator()(loki::ObserverPtr<const mimir::EffectConditionalImpl> lhs,
+                                                                                      loki::ObserverPtr<const mimir::EffectConditionalImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_effects() == r->get_effects()) && (l->get_parameters() == r->get_parameters())
-               && (l->get_conditions<Static>() == r->get_conditions<Static>()) && (l->get_conditions<Fluent>() == r->get_conditions<Fluent>())
-               && (l->get_conditions<Derived>() == r->get_conditions<Derived>()) && (l->get_function_expression() == r->get_function_expression());
-    }
-    return true;
+    return (lhs->get_effects() == rhs->get_effects()) && (lhs->get_parameters() == rhs->get_parameters())
+           && (lhs->get_conditions<mimir::Static>() == rhs->get_conditions<mimir::Static>())
+           && (lhs->get_conditions<mimir::Fluent>() == rhs->get_conditions<mimir::Fluent>())
+           && (lhs->get_conditions<mimir::Derived>() == rhs->get_conditions<mimir::Derived>())
+           && (lhs->get_function_expression() == rhs->get_function_expression());
 }
 
-bool UniquePDDLEqualTo<ExistentiallyQuantifiedConjunctiveCondition>::operator()(ExistentiallyQuantifiedConjunctiveCondition l,
-                                                                                ExistentiallyQuantifiedConjunctiveCondition r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl> lhs,
+    loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_parameters() == r->get_parameters()) && (l->get_literals<Static>() == r->get_literals<Static>())
-               && (l->get_literals<Fluent>() == r->get_literals<Fluent>()) && (l->get_literals<Derived>() == r->get_literals<Derived>());
-    }
-    return true;
+    return (lhs->get_parameters() == rhs->get_parameters()) && (lhs->get_literals<mimir::Static>() == rhs->get_literals<mimir::Static>())
+           && (lhs->get_literals<mimir::Fluent>() == rhs->get_literals<mimir::Fluent>())
+           && (lhs->get_literals<mimir::Derived>() == rhs->get_literals<mimir::Derived>());
 }
 
-bool UniquePDDLEqualTo<FunctionExpressionNumber>::operator()(FunctionExpressionNumber l, FunctionExpressionNumber r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl> lhs,
+    loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_number() == r->get_number());
-    }
-    return true;
+    return (lhs->get_number() == rhs->get_number());
 }
 
-bool UniquePDDLEqualTo<FunctionExpressionBinaryOperator>::operator()(FunctionExpressionBinaryOperator l, FunctionExpressionBinaryOperator r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl> lhs,
+    loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_binary_operator() == r->get_binary_operator()) && (l->get_left_function_expression() == r->get_left_function_expression())
-               && (l->get_right_function_expression() == r->get_right_function_expression());
-    }
-    return true;
+    return (lhs->get_binary_operator() == rhs->get_binary_operator()) && (lhs->get_left_function_expression() == rhs->get_left_function_expression())
+           && (lhs->get_right_function_expression() == rhs->get_right_function_expression());
 }
 
-bool UniquePDDLEqualTo<FunctionExpressionMultiOperator>::operator()(FunctionExpressionMultiOperator l, FunctionExpressionMultiOperator r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl> lhs,
+    loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_multi_operator() == r->get_multi_operator()) && (l->get_function_expressions() == r->get_function_expressions());
-    }
-    return true;
+    return (lhs->get_multi_operator() == rhs->get_multi_operator()) && (lhs->get_function_expressions() == rhs->get_function_expressions());
 }
 
-bool UniquePDDLEqualTo<FunctionExpressionMinus>::operator()(FunctionExpressionMinus l, FunctionExpressionMinus r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl> lhs,
+    loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_function_expression() == r->get_function_expression());
-    }
-    return true;
+    return (lhs->get_function_expression() == rhs->get_function_expression());
 }
 
-bool UniquePDDLEqualTo<FunctionExpressionFunction>::operator()(FunctionExpressionFunction l, FunctionExpressionFunction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl> lhs,
+    loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_function() == r->get_function());
-    }
-    return true;
+    return (lhs->get_function() == rhs->get_function());
 }
 
-bool UniquePDDLEqualTo<FunctionExpression>::operator()(FunctionExpression l, FunctionExpression r) const { return l->get_variant() == r->get_variant(); }
-
-bool UniquePDDLEqualTo<FunctionSkeleton>::operator()(FunctionSkeleton l, FunctionSkeleton r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionExpressionImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionExpressionImpl> lhs,
+                                                                                       loki::ObserverPtr<const mimir::FunctionExpressionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters());
-    }
-    return true;
+    return lhs->get_variant() == rhs->get_variant();
 }
 
-bool UniquePDDLEqualTo<Function>::operator()(Function l, Function r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionSkeletonImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionSkeletonImpl> lhs,
+                                                                                     loki::ObserverPtr<const mimir::FunctionSkeletonImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_function_skeleton() == r->get_function_skeleton()) && (l->get_terms() == r->get_terms());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name()) && (lhs->get_parameters() == rhs->get_parameters());
 }
 
-template<PredicateTag P>
-bool UniquePDDLEqualTo<GroundAtom<P>>::operator()(GroundAtom<P> l, GroundAtom<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::FunctionImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionImpl> lhs,
+                                                                             loki::ObserverPtr<const mimir::FunctionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_predicate() == r->get_predicate()) && (l->get_objects() == r->get_objects());
-    }
-    return true;
+    return (lhs->get_function_skeleton() == rhs->get_function_skeleton()) && (lhs->get_terms() == rhs->get_terms());
 }
 
-template bool UniquePDDLEqualTo<const GroundAtomImpl<Static>*>::operator()(const GroundAtomImpl<Static>* l, const GroundAtomImpl<Static>* r) const;
-template bool UniquePDDLEqualTo<const GroundAtomImpl<Fluent>*>::operator()(const GroundAtomImpl<Fluent>* l, const GroundAtomImpl<Fluent>* r) const;
-template bool UniquePDDLEqualTo<const GroundAtomImpl<Derived>*>::operator()(const GroundAtomImpl<Derived>* l, const GroundAtomImpl<Derived>* r) const;
-
-bool UniquePDDLEqualTo<GroundFunctionExpressionNumber>::operator()(GroundFunctionExpressionNumber l, GroundFunctionExpressionNumber r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundAtomImpl<P>>>::operator()(loki::ObserverPtr<const mimir::GroundAtomImpl<P>> lhs,
+                                                                                  loki::ObserverPtr<const mimir::GroundAtomImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_number() == r->get_number());
-    }
-    return true;
+    return (lhs->get_predicate() == rhs->get_predicate()) && (lhs->get_objects() == rhs->get_objects());
 }
 
-bool UniquePDDLEqualTo<GroundFunctionExpressionBinaryOperator>::operator()(GroundFunctionExpressionBinaryOperator l,
-                                                                           GroundFunctionExpressionBinaryOperator r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::GroundAtomImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::GroundAtomImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::GroundAtomImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl> lhs,
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_binary_operator() == r->get_binary_operator()) && (l->get_left_function_expression() == r->get_left_function_expression())
-               && (l->get_right_function_expression() == r->get_right_function_expression());
-    }
-    return true;
+    return (lhs->get_number() == rhs->get_number());
 }
 
-bool UniquePDDLEqualTo<GroundFunctionExpressionMultiOperator>::operator()(GroundFunctionExpressionMultiOperator l,
-                                                                          GroundFunctionExpressionMultiOperator r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl> lhs,
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_multi_operator() == r->get_multi_operator()) && (l->get_function_expressions() == r->get_function_expressions());
-    }
-    return true;
+    return (lhs->get_binary_operator() == rhs->get_binary_operator()) && (lhs->get_left_function_expression() == rhs->get_left_function_expression())
+           && (lhs->get_right_function_expression() == rhs->get_right_function_expression());
 }
 
-bool UniquePDDLEqualTo<GroundFunctionExpressionMinus>::operator()(GroundFunctionExpressionMinus l, GroundFunctionExpressionMinus r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl> lhs,
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_function_expression() == r->get_function_expression());
-    }
-    return true;
+    return (lhs->get_multi_operator() == rhs->get_multi_operator()) && (lhs->get_function_expressions() == rhs->get_function_expressions());
 }
 
-bool UniquePDDLEqualTo<GroundFunctionExpressionFunction>::operator()(GroundFunctionExpressionFunction l, GroundFunctionExpressionFunction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl> lhs,
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_function() == r->get_function());
-    }
-    return true;
+    return (lhs->get_function_expression() == rhs->get_function_expression());
 }
 
-bool UniquePDDLEqualTo<GroundFunctionExpression>::operator()(GroundFunctionExpression l, GroundFunctionExpression r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl> lhs,
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl> rhs) const
 {
-    return l->get_variant() == r->get_variant();
+    return (lhs->get_function() == rhs->get_function());
 }
 
-bool UniquePDDLEqualTo<GroundFunction>::operator()(GroundFunction l, GroundFunction r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl> lhs,
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_function_skeleton() == r->get_function_skeleton() && l->get_objects() == r->get_objects());
-    }
-    return true;
+    return lhs->get_variant() == rhs->get_variant();
 }
 
-template<PredicateTag P>
-bool UniquePDDLEqualTo<GroundLiteral<P>>::operator()(GroundLiteral<P> l, GroundLiteral<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundFunctionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundFunctionImpl> lhs,
+                                                                                   loki::ObserverPtr<const mimir::GroundFunctionImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->is_negated() == r->is_negated()) && (l->get_atom() == r->get_atom());
-    }
-    return true;
+    return (lhs->get_function_skeleton() == rhs->get_function_skeleton() && lhs->get_objects() == rhs->get_objects());
 }
 
-template bool UniquePDDLEqualTo<const GroundLiteralImpl<Static>*>::operator()(const GroundLiteralImpl<Static>* l, const GroundLiteralImpl<Static>* r) const;
-template bool UniquePDDLEqualTo<const GroundLiteralImpl<Fluent>*>::operator()(const GroundLiteralImpl<Fluent>* l, const GroundLiteralImpl<Fluent>* r) const;
-template bool UniquePDDLEqualTo<const GroundLiteralImpl<Derived>*>::operator()(const GroundLiteralImpl<Derived>* l, const GroundLiteralImpl<Derived>* r) const;
-
-template<PredicateTag P>
-bool UniquePDDLEqualTo<Literal<P>>::operator()(Literal<P> l, Literal<P> r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::GroundLiteralImpl<P>>>::operator()(loki::ObserverPtr<const mimir::GroundLiteralImpl<P>> lhs,
+                                                                                     loki::ObserverPtr<const mimir::GroundLiteralImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->is_negated() == r->is_negated()) && (l->get_atom() == r->get_atom());
-    }
-    return true;
+    return (lhs->is_negated() == rhs->is_negated()) && (lhs->get_atom() == rhs->get_atom());
 }
 
-template bool UniquePDDLEqualTo<const LiteralImpl<Static>*>::operator()(const LiteralImpl<Static>* l, const LiteralImpl<Static>* r) const;
-template bool UniquePDDLEqualTo<const LiteralImpl<Fluent>*>::operator()(const LiteralImpl<Fluent>* l, const LiteralImpl<Fluent>* r) const;
-template bool UniquePDDLEqualTo<const LiteralImpl<Derived>*>::operator()(const LiteralImpl<Derived>* l, const LiteralImpl<Derived>* r) const;
+template struct std::equal_to<loki::ObserverPtr<const mimir::GroundLiteralImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::GroundLiteralImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::GroundLiteralImpl<mimir::Derived>>>;
 
-bool UniquePDDLEqualTo<OptimizationMetric>::operator()(OptimizationMetric l, OptimizationMetric r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::LiteralImpl<P>>>::operator()(loki::ObserverPtr<const mimir::LiteralImpl<P>> lhs,
+                                                                               loki::ObserverPtr<const mimir::LiteralImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_optimization_metric() == r->get_optimization_metric()) && (l->get_function_expression() == r->get_function_expression());
-    }
-    return true;
+    return (lhs->is_negated() == rhs->is_negated()) && (lhs->get_atom() == rhs->get_atom());
 }
 
-bool UniquePDDLEqualTo<NumericFluent>::operator()(NumericFluent l, NumericFluent r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::LiteralImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::LiteralImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::LiteralImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::OptimizationMetricImpl>>::operator()(loki::ObserverPtr<const mimir::OptimizationMetricImpl> lhs,
+                                                                                       loki::ObserverPtr<const mimir::OptimizationMetricImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_number() == r->get_number()) && (l->get_function() == r->get_function());
-    }
-    return true;
+    return (lhs->get_optimization_metric() == rhs->get_optimization_metric()) && (lhs->get_function_expression() == rhs->get_function_expression());
 }
 
-bool UniquePDDLEqualTo<Object>::operator()(Object l, Object r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::NumericFluentImpl>>::operator()(loki::ObserverPtr<const mimir::NumericFluentImpl> lhs,
+                                                                                  loki::ObserverPtr<const mimir::NumericFluentImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name());
-    }
-    return true;
+    return (lhs->get_number() == rhs->get_number()) && (lhs->get_function() == rhs->get_function());
 }
 
-template<PredicateTag P>
-bool UniquePDDLEqualTo<Predicate<P>>::operator()(Predicate<P> l, Predicate<P> r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::ObjectImpl>>::operator()(loki::ObserverPtr<const mimir::ObjectImpl> lhs,
+                                                                           loki::ObserverPtr<const mimir::ObjectImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name()) && (l->get_parameters() == r->get_parameters());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name());
 }
 
-template bool UniquePDDLEqualTo<const PredicateImpl<Static>*>::operator()(const PredicateImpl<Static>* l, const PredicateImpl<Static>* r) const;
-template bool UniquePDDLEqualTo<const PredicateImpl<Fluent>*>::operator()(const PredicateImpl<Fluent>* l, const PredicateImpl<Fluent>* r) const;
-template bool UniquePDDLEqualTo<const PredicateImpl<Derived>*>::operator()(const PredicateImpl<Derived>* l, const PredicateImpl<Derived>* r) const;
-
-bool UniquePDDLEqualTo<Problem>::operator()(Problem l, Problem r) const
+template<mimir::PredicateTag P>
+bool std::equal_to<loki::ObserverPtr<const mimir::PredicateImpl<P>>>::operator()(loki::ObserverPtr<const mimir::PredicateImpl<P>> lhs,
+                                                                                 loki::ObserverPtr<const mimir::PredicateImpl<P>> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name()) && (l->get_requirements() == r->get_requirements()) && (l->get_domain() == r->get_domain())
-               && (l->get_objects() == r->get_objects()) && (l->get_derived_predicates() == r->get_derived_predicates())
-               && (l->get_static_initial_literals() == r->get_static_initial_literals())
-               && (l->get_fluent_initial_literals() == r->get_fluent_initial_literals()) && (l->get_numeric_fluents() == r->get_numeric_fluents())
-               && (l->get_goal_condition<Static>() == r->get_goal_condition<Static>()) && (l->get_goal_condition<Fluent>() == r->get_goal_condition<Fluent>())
-               && (l->get_goal_condition<Derived>() == r->get_goal_condition<Derived>()) && (l->get_optimization_metric() == r->get_optimization_metric())
-               && (l->get_axioms() == r->get_axioms());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name()) && (lhs->get_parameters() == rhs->get_parameters());
 }
 
-bool UniquePDDLEqualTo<Requirements>::operator()(Requirements l, Requirements r) const
+template struct std::equal_to<loki::ObserverPtr<const mimir::PredicateImpl<mimir::Static>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::PredicateImpl<mimir::Fluent>>>;
+template struct std::equal_to<loki::ObserverPtr<const mimir::PredicateImpl<mimir::Derived>>>;
+
+bool std::equal_to<loki::ObserverPtr<const mimir::ProblemImpl>>::operator()(loki::ObserverPtr<const mimir::ProblemImpl> lhs,
+                                                                            loki::ObserverPtr<const mimir::ProblemImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_requirements() == r->get_requirements());
-    }
-    return true;
+    return (lhs->get_name() == rhs->get_name()) && (lhs->get_requirements() == rhs->get_requirements()) && (lhs->get_domain() == rhs->get_domain())
+           && (lhs->get_objects() == rhs->get_objects()) && (lhs->get_derived_predicates() == rhs->get_derived_predicates())
+           && (lhs->get_static_initial_literals() == rhs->get_static_initial_literals())
+           && (lhs->get_fluent_initial_literals() == rhs->get_fluent_initial_literals()) && (lhs->get_numeric_fluents() == rhs->get_numeric_fluents())
+           && (lhs->get_goal_condition<mimir::Static>() == rhs->get_goal_condition<mimir::Static>())
+           && (lhs->get_goal_condition<mimir::Fluent>() == rhs->get_goal_condition<mimir::Fluent>())
+           && (lhs->get_goal_condition<mimir::Derived>() == rhs->get_goal_condition<mimir::Derived>())
+           && (lhs->get_optimization_metric() == rhs->get_optimization_metric()) && (lhs->get_axioms() == rhs->get_axioms());
 }
 
-bool UniquePDDLEqualTo<Term>::operator()(Term l, Term r) const { return l->get_variant() == r->get_variant(); }
-
-bool UniquePDDLEqualTo<Variable>::operator()(Variable l, Variable r) const
+bool std::equal_to<loki::ObserverPtr<const mimir::RequirementsImpl>>::operator()(loki::ObserverPtr<const mimir::RequirementsImpl> lhs,
+                                                                                 loki::ObserverPtr<const mimir::RequirementsImpl> rhs) const
 {
-    if (&l != &r)
-    {
-        return (l->get_name() == r->get_name()) && (l->get_parameter_index() == r->get_parameter_index());
-    }
-    return true;
+    return (lhs->get_requirements() == rhs->get_requirements());
 }
 
+bool std::equal_to<loki::ObserverPtr<const mimir::TermImpl>>::operator()(loki::ObserverPtr<const mimir::TermImpl> lhs,
+                                                                         loki::ObserverPtr<const mimir::TermImpl> rhs) const
+{
+    return lhs->get_variant() == rhs->get_variant();
+}
+
+bool std::equal_to<loki::ObserverPtr<const mimir::VariableImpl>>::operator()(loki::ObserverPtr<const mimir::VariableImpl> lhs,
+                                                                             loki::ObserverPtr<const mimir::VariableImpl> rhs) const
+{
+    return (lhs->get_name() == rhs->get_name()) && (lhs->get_parameter_index() == rhs->get_parameter_index());
 }

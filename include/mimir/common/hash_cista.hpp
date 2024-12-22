@@ -25,6 +25,8 @@
 #include "mimir/algorithms/murmurhash3.hpp"
 #include "mimir/common/hash.hpp"
 
+#include <loki/details/utils/observer_ptr.hpp>
+
 /* DynamicBitset */
 
 template<typename Block, template<typename> typename Ptr>
@@ -52,6 +54,15 @@ struct std::hash<cista::basic_dynamic_bitset<Block, Ptr>>
     }
 };
 
+template<typename Block, template<typename> typename Ptr>
+struct std::hash<loki::ObserverPtr<const cista::basic_dynamic_bitset<Block, Ptr>>>
+{
+    size_t operator()(loki::ObserverPtr<const cista::basic_dynamic_bitset<Block, Ptr>> vector) const
+    {
+        return std::hash<cista::basic_dynamic_bitset<Block, Ptr>>()(*vector);
+    }
+};
+
 /* Tuple */
 
 template<typename... Ts>
@@ -68,6 +79,12 @@ struct std::hash<cista::tuple<Ts...>>
 
         return seed;
     }
+};
+
+template<typename... Ts>
+struct std::hash<loki::ObserverPtr<const cista::tuple<Ts...>>>
+{
+    size_t operator()(loki::ObserverPtr<const cista::tuple<Ts...>> vector) const { return std::hash<cista::tuple<Ts...>>()(*vector); }
 };
 
 /* Vector */
@@ -91,6 +108,15 @@ struct std::hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Al
     }
 };
 
+template<typename T, template<typename> typename Ptr, bool IndexPointers, typename TemplateSizeType, class Allocator>
+struct std::hash<loki::ObserverPtr<const cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>>>
+{
+    size_t operator()(loki::ObserverPtr<const cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>> vector) const
+    {
+        return std::hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Allocator>>()(*vector);
+    }
+};
+
 /* FlexibleIndexVector */
 
 template<std::unsigned_integral IndexType, template<typename> typename Ptr>
@@ -109,6 +135,15 @@ struct std::hash<cista::basic_flexible_index_vector<IndexType, Ptr>>
         mimir::hash_combine(seed, hash[1]);
 
         return seed;
+    }
+};
+
+template<std::unsigned_integral IndexType, template<typename> typename Ptr>
+struct std::hash<loki::ObserverPtr<const cista::basic_flexible_index_vector<IndexType, Ptr>>>
+{
+    size_t operator()(loki::ObserverPtr<const cista::basic_flexible_index_vector<IndexType, Ptr>> vector) const
+    {
+        return std::hash<cista::basic_flexible_index_vector<IndexType, Ptr>>()(*vector);
     }
 };
 

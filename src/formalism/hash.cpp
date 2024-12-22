@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/hash.hpp"
 
+#include "mimir/common/hash.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
@@ -40,176 +41,231 @@
 #include "mimir/formalism/term.hpp"
 #include "mimir/formalism/variable.hpp"
 
-namespace mimir
+size_t std::hash<loki::ObserverPtr<const mimir::ActionImpl>>::operator()(loki::ObserverPtr<const mimir::ActionImpl> ptr) const
 {
-size_t UniquePDDLHasher<Action>::operator()(Action e) const
-{
-    return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters(), e->get_precondition(), e->get_strips_effect(), e->get_conditional_effects());
+    return mimir::hash_combine(ptr->get_name(), ptr->get_parameters(), ptr->get_precondition(), ptr->get_strips_effect(), ptr->get_conditional_effects());
 }
 
-template<PredicateTag P>
-size_t UniquePDDLHasher<Atom<P>>::operator()(Atom<P> e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::AtomImpl<P>>>::operator()(loki::ObserverPtr<const mimir::AtomImpl<P>> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_predicate(), e->get_terms());
+    return mimir::hash_combine(ptr->get_predicate(), ptr->get_terms());
 }
 
-template size_t UniquePDDLHasher<const AtomImpl<Static>*>::operator()(const AtomImpl<Static>* e) const;
-template size_t UniquePDDLHasher<const AtomImpl<Fluent>*>::operator()(const AtomImpl<Fluent>* e) const;
-template size_t UniquePDDLHasher<const AtomImpl<Derived>*>::operator()(const AtomImpl<Derived>* e) const;
+template struct std::hash<loki::ObserverPtr<const mimir::AtomImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::AtomImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::AtomImpl<mimir::Derived>>>;
 
-size_t UniquePDDLHasher<Axiom>::operator()(Axiom e) const { return UniquePDDLHashCombiner()(e->get_literal(), e->get_precondition(), e->get_parameters()); }
-
-size_t UniquePDDLHasher<Domain>::operator()(Domain e) const
+size_t std::hash<loki::ObserverPtr<const mimir::AxiomImpl>>::operator()(loki::ObserverPtr<const mimir::AxiomImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_name(),
-                                    e->get_requirements(),
-                                    e->get_constants(),
-                                    e->get_predicates<Static>(),
-                                    e->get_predicates<Fluent>(),
-                                    e->get_predicates<Derived>(),
-                                    e->get_functions(),
-                                    e->get_actions(),
-                                    e->get_axioms());
+    return mimir::hash_combine(ptr->get_literal(), ptr->get_precondition(), ptr->get_parameters());
 }
 
-size_t UniquePDDLHasher<EffectStrips>::operator()(EffectStrips e) const { return UniquePDDLHashCombiner()(e->get_effects(), e->get_function_expression()); }
-
-size_t UniquePDDLHasher<EffectConditional>::operator()(EffectConditional e) const
+size_t std::hash<loki::ObserverPtr<const mimir::DomainImpl>>::operator()(loki::ObserverPtr<const mimir::DomainImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_effects(),
-                                    e->get_parameters(),
-                                    e->get_conditions<Static>(),
-                                    e->get_conditions<Fluent>(),
-                                    e->get_conditions<Derived>(),
-                                    e->get_function_expression());
+    return mimir::hash_combine(ptr->get_name(),
+                               ptr->get_requirements(),
+                               ptr->get_constants(),
+                               ptr->get_predicates<mimir::Static>(),
+                               ptr->get_predicates<mimir::Fluent>(),
+                               ptr->get_predicates<mimir::Derived>(),
+                               ptr->get_functions(),
+                               ptr->get_actions(),
+                               ptr->get_axioms());
 }
 
-size_t UniquePDDLHasher<ExistentiallyQuantifiedConjunctiveCondition>::operator()(ExistentiallyQuantifiedConjunctiveCondition e) const
+size_t std::hash<loki::ObserverPtr<const mimir::EffectStripsImpl>>::operator()(loki::ObserverPtr<const mimir::EffectStripsImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_parameters(), e->get_literals<Static>(), e->get_literals<Fluent>(), e->get_literals<Derived>());
+    return mimir::hash_combine(ptr->get_effects(), ptr->get_function_expression());
 }
 
-size_t UniquePDDLHasher<FunctionExpressionNumber>::operator()(FunctionExpressionNumber e) const { return UniquePDDLHashCombiner()(e->get_number()); }
-
-size_t UniquePDDLHasher<FunctionExpressionBinaryOperator>::operator()(FunctionExpressionBinaryOperator e) const
+size_t std::hash<loki::ObserverPtr<const mimir::EffectConditionalImpl>>::operator()(loki::ObserverPtr<const mimir::EffectConditionalImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_binary_operator(), e->get_left_function_expression(), e->get_right_function_expression());
+    return mimir::hash_combine(ptr->get_effects(),
+                               ptr->get_parameters(),
+                               ptr->get_conditions<mimir::Static>(),
+                               ptr->get_conditions<mimir::Fluent>(),
+                               ptr->get_conditions<mimir::Derived>(),
+                               ptr->get_function_expression());
 }
 
-size_t UniquePDDLHasher<FunctionExpressionMultiOperator>::operator()(FunctionExpressionMultiOperator e) const
+size_t std::hash<loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::ExistentiallyQuantifiedConjunctiveConditionImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_multi_operator(), e->get_function_expressions());
+    return mimir::hash_combine(ptr->get_parameters(),
+                               ptr->get_literals<mimir::Static>(),
+                               ptr->get_literals<mimir::Fluent>(),
+                               ptr->get_literals<mimir::Derived>());
 }
 
-size_t UniquePDDLHasher<FunctionExpressionMinus>::operator()(FunctionExpressionMinus e) const { return UniquePDDLHashCombiner()(e->get_function_expression()); }
-
-size_t UniquePDDLHasher<FunctionExpressionFunction>::operator()(FunctionExpressionFunction e) const { return UniquePDDLHashCombiner()(e->get_function()); }
-
-size_t UniquePDDLHasher<FunctionExpression>::operator()(FunctionExpression e) const { return UniquePDDLHashCombiner()(e->get_variant()); }
-
-size_t UniquePDDLHasher<FunctionSkeleton>::operator()(FunctionSkeleton e) const { return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters()); }
-
-size_t UniquePDDLHasher<Function>::operator()(Function e) const { return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_terms()); }
-
-template<PredicateTag P>
-size_t UniquePDDLHasher<GroundAtom<P>>::operator()(GroundAtom<P> e) const
+size_t
+std::hash<loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionExpressionNumberImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_predicate(), e->get_objects());
+    return mimir::hash_combine(ptr->get_number());
 }
 
-template size_t UniquePDDLHasher<const GroundAtomImpl<Static>*>::operator()(const GroundAtomImpl<Static>* e) const;
-template size_t UniquePDDLHasher<const GroundAtomImpl<Fluent>*>::operator()(const GroundAtomImpl<Fluent>* e) const;
-template size_t UniquePDDLHasher<const GroundAtomImpl<Derived>*>::operator()(const GroundAtomImpl<Derived>* e) const;
-
-size_t UniquePDDLHasher<GroundFunctionExpressionNumber>::operator()(GroundFunctionExpressionNumber e) const
+size_t std::hash<loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionBinaryOperatorImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_number());
+    return mimir::hash_combine(ptr->get_binary_operator(), ptr->get_left_function_expression(), ptr->get_right_function_expression());
 }
 
-size_t UniquePDDLHasher<GroundFunctionExpressionBinaryOperator>::operator()(GroundFunctionExpressionBinaryOperator e) const
+size_t std::hash<loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::FunctionExpressionMultiOperatorImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_binary_operator(), e->get_left_function_expression(), e->get_right_function_expression());
+    return mimir::hash_combine(ptr->get_multi_operator(), ptr->get_function_expressions());
 }
 
-size_t UniquePDDLHasher<GroundFunctionExpressionMultiOperator>::operator()(GroundFunctionExpressionMultiOperator e) const
+size_t std::hash<loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionExpressionMinusImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_multi_operator(), e->get_function_expressions());
+    return mimir::hash_combine(ptr->get_function_expression());
 }
 
-size_t UniquePDDLHasher<GroundFunctionExpressionMinus>::operator()(GroundFunctionExpressionMinus e) const
+size_t
+std::hash<loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionExpressionFunctionImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_function_expression());
+    return mimir::hash_combine(ptr->get_function());
 }
 
-size_t UniquePDDLHasher<GroundFunctionExpressionFunction>::operator()(GroundFunctionExpressionFunction e) const
+size_t std::hash<loki::ObserverPtr<const mimir::FunctionExpressionImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionExpressionImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_function());
+    return mimir::hash_combine(ptr->get_variant());
 }
 
-size_t UniquePDDLHasher<GroundFunctionExpression>::operator()(GroundFunctionExpression e) const { return UniquePDDLHashCombiner()(e->get_variant()); }
-
-size_t UniquePDDLHasher<GroundFunction>::operator()(GroundFunction e) const { return UniquePDDLHashCombiner()(e->get_function_skeleton(), e->get_objects()); }
-
-template<PredicateTag P>
-size_t UniquePDDLHasher<GroundLiteral<P>>::operator()(GroundLiteral<P> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::FunctionSkeletonImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionSkeletonImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->is_negated(), e->get_atom());
+    return mimir::hash_combine(ptr->get_name(), ptr->get_parameters());
 }
 
-template size_t UniquePDDLHasher<const GroundLiteralImpl<Static>*>::operator()(const GroundLiteralImpl<Static>* e) const;
-template size_t UniquePDDLHasher<const GroundLiteralImpl<Fluent>*>::operator()(const GroundLiteralImpl<Fluent>* e) const;
-template size_t UniquePDDLHasher<const GroundLiteralImpl<Derived>*>::operator()(const GroundLiteralImpl<Derived>* e) const;
-
-template<PredicateTag P>
-size_t UniquePDDLHasher<Literal<P>>::operator()(Literal<P> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::FunctionImpl>>::operator()(loki::ObserverPtr<const mimir::FunctionImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->is_negated(), e->get_atom());
+    return mimir::hash_combine(ptr->get_function_skeleton(), ptr->get_terms());
 }
 
-template size_t UniquePDDLHasher<const LiteralImpl<Static>*>::operator()(const LiteralImpl<Static>* e) const;
-template size_t UniquePDDLHasher<const LiteralImpl<Fluent>*>::operator()(const LiteralImpl<Fluent>* e) const;
-template size_t UniquePDDLHasher<const LiteralImpl<Derived>*>::operator()(const LiteralImpl<Derived>* e) const;
-
-size_t UniquePDDLHasher<OptimizationMetric>::operator()(OptimizationMetric e) const
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::GroundAtomImpl<P>>>::operator()(loki::ObserverPtr<const mimir::GroundAtomImpl<P>> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_optimization_metric(), e->get_function_expression());
+    return mimir::hash_combine(ptr->get_predicate(), ptr->get_objects());
 }
 
-size_t UniquePDDLHasher<NumericFluent>::operator()(NumericFluent e) const { return UniquePDDLHashCombiner()(e->get_number(), e->get_function()); }
+template struct std::hash<loki::ObserverPtr<const mimir::GroundAtomImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::GroundAtomImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::GroundAtomImpl<mimir::Derived>>>;
 
-size_t UniquePDDLHasher<Object>::operator()(Object e) const { return UniquePDDLHashCombiner()(e->get_name()); }
-
-template<PredicateTag P>
-size_t UniquePDDLHasher<Predicate<P>>::operator()(Predicate<P> e) const
+size_t std::hash<loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionNumberImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_name(), e->get_parameters());
+    return mimir::hash_combine(ptr->get_number());
 }
 
-template size_t UniquePDDLHasher<const PredicateImpl<Static>*>::operator()(const PredicateImpl<Static>* e) const;
-template size_t UniquePDDLHasher<const PredicateImpl<Fluent>*>::operator()(const PredicateImpl<Fluent>* e) const;
-template size_t UniquePDDLHasher<const PredicateImpl<Derived>*>::operator()(const PredicateImpl<Derived>* e) const;
-
-size_t UniquePDDLHasher<Problem>::operator()(Problem e) const
+size_t std::hash<loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionBinaryOperatorImpl> ptr) const
 {
-    return UniquePDDLHashCombiner()(e->get_name(),
-                                    e->get_requirements(),
-                                    e->get_domain(),
-                                    e->get_objects(),
-                                    e->get_derived_predicates(),
-                                    e->get_static_initial_literals(),
-                                    e->get_fluent_initial_literals(),
-                                    e->get_numeric_fluents(),
-                                    e->get_goal_condition<Static>(),
-                                    e->get_goal_condition<Fluent>(),
-                                    e->get_goal_condition<Derived>(),
-                                    e->get_optimization_metric(),
-                                    e->get_axioms());
+    return mimir::hash_combine(ptr->get_binary_operator(), ptr->get_left_function_expression(), ptr->get_right_function_expression());
 }
 
-size_t UniquePDDLHasher<Requirements>::operator()(Requirements e) const { return UniquePDDLHashCombiner()(e->get_requirements()); }
+size_t std::hash<loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionMultiOperatorImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_multi_operator(), ptr->get_function_expressions());
+}
 
-size_t UniquePDDLHasher<Term>::operator()(Term e) const { return UniquePDDLHashCombiner()(e->get_variant()); }
+size_t std::hash<loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionMinusImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_function_expression());
+}
 
-size_t UniquePDDLHasher<Variable>::operator()(Variable e) const { return UniquePDDLHashCombiner()(e->get_name(), e->get_parameter_index()); }
+size_t std::hash<loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl>>::operator()(
+    loki::ObserverPtr<const mimir::GroundFunctionExpressionFunctionImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_function());
+}
 
+size_t
+std::hash<loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundFunctionExpressionImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_variant());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::GroundFunctionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundFunctionImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_function_skeleton(), ptr->get_objects());
+}
+
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::GroundLiteralImpl<P>>>::operator()(loki::ObserverPtr<const mimir::GroundLiteralImpl<P>> ptr) const
+{
+    return mimir::hash_combine(ptr->is_negated(), ptr->get_atom());
+}
+
+template struct std::hash<loki::ObserverPtr<const mimir::GroundLiteralImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::GroundLiteralImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::GroundLiteralImpl<mimir::Derived>>>;
+
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::LiteralImpl<P>>>::operator()(loki::ObserverPtr<const mimir::LiteralImpl<P>> ptr) const
+{
+    return mimir::hash_combine(ptr->is_negated(), ptr->get_atom());
+}
+
+template struct std::hash<loki::ObserverPtr<const mimir::LiteralImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::LiteralImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::LiteralImpl<mimir::Derived>>>;
+
+size_t std::hash<loki::ObserverPtr<const mimir::OptimizationMetricImpl>>::operator()(loki::ObserverPtr<const mimir::OptimizationMetricImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_optimization_metric(), ptr->get_function_expression());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::NumericFluentImpl>>::operator()(loki::ObserverPtr<const mimir::NumericFluentImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_number(), ptr->get_function());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::ObjectImpl>>::operator()(loki::ObserverPtr<const mimir::ObjectImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_name());
+}
+
+template<mimir::PredicateTag P>
+size_t std::hash<loki::ObserverPtr<const mimir::PredicateImpl<P>>>::operator()(loki::ObserverPtr<const mimir::PredicateImpl<P>> ptr) const
+{
+    return mimir::hash_combine(ptr->get_name(), ptr->get_parameters());
+}
+
+template struct std::hash<loki::ObserverPtr<const mimir::PredicateImpl<mimir::Static>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::PredicateImpl<mimir::Fluent>>>;
+template struct std::hash<loki::ObserverPtr<const mimir::PredicateImpl<mimir::Derived>>>;
+
+size_t std::hash<loki::ObserverPtr<const mimir::ProblemImpl>>::operator()(loki::ObserverPtr<const mimir::ProblemImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_name(),
+                               ptr->get_requirements(),
+                               ptr->get_domain(),
+                               ptr->get_objects(),
+                               ptr->get_derived_predicates(),
+                               ptr->get_static_initial_literals(),
+                               ptr->get_fluent_initial_literals(),
+                               ptr->get_numeric_fluents(),
+                               ptr->get_goal_condition<mimir::Static>(),
+                               ptr->get_goal_condition<mimir::Fluent>(),
+                               ptr->get_goal_condition<mimir::Derived>(),
+                               ptr->get_optimization_metric(),
+                               ptr->get_axioms());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::RequirementsImpl>>::operator()(loki::ObserverPtr<const mimir::RequirementsImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_requirements());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::TermImpl>>::operator()(loki::ObserverPtr<const mimir::TermImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_variant());
+}
+
+size_t std::hash<loki::ObserverPtr<const mimir::VariableImpl>>::operator()(loki::ObserverPtr<const mimir::VariableImpl> ptr) const
+{
+    return mimir::hash_combine(ptr->get_name(), ptr->get_parameter_index());
 }

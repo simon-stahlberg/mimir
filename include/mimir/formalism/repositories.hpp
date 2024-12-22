@@ -51,7 +51,7 @@ namespace mimir
 {
 
 template<typename T>
-using SegmentedPDDLRepository = loki::SegmentedRepository<T, UniquePDDLHasher<const T*>, UniquePDDLEqualTo<const T*>>;
+using SegmentedPDDLRepository = loki::SegmentedRepository<T>;
 
 using RequirementsRepository = SegmentedPDDLRepository<RequirementsImpl>;
 using VariableRepository = SegmentedPDDLRepository<VariableImpl>;

@@ -107,7 +107,7 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
 
     const auto [iter, inserted] = m_axioms.insert(axiom_builder);
-    const auto grounded_axiom = *iter;
+    const auto grounded_axiom = iter->get();
 
     if (inserted)
     {
@@ -146,9 +146,9 @@ size_t AxiomGrounder::get_estimated_memory_usage_in_bytes_for_axioms() const
     {
         const auto& [axiom_builder, grounding_table] = action_data;
         // TODO: add memory usage of axiom_builder
-        usage3 += get_memory_usage_in_bytes(grounding_table);
+        // usage3 += get_memory_usage_in_bytes(grounding_table);
     }
 
-    return usage1 + usage2 + usage3;
+    return usage1 + usage2;  // + usage3;
 }
 }

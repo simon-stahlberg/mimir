@@ -20,37 +20,23 @@
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
+#include "mimir/common/equal_to_cista.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/memory.hpp"
 
 #include <absl/container/flat_hash_set.h>
+#include <functional>
+#include <loki/details/utils/observer_ptr.hpp>
 #include <unordered_set>
 #include <utility>
 
 namespace mimir::buffering
 {
-/// @brief `DerefStdHasher` is a hash function tailored towards `UnorderedSet`
-/// which should always accept const pointer types and computes a hash for the object pointed to.
-/// @tparam T
-template<typename T>
-struct DerefStdHasher
-{
-    size_t operator()(const T* ptr) const { return std::hash<T>()(*ptr); }
-};
-
-/// @brief `DerefStdEqualTo` is a comparison function tailored towards `UnorderedSet`
-/// which should always accept const pointer types and compares the objects pointed to.
-/// @tparam T
-template<typename T>
-struct DerefStdEqualTo
-{
-    size_t operator()(const T* lhs, const T* rhs) const { return std::equal_to<T>()(*lhs, *rhs); }
-};
-
 /// @brief `UnorderedSet` is a container that uniquely stores buffers of a cista container of type T.
 /// @tparam T is the underlying container type.
 /// @tparam Hash is a hash function that computes a hash value for a dereferenced pointer of type T.
 /// @tparam Equal is a comparison function that compares two dereferenced pointers of type T.
-template<typename T, typename Hash = DerefStdHasher<T>, typename Equal = DerefStdEqualTo<T>>
+template<typename T, typename Hash = std::hash<loki::ObserverPtr<const T>>, typename Equal = std::equal_to<loki::ObserverPtr<const T>>>
 class UnorderedSet
 {
 private:
@@ -58,7 +44,7 @@ private:
     ByteBufferSegmented m_storage;
 
     // Data to be accessed, we use absl::flat_hash_set because it stores the data in contiguous memory.
-    absl::flat_hash_set<const T*, Hash, Equal> m_elements;
+    std::unordered_set<loki::ObserverPtr<const T>, Hash, Equal> m_elements;
 
     // Serialization buffer
     cista::buf<std::vector<uint8_t>> m_buf;
@@ -141,8 +127,8 @@ public:
     size_t get_estimated_memory_usage_in_bytes() const
     {
         const auto usage1 = m_storage.capacity();
-        const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);
-        return usage1 + usage2;
+        // const auto usage2 = mimir::get_memory_usage_in_bytes(m_elements);
+        return usage1;  // + usage2;
     }
 };
 

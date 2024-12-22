@@ -164,18 +164,19 @@ struct GroundActionImpl
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
+
 }
 
 template<>
-struct mimir::buffering::DerefStdHasher<mimir::GroundActionImpl>
+struct std::hash<loki::ObserverPtr<const mimir::GroundActionImpl>>
 {
-    size_t operator()(const mimir::GroundActionImpl* ptr) const;
+    size_t operator()(loki::ObserverPtr<const mimir::GroundActionImpl> ptr) const;
 };
 
 template<>
-struct mimir::buffering::DerefStdEqualTo<mimir::GroundActionImpl>
+struct std::equal_to<loki::ObserverPtr<const mimir::GroundActionImpl>>
 {
-    bool operator()(const mimir::GroundActionImpl* lhs, const mimir::GroundActionImpl* rhs) const;
+    size_t operator()(loki::ObserverPtr<const mimir::GroundActionImpl> lhs, loki::ObserverPtr<const mimir::GroundActionImpl> rhs) const;
 };
 
 namespace mimir

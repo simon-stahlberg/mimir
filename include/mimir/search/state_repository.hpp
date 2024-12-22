@@ -18,6 +18,8 @@
 #ifndef MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 #define MIMIR_SEARCH_STATE_REPOSITORY_HPP_
 
+#include "mimir/common/equal_to_cista.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
