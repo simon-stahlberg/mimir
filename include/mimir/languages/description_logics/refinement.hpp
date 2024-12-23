@@ -20,10 +20,8 @@
 
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
 #include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/equal_to.hpp"
 #include "mimir/languages/description_logics/evaluation_context.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
-#include "mimir/languages/description_logics/hash.hpp"
 
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>

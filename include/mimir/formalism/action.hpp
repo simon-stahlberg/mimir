@@ -61,6 +61,15 @@ public:
     const EffectConditionalList& get_conditional_effects() const;
 
     size_t get_arity() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_name),
+                                     std::as_const(m_original_arity),
+                                     std::as_const(m_precondition),
+                                     std::as_const(m_strips_effect),
+                                     std::as_const(m_conditional_effects));
+    }
 };
 
 /**

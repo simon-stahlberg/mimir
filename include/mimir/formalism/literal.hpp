@@ -51,6 +51,8 @@ public:
     Index get_index() const;
     bool is_negated() const;
     const Atom<P>& get_atom() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_is_negated), std::as_const(m_atom)); }
 };
 
 template<PredicateTag P>

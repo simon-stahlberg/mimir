@@ -52,6 +52,8 @@ public:
     const TermList& get_terms() const;
     VariableList get_variables() const;
     size_t get_arity() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_terms)); }
 };
 
 template<PredicateTag P>

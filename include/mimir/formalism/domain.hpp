@@ -80,6 +80,20 @@ public:
     const ToObjectMap<std::string> get_name_to_constants() const;
     template<PredicateTag P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_filepath),
+                                     std::as_const(m_name),
+                                     std::as_const(m_requirements),
+                                     std::as_const(m_constants),
+                                     std::as_const(m_static_predicates),
+                                     std::as_const(m_fluent_predicates),
+                                     std::as_const(m_derived_predicates),
+                                     std::as_const(m_functions),
+                                     std::as_const(m_actions),
+                                     std::as_const(m_axioms));
+    }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const DomainImpl& element);

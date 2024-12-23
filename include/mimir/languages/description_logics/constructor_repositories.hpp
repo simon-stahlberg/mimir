@@ -19,8 +19,6 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CONSTRUCTOR_REPOSITORIES_HPP_
 
 #include "mimir/languages/description_logics/constructors.hpp"
-#include "mimir/languages/description_logics/equal_to.hpp"
-#include "mimir/languages/description_logics/hash.hpp"
 
 #include <boost/hana.hpp>
 #include <loki/loki.hpp>

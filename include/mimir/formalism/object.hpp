@@ -46,6 +46,8 @@ public:
 
     Index get_index() const;
     const std::string& get_name() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ObjectImpl& element);

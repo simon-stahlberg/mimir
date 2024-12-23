@@ -52,6 +52,8 @@ public:
     const std::string& get_name() const;
     const VariableList& get_parameters() const;
     size_t get_arity() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_parameters)); }
 };
 
 template<PredicateTag P>

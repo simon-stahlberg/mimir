@@ -59,6 +59,8 @@ public:
     ConceptBotImpl& operator=(ConceptBotImpl&& other) = default;
 
     Index get_index() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
 class ConceptTopImpl : public ConstructorEvaluatorBase<Concept, ConceptTopImpl>
@@ -86,6 +88,8 @@ public:
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
     Index get_index() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
 template<PredicateTag P>
@@ -116,6 +120,8 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
 template<PredicateTag P>
@@ -148,6 +154,8 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
 };
 
 class ConceptIntersectionImpl : public ConstructorEvaluatorBase<Concept, ConceptIntersectionImpl>
@@ -179,6 +187,8 @@ public:
     Index get_index() const;
     Constructor<Concept> get_concept_left() const;
     Constructor<Concept> get_concept_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_left), std::as_const(m_concept_right)); }
 };
 
 class ConceptUnionImpl : public ConstructorEvaluatorBase<Concept, ConceptUnionImpl>
@@ -210,6 +220,8 @@ public:
     Index get_index() const;
     Constructor<Concept> get_concept_left() const;
     Constructor<Concept> get_concept_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_left), std::as_const(m_concept_right)); }
 };
 
 class ConceptNegationImpl : public ConstructorEvaluatorBase<Concept, ConceptNegationImpl>
@@ -239,6 +251,8 @@ public:
 
     Index get_index() const;
     Constructor<Concept> get_concept() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept)); }
 };
 
 class ConceptValueRestrictionImpl : public ConstructorEvaluatorBase<Concept, ConceptValueRestrictionImpl>
@@ -270,6 +284,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role() const;
     Constructor<Concept> get_concept() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role), std::as_const(m_concept)); }
 };
 
 class ConceptExistentialQuantificationImpl : public ConstructorEvaluatorBase<Concept, ConceptExistentialQuantificationImpl>
@@ -301,6 +317,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role() const;
     Constructor<Concept> get_concept() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role), std::as_const(m_concept)); }
 };
 
 class ConceptRoleValueMapContainmentImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapContainmentImpl>
@@ -332,6 +350,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
 };
 
 class ConceptRoleValueMapEqualityImpl : public ConstructorEvaluatorBase<Concept, ConceptRoleValueMapEqualityImpl>
@@ -363,6 +383,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
 };
 
 class ConceptNominalImpl : public ConstructorEvaluatorBase<Concept, ConceptNominalImpl>
@@ -392,6 +414,8 @@ public:
 
     Index get_index() const;
     Object get_object() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_object)); }
 };
 
 /**
@@ -423,6 +447,8 @@ public:
     RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
 
     Index get_index() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
 template<PredicateTag P>
@@ -453,6 +479,8 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
 template<PredicateTag P>
@@ -485,6 +513,8 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
 };
 
 class RoleIntersectionImpl : public ConstructorEvaluatorBase<Role, RoleIntersectionImpl>
@@ -516,6 +546,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
 };
 
 class RoleUnionImpl : public ConstructorEvaluatorBase<Role, RoleUnionImpl>
@@ -547,6 +579,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
 };
 
 class RoleComplementImpl : public ConstructorEvaluatorBase<Role, RoleComplementImpl>
@@ -576,6 +610,8 @@ public:
 
     Index get_index() const;
     Constructor<Role> get_role() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
 };
 
 class RoleInverseImpl : public ConstructorEvaluatorBase<Role, RoleInverseImpl>
@@ -605,6 +641,8 @@ public:
 
     Index get_index() const;
     Constructor<Role> get_role() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
 };
 
 class RoleCompositionImpl : public ConstructorEvaluatorBase<Role, RoleCompositionImpl>
@@ -636,6 +674,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role_left() const;
     Constructor<Role> get_role_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_left), std::as_const(m_role_right)); }
 };
 
 class RoleTransitiveClosureImpl : public ConstructorEvaluatorBase<Role, RoleTransitiveClosureImpl>
@@ -665,6 +705,8 @@ public:
 
     Index get_index() const;
     Constructor<Role> get_role() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
 };
 
 class RoleReflexiveTransitiveClosureImpl : public ConstructorEvaluatorBase<Role, RoleReflexiveTransitiveClosureImpl>
@@ -694,6 +736,8 @@ public:
 
     Index get_index() const;
     Constructor<Role> get_role() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role)); }
 };
 
 class RoleRestrictionImpl : public ConstructorEvaluatorBase<Role, RoleRestrictionImpl>
@@ -725,6 +769,8 @@ public:
     Index get_index() const;
     Constructor<Role> get_role() const;
     Constructor<Concept> get_concept() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role), std::as_const(m_concept)); }
 };
 
 class RoleIdentityImpl : public ConstructorEvaluatorBase<Role, RoleIdentityImpl>
@@ -754,6 +800,8 @@ public:
 
     Index get_index() const;
     Constructor<Concept> get_concept() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept)); }
 };
 
 }

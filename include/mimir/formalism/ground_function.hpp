@@ -45,6 +45,8 @@ public:
     Index get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const ObjectList& get_objects() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_objects)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element);

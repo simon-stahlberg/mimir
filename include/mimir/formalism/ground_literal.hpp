@@ -52,6 +52,8 @@ public:
     bool is_negated() const;
     const GroundAtom<P>& get_atom() const;
     Literal<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_is_negated), std::as_const(m_atom)); }
 };
 
 template<PredicateTag P>

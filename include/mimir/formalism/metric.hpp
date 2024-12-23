@@ -19,7 +19,6 @@
 #define MIMIR_FORMALISM_METRIC_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/equal_to.hpp"
 
 namespace mimir
 {
@@ -48,6 +47,8 @@ public:
     Index get_index() const;
     loki::OptimizationMetricEnum get_optimization_metric() const;
     const GroundFunctionExpression& get_function_expression() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_optimization_metric), std::as_const(m_function_expression)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const OptimizationMetricImpl& element);

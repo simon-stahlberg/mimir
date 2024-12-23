@@ -47,6 +47,8 @@ public:
     Index get_index() const;
     const FunctionSkeleton& get_function_skeleton() const;
     const TermList& get_terms() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_terms)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionImpl& element);

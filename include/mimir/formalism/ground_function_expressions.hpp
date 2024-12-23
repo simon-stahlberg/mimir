@@ -47,6 +47,8 @@ public:
 
     Index get_index() const;
     double get_number() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_number)); }
 };
 
 /* FunctionExpressionBinaryOperator */
@@ -80,6 +82,11 @@ public:
     loki::BinaryOperatorEnum get_binary_operator() const;
     const GroundFunctionExpression& get_left_function_expression() const;
     const GroundFunctionExpression& get_right_function_expression() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_binary_operator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
+    }
 };
 
 /* FunctionExpressionMultiOperator */
@@ -108,6 +115,8 @@ public:
     Index get_index() const;
     loki::MultiOperatorEnum get_multi_operator() const;
     const GroundFunctionExpressionList& get_function_expressions() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_multi_operator), std::as_const(m_function_expressions)); }
 };
 
 /* FunctionExpressionMinus */
@@ -134,6 +143,8 @@ public:
 
     Index get_index() const;
     const GroundFunctionExpression& get_function_expression() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_expression)); }
 };
 
 /* FunctionExpressionFunction */
@@ -160,6 +171,8 @@ public:
 
     Index get_index() const;
     const GroundFunction& get_function() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function)); }
 };
 
 /* GroundFunctionExpression */
@@ -199,6 +212,8 @@ public:
                        GroundFunctionExpressionMinus,
                        GroundFunctionExpressionFunction>&
     get_variant() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_ground_function_expression)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);

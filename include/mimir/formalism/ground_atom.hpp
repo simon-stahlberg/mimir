@@ -53,6 +53,8 @@ public:
     const ObjectList& get_objects() const;
     size_t get_arity() const;
     Atom<P> lift(const TermList& terms, PDDLRepositories& pddl_repositories) const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_objects)); }
 };
 
 template<PredicateTag P>

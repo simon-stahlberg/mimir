@@ -69,6 +69,8 @@ public:
 
     // Deferred initialization for internal usage. Users should not use it.
     void set_rule(DerivationRule<D> rule) const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_rule)); }
 };
 
 /**
@@ -101,6 +103,8 @@ public:
 
     Index get_index() const;
     const std::variant<Constructor<D>, NonTerminal<D>>& get_constructor_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_choice)); }
 };
 
 /**
@@ -135,6 +139,8 @@ public:
     Index get_index() const;
     NonTerminal<D> get_non_terminal() const;
     const ConstructorOrNonTerminalList<D>& get_constructor_or_non_terminals() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_non_terminal), std::as_const(m_constructor_or_non_terminals)); }
 };
 
 /**
@@ -164,6 +170,8 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
 class ConceptTopImpl : public ConstructorImpl<Concept>
@@ -189,6 +197,8 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
 template<PredicateTag P>
@@ -217,6 +227,8 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
 template<PredicateTag P>
@@ -247,6 +259,8 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
 };
 
 class ConceptIntersectionImpl : public ConstructorImpl<Concept>
@@ -278,6 +292,11 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_right() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal_left), std::as_const(m_concept_or_non_terminal_right));
+    }
 };
 
 class ConceptUnionImpl : public ConstructorImpl<Concept>
@@ -309,6 +328,11 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_right() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal_left), std::as_const(m_concept_or_non_terminal_right));
+    }
 };
 
 class ConceptNegationImpl : public ConstructorImpl<Concept>
@@ -336,6 +360,8 @@ public:
 
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal)); }
 };
 
 class ConceptValueRestrictionImpl : public ConstructorImpl<Concept>
@@ -365,6 +391,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal), std::as_const(m_concept_or_non_terminal)); }
 };
 
 class ConceptExistentialQuantificationImpl : public ConstructorImpl<Concept>
@@ -396,6 +424,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal), std::as_const(m_concept_or_non_terminal)); }
 };
 
 class ConceptRoleValueMapContainmentImpl : public ConstructorImpl<Concept>
@@ -427,6 +457,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
 class ConceptRoleValueMapEqualityImpl : public ConstructorImpl<Concept>
@@ -458,6 +490,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
 class ConceptNominalImpl : public ConstructorImpl<Concept>
@@ -485,6 +519,8 @@ public:
 
     Index get_index() const;
     Object get_object() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_object)); }
 };
 
 /**
@@ -514,6 +550,8 @@ public:
     void accept(Visitor& visitor) const override;
 
     Index get_index() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
 template<PredicateTag P>
@@ -542,6 +580,8 @@ public:
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
 template<PredicateTag P>
@@ -572,6 +612,8 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
     bool is_negated() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
 };
 
 class RoleIntersectionImpl : public ConstructorImpl<Role>
@@ -601,6 +643,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
 class RoleUnionImpl : public ConstructorImpl<Role>
@@ -630,6 +674,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
 class RoleComplementImpl : public ConstructorImpl<Role>
@@ -657,6 +703,8 @@ public:
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
 class RoleInverseImpl : public ConstructorImpl<Role>
@@ -684,6 +732,8 @@ public:
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
 class RoleCompositionImpl : public ConstructorImpl<Role>
@@ -713,6 +763,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
 class RoleTransitiveClosureImpl : public ConstructorImpl<Role>
@@ -740,6 +792,8 @@ public:
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
 class RoleReflexiveTransitiveClosureImpl : public ConstructorImpl<Role>
@@ -767,6 +821,8 @@ public:
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
 class RoleRestrictionImpl : public ConstructorImpl<Role>
@@ -796,6 +852,8 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal), std::as_const(m_concept_or_non_terminal)); }
 };
 
 class RoleIdentityImpl : public ConstructorImpl<Role>
@@ -823,6 +881,8 @@ public:
 
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal)); }
 };
 }
 

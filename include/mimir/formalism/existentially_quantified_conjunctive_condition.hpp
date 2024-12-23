@@ -64,6 +64,14 @@ public:
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
 
     size_t get_arity() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_parameters),
+                                     std::as_const(m_static_conditions),
+                                     std::as_const(m_fluent_conditions),
+                                     std::as_const(m_derived_conditions));
+    }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ExistentiallyQuantifiedConjunctiveConditionImpl& element);

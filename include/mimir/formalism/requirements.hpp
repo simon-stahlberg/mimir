@@ -47,6 +47,8 @@ public:
 
     Index get_index() const;
     const loki::RequirementEnumSet& get_requirements() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_requirements)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const RequirementsImpl& element);

@@ -51,6 +51,8 @@ public:
     Index get_index() const;
     const LiteralList<Fluent>& get_effects() const;
     const FunctionExpression& get_function_expression() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_effects), std::as_const(m_function_expression)); }
 };
 
 /**
@@ -96,6 +98,16 @@ public:
     const FunctionExpression& get_function_expression() const;
 
     size_t get_arity() const;
+
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_quantified_variables),
+                                     std::as_const(m_static_conditions),
+                                     std::as_const(m_fluent_conditions),
+                                     std::as_const(m_derived_conditions),
+                                     std::as_const(m_effects),
+                                     std::as_const(m_function_expression));
+    }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element);

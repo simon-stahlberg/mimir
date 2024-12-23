@@ -47,6 +47,8 @@ public:
     Index get_index() const;
     const GroundFunction& get_function() const;
     double get_number() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function), std::as_const(m_number)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element);
