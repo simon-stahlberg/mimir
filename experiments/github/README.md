@@ -63,7 +63,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Powerlifted       |          135 |         **344** |              217 |
 | Mimir-lifted      |      **155** |             522 |              270 |
 
-1. Optimal-STRIPS
+2. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
@@ -89,6 +89,8 @@ Observations:
 
 ### Time limit 5 Minutes:
 
+1. Hard-to-Ground
+
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |          113 |            2552 |               67 |
@@ -96,7 +98,7 @@ Observations:
 | Powerlifted       |          129 |         **197** |              120 |
 | Mimir-lifted      |      **137** |             311 |              165 |
 
-1. Optimal-STRIPS
+2. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
