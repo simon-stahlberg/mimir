@@ -27,7 +27,7 @@ namespace mimir
 {
 
 /**
- * Implementation of https://arxiv.org/pdf/1109.6051.pdf section 5
+ * Implementation of https://arxiv.org/pdf/1109.6051.pdf section 5.
  *
  * The key idea in our implementation is to store all elements in a vector
  * and store iterator offsets in the generator nodes.
