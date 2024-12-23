@@ -276,6 +276,9 @@ void MatchTree<T>::get_applicable_elements(const FlatBitset& fluent_ground_atoms
                                            const FlatBitset& derived_ground_atoms,
                                            std::vector<T>& out_applicable_elements)
 {
+    // Note: iterative version performed better that recursive version.
+    // Additionally, we needed iterative version to avoid stack overflow.
+
     out_applicable_elements.clear();
     m_evaluate_stack.clear();
 

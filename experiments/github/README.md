@@ -59,27 +59,27 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |          126 |            3132 |              102 |
-| Mimir-grounded    |          106 |            3769 |           **77** |
+| Mimir-grounded    |          106 |            3270 |           **61** |
 | Powerlifted       |          135 |         **344** |              217 |
-| Mimir-lifted      |      **156** |             547 |              278 |
+| Mimir-lifted      |      **155** |             522 |              270 |
 
 1. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **752** |            1273 |          **261** |
-| Mimir-grounded    |          681 |         **789** |              334 |
+| Mimir-grounded    |          695 |         **756** |              313 |
 | Powerlifted       |          539 |            6958 |             6050 |
-| Mimir-lifted      |          663 |            2601 |             1754 |
+| Mimir-lifted      |          669 |            2574 |             1692 |
 
 3. Optimal-ADL
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **365** |            2156 |          **346** |
-| Mimir-grounded    |          330 |        **1302** |              540 |
+| Fast-Downward     |      **365** |            2394 |          **399** |
+| Mimir-grounded    |          336 |        **1334** |              599 |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |          294 |            5436 |             4132 |
+| Mimir-lifted      |          299 |            5722 |             4544 |
 
 Observations:
 - Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. We suspect that the slight improvements in search time are directly correlated with its memory efficiency resulting in better cache utilization. Fast-Downward's preprocessing step causes a significant decline in total time compared to Mimir.
@@ -91,10 +91,10 @@ Observations:
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |          113 |            2425 |               62 |
-| Mimir-grounded    |           99 |            2552 |           **42** |
-| Powerlifted       |          129 |         **186** |              113 |
-| Mimir-lifted      |      **138** |             331 |              156 |
+| Fast-Downward     |          113 |            2552 |               67 |
+| Mimir-grounded    |          101 |            2458 |           **37** |
+| Powerlifted       |          129 |         **197** |              120 |
+| Mimir-lifted      |      **137** |             311 |              165 |
 
 1. Optimal-STRIPS
 
@@ -109,10 +109,10 @@ Observations:
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **318** |            1227 |          **132** |
-| Mimir-grounded    |          308 |         **656** |              213 |
+| Fast-Downward     |      **318** |            1234 |          **137** |
+| Mimir-grounded    |          312 |         **607** |              208 |
 | Powerlifted       |            x |               x |                x |
-| Mimir-lifted      |          253 |            2395 |             1668 |
+| Mimir-lifted      |          255 |            2340 |             1619 |
 
 The observations remain almost identical to the 30 minutes experiment.
 
