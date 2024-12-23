@@ -38,7 +38,7 @@ private:
     EffectStripsImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -78,7 +78,7 @@ private:
                           FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:

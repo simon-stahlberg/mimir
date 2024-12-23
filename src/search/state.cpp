@@ -17,7 +17,6 @@
 
 #include "mimir/search/state.hpp"
 
-#include "mimir/algorithms/murmurhash3.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
@@ -136,8 +135,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
               out_derived_ground_atoms.end(),
               [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
-       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State("
+       << "index=" << state->get_index() << ", "
+       << "fluent atoms=" << out_fluent_ground_atoms << ", "
+       << "static atoms=" << out_static_ground_atoms << ", "
+       << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }

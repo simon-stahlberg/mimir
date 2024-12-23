@@ -34,12 +34,6 @@
 #include <variant>
 #include <vector>
 
-namespace loki
-{
-template<typename HolderType, typename Hash, typename EqualTo>
-class UniqueFactory;
-}
-
 namespace mimir
 {
 /**

@@ -35,7 +35,7 @@ private:
     VariableImpl(Index index, std::string name, size_t parameter_index);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:

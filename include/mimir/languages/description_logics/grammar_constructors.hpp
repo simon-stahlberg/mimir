@@ -49,7 +49,7 @@ private:
     NonTerminalImpl(Index index, std::string name);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -85,7 +85,7 @@ private:
     ConstructorOrNonTerminalImpl(Index index, std::variant<Constructor<D>, NonTerminal<D>> choice);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -118,7 +118,7 @@ protected:
     DerivationRuleImpl(Index index, NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -149,7 +149,7 @@ private:
     explicit ConceptBotImpl(Index index);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -174,7 +174,7 @@ private:
     explicit ConceptTopImpl(Index index);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -201,7 +201,7 @@ private:
     ConceptAtomicStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -230,7 +230,7 @@ private:
     ConceptAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -261,7 +261,7 @@ private:
                             ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -292,7 +292,7 @@ private:
                      ConstructorOrNonTerminal<Concept> concept_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -320,7 +320,7 @@ private:
     ConceptNegationImpl(Index index, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -348,7 +348,7 @@ private:
     ConceptValueRestrictionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -379,7 +379,7 @@ private:
                                          ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -410,7 +410,7 @@ private:
                                        ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -441,7 +441,7 @@ private:
                                     ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -469,7 +469,7 @@ private:
     ConceptNominalImpl(Index index, Object object);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -499,7 +499,7 @@ private:
     explicit RoleUniversalImpl(Index index);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -526,7 +526,7 @@ private:
     RoleAtomicStateImpl(Index index, Predicate<P> predicate);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -555,7 +555,7 @@ private:
     RoleAtomicGoalImpl(Index index, Predicate<P> predicate, bool is_negated);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -584,7 +584,7 @@ private:
     RoleIntersectionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -613,7 +613,7 @@ private:
     RoleUnionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -641,7 +641,7 @@ private:
     RoleComplementImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -668,7 +668,7 @@ private:
     RoleInverseImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -696,7 +696,7 @@ private:
     RoleCompositionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal_left, ConstructorOrNonTerminal<Role> role_or_non_terminal_right);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -724,7 +724,7 @@ private:
     RoleTransitiveClosureImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -751,7 +751,7 @@ private:
     RoleReflexiveTransitiveClosureImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -779,7 +779,7 @@ private:
     RoleRestrictionImpl(Index index, ConstructorOrNonTerminal<Role> role_or_non_terminal, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -807,7 +807,7 @@ private:
     RoleIdentityImpl(Index index, ConstructorOrNonTerminal<Concept> concept_or_non_terminal);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:

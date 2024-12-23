@@ -35,7 +35,7 @@ private:
     GroundFunctionExpressionNumberImpl(Index index, double number);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -66,7 +66,7 @@ private:
                                                GroundFunctionExpression right_function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -95,7 +95,7 @@ private:
     GroundFunctionExpressionMultiOperatorImpl(Index index, loki::MultiOperatorEnum multi_operator, GroundFunctionExpressionList function_expressions);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -122,7 +122,7 @@ private:
     GroundFunctionExpressionMinusImpl(Index index, GroundFunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -148,7 +148,7 @@ private:
     GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -182,7 +182,7 @@ private:
                                               GroundFunctionExpressionFunction> ground_function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:

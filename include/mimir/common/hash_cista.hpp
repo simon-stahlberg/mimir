@@ -22,9 +22,9 @@
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/tuple.h"
 #include "cista/containers/vector.h"
-#include "mimir/algorithms/murmurhash3.hpp"
 #include "mimir/common/hash.hpp"
 
+#include <loki/details/utils/murmurhash3.h>
 #include <loki/details/utils/observer_ptr.hpp>
 
 /* DynamicBitset */
@@ -99,7 +99,7 @@ struct std::hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Al
         size_t seed = vector.size();
         size_t hash[2] = { 0, 0 };
 
-        MurmurHash3_x64_128(vector.data(), vector.size() * sizeof(T), seed, hash);
+        loki::MurmurHash3_x64_128(vector.data(), vector.size() * sizeof(T), seed, hash);
 
         mimir::hash_combine(seed, hash[0]);
         mimir::hash_combine(seed, hash[1]);
@@ -129,7 +129,7 @@ struct std::hash<cista::basic_flexible_index_vector<IndexType, Ptr>>
         size_t seed = vector.size();
         size_t hash[2] = { 0, 0 };
 
-        ::MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(IndexType), seed, hash);
+        loki::MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(IndexType), seed, hash);
 
         mimir::hash_combine(seed, hash[0]);
         mimir::hash_combine(seed, hash[1]);

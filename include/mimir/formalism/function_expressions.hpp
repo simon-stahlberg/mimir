@@ -35,7 +35,7 @@ private:
     FunctionExpressionNumberImpl(Index index, double number);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -66,7 +66,7 @@ private:
                                          FunctionExpression right_function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -95,7 +95,7 @@ private:
     FunctionExpressionMultiOperatorImpl(Index index, loki::MultiOperatorEnum multi_operator, FunctionExpressionList function_expressions);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -122,7 +122,7 @@ private:
     FunctionExpressionMinusImpl(Index index, FunctionExpression function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -148,7 +148,7 @@ private:
     FunctionExpressionFunctionImpl(Index index, Function function);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
@@ -182,7 +182,7 @@ private:
                                         FunctionExpressionFunction> function_expression);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:

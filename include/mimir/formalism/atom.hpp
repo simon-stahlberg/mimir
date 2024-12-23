@@ -35,7 +35,7 @@ private:
     AtomImpl(Index index, Predicate<P> predicate, TermList terms);
 
     // Give access to the constructor.
-    template<typename HolderType, typename Hash, typename EqualTo>
+    template<typename T, typename Hash, typename EqualTo>
     friend class loki::SegmentedRepository;
 
 public:
