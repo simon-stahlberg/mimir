@@ -20,7 +20,6 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/literal.hpp"

@@ -18,7 +18,6 @@
 #include "mimir/formalism/requirements.hpp"
 
 #include "formatter.hpp"
-#include "mimir/common/hash.hpp"
 
 #include <cassert>
 

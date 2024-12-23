@@ -19,8 +19,6 @@
 #define MIMIR_GRAPHS_ALGORITHMS_FOLKLORE_WEISFEILER_LEMAN_HPP_
 
 #include "mimir/algorithms/nauty.hpp"
-#include "mimir/common/equal_to.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/algorithms/color_refinement.hpp"
@@ -31,6 +29,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -47,7 +46,7 @@ class Certificate
 public:
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
     using ConfigurationCompressionFunction =
-        std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
+        std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
     using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color>;
 
     Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color);
@@ -102,8 +101,8 @@ IndexArray<K> hash_to_tuple(size_t hash, size_t num_vertices);
 /// @tparam K is the dimensionality.
 /// @return the `Certicate`
 template<size_t K, typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function);
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function);
 }
 
 /// @brief std::hash specialization for the certificate.

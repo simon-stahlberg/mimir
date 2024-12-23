@@ -20,7 +20,6 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/variable.hpp"
 

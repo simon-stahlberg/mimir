@@ -18,10 +18,9 @@
 #ifndef MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 #define MIMIR_GRAPHS_GRAPH_VERTICES_HPP_
 
-#include "mimir/common/equal_to.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
+#include <loki/details/utils/hash.hpp>
 #include <tuple>
 
 namespace mimir
@@ -76,7 +75,7 @@ struct std::hash<mimir::Vertex<VertexProperties...>>
     template<std::size_t... Is>
     void apply_properties_hash(size_t& seed, const mimir::Vertex<VertexProperties...>& element, std::index_sequence<Is...>) const
     {
-        (..., mimir::hash_combine(seed, element.template get_property<Is>()));
+        (..., loki::hash_combine(seed, element.template get_property<Is>()));
     }
 };
 
@@ -104,11 +103,10 @@ using ColoredVertex = Vertex<Color>;
 inline Color get_color(const ColoredVertex& vertex) { return vertex.get_property<0>(); }
 
 template<typename T>
-concept IsVertexColoredGraph = requires(T::VertexType vertex)
-{
+concept IsVertexColoredGraph = requires(T::VertexType vertex) {
     {
         get_color(vertex)
-        } -> std::same_as<Color>;
+    } -> std::same_as<Color>;
 };
 
 }

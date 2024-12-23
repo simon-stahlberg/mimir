@@ -18,9 +18,9 @@
 #ifndef MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 #define MIMIR_GRAPHS_GRAPH_EDGES_HPP_
 
-#include "mimir/common/equal_to.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
+
+#include <loki/details/utils/hash.hpp>
 
 namespace mimir
 {
@@ -79,7 +79,7 @@ struct std::hash<mimir::Edge<EdgeProperties...>>
 {
     size_t operator()(const mimir::Edge<EdgeProperties...>& element) const
     {
-        size_t seed = mimir::hash_combine(element.get_index(), element.get_source(), element.get_target());
+        size_t seed = loki::hash_combine(element.get_index(), element.get_source(), element.get_target());
         apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(EdgeProperties)> {});
         return seed;
     }
@@ -88,7 +88,7 @@ struct std::hash<mimir::Edge<EdgeProperties...>>
     template<std::size_t... Is>
     void apply_properties_hash(size_t& seed, const mimir::Edge<EdgeProperties...>& element, std::index_sequence<Is...>) const
     {
-        (..., mimir::hash_combine(seed, element.template get_property<Is>()));
+        (..., loki::hash_combine(seed, element.template get_property<Is>()));
     }
 };
 
@@ -116,11 +116,10 @@ using ColoredEdge = Edge<Color>;
 inline Color get_color(const ColoredEdge& edge) { return edge.get_property<0>(); }
 
 template<typename T>
-concept IsEdgeColoredGraph = requires(T::EdgeType edge)
-{
+concept IsEdgeColoredGraph = requires(T::EdgeType edge) {
     {
         get_color(edge)
-        } -> std::same_as<Color>;
+    } -> std::same_as<Color>;
 };
 
 }

@@ -18,10 +18,10 @@
 #include "mimir/formalism/translators/to_mimir_structures.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/translators/utils.hpp"
 
+#include <loki/details/utils/hash.hpp>
 #include <numeric>
 #include <typeinfo>
 #include <unordered_map>
@@ -493,7 +493,7 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
     using EffectStripsData = std::pair<LiteralList<Fluent>, FunctionExpressionList>;
     using EffectConditionalData = std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>,
                                                      std::pair<LiteralList<Fluent>, FunctionExpressionList>,
-                                                     mimir::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
+                                                     loki::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
 
     const auto translate_effect_func =
         [&](const loki::Effect& effect, EffectStripsData& ref_effect_strips_data, EffectConditionalData& ref_effect_conditional_data)

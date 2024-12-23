@@ -19,12 +19,11 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DENOTATIONS_HPP_
 
 #include "mimir/buffering/unordered_set.h"
-#include "mimir/common/equal_to.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
+#include <loki/details/utils/hash.hpp>
 #include <loki/details/utils/observer_ptr.hpp>
 #include <unordered_map>
 #include <unordered_set>
@@ -68,7 +67,7 @@ using ConstructorTagToDenotationType =
 template<mimir::dl::ConstructorTag D>
 struct std::hash<loki::ObserverPtr<const mimir::dl::DenotationImpl<D>>>
 {
-    size_t operator()(loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> ptr) const { return mimir::hash_combine(ptr->get_data()); }
+    size_t operator()(loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> ptr) const { return loki::hash_combine(ptr->get_data()); }
 };
 template<mimir::dl::ConstructorTag D>
 struct std::equal_to<loki::ObserverPtr<const mimir::dl::DenotationImpl<D>>>

@@ -81,7 +81,7 @@ private:
     /// These addresses are stored as vectors of `uintptr_t`.
     /// Two identical vectors imply identical evaluations across all states.
     using DenotationsList = std::vector<uintptr_t>;
-    std::unordered_set<DenotationsList, Hash<DenotationsList>> m_denotations_repository;
+    std::unordered_set<DenotationsList, loki::Hash<DenotationsList>> m_denotations_repository;
 };
 
 /**

@@ -18,7 +18,6 @@
 #include "mimir/graphs/object_graph.hpp"
 
 #include "mimir/algorithms/nauty.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/datasets/state_space.hpp"
 
 #include <gtest/gtest.h>

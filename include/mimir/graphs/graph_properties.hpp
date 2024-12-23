@@ -18,21 +18,21 @@
 #ifndef MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 #define MIMIR_GRAPHS_GRAPH_PROPERTIES_HPP_
 
-#include "mimir/common/hash.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_interface.hpp"
 
+#include <loki/details/utils/hash.hpp>
 #include <unordered_set>
 
 namespace mimir
 {
 
 template<typename G>
-requires IsEdgeListGraph<G>  //
+    requires IsEdgeListGraph<G>  //
 bool is_undirected_graph(const G& graph)
 {
     // Create datastructure for efficient lookup
-    auto directed_edges = std::unordered_set<std::pair<Index, Index>, Hash<std::pair<Index, Index>>>();
+    auto directed_edges = std::unordered_set<std::pair<Index, Index>, loki::Hash<std::pair<Index, Index>>>();
     for (const auto& edge : graph.get_edges())
     {
         directed_edges.emplace(edge.get_source(), edge.get_target());
@@ -50,10 +50,10 @@ bool is_undirected_graph(const G& graph)
 }
 
 template<typename G>
-requires IsEdgeListGraph<G>  //
+    requires IsEdgeListGraph<G>  //
 bool is_multi_graph(const G& graph)
 {
-    auto directed_edges = std::unordered_set<std::pair<Index, Index>, Hash<std::pair<Index, Index>>>();
+    auto directed_edges = std::unordered_set<std::pair<Index, Index>, loki::Hash<std::pair<Index, Index>>>();
     for (const auto& edge : graph.get_edges())
     {
         if (!directed_edges.emplace(edge.get_source(), edge.get_target()).second)

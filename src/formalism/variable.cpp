@@ -18,7 +18,6 @@
 #include "mimir/formalism/variable.hpp"
 
 #include "formatter.hpp"
-#include "mimir/common/hash.hpp"
 
 namespace mimir
 {

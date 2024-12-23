@@ -18,8 +18,6 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_HPP_
 
-#include "mimir/common/equal_to.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
@@ -29,6 +27,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -41,7 +40,7 @@ namespace mimir::color_refinement
 class Certificate
 {
 public:
-    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, Hash<std::pair<Color, ColorList>>>;
+    using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
 
     using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
 
@@ -76,8 +75,8 @@ extern std::ostream& operator<<(std::ostream& out, const Certificate& element);
 /// @tparam G is the vertex-colored graph.
 /// @return the `Certicate`
 template<typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    Certificate compute_certificate(const G& graph);
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+Certificate compute_certificate(const G& graph);
 }
 
 /// @brief std::hash specialization for the certificate.

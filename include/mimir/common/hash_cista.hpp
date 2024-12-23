@@ -22,7 +22,6 @@
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/tuple.h"
 #include "cista/containers/vector.h"
-#include "mimir/common/hash.hpp"
 
 #include <loki/details/utils/murmurhash3.h>
 #include <loki/details/utils/observer_ptr.hpp>
@@ -37,7 +36,6 @@ struct std::hash<cista::basic_dynamic_bitset<Block, Ptr>>
     size_t operator()(const Type& bitset) const
     {
         const auto default_block = bitset.default_bit_value_ ? Type::block_ones : Type::block_zeroes;
-        size_t seed = default_block;
 
         // Find the last block that differs from the default block
         auto last_relevant_index = static_cast<int64_t>(bitset.blocks_.size()) - 1;
@@ -45,10 +43,13 @@ struct std::hash<cista::basic_dynamic_bitset<Block, Ptr>>
         size_t hashable_size = last_relevant_index + 1;
 
         // Compute a hash value up to and including this block
-        for (size_t i = 0; i < hashable_size; ++i)
-        {
-            mimir::hash_combine(seed, bitset.blocks_[i]);
-        }
+        size_t seed = loki::hash_combine(default_block, hashable_size);
+        size_t hash[2] = { 0, 0 };
+
+        loki::MurmurHash3_x64_128(bitset.blocks_.data(), hashable_size * sizeof(Block), seed, hash);
+
+        loki::hash_combine(seed, hash[0]);
+        loki::hash_combine(seed, hash[1]);
 
         return seed;
     }
@@ -75,7 +76,7 @@ struct std::hash<cista::tuple<Ts...>>
         constexpr std::size_t seed = sizeof...(Ts);
 
         [&]<std::size_t... Is>(std::index_sequence<Is...>)
-        { (mimir::hash_combine(seed, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
+        { (loki::hash_combine(seed, cista::get<Is>(tuple)), ...); }(std::make_index_sequence<sizeof...(Ts)> {});
 
         return seed;
     }
@@ -101,8 +102,8 @@ struct std::hash<cista::basic_vector<T, Ptr, IndexPointers, TemplateSizeType, Al
 
         loki::MurmurHash3_x64_128(vector.data(), vector.size() * sizeof(T), seed, hash);
 
-        mimir::hash_combine(seed, hash[0]);
-        mimir::hash_combine(seed, hash[1]);
+        loki::hash_combine(seed, hash[0]);
+        loki::hash_combine(seed, hash[1]);
 
         return seed;
     }
@@ -131,8 +132,8 @@ struct std::hash<cista::basic_flexible_index_vector<IndexType, Ptr>>
 
         loki::MurmurHash3_x64_128(vector.blocks().data(), vector.blocks().size() * sizeof(IndexType), seed, hash);
 
-        mimir::hash_combine(seed, hash[0]);
-        mimir::hash_combine(seed, hash[1]);
+        loki::hash_combine(seed, hash[0]);
+        loki::hash_combine(seed, hash[1]);
 
         return seed;
     }

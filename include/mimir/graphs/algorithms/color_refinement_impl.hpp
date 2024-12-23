@@ -18,8 +18,6 @@
 #ifndef MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_IMPL_HPP_
 #define MIMIR_GRAPHS_ALGORITHMS_COLOR_REFINEMENT_IMPL_HPP_
 
-#include "mimir/common/equal_to.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
@@ -29,6 +27,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
 #include <unordered_map>
@@ -79,7 +78,7 @@ void replace_tuples(const std::vector<std::pair<Index, ColorType>>& M,
 /// @param out_L
 template<typename ColorType>
 void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorType>, Index>>& M_replaced,
-                         std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
+                         std::unordered_map<std::pair<Color, std::vector<ColorType>>, Color, loki::Hash<std::pair<Color, std::vector<ColorType>>>>& ref_f,
                          Color& ref_max_color,
                          ColorList& ref_hash_to_color,
                          ColorMap<IndexList>& out_color_to_hashes,
@@ -151,8 +150,8 @@ void split_color_classes(const std::vector<std::tuple<Color, std::vector<ColorTy
 }
 
 template<typename G>
-requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
-    Certificate compute_certificate(const G& graph)
+    requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
+Certificate compute_certificate(const G& graph)
 {
     if (!is_undirected_graph(graph))
     {

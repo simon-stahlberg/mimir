@@ -17,15 +17,17 @@
 
 #include "mimir/search/axiom.hpp"
 
-#include "mimir/common/hash.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
+
+#include <loki/details/utils/hash.hpp>
 
 size_t std::hash<loki::ObserverPtr<const mimir::GroundAxiomImpl>>::operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> ptr) const
 {
     const auto axiom = ptr->get_axiom_index();
     const auto& objects = ptr->get_object_indices();
-    return mimir::hash_combine(axiom, objects);
+    return loki::hash_combine(axiom, objects);
 }
 
 size_t std::equal_to<loki::ObserverPtr<const mimir::GroundAxiomImpl>>::operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> lhs,

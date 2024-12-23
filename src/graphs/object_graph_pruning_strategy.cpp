@@ -18,7 +18,6 @@
 #include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
@@ -28,6 +27,7 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 
+#include <loki/details/utils/hash.hpp>
 #include <optional>
 #include <stack>
 
@@ -162,7 +162,7 @@ static StaticForwardGraph<StaticDigraph> create_scc_digraph(size_t num_component
         g.add_vertex();
     }
     using StatePair = std::pair<size_t, size_t>;
-    std::unordered_set<StatePair, Hash<StatePair>> edges;
+    std::unordered_set<StatePair, loki::Hash<StatePair>> edges;
     for (const auto& t : state_space.get_graph().get_edges())
     {
         const auto source = t.get_source();

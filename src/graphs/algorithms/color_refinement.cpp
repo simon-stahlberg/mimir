@@ -17,8 +17,6 @@
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 
-#include "mimir/common/hash.hpp"
-
 namespace mimir::color_refinement
 {
 
@@ -59,5 +57,5 @@ std::ostream& operator<<(std::ostream& out, const Certificate& element)
 
 size_t std::hash<mimir::color_refinement::Certificate>::operator()(const mimir::color_refinement::Certificate& element) const
 {
-    return mimir::hash_combine(element.get_canonical_coloring(), element.get_canonical_compression_function());
+    return loki::hash_combine(element.get_canonical_coloring(), element.get_canonical_compression_function());
 }

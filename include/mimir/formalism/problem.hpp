@@ -128,8 +128,7 @@ public:
 
     auto identifiable_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_filepath),
-                                     std::as_const(m_domain),
+        return std::forward_as_tuple(std::as_const(m_domain),
                                      std::as_const(m_requirements),
                                      std::as_const(m_objects),
                                      std::as_const(m_derived_predicates),

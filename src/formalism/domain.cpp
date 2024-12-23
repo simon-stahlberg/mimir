@@ -20,7 +20,6 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/axiom.hpp"

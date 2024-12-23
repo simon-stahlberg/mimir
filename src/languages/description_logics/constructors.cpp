@@ -17,7 +17,6 @@
 
 #include "mimir/languages/description_logics/constructors.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"

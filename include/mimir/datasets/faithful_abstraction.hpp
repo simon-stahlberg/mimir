@@ -20,7 +20,6 @@
 
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/grouped_vector.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/declarations.hpp"
 #include "mimir/datasets/ground_actions_edge.hpp"

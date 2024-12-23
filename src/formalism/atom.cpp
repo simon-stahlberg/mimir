@@ -18,7 +18,6 @@
 #include "mimir/formalism/atom.hpp"
 
 #include "formatter.hpp"
-#include "mimir/common/hash.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
 

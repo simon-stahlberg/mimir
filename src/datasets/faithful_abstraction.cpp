@@ -19,7 +19,6 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/algorithms/nauty.hpp"
-#include "mimir/common/equal_to.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -646,8 +645,10 @@ const std::map<ContinuousCost, IndexList>& FaithfulAbstraction::get_vertex_indic
 std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstraction)
 {
     // 2. Header
-    out << "digraph {" << "\n"
-        << "rankdir=\"LR\"" << "\n";
+    out << "digraph {"
+        << "\n"
+        << "rankdir=\"LR\""
+        << "\n";
 
     // 3. Draw states
     for (size_t vertex = 0; vertex < abstraction.get_num_vertices(); ++vertex)
@@ -696,7 +697,8 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
     for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->"
+            << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";

@@ -17,13 +17,13 @@
 
 #include "mimir/algorithms/nauty.hpp"
 
-#include "mimir/common/hash.hpp"
 #include "mimir/common/types.hpp"
 #include "nauty_dense_impl.hpp"
 #include "nauty_sparse_impl.hpp"
 
 #include <cassert>
 #include <iostream>
+#include <loki/details/utils/hash.hpp>
 #include <stdexcept>
 
 namespace nauty_wrapper
@@ -209,5 +209,5 @@ bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
 
 size_t std::hash<nauty_wrapper::Certificate>::operator()(const nauty_wrapper::Certificate& element) const
 {
-    return mimir::hash_combine(element.get_canonical_graph(), element.get_canonical_coloring());
+    return loki::hash_combine(element.get_canonical_graph(), element.get_canonical_coloring());
 }

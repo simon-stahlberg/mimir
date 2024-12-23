@@ -18,9 +18,9 @@
 #include "mimir/formalism/translators/utils.hpp"
 
 #include "mimir/common/collections.hpp"
-#include "mimir/common/hash.hpp"
 
 #include <iomanip>
+#include <loki/details/utils/hash.hpp>
 #include <sstream>
 #include <string>
 #include <unordered_set>
@@ -102,7 +102,7 @@ loki::Effect flatten(const loki::EffectAndImpl& effect, loki::PDDLRepositories& 
 {
     auto function_to_numeric_effects = std::unordered_map<std::pair<loki::AssignOperatorEnum, loki::Function>,
                                                           loki::EffectList,
-                                                          mimir::Hash<std::pair<loki::AssignOperatorEnum, loki::Function>>> {};
+                                                          loki::Hash<std::pair<loki::AssignOperatorEnum, loki::Function>>> {};
     auto other_effects = loki::EffectList {};
 
     for (const auto& part : effect.get_effects())
