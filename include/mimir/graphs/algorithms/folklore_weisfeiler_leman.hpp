@@ -29,6 +29,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
@@ -47,22 +48,26 @@ public:
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
     using ConfigurationCompressionFunction =
         std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
-    using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color>;
+    using CanonicalConfigurationCompressionFunction =
+        std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
 
     Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color);
 
     const CanonicalConfigurationCompressionFunction& get_canonical_configuration_compression_function() const;
     const ColorList& get_canonical_coloring() const;
 
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_f), std::as_const(m_canonical_coloring)); }
+
 private:
     ColorList m_hash_to_color;
 
     CanonicalConfigurationCompressionFunction m_f;
-    ColorList m_coloring_coloring;
+    ColorList m_canonical_coloring;
 };
 
 /// @brief `IsomorphismTypeCompressionFunction` encapsulates mappings from canonical subgraphs to colors.
-using IsomorphismTypeCompressionFunction = std::unordered_map<nauty_wrapper::Certificate, Color>;
+using IsomorphismTypeCompressionFunction =
+    std::unordered_map<nauty_wrapper::Certificate, Color, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>>;
 
 /// @brief Compare two certificates for equality.
 /// @param lhs is the first certificate.
@@ -104,13 +109,6 @@ template<size_t K, typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
 Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFunction& iso_type_function);
 }
-
-/// @brief std::hash specialization for the certificate.
-template<size_t K>
-struct std::hash<mimir::kfwl::Certificate<K>>
-{
-    size_t operator()(const mimir::kfwl::Certificate<K>& element) const;
-};
 
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman_impl.hpp"
 

@@ -20,6 +20,7 @@
 
 #include "mimir/graphs/graph_vertex_interface.hpp"
 
+#include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <tuple>
 
@@ -39,15 +40,6 @@ public:
 
     VertexIndex get_index() const { return m_index; }
 
-    bool operator==(const Vertex& other) const
-    {
-        if (this != &other)
-        {
-            return (m_index == other.m_index) && (m_properties == other.m_properties);
-        }
-        return true;
-    }
-
     template<size_t I>
     const auto& get_property() const
     {
@@ -55,32 +47,15 @@ public:
         return std::get<I>(m_properties);
     }
 
+    /// @brief `identifiable_members` describes the members that identify the vertex
+    /// to automatically generate loki::Hash and loki::EqualTo specializations.
+    /// @return a tuple of const references to all members that identify the vertex.
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_properties)); }
+
 private:
     VertexIndex m_index;
     std::tuple<VertexProperties...> m_properties;
 };
-}
-
-template<typename... VertexProperties>
-struct std::hash<mimir::Vertex<VertexProperties...>>
-{
-    size_t operator()(const mimir::Vertex<VertexProperties...>& element) const
-    {
-        size_t seed = element.get_index();
-        apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(VertexProperties)> {});
-        return seed;
-    }
-
-    // Helper function to apply hashing to all properties
-    template<std::size_t... Is>
-    void apply_properties_hash(size_t& seed, const mimir::Vertex<VertexProperties...>& element, std::index_sequence<Is...>) const
-    {
-        (..., loki::hash_combine(seed, element.template get_property<Is>()));
-    }
-};
-
-namespace mimir
-{
 
 /**
  * EmptyVertex

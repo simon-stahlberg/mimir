@@ -27,6 +27,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 
 #include <cassert>
+#include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 #include <map>
 #include <set>
@@ -42,7 +43,7 @@ class Certificate
 public:
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
 
-    using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
+    using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
 
     Certificate(CompressionFunction f, ColorList hash_to_color);
 
@@ -50,6 +51,8 @@ public:
 
     const CanonicalCompressionFunction& get_canonical_compression_function() const;
     const ColorList& get_canonical_coloring() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_f), std::as_const(m_canonical_coloring)); }
 
 private:
     ColorList m_hash_to_color;
@@ -78,13 +81,6 @@ template<typename G>
     requires IsVertexListGraph<G> && IsIncidenceGraph<G> && IsVertexColoredGraph<G>  //
 Certificate compute_certificate(const G& graph);
 }
-
-/// @brief std::hash specialization for the certificate.
-template<>
-struct std::hash<mimir::color_refinement::Certificate>
-{
-    size_t operator()(const mimir::color_refinement::Certificate& element) const;
-};
 
 #include "mimir/graphs/algorithms/color_refinement_impl.hpp"
 

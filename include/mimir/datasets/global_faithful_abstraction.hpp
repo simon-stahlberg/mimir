@@ -27,7 +27,9 @@
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 
+#include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/filesystem.hpp>
+#include <loki/details/utils/hash.hpp>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -54,12 +56,22 @@ private:
 public:
     GlobalFaithfulAbstractState(Index vertex_index, Index global_index, Index faithful_abstraction_index, Index faithful_abstraction_vertex_index);
 
-    bool operator==(const GlobalFaithfulAbstractState& other) const;
-
     Index get_vertex_index() const;
     Index get_global_index() const;
     Index get_faithful_abstraction_index() const;
     Index get_faithful_abstraction_vertex_index() const;
+
+    /// @brief `identifiable_members` describes the members that identify the state
+    /// to automatically generate loki::Hash and loki::EqualTo specializations.
+    ///
+    /// Note: we do not use include m_vertex_index because it is fa specific.
+    /// @return a tuple of const references to all members that identify the state.
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_global_index),
+                                     std::as_const(m_faithful_abstraction_index),
+                                     std::as_const(m_faithful_abstraction_vertex_index));
+    }
 };
 
 using GlobalFaithfulAbstractStateList = std::vector<GlobalFaithfulAbstractState>;
@@ -214,11 +226,5 @@ static_assert(IsStaticGraph<StaticBidirectionalGraph<StaticGraph<FaithfulAbstrac
 extern std::ostream& operator<<(std::ostream& out, const GlobalFaithfulAbstraction& abstraction);
 
 }
-
-template<>
-struct std::hash<mimir::GlobalFaithfulAbstractState>
-{
-    size_t operator()(const mimir::GlobalFaithfulAbstractState& element) const;
-};
 
 #endif

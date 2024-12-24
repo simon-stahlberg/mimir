@@ -148,7 +148,8 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_TRUE(v1_backward_adjacent_vertex_indices.contains(v5));
 
     // AdjacentVertexIterator
-    using VertexSetType = std::unordered_set<typename DynamicDigraph::VertexType>;
+    using VertexType = typename DynamicDigraph::VertexType;
+    using VertexSetType = std::unordered_set<VertexType, loki::Hash<VertexType>, loki::EqualTo<VertexType>>;
     auto v1_foward_adjacent_vertices =
         VertexSetType(graph.get_adjacent_vertices<ForwardTraversal>(v1).begin(), graph.get_adjacent_vertices<ForwardTraversal>(v1).end());
     auto v1_backward_adjacent_vertices =
@@ -175,7 +176,8 @@ TEST(MimirTests, GraphsDynamicDigraphTest)
     EXPECT_TRUE(v1_backward_adjacent_edge_indices.contains(e7));
 
     // AdjacentEdgeIterator
-    using EdgeSetType = std::unordered_set<typename DynamicDigraph::EdgeType>;
+    using EdgeType = typename DynamicDigraph::EdgeType;
+    using EdgeSetType = std::unordered_set<EdgeType, loki::Hash<EdgeType>, loki::EqualTo<EdgeType>>;
     auto v1_forward_adjacent_edge = EdgeSetType(graph.get_adjacent_edges<ForwardTraversal>(v1).begin(), graph.get_adjacent_edges<ForwardTraversal>(v1).end());
     auto v1_backward_adjacent_edge =
         EdgeSetType(graph.get_adjacent_edges<BackwardTraversal>(v1).begin(), graph.get_adjacent_edges<BackwardTraversal>(v1).end());

@@ -19,12 +19,14 @@
 #define MIMIR_SEARCH_STATE_HPP_
 
 #include "mimir/buffering/unordered_set.h"
-#include "mimir/common/equal_to_cista.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+
+#include <loki/details/utils/equal_to.hpp>
+#include <loki/details/utils/hash.hpp>
 
 namespace mimir
 {
@@ -57,6 +59,11 @@ struct StateImpl
     template<DynamicPredicateTag P>
     const FlatIndexList& get_atoms() const;
 
+    // Only hash/compare the non-extended portion of a state, and the problem.
+    // The extended portion is always equal for the same non-extended portion.
+    // We use it for the unique state construction in the `StateRepository`.
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(get_atoms<Fluent>())); }
+
 private:
     /* Mutable Getters */
 
@@ -67,26 +74,6 @@ private:
     FlatIndexList& get_fluent_atoms();
     uintptr_t& get_derived_atoms();
 };
-
-}
-
-// Only hash/compare the non-extended portion of a state, and the problem.
-// The extended portion is always equal for the same non-extended portion.
-// We use it for the unique state construction in the `StateRepository`.
-template<>
-struct std::hash<loki::ObserverPtr<const mimir::StateImpl>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::StateImpl> ptr) const;
-};
-
-template<>
-struct std::equal_to<loki::ObserverPtr<const mimir::StateImpl>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::StateImpl> lhs, loki::ObserverPtr<const mimir::StateImpl> rhs) const;
-};
-
-namespace mimir
-{
 
 using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
 using AxiomEvaluationSet = mimir::buffering::UnorderedSet<FlatIndexList>;

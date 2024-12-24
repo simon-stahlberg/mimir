@@ -1,9 +1,6 @@
 # Mimir: A Planning Library
 
-Mimir is a C++20-based planning library with Python bindings, designed for both grounded and lifted planning.
-Its primary focus lies at the intersection of planning and machine learning, making it a powerful tool for research in learning-based planning.
-Unlike many planners, Mimir is designed to be used as a library rather than as a standalone application, offering seamless integration into both C++ and Python projects.
-Pre-compiled Python binaries are available via PyPI for easy installation and use.
+Mimir is a C++20-based planning library with Python bindings, designed for both grounded and lifted planning. Its primary focus lies at the intersection of planning and machine learning, making it a powerful tool for  research in learning-based planning. Unlike many planners, Mimir is designed to be used as a library rather than as a standalone application, offering seamless integration into both C++ and Python projects. Pre-compiled Python binaries are available via PyPI for easy installation and use.
 
 ## Key Features
 
@@ -56,7 +53,7 @@ Pre-compiled Python binaries are available via PyPI for easy installation and us
   States are represented using a compressed sparse vector representation that contains all ground atoms that are true in the state. The compression step identifies the largest bit-width required to store all ground atoms. Internally, we unpack states into dense bitset representations for constant time randomized access.
 
 - **Ground Action and Axiom Representations:**
-  Ground action preconditions, effects, and ground axiom preconditions are represented using a compressed sparse vector representation similar to states. However, we do not unpack them, as having unpacked states suffices for efficient applicability checks.
+  Ground action and axioms are complex composite structures. Similar to states, we represent them using a single compressed sparse vector. However, we do never unpack them, as having unpacked states suffices for efficient applicability check.
 
 - **State-Dependent Action Costs (SDAC):**
   State-dependent action costs play a crucial role in accurately modeling real-world problems. For example, in a logistics domain, the cost of moving between locations may depend on factors such as the available vehicles, the terrain, or the load carried by a vehicle. Mimir supports all `:action-costs` features, allowing modelers to write complex cost expressions directly into conditional effects.
@@ -79,3 +76,11 @@ See [build](docs/BUILD.md) for how to compile Mimir, and [examples](docs/EXAMPLE
 
 We would love for people to participate in the development of Mimir, but we are not ready for that yet.
 In the future, see [development guidelines](docs/DEVELOPER_GUIDELINES.md) for instructions.
+
+## Long Term Goals
+
+One of Mimir's long term goal is increasing the support of PDDL features towards non-deterministic, probabilistic, and numeric planning. The current idea is as follows.
+
+To support nondeterminstic and probabilistic planning, we will add two additional types of lifted and ground actions, and successor states generation in the StateRepository. The overhead of supporting nondeterministic and probabilistic planning is small, since ground actions will never be generated, if not present in the input PDDL. However, specialized search algorithm implementations might be necessary for problems that contain such actions.
+
+To support numeric planning, we will add an additional repository for storing numerical function values and full support of `:numeric-fluents`, which is already partially implemented in the form of action costs. The overhead of supporting numeric planning is small, with an overhead of 8 bytes per state in the case where numeric fluents are not used at all.

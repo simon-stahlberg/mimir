@@ -1347,25 +1347,31 @@ void init_pymimir(py::module_& m)
 
     // StateVertex
     py::class_<StateVertex>(m, "StateVertex")  //
-        .def("__eq__", &StateVertex::operator==)
-        .def("__hash__", [](const StateVertex& self) { return std::hash<StateVertex>()(self); })
+        .def("__eq__", [](const StateVertex& lhs, const StateVertex& rhs) { return loki::EqualTo<StateVertex>()(lhs, rhs); })
+        .def("__hash__", [](const StateVertex& self) { return loki::Hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_state",
+            [](const StateVertex& self) { return get_state(self); },
+            py::return_value_policy::reference_internal);
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
-        .def("__eq__", &GroundActionEdge::operator==)
-        .def("__hash__", [](const GroundActionEdge& self) { return std::hash<GroundActionEdge>()(self); })
+        .def("__eq__", [](const GroundActionEdge& lhs, const StateVertex& rhs) { return loki::EqualTo<GroundActionEdge>()(lhs, rhs); })
+        .def("__hash__", [](const GroundActionEdge& self) { return loki::Hash<GroundActionEdge>()(self); })
         .def("get_index", &GroundActionEdge::get_index)
         .def("get_source", &GroundActionEdge::get_source)
         .def("get_target", &GroundActionEdge::get_target)
         .def("get_cost", [](const GroundActionEdge& self) { return get_cost(self); })
-        .def("get_creating_action", [](const GroundActionEdge& self) { return get_creating_action(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_creating_action",
+            [](const GroundActionEdge& self) { return get_creating_action(self); },
+            py::return_value_policy::reference_internal);
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
-        .def("__eq__", &GroundActionsEdge::operator==)
-        .def("__hash__", [](const GroundActionsEdge& self) { return std::hash<GroundActionsEdge>()(self); })
+        .def("__eq__", [](const GroundActionEdge& lhs, const GroundActionsEdge& rhs) { return loki::EqualTo<GroundActionsEdge>()(lhs, rhs); })
+        .def("__hash__", [](const GroundActionsEdge& self) { return loki::Hash<GroundActionsEdge>()(self); })
         .def("get_index", &GroundActionsEdge::get_index)
         .def("get_source", &GroundActionsEdge::get_source)
         .def("get_target", &GroundActionsEdge::get_target)
@@ -1549,8 +1555,9 @@ void init_pymimir(py::module_& m)
 
     // NautyCertificate
     py::class_<nauty_wrapper::Certificate, std::shared_ptr<nauty_wrapper::Certificate>>(m, "NautyCertificate")
-        .def("__eq__", [](const nauty_wrapper::Certificate& lhs, const nauty_wrapper::Certificate& rhs) { return lhs == rhs; })
-        .def("__hash__", [](const nauty_wrapper::Certificate& self) { return std::hash<nauty_wrapper::Certificate>()(self); })
+        .def("__eq__",
+             [](const nauty_wrapper::Certificate& lhs, const nauty_wrapper::Certificate& rhs) { return loki::EqualTo<nauty_wrapper::Certificate>(lhs, rhs); })
+        .def("__hash__", [](const nauty_wrapper::Certificate& self) { return loki::Hash<nauty_wrapper::Certificate>()(self); })
         .def("get_canonical_graph", &nauty_wrapper::Certificate::get_canonical_graph, py::return_value_policy::reference_internal)
         .def("get_canonical_coloring", &nauty_wrapper::Certificate::get_canonical_coloring, py::return_value_policy::reference_internal);
 
@@ -1616,7 +1623,10 @@ void init_pymimir(py::module_& m)
             "get_representative_state",
             [](const FaithfulAbstractStateVertex& self) { return get_representative_state(self); },
             py::keep_alive<0, 1>())
-        .def("get_certificate", [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); }, py::return_value_policy::reference_internal);
+        .def(
+            "get_certificate",
+            [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); },
+            py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def("__str__",
@@ -1763,8 +1773,10 @@ void init_pymimir(py::module_& m)
     // GlobalFaithfulAbstraction
 
     py::class_<GlobalFaithfulAbstractState>(m, "GlobalFaithfulAbstractState")
-        .def("__eq__", &GlobalFaithfulAbstractState::operator==)
-        .def("__hash__", [](const GlobalFaithfulAbstractState& self) { return std::hash<GlobalFaithfulAbstractState>()(self); })
+        .def("__eq__",
+             [](const GlobalFaithfulAbstractState& lhs, const GlobalFaithfulAbstractState& rhs)
+             { return loki::EqualTo<GlobalFaithfulAbstractState>()(lhs, rhs); })
+        .def("__hash__", [](const GlobalFaithfulAbstractState& self) { return loki::Hash<GlobalFaithfulAbstractState>()(self); })
         .def("get_vertex_index", &GlobalFaithfulAbstractState::get_vertex_index)
         .def("get_global_index", &GlobalFaithfulAbstractState::get_global_index)
         .def("get_faithful_abstraction_index", &GlobalFaithfulAbstractState::get_faithful_abstraction_index)
@@ -1990,7 +2002,10 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
+        .def(
+            "get_states",
+            [](const TupleGraphVertex& self) { return StateList(self.get_states()); },
+            py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
@@ -2021,14 +2036,14 @@ void init_pymimir(py::module_& m)
 
     // EmptyVertex (used in StaticDigraph)
     py::class_<EmptyVertex>(m, "EmptyVertex")
-        .def("__eq__", &EmptyVertex::operator==)
-        .def("__hash__", [](const EmptyVertex& self) { return std::hash<EmptyVertex>()(self); })
+        .def("__eq__", [](const EmptyVertex& lhs, const EmptyVertex& rhs) { return loki::EqualTo<EmptyVertex>()(lhs, rhs); })
+        .def("__hash__", [](const EmptyVertex& self) { return loki::Hash<EmptyVertex>()(self); })
         .def("get_index", &EmptyVertex::get_index);
 
     // EmptyEdge (used in StaticDigraph)
     py::class_<EmptyEdge>(m, "EmptyEdge")
-        .def("__eq__", &EmptyEdge::operator==)
-        .def("__hash__", [](const EmptyEdge& self) { return std::hash<EmptyEdge>()(self); })
+        .def("__eq__", [](const EmptyEdge& lhs, const EmptyEdge& rhs) { return loki::EqualTo<EmptyEdge>()(lhs, rhs); })
+        .def("__hash__", [](const EmptyEdge& self) { return loki::Hash<EmptyEdge>()(self); })
         .def("get_index", &EmptyEdge::get_index)
         .def("get_source", &EmptyEdge::get_source)
         .def("get_target", &EmptyEdge::get_target);
@@ -2129,7 +2144,10 @@ void init_pymimir(py::module_& m)
 
     // ColorFunction
     py::class_<ColorFunction>(m, "ColorFunction")  //
-        .def("get_color_name", [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); }, py::arg("color"));
+        .def(
+            "get_color_name",
+            [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); },
+            py::arg("color"));
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, ColorFunction>(m, "ProblemColorFunction")  //
@@ -2183,8 +2201,8 @@ void init_pymimir(py::module_& m)
 
     // ColoredVertex
     py::class_<ColoredVertex>(m, "ColoredVertex")
-        .def("__eq__", &ColoredVertex::operator==)
-        .def("__hash__", [](const ColoredVertex& self) { return std::hash<ColoredVertex>()(self); })
+        .def("__eq__", [](const ColoredVertex& lhs, const ColoredVertex& rhs) { return loki::EqualTo<ColoredVertex>()(lhs, rhs); })
+        .def("__hash__", [](const ColoredVertex& self) { return loki::Hash<ColoredVertex>()(self); })
         .def("get_index", &ColoredVertex::get_index)
         .def("get_color", [](const ColoredVertex& self) { return get_color(self); });
 
@@ -2310,8 +2328,10 @@ void init_pymimir(py::module_& m)
 
     // Color Refinement
     py::class_<color_refinement::Certificate>(m, "CertificateColorRefinement")
-        .def("__eq__", [](const color_refinement::Certificate& lhs, const color_refinement::Certificate& rhs) { return lhs == rhs; })
-        .def("__hash__", [](const color_refinement::Certificate& self) { return std::hash<color_refinement::Certificate>()(self); })
+        .def("__eq__",
+             [](const color_refinement::Certificate& lhs, const color_refinement::Certificate& rhs)
+             { return loki::EqualTo<color_refinement::Certificate>()(lhs, rhs); })
+        .def("__hash__", [](const color_refinement::Certificate& self) { return loki::Hash<color_refinement::Certificate>()(self); })
         .def("__str__",
              [](const color_refinement::Certificate& self)
              {
@@ -2334,8 +2354,8 @@ void init_pymimir(py::module_& m)
         using CertificateK = kfwl::Certificate<K>;
 
         py::class_<CertificateK>(m, class_name.c_str())
-            .def("__eq__", [](const CertificateK& lhs, const CertificateK& rhs) { return lhs == rhs; })
-            .def("__hash__", [](const CertificateK& self) { return std::hash<CertificateK>()(self); })
+            .def("__eq__", [](const CertificateK& lhs, const CertificateK& rhs) { return loki::EqualTo<CertificateK>()(lhs, rhs); })
+            .def("__hash__", [](const CertificateK& self) { return loki::Hash<CertificateK>()(self); })
             .def("__str__",
                  [](const CertificateK& self)
                  {

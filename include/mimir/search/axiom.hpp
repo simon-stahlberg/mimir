@@ -18,11 +18,15 @@
 #ifndef MIMIR_SEARCH_AXIOM_HPP_
 #define MIMIR_SEARCH_AXIOM_HPP_
 
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/action.hpp"
+
+#include <loki/details/utils/equal_to.hpp>
+#include <loki/details/utils/hash.hpp>
 
 namespace mimir
 {
@@ -66,23 +70,10 @@ struct GroundAxiomImpl
     bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
-};
-}
 
-template<>
-struct std::hash<loki::ObserverPtr<const mimir::GroundAxiomImpl>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> ptr) const;
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_objects)); }
 };
 
-template<>
-struct std::equal_to<loki::ObserverPtr<const mimir::GroundAxiomImpl>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> lhs, loki::ObserverPtr<const mimir::GroundAxiomImpl> rhs) const;
-};
-
-namespace mimir
-{
 /**
  * Mimir types
  */

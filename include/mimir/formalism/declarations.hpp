@@ -146,7 +146,7 @@ using NumericFluentList = std::vector<NumericFluent>;
 class ObjectImpl;
 using Object = const ObjectImpl*;
 using ObjectList = std::vector<Object>;
-template<typename Key, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+template<typename Key, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
 using ToObjectMap = std::unordered_map<Key, Object, Hash, KeyEqual>;
 
 class PDDLRepositories;
@@ -159,7 +159,7 @@ template<PredicateTag P>
 using PredicateList = std::vector<Predicate<P>>;
 template<PredicateTag P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
-template<typename Key, PredicateTag P, typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+template<typename Key, PredicateTag P, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
 using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 
 class ProblemImpl;

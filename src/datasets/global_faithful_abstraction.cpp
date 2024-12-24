@@ -26,13 +26,6 @@
 #include <algorithm>
 #include <cstdlib>
 #include <deque>
-#include <loki/details/utils/hash.hpp>
-
-size_t std::hash<mimir::GlobalFaithfulAbstractState>::operator()(const mimir::GlobalFaithfulAbstractState& element) const
-{
-    // Note: we do not use element.get_vertex_index() because it is fa specific
-    return loki::hash_combine(element.get_global_index(), element.get_faithful_abstraction_index(), element.get_faithful_abstraction_vertex_index());
-}
 
 namespace mimir
 {
@@ -49,17 +42,6 @@ GlobalFaithfulAbstractState::GlobalFaithfulAbstractState(Index vertex_index,
     m_faithful_abstraction_index(faithful_abstraction_index),
     m_faithful_abstraction_vertex_index(faithful_abstraction_vertex_index)
 {
-}
-
-bool GlobalFaithfulAbstractState::operator==(const GlobalFaithfulAbstractState& other) const
-{
-    if (this != &other)
-    {
-        // Note: we do not use m_index because it is fa specific
-        return (m_global_index == other.m_global_index) && (m_faithful_abstraction_index == other.m_faithful_abstraction_index)
-               && (m_faithful_abstraction_vertex_index == other.m_faithful_abstraction_vertex_index);
-    }
-    return true;
 }
 
 Index GlobalFaithfulAbstractState::get_vertex_index() const { return m_vertex_index; }

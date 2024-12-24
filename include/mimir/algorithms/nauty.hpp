@@ -22,6 +22,8 @@
 #include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
 
+#include <loki/details/utils/equal_to.hpp>
+#include <loki/details/utils/hash.hpp>
 #include <memory>
 #include <ostream>
 #include <vector>
@@ -47,6 +49,8 @@ public:
 
     const std::string& get_canonical_graph() const;
     const mimir::ColorList& get_canonical_coloring() const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_canonical_graph), std::as_const(m_canonical_coloring)); }
 };
 
 extern bool operator==(const Certificate& lhs, const Certificate& rhs);
@@ -163,11 +167,5 @@ public:
 };
 
 }
-
-template<>
-struct std::hash<nauty_wrapper::Certificate>
-{
-    size_t operator()(const nauty_wrapper::Certificate& element) const;
-};
 
 #endif

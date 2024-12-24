@@ -35,15 +35,7 @@ const Certificate::CanonicalCompressionFunction& Certificate::get_canonical_comp
 
 const ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
-bool operator==(const Certificate& lhs, const Certificate& rhs)
-{
-    if (&lhs != &rhs)
-    {
-        return (lhs.get_canonical_coloring() == rhs.get_canonical_coloring())
-               && (lhs.get_canonical_compression_function() == rhs.get_canonical_compression_function());
-    }
-    return true;
-}
+bool operator==(const Certificate& lhs, const Certificate& rhs) { return loki::EqualTo<Certificate>()(lhs, rhs); }
 
 std::ostream& operator<<(std::ostream& out, const Certificate& element)
 {
@@ -53,9 +45,4 @@ std::ostream& operator<<(std::ostream& out, const Certificate& element)
     return out;
 }
 
-}
-
-size_t std::hash<mimir::color_refinement::Certificate>::operator()(const mimir::color_refinement::Certificate& element) const
-{
-    return loki::hash_combine(element.get_canonical_coloring(), element.get_canonical_compression_function());
 }

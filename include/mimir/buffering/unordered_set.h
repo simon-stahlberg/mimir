@@ -20,13 +20,15 @@
 
 #include "cista/serialization.h"
 #include "mimir/buffering/byte_buffer_segmented.h"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/memory.hpp"
 
 #include <absl/container/flat_hash_set.h>
 #include <functional>
-#include <loki/details/utils/observer_ptr.hpp>
-#include <unordered_set>
+#include <loki/details/utils/equal_to.hpp>
+#include <loki/details/utils/hash.hpp>
 #include <utility>
+#include <vector>
 
 namespace mimir::buffering
 {
@@ -34,7 +36,7 @@ namespace mimir::buffering
 /// @tparam T is the underlying container type.
 /// @tparam Hash is a hash function that computes a hash value for a dereferenced pointer of type T.
 /// @tparam Equal is a comparison function that compares two dereferenced pointers of type T.
-template<typename T, typename Hash = std::hash<loki::ObserverPtr<const T>>, typename Equal = std::equal_to<loki::ObserverPtr<const T>>>
+template<typename T, typename Hash = loki::Hash<loki::ObserverPtr<const T>>, typename Equal = loki::EqualTo<loki::ObserverPtr<const T>>>
 class UnorderedSet
 {
 private:

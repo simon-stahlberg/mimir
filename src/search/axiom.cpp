@@ -21,25 +21,6 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
 
-#include <loki/details/utils/hash.hpp>
-
-size_t std::hash<loki::ObserverPtr<const mimir::GroundAxiomImpl>>::operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> ptr) const
-{
-    const auto axiom = ptr->get_axiom_index();
-    const auto& objects = ptr->get_object_indices();
-    return loki::hash_combine(axiom, objects);
-}
-
-size_t std::equal_to<loki::ObserverPtr<const mimir::GroundAxiomImpl>>::operator()(loki::ObserverPtr<const mimir::GroundAxiomImpl> lhs,
-                                                                                  loki::ObserverPtr<const mimir::GroundAxiomImpl> rhs) const
-{
-    const auto axiom_left = lhs->get_axiom_index();
-    const auto& objects_left = lhs->get_object_indices();
-    const auto axiom_right = rhs->get_axiom_index();
-    const auto& objects_right = rhs->get_object_indices();
-    return (axiom_left == axiom_right) && (objects_left == objects_right);
-}
-
 namespace mimir
 {
 

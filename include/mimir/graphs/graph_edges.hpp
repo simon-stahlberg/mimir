@@ -20,6 +20,7 @@
 
 #include "mimir/graphs/graph_edge_interface.hpp"
 
+#include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
 
 namespace mimir
@@ -46,15 +47,6 @@ public:
     VertexIndex get_source() const { return m_source; }
     VertexIndex get_target() const { return m_target; }
 
-    bool operator==(const Edge& other) const
-    {
-        if (this != &other)
-        {
-            return (m_index == other.m_index) && (m_source == other.m_source) && (m_target == other.m_target) && (m_properties == other.m_properties);
-        }
-        return true;
-    }
-
     /// @brief Get a reference to the I-th `EdgeProperties`.
     /// We recommend providing free inline functions to access properties with more meaningful names.
     /// @tparam I the index of the property in the parameter pack.
@@ -66,34 +58,20 @@ public:
         return std::get<I>(m_properties);
     }
 
+    /// @brief `identifiable_members` describes the members that identify the edge
+    /// to automatically generate loki::Hash and loki::EqualTo specializations.
+    /// @return a tuple of const references to all members that identify the edge.
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_source), std::as_const(m_target)), std::as_const(m_properties);
+    }
+
 private:
     EdgeIndex m_index;
     VertexIndex m_source;
     VertexIndex m_target;
     std::tuple<EdgeProperties...> m_properties;
 };
-}
-
-template<typename... EdgeProperties>
-struct std::hash<mimir::Edge<EdgeProperties...>>
-{
-    size_t operator()(const mimir::Edge<EdgeProperties...>& element) const
-    {
-        size_t seed = loki::hash_combine(element.get_index(), element.get_source(), element.get_target());
-        apply_properties_hash(seed, element, std::make_index_sequence<sizeof...(EdgeProperties)> {});
-        return seed;
-    }
-
-    // Helper function to apply hashing to all properties
-    template<std::size_t... Is>
-    void apply_properties_hash(size_t& seed, const mimir::Edge<EdgeProperties...>& element, std::index_sequence<Is...>) const
-    {
-        (..., loki::hash_combine(seed, element.template get_property<Is>()));
-    }
-};
-
-namespace mimir
-{
 
 /**
  * EmptyEdge

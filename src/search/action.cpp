@@ -24,26 +24,8 @@
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
 
-#include <loki/details/utils/hash.hpp>
 #include <ostream>
 #include <tuple>
-
-size_t std::hash<loki::ObserverPtr<const mimir::GroundActionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundActionImpl> ptr) const
-{
-    const auto action = ptr->get_action_index();
-    const auto& objects = ptr->get_object_indices();
-    return loki::hash_combine(action, objects);
-}
-
-size_t std::equal_to<loki::ObserverPtr<const mimir::GroundActionImpl>>::operator()(loki::ObserverPtr<const mimir::GroundActionImpl> lhs,
-                                                                                   loki::ObserverPtr<const mimir::GroundActionImpl> rhs) const
-{
-    const auto action_left = lhs->get_action_index();
-    const auto& objects_left = lhs->get_object_indices();
-    const auto action_right = rhs->get_action_index();
-    const auto& objects_right = rhs->get_object_indices();
-    return (action_left == action_right) && (objects_left == objects_right);
-}
 
 namespace mimir
 {

@@ -42,21 +42,14 @@ const std::string& Certificate::get_canonical_graph() const { return m_canonical
 
 const mimir::ColorList& Certificate::get_canonical_coloring() const { return m_canonical_coloring; }
 
-size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Certificate>& element) const { return std::hash<Certificate>()(*element); }
+size_t UniqueCertificateSharedPtrHash::operator()(const std::shared_ptr<const Certificate>& element) const { return loki::Hash<Certificate>()(*element); }
 
 size_t UniqueCertificateSharedPtrEqualTo::operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const
 {
-    return *lhs == *rhs;
+    return loki::EqualTo<Certificate>()(*lhs, *rhs);
 }
 
-bool operator==(const Certificate& lhs, const Certificate& rhs)
-{
-    if (&lhs != &rhs)
-    {
-        return (lhs.get_canonical_coloring() == rhs.get_canonical_coloring()) && (lhs.get_canonical_graph() == rhs.get_canonical_graph());
-    }
-    return true;
-}
+bool operator==(const Certificate& lhs, const Certificate& rhs) { return loki::EqualTo<Certificate>()(lhs, rhs); }
 
 bool operator<(const Certificate& lhs, const Certificate& rhs)
 {
@@ -205,9 +198,4 @@ Certificate SparseGraph::compute_certificate() { return m_impl->compute_certific
 void SparseGraph::clear(size_t num_vertices) { m_impl->clear(num_vertices); }
 
 bool SparseGraph::is_directed() const { return m_impl->is_directed(); }
-}
-
-size_t std::hash<nauty_wrapper::Certificate>::operator()(const nauty_wrapper::Certificate& element) const
-{
-    return loki::hash_combine(element.get_canonical_graph(), element.get_canonical_coloring());
 }

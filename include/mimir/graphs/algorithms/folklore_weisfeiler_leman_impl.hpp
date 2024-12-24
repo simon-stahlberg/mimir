@@ -45,9 +45,9 @@ template<size_t K>
 Certificate<K>::Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color) :
     m_hash_to_color(std::move(hash_to_color)),
     m_f(f.begin(), f.end()),
-    m_coloring_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
+    m_canonical_coloring(m_hash_to_color.begin(), m_hash_to_color.end())
 {
-    std::sort(m_coloring_coloring.begin(), m_coloring_coloring.end());
+    std::sort(m_canonical_coloring.begin(), m_canonical_coloring.end());
 }
 
 template<size_t K>
@@ -59,18 +59,13 @@ const Certificate<K>::CanonicalConfigurationCompressionFunction& Certificate<K>:
 template<size_t K>
 const ColorList& Certificate<K>::get_canonical_coloring() const
 {
-    return m_coloring_coloring;
+    return m_canonical_coloring;
 }
 
 template<size_t K>
 bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs)
 {
-    if (&lhs != &rhs)
-    {
-        return (lhs.get_canonical_coloring() == rhs.get_canonical_coloring())
-               && (lhs.get_canonical_configuration_compression_function() == rhs.get_canonical_configuration_compression_function());
-    }
-    return true;
+    return loki::EqualTo<Certificate<K>>()(lhs, rhs);
 }
 
 template<size_t K>
@@ -305,12 +300,6 @@ Certificate<K> compute_certificate(const G& graph, IsomorphismTypeCompressionFun
     /* Return the certificate */
     return Certificate(std::move(f), std::move(hash_to_color));
 }
-}
-
-template<size_t K>
-size_t std::hash<mimir::kfwl::Certificate<K>>::operator()(const mimir::kfwl::Certificate<K>& element) const
-{
-    return loki::hash_combine(element.get_canonical_coloring(), element.get_canonical_configuration_compression_function());
 }
 
 #endif

@@ -25,6 +25,9 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
 
+#include <loki/details/utils/equal_to.hpp>
+#include <loki/details/utils/hash.hpp>
+
 namespace mimir
 {
 struct GroundConditionStrips
@@ -163,24 +166,9 @@ struct GroundActionImpl
     bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_action_index), std::as_const(m_objects)); }
 };
-
-}
-
-template<>
-struct std::hash<loki::ObserverPtr<const mimir::GroundActionImpl>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::GroundActionImpl> ptr) const;
-};
-
-template<>
-struct std::equal_to<loki::ObserverPtr<const mimir::GroundActionImpl>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::GroundActionImpl> lhs, loki::ObserverPtr<const mimir::GroundActionImpl> rhs) const;
-};
-
-namespace mimir
-{
 
 /**
  * Mimir types

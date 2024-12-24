@@ -133,9 +133,9 @@ TEST(CistaTests, CistaDynamicBitsetEqualTest)
 
     // Test Builder
     EXPECT_TRUE((builder1 == builder3));
-    EXPECT_EQ(std::hash<cista::raw::dynamic_bitset<uint64_t>>()(builder1), std::hash<cista::raw::dynamic_bitset<uint64_t>>()(builder3));
+    EXPECT_EQ(loki::Hash<cista::raw::dynamic_bitset<uint64_t>>()(builder1), loki::Hash<cista::raw::dynamic_bitset<uint64_t>>()(builder3));
     EXPECT_FALSE((builder1 == builder2));
-    EXPECT_NE(std::hash<cista::raw::dynamic_bitset<uint64_t>>()(builder1), std::hash<cista::raw::dynamic_bitset<uint64_t>>()(builder2));
+    EXPECT_NE(loki::Hash<cista::raw::dynamic_bitset<uint64_t>>()(builder1), loki::Hash<cista::raw::dynamic_bitset<uint64_t>>()(builder2));
 }
 
 TEST(CistaTests, CistaDynamicBitsetAreDisjointTest)

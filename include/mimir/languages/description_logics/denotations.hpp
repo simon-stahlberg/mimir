@@ -23,8 +23,8 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
+#include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
-#include <loki/details/utils/observer_ptr.hpp>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -45,6 +45,8 @@ struct DenotationImpl<Concept>
 
     DenotationType& get_data() { return m_data; }
     const DenotationType& get_data() const { return m_data; }
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_data)); }
 };
 
 template<>
@@ -56,30 +58,14 @@ struct DenotationImpl<Role>
 
     DenotationType& get_data() { return m_data; }
     const DenotationType& get_data() const { return m_data; }
+
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_data)); }
 };
 
 /// @brief Denotation for temporary construction.
 /// This stores a computed denotation for a single state.
 using ConstructorTagToDenotationType =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationImpl<Concept>>, boost::hana::pair<boost::hana::type<Role>, DenotationImpl<Role>>>;
-}
-
-template<mimir::dl::ConstructorTag D>
-struct std::hash<loki::ObserverPtr<const mimir::dl::DenotationImpl<D>>>
-{
-    size_t operator()(loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> ptr) const { return loki::hash_combine(ptr->get_data()); }
-};
-template<mimir::dl::ConstructorTag D>
-struct std::equal_to<loki::ObserverPtr<const mimir::dl::DenotationImpl<D>>>
-{
-    bool operator()(loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> lhs, loki::ObserverPtr<const mimir::dl::DenotationImpl<D>> rhs) const
-    {
-        return lhs->get_data() == rhs->get_data();
-    }
-};
-
-namespace mimir::dl
-{
 
 template<ConstructorTag D>
 using DenotationImplSet = mimir::buffering::UnorderedSet<DenotationImpl<D>>;
