@@ -26,7 +26,7 @@ We use the following performance metrics to compare the planners':
 
 1. `Fast-Downward` is one of the most widely used planners that works exclusively on the grounded problem representation. The state representation in Fast-Downward is a dense finite-domain representation (FDR/SAS+) obtained through a preprocessing step called mutex analysis. Additionally, Fast-downward applied an additional pruning of unimportant variables to prune the search space. To obtain comparable search behavior regarding state expansions, we turn off the computation of irrelevant variables by setting the flag `--keep-unimportant-variables`.
 2. `Powerlifted` is one of the most widely used planners that work on the lifted problem representation. The state representation in Powerlifted is a sparse vector representation. Powerlifted does not support `:negative-preconditions`, `:conditional-effects`, `existential-quantifiers`, `universal-quantifiers`. We will discuss its impact on the experimental results for a fair comparison.
-3. Mimir is designed to work on grounded and lifted problem representations while being optimized for the lifted representation. We denote its lifted configuration as `Mimir-lifted` and its grounded configuration as `Mimir-grounded.` The state representation in Mimir is a sparse vector representation with dynamic compression to the smallest required bitwidth. Additionally, Mimir statically separates static, fluent, and derived atoms during preprocessing, mostly to avoid accidentally mixing them up during programming.
+3. Mimir is designed to work on grounded and lifted problem representations while being optimized for the lifted representation. We denote its lifted configuration as `Mimir-lifted` and its grounded configuration as `Mimir-grounded.` The state representation in Mimir is a sparse vector representation with dynamic compression to the smallest required bitwidth.
 
 ## 4. Benchmarks
 
@@ -84,8 +84,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 Observations:
 - Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. We suspect that the slight improvements in search time are directly correlated with its memory efficiency resulting in better cache utilization. Fast-Downward's preprocessing step causes a significant decline in total time compared to Mimir.
 - Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because of its limited support in PDDL features. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 72, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
-- Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks.
-- Overall, the planners complement each other nicely. Fast-Downward performs strongest on easy-to-ground benchmarks, while Mimir and Powerlifted perform similarly and strongest on hard-to-ground benchmarks.
+- Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks. Mimir's costs are even higher because the tree structure used to retrieve applicable actions is based on a less compact propositional state representation compared to Fast Downward's, which is based on a compact finite-domain state representation (FDR).
 
 ### Time limit 5 Minutes:
 
@@ -103,9 +102,9 @@ Observations:
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
 | Fast-Downward     |      **702** |             607 |           **88** |
-| Mimir-grounded    |          664 |         **299** |              103 |
+| Mimir-grounded    |          670 |         **303** |              99 |
 | Powerlifted       |          454 |            2113 |             1868 |
-| Mimir-lifted      |          581 |             881 |              539 |
+| Mimir-lifted      |          582 |             853 |              527 |
 
 3. Optimal-ADL
 
@@ -128,4 +127,4 @@ Our experiments demonstrate that a single library can efficiently combine lifted
 
 ## 8. Future Work
 
-In the future, we plan on further extending the supported PDDL fragments towards probabilistic, nondeterministic, and numeric planning. 
+In the future, we plan on further extending the supported PDDL fragments towards probabilistic, nondeterministic, and numeric planning.

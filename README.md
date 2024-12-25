@@ -79,8 +79,5 @@ In the future, see [development guidelines](docs/DEVELOPER_GUIDELINES.md) for in
 
 ## Long Term Goals
 
-One of Mimir's long term goal is increasing the support of PDDL features towards non-deterministic, probabilistic, and numeric planning. The current idea is as follows.
+One of Mimir's long term goal is increasing the support of PDDL features towards non-deterministic, probabilistic, and numeric planning.
 
-To support nondeterminstic and probabilistic planning, we will add two additional types of lifted and ground actions, and successor states generation in the StateRepository. The overhead of supporting nondeterministic and probabilistic planning is small, since ground actions will never be generated, if not present in the input PDDL. However, specialized search algorithm implementations might be necessary for problems that contain such actions.
-
-To support numeric planning, we will add an additional repository for storing numerical function values and full support of `:numeric-fluents`, which is already partially implemented in the form of action costs. The overhead of supporting numeric planning is small, with an overhead of 8 bytes per state in the case where numeric fluents are not used at all.
