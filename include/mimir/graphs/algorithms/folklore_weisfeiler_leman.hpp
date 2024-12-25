@@ -48,8 +48,7 @@ public:
     /* Compression of new color to map (C(bar{v}), {{(c_1^1, ...,c_k^1), ..., (c_1^r, ...,c_k^r)}}) to an integer color for bar{v} in V^k */
     using ConfigurationCompressionFunction =
         std::unordered_map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
-    using CanonicalConfigurationCompressionFunction =
-        std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color, loki::Hash<std::pair<Color, std::vector<ColorArray<K>>>>>;
+    using CanonicalConfigurationCompressionFunction = std::map<std::pair<Color, std::vector<ColorArray<K>>>, Color>;
 
     Certificate(ConfigurationCompressionFunction f, ColorList hash_to_color);
 

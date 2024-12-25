@@ -107,7 +107,8 @@ TEST(MimirTests, GraphsStaticDigraphTest)
         EXPECT_TRUE(v0_backward_adjacent_vertex_indices.contains(v3));
 
         // AdjacentVertexIterator
-        using VertexSetType = std::unordered_set<typename DynamicDigraph::VertexType>;
+        using VertexType = typename DynamicDigraph::VertexType;
+        using VertexSetType = std::unordered_set<VertexType, loki::Hash<VertexType>, loki::EqualTo<VertexType>>;
         auto v0_foward_adjacent_vertices =
             VertexSetType(graph.get_adjacent_vertices<ForwardTraversal>(v0).begin(), graph.get_adjacent_vertices<ForwardTraversal>(v0).end());
         auto v0_backward_adjacent_vertices =
@@ -134,7 +135,8 @@ TEST(MimirTests, GraphsStaticDigraphTest)
         EXPECT_TRUE(v0_backward_adjacent_edge_indices.contains(e4));
 
         // AdjacentEdgeIterator
-        using EdgeSetType = std::unordered_set<typename DynamicDigraph::EdgeType>;
+        using EdgeType = typename DynamicDigraph::EdgeType;
+        using EdgeSetType = std::unordered_set<EdgeType, loki::Hash<EdgeType>, loki::EqualTo<EdgeType>>;
         auto v0_forward_adjacent_edge =
             EdgeSetType(graph.get_adjacent_edges<ForwardTraversal>(v0).begin(), graph.get_adjacent_edges<ForwardTraversal>(v0).end());
         auto v0_backward_adjacent_edge =
@@ -207,7 +209,8 @@ TEST(MimirTests, GraphsStaticDigraphTest)
         EXPECT_TRUE(v0_backward_adjacent_vertex_indices.contains(v3));
 
         // AdjacentVertexIterator
-        using VertexSetType = std::unordered_set<typename DynamicDigraph::VertexType>;
+        using VertexType = typename DynamicDigraph::VertexType;
+        using VertexSetType = std::unordered_set<VertexType, loki::Hash<VertexType>, loki::EqualTo<VertexType>>;
         auto v0_foward_adjacent_vertices =
             VertexSetType(forward_graph.get_adjacent_vertices<ForwardTraversal>(v0).begin(), forward_graph.get_adjacent_vertices<ForwardTraversal>(v0).end());
         auto v0_backward_adjacent_vertices =
@@ -234,7 +237,8 @@ TEST(MimirTests, GraphsStaticDigraphTest)
         EXPECT_TRUE(v0_backward_adjacent_edge_indices.contains(e4));
 
         // AdjacentEdgeIterator
-        using EdgeSetType = std::unordered_set<typename DynamicDigraph::EdgeType>;
+        using EdgeType = typename DynamicDigraph::EdgeType;
+        using EdgeSetType = std::unordered_set<EdgeType, loki::Hash<EdgeType>, loki::EqualTo<EdgeType>>;
         auto v0_forward_adjacent_edge =
             EdgeSetType(forward_graph.get_adjacent_edges<ForwardTraversal>(v0).begin(), forward_graph.get_adjacent_edges<ForwardTraversal>(v0).end());
         auto v0_backward_adjacent_edge =
@@ -307,7 +311,8 @@ TEST(MimirTests, GraphsStaticDigraphTest)
         EXPECT_TRUE(v0_backward_adjacent_vertex_indices.contains(v3));
 
         // AdjacentVertexIterator
-        using VertexSetType = std::unordered_set<typename DynamicDigraph::VertexType>;
+        using VertexType = typename DynamicDigraph::VertexType;
+        using VertexSetType = std::unordered_set<VertexType, loki::Hash<VertexType>, loki::EqualTo<VertexType>>;
         auto v0_foward_adjacent_vertices = VertexSetType(bidirectional_graph.get_adjacent_vertices<ForwardTraversal>(v0).begin(),
                                                          bidirectional_graph.get_adjacent_vertices<ForwardTraversal>(v0).end());
         auto v0_backward_adjacent_vertices = VertexSetType(bidirectional_graph.get_adjacent_vertices<BackwardTraversal>(v0).begin(),
@@ -334,7 +339,8 @@ TEST(MimirTests, GraphsStaticDigraphTest)
         EXPECT_TRUE(v0_backward_adjacent_edge_indices.contains(e4));
 
         // AdjacentEdgeIterator
-        using EdgeSetType = std::unordered_set<typename DynamicDigraph::EdgeType>;
+        using EdgeType = typename DynamicDigraph::EdgeType;
+        using EdgeSetType = std::unordered_set<EdgeType, loki::Hash<EdgeType>, loki::EqualTo<EdgeType>>;
         auto v0_forward_adjacent_edge = EdgeSetType(bidirectional_graph.get_adjacent_edges<ForwardTraversal>(v0).begin(),
                                                     bidirectional_graph.get_adjacent_edges<ForwardTraversal>(v0).end());
         auto v0_backward_adjacent_edge = EdgeSetType(bidirectional_graph.get_adjacent_edges<BackwardTraversal>(v0).begin(),

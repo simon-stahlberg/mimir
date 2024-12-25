@@ -43,7 +43,7 @@ class Certificate
 public:
     using CompressionFunction = std::unordered_map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
 
-    using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color, loki::Hash<std::pair<Color, ColorList>>>;
+    using CanonicalCompressionFunction = std::map<std::pair<Color, ColorList>, Color>;
 
     Certificate(CompressionFunction f, ColorList hash_to_color);
 

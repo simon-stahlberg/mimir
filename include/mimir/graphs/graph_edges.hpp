@@ -63,7 +63,7 @@ public:
     /// @return a tuple of const references to all members that identify the edge.
     auto identifiable_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_source), std::as_const(m_target)), std::as_const(m_properties);
+        return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_source), std::as_const(m_target), std::as_const(m_properties));
     }
 
 private:

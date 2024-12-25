@@ -48,36 +48,36 @@ std::string to_string(const T& element)
  * Forward declarations
  */
 
-template<typename T, size_t K>
-std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr);
+template<typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr);
 
-template<typename K, typename V>
-std::ostream& operator<<(std::ostream& os, const std::map<K, V>& map);
+template<typename Key, typename T, typename Compare, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map);
 
 template<typename T1, typename T2>
 std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair);
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::set<T>& set);
+template<typename Key, typename Compare, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::set<Key, Compare, Allocator>& set);
 
 template<typename... Ts>
 std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple);
 
-template<typename K, typename V>
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& map);
+template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map);
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set);
+template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set);
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec);
+template<typename T, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec);
 
 /**
  * Definitions
  */
 
-template<typename T, size_t K>
-std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr)
+template<typename T, size_t N>
+std::ostream& operator<<(std::ostream& os, const std::array<T, N>& arr)
 {
     os << "<";
     for (size_t i = 0; i < arr.size(); ++i)
@@ -90,8 +90,8 @@ std::ostream& operator<<(std::ostream& os, const std::array<T, K>& arr)
     return os;
 }
 
-template<typename K, typename V>
-std::ostream& operator<<(std::ostream& os, const std::map<K, V>& map)
+template<typename Key, typename T, typename Compare, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::map<Key, T, Compare, Allocator>& map)
 {
     os << "{";
     for (auto it = map.begin(); it != map.end(); ++it)
@@ -111,8 +111,8 @@ std::ostream& operator<<(std::ostream& os, const std::pair<T1, T2>& pair)
     return os;
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::set<T>& set)
+template<typename Key, typename Compare, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::set<Key, Compare, Allocator>& set)
 {
     os << "{";
     size_t i = 0;
@@ -137,8 +137,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Ts...>& tuple)
     return os;
 }
 
-template<typename K, typename V>
-std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& map)
+template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::unordered_map<Key, T, Hash, KeyEqual, Allocator>& map)
 {
     os << "{";
     for (auto it = map.begin(); it != map.end(); ++it)
@@ -151,8 +151,8 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V>& map)
     return os;
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set)
+template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::unordered_set<Key, Hash, KeyEqual, Allocator>& set)
 {
     os << "{";
     size_t i = 0;
@@ -167,8 +167,8 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_set<T>& set)
     return os;
 }
 
-template<typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& vec)
+template<typename T, typename Allocator>
+std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec)
 {
     os << "[";
     for (size_t i = 0; i < vec.size(); ++i)

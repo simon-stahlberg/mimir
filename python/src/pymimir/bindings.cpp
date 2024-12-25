@@ -1357,7 +1357,7 @@ void init_pymimir(py::module_& m)
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
-        .def("__eq__", [](const GroundActionEdge& lhs, const StateVertex& rhs) { return loki::EqualTo<GroundActionEdge>()(lhs, rhs); })
+        .def("__eq__", [](const GroundActionEdge& lhs, const GroundActionEdge& rhs) { return loki::EqualTo<GroundActionEdge>()(lhs, rhs); })
         .def("__hash__", [](const GroundActionEdge& self) { return loki::Hash<GroundActionEdge>()(self); })
         .def("get_index", &GroundActionEdge::get_index)
         .def("get_source", &GroundActionEdge::get_source)
@@ -1370,7 +1370,7 @@ void init_pymimir(py::module_& m)
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
-        .def("__eq__", [](const GroundActionEdge& lhs, const GroundActionsEdge& rhs) { return loki::EqualTo<GroundActionsEdge>()(lhs, rhs); })
+        .def("__eq__", [](const GroundActionsEdge& lhs, const GroundActionsEdge& rhs) { return loki::EqualTo<GroundActionsEdge>()(lhs, rhs); })
         .def("__hash__", [](const GroundActionsEdge& self) { return loki::Hash<GroundActionsEdge>()(self); })
         .def("get_index", &GroundActionsEdge::get_index)
         .def("get_source", &GroundActionsEdge::get_source)
@@ -1556,7 +1556,7 @@ void init_pymimir(py::module_& m)
     // NautyCertificate
     py::class_<nauty_wrapper::Certificate, std::shared_ptr<nauty_wrapper::Certificate>>(m, "NautyCertificate")
         .def("__eq__",
-             [](const nauty_wrapper::Certificate& lhs, const nauty_wrapper::Certificate& rhs) { return loki::EqualTo<nauty_wrapper::Certificate>(lhs, rhs); })
+             [](const nauty_wrapper::Certificate& lhs, const nauty_wrapper::Certificate& rhs) { return loki::EqualTo<nauty_wrapper::Certificate>()(lhs, rhs); })
         .def("__hash__", [](const nauty_wrapper::Certificate& self) { return loki::Hash<nauty_wrapper::Certificate>()(self); })
         .def("get_canonical_graph", &nauty_wrapper::Certificate::get_canonical_graph, py::return_value_policy::reference_internal)
         .def("get_canonical_coloring", &nauty_wrapper::Certificate::get_canonical_coloring, py::return_value_policy::reference_internal);
