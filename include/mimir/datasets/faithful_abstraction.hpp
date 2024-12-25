@@ -39,16 +39,6 @@
 #include <unordered_set>
 #include <vector>
 
-/// @brief STL does not define equal_to for std::span.
-template<>
-struct std::equal_to<std::span<const mimir::State>>
-{
-    bool operator()(const std::span<const mimir::State>& lhs, const std::span<const mimir::State>& rhs) const
-    {
-        return (lhs.size() == rhs.size()) && (lhs.data() == rhs.data());
-    }
-};
-
 namespace mimir
 {
 

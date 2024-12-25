@@ -48,6 +48,9 @@ public:
     Index get_index() const;
     double get_number() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_number)); }
 };
 
@@ -83,6 +86,9 @@ public:
     const GroundFunctionExpression& get_left_function_expression() const;
     const GroundFunctionExpression& get_right_function_expression() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
         return std::forward_as_tuple(std::as_const(m_binary_operator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
@@ -116,6 +122,9 @@ public:
     loki::MultiOperatorEnum get_multi_operator() const;
     const GroundFunctionExpressionList& get_function_expressions() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_multi_operator), std::as_const(m_function_expressions)); }
 };
 
@@ -144,6 +153,9 @@ public:
     Index get_index() const;
     const GroundFunctionExpression& get_function_expression() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_expression)); }
 };
 
@@ -172,6 +184,9 @@ public:
     Index get_index() const;
     const GroundFunction& get_function() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function)); }
 };
 
@@ -213,6 +228,9 @@ public:
                        GroundFunctionExpressionFunction>&
     get_variant() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_ground_function_expression)); }
 };
 

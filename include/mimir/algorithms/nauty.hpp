@@ -50,6 +50,9 @@ public:
     const std::string& get_canonical_graph() const;
     const mimir::ColorList& get_canonical_coloring() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_canonical_graph), std::as_const(m_canonical_coloring)); }
 };
 

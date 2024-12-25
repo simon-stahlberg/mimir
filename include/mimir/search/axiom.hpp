@@ -71,6 +71,11 @@ struct GroundAxiomImpl
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    ///
+    /// Only return the lifted schema index and the binding because they imply the rest.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_objects)); }
 };
 

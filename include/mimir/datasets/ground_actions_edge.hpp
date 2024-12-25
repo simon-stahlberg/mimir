@@ -26,16 +26,6 @@
 #include <span>
 #include <vector>
 
-/// @brief STL does not define equal_to for std::span.
-template<>
-struct std::equal_to<std::span<const mimir::GroundAction>>
-{
-    bool operator()(const std::span<const mimir::GroundAction>& lhs, const std::span<const mimir::GroundAction>& rhs) const
-    {
-        return (lhs.size() == rhs.size()) && (lhs.data() == rhs.data());
-    }
-};
-
 namespace mimir
 {
 

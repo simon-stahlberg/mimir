@@ -58,9 +58,9 @@ public:
         return std::get<I>(m_properties);
     }
 
-    /// @brief `identifiable_members` describes the members that identify the edge
-    /// to automatically generate loki::Hash and loki::EqualTo specializations.
-    /// @return a tuple of const references to all members that identify the edge.
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
         return std::forward_as_tuple(std::as_const(m_index), std::as_const(m_source), std::as_const(m_target), std::as_const(m_properties));

@@ -61,11 +61,9 @@ public:
     Index get_faithful_abstraction_index() const;
     Index get_faithful_abstraction_vertex_index() const;
 
-    /// @brief `identifiable_members` describes the members that identify the state
-    /// to automatically generate loki::Hash and loki::EqualTo specializations.
-    ///
-    /// Note: we do not use include m_vertex_index because it is fa specific.
-    /// @return a tuple of const references to all members that identify the state.
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
         return std::forward_as_tuple(std::as_const(m_global_index),

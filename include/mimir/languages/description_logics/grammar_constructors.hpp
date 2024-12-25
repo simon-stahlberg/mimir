@@ -70,6 +70,9 @@ public:
     // Deferred initialization for internal usage. Users should not use it.
     void set_rule(DerivationRule<D> rule) const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_rule)); }
 };
 
@@ -104,6 +107,9 @@ public:
     Index get_index() const;
     const std::variant<Constructor<D>, NonTerminal<D>>& get_constructor_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_choice)); }
 };
 
@@ -140,6 +146,9 @@ public:
     NonTerminal<D> get_non_terminal() const;
     const ConstructorOrNonTerminalList<D>& get_constructor_or_non_terminals() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_non_terminal), std::as_const(m_constructor_or_non_terminals)); }
 };
 
@@ -171,6 +180,9 @@ public:
 
     Index get_index() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
@@ -198,6 +210,9 @@ public:
 
     Index get_index() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
@@ -228,6 +243,9 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
@@ -260,6 +278,9 @@ public:
     Predicate<P> get_predicate() const;
     bool is_negated() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
 };
 
@@ -293,6 +314,9 @@ public:
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
         return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal_left), std::as_const(m_concept_or_non_terminal_right));
@@ -329,6 +353,9 @@ public:
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
         return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal_left), std::as_const(m_concept_or_non_terminal_right));
@@ -361,6 +388,9 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal)); }
 };
 
@@ -392,6 +422,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal), std::as_const(m_concept_or_non_terminal)); }
 };
 
@@ -425,6 +458,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal), std::as_const(m_concept_or_non_terminal)); }
 };
 
@@ -458,6 +494,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
@@ -491,6 +530,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
@@ -520,6 +562,9 @@ public:
     Index get_index() const;
     Object get_object() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_object)); }
 };
 
@@ -551,6 +596,9 @@ public:
 
     Index get_index() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(); }
 };
 
@@ -581,6 +629,9 @@ public:
     Index get_index() const;
     Predicate<P> get_predicate() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
@@ -613,6 +664,9 @@ public:
     Predicate<P> get_predicate() const;
     bool is_negated() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_is_negated)); }
 };
 
@@ -644,6 +698,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
@@ -675,6 +732,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
@@ -704,6 +764,9 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
@@ -733,6 +796,9 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
@@ -764,6 +830,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_right() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal_left), std::as_const(m_role_or_non_terminal_right)); }
 };
 
@@ -793,6 +862,9 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
@@ -822,6 +894,9 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal)); }
 };
 
@@ -853,6 +928,9 @@ public:
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_role_or_non_terminal), std::as_const(m_concept_or_non_terminal)); }
 };
 
@@ -882,6 +960,9 @@ public:
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_concept_or_non_terminal)); }
 };
 }

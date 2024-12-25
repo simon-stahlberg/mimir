@@ -59,9 +59,11 @@ struct StateImpl
     template<DynamicPredicateTag P>
     const FlatIndexList& get_atoms() const;
 
-    // Only hash/compare the non-extended portion of a state, and the problem.
-    // The extended portion is always equal for the same non-extended portion.
-    // We use it for the unique state construction in the `StateRepository`.
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    ///
+    /// Only return the non-extended portion of a state because it implies the extended portion.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(get_atoms<Fluent>())); }
 
 private:
@@ -74,6 +76,12 @@ private:
     FlatIndexList& get_fluent_atoms();
     uintptr_t& get_derived_atoms();
 };
+
+/// @brief STL does not define operator== for std::span.
+inline bool operator==(const std::span<const State>& lhs, const std::span<const State>& rhs)
+{
+    return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
+}
 
 using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
 using AxiomEvaluationSet = mimir::buffering::UnorderedSet<FlatIndexList>;

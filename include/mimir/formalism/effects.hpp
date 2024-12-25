@@ -52,6 +52,9 @@ public:
     const LiteralList<Fluent>& get_effects() const;
     const FunctionExpression& get_function_expression() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_effects), std::as_const(m_function_expression)); }
 };
 
@@ -99,6 +102,9 @@ public:
 
     size_t get_arity() const;
 
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
         return std::forward_as_tuple(std::as_const(m_quantified_variables),
