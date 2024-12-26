@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(mimir VERSION 0.1.1)
+project(mimir VERSION 0.2.0)
 
 
 ##############################################################
@@ -14,11 +14,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 ##############################################################
 # Options
 ##############################################################
-
-# more options to the list of string, e.g., "Dense" "Sparse"
-#set(STATE_REPR "Dense" CACHE STRING "Select the state representation type")
-#set_property(CACHE STATE_REPR PROPERTY STRINGS "Dense")
-#message("Use state representation compile flag: ${STATE_REPR}")
 
 
 ##############################################################

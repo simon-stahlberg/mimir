@@ -147,7 +147,7 @@ from _pymimir import (
     StateSpan,
     StateRepository,
     StateRepositoryWorkspace,
-    IndexGroupedVector,
+    StateIndexGroupedVector,
     TupleIndexMapper,
 
     LiteralGrounder,

@@ -874,7 +874,7 @@ void init_pymimir(py::module_& m)
     static_assert(!py::detail::vector_needs_copy<StateList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<StateList>(m, "StateList");
     bind_const_span<std::span<const State>>(m, "StateSpan");
-    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "IndexGroupedVector");
+    bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "StateIndexGroupedVector");
 
     /* Action */
     py::class_<GroundEffectStrips>(m, "GroundEffectStrips")
