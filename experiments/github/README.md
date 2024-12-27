@@ -40,7 +40,7 @@ The optimal STRIPS benchmarks from the IPC use a simple PDDL fragment, which inc
 
 3. `Optimal-ADL` from the international planning competition (IPC)
 
-The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, which includes `:adl` and implies `:disjunctive-preconditions`, `:quantified-preconditions`, `:conditional-effects`. Similarly, these benchmarks are often easy to ground and available in the same [Github](https://github.com/aibasel/downward-benchmarks) repository.
+The optimal adl benchmarks from the IPC use a more expressive PDDL fragment, which includes `:adl` and implies `:disjunctive-preconditions`, `:existential-preconditions`, `:quantified-preconditions`, `:conditional-effects`. Similarly, these benchmarks are often easy to ground and available in the same [Github](https://github.com/aibasel/downward-benchmarks) repository.
 
 ## 5. Comparison Notes and Clarifications
 
@@ -82,7 +82,7 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Mimir-lifted      |          299 |            5722 |             4544 |
 
 Observations:
-- Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. We suspect that the slight improvements in search time are directly correlated with its memory efficiency resulting in better cache utilization. Fast-Downward's preprocessing step causes a significant decline in total time compared to Mimir.
+- Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. Fast-Downward's preprocessing step to compute a compact state representation is costly, resulting in a higher total time compared to Mimir-grounded.
 - Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because of its limited support in PDDL features. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 72, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
 - Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks. Mimir's costs are even higher because the tree structure used to retrieve applicable actions is based on a less compact propositional state representation compared to Fast Downward's, which is based on a compact finite-domain state representation (FDR).
 
@@ -115,7 +115,7 @@ Observations:
 | Powerlifted       |            x |               x |                x |
 | Mimir-lifted      |          255 |            2340 |             1619 |
 
-The observations remain almost identical to the 30 minutes experiment.
+The observations remain almost identical to the 30 minutes experiment. The gaps between grounded planners planners starts to diminish, indicating that memory becomes less problematic. For lifted planners, the gap remains significant.
 
 ## 7. Conclusions
 
@@ -123,7 +123,7 @@ On easy-to-ground benchmarks, Fast-Downward has the most efficient state represe
 
 On hard-to-ground benchmarks, Powerlifted is a strong planner with the lowest total time. Mimir-lifted has the highest coverage score and comparable runtime performance.
 
-Our experiments demonstrate that a single library can efficiently combine lifted and grounded planning with expressive extensions such as conditional effects, existential quantifiers, and universal quantifiers.
+Our experiments demonstrate that a single library can efficiently combine lifted and grounded planning with expressive extensions such as conditional effects, existential preconditions, and universal preconditions.
 
 ## 8. Future Work
 

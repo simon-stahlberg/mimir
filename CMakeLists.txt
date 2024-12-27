@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21)
-project(mimir VERSION 0.2.0)
+project(mimir VERSION 0.10.0)
 
 
 ##############################################################
