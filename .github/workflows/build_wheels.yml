@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
 
     if: github.repository_owner == 'simon-stahlberg'
 
@@ -31,7 +31,12 @@ jobs:
         python -m pip install setuptools wheel twine cibuildwheel
 
     - name: Build wheels
-      run: cibuildwheel --platform linux --output-dir wheelhouse
+      run: |
+        if [[ "${{ matrix.os }}" == "ubuntu-latest" ]]; then
+          cibuildwheel --platform linux --output-dir wheelhouse;
+        elif [[ "${{ matrix.os }}" == "macos-latest" ]]; then
+          cibuildwheel --platform macos --output-dir wheelhouse;
+        fi
       env:
         CIBW_BUILD_VERBOSITY: "1"
 
