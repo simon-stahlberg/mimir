@@ -39,6 +39,7 @@ jobs:
         fi
       env:
         CIBW_BUILD_VERBOSITY: "1"
+        CIBW_ARCHS_MACOS: "arm64"
 
     - name: Upload to PyPI
       env:
