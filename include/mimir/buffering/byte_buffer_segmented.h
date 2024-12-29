@@ -64,7 +64,7 @@ private:
     }
 
 public:
-    explicit ByteBufferSegmented(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 1024 * 1024) :
+    explicit ByteBufferSegmented(size_t initial_num_bytes_per_segment = 1024, size_t maximum_num_bytes_per_segment = 32 * 1024 * 1024) :
         m_num_bytes_per_segment(initial_num_bytes_per_segment),
         m_maximum_num_bytes_per_segment(maximum_num_bytes_per_segment),
         m_segments(),

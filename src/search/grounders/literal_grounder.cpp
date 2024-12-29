@@ -47,7 +47,13 @@ GroundLiteral<P> LiteralGrounder::ground_literal(Literal<P> literal, const Objec
     auto& grounding_table = grounding_tables.at(literal_index);
 
     /* 3. Check if grounding is cached */
-    const auto it = grounding_table.find(binding);
+
+    // We have to fetch the literal-relevant part of the binding first.
+    // Note: this is important and saves a lot of memory.
+    auto grounded_terms = ObjectList {};
+    ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
+
+    const auto it = grounding_table.find(grounded_terms);
     if (it != grounding_table.end())
     {
         return it->second;
@@ -55,14 +61,12 @@ GroundLiteral<P> LiteralGrounder::ground_literal(Literal<P> literal, const Objec
 
     /* 4. Ground the literal */
 
-    auto grounded_terms = ObjectList {};
-    ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
     auto grounded_atom = m_pddl_repositories->get_or_create_ground_atom(literal->get_atom()->get_predicate(), grounded_terms);
     auto grounded_literal = m_pddl_repositories->get_or_create_ground_literal(literal->is_negated(), grounded_atom);
 
     /* 5. Insert to grounding_table table */
 
-    grounding_table.emplace(ObjectList(binding), GroundLiteral<P>(grounded_literal));
+    grounding_table.emplace(std::move(grounded_terms), GroundLiteral<P>(grounded_literal));
 
     /* 6. Return the resulting ground literal */
 
