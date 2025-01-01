@@ -78,9 +78,6 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, Ax
     {
         bool reached_partition_fixed_point;
 
-        // Optimization 1: Track new ground atoms to simplify the clique enumeration graph in the next iteration.
-        auto new_ground_atoms = GroundAtomList<Derived> {};
-
         // TODO: Optimization 4: Inductively compile away axioms with static bodies. (grounded in match tree?)
 
         // Optimization 2: Track axioms that might trigger in next iteration.
@@ -126,7 +123,6 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, Ax
 
             /* Apply applicable axioms */
 
-            new_ground_atoms.clear();
             relevant_axioms.clear();
 
             for (const auto& grounded_axiom : applicable_axioms)
@@ -141,18 +137,13 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, Ax
                     const auto new_ground_atom = pddl_repositories->get_ground_atom<Derived>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
-                    // TODO: Optimization 5: Update new ground atoms to speed up successive iterations, i.e.,
-                    // only cliques that takes these new atoms into account must be computed.
-                    new_ground_atoms.push_back(new_ground_atom);
-
                     // Update the assignment set
                     derived_assignment_set.insert_ground_atom(new_ground_atom);
+                    dense_derived_atoms.set(grounded_atom_index);
 
                     // Retrieve relevant axioms
                     partition.retrieve_axioms_with_same_body_predicate(new_ground_atom, relevant_axioms);
                 }
-
-                dense_derived_atoms.set(grounded_atom_index);
             }
         } while (!reached_partition_fixed_point);
     }
