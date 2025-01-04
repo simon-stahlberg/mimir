@@ -31,11 +31,20 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("github/30/htg-astar-blind/combined_results")
+exp = Experiment("github/30/htg-astar-blind/combined_results_filtered")
 
-exp.add_fetcher("github/30/htg-astar-blind/mimir-sparse-htg-astar-blind-eval")
-exp.add_fetcher("github/30/htg-astar-blind/downward-htg-astar-blind-eval")
-exp.add_fetcher("github/30/htg-astar-blind/powerlifted-htg-astar-blind-eval")
+def remove_unsupported_domains(properties):
+    """Rename algorithm dynamically during fetching."""
+    if properties["domain"] in {
+        "genome-edit-distance-positional",
+    }:
+        return False
+    return True
+
+
+exp.add_fetcher("github/30/htg-astar-blind/mimir-sparse-htg-astar-blind-eval", filter=remove_unsupported_domains)
+exp.add_fetcher("github/30/htg-astar-blind/downward-htg-astar-blind-eval", filter=remove_unsupported_domains)
+exp.add_fetcher("github/30/htg-astar-blind/powerlifted-htg-astar-blind-eval", filter=remove_unsupported_domains)
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "mimir-grounded-dense-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind", "mimir-lifted-dense-astar-blind"]))
 
