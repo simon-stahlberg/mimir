@@ -31,10 +31,9 @@ ATTRIBUTES = [
 ]
 
 
-exp = Experiment("github/30/ipc-optimal-strips-astar-blind/combined_results_filtered")
+exp = Experiment("github/30/ipc-optimal-strips-astar-blind/combined_results")
 
-def remove_unsupported_domains(properties):
-    """Rename algorithm dynamically during fetching."""
+def remove_nonstrips_domains(properties):
     if properties["domain"] in {
         "data-network-opt18-strips",
         "pathways",
@@ -50,9 +49,9 @@ def remove_unsupported_domains(properties):
     return True
 
 
-exp.add_fetcher("github/30/ipc-optimal-strips-astar-blind/downward-ipc-optimal-strips-astar-blind-eval", filter=remove_unsupported_domains)
-exp.add_fetcher("github/30/ipc-optimal-strips-astar-blind/powerlifted-ipc-optimal-strips-astar-blind-eval", filter=remove_unsupported_domains)
-exp.add_fetcher("github/30/ipc-optimal-strips-astar-blind/mimir-sparse-ipc-optimal-strips-astar-blind-eval", filter=remove_unsupported_domains)
+exp.add_fetcher("github/30/ipc-optimal-strips-astar-blind/downward-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
+exp.add_fetcher("github/30/ipc-optimal-strips-astar-blind/powerlifted-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
+exp.add_fetcher("github/30/ipc-optimal-strips-astar-blind/mimir-sparse-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind"]))
 

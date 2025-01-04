@@ -30,13 +30,13 @@ We use the following performance metrics to compare the planners':
 
 ## 4. Benchmarks
 
-1. `Hard-to-Ground` (HTG)
+1. `Optimal-STRIPS` from the international planning competition (IPC)
 
-Hard-to-ground benchmarks result in often infeasibly large numbers of ground atoms and/or ground actions/axioms. We use a compilation of hard-to-ground benchmarks available on [GitHub](https://github.com/abcorrea/htg-domains).
+The optimal STRIPS benchmarks from the IPC use a simple PDDL fragment, which includes `:strips`, `:action-costs`, `:typing`, `:negative-preconditions`, `:equality`. We exclude domains that use negative preconditions because Powerlifted does not support it. Additionally, these benchmarks are often easy to ground, with only a few reached ground atoms, actions, and axioms. We use a compilation of the IPC benchmarks available on [Github](https://github.com/aibasel/downward-benchmarks).
 
-2. `Optimal-STRIPS` from the international planning competition (IPC)
+2. `Hard-to-Ground` (HTG)
 
-The optimal STRIPS benchmarks from the IPC use a simple PDDL fragment, which includes `:strips`, `:action-costs`, `:typing`, `:negative-preconditions`, `:equality`. Additionally, these benchmarks are often easy to ground, with only a few reached ground atoms, actions, and axioms. We use a compilation of the IPC benchmarks available on [Github](https://github.com/aibasel/downward-benchmarks).
+Hard-to-ground benchmarks often result in infeasibly high numbers of ground atoms and/or ground actions/axioms. We use a compilation of hard-to-ground benchmarks available on [GitHub](https://github.com/abcorrea/htg-domains). We exclude domains beyond the PDDL language features specified for the STRIPS benchmark set. 
 
 3. `Optimal-ADL` from the international planning competition (IPC)
 
@@ -54,23 +54,23 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 
 ### Time limit 30 Minutes:
 
-1. Hard-to-Ground
+1. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |          126 |            3132 |              102 |
-| Mimir-grounded    |          106 |            3270 |           **61** |
-| Powerlifted       |          135 |         **344** |              217 |
-| Mimir-lifted      |      **155** |             522 |              270 |
-
-2. Optimal-STRIPS
-
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
-| :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **752** |            1273 |          **261** |
-| Mimir-grounded    |          695 |         **756** |              313 |
+| Fast-Downward     |      **659** |            1273 |          **261** |
+| Mimir-grounded    |          611 |         **756** |              313 |
 | Powerlifted       |          539 |            6958 |             6050 |
-| Mimir-lifted      |          669 |            2574 |             1692 |
+| Mimir-lifted      |          598 |            2574 |             1692 |
+
+2. Hard-to-Ground
+
+| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| :---------------- | -----------: | --------------: | ---------------: |
+| Fast-Downward     |          108 |            3132 |              102 |
+| Mimir-grounded    |           88 |            3270 |           **61** |
+| Powerlifted       |          135 |         **344** |              217 |
+| Mimir-lifted      |      **137** |             522 |              270 |
 
 3. Optimal-ADL
 
@@ -82,29 +82,29 @@ It follows the performance metric scores `Coverage`, `Total time`, and `Search t
 | Mimir-lifted      |          299 |            5722 |             4544 |
 
 Observations:
-- Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. Fast-Downward's preprocessing step to compute a compact state representation is costly, resulting in a higher total time compared to Mimir-grounded.
-- Powerlifted has the best runtime performance on hard-to-ground benchmarks but lower coverage than Mimir because of its limited support in PDDL features. In the unsupported domains on hard-to-ground and STRIPS, Mimir-lifted solves a total of 18, respectively 72, problems. Supporting these extensions in Powerlifted would result in potentially similar coverage scores in hard-to-ground benchmarks. However, in easy-to-ground benchmarks, Powerlifted is not sufficiently optimized to match Mimir's performance.
-- Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks. Mimir's costs are even higher because the tree structure used to retrieve applicable actions is based on a less compact propositional state representation compared to Fast Downward's, which is based on a compact finite-domain state representation (FDR).
+- Fast-Downward's preprocessing step results in the most compact state representation on easy-to-ground benchmarks, resulting in strong memory efficiency, search time, and overall highest coverage on the IPC STRIPS and ADL benchmarks. The preprocessing step is costly, resulting in a higher total time than Mimir-grounded. Fast Downward and Mimir-grounded achieve comparable search time scores.
+- Powerlifted has the best runtime score on hard-to-ground benchmarks and comparable coverage with Mimir-lifted. However, Powerlifted achieves significantly worse scores in all three performance metrics than Mimir-lifted in easy-to-ground benchmarks.
+- Fast-Downward's and Mimir's grounding step costs a comparable and significant amount of time on hard-to-ground benchmarks. Mimir's costs are even higher because the tree structure used to retrieve applicable actions is based on a less compact propositional state representation than Fast Downward's, which is based on a compact finite-domain state representation (FDR).
 
 ### Time limit 5 Minutes:
 
-1. Hard-to-Ground
+1. Optimal-STRIPS
 
 | Item              |     Coverage | Total time [ms] | Search time [ms] |
 | :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |          113 |            2552 |               67 |
-| Mimir-grounded    |          101 |            2458 |           **37** |
-| Powerlifted       |          129 |         **197** |              120 |
-| Mimir-lifted      |      **137** |             311 |              165 |
-
-2. Optimal-STRIPS
-
-| Item              |     Coverage | Total time [ms] | Search time [ms] |
-| :---------------- | -----------: | --------------: | ---------------: |
-| Fast-Downward     |      **702** |             607 |           **88** |
-| Mimir-grounded    |          670 |         **303** |              99 |
+| Fast-Downward     |      **617** |             607 |           **88** |
+| Mimir-grounded    |          592 |         **303** |              99 |
 | Powerlifted       |          454 |            2113 |             1868 |
-| Mimir-lifted      |          582 |             853 |              527 |
+| Mimir-lifted      |          525 |             853 |              527 |
+
+2. Hard-to-Ground
+
+| Item              |     Coverage | Total time [ms] | Search time [ms] |
+| :---------------- | -----------: | --------------: | ---------------: |
+| Fast-Downward     |          97 |            2552 |               67 |
+| Mimir-grounded    |          87 |            2458 |           **37** |
+| Powerlifted       |     **129** |         **197** |              120 |
+| Mimir-lifted      |         123 |             311 |              165 |
 
 3. Optimal-ADL
 
@@ -115,7 +115,7 @@ Observations:
 | Powerlifted       |            x |               x |                x |
 | Mimir-lifted      |          255 |            2340 |             1619 |
 
-The observations remain almost identical to the 30 minutes experiment. The gaps between grounded planners planners starts to diminish, indicating that memory becomes less problematic. For lifted planners, the gap remains significant.
+The observations remain almost identical to the 30 minutes experiment. The gaps between grounded planners planners starts to diminish, indicating that memory becomes less problematic. For lifted planners on the STRIPS benchmarks, the gap remains significant.
 
 ## 7. Conclusions
 

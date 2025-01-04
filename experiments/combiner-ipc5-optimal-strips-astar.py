@@ -33,9 +33,24 @@ ATTRIBUTES = [
 
 exp = Experiment("github/5/ipc-optimal-strips-astar-blind/combined_results")
 
-exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/downward-ipc-optimal-strips-astar-blind-eval")
-exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/powerlifted-ipc-optimal-strips-astar-blind-eval")
-exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/mimir-sparse-ipc-optimal-strips-astar-blind-eval")
+def remove_nonstrips_domains(properties):
+    if properties["domain"] in {
+        "data-network-opt18-strips",
+        "pathways",
+        "quantum-layout-opt23-strips",
+        "snake-opt18-strips",
+        "termes-opt18-strips",
+        "tetris-opt14-strips",
+        "tidybot-opt11-strips",
+        "spider-opt18-strips",
+        "storage",
+    }:
+        return False
+    return True
+
+exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/downward-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
+exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/powerlifted-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
+exp.add_fetcher("github/5/ipc-optimal-strips-astar-blind/mimir-sparse-ipc-optimal-strips-astar-blind-eval", filter=remove_nonstrips_domains)
 
 exp.add_report(BaseReport(attributes=ATTRIBUTES, filter_algorithm=["downward-astar-blind", "mimir-grounded-sparse-astar-blind", "powerlifted-astar-blind", "mimir-lifted-sparse-astar-blind"]))
 
