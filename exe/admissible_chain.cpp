@@ -37,10 +37,8 @@ int main(int argc, char** argv)
     auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator =
         std::dynamic_pointer_cast<IApplicableActionGenerator>(std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder()));
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
     auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-    auto state_repository_workspace = StateRepositoryWorkspace();
 
     const auto state_space = std::make_shared<StateSpace>(std::move(StateSpace::create(applicable_action_generator, state_repository).value()));
 
@@ -50,7 +48,7 @@ int main(int argc, char** argv)
     {
         auto tuple_graph_factory = TupleGraphFactory(state_space, arity, false);
 
-        auto tuple_graph = tuple_graph_factory.create(state_space->get_state_repository()->get_or_create_initial_state(state_repository_workspace));
+        auto tuple_graph = tuple_graph_factory.create(state_space->get_state_repository()->get_or_create_initial_state());
 
         if (tuple_graph.compute_admissible_chain(fluent_goal_atoms) != std::nullopt)
         {

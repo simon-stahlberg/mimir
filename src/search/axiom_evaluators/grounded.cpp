@@ -44,7 +44,7 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 {
 }
 
-void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace&)
+void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
     const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();

@@ -34,7 +34,7 @@ public:
     virtual ~IAxiomEvaluator() = default;
 
     /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(DenseState& dense_state, AxiomEvaluatorWorkspace& workspace) = 0;
+    virtual void generate_and_apply_axioms(DenseState& dense_state) = 0;
 
     /// @brief Accumulate event handler statistics during search.
     virtual void on_finish_search_layer() = 0;

@@ -25,8 +25,6 @@
 #include "mimir/search/action.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
-#include "mimir/search/workspaces/axiom_evaluator.hpp"
-#include "mimir/search/workspaces/state_repository.hpp"
 
 namespace mimir
 {
@@ -38,20 +36,18 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
     m_states(),
     m_axiom_evaluations(),
     m_reached_fluent_atoms(),
-    m_reached_derived_atoms()
+    m_reached_derived_atoms(),
+    m_state_builder(),
+    m_dense_state_builder(),
+    m_applied_positive_effect_atoms(),
+    m_applied_negative_effect_atoms(),
+    m_state_derived_atoms()
 {
 }
 
-State StateRepository::get_or_create_initial_state(StateRepositoryWorkspace& workspace)
+State StateRepository::get_or_create_initial_state()
 {
-    auto ground_atoms = GroundAtomList<Fluent> {};
-
-    for (const auto& literal : m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_fluent_initial_literals())
-    {
-        ground_atoms.push_back(literal->get_atom());
-    }
-
-    return get_or_create_state(ground_atoms, workspace);
+    return get_or_create_state(m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_fluent_initial_atoms());
 }
 
 static void translate_dense_into_sorted_compressed_sparse(const FlatBitset& dense, FlatIndexList& ref_sparse)
@@ -75,26 +71,23 @@ static void update_derived_atoms_ptr(const FlatIndexList& state_derived_atoms, u
     state_derived_atoms_ptr = reinterpret_cast<uintptr_t>(&state_derived_atoms);
 }
 
-State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace)
+State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
 {
-    auto& state_builder = workspace.get_or_create_state_builder();
-    auto& state_fluent_atoms = state_builder.get_fluent_atoms();
-    auto& state_derived_atoms = workspace.get_or_create_new_derived_atoms_list();
-    auto& state_derived_atoms_ptr = state_builder.get_derived_atoms();
+    auto& state_fluent_atoms = m_state_builder.get_fluent_atoms();
+    auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
     state_fluent_atoms.clear();
-    state_derived_atoms.clear();
+    m_state_derived_atoms.clear();
     state_derived_atoms_ptr = uintptr_t(0);
 
-    auto& dense_state = workspace.get_or_create_dense_state();
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<Fluent>();
+    auto& dense_derived_atoms = m_dense_state_builder.get_atoms<Derived>();
     dense_fluent_atoms.unset_all();
     dense_derived_atoms.unset_all();
 
     /* 1. Set state index */
 
     {
-        auto& state_index = state_builder.get_index();
+        auto& state_index = m_state_builder.get_index();
         const auto next_state_index = Index(m_states.size());
         state_index = next_state_index;
     }
@@ -112,7 +105,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, state_fluent_atoms);
 
         // Test whether there exists an extended state for the given non extended state
-        auto iter = m_states.find(state_builder);
+        auto iter = m_states.find(m_state_builder);
         if (iter != m_states.end())
         {
             return iter->get();
@@ -125,20 +118,20 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, 
         {
             // Evaluate axioms
             assert(dense_derived_atoms.count() == 0);
-            m_axiom_evaluator->generate_and_apply_axioms(dense_state, workspace.get_or_create_axiom_evaluator_workspace());
+            m_axiom_evaluator->generate_and_apply_axioms(m_dense_state_builder);
 
             update_reached_derived_atoms(dense_derived_atoms, m_reached_derived_atoms);
 
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
-            const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
+            const auto [iter, inserted] = m_axiom_evaluations.insert(m_state_derived_atoms);
 
             update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
     }
 
     // Cache and return the extended state.
-    return m_states.insert(state_builder).first->get();
+    return m_states.insert(m_state_builder).first->get();
 }
 
 static void apply_action_effects(const FlatBitset& negative_applied_effects, const FlatBitset& positive_applied_effects, FlatBitset& ref_state_fluent_atoms)
@@ -147,18 +140,11 @@ static void apply_action_effects(const FlatBitset& negative_applied_effects, con
     ref_state_fluent_atoms |= positive_applied_effects;
 }
 
-std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace)
+std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action)
 {
-    auto& dense_state = workspace.get_or_create_dense_state();
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
-    dense_fluent_atoms.unset_all();
-    dense_derived_atoms.unset_all();
+    DenseState::translate(state, m_dense_state_builder);
 
-    insert_into_bitset(state->get_atoms<Fluent>(), dense_fluent_atoms);
-    insert_into_bitset(state->get_atoms<Derived>(), dense_derived_atoms);
-
-    return get_or_create_successor_state(dense_state, action, workspace);
+    return get_or_create_successor_state(m_dense_state_builder, action);
 }
 
 static void collect_applied_strips_effects(GroundAction action,
@@ -199,18 +185,15 @@ static void collect_applied_conditional_effects(GroundAction action,
     }
 }
 
-std::pair<State, ContinuousCost>
-StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action, StateRepositoryWorkspace& workspace)
+std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action)
 {
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
-    auto& state_builder = workspace.get_or_create_state_builder();
-    auto& state_fluent_atoms = state_builder.get_fluent_atoms();
-    auto& state_derived_atoms = workspace.get_or_create_new_derived_atoms_list();
-    auto& state_derived_atoms_ptr = state_builder.get_derived_atoms();
+    auto& state_fluent_atoms = m_state_builder.get_fluent_atoms();
+    auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
     state_fluent_atoms.clear();
-    state_derived_atoms.clear();
+    m_state_derived_atoms.clear();
     state_derived_atoms_ptr = uintptr_t(0);
 
     /* Accumulate state-dependent action cost. */
@@ -218,35 +201,33 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
 
     /* 1. Set the state index. */
     {
-        auto& state_index = state_builder.get_index();
+        auto& state_index = m_state_builder.get_index();
         const auto next_state_index = Index(m_states.size());
         state_index = next_state_index;
     }
 
     /* 2. Apply action effects to construct non-extended state. */
     {
-        auto& negative_applied_effects = workspace.get_or_create_applied_negative_effect_atoms();
-        auto& positive_applied_effects = workspace.get_or_create_applied_positive_effect_atoms();
-        negative_applied_effects.unset_all();
-        positive_applied_effects.unset_all();
+        m_applied_negative_effect_atoms.unset_all();
+        m_applied_positive_effect_atoms.unset_all();
 
-        collect_applied_strips_effects(action, negative_applied_effects, positive_applied_effects, action_cost);
+        collect_applied_strips_effects(action, m_applied_negative_effect_atoms, m_applied_positive_effect_atoms, action_cost);
 
         collect_applied_conditional_effects(action,
                                             m_axiom_evaluator->get_axiom_grounder()->get_problem(),
                                             dense_state,
-                                            negative_applied_effects,
-                                            positive_applied_effects,
+                                            m_applied_negative_effect_atoms,
+                                            m_applied_positive_effect_atoms,
                                             action_cost);
 
-        apply_action_effects(negative_applied_effects, positive_applied_effects, dense_fluent_atoms);
+        apply_action_effects(m_applied_negative_effect_atoms, m_applied_positive_effect_atoms, dense_fluent_atoms);
 
         update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
         translate_dense_into_sorted_compressed_sparse(dense_fluent_atoms, state_fluent_atoms);
 
         // Check if non-extended state exists in cache
-        const auto iter = m_states.find(state_builder);
+        const auto iter = m_states.find(m_state_builder);
         if (iter != m_states.end())
         {
             return std::make_pair(iter->get(), action_cost);
@@ -259,20 +240,20 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
         {
             // Evaluate axioms
             dense_derived_atoms.unset_all();  ///< Important: now we must clear the buffer before evaluating for the updated fluent atoms.
-            m_axiom_evaluator->generate_and_apply_axioms(dense_state, workspace.get_or_create_axiom_evaluator_workspace());
+            m_axiom_evaluator->generate_and_apply_axioms(dense_state);
 
             update_reached_fluent_atoms(dense_derived_atoms, m_reached_derived_atoms);
 
-            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, state_derived_atoms);
+            translate_dense_into_sorted_compressed_sparse(dense_derived_atoms, m_state_derived_atoms);
 
-            const auto [iter, inserted] = m_axiom_evaluations.insert(state_derived_atoms);
+            const auto [iter, inserted] = m_axiom_evaluations.insert(m_state_derived_atoms);
 
             update_derived_atoms_ptr(**iter, state_derived_atoms_ptr);
         }
     }
 
     // Cache and return the extended state.
-    return std::make_pair(m_states.insert(state_builder).first->get(), action_cost);
+    return std::make_pair(m_states.insert(m_state_builder).first->get(), action_cost);
 }
 
 Problem StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }

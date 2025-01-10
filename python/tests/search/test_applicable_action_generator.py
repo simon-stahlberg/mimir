@@ -14,12 +14,10 @@ def test_applicable_action_generator_ownership():
 
     grounder = mm.Grounder(pddl_parser.get_problem(), pddl_parser.get_pddl_repositories())
     applicable_action_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
-    applicable_action_generator_workspace = mm.ApplicableActionGeneratorWorkspace()
     axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
     state_repository = mm.StateRepository(axiom_evaluator)
-    state_repository_workspace = mm.StateRepositoryWorkspace()
-    initial_state = state_repository.get_or_create_initial_state(state_repository_workspace)
-    actions = applicable_action_generator.generate_applicable_actions(initial_state, applicable_action_generator_workspace)
+    initial_state = state_repository.get_or_create_initial_state()
+    actions = applicable_action_generator.generate_applicable_actions(initial_state)
 
     del state_repository
     del applicable_action_generator

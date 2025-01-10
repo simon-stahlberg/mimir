@@ -22,8 +22,6 @@
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
-#include "mimir/search/workspaces/applicable_action_generator.hpp"
-#include "mimir/search/workspaces/grounded_applicable_action_generator.hpp"
 
 namespace mimir
 {
@@ -40,24 +38,22 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
     m_grounder(std::move(action_grounder)),
     m_match_tree(std::move(match_tree)),
-    m_event_handler(std::move(event_handler))
+    m_event_handler(std::move(event_handler)),
+    m_dense_state()
 {
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace)
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(State state)
 {
-    auto& grounded_workspace = workspace.get_or_create_grounded_workspace();
-    auto& dense_state = grounded_workspace.get_or_create_dense_state();
-    DenseState::translate(state, dense_state);
+    DenseState::translate(state, m_dense_state);
 
-    return create_applicable_action_generator(dense_state, workspace);
+    return create_applicable_action_generator(m_dense_state);
 }
 
-mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state,
-                                                                                                     ApplicableActionGeneratorWorkspace& workspace)
+mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state)
 {
-    auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
+    const auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
     auto ground_actions = GroundActionList {};
     m_match_tree.get_applicable_elements(dense_fluent_atoms, dense_derived_atoms, ground_actions);

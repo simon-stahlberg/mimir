@@ -23,7 +23,6 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -77,12 +76,9 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
 {
     const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
 
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
-    auto state_repository_workspace = StateRepositoryWorkspace();
-
     auto stop_watch = StopWatch(options.timeout_ms);
 
-    auto initial_state = state_repository->get_or_create_initial_state(state_repository_workspace);
+    auto initial_state = state_repository->get_or_create_initial_state();
 
     if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
@@ -112,11 +108,9 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
             goal_vertex_indices.insert(vertex_index);
         }
 
-        for (const auto& action :
-             applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex), applicable_action_generator_workspace))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
         {
-            const auto [successor_state, action_cost] =
-                state_repository->get_or_create_successor_state(mimir::get_state(vertex), action, state_repository_workspace);
+            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action);
             const auto it = state_to_vertex_index.find(successor_state);
             const bool exists = (it != state_to_vertex_index.end());
             if (exists)

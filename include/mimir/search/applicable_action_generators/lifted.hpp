@@ -38,6 +38,13 @@ private:
 
     std::unordered_map<Action, SatisficingBindingGenerator> m_action_precondition_grounders;
 
+    /* Memory for reuse */
+    DenseState m_dense_state;
+    GroundAtomList<Fluent> m_fluent_atoms;
+    GroundAtomList<Derived> m_derived_atoms;
+    AssignmentSet<Fluent> m_fluent_assignment_set;
+    AssignmentSet<Derived> m_derived_assignment_set;
+
 public:
     /// @brief Simplest construction
     LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder);
@@ -53,8 +60,8 @@ public:
     LiftedApplicableActionGenerator(LiftedApplicableActionGenerator&& other) = delete;
     LiftedApplicableActionGenerator& operator=(LiftedApplicableActionGenerator&& other) = delete;
 
-    mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspaces) override;
-    mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state, ApplicableActionGeneratorWorkspace& workspace) override;
+    mimir::generator<GroundAction> create_applicable_action_generator(State state) override;
+    mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

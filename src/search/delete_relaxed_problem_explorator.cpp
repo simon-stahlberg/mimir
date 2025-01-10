@@ -25,8 +25,6 @@
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
-#include "mimir/search/workspaces/applicable_action_generator.hpp"
-#include "mimir/search/workspaces/state_repository.hpp"
 
 namespace mimir
 {
@@ -89,10 +87,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_grounder->get_axiom_grounder())),
     m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
-    auto state_repository_workspace = StateRepositoryWorkspace();
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
-
-    auto initial_state = m_delete_free_state_repository.get_or_create_initial_state(state_repository_workspace);
+    auto initial_state = m_delete_free_state_repository.get_or_create_initial_state();
 
     auto dense_state = DenseState(initial_state);
 
@@ -103,22 +98,22 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     {
         reached_delete_free_explore_fixpoint = true;
 
-        auto num_atoms_before = dense_state.get_atoms<Fluent>().count();
+        auto num_atoms_before = m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
 
         // Create and all applicable actions and apply them
         // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
         // Attention2: we simply incrementally keep growing the derived atoms in the dense state.
-        for (const auto& action :
-             m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state, applicable_action_generator_workspace))
+        for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state))
         {
-            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action, state_repository_workspace);
+            // Note that get_or_create_successor_state already modifies dense_state to be the successor state.
+            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action);
         }
 
         // Create and all applicable axioms and apply them
-        m_delete_free_axiom_evalator->generate_and_apply_axioms(dense_state, state_repository_workspace.get_or_create_axiom_evaluator_workspace());
+        m_delete_free_axiom_evalator->generate_and_apply_axioms(dense_state);
 
         // Note: checking fluent atoms suffices because derived are implied by those.
-        auto num_atoms_after = dense_state.get_atoms<Fluent>().count();
+        auto num_atoms_after = m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
 
         if (num_atoms_before != num_atoms_after)
         {
@@ -187,6 +182,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
             auto grounded_action = m_grounder->get_action_grounder()->ground_action(unrelaxed_action, std::move(action_arguments));
             if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
+                std::cout << std::make_tuple(grounded_action, std::cref(*pddl_repositories), FullActionFormatterTag {}) << std::endl;
                 ground_actions.push_back(grounded_action);
             }
         }

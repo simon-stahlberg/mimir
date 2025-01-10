@@ -120,10 +120,8 @@ from _pymimir import (
     GroundedApplicableActionGenerator,
     GroundedAxiomEvaluator,
     IApplicableActionGenerator,
-    ApplicableActionGeneratorWorkspace,
     IAStarAlgorithmEventHandler,
     IAxiomEvaluator,
-    AxiomEvaluatorWorkspace,
     IBrFSAlgorithmEventHandler,
     IIWAlgorithmEventHandler,
     IGroundedApplicableActionGeneratorEventHandler,
@@ -134,9 +132,7 @@ from _pymimir import (
     ISIWAlgorithmEventHandler,
     IWAlgorithmStatistics,
     LiftedApplicableActionGenerator,
-    LiftedApplicableActionGeneratorWorkspace,
     LiftedAxiomEvaluator,
-    LiftedAxiomEvaluatorWorkspace,
     Plan,
     SearchNodeStatus,
     SearchStatus,
@@ -146,7 +142,6 @@ from _pymimir import (
     StateList,
     StateSpan,
     StateRepository,
-    StateRepositoryWorkspace,
     StateIndexGroupedVector,
     TupleIndexMapper,
 
@@ -157,7 +152,6 @@ from _pymimir import (
     Grounder,
 
     SatisficingBindingGenerator,
-    SatisficingBindingGeneratorWorkspace,
 
     StaticAssignmentSet,
     FluentAssignmentSet,

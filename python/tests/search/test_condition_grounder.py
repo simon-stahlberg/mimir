@@ -18,13 +18,11 @@ def test_condition_grounder():
     grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
     existentially_quantified_conjunctive_condition = pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(goal_variables, mm.StaticLiteralList(), goal_lifted, mm.DerivedLiteralList())
     condition_grounder = mm.SatisficingBindingGenerator(grounder.get_literal_grounder(), existentially_quantified_conjunctive_condition)
-    condition_grounder_workspace = mm.SatisficingBindingGeneratorWorkspace()
     applicable_action_generator = mm.LiftedApplicableActionGenerator(grounder.get_action_grounder())
     axiom_evaluator = mm.LiftedAxiomEvaluator(grounder.get_axiom_grounder())
     state_repository = mm.StateRepository(axiom_evaluator)
-    state_repository_workspace = mm.StateRepositoryWorkspace()
-    initial_state = state_repository.get_or_create_initial_state(state_repository_workspace)
-    goal_bindings = condition_grounder.generate_ground_conjunctions(initial_state, condition_grounder_workspace, 1_000_000)
+    initial_state = state_repository.get_or_create_initial_state()
+    goal_bindings = condition_grounder.generate_ground_conjunctions(initial_state, 1_000_000)
 
     del state_repository
     del applicable_action_generator

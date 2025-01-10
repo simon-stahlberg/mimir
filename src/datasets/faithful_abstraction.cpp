@@ -104,12 +104,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
     const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
     const auto pddl_repositories = applicable_action_generator->get_action_grounder()->get_pddl_repositories();
 
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
-    auto state_repository_workspace = StateRepositoryWorkspace();
-
     auto stop_watch = StopWatch(options.timeout_ms);
 
-    auto initial_state = state_repository->get_or_create_initial_state(state_repository_workspace);
+    auto initial_state = state_repository->get_or_create_initial_state();
 
     if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
@@ -180,9 +177,9 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
             abstract_goal_states.insert(abstract_state_index);
         }
 
-        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state, applicable_action_generator_workspace))
+        for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
-            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action, state_repository_workspace);
+            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
 
             // Regenerate concrete state
             const auto concrete_successor_state_exists = concrete_to_abstract_state.count(successor_state);
@@ -645,10 +642,8 @@ const std::map<ContinuousCost, IndexList>& FaithfulAbstraction::get_vertex_indic
 std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstraction)
 {
     // 2. Header
-    out << "digraph {"
-        << "\n"
-        << "rankdir=\"LR\""
-        << "\n";
+    out << "digraph {" << "\n"
+        << "rankdir=\"LR\"" << "\n";
 
     // 3. Draw states
     for (size_t vertex = 0; vertex < abstraction.get_num_vertices(); ++vertex)
@@ -697,8 +692,7 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
     for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->"
-            << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";

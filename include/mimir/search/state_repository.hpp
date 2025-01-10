@@ -21,8 +21,8 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
-#include "mimir/search/workspaces/state_repository.hpp"  ///< We put this in the header to reduce includes
 
 namespace mimir
 {
@@ -39,6 +39,15 @@ private:
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
 
+    /* Memory for reuse */
+    StateImpl m_state_builder;
+    DenseState m_dense_state_builder;
+
+    FlatBitset m_applied_positive_effect_atoms;
+    FlatBitset m_applied_negative_effect_atoms;
+
+    FlatIndexList m_state_derived_atoms;
+
 public:
     explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
 
@@ -49,30 +58,29 @@ public:
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
-    State get_or_create_initial_state(StateRepositoryWorkspace& workspace);
+    State get_or_create_initial_state();
 
     /// @brief Get or create the extended state for a given set of ground `atoms`.
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    State get_or_create_state(const GroundAtomList<Fluent>& atoms, StateRepositoryWorkspace& workspace);
+    State get_or_create_state(const GroundAtomList<Fluent>& atoms);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and the action cost.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action, StateRepositoryWorkspace& workspace);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
-    /// `derived_atoms`. The input parameters `state_fluent_atoms` and `state_derived_atoms` are modified, meaning that side effects have to be taken into
-    /// account.
+    /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
     /// @param state_fluent_atoms are the fluent atoms of the state
     /// @param state_derived_atoms are the derived atoms of the state
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and the action cost.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action, StateRepositoryWorkspace& workspace);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action);
 
     /**
      * Getters

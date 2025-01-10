@@ -836,20 +836,6 @@ void init_pymimir(py::module_& m)
         .value("UNSOLVABLE", SearchStatus::UNSOLVABLE)
         .export_values();
 
-    /* Workspaces */
-    py::class_<ApplicableActionGeneratorWorkspace>(m, "ApplicableActionGeneratorWorkspace")  //
-        .def(py::init<>());
-    py::class_<LiftedApplicableActionGeneratorWorkspace>(m, "LiftedApplicableActionGeneratorWorkspace")  //
-        .def(py::init<>());
-    py::class_<AxiomEvaluatorWorkspace>(m, "AxiomEvaluatorWorkspace")  //
-        .def(py::init<>());
-    py::class_<LiftedAxiomEvaluatorWorkspace>(m, "LiftedAxiomEvaluatorWorkspace")  //
-        .def(py::init<>());
-    py::class_<SatisficingBindingGeneratorWorkspace>(m, "SatisficingBindingGeneratorWorkspace")  //
-        .def(py::init<>());
-    py::class_<StateRepositoryWorkspace>(m, "StateRepositoryWorkspace")  //
-        .def(py::init<>());
-
     /* State */
     py::class_<StateImpl>(m, "State")  //
         .def("__hash__", [](const StateImpl& self) { return self.get_index(); })
@@ -999,24 +985,27 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::shared_ptr<LiteralGrounder>, ExistentiallyQuantifiedConjunctiveCondition>(),
              py::arg("literal_grounder"),
              py::arg("existentially_quantified_conjunctive_condition"))
-        .def("generate_ground_conjunctions",
-             [](SatisficingBindingGenerator& self, State state, SatisficingBindingGeneratorWorkspace& workspace, size_t max_num_groundings)
-             {
-                 auto result =
-                     std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
+        .def(
+            "generate_ground_conjunctions",
+            [](SatisficingBindingGenerator& self, State state, size_t max_num_groundings)
+            {
+                auto result =
+                    std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
 
-                 auto count = size_t(0);
-                 for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state, workspace))
-                 {
-                     if (count >= max_num_groundings)
-                     {
-                         break;
-                     }
-                     result.push_back(ground_conjunction);
-                     ++count;
-                 }
-                 return result;  // TODO: keep alive is not set. Lets leave it "buggy" for this specialized piece of code...
-             });
+                auto count = size_t(0);
+                for (const auto& ground_conjunction : self.create_ground_conjunction_generator(state))
+                {
+                    if (count >= max_num_groundings)
+                    {
+                        break;
+                    }
+                    result.push_back(ground_conjunction);
+                    ++count;
+                }
+                return result;  // TODO: keep alive is not set. Lets leave it "buggy" for this specialized piece of code...
+            },
+            py::arg("state"),
+            py::arg("max_num_groundings"));
 
     /* LiteralGrounder */
     py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>>(m, "LiteralGrounder")  //
@@ -1078,19 +1067,18 @@ void init_pymimir(py::module_& m)
         .def("get_pddl_repositories", &IApplicableActionGenerator::get_pddl_repositories, py::return_value_policy::copy)
         .def(
             "generate_applicable_actions",
-            [](IApplicableActionGenerator& self, State state, ApplicableActionGeneratorWorkspace& workspace)
+            [](IApplicableActionGenerator& self, State state)
             {
                 // TODO: pybind11 does not support std::generator. Is there a simple workaround WITHOUT introducing additional code?
                 auto actions = GroundActionList {};
-                for (const auto& action : self.create_applicable_action_generator(state, workspace))
+                for (const auto& action : self.create_applicable_action_generator(state))
                 {
                     actions.push_back(action);
                 }
                 return actions;
             },
             py::keep_alive<0, 1>(),
-            py::arg("state"),
-            py::arg("applicable_action_generator_workspace"))
+            py::arg("state"))
         .def("get_action_grounder", &IApplicableActionGenerator::get_action_grounder, py::return_value_policy::copy);
 
     // Lifted
@@ -1182,21 +1170,13 @@ void init_pymimir(py::module_& m)
     /* StateRepository */
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
         .def(py::init<std::shared_ptr<IAxiomEvaluator>>(), py::arg("axiom_evaluator"))
-        .def("get_or_create_initial_state",
-             &StateRepository::get_or_create_initial_state,
-             py::return_value_policy::reference_internal,
-             py::arg("state_repository_workspace"))
-        .def("get_or_create_state",
-             &StateRepository::get_or_create_state,
-             py::return_value_policy::reference_internal,
-             py::arg("atoms"),
-             py::arg("state_repository_workspace"))
+        .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
+        .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
         .def("get_or_create_successor_state",
-             py::overload_cast<State, GroundAction, StateRepositoryWorkspace&>(&StateRepository::get_or_create_successor_state),
+             py::overload_cast<State, GroundAction>(&StateRepository::get_or_create_successor_state),
              py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
              py::arg("state"),
-             py::arg("action"),
-             py::arg("state_repository_workspace"))
+             py::arg("action"))
         .def("get_state_count", &StateRepository::get_state_count)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepository::get_reached_fluent_ground_atoms_bitset, py::return_value_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepository::get_reached_derived_ground_atoms_bitset, py::return_value_policy::copy);
@@ -1350,10 +1330,7 @@ void init_pymimir(py::module_& m)
         .def("__eq__", [](const StateVertex& lhs, const StateVertex& rhs) { return loki::EqualTo<StateVertex>()(lhs, rhs); })
         .def("__hash__", [](const StateVertex& self) { return loki::Hash<StateVertex>()(self); })
         .def("get_index", &StateVertex::get_index)
-        .def(
-            "get_state",
-            [](const StateVertex& self) { return get_state(self); },
-            py::return_value_policy::reference_internal);
+        .def("get_state", [](const StateVertex& self) { return get_state(self); }, py::return_value_policy::reference_internal);
 
     // GroundActionEdge
     py::class_<GroundActionEdge>(m, "GroundActionEdge")  //
@@ -1363,10 +1340,7 @@ void init_pymimir(py::module_& m)
         .def("get_source", &GroundActionEdge::get_source)
         .def("get_target", &GroundActionEdge::get_target)
         .def("get_cost", [](const GroundActionEdge& self) { return get_cost(self); })
-        .def(
-            "get_creating_action",
-            [](const GroundActionEdge& self) { return get_creating_action(self); },
-            py::return_value_policy::reference_internal);
+        .def("get_creating_action", [](const GroundActionEdge& self) { return get_creating_action(self); }, py::return_value_policy::reference_internal);
 
     // GroundActionsEdge
     py::class_<GroundActionsEdge>(m, "GroundActionsEdge")  //
@@ -1623,10 +1597,7 @@ void init_pymimir(py::module_& m)
             "get_representative_state",
             [](const FaithfulAbstractStateVertex& self) { return get_representative_state(self); },
             py::keep_alive<0, 1>())
-        .def(
-            "get_certificate",
-            [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); },
-            py::return_value_policy::reference_internal);
+        .def("get_certificate", [](const FaithfulAbstractStateVertex& self) { return get_certificate(self); }, py::return_value_policy::reference_internal);
 
     py::class_<FaithfulAbstraction, std::shared_ptr<FaithfulAbstraction>>(m, "FaithfulAbstraction")
         .def("__str__",
@@ -2002,10 +1973,7 @@ void init_pymimir(py::module_& m)
     py::class_<TupleGraphVertex>(m, "TupleGraphVertex")  //
         .def("get_index", &TupleGraphVertex::get_index)
         .def("get_tuple_index", &TupleGraphVertex::get_tuple_index)
-        .def(
-            "get_states",
-            [](const TupleGraphVertex& self) { return StateList(self.get_states()); },
-            py::keep_alive<0, 1>());
+        .def("get_states", [](const TupleGraphVertex& self) { return StateList(self.get_states()); }, py::keep_alive<0, 1>());
     bind_const_span<std::span<const TupleGraphVertex>>(m, "TupleGraphVertexSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const TupleGraphVertex>>(m, "TupleGraphVertexIndexGroupedVector");
 
@@ -2144,10 +2112,7 @@ void init_pymimir(py::module_& m)
 
     // ColorFunction
     py::class_<ColorFunction>(m, "ColorFunction")  //
-        .def(
-            "get_color_name",
-            [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); },
-            py::arg("color"));
+        .def("get_color_name", [](const ColorFunction& self, Color color) -> const std::string& { return self.get_color_name(color); }, py::arg("color"));
 
     // ProblemColorFunction
     py::class_<ProblemColorFunction, ColorFunction>(m, "ProblemColorFunction")  //

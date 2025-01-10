@@ -34,7 +34,6 @@
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
-#include "mimir/search/workspaces/applicable_action_generator.hpp"
 
 #include <sstream>
 
@@ -859,11 +858,8 @@ SearchResult find_solution_iw(std::shared_ptr<IApplicableActionGenerator> applic
 {
     assert(applicable_action_generator && state_repository);
 
-    auto applicable_action_generator_workspace = ApplicableActionGeneratorWorkspace();
-    auto state_repository_workspace = StateRepositoryWorkspace();
-
     const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state(state_repository_workspace);
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
     const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
     const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     const auto goal_strategy =

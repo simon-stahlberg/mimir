@@ -21,6 +21,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree.hpp"
 
 #include <variant>
@@ -39,6 +40,9 @@ private:
     MatchTree<GroundAction> m_match_tree;
 
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
+
+    /* Memory for reuse */
+    DenseState m_dense_state;
 
 public:
     /// @brief Simplest construction
@@ -60,8 +64,8 @@ public:
     /// @param state is the state.
     /// @param workspace is the workspace. There is no specific workspace in the grounded case and it should not be initialized.
     /// @return a generator to yield the applicable actions for the given state.
-    mimir::generator<GroundAction> create_applicable_action_generator(State state, ApplicableActionGeneratorWorkspace& workspace) override;
-    mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state, ApplicableActionGeneratorWorkspace& workspace) override;
+    mimir::generator<GroundAction> create_applicable_action_generator(State state) override;
+    mimir::generator<GroundAction> create_applicable_action_generator(const DenseState& dense_state) override;
 
     void on_finish_search_layer() override;
     void on_end_search() override;

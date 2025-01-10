@@ -150,18 +150,14 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const Dense
 
 mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const DenseState& dense_state,
                                                                        const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                       const AssignmentSet<Derived>& derived_assignment_sets,
-                                                                       SatisficingBindingGeneratorWorkspace& workspace)
+                                                                       const AssignmentSet<Derived>& derived_assignment_sets)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
         co_return;
     }
 
-    auto& full_consistency_graph = workspace.get_or_create_full_consistency_graph(m_static_consistency_graph);
-    clear_full_consistency_graph(full_consistency_graph);
-
-    auto& kpkc_workspace = workspace.get_or_create_kpkc_workspace(m_static_consistency_graph);
+    clear_full_consistency_graph(m_full_consistency_graph);
 
     /* Build the full consistency graph.
        Restricts statically consistent assignments based on the assignments in the current state and builds the consistency graph as an adjacency matrix
@@ -173,8 +169,8 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Den
         {
             const auto first_index = edge.get_src().get_index();
             const auto second_index = edge.get_dst().get_index();
-            auto& first_row = full_consistency_graph[first_index];
-            auto& second_row = full_consistency_graph[second_index];
+            auto& first_row = m_full_consistency_graph[first_index];
+            auto& second_row = m_full_consistency_graph[second_index];
             first_row[second_index] = 1;
             second_row[first_index] = 1;
         }
@@ -186,7 +182,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Den
 
     const auto& vertices = m_static_consistency_graph.get_vertices();
     const auto& partitions = m_static_consistency_graph.get_vertices_by_parameter_index();
-    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(full_consistency_graph, partitions, &kpkc_workspace))
+    for (const auto& clique : create_k_clique_in_k_partite_graph_generator(m_full_consistency_graph, partitions, &m_kpkc_workspace))
     {
         auto binding = ObjectList(clique.size());
 
@@ -218,28 +214,33 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                                          ExistentiallyQuantifiedConjunctiveCondition precondition,
                                                          std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
-    m_literal_grounder(std::move(literal_grounder)),
+    m_literal_grounder(literal_grounder),
     m_precondition(precondition),
-    m_event_handler(std::move(event_handler)),
-    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_precondition->get_parameters().size(), m_precondition->get_literals<Static>())
+    m_event_handler(event_handler),
+    m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_precondition->get_parameters().size(), m_precondition->get_literals<Static>()),
+    m_dense_state(),
+    m_fluent_atoms(),
+    m_derived_atoms(),
+    m_fluent_assignment_set(m_literal_grounder->get_problem()->get_objects().size(), m_literal_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
+    m_derived_assignment_set(m_literal_grounder->get_problem()->get_objects().size(),
+                             m_literal_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
+    m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
+    m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
 {
 }
 
 mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(State state,
                                                                                    const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                                   const AssignmentSet<Derived>& derived_assignment_set,
-                                                                                   SatisficingBindingGeneratorWorkspace& workspace)
+                                                                                   const AssignmentSet<Derived>& derived_assignment_set)
 {
-    auto& dense_state = workspace.get_or_create_dense_state();
-    DenseState::translate(state, dense_state);
+    DenseState::translate(state, m_dense_state);
 
-    return create_binding_generator(dense_state, fluent_assignment_set, derived_assignment_set, workspace);
+    return create_binding_generator(m_dense_state, fluent_assignment_set, derived_assignment_set);
 }
 
 mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(const DenseState& dense_state,
                                                                                    const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                                   const AssignmentSet<Derived>& derived_assignment_set,
-                                                                                   SatisficingBindingGeneratorWorkspace& workspace)
+                                                                                   const AssignmentSet<Derived>& derived_assignment_set)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -256,21 +257,20 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
     }
     else
     {
-        return general_case(dense_state, fluent_assignment_set, derived_assignment_set, workspace);
+        return general_case(dense_state, fluent_assignment_set, derived_assignment_set);
     }
 }
 
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-SatisficingBindingGenerator::create_ground_conjunction_generator(State state, SatisficingBindingGeneratorWorkspace& workspace)
+SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
 {
-    auto& dense_state = workspace.get_or_create_dense_state();
-    DenseState::translate(state, dense_state);
+    DenseState::translate(state, m_dense_state);
 
-    return create_ground_conjunction_generator(dense_state, workspace);
+    return create_ground_conjunction_generator(m_dense_state);
 }
 
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseState& dense_state, SatisficingBindingGeneratorWorkspace& workspace)
+SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseState& dense_state)
 {
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
@@ -281,18 +281,15 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseStat
         co_return;
     }
 
-    auto& assignment_set_workspace = workspace.get_or_create_assignment_set_workspace();
-    auto& fluent_atoms = assignment_set_workspace.get_or_create_fluent_atoms(dense_fluent_atoms, *m_literal_grounder->get_pddl_repositories());
-    auto& fluent_assignment_set = assignment_set_workspace.get_or_create_fluent_assignment_set(m_literal_grounder->get_problem());
-    fluent_assignment_set.clear();
-    fluent_assignment_set.insert_ground_atoms(fluent_atoms);
+    m_literal_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
+    m_fluent_assignment_set.clear();
+    m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
-    auto& derived_fluents = assignment_set_workspace.get_or_create_derived_atoms(dense_derived_atoms, *m_literal_grounder->get_pddl_repositories());
-    auto& derived_assignment_set = assignment_set_workspace.get_or_create_derived_assignment_set(m_literal_grounder->get_problem());
-    derived_assignment_set.clear();
-    derived_assignment_set.insert_ground_atoms(derived_fluents);
+    m_literal_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
+    m_derived_assignment_set.clear();
+    m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
-    for (const auto& binding : create_binding_generator(dense_state, fluent_assignment_set, derived_assignment_set, workspace))
+    for (const auto& binding : create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set))
     {
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : m_precondition->get_literals<Static>())

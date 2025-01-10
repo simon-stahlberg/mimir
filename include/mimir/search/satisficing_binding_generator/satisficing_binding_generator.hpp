@@ -22,8 +22,8 @@
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
-#include "mimir/search/workspaces/satisficing_binding_generator.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
@@ -45,11 +45,21 @@ class SatisficingBindingGenerator
 {
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
-    ExistentiallyQuantifiedConjunctiveCondition m_precondition;  // const
+    ExistentiallyQuantifiedConjunctiveCondition m_precondition;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
-    consistency_graph::StaticConsistencyGraph m_static_consistency_graph;  // const
+    consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
 
+    /* Memory for reuse */
+    DenseState m_dense_state;
+    GroundAtomList<Fluent> m_fluent_atoms;
+    GroundAtomList<Derived> m_derived_atoms;
+    AssignmentSet<Fluent> m_fluent_assignment_set;
+    AssignmentSet<Derived> m_derived_assignment_set;
+    std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
+    KPKCWorkspace m_kpkc_workspace;
+
+private:
     /**
      * Here we need to distinguish between sparse and dense states.
      */
@@ -65,10 +75,8 @@ private:
     mimir::generator<ObjectList>
     unary_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
 
-    mimir::generator<ObjectList> general_case(const DenseState& dense_state,
-                                              const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                              const AssignmentSet<Derived>& derived_assignment_sets,
-                                              SatisficingBindingGeneratorWorkspace& workspace);
+    mimir::generator<ObjectList>
+    general_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
 
 public:
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder, ExistentiallyQuantifiedConjunctiveCondition precondition);
@@ -77,21 +85,18 @@ public:
                                 ExistentiallyQuantifiedConjunctiveCondition precondition,
                                 std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 
-    mimir::generator<ObjectList> create_binding_generator(State state,
-                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                          const AssignmentSet<Derived>& derived_assignment_set,
-                                                          SatisficingBindingGeneratorWorkspace& workspace);
+    mimir::generator<ObjectList>
+    create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
 
     mimir::generator<ObjectList> create_binding_generator(const DenseState& dense_state,
                                                           const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                          const AssignmentSet<Derived>& derived_assignment_set,
-                                                          SatisficingBindingGeneratorWorkspace& workspace);
+                                                          const AssignmentSet<Derived>& derived_assignment_set);
 
     mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-    create_ground_conjunction_generator(State state, SatisficingBindingGeneratorWorkspace& workspace);
+    create_ground_conjunction_generator(State state);
 
     mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-    create_ground_conjunction_generator(const DenseState& dense_state, SatisficingBindingGeneratorWorkspace& workspace);
+    create_ground_conjunction_generator(const DenseState& dense_state);
 
     /**
      * Getters
