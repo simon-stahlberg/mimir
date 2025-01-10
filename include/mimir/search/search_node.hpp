@@ -37,10 +37,41 @@ enum SearchNodeStatus
 };
 
 template<typename... SearchNodeProperties>
-using SearchNodeImpl = cista::tuple<SearchNodeStatus,
-                                    Index,  // Parent state index
-                                    Index,  // Creating ground action index
-                                    SearchNodeProperties...>;
+struct SearchNodeImpl
+{
+    SearchNodeImpl() = default;
+    SearchNodeImpl(SearchNodeStatus status, Index parent_state_index, cista::tuple<SearchNodeProperties...> properties) :
+        m_status(status),
+        m_parent_state_index(parent_state_index),
+        m_properties(properties)
+    {
+    }
+
+    SearchNodeStatus& get_status() { return m_status; }
+    SearchNodeStatus get_status() const { return m_status; }
+
+    Index& get_parent_state() { return m_parent_state_index; }
+    Index get_parent_state() const { return m_parent_state_index; }
+
+    template<size_t I>
+    auto& get_property()
+    {
+        return cista::get<I>(m_properties);
+    }
+    template<size_t I>
+    const auto& get_property() const
+    {
+        return cista::get<I>(m_properties);
+    }
+
+    /// @brief
+    /// @return
+    auto cista_members() { return std::tie(m_status, m_parent_state_index, m_properties); }
+
+    SearchNodeStatus m_status = SearchNodeStatus::NEW;
+    Index m_parent_state_index = -1;
+    cista::tuple<SearchNodeProperties...> m_properties;
+};
 
 // We never work with nullptr SearchNodes so we hide the pointer detail.
 template<typename... SearchNodeProperties>
@@ -49,93 +80,34 @@ template<typename... SearchNodeProperties>
 using ConstSearchNode = const SearchNodeImpl<SearchNodeProperties...>*;
 
 /**
- * Getters.
- */
-
-template<typename... SearchNodeProperties>
-SearchNodeStatus get_status(ConstSearchNode<SearchNodeProperties...> node)
-{
-    return cista::get<0>(*node);
-}
-
-template<typename... SearchNodeProperties>
-Index get_parent_state(ConstSearchNode<SearchNodeProperties...> node)
-{
-    return cista::get<1>(*node);
-}
-
-template<typename... SearchNodeProperties>
-Index get_creating_action(ConstSearchNode<SearchNodeProperties...> node)
-{
-    return cista::get<2>(*node);
-}
-
-template<size_t I, typename... SearchNodeProperties>
-auto get_property(ConstSearchNode<SearchNodeProperties...> node)
-{
-    static_assert(I < sizeof...(SearchNodeProperties));
-    return cista::get<I + 3>(*node);
-}
-
-/**
- * Setters
- */
-
-template<typename... SearchNodeProperties>
-void set_status(SearchNode<SearchNodeProperties...> node, SearchNodeStatus status)
-{
-    cista::get<0>(*node) = status;
-}
-
-template<typename... SearchNodeProperties>
-void set_parent_state(SearchNode<SearchNodeProperties...> node, Index state)
-{
-    cista::get<1>(*node) = state;
-}
-
-template<typename... SearchNodeProperties>
-void set_creating_action(SearchNode<SearchNodeProperties...> node, Index action)
-{
-    cista::get<2>(*node) = action;
-}
-
-template<size_t I, typename... SearchNodeProperties>
-void set_property(SearchNode<SearchNodeProperties...> node, const typename std::tuple_element<I, std::tuple<SearchNodeProperties...>>::type& value)
-{
-    static_assert(I < sizeof...(SearchNodeProperties));
-    cista::get<I + 3>(*node) = value;
-}
-
-/**
  * Utility
  */
 
-/// @brief Compute the plan consisting of ground actions by collecting the creating actions
-///        and reversing them.
-/// @param search_nodes The collection of all search nodes.
-/// @param search_node The search node from which to start backtracking.
-/// @param[out] out_plan The sequence of ground actions that leads from the initial state to
-///                      the to the state underlying the search node.
+/// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.
+/// @tparam ...SearchNodeProperties
+/// @param search_nodes are all search nodes.
+/// @param final_search_node is the final search node.
+/// @param final_state_index is the final state index.
+/// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
 template<typename... SearchNodeProperties>
-void set_plan(const mimir::buffering::Vector<SearchNodeImpl<SearchNodeProperties...>>& search_nodes,  //
-              const GroundActionList& ground_actions,
-              ConstSearchNode<SearchNodeProperties...> search_node,
-              GroundActionList& out_plan)
+void extract_state_trajectory(const mimir::buffering::Vector<SearchNodeImpl<SearchNodeProperties...>>& search_nodes,  //
+                              ConstSearchNode<SearchNodeProperties...> final_search_node,
+                              Index final_state_index,
+                              IndexList& out_trajectory)
 {
-    out_plan.clear();
+    out_trajectory.clear();
+    out_trajectory.push_back(final_state_index);
 
-    auto cur_search_node = search_node;
+    auto cur_search_node = final_search_node;
 
-    while (get_parent_state(cur_search_node) != std::numeric_limits<Index>::max())
+    while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
     {
-        assert(get_creating_action(cur_search_node) != std::numeric_limits<Index>::max());
+        out_trajectory.push_back(cur_search_node->get_parent_state());
 
-        out_plan.push_back(ground_actions.at(get_creating_action(cur_search_node)));
-
-        cur_search_node = search_nodes.at(get_parent_state(cur_search_node));
+        cur_search_node = search_nodes.at(cur_search_node->get_parent_state());
     }
 
-    std::reverse(out_plan.begin(), out_plan.end());
+    std::reverse(out_trajectory.begin(), out_trajectory.end());
 }
 
 }

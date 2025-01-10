@@ -188,7 +188,7 @@ TEST(MimirTests, SearchAlgorithmsSIWLiftedGripperTest)
     const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = siw.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 158);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_hits_per_search_layer().back(), 164);
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_action_cache_misses_per_search_layer().back(), 18);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axiom_cache_hits_per_search_layer().back(), 0);

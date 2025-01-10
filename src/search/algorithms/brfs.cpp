@@ -23,6 +23,7 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/applicable_action_generators/utils.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
@@ -47,9 +48,9 @@ using BrFSSearchNodeImpl = SearchNodeImpl<DiscreteCost>;
 using BrFSSearchNode = BrFSSearchNodeImpl*;
 using ConstBrFSSearchNode = const BrFSSearchNodeImpl*;
 
-static void set_g_value(BrFSSearchNode node, DiscreteCost g_value) { return set_property<0>(node, g_value); }
+static void set_g_value(BrFSSearchNode node, DiscreteCost g_value) { node->get_property<0>() = g_value; }
 
-static DiscreteCost get_g_value(ConstBrFSSearchNode node) { return get_property<0>(node); }
+static DiscreteCost get_g_value(ConstBrFSSearchNode node) { return node->get_property<0>(); }
 
 static BrFSSearchNode
 get_or_create_search_node(size_t state_index, const BrFSSearchNodeImpl& default_node, mimir::buffering::Vector<BrFSSearchNodeImpl>& search_nodes)
@@ -81,8 +82,7 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
     const auto pruning_strategy = (pruning_strategy_.has_value()) ? pruning_strategy_.value() : std::make_shared<DuplicateStatePruning>();
 
     auto result = SearchResult();
-    auto default_search_node =
-        BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), std::numeric_limits<Index>::max(), DiscreteCost(0) };
+    auto default_search_node = BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), DiscreteCost(0) };
     auto search_nodes = mimir::buffering::Vector<BrFSSearchNodeImpl>();
     auto queue = std::deque<State>();
 
@@ -91,7 +91,7 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
     event_handler->on_start_search(start_state, problem, pddl_repositories);
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
-    set_status(start_search_node, SearchNodeStatus::OPEN);
+    start_search_node->get_status() = SearchNodeStatus::OPEN;
     set_g_value(start_search_node, 0);
 
     if (!goal_strategy->test_static_goal())
@@ -135,7 +135,9 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
         if (goal_strategy->test_dynamic_goal(state))
         {
             auto plan_actions = GroundActionList {};
-            set_plan(search_nodes, applicable_action_generator->get_action_grounder()->get_ground_actions(), search_node, plan_actions);
+            auto state_trajectory = IndexList {};
+            extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
+            extract_ground_action_sequence(start_state, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
             result.goal_state = state;
             result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
             event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
@@ -170,23 +172,22 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
             event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
 
-            const bool is_new_successor_state = (get_status(successor_search_node) == SearchNodeStatus::NEW);
+            const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
             if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
             {
                 event_handler->on_prune_state(successor_state, problem, pddl_repositories);
                 continue;
             }
 
-            set_status(successor_search_node, SearchNodeStatus::OPEN);
-            set_parent_state(successor_search_node, state->get_index());
-            set_creating_action(successor_search_node, action->get_index());
+            successor_search_node->get_status() = SearchNodeStatus::OPEN;
+            successor_search_node->get_parent_state() = state->get_index();
             set_g_value(successor_search_node, get_g_value(search_node) + 1);
 
             queue.emplace_back(successor_state);
         }
 
         /* Close state. */
-        set_status(search_node, SearchNodeStatus::CLOSED);
+        search_node->get_status() = SearchNodeStatus::CLOSED;
     }
 
     event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
