@@ -48,7 +48,7 @@ class CMakeBuild(build_ext):
                 os.remove(file)
 
         subprocess.run(
-            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
+            ["cmake", "-S", f"{ext.sourcedir}/dependencies", "-B", f"{str(temp_directory)}/dependencies/build", f"-DCMAKE_BUILD_TYPE={build_type}", f"-DCMAKE_INSTALL_PREFIX={str(temp_directory)}/dependencies/installs", f"-DCMAKE_PREFIX_PATH={str(temp_directory)}/dependencies/installs"], cwd=str(temp_directory), check=True
         )
 
         subprocess.run(
@@ -60,7 +60,7 @@ class CMakeBuild(build_ext):
         # 2. Build mimir
 
         cmake_args = [
-            "-DBUILD_PYMIMIR=On",
+            "-DBUILD_PYMIMIR=ON",
             f"-DMIMIR_VERSION_INFO={__version__}",
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={output_directory}",
             f"-DPYTHON_EXECUTABLE={sys.executable}",
