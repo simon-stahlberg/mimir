@@ -43,10 +43,7 @@ TEST(MimirTests, SearchStateRepositoryTest)
     {
         const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action);
 
-        for (const auto& action2 : applicable_action_generator.create_applicable_action_generator(successor_state))
-        {
-            [[maybe_unused]] const auto [successor_state2, action_cost2] = state_repository.get_or_create_successor_state(successor_state, action2);
-        }
+        // cannot nest more because create_applicable_action_generator is in use.
     }
 }
 
