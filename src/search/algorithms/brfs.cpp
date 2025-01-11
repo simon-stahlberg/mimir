@@ -23,12 +23,12 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/applicable_action_generators/utils.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_node.hpp"
+#include "mimir/search/search_space.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <deque>
@@ -83,7 +83,7 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
     auto result = SearchResult();
     auto default_search_node = BrFSSearchNodeImpl { SearchNodeStatus::NEW, std::numeric_limits<Index>::max(), DiscreteCost(0) };
-    auto search_nodes = mimir::buffering::Vector<BrFSSearchNodeImpl>();
+    auto search_nodes = SearchNodeImplVector<DiscreteCost>();
     auto queue = std::deque<State>();
 
     const auto problem = applicable_action_generator->get_problem();

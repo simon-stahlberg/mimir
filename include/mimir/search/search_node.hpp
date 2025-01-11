@@ -18,11 +18,8 @@
 #ifndef MIMIR_SEARCH_SEARCH_NODE_HPP_
 #define MIMIR_SEARCH_SEARCH_NODE_HPP_
 
-#include "cista/containers/tuple.h"
-#include "cista/serialization.h"
 #include "mimir/buffering/vector.h"
 #include "mimir/common/types.hpp"
-#include "mimir/search/action.hpp"
 
 namespace mimir
 {
@@ -64,51 +61,22 @@ struct SearchNodeImpl
         return cista::get<I>(m_properties);
     }
 
-    /// @brief
-    /// @return
+    /// @brief Return all members to make them serializable by cista.
+    /// @return a tuple of references to all members.
     auto cista_members() { return std::tie(m_status, m_parent_state_index, m_properties); }
 
     SearchNodeStatus m_status = SearchNodeStatus::NEW;
-    Index m_parent_state_index = -1;
+    Index m_parent_state_index = std::numeric_limits<Index>::max();
     cista::tuple<SearchNodeProperties...> m_properties;
 };
 
-// We never work with nullptr SearchNodes so we hide the pointer detail.
 template<typename... SearchNodeProperties>
 using SearchNode = SearchNodeImpl<SearchNodeProperties...>*;
 template<typename... SearchNodeProperties>
 using ConstSearchNode = const SearchNodeImpl<SearchNodeProperties...>*;
 
-/**
- * Utility
- */
-
-/// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.
-/// @tparam ...SearchNodeProperties
-/// @param search_nodes are all search nodes.
-/// @param final_search_node is the final search node.
-/// @param final_state_index is the final state index.
-/// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
 template<typename... SearchNodeProperties>
-void extract_state_trajectory(const mimir::buffering::Vector<SearchNodeImpl<SearchNodeProperties...>>& search_nodes,  //
-                              ConstSearchNode<SearchNodeProperties...> final_search_node,
-                              Index final_state_index,
-                              IndexList& out_trajectory)
-{
-    out_trajectory.clear();
-    out_trajectory.push_back(final_state_index);
-
-    auto cur_search_node = final_search_node;
-
-    while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
-    {
-        out_trajectory.push_back(cur_search_node->get_parent_state());
-
-        cur_search_node = search_nodes.at(cur_search_node->get_parent_state());
-    }
-
-    std::reverse(out_trajectory.begin(), out_trajectory.end());
-}
+using SearchNodeImplVector = mimir::buffering::Vector<SearchNodeImpl<SearchNodeProperties...>>;
 
 }
 

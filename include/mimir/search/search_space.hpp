@@ -15,10 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_UTILS_HPP_
-#define MIMIR_SEARCH_APPLICABLE_ACTION_GENERATORS_UTILS_HPP_
+#ifndef MIMIR_SEARCH_SEARCH_SPACE_HPP_
+#define MIMIR_SEARCH_SEARCH_SPACE_HPP_
 
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/search_node.hpp"
 #include "mimir/search/state_repository.hpp"
 
 namespace mimir
@@ -59,6 +60,33 @@ inline void extract_ground_action_sequence(State start_state,
             }
         }
     }
+}
+
+/// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.
+/// @tparam ...SearchNodeProperties
+/// @param search_nodes are all search nodes.
+/// @param final_search_node is the final search node.
+/// @param final_state_index is the final state index.
+/// @param out_trajectory is the resulting state trajectory that ends in the `final_state_index`
+template<typename... SearchNodeProperties>
+void extract_state_trajectory(const SearchNodeImplVector<SearchNodeProperties...>& search_nodes,  //
+                              ConstSearchNode<SearchNodeProperties...> final_search_node,
+                              Index final_state_index,
+                              IndexList& out_trajectory)
+{
+    out_trajectory.clear();
+    out_trajectory.push_back(final_state_index);
+
+    auto cur_search_node = final_search_node;
+
+    while (cur_search_node->get_parent_state() != std::numeric_limits<Index>::max())
+    {
+        out_trajectory.push_back(cur_search_node->get_parent_state());
+
+        cur_search_node = search_nodes.at(cur_search_node->get_parent_state());
+    }
+
+    std::reverse(out_trajectory.begin(), out_trajectory.end());
 }
 
 }

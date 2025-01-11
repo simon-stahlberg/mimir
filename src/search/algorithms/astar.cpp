@@ -21,7 +21,6 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
-#include "mimir/search/applicable_action_generators/utils.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
@@ -30,6 +29,7 @@
 #include "mimir/search/openlists/priority_queue.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/search_node.hpp"
+#include "mimir/search/search_space.hpp"
 #include "mimir/search/state_repository.hpp"
 
 namespace mimir
@@ -91,10 +91,11 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
         return result;
     }
 
-    auto default_search_node = AStarSearchNodeImpl(SearchNodeStatus::NEW,
-                                                   std::numeric_limits<Index>::max(),
-                                                   cista::tuple<double, double> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
-    auto search_nodes = mimir::buffering::Vector<AStarSearchNodeImpl>();
+    auto default_search_node =
+        AStarSearchNodeImpl(SearchNodeStatus::NEW,
+                            std::numeric_limits<Index>::max(),
+                            cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
+    auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
 
     auto openlist = PriorityQueue<State>();
 

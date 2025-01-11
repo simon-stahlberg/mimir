@@ -101,8 +101,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
         auto num_atoms_before = m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count();
 
         // Create and all applicable actions and apply them
-        // Attention: we cannot just apply newly generated actions because conditional effects might trigger later.
-        // Attention2: we simply incrementally keep growing the derived atoms in the dense state.
+        // Attention1: we cannot just apply newly generated actions because conditional effects might trigger later.
+        // Attention2: we incrementally keep growing the atoms in the dense state.
         for (const auto& action : m_delete_free_applicable_action_generator->create_applicable_action_generator(dense_state))
         {
             // Note that get_or_create_successor_state already modifies dense_state to be the successor state.
@@ -182,7 +182,6 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
             auto grounded_action = m_grounder->get_action_grounder()->ground_action(unrelaxed_action, std::move(action_arguments));
             if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
-                std::cout << std::make_tuple(grounded_action, std::cref(*pddl_repositories), FullActionFormatterTag {}) << std::endl;
                 ground_actions.push_back(grounded_action);
             }
         }
