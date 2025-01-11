@@ -32,7 +32,7 @@ TEST(MimirTests, FormalismTranslatorsToNegationNormalForm)
     auto domain_parser = loki::DomainParser(domain_file);
     auto problem_parser = loki::ProblemParser(problem_file, domain_parser);
 
-    auto domain = domain_parser.get_domain();
+    [[maybe_unused]] auto domain = domain_parser.get_domain();
     auto problem = problem_parser.get_problem();
 
     // std::cout << "\nInput domain and problem" << std::endl;
@@ -41,7 +41,7 @@ TEST(MimirTests, FormalismTranslatorsToNegationNormalForm)
 
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
     auto translated_problem = to_nnf_translator.run(*problem);
-    auto translated_domain = translated_problem->get_domain();
+    [[maybe_unused]] auto translated_domain = translated_problem->get_domain();
 
     // std::cout << "\nTranslated domain and problem" << std::endl;
     // std::cout << *translated_problem->get_domain() << std::endl;

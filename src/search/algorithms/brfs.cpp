@@ -134,12 +134,6 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            auto plan_actions = GroundActionList {};
-            auto state_trajectory = IndexList {};
-            extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
-            extract_ground_action_sequence(start_state, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
-            result.goal_state = state;
-            result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
             event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
                                          state_repository->get_reached_derived_ground_atoms_bitset().count(),
                                          state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
@@ -156,9 +150,17 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
                 applicable_action_generator->on_end_search();
                 state_repository->get_axiom_evaluator()->on_end_search();
             }
+
+            auto plan_actions = GroundActionList {};
+            auto state_trajectory = IndexList {};
+            extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
+            extract_ground_action_sequence(start_state, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
+            result.goal_state = state;
+            result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
+            result.status = SearchStatus::SOLVED;
+
             event_handler->on_solved(result.plan.value(), pddl_repositories);
 
-            result.status = SearchStatus::SOLVED;
             return result;
         }
 
