@@ -24,10 +24,10 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
-#include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/requirements.hpp"
@@ -49,7 +49,7 @@ ProblemImpl::ProblemImpl(Index index,
                          PredicateList<Derived> derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
-                         NumericFluentList numeric_fluents,
+                         GroundFunctionValueList ground_function_values,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
@@ -64,7 +64,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_derived_predicates(std::move(derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
-    m_numeric_fluents(std::move(numeric_fluents)),
+    m_ground_function_values(std::move(ground_function_values)),
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
     m_derived_goal_condition(std::move(derived_goal_condition)),
@@ -102,7 +102,7 @@ ProblemImpl::ProblemImpl(Index index,
     assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
-    assert(is_all_unique(m_numeric_fluents));
+    assert(is_all_unique(m_ground_function_values));
     assert(is_all_unique(m_static_goal_condition));
     assert(is_all_unique(m_fluent_goal_condition));
     assert(is_all_unique(m_derived_goal_condition));
@@ -116,7 +116,9 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(m_fluent_initial_literals.begin(),
                           m_fluent_initial_literals.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_numeric_fluents.begin(), m_numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_ground_function_values.begin(),
+                          m_ground_function_values.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -153,7 +155,7 @@ ProblemImpl::ProblemImpl(Index index,
 
     m_positive_static_initial_assignment_set.insert_ground_atoms(m_positive_static_initial_atoms);
 
-    for (const auto numeric_fluent : get_numeric_fluents())
+    for (const auto numeric_fluent : get_function_values())
     {
         m_ground_function_to_value.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
     }
@@ -265,7 +267,7 @@ const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() cons
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
-const NumericFluentList& ProblemImpl::get_numeric_fluents() const { return m_numeric_fluents; }
+const GroundFunctionValueList& ProblemImpl::get_function_values() const { return m_ground_function_values; }
 
 template<PredicateTag P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const

@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
-#define MIMIR_FORMALISM_NUMERIC_FLUENT_HPP_
+#ifndef MIMIR_FORMALISM_GROUND_FUNCTION_VALUE_HPP_
+#define MIMIR_FORMALISM_GROUND_FUNCTION_VALUE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
-class NumericFluentImpl
+class GroundFunctionValueImpl
 {
 private:
     Index m_index;
@@ -31,7 +31,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    NumericFluentImpl(Index index, GroundFunction function, double number);
+    GroundFunctionValueImpl(Index index, GroundFunction function, double number);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -39,10 +39,10 @@ private:
 
 public:
     // moveable but not copyable
-    NumericFluentImpl(const NumericFluentImpl& other) = delete;
-    NumericFluentImpl& operator=(const NumericFluentImpl& other) = delete;
-    NumericFluentImpl(NumericFluentImpl&& other) = default;
-    NumericFluentImpl& operator=(NumericFluentImpl&& other) = default;
+    GroundFunctionValueImpl(const GroundFunctionValueImpl& other) = delete;
+    GroundFunctionValueImpl& operator=(const GroundFunctionValueImpl& other) = delete;
+    GroundFunctionValueImpl(GroundFunctionValueImpl&& other) = default;
+    GroundFunctionValueImpl& operator=(GroundFunctionValueImpl&& other) = default;
 
     Index get_index() const;
     const GroundFunction& get_function() const;
@@ -54,9 +54,9 @@ public:
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function), std::as_const(m_number)); }
 };
 
-extern std::ostream& operator<<(std::ostream& out, const NumericFluentImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl& element);
 
-extern std::ostream& operator<<(std::ostream& out, NumericFluent element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionValue element);
 
 }
 

@@ -24,7 +24,7 @@
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_function.hpp"
-#include "mimir/formalism/numeric_fluent.hpp"
+#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/requirements.hpp"
 
@@ -79,11 +79,11 @@ struct FunctionExpressionBoundsDeterminer
     }
 };
 
-static std::unordered_map<FunctionSkeleton, std::pair<double, double>> compute_function_skeleton_bounds(const NumericFluentList& numeric_fluents)
+static std::unordered_map<FunctionSkeleton, std::pair<double, double>> compute_function_skeleton_bounds(const GroundFunctionValueList& ground_function_values)
 {
     auto result = std::unordered_map<FunctionSkeleton, std::pair<double, double>> {};
 
-    for (const auto& numeric_fluent : numeric_fluents)
+    for (const auto& numeric_fluent : ground_function_values)
     {
         const auto function_skeleton = numeric_fluent->get_function()->get_function_skeleton();
         const auto value = numeric_fluent->get_number();
@@ -101,7 +101,7 @@ static double determine_action_cost_lower_bound(Problem problem)
 {
     double lower_bound = 1.;  ///< 1.0 is sufficiently large to push goal states to the front.
 
-    auto function_skeleton_bounds = compute_function_skeleton_bounds(problem->get_numeric_fluents());
+    auto function_skeleton_bounds = compute_function_skeleton_bounds(problem->get_function_values());
 
     for (const auto& action : problem->get_domain()->get_actions())
     {

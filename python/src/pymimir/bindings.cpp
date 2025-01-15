@@ -76,7 +76,7 @@ PYBIND11_MAKE_OPAQUE(GroundLiteralList<Derived>);
 PYBIND11_MAKE_OPAQUE(LiteralList<Static>);
 PYBIND11_MAKE_OPAQUE(LiteralList<Fluent>);
 PYBIND11_MAKE_OPAQUE(LiteralList<Derived>);
-PYBIND11_MAKE_OPAQUE(NumericFluentList);
+PYBIND11_MAKE_OPAQUE(GroundFunctionValueList);
 PYBIND11_MAKE_OPAQUE(ObjectList);
 PYBIND11_MAKE_OPAQUE(PredicateList<Static>);
 PYBIND11_MAKE_OPAQUE(PredicateList<Fluent>);
@@ -366,7 +366,7 @@ void init_pymimir(py::module_& m)
         .value("CONDITIONAL_EFFECTS", loki::RequirementEnum::CONDITIONAL_EFFECTS)
         .value("FLUENTS", loki::RequirementEnum::FLUENTS)
         .value("OBJECT_FLUENTS", loki::RequirementEnum::OBJECT_FLUENTS)
-        .value("NUMERIC_FLUENTS", loki::RequirementEnum::NUMERIC_FLUENTS)
+        .value("ground_function_values", loki::RequirementEnum::ground_function_values)
         .value("ADL", loki::RequirementEnum::ADL)
         .value("DURATIVE_ACTIONS", loki::RequirementEnum::DURATIVE_ACTIONS)
         .value("DERIVED_PREDICATES", loki::RequirementEnum::DERIVED_PREDICATES)
@@ -551,14 +551,14 @@ void init_pymimir(py::module_& m)
     bind_literal("FluentLiteral", Fluent {});
     bind_literal("DerivedLiteral", Derived {});
 
-    py::class_<NumericFluentImpl>(m, "NumericFluent")  //
-        .def("__str__", [](const NumericFluentImpl& self) { return to_string(self); })
-        .def("__repr__", [](const NumericFluentImpl& self) { return to_string(self); })
-        .def("get_index", &NumericFluentImpl::get_index)
-        .def("get_function", &NumericFluentImpl::get_function, py::return_value_policy::reference_internal)
-        .def("get_number", &NumericFluentImpl::get_number);
-    static_assert(!py::detail::vector_needs_copy<NumericFluentList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<NumericFluentList>(m, "NumericFluentList");
+    py::class_<GroundFunctionValueImpl>(m, "GroundFunctionValue")  //
+        .def("__str__", [](const GroundFunctionValueImpl& self) { return to_string(self); })
+        .def("__repr__", [](const GroundFunctionValueImpl& self) { return to_string(self); })
+        .def("get_index", &GroundFunctionValueImpl::get_index)
+        .def("get_function", &GroundFunctionValueImpl::get_function, py::return_value_policy::reference_internal)
+        .def("get_number", &GroundFunctionValueImpl::get_number);
+    static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<GroundFunctionValueList>(m, "GroundFunctionValueList");
 
     py::class_<EffectStripsImpl>(m, "EffectStrips")  //
         .def("__str__", [](const EffectStripsImpl& self) { return to_string(self); })
@@ -762,7 +762,7 @@ void init_pymimir(py::module_& m)
         .def("get_objects", &ProblemImpl::get_objects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_static_initial_literals", &ProblemImpl::get_static_initial_literals, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_numeric_fluents", &ProblemImpl::get_numeric_fluents, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_function_values", &ProblemImpl::get_function_values, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference_internal)
         .def("get_static_goal_condition", &ProblemImpl::get_goal_condition<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_fluent_goal_condition", &ProblemImpl::get_goal_condition<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)

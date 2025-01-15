@@ -52,7 +52,7 @@ private:
         boost::hana::pair<boost::hana::type<loki::Predicate>, std::unordered_map<loki::Predicate, loki::Predicate>>,
         boost::hana::pair<boost::hana::type<loki::Atom>, std::unordered_map<loki::Atom, loki::Atom>>,
         boost::hana::pair<boost::hana::type<loki::Literal>, std::unordered_map<loki::Literal, loki::Literal>>,
-        boost::hana::pair<boost::hana::type<loki::NumericFluent>, std::unordered_map<loki::NumericFluent, loki::NumericFluent>>,
+        boost::hana::pair<boost::hana::type<loki::FunctionValue>, std::unordered_map<loki::FunctionValue, loki::FunctionValue>>,
         boost::hana::pair<boost::hana::type<loki::ConditionLiteral>, std::unordered_map<loki::ConditionLiteral, loki::Condition>>,
         boost::hana::pair<boost::hana::type<loki::ConditionAnd>, std::unordered_map<loki::ConditionAnd, loki::Condition>>,
         boost::hana::pair<boost::hana::type<loki::ConditionOr>, std::unordered_map<loki::ConditionOr, loki::Condition>>,
@@ -60,8 +60,7 @@ private:
         boost::hana::pair<boost::hana::type<loki::ConditionImply>, std::unordered_map<loki::ConditionImply, loki::Condition>>,
         boost::hana::pair<boost::hana::type<loki::ConditionExists>, std::unordered_map<loki::ConditionExists, loki::Condition>>,
         boost::hana::pair<boost::hana::type<loki::ConditionForall>, std::unordered_map<loki::ConditionForall, loki::Condition>>,
-        boost::hana::pair<boost::hana::type<loki::ConditionFunctionExpressionComparison>,
-                          std::unordered_map<loki::ConditionFunctionExpressionComparison, loki::Condition>>,
+        boost::hana::pair<boost::hana::type<loki::ConditionNumericConstraint>, std::unordered_map<loki::ConditionNumericConstraint, loki::Condition>>,
         boost::hana::pair<boost::hana::type<loki::Condition>, std::unordered_map<loki::Condition, loki::Condition>>,
         boost::hana::pair<boost::hana::type<loki::EffectLiteral>, std::unordered_map<loki::EffectLiteral, loki::Effect>>,
         boost::hana::pair<boost::hana::type<loki::EffectAnd>, std::unordered_map<loki::EffectAnd, loki::Effect>>,
@@ -136,7 +135,7 @@ protected:
         this->prepare(atom.get_terms());
     }
     void prepare_impl(const loki::LiteralImpl& literal) { this->prepare(*literal.get_atom()); }
-    void prepare_impl(const loki::NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
+    void prepare_impl(const loki::FunctionValueImpl& function_value) { this->prepare(*function_value.get_function()); }
     void prepare_impl(const loki::ConditionLiteralImpl& condition) { this->prepare(*condition.get_literal()); }
     void prepare_impl(const loki::ConditionAndImpl& condition) { this->prepare(condition.get_conditions()); }
     void prepare_impl(const loki::ConditionOrImpl& condition) { this->prepare(condition.get_conditions()); }
@@ -156,7 +155,7 @@ protected:
         this->prepare(condition.get_parameters());
         this->prepare(*condition.get_condition());
     }
-    void prepare_impl(const loki::ConditionFunctionExpressionComparisonImpl& condition)
+    void prepare_impl(const loki::ConditionNumericConstraintImpl& condition)
     {
         this->prepare(*condition.get_function_expression_left());
         this->prepare(*condition.get_function_expression_right());
@@ -252,7 +251,7 @@ protected:
         this->prepare(problem.get_objects());
         this->prepare(problem.get_derived_predicates());
         this->prepare(problem.get_initial_literals());
-        this->prepare(problem.get_numeric_fluents());
+        this->prepare(problem.get_function_values());
         if (problem.get_goal_condition().has_value())
         {
             this->prepare(*problem.get_goal_condition().value());
@@ -357,9 +356,9 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_literal(literal.is_negated(), this->translate(*literal.get_atom()));
     }
-    loki::NumericFluent translate_impl(const loki::NumericFluentImpl& numeric_fluent)
+    loki::FunctionValue translate_impl(const loki::FunctionValueImpl& function_value)
     {
-        return this->m_pddl_repositories.get_or_create_numeric_fluent(this->translate(*numeric_fluent.get_function()), numeric_fluent.get_number());
+        return this->m_pddl_repositories.get_or_create_function_value(this->translate(*function_value.get_function()), function_value.get_number());
     }
     loki::Condition translate_impl(const loki::ConditionLiteralImpl& condition)
     {
@@ -397,12 +396,12 @@ protected:
         return this->m_pddl_repositories.get_or_create_condition(
             this->m_pddl_repositories.get_or_create_condition_forall(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())));
     }
-    loki::Condition translate_impl(const loki::ConditionFunctionExpressionComparisonImpl& condition)
+    loki::Condition translate_impl(const loki::ConditionNumericConstraintImpl& condition)
     {
         return this->m_pddl_repositories.get_or_create_condition(
-            this->m_pddl_repositories.get_or_create_condition_function_expression_comparison(condition.get_binary_comparator(),
-                                                                                             this->translate(*condition.get_function_expression_left()),
-                                                                                             this->translate(*condition.get_function_expression_right())));
+            this->m_pddl_repositories.get_or_create_condition_numeric_constraint(condition.get_binary_comparator(),
+                                                                                 this->translate(*condition.get_function_expression_left()),
+                                                                                 this->translate(*condition.get_function_expression_right())));
     }
     loki::Condition translate_impl(const loki::ConditionImpl& condition)
     {
@@ -537,7 +536,7 @@ protected:
             this->translate(problem.get_objects()),
             this->translate(problem.get_derived_predicates()),
             this->translate(problem.get_initial_literals()),
-            this->translate(problem.get_numeric_fluents()),
+            this->translate(problem.get_function_values()),
             (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
             (problem.get_optimization_metric().has_value() ?
                  std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :

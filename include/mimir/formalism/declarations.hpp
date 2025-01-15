@@ -139,9 +139,9 @@ using LiteralSet = std::unordered_set<Literal<P>>;
 class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
 
-class NumericFluentImpl;
-using NumericFluent = const NumericFluentImpl*;
-using NumericFluentList = std::vector<NumericFluent>;
+class GroundFunctionValueImpl;
+using GroundFunctionValue = const GroundFunctionValueImpl*;
+using GroundFunctionValueList = std::vector<GroundFunctionValue>;
 
 class ObjectImpl;
 using Object = const ObjectImpl*;

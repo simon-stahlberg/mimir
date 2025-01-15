@@ -30,10 +30,10 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
-#include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -86,7 +86,7 @@ using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<Exist
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
-using NumericFluentRepository = SegmentedPDDLRepository<NumericFluentImpl>;
+using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl>;
 using DomainRepository = SegmentedPDDLRepository<DomainImpl>;
 using ProblemRepository = SegmentedPDDLRepository<ProblemImpl>;
 
@@ -131,7 +131,7 @@ using PDDLTypeToRepository =
                      boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
                      boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
                      boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
-                     boost::hana::pair<boost::hana::type<NumericFluentImpl>, NumericFluentRepository>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionValueImpl>, GroundFunctionValueRepository>,
                      boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
                      boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
 
@@ -270,7 +270,7 @@ public:
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
 
     /// @brief Get or create an optimization metric for the given parameters.
-    NumericFluent get_or_create_numeric_fluent(GroundFunction function, double number);
+    GroundFunctionValue get_or_create_ground_function_value(GroundFunction function, double number);
 
     /// @brief Get or create a domain for the given parameters.
     Domain get_or_create_domain(std::optional<fs::path> filepath,
@@ -293,7 +293,7 @@ public:
                                   PredicateList<Derived> derived_predicates,
                                   GroundLiteralList<Static> static_initial_literals,
                                   GroundLiteralList<Fluent> fluent_initial_literals,
-                                  NumericFluentList numeric_fluents,
+                                  GroundFunctionValueList ground_function_values,
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
                                   GroundLiteralList<Derived> derived_goal_condition,

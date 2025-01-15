@@ -29,10 +29,10 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
-#include "mimir/formalism/numeric_fluent.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -537,7 +537,7 @@ void PDDLFormatter::write(const OptimizationMetricImpl& element, std::ostream& o
     out << ")";
 }
 
-void PDDLFormatter::write(const NumericFluentImpl& element, std::ostream& out)
+void PDDLFormatter::write(const GroundFunctionValueImpl& element, std::ostream& out)
 {
     out << "(= ";
     write(*element.get_function(), out);
@@ -600,7 +600,7 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         out << ")" << std::endl;
     }
 
-    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_numeric_fluents().empty()))
+    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_function_values().empty()))
     {
         out << std::string(m_indent, ' ') << "(:init ";
         for (size_t i = 0; i < element.get_static_initial_literals().size(); ++i)
@@ -614,10 +614,10 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
             out << " ";
             write(*element.get_fluent_initial_literals()[i], out);
         }
-        for (size_t i = 0; i < element.get_numeric_fluents().size(); ++i)
+        for (size_t i = 0; i < element.get_function_values().size(); ++i)
         {
             out << " ";
-            write(*element.get_numeric_fluents()[i], out);
+            write(*element.get_function_values()[i], out);
         }
     }
     out << ")" << std::endl;

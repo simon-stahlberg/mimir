@@ -314,7 +314,7 @@ loki::Problem RemoveTypesTranslator::translate_impl(const loki::ProblemImpl& pro
         translated_objects,
         this->translate(problem.get_derived_predicates()),
         translated_initial_literals,
-        this->translate(problem.get_numeric_fluents()),
+        this->translate(problem.get_function_values()),
         (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
         (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
                                                          std::nullopt),

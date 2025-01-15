@@ -69,7 +69,7 @@ private:
     void prepare(const loki::PredicateImpl& predicate);
     void prepare(const loki::AtomImpl& atom);
     void prepare(const loki::LiteralImpl& literal);
-    void prepare(const loki::NumericFluentImpl& numeric_fluent);
+    void prepare(const loki::FunctionValueImpl& function_value);
     void prepare(const loki::ConditionLiteralImpl& condition);
     void prepare(const loki::ConditionAndImpl& condition);
     void prepare(const loki::ConditionOrImpl& condition);
@@ -77,7 +77,7 @@ private:
     void prepare(const loki::ConditionImplyImpl& condition);
     void prepare(const loki::ConditionExistsImpl& condition);
     void prepare(const loki::ConditionForallImpl& condition);
-    void prepare(const loki::ConditionFunctionExpressionComparisonImpl& condition);
+    void prepare(const loki::ConditionNumericConstraintImpl& condition);
     void prepare(const loki::ConditionImpl& condition);
     void prepare(const loki::EffectImpl& effect);
     void prepare(const loki::FunctionExpressionNumberImpl& function_expression);
@@ -159,7 +159,7 @@ private:
     Object translate_grounded(const loki::TermImpl& term);
     StaticOrFluentOrDerivedGroundAtom translate_grounded(const loki::AtomImpl& atom);
     StaticOrFluentOrDerivedGroundLiteral translate_grounded(const loki::LiteralImpl& literal);
-    NumericFluent translate_grounded(const loki::NumericFluentImpl& numeric_fluent);
+    GroundFunctionValue translate_grounded(const loki::FunctionValueImpl& numeric_fluent);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionMultiOperatorImpl& function_expression);

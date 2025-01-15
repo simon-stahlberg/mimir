@@ -238,7 +238,7 @@ loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::P
         this->translate(problem.get_objects()),
         translated_derived_predicates,
         this->translate(problem.get_initial_literals()),
-        this->translate(problem.get_numeric_fluents()),
+        this->translate(problem.get_function_values()),
         translated_goal,
         (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
                                                          std::nullopt),

@@ -36,7 +36,7 @@ private:
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
-    NumericFluentList m_numeric_fluents;
+    GroundFunctionValueList m_ground_function_values;
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
     GroundLiteralList<Derived> m_derived_goal_condition;
@@ -93,7 +93,7 @@ private:
                 PredicateList<Derived> derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
-                NumericFluentList numeric_fluents,
+                GroundFunctionValueList ground_function_values,
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
                 GroundLiteralList<Derived> derived_goal_condition,
@@ -120,7 +120,7 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
-    const NumericFluentList& get_numeric_fluents() const;
+    const GroundFunctionValueList& get_function_values() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
@@ -137,7 +137,7 @@ public:
                                      std::as_const(m_derived_predicates),
                                      std::as_const(m_static_initial_literals),
                                      std::as_const(m_fluent_initial_literals),
-                                     std::as_const(m_numeric_fluents),
+                                     std::as_const(m_ground_function_values),
                                      std::as_const(m_static_goal_condition),
                                      std::as_const(m_fluent_goal_condition),
                                      std::as_const(m_derived_goal_condition),

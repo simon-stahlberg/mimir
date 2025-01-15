@@ -63,7 +63,7 @@ PDDLTypeToRepository create_default_pddl_type_to_repository()
         boost::hana::make_pair(boost::hana::type_c<ActionImpl>, ActionRepository {}),
         boost::hana::make_pair(boost::hana::type_c<AxiomImpl>, AxiomRepository {}),
         boost::hana::make_pair(boost::hana::type_c<OptimizationMetricImpl>, OptimizationMetricRepository {}),
-        boost::hana::make_pair(boost::hana::type_c<NumericFluentImpl>, NumericFluentRepository {}),
+        boost::hana::make_pair(boost::hana::type_c<GroundFunctionValueImpl>, GroundFunctionValueRepository {}),
         boost::hana::make_pair(boost::hana::type_c<DomainImpl>, DomainRepository {}),
         boost::hana::make_pair(boost::hana::type_c<ProblemImpl>, ProblemRepository {}));
 }
@@ -390,9 +390,9 @@ OptimizationMetric PDDLRepositories::get_or_create_optimization_metric(loki::Opt
     return boost::hana::at_key(m_repositories, boost::hana::type<OptimizationMetricImpl> {}).get_or_create(std::move(metric), std::move(function_expression));
 }
 
-NumericFluent PDDLRepositories::get_or_create_numeric_fluent(GroundFunction function, double number)
+GroundFunctionValue PDDLRepositories::get_or_create_ground_function_value(GroundFunction function, double number)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<NumericFluentImpl> {}).get_or_create(std::move(function), std::move(number));
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionValueImpl> {}).get_or_create(std::move(function), std::move(number));
 }
 
 Domain PDDLRepositories::get_or_create_domain(std::optional<fs::path> filepath,
@@ -436,7 +436,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                                                 PredicateList<Derived> derived_predicates,
                                                 GroundLiteralList<Static> static_initial_literals,
                                                 GroundLiteralList<Fluent> fluent_initial_literals,
-                                                NumericFluentList numeric_fluents,
+                                                GroundFunctionValueList ground_function_values,
                                                 GroundLiteralList<Static> static_goal_condition,
                                                 GroundLiteralList<Fluent> fluent_goal_condition,
                                                 GroundLiteralList<Derived> derived_goal_condition,
@@ -448,7 +448,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
     std::sort(derived_predicates.begin(), derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_initial_literals.begin(), static_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_initial_literals.begin(), fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(numeric_fluents.begin(), numeric_fluents.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(ground_function_values.begin(), ground_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_goal_condition.begin(), static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_goal_condition.begin(), fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_goal_condition.begin(), derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -463,7 +463,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                        std::move(derived_predicates),
                        std::move(static_initial_literals),
                        std::move(fluent_initial_literals),
-                       std::move(numeric_fluents),
+                       std::move(ground_function_values),
                        std::move(static_goal_condition),
                        std::move(fluent_goal_condition),
                        std::move(derived_goal_condition),

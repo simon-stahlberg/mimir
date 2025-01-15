@@ -69,7 +69,7 @@ public:
     template<PredicateTag P>
     void write(const LiteralImpl<P>& element, std::ostream& out);
     void write(const OptimizationMetricImpl& element, std::ostream& out);
-    void write(const NumericFluentImpl& element, std::ostream& out);
+    void write(const GroundFunctionValueImpl& element, std::ostream& out);
     void write(const ObjectImpl& element, std::ostream& out);
     template<PredicateTag P>
     void write(const PredicateImpl<P>& element, std::ostream& out);

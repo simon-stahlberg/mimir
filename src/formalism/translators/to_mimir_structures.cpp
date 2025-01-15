@@ -44,7 +44,7 @@ void ToMimirStructures::prepare(const loki::AtomImpl& atom)
     prepare(atom.get_terms());
 }
 void ToMimirStructures::prepare(const loki::LiteralImpl& literal) { prepare(*literal.get_atom()); }
-void ToMimirStructures::prepare(const loki::NumericFluentImpl& numeric_fluent) { prepare(*numeric_fluent.get_function()); }
+void ToMimirStructures::prepare(const loki::FunctionValueImpl& function_value) { prepare(*function_value.get_function()); }
 void ToMimirStructures::prepare(const loki::ConditionLiteralImpl& condition) { prepare(*condition.get_literal()); }
 void ToMimirStructures::prepare(const loki::ConditionAndImpl& condition) { prepare(condition.get_conditions()); }
 void ToMimirStructures::prepare(const loki::ConditionOrImpl& condition) { prepare(condition.get_conditions()); }
@@ -64,7 +64,7 @@ void ToMimirStructures::prepare(const loki::ConditionForallImpl& condition)
     prepare(condition.get_parameters());
     prepare(*condition.get_condition());
 }
-void ToMimirStructures::prepare(const loki::ConditionFunctionExpressionComparisonImpl& condition)
+void ToMimirStructures::prepare(const loki::ConditionNumericConstraintImpl& condition)
 {
     prepare(*condition.get_function_expression_left());
     prepare(*condition.get_function_expression_right());
@@ -215,7 +215,7 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
     prepare(problem.get_objects());
     prepare(problem.get_derived_predicates());
     prepare(problem.get_initial_literals());
-    prepare(problem.get_numeric_fluents());
+    prepare(problem.get_function_values());
     if (problem.get_goal_condition().has_value())
     {
         prepare(*problem.get_goal_condition().value());
@@ -839,9 +839,9 @@ StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(const
         static_or_fluent_or_derived_ground_atom);
 }
 
-NumericFluent ToMimirStructures::translate_grounded(const loki::NumericFluentImpl& numeric_fluent)
+GroundFunctionValue ToMimirStructures::translate_grounded(const loki::FunctionValueImpl& function_value)
 {
-    return m_pddl_repositories.get_or_create_numeric_fluent(translate_grounded(*numeric_fluent.get_function()), numeric_fluent.get_number());
+    return m_pddl_repositories.get_or_create_ground_function_value(translate_grounded(*function_value.get_function()), function_value.get_number());
 }
 
 GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression)
@@ -1039,7 +1039,7 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                      uniquify_elements(derived_predicates),
                                                      uniquify_elements(static_initial_literals),
                                                      uniquify_elements(fluent_initial_literals),
-                                                     uniquify_elements(translate_grounded(problem.get_numeric_fluents())),
+                                                     uniquify_elements(translate_grounded(problem.get_function_values())),
                                                      uniquify_elements(static_goal_literals),
                                                      uniquify_elements(fluent_goal_literals),
                                                      uniquify_elements(derived_goal_literals),

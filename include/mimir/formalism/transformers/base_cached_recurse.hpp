@@ -65,7 +65,7 @@ protected:
         boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, std::unordered_map<GroundLiteral<Static>, GroundLiteral<Static>>>,
         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, std::unordered_map<GroundLiteral<Fluent>, GroundLiteral<Fluent>>>,
         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, std::unordered_map<GroundLiteral<Derived>, GroundLiteral<Derived>>>,
-        boost::hana::pair<boost::hana::type<NumericFluent>, std::unordered_map<NumericFluent, NumericFluent>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionValue>, std::unordered_map<GroundFunctionValue, GroundFunctionValue>>,
         boost::hana::pair<boost::hana::type<EffectStrips>, std::unordered_map<EffectStrips, EffectStrips>>,
         boost::hana::pair<boost::hana::type<EffectConditional>, std::unordered_map<EffectConditional, EffectConditional>>,
         boost::hana::pair<boost::hana::type<FunctionExpressionNumber>, std::unordered_map<FunctionExpressionNumber, FunctionExpression>>,
@@ -154,7 +154,7 @@ protected:
     {
         this->prepare(*literal.get_atom());
     }
-    void prepare_impl(const NumericFluentImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
+    void prepare_impl(const GroundFunctionValueImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
     void prepare_impl(const EffectStripsImpl& effect)
     {
         this->prepare(effect.get_effects());
@@ -244,7 +244,7 @@ protected:
         this->prepare(problem.get_derived_predicates());
         this->prepare(problem.get_static_initial_literals());
         this->prepare(problem.get_fluent_initial_literals());
-        this->prepare(problem.get_numeric_fluents());
+        this->prepare(problem.get_function_values());
         this->prepare(problem.get_goal_condition<Static>());
         this->prepare(problem.get_goal_condition<Fluent>());
         this->prepare(problem.get_goal_condition<Derived>());
@@ -372,9 +372,9 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
-    NumericFluent transform_impl(const NumericFluentImpl& numeric_fluent)
+    GroundFunctionValue transform_impl(const GroundFunctionValueImpl& numeric_fluent)
     {
-        return this->m_pddl_repositories.get_or_create_numeric_fluent(this->transform(*numeric_fluent.get_function()), numeric_fluent.get_number());
+        return this->m_pddl_repositories.get_or_create_ground_function_value(this->transform(*numeric_fluent.get_function()), numeric_fluent.get_number());
     }
     EffectStrips transform_impl(const EffectStripsImpl& effect)
     {
@@ -516,7 +516,7 @@ protected:
             this->transform(problem.get_derived_predicates()),
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
-            this->transform(problem.get_numeric_fluents()),
+            this->transform(problem.get_function_values()),
             this->transform(problem.get_goal_condition<Static>()),
             this->transform(problem.get_goal_condition<Fluent>()),
             this->transform(problem.get_goal_condition<Derived>()),
