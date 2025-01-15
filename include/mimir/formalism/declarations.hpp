@@ -20,7 +20,7 @@
 
 // Do not include headers with transitive dependencies.
 #include "mimir/common/types.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
+#include "mimir/formalism/tags.hpp"
 
 #include <cassert>
 #include <cstdint>
@@ -79,26 +79,26 @@ class FunctionExpressionMultiOperatorImpl;
 using FunctionExpressionMultiOperator = const FunctionExpressionMultiOperatorImpl*;
 class FunctionExpressionMinusImpl;
 using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
-template<PredicateTag P>
+template<FunctionTag F>
 class FunctionExpressionFunctionImpl;
-template<PredicateTag P>
+template<FunctionTag F>
 using FunctionExpressionFunction = const FunctionExpressionFunctionImpl<P>*;
 class FunctionExpressionImpl;
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
 
-template<PredicateTag P>
+template<FunctionTag F>
 class FunctionSkeletonImpl;
-template<PredicateTag P>
+template<FunctionTag F>
 using FunctionSkeleton = const FunctionSkeletonImpl<P>*;
-template<PredicateTag P>
+template<FunctionTag F>
 using FunctionSkeletonList = std::vector<FunctionSkeleton<P>>;
 
-template<PredicateTag P>
+template<FunctionTag F>
 class FunctionImpl;
-template<PredicateTag P>
+template<FunctionTag F>
 using Function = const FunctionImpl<P>*;
-template<PredicateTag P>
+template<FunctionTag F>
 using FunctionList = std::vector<Function<P>>;
 
 template<PredicateTag P>
@@ -118,19 +118,21 @@ class GroundFunctionExpressionMultiOperatorImpl;
 using GroundFunctionExpressionMultiOperator = const GroundFunctionExpressionMultiOperatorImpl*;
 class GroundFunctionExpressionMinusImpl;
 using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
+template<FunctionTag F>
 class GroundFunctionExpressionFunctionImpl;
-using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl*;
+template<FunctionTag F>
+using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl<P>*;
 class GroundFunctionExpressionImpl;
 using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
 using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 
-template<PredicateTag P>
+template<FunctionTag F>
 class GroundFunctionImpl;
-template<PredicateTag P>
+template<FunctionTag F>
 using GroundFunction = const GroundFunctionImpl<P>*;
-template<PredicateTag P>
+template<FunctionTag F>
 using GroundFunctionList = std::vector<GroundFunction<P>>;
-template<PredicateTag P, typename T>
+template<FunctionTag F, typename T>
 using GroundFunctionMap = std::unordered_map<GroundFunction<P>, T>;
 
 template<PredicateTag P>
@@ -154,11 +156,11 @@ using LiteralSet = std::unordered_set<Literal<P>>;
 class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
 
-template<PredicateTag P>
+template<FunctionTag F>
 class GroundFunctionValueImpl;
-template<PredicateTag P>
+template<FunctionTag F>
 using GroundFunctionValue = const GroundFunctionValueImpl<P>*;
-template<PredicateTag P>
+template<FunctionTag F>
 using GroundFunctionValueList = std::vector<GroundFunctionValue<P>>;
 
 class NumericConstraintImpl;

@@ -160,15 +160,16 @@ public:
 };
 
 /* FunctionExpressionFunction */
+template<FunctionTag F>
 class GroundFunctionExpressionFunctionImpl
 {
 private:
     Index m_index;
-    GroundFunction m_function;
+    GroundFunction<F> m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function);
+    GroundFunctionExpressionFunctionImpl(Index index, GroundFunction<F> function);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -182,7 +183,7 @@ public:
     GroundFunctionExpressionFunctionImpl& operator=(GroundFunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const GroundFunction& get_function() const;
+    const GroundFunction<F>& get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -191,23 +192,21 @@ public:
 };
 
 /* GroundFunctionExpression */
+using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNumber,
+                                                     GroundFunctionExpressionBinaryOperator,
+                                                     GroundFunctionExpressionMultiOperator,
+                                                     GroundFunctionExpressionMinus,
+                                                     GroundFunctionExpressionFunction<Static>,
+                                                     GroundFunctionExpressionFunction<Fluent>,
+                                                     GroundFunctionExpressionFunction<Auxiliary>>;
+
 class GroundFunctionExpressionImpl
 {
 private:
     size_t m_index;
-    std::variant<GroundFunctionExpressionNumber,
-                 GroundFunctionExpressionBinaryOperator,
-                 GroundFunctionExpressionMultiOperator,
-                 GroundFunctionExpressionMinus,
-                 GroundFunctionExpressionFunction>
-        m_ground_function_expression;
+    GroundFunctionExpressionVariant m_ground_function_expression;
 
-    GroundFunctionExpressionImpl(size_t index,
-                                 std::variant<GroundFunctionExpressionNumber,
-                                              GroundFunctionExpressionBinaryOperator,
-                                              GroundFunctionExpressionMultiOperator,
-                                              GroundFunctionExpressionMinus,
-                                              GroundFunctionExpressionFunction> ground_function_expression);
+    GroundFunctionExpressionImpl(size_t index, GroundFunctionExpressionVariant ground_function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -221,12 +220,7 @@ public:
     GroundFunctionExpressionImpl& operator=(GroundFunctionExpressionImpl&& other) = default;
 
     size_t get_index() const;
-    const std::variant<GroundFunctionExpressionNumber,
-                       GroundFunctionExpressionBinaryOperator,
-                       GroundFunctionExpressionMultiOperator,
-                       GroundFunctionExpressionMinus,
-                       GroundFunctionExpressionFunction>&
-    get_variant() const;
+    const GroundFunctionExpressionVariant& get_variant() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -238,7 +232,8 @@ extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressio
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl& element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);

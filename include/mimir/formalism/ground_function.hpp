@@ -22,15 +22,15 @@
 
 namespace mimir
 {
-template<PredicateTag P>
+template<FunctionTag F>
 class GroundFunctionImpl
 {
 private:
     Index m_index;
-    FunctionSkeleton<P> m_function_skeleton;
+    FunctionSkeleton<F> m_function_skeleton;
     ObjectList m_objects;
 
-    GroundFunctionImpl(Index index, FunctionSkeleton<P> function_skeleton, ObjectList objects);
+    GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -44,7 +44,7 @@ public:
     GroundFunctionImpl& operator=(GroundFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionSkeleton<P>& get_function_skeleton() const;
+    const FunctionSkeleton<F>& get_function_skeleton() const;
     const ObjectList& get_objects() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -53,11 +53,11 @@ public:
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_objects)); }
 };
 
-template<PredicateTag P>
-extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<P>& element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element);
 
-template<PredicateTag P>
-extern std::ostream& operator<<(std::ostream& out, GroundFunction<P> element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, GroundFunction<F> element);
 
 }
 

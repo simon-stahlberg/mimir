@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_PREDICATE_CATEGORY_HPP_
-#define MIMIR_FORMALISM_PREDICATE_CATEGORY_HPP_
+#ifndef MIMIR_FORMALISM_TAGS_HPP_
+#define MIMIR_FORMALISM_TAGS_HPP_
 
 #include <concepts>
 #include <type_traits>
@@ -25,7 +25,7 @@ namespace mimir
 {
 
 /**
- * Dispatchers
+ * PredicateTag
  */
 
 struct Static
@@ -43,6 +43,25 @@ concept PredicateTag = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> ||
 
 template<typename T>
 concept DynamicPredicateTag = std::is_same_v<T, Fluent> || std::is_same_v<T, Derived>;
+
+/**
+ * FunctionTag
+ */
+
+/// @brief `Static` never appear in a condition.
+/// Hence, their values stay fixed and can be stored in the `Problem`.
+
+/// @brief `Fluent` appear at least once in an action effect. They must appear in conditions as well, or otherwise, they are considered Auxiliary.
+/// They must be stored in the state.
+
+/// @brief `Auxiliary` appear in effects but never in conditions.
+/// They are typically used to define search metrics, which are stored in `SearchNode`
+struct Auxiliary
+{
+};
+
+template<typename T>
+concept FunctionTag = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;
 
 }
 

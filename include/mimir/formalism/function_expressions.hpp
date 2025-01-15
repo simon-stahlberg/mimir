@@ -160,16 +160,16 @@ public:
 };
 
 /* FunctionExpressionFunction */
-template<PredicateTag P>
+template<FunctionTag F>
 class FunctionExpressionFunctionImpl
 {
 private:
     Index m_index;
-    Function<P> m_function;
+    Function<F> m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionFunctionImpl(Index index, Function<P> function);
+    FunctionExpressionFunctionImpl(Index index, Function<F> function);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -183,7 +183,7 @@ public:
     FunctionExpressionFunctionImpl& operator=(FunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const Function<P>& get_function() const;
+    const Function<F>& get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -199,7 +199,7 @@ using FunctionExpressionVariant = std::variant<FunctionExpressionNumber,
                                                FunctionExpressionMinus,
                                                FunctionExpressionFunction<Static>,
                                                FunctionExpressionFunction<Fluent>,
-                                               FunctionExpressionFunction<Derived>>;
+                                               FunctionExpressionFunction<Auxiliary>>;
 
 class FunctionExpressionImpl
 {

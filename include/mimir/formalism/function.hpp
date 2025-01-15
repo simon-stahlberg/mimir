@@ -22,17 +22,17 @@
 
 namespace mimir
 {
-template<PredicateTag P>
+template<FunctionTag F>
 class FunctionImpl
 {
 private:
     Index m_index;
-    FunctionSkeleton<P> m_function_skeleton;
+    FunctionSkeleton<F> m_function_skeleton;
     TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionImpl(Index index, FunctionSkeleton<P> function_skeleton, TermList terms);
+    FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -46,7 +46,7 @@ public:
     FunctionImpl& operator=(FunctionImpl&& other) = default;
 
     Index get_index() const;
-    const FunctionSkeleton<P>& get_function_skeleton() const;
+    const FunctionSkeleton<F>& get_function_skeleton() const;
     const TermList& get_terms() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -55,11 +55,11 @@ public:
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_terms)); }
 };
 
-template<PredicateTag P>
-extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<P>& element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element);
 
-template<PredicateTag P>
-extern std::ostream& operator<<(std::ostream& out, Function<P> element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, Function<F> element);
 
 }
 
