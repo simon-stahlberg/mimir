@@ -103,6 +103,11 @@ protected:
         this->prepare(condition.get_parameters());
         this->prepare(*condition.get_condition());
     }
+    void prepare_impl(const loki::ConditionFunctionExpressionComparisonImpl& condition)
+    {
+        this->prepare(*condition.get_function_expression_left());
+        this->prepare(*condition.get_function_expression_right());
+    }
     void prepare_impl(const loki::ConditionImpl& condition)
     {
         std::visit([this](auto&& arg) { return this->prepare(*arg); }, condition.get_condition());
@@ -125,6 +130,13 @@ protected:
         this->prepare(*effect.get_effect());
     }
     void prepare_impl(const loki::EffectCompositeOneofImpl& effect) { this->prepare(effect.get_effects()); }
+    void prepare_impl(const loki::EffectCompositeProbabilisticImpl& effect)
+    {
+        for (const auto& [probability, effect] : effect.get_effect_distribution())
+        {
+            this->prepare(*effect);
+        }
+    }
     void prepare_impl(const loki::EffectImpl& effect)
     {
         std::visit([this](auto&& arg) { return this->prepare(*arg); }, effect.get_effect());
@@ -303,6 +315,13 @@ protected:
         return this->m_pddl_repositories.get_or_create_condition(
             this->m_pddl_repositories.get_or_create_condition_forall(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())));
     }
+    loki::Condition translate_impl(const loki::ConditionFunctionExpressionComparisonImpl& condition)
+    {
+        return this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_function_expression_comparison(condition.get_binary_comparator(),
+                                                                                             this->translate(*condition.get_function_expression_left()),
+                                                                                             this->translate(*condition.get_function_expression_right())));
+    }
     loki::Condition translate_impl(const loki::ConditionImpl& condition)
     {
         return std::visit([this](auto&& arg) -> loki::Condition { return this->translate(*arg); }, condition.get_condition());
@@ -336,6 +355,15 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_effect(
             this->m_pddl_repositories.get_or_create_effect_composite_oneof(this->translate(effect.get_effects())));
+    }
+    loki::Effect translate_impl(const loki::EffectCompositeProbabilisticImpl& effect)
+    {
+        auto distribution = loki::EffectDistribution();
+        for (const auto& [probability, effect] : effect.get_effect_distribution())
+        {
+            distribution.emplace_back(probability, this->translate(*effect));
+        }
+        return this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_probabilistic(distribution));
     }
     loki::Effect translate_impl(const loki::EffectImpl& effect)
     {

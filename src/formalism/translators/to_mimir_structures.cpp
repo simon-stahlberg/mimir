@@ -64,6 +64,11 @@ void ToMimirStructures::prepare(const loki::ConditionForallImpl& condition)
     prepare(condition.get_parameters());
     prepare(*condition.get_condition());
 }
+void ToMimirStructures::prepare(const loki::ConditionFunctionExpressionComparisonImpl& condition)
+{
+    prepare(*condition.get_function_expression_left());
+    prepare(*condition.get_function_expression_right());
+}
 void ToMimirStructures::prepare(const loki::ConditionImpl& condition)
 {
     std::visit([this](auto&& arg) { return this->prepare(*arg); }, condition.get_condition());

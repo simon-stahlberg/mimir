@@ -77,6 +77,7 @@ private:
     void prepare(const loki::ConditionImplyImpl& condition);
     void prepare(const loki::ConditionExistsImpl& condition);
     void prepare(const loki::ConditionForallImpl& condition);
+    void prepare(const loki::ConditionFunctionExpressionComparisonImpl& condition);
     void prepare(const loki::ConditionImpl& condition);
     void prepare(const loki::EffectImpl& effect);
     void prepare(const loki::FunctionExpressionNumberImpl& function_expression);
