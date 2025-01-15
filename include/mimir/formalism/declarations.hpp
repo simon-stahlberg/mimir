@@ -60,6 +60,10 @@ class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
 
+class EffectNumericImpl;
+using EffectNumeric = const EffectNumericImpl*;
+using EffectNumericList = std::vector<EffectNumeric>;
+
 class EffectStripsImpl;
 using EffectStrips = const EffectStripsImpl*;
 
@@ -75,19 +79,27 @@ class FunctionExpressionMultiOperatorImpl;
 using FunctionExpressionMultiOperator = const FunctionExpressionMultiOperatorImpl*;
 class FunctionExpressionMinusImpl;
 using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
+template<PredicateTag P>
 class FunctionExpressionFunctionImpl;
-using FunctionExpressionFunction = const FunctionExpressionFunctionImpl*;
+template<PredicateTag P>
+using FunctionExpressionFunction = const FunctionExpressionFunctionImpl<P>*;
 class FunctionExpressionImpl;
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
 
+template<PredicateTag P>
 class FunctionSkeletonImpl;
-using FunctionSkeleton = const FunctionSkeletonImpl*;
-using FunctionSkeletonList = std::vector<FunctionSkeleton>;
+template<PredicateTag P>
+using FunctionSkeleton = const FunctionSkeletonImpl<P>*;
+template<PredicateTag P>
+using FunctionSkeletonList = std::vector<FunctionSkeleton<P>>;
 
+template<PredicateTag P>
 class FunctionImpl;
-using Function = const FunctionImpl*;
-using FunctionList = std::vector<Function>;
+template<PredicateTag P>
+using Function = const FunctionImpl<P>*;
+template<PredicateTag P>
+using FunctionList = std::vector<Function<P>>;
 
 template<PredicateTag P>
 class GroundAtomImpl;
@@ -112,11 +124,14 @@ class GroundFunctionExpressionImpl;
 using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
 using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 
+template<PredicateTag P>
 class GroundFunctionImpl;
-using GroundFunction = const GroundFunctionImpl*;
-using GroundFunctionList = std::vector<GroundFunction>;
-template<typename T>
-using GroundFunctionMap = std::unordered_map<GroundFunction, T>;
+template<PredicateTag P>
+using GroundFunction = const GroundFunctionImpl<P>*;
+template<PredicateTag P>
+using GroundFunctionList = std::vector<GroundFunction<P>>;
+template<PredicateTag P, typename T>
+using GroundFunctionMap = std::unordered_map<GroundFunction<P>, T>;
 
 template<PredicateTag P>
 class GroundLiteralImpl;
@@ -139,9 +154,15 @@ using LiteralSet = std::unordered_set<Literal<P>>;
 class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
 
+template<PredicateTag P>
 class GroundFunctionValueImpl;
-using GroundFunctionValue = const GroundFunctionValueImpl*;
-using GroundFunctionValueList = std::vector<GroundFunctionValue>;
+template<PredicateTag P>
+using GroundFunctionValue = const GroundFunctionValueImpl<P>*;
+template<PredicateTag P>
+using GroundFunctionValueList = std::vector<GroundFunctionValue<P>>;
+
+class NumericConstraintImpl;
+using NumericConstraint = const NumericConstraintImpl;
 
 class ObjectImpl;
 using Object = const ObjectImpl*;

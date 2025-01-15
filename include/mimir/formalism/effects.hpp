@@ -23,6 +23,43 @@
 namespace mimir
 {
 
+class EffectNumericImpl
+{
+private:
+    Index m_index;
+    loki::AssignOperatorEnum m_assign_operator;
+    GroundFunction<Fluent> m_function;
+    FunctionExpression m_function_expression;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, GroundFunction<Fluent> function, FunctionExpression m_function_expression);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
+
+public:
+    // moveable but not copyable
+    EffectNumericImpl(const EffectNumericImpl& other) = delete;
+    EffectNumericImpl& operator=(const EffectNumericImpl& other) = delete;
+    EffectNumericImpl(EffectNumericImpl&& other) = default;
+    EffectNumericImpl& operator=(EffectNumericImpl&& other) = default;
+
+    Index get_index() const;
+    loki::AssignOperatorEnum get_assign_operator() const;
+    const GroundFunction<Fluent>& get_function() const;
+    const FunctionExpression& get_function_expression() const;
+
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_assign_operator), std::as_const(m_function), std::as_const(m_function_expression));
+    }
+};
+
 /**
  * Type 1 effects
  */
@@ -31,11 +68,16 @@ class EffectStripsImpl
 private:
     Index m_index;
     LiteralList<Fluent> m_effects;
-    FunctionExpression m_function_expression;
+    /* Partitioning of numeric effects. */
+    EffectNumericList m_numeric_state_relevant_effects;    ///< numeric effects that appear in conditions.
+    EffectNumericList m_numeric_state_irrelevant_effects;  ///< numeric effects that never appear in conditions but for example in metrics.
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectStripsImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression);
+    EffectStripsImpl(Index index,
+                     LiteralList<Fluent> effects,
+                     EffectNumericList numeric_state_relevant_effects,
+                     EffectNumericList numeric_state_irrelevant_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -50,12 +92,18 @@ public:
 
     Index get_index() const;
     const LiteralList<Fluent>& get_effects() const;
-    const FunctionExpression& get_function_expression() const;
+    const EffectNumericList& get_numeric_state_relevant_effects() const;
+    const EffectNumericList& get_numeric_state_irrelevant_effects() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_effects), std::as_const(m_function_expression)); }
+    auto identifiable_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_effects),
+                                     std::as_const(m_numeric_state_relevant_effects),
+                                     std::as_const(m_numeric_state_irrelevant_effects));
+    }
 };
 
 /**
@@ -70,7 +118,9 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     LiteralList<Fluent> m_effects;
-    FunctionExpression m_function_expression;
+    /* Partitioning of numeric effects. */
+    EffectNumericList m_numeric_state_relevant_effects;    ///< numeric effects that appear in conditions.
+    EffectNumericList m_numeric_state_irrelevant_effects;  ///< numeric effects that never appear in conditions but for example in metrics.
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -80,7 +130,8 @@ private:
                           LiteralList<Fluent> fluent_conditions,
                           LiteralList<Derived> derived_conditions,
                           LiteralList<Fluent> effects,
-                          FunctionExpression function_expression);
+                          EffectNumericList numeric_state_relevant_effects,
+                          EffectNumericList numeric_state_irrelevant_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -98,7 +149,8 @@ public:
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const LiteralList<Fluent>& get_effects() const;
-    const FunctionExpression& get_function_expression() const;
+    const EffectNumericList& get_numeric_state_relevant_effects() const;
+    const EffectNumericList& get_numeric_state_irrelevant_effects() const;
 
     size_t get_arity() const;
 
@@ -112,7 +164,8 @@ public:
                                      std::as_const(m_fluent_conditions),
                                      std::as_const(m_derived_conditions),
                                      std::as_const(m_effects),
-                                     std::as_const(m_function_expression));
+                                     std::as_const(m_numeric_state_relevant_effects),
+                                     std::as_const(m_numeric_state_irrelevant_effects));
     }
 };
 

@@ -160,15 +160,16 @@ public:
 };
 
 /* FunctionExpressionFunction */
+template<PredicateTag P>
 class FunctionExpressionFunctionImpl
 {
 private:
     Index m_index;
-    Function m_function;
+    Function<P> m_function;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionExpressionFunctionImpl(Index index, Function function);
+    FunctionExpressionFunctionImpl(Index index, Function<P> function);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -182,7 +183,7 @@ public:
     FunctionExpressionFunctionImpl& operator=(FunctionExpressionFunctionImpl&& other) = default;
 
     Index get_index() const;
-    const Function& get_function() const;
+    const Function<P>& get_function() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -191,23 +192,22 @@ public:
 };
 
 /* FunctionExpression */
+// TODO: introduce FunctionExpressionCondition, FunctionExpressionEffect?
+using FunctionExpressionVariant = std::variant<FunctionExpressionNumber,
+                                               FunctionExpressionBinaryOperator,
+                                               FunctionExpressionMultiOperator,
+                                               FunctionExpressionMinus,
+                                               FunctionExpressionFunction<Static>,
+                                               FunctionExpressionFunction<Fluent>,
+                                               FunctionExpressionFunction<Derived>>;
+
 class FunctionExpressionImpl
 {
 private:
     size_t m_index;
-    std::variant<FunctionExpressionNumber,
-                 FunctionExpressionBinaryOperator,
-                 FunctionExpressionMultiOperator,
-                 FunctionExpressionMinus,
-                 FunctionExpressionFunction>
-        m_function_expression;
+    FunctionExpressionVariant m_function_expression;
 
-    FunctionExpressionImpl(size_t index,
-                           std::variant<FunctionExpressionNumber,
-                                        FunctionExpressionBinaryOperator,
-                                        FunctionExpressionMultiOperator,
-                                        FunctionExpressionMinus,
-                                        FunctionExpressionFunction> function_expression);
+    FunctionExpressionImpl(size_t index, FunctionExpressionVariant function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -221,12 +221,7 @@ public:
     FunctionExpressionImpl& operator=(FunctionExpressionImpl&& other) = default;
 
     size_t get_index() const;
-    const std::variant<FunctionExpressionNumber,
-                       FunctionExpressionBinaryOperator,
-                       FunctionExpressionMultiOperator,
-                       FunctionExpressionMinus,
-                       FunctionExpressionFunction>&
-    get_variant() const;
+    const FunctionExpressionVariant& get_variant() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
@@ -314,7 +309,8 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumbe
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element);
+template<PredicateTag P>
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<P>& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 
 extern std::ostream& operator<<(std::ostream& out, FunctionExpression element);

@@ -22,6 +22,7 @@
 
 namespace mimir
 {
+template<PredicateTag P>
 class FunctionSkeletonImpl
 {
 private:
@@ -54,9 +55,11 @@ public:
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_parameters)); }
 };
 
-extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element);
+template<PredicateTag P>
+extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<P>& element);
 
-extern std::ostream& operator<<(std::ostream& out, FunctionSkeleton element);
+template<PredicateTag P>
+extern std::ostream& operator<<(std::ostream& out, FunctionSkeleton<P> element);
 
 }
 
