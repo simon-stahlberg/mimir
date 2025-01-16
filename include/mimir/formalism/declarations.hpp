@@ -60,9 +60,12 @@ class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
 
+template<DynamicFunctionTag F>
 class EffectNumericImpl;
-using EffectNumeric = const EffectNumericImpl*;
-using EffectNumericList = std::vector<EffectNumeric>;
+template<DynamicFunctionTag F>
+using EffectNumeric = const EffectNumericImpl<F>*;
+template<DynamicFunctionTag F>
+using EffectNumericList = std::vector<EffectNumeric<F>>;
 
 class EffectStripsImpl;
 using EffectStrips = const EffectStripsImpl*;
@@ -82,7 +85,7 @@ using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
 template<FunctionTag F>
 class FunctionExpressionFunctionImpl;
 template<FunctionTag F>
-using FunctionExpressionFunction = const FunctionExpressionFunctionImpl<P>*;
+using FunctionExpressionFunction = const FunctionExpressionFunctionImpl<F>*;
 class FunctionExpressionImpl;
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
@@ -90,16 +93,16 @@ using FunctionExpressionList = std::vector<FunctionExpression>;
 template<FunctionTag F>
 class FunctionSkeletonImpl;
 template<FunctionTag F>
-using FunctionSkeleton = const FunctionSkeletonImpl<P>*;
+using FunctionSkeleton = const FunctionSkeletonImpl<F>*;
 template<FunctionTag F>
-using FunctionSkeletonList = std::vector<FunctionSkeleton<P>>;
+using FunctionSkeletonList = std::vector<FunctionSkeleton<F>>;
 
 template<FunctionTag F>
 class FunctionImpl;
 template<FunctionTag F>
-using Function = const FunctionImpl<P>*;
+using Function = const FunctionImpl<F>*;
 template<FunctionTag F>
-using FunctionList = std::vector<Function<P>>;
+using FunctionList = std::vector<Function<F>>;
 
 template<PredicateTag P>
 class GroundAtomImpl;
@@ -121,7 +124,7 @@ using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
 template<FunctionTag F>
 class GroundFunctionExpressionFunctionImpl;
 template<FunctionTag F>
-using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl<P>*;
+using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl<F>*;
 class GroundFunctionExpressionImpl;
 using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
 using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
@@ -129,11 +132,11 @@ using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 template<FunctionTag F>
 class GroundFunctionImpl;
 template<FunctionTag F>
-using GroundFunction = const GroundFunctionImpl<P>*;
+using GroundFunction = const GroundFunctionImpl<F>*;
 template<FunctionTag F>
-using GroundFunctionList = std::vector<GroundFunction<P>>;
+using GroundFunctionList = std::vector<GroundFunction<F>>;
 template<FunctionTag F, typename T>
-using GroundFunctionMap = std::unordered_map<GroundFunction<P>, T>;
+using GroundFunctionMap = std::unordered_map<GroundFunction<F>, T>;
 
 template<PredicateTag P>
 class GroundLiteralImpl;
@@ -159,9 +162,9 @@ using OptimizationMetric = const OptimizationMetricImpl*;
 template<FunctionTag F>
 class GroundFunctionValueImpl;
 template<FunctionTag F>
-using GroundFunctionValue = const GroundFunctionValueImpl<P>*;
+using GroundFunctionValue = const GroundFunctionValueImpl<F>*;
 template<FunctionTag F>
-using GroundFunctionValueList = std::vector<GroundFunctionValue<P>>;
+using GroundFunctionValueList = std::vector<GroundFunctionValue<F>>;
 
 class NumericConstraintImpl;
 using NumericConstraint = const NumericConstraintImpl;

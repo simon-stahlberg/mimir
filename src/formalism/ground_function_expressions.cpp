@@ -88,23 +88,31 @@ Index GroundFunctionExpressionMinusImpl::get_index() const { return m_index; }
 const GroundFunctionExpression& GroundFunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-GroundFunctionExpressionFunctionImpl::GroundFunctionExpressionFunctionImpl(Index index, GroundFunction function) :
+template<FunctionTag F>
+GroundFunctionExpressionFunctionImpl<F>::GroundFunctionExpressionFunctionImpl(Index index, GroundFunction<F> function) :
     m_index(index),
     m_function(std::move(function))
 {
 }
 
-Index GroundFunctionExpressionFunctionImpl::get_index() const { return m_index; }
+template<FunctionTag F>
+Index GroundFunctionExpressionFunctionImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const GroundFunction& GroundFunctionExpressionFunctionImpl::get_function() const { return m_function; }
+template<FunctionTag F>
+const GroundFunction<F>& GroundFunctionExpressionFunctionImpl<F>::get_function() const
+{
+    return m_function;
+}
+
+template class GroundFunctionExpressionFunctionImpl<Static>;
+template class GroundFunctionExpressionFunctionImpl<Fluent>;
+template class GroundFunctionExpressionFunctionImpl<Auxiliary>;
 
 /* GroundFunctionExpression */
-GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(size_t index,
-                                                           std::variant<GroundFunctionExpressionNumber,
-                                                                        GroundFunctionExpressionBinaryOperator,
-                                                                        GroundFunctionExpressionMultiOperator,
-                                                                        GroundFunctionExpressionMinus,
-                                                                        GroundFunctionExpressionFunction> ground_function_expression) :
+GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(size_t index, GroundFunctionExpressionVariant ground_function_expression) :
     m_index(index),
     m_ground_function_expression(ground_function_expression)
 {
@@ -112,15 +120,7 @@ GroundFunctionExpressionImpl::GroundFunctionExpressionImpl(size_t index,
 
 size_t GroundFunctionExpressionImpl::get_index() const { return m_index; }
 
-const std::variant<GroundFunctionExpressionNumber,
-                   GroundFunctionExpressionBinaryOperator,
-                   GroundFunctionExpressionMultiOperator,
-                   GroundFunctionExpressionMinus,
-                   GroundFunctionExpressionFunction>&
-GroundFunctionExpressionImpl::get_variant() const
-{
-    return m_ground_function_expression;
-}
+const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant() const { return m_ground_function_expression; }
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
 {
@@ -150,12 +150,52 @@ std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusI
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl& element)
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<Auxiliary>& element);
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element)
+{
+    out << *element;
+    return out;
+}
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<Static> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<Auxiliary> element);
 
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element)
 {

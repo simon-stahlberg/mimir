@@ -19,7 +19,6 @@
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
 #include "mimir/formalism/variable.hpp"
 
 namespace mimir

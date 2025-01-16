@@ -22,30 +22,57 @@
 
 namespace mimir
 {
-FunctionSkeletonImpl::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
+template<FunctionTag F>
+FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
     m_parameters(std::move(parameters))
 {
 }
 
-Index FunctionSkeletonImpl::get_index() const { return m_index; }
+template<FunctionTag F>
+Index FunctionSkeletonImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const std::string& FunctionSkeletonImpl::get_name() const { return m_name; }
+template<FunctionTag F>
+const std::string& FunctionSkeletonImpl<F>::get_name() const
+{
+    return m_name;
+}
 
-const VariableList& FunctionSkeletonImpl::get_parameters() const { return m_parameters; }
+template<FunctionTag F>
+const VariableList& FunctionSkeletonImpl<F>::get_parameters() const
+{
+    return m_parameters;
+}
 
-std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl& element)
+template class FunctionSkeletonImpl<Static>;
+template class FunctionSkeletonImpl<Fluent>;
+template class FunctionSkeletonImpl<Auxiliary>;
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, FunctionSkeleton element)
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Auxiliary>& element);
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, FunctionSkeleton<F> element)
 {
     out << *element;
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<Static> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, FunctionSkeleton<Auxiliary> element);
 
 }

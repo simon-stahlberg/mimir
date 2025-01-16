@@ -88,19 +88,29 @@ Index FunctionExpressionMinusImpl::get_index() const { return m_index; }
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-FunctionExpressionFunctionImpl::FunctionExpressionFunctionImpl(Index index, Function function) : m_index(index), m_function(std::move(function)) {}
+template<FunctionTag F>
+FunctionExpressionFunctionImpl<F>::FunctionExpressionFunctionImpl(Index index, Function<F> function) : m_index(index), m_function(std::move(function))
+{
+}
 
-Index FunctionExpressionFunctionImpl::get_index() const { return m_index; }
+template<FunctionTag F>
+Index FunctionExpressionFunctionImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const Function& FunctionExpressionFunctionImpl::get_function() const { return m_function; }
+template<FunctionTag F>
+const Function<F>& FunctionExpressionFunctionImpl<F>::get_function() const
+{
+    return m_function;
+}
+
+template class FunctionExpressionFunctionImpl<Static>;
+template class FunctionExpressionFunctionImpl<Fluent>;
+template class FunctionExpressionFunctionImpl<Auxiliary>;
 
 /* FunctionExpression */
-FunctionExpressionImpl::FunctionExpressionImpl(size_t index,
-                                               std::variant<FunctionExpressionNumber,
-                                                            FunctionExpressionBinaryOperator,
-                                                            FunctionExpressionMultiOperator,
-                                                            FunctionExpressionMinus,
-                                                            FunctionExpressionFunction> function_expression) :
+FunctionExpressionImpl::FunctionExpressionImpl(size_t index, FunctionExpressionVariant function_expression) :
     m_index(index),
     m_function_expression(function_expression)
 {
@@ -108,12 +118,7 @@ FunctionExpressionImpl::FunctionExpressionImpl(size_t index,
 
 size_t FunctionExpressionImpl::get_index() const { return m_index; }
 
-const std::
-    variant<FunctionExpressionNumber, FunctionExpressionBinaryOperator, FunctionExpressionMultiOperator, FunctionExpressionMinus, FunctionExpressionFunction>&
-    FunctionExpressionImpl::get_variant() const
-{
-    return m_function_expression;
-}
+const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { return m_function_expression; }
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
 {
@@ -143,12 +148,17 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& e
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl& element)
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<Auxiliary>& element);
 
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element)
 {
@@ -156,6 +166,41 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& elemen
     formatter.write(element, out);
     return out;
 }
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element)
+{
+    out << *element;
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
+{
+    out << *element;
+    return out;
+}
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<Static> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<Auxiliary> element);
 
 std::ostream& operator<<(std::ostream& out, FunctionExpression element)
 {

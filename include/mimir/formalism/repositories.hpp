@@ -69,73 +69,89 @@ using FunctionExpressionNumberRepository = SegmentedPDDLRepository<FunctionExpre
 using FunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<FunctionExpressionBinaryOperatorImpl>;
 using FunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<FunctionExpressionMultiOperatorImpl>;
 using FunctionExpressionMinusRepository = SegmentedPDDLRepository<FunctionExpressionMinusImpl>;
-using FunctionExpressionFunctionRepository = SegmentedPDDLRepository<FunctionExpressionFunctionImpl>;
+template<FunctionTag F>
+using FunctionExpressionFunctionRepository = SegmentedPDDLRepository<FunctionExpressionFunctionImpl<F>>;
 using FunctionExpressionRepository = SegmentedPDDLRepository<FunctionExpressionImpl>;
 using GroundFunctionExpressionNumberRepository = SegmentedPDDLRepository<GroundFunctionExpressionNumberImpl>;
 using GroundFunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionBinaryOperatorImpl>;
 using GroundFunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionMultiOperatorImpl>;
 using GroundFunctionExpressionMinusRepository = SegmentedPDDLRepository<GroundFunctionExpressionMinusImpl>;
-using GroundFunctionExpressionFunctionRepository = SegmentedPDDLRepository<GroundFunctionExpressionFunctionImpl>;
+template<FunctionTag F>
+using GroundFunctionExpressionFunctionRepository = SegmentedPDDLRepository<GroundFunctionExpressionFunctionImpl<F>>;
 using GroundFunctionExpressionRepository = SegmentedPDDLRepository<GroundFunctionExpressionImpl>;
-using FunctionRepository = SegmentedPDDLRepository<FunctionImpl>;
-using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl>;
-using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl>;
+template<FunctionTag F>
+using FunctionRepository = SegmentedPDDLRepository<FunctionImpl<F>>;
+template<FunctionTag F>
+using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl<F>>;
+template<FunctionTag F>
+using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
 using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
 using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
 using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ExistentiallyQuantifiedConjunctiveConditionImpl>;
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
-using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl>;
+template<FunctionTag F>
+using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl<F>>;
 using DomainRepository = SegmentedPDDLRepository<DomainImpl>;
 using ProblemRepository = SegmentedPDDLRepository<ProblemImpl>;
 
-using PDDLTypeToRepository =
-    boost::hana::map<boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
-                     boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
-                     boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
-                     boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
-                     boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomRepository<Derived>>,
-                     boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived>>,
-                     boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralRepository<Derived>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived>>,
-                     boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateRepository<Static>>,
-                     boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateRepository<Fluent>>,
-                     boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateRepository<Derived>>,
-                     boost::hana::pair<boost::hana::type<FunctionExpressionNumberImpl>, FunctionExpressionNumberRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionExpressionBinaryOperatorImpl>, FunctionExpressionBinaryOperatorRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionExpressionMultiOperatorImpl>, FunctionExpressionMultiOperatorRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionExpressionMinusImpl>, FunctionExpressionMinusRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl>, FunctionExpressionFunctionRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionNumberImpl>, GroundFunctionExpressionNumberRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionBinaryOperatorImpl>, GroundFunctionExpressionBinaryOperatorRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionMultiOperatorImpl>, GroundFunctionExpressionMultiOperatorRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionMinusImpl>, GroundFunctionExpressionMinusRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl>, GroundFunctionExpressionFunctionRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionImpl>, FunctionRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionImpl>, GroundFunctionRepository>,
-                     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl>, FunctionSkeletonRepository>,
-                     boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
-                     boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
-                     boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository>,
-                     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
-                     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
-                     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
-                     boost::hana::pair<boost::hana::type<GroundFunctionValueImpl>, GroundFunctionValueRepository>,
-                     boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
-                     boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
-
-extern PDDLTypeToRepository create_default_pddl_type_to_repository();
+using PDDLTypeToRepository = boost::hana::map<
+    boost::hana::pair<boost::hana::type<RequirementsImpl>, RequirementsRepository>,
+    boost::hana::pair<boost::hana::type<VariableImpl>, VariableRepository>,
+    boost::hana::pair<boost::hana::type<TermImpl>, TermRepository>,
+    boost::hana::pair<boost::hana::type<ObjectImpl>, ObjectRepository>,
+    boost::hana::pair<boost::hana::type<AtomImpl<Static>>, AtomRepository<Static>>,
+    boost::hana::pair<boost::hana::type<AtomImpl<Fluent>>, AtomRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<AtomImpl<Derived>>, AtomRepository<Derived>>,
+    boost::hana::pair<boost::hana::type<GroundAtomImpl<Static>>, GroundAtomRepository<Static>>,
+    boost::hana::pair<boost::hana::type<GroundAtomImpl<Fluent>>, GroundAtomRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundAtomImpl<Derived>>, GroundAtomRepository<Derived>>,
+    boost::hana::pair<boost::hana::type<LiteralImpl<Static>>, LiteralRepository<Static>>,
+    boost::hana::pair<boost::hana::type<LiteralImpl<Fluent>>, LiteralRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<LiteralImpl<Derived>>, LiteralRepository<Derived>>,
+    boost::hana::pair<boost::hana::type<GroundLiteralImpl<Static>>, GroundLiteralRepository<Static>>,
+    boost::hana::pair<boost::hana::type<GroundLiteralImpl<Fluent>>, GroundLiteralRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundLiteralImpl<Derived>>, GroundLiteralRepository<Derived>>,
+    boost::hana::pair<boost::hana::type<PredicateImpl<Static>>, PredicateRepository<Static>>,
+    boost::hana::pair<boost::hana::type<PredicateImpl<Fluent>>, PredicateRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<PredicateImpl<Derived>>, PredicateRepository<Derived>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionNumberImpl>, FunctionExpressionNumberRepository>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionBinaryOperatorImpl>, FunctionExpressionBinaryOperatorRepository>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionMultiOperatorImpl>, FunctionExpressionMultiOperatorRepository>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionMinusImpl>, FunctionExpressionMinusRepository>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<Static>>, FunctionExpressionFunctionRepository<Static>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<Fluent>>, FunctionExpressionFunctionRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionFunctionImpl<Auxiliary>>, FunctionExpressionFunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<FunctionExpressionImpl>, FunctionExpressionRepository>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionNumberImpl>, GroundFunctionExpressionNumberRepository>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionBinaryOperatorImpl>, GroundFunctionExpressionBinaryOperatorRepository>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionMultiOperatorImpl>, GroundFunctionExpressionMultiOperatorRepository>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionMinusImpl>, GroundFunctionExpressionMinusRepository>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<Static>>, GroundFunctionExpressionFunctionRepository<Static>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<Fluent>>, GroundFunctionExpressionFunctionRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunctionImpl<Auxiliary>>, GroundFunctionExpressionFunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionExpressionImpl>, GroundFunctionExpressionRepository>,
+    boost::hana::pair<boost::hana::type<FunctionImpl<Static>>, FunctionRepository<Static>>,
+    boost::hana::pair<boost::hana::type<FunctionImpl<Fluent>>, FunctionRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<FunctionImpl<Auxiliary>>, FunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionImpl<Static>>, GroundFunctionRepository<Static>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionImpl<Fluent>>, GroundFunctionRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionImpl<Auxiliary>>, GroundFunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Static>>, FunctionSkeletonRepository<Static>>,
+    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Fluent>>, FunctionSkeletonRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Auxiliary>>, FunctionSkeletonRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
+    boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
+    boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository>,
+    boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
+    boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
+    boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Static>>, GroundFunctionValueRepository<Static>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Fluent>>, GroundFunctionValueRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Auxiliary>>, GroundFunctionValueRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
+    boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
 
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLRepositories
@@ -196,14 +212,16 @@ public:
     FunctionExpressionMinus get_or_create_function_expression_minus(FunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    FunctionExpressionFunction get_or_create_function_expression_function(Function function);
+    template<FunctionTag F>
+    FunctionExpressionFunction<F> get_or_create_function_expression_function(Function<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
     FunctionExpression get_or_create_function_expression(FunctionExpressionNumber fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMultiOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMinus fexpr);
-    FunctionExpression get_or_create_function_expression(FunctionExpressionFunction fexpr);
+    template<FunctionTag F>
+    FunctionExpression get_or_create_function_expression(FunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a number function expression for the given parameters.
     GroundFunctionExpressionNumber get_or_create_ground_function_expression_number(double number);
@@ -221,26 +239,37 @@ public:
     GroundFunctionExpressionMinus get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    GroundFunctionExpressionFunction get_or_create_ground_function_expression_function(GroundFunction function);
+    template<FunctionTag F>
+    GroundFunctionExpressionFunction<F> get_or_create_ground_function_expression_function(GroundFunction<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionNumber fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr);
-    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction fexpr);
+    template<FunctionTag F>
+    GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a function for the given parameters.
-    Function get_or_create_function(FunctionSkeleton function_skeleton, TermList terms);
+    template<FunctionTag F>
+    Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms);
 
     /// @brief Get or create a function for the given parameters.
-    GroundFunction get_or_create_ground_function(FunctionSkeleton function_skeleton, ObjectList objects);
+    template<FunctionTag F>
+    GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList objects);
 
     /// @brief Get or create a function skeleton for the given parameters.
-    FunctionSkeleton get_or_create_function_skeleton(std::string name, VariableList parameters);
+    template<FunctionTag F>
+    FunctionSkeleton<F> get_or_create_function_skeleton(std::string name, VariableList parameters);
+
+    /// @brief Get or create a numeric effect for the given parameters.
+    template<DynamicFunctionTag F>
+    EffectNumeric<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, FunctionExpression function_expression);
 
     /// @brief Get or create a simple effect for the given parameters.
-    EffectStrips get_or_create_strips_effect(LiteralList<Fluent> effects, FunctionExpression function_expression);
+    EffectStrips get_or_create_strips_effect(LiteralList<Fluent> effects,
+                                             EffectNumericList<Fluent> fluent_numeric_effects,
+                                             EffectNumericList<Auxiliary> auxiliary_numeric_effects);
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     EffectConditional get_or_create_conditional_effect(VariableList parameters,
@@ -248,7 +277,8 @@ public:
                                                        LiteralList<Fluent> fluent_conditions,
                                                        LiteralList<Derived> derived_conditions,
                                                        LiteralList<Fluent> effects,
-                                                       FunctionExpression function_expression);
+                                                       EffectNumericList<Fluent> fluent_numeric_effects,
+                                                       EffectNumericList<Auxiliary> auxiliary_numeric_effects);
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
     ExistentiallyQuantifiedConjunctiveCondition get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
@@ -270,7 +300,8 @@ public:
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
 
     /// @brief Get or create an optimization metric for the given parameters.
-    GroundFunctionValue get_or_create_ground_function_value(GroundFunction function, double number);
+    template<FunctionTag F>
+    GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
 
     /// @brief Get or create a domain for the given parameters.
     Domain get_or_create_domain(std::optional<fs::path> filepath,
@@ -280,7 +311,9 @@ public:
                                 PredicateList<Static> static_predicates,
                                 PredicateList<Fluent> fluent_predicates,
                                 PredicateList<Derived> derived_predicates,
-                                FunctionSkeletonList functions,
+                                FunctionSkeletonList<Static> static_functions,
+                                FunctionSkeletonList<Fluent> fluent_functions,
+                                FunctionSkeletonList<Auxiliary> auxiliary_functions,
                                 ActionList actions,
                                 AxiomList axioms);
 
@@ -293,7 +326,7 @@ public:
                                   PredicateList<Derived> derived_predicates,
                                   GroundLiteralList<Static> static_initial_literals,
                                   GroundLiteralList<Fluent> fluent_initial_literals,
-                                  GroundFunctionValueList ground_function_values,
+                                  GroundFunctionValueList<Static> static_function_values,
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
                                   GroundLiteralList<Derived> derived_goal_condition,

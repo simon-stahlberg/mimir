@@ -33,7 +33,9 @@ private:
     PredicateList<Static> m_static_predicates;
     PredicateList<Fluent> m_fluent_predicates;
     PredicateList<Derived> m_derived_predicates;
-    FunctionSkeletonList m_functions;
+    FunctionSkeletonList<Static> m_static_functions;
+    FunctionSkeletonList<Fluent> m_fluent_functions;
+    FunctionSkeletonList<Auxiliary> m_auxiliary_functions;
     ActionList m_actions;
     AxiomList m_axioms;
 
@@ -51,7 +53,9 @@ private:
                PredicateList<Static> static_predicates,
                PredicateList<Fluent> fluent_predicates,
                PredicateList<Derived> derived_predicates,
-               FunctionSkeletonList functions,
+               FunctionSkeletonList<Static> static_functions,
+               FunctionSkeletonList<Fluent> fluent_functions,
+               FunctionSkeletonList<Auxiliary> auxiliary_functions,
                ActionList actions,
                AxiomList axioms);
 
@@ -73,7 +77,8 @@ public:
     const ObjectList& get_constants() const;
     template<PredicateTag P>
     const PredicateList<P>& get_predicates() const;
-    const FunctionSkeletonList& get_functions() const;
+    template<FunctionTag F>
+    const FunctionSkeletonList<F>& get_functions() const;
     const ActionList& get_actions() const;
     const AxiomList& get_axioms() const;
 
@@ -92,7 +97,9 @@ public:
                                      std::as_const(m_static_predicates),
                                      std::as_const(m_fluent_predicates),
                                      std::as_const(m_derived_predicates),
-                                     std::as_const(m_functions),
+                                     std::as_const(m_static_functions),
+                                     std::as_const(m_fluent_functions),
+                                     std::as_const(m_auxiliary_functions),
                                      std::as_const(m_actions),
                                      std::as_const(m_axioms));
     }

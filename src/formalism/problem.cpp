@@ -49,7 +49,7 @@ ProblemImpl::ProblemImpl(Index index,
                          PredicateList<Derived> derived_predicates,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
-                         GroundFunctionValueList ground_function_values,
+                         GroundFunctionValueList<Static> static_function_values,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
@@ -64,7 +64,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_derived_predicates(std::move(derived_predicates)),
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
-    m_ground_function_values(std::move(ground_function_values)),
+    m_static_function_values(std::move(static_function_values)),
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
     m_derived_goal_condition(std::move(derived_goal_condition)),
@@ -76,7 +76,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_static_initial_atoms_indices(),
     m_positive_static_initial_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>())),
     m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
-    m_ground_function_to_value(),
+    m_static_function_to_value(),
     m_static_goal_holds(false),
     m_positive_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, true)),
     m_positive_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, true)),
@@ -102,7 +102,7 @@ ProblemImpl::ProblemImpl(Index index,
     assert(is_all_unique(m_derived_predicates));
     assert(is_all_unique(m_static_initial_literals));
     assert(is_all_unique(m_fluent_initial_literals));
-    assert(is_all_unique(m_ground_function_values));
+    assert(is_all_unique(m_static_function_values));
     assert(is_all_unique(m_static_goal_condition));
     assert(is_all_unique(m_fluent_goal_condition));
     assert(is_all_unique(m_derived_goal_condition));
@@ -155,9 +155,9 @@ ProblemImpl::ProblemImpl(Index index,
 
     m_positive_static_initial_assignment_set.insert_ground_atoms(m_positive_static_initial_atoms);
 
-    for (const auto numeric_fluent : get_function_values())
+    for (const auto numeric_fluent : get_static_function_values())
     {
-        m_ground_function_to_value.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
+        m_static_function_to_value.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
     }
 
     /* Goal */
@@ -267,7 +267,7 @@ const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() cons
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
-const GroundFunctionValueList& ProblemImpl::get_function_values() const { return m_ground_function_values; }
+const GroundFunctionValueList<Static>& ProblemImpl::get_static_function_values() const { return m_static_function_values; }
 
 template<PredicateTag P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
@@ -321,12 +321,12 @@ const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { re
 
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 
-const GroundFunctionMap<ContinuousCost>& ProblemImpl::get_ground_function_to_value() const { return m_ground_function_to_value; }
+const GroundFunctionMap<Static, ContinuousCost>& ProblemImpl::get_static_function_to_value() const { return m_static_function_to_value; }
 
-ContinuousCost ProblemImpl::get_ground_function_value(GroundFunction function) const
+ContinuousCost ProblemImpl::get_static_function_value(GroundFunction<Static> function) const
 {
-    auto it = m_ground_function_to_value.find(function);
-    if (it != m_ground_function_to_value.end())
+    auto it = m_static_function_to_value.find(function);
+    if (it != m_static_function_to_value.end())
     {
         return it->second;
     }

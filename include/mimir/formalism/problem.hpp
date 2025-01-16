@@ -36,7 +36,7 @@ private:
     PredicateList<Derived> m_derived_predicates;
     GroundLiteralList<Static> m_static_initial_literals;
     GroundLiteralList<Fluent> m_fluent_initial_literals;
-    GroundFunctionValueList m_ground_function_values;
+    GroundFunctionValueList<Static> m_static_function_values;
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
     GroundLiteralList<Derived> m_derived_goal_condition;
@@ -56,7 +56,7 @@ private:
 
     GroundAtomList<Fluent> m_positive_fluent_initial_atoms;
 
-    GroundFunctionMap<ContinuousCost> m_ground_function_to_value;
+    GroundFunctionMap<Static, ContinuousCost> m_static_function_to_value;
 
     /* Goal */
     bool m_static_goal_holds;
@@ -93,7 +93,7 @@ private:
                 PredicateList<Derived> derived_predicates,
                 GroundLiteralList<Static> static_initial_literals,
                 GroundLiteralList<Fluent> fluent_initial_literals,
-                GroundFunctionValueList ground_function_values,
+                GroundFunctionValueList<Static> static_function_values,
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
                 GroundLiteralList<Derived> derived_goal_condition,
@@ -120,7 +120,7 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
-    const GroundFunctionValueList& get_function_values() const;
+    const GroundFunctionValueList<Static>& get_static_function_values() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
     const std::optional<OptimizationMetric>& get_optimization_metric() const;
@@ -137,7 +137,7 @@ public:
                                      std::as_const(m_derived_predicates),
                                      std::as_const(m_static_initial_literals),
                                      std::as_const(m_fluent_initial_literals),
-                                     std::as_const(m_ground_function_values),
+                                     std::as_const(m_static_function_values),
                                      std::as_const(m_static_goal_condition),
                                      std::as_const(m_fluent_goal_condition),
                                      std::as_const(m_derived_goal_condition),
@@ -160,8 +160,8 @@ public:
 
     const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
 
-    const GroundFunctionMap<ContinuousCost>& get_ground_function_to_value() const;
-    ContinuousCost get_ground_function_value(GroundFunction function) const;
+    const GroundFunctionMap<Static, ContinuousCost>& get_static_function_to_value() const;
+    ContinuousCost get_static_function_value(GroundFunction<Static> function) const;
 
     /* Goal */
     bool static_literal_holds(const GroundLiteral<Static> literal) const;  // TODO: probably can go in the future

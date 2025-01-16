@@ -18,7 +18,7 @@
 #ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_DECLARATIONS_HPP_
 
-#include "mimir/formalism/predicate_tag.hpp"
+#include "mimir/formalism/tags.hpp"
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
 #include <boost/hana.hpp>

@@ -23,17 +23,18 @@
 namespace mimir
 {
 
+template<DynamicFunctionTag F>
 class EffectNumericImpl
 {
 private:
     Index m_index;
     loki::AssignOperatorEnum m_assign_operator;
-    GroundFunction<Fluent> m_function;
+    GroundFunction<F> m_function;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, GroundFunction<Fluent> function, FunctionExpression m_function_expression);
+    EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -48,7 +49,7 @@ public:
 
     Index get_index() const;
     loki::AssignOperatorEnum get_assign_operator() const;
-    const GroundFunction<Fluent>& get_function() const;
+    const GroundFunction<F>& get_function() const;
     const FunctionExpression& get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -68,16 +69,15 @@ class EffectStripsImpl
 private:
     Index m_index;
     LiteralList<Fluent> m_effects;
-    /* Partitioning of numeric effects. */
-    EffectNumericList m_numeric_state_relevant_effects;    ///< numeric effects that appear in conditions.
-    EffectNumericList m_numeric_state_irrelevant_effects;  ///< numeric effects that never appear in conditions but for example in metrics.
+    EffectNumericList<Fluent> m_fluent_numeric_effects;
+    EffectNumericList<Auxiliary> m_auxiliary_numeric_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     EffectStripsImpl(Index index,
                      LiteralList<Fluent> effects,
-                     EffectNumericList numeric_state_relevant_effects,
-                     EffectNumericList numeric_state_irrelevant_effects);
+                     EffectNumericList<Fluent> fluent_numeric_effects,
+                     EffectNumericList<Auxiliary> auxiliary_numeric_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -92,17 +92,15 @@ public:
 
     Index get_index() const;
     const LiteralList<Fluent>& get_effects() const;
-    const EffectNumericList& get_numeric_state_relevant_effects() const;
-    const EffectNumericList& get_numeric_state_irrelevant_effects() const;
+    template<DynamicFunctionTag F>
+    const EffectNumericList<F>& get_numeric_effects() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_effects),
-                                     std::as_const(m_numeric_state_relevant_effects),
-                                     std::as_const(m_numeric_state_irrelevant_effects));
+        return std::forward_as_tuple(std::as_const(m_effects), std::as_const(m_fluent_numeric_effects), std::as_const(m_auxiliary_numeric_effects));
     }
 };
 
@@ -118,9 +116,8 @@ private:
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
     LiteralList<Fluent> m_effects;
-    /* Partitioning of numeric effects. */
-    EffectNumericList m_numeric_state_relevant_effects;    ///< numeric effects that appear in conditions.
-    EffectNumericList m_numeric_state_irrelevant_effects;  ///< numeric effects that never appear in conditions but for example in metrics.
+    EffectNumericList<Fluent> m_fluent_numeric_effects;
+    EffectNumericList<Auxiliary> m_auxiliary_numeric_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -130,8 +127,8 @@ private:
                           LiteralList<Fluent> fluent_conditions,
                           LiteralList<Derived> derived_conditions,
                           LiteralList<Fluent> effects,
-                          EffectNumericList numeric_state_relevant_effects,
-                          EffectNumericList numeric_state_irrelevant_effects);
+                          EffectNumericList<Fluent> fluent_numeric_effects,
+                          EffectNumericList<Auxiliary> auxiliary_numeric_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -149,8 +146,8 @@ public:
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
     const LiteralList<Fluent>& get_effects() const;
-    const EffectNumericList& get_numeric_state_relevant_effects() const;
-    const EffectNumericList& get_numeric_state_irrelevant_effects() const;
+    template<DynamicFunctionTag F>
+    const EffectNumericList<F>& get_numeric_effects() const;
 
     size_t get_arity() const;
 
@@ -164,14 +161,18 @@ public:
                                      std::as_const(m_fluent_conditions),
                                      std::as_const(m_derived_conditions),
                                      std::as_const(m_effects),
-                                     std::as_const(m_numeric_state_relevant_effects),
-                                     std::as_const(m_numeric_state_irrelevant_effects));
+                                     std::as_const(m_fluent_numeric_effects),
+                                     std::as_const(m_auxiliary_numeric_effects));
     }
 };
 
+template<DynamicFunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element);
 
+template<DynamicFunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, EffectNumeric<F> element);
 extern std::ostream& operator<<(std::ostream& out, EffectStrips element);
 extern std::ostream& operator<<(std::ostream& out, EffectConditional element);
 

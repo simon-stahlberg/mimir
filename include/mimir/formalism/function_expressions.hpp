@@ -309,10 +309,16 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumbe
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
-template<PredicateTag P>
-extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<P>& element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber element);
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element);
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element);
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpression element);
 }
 

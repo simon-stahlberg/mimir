@@ -46,7 +46,13 @@
 namespace mimir
 {
 
-PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs) : m_indent(indent), m_add_indent(add_indent), m_action_costs(action_costs) {}
+PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs, bool numeric_fluents) :
+    m_indent(indent),
+    m_add_indent(add_indent),
+    m_action_costs(action_costs),
+    m_numeric_fluents(numeric_fluents)
+{
+}
 
 void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out)
 {
@@ -151,12 +157,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
             out << " ";
             write(*effect, out);
         }
-        if (m_action_costs)
-        {
-            out << " (increase total-cost ";
-            write(*element.get_strips_effect()->get_function_expression(), out);
-            out << ")";
-        }
+
         out << ")";  // end and
     }
 
@@ -226,6 +227,7 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
     }
 
     m_action_costs = element.get_requirements()->test(loki::RequirementEnum::ACTION_COSTS);
+    m_numeric_fluents = element.get_requirements()->test(loki::RequirementEnum::NUMERIC_FLUENTS);
 
     if (!element.get_constants().empty())
     {
@@ -258,15 +260,25 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
         }
         out << ")\n";
     }
-    if (!element.get_functions().empty())
+    if (!(element.get_functions<Static>().empty() && element.get_functions<Fluent>().empty() && element.get_functions<Auxiliary>().empty()))
     {
-        out << std::string(m_indent, ' ') << "(:functions ";
-        for (size_t i = 0; i < element.get_functions().size(); ++i)
+        out << std::string(m_indent, ' ') << "(:functions";
+        for (const auto& function : element.get_functions<Static>())
         {
-            if (i != 0)
-                out << " ";
-            write(*element.get_functions()[i], out);
+            out << " ";
+            write(*function, out);
         }
+        for (const auto& function : element.get_functions<Fluent>())
+        {
+            out << " ";
+            write(*function, out);
+        }
+        for (const auto& function : element.get_functions<Auxiliary>())
+        {
+            out << " ";
+            write(*function, out);
+        }
+        out << ")\n";
     }
 
     for (const auto& action : element.get_actions())
@@ -282,6 +294,16 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
     m_indent -= m_add_indent;
 
     out << std::string(m_indent, ' ') << ")";
+}
+
+template<DynamicFunctionTag F>
+void PDDLFormatter::write(const EffectNumericImpl<F>& element, std::ostream& out)
+{
+    out << "(" << to_string(element.get_assign_operator()) << " ";
+    write(*element.get_function(), out);
+    out << " ";
+    write(*element.get_function_expression(), out);
+    out << ")";
 }
 
 void PDDLFormatter::write(const EffectStripsImpl& element, std::ostream& out)
@@ -336,10 +358,18 @@ void PDDLFormatter::write(const EffectConditionalImpl& element, std::ostream& ou
         out << " ";
         write(*effect, out);
     }
-    if (m_action_costs)
+    if (m_action_costs || m_numeric_fluents)
     {
-        out << " (increase total-cost ";
-        write(*element.get_function_expression(), out);
+        for (const auto& effect : element.get_numeric_effects<Fluent>())
+        {
+            out << " ";
+            write(*effect, out);
+        }
+        for (const auto& effect : element.get_numeric_effects<Auxiliary>())
+        {
+            out << " ";
+            write(*effect, out);
+        }
     }
     out << ")";  // end effect and
 
@@ -384,14 +414,23 @@ void PDDLFormatter::write(const FunctionExpressionMinusImpl& element, std::ostre
     out << ")";
 }
 
-void PDDLFormatter::write(const FunctionExpressionFunctionImpl& element, std::ostream& out) { write(*element.get_function(), out); }
+template<FunctionTag F>
+void PDDLFormatter::write(const FunctionExpressionFunctionImpl<F>& element, std::ostream& out)
+{
+    write(*element.get_function(), out);
+}
+
+template void PDDLFormatter::write(const FunctionExpressionFunctionImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const FunctionExpressionFunctionImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const FunctionExpressionFunctionImpl<Auxiliary>& element, std::ostream& out);
 
 void PDDLFormatter::write(const FunctionExpressionImpl& element, std::ostream& out)
 {
     std::visit([this, &out](const auto& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
-void PDDLFormatter::write(const FunctionSkeletonImpl& element, std::ostream& out)
+template<FunctionTag F>
+void PDDLFormatter::write(const FunctionSkeletonImpl<F>& element, std::ostream& out)
 {
     out << "(" << element.get_name();
     for (const auto& parameter : element.get_parameters())
@@ -402,7 +441,12 @@ void PDDLFormatter::write(const FunctionSkeletonImpl& element, std::ostream& out
     out << ")";
 }
 
-void PDDLFormatter::write(const FunctionImpl& element, std::ostream& out)
+template void PDDLFormatter::write(const FunctionSkeletonImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const FunctionSkeletonImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const FunctionSkeletonImpl<Auxiliary>& element, std::ostream& out);
+
+template<FunctionTag F>
+void PDDLFormatter::write(const FunctionImpl<F>& element, std::ostream& out)
 {
     if (element.get_terms().empty())
     {
@@ -420,6 +464,10 @@ void PDDLFormatter::write(const FunctionImpl& element, std::ostream& out)
         out << "))";
     }
 }
+
+template void PDDLFormatter::write(const FunctionImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const FunctionImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const FunctionImpl<Auxiliary>& element, std::ostream& out);
 
 template<PredicateTag P>
 void PDDLFormatter::write(const GroundAtomImpl<P>& element, std::ostream& out)
@@ -466,14 +514,23 @@ void PDDLFormatter::write(const GroundFunctionExpressionMinusImpl& element, std:
     out << ")";
 }
 
-void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl& element, std::ostream& out) { write(*element.get_function(), out); }
+template<FunctionTag F>
+void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl<F>& element, std::ostream& out)
+{
+    write(*element.get_function(), out);
+}
+
+template void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl<Auxiliary>& element, std::ostream& out);
 
 void PDDLFormatter::write(const GroundFunctionExpressionImpl& element, std::ostream& out)
 {
     std::visit([this, &out](auto&& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
-void PDDLFormatter::write(const GroundFunctionImpl& element, std::ostream& out)
+template<FunctionTag F>
+void PDDLFormatter::write(const GroundFunctionImpl<F>& element, std::ostream& out)
 {
     if (element.get_objects().empty())
     {
@@ -491,6 +548,10 @@ void PDDLFormatter::write(const GroundFunctionImpl& element, std::ostream& out)
         out << "))";
     }
 }
+
+template void PDDLFormatter::write(const GroundFunctionImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionImpl<Auxiliary>& element, std::ostream& out);
 
 template<PredicateTag P>
 void PDDLFormatter::write(const GroundLiteralImpl<P>& element, std::ostream& out)
@@ -537,12 +598,17 @@ void PDDLFormatter::write(const OptimizationMetricImpl& element, std::ostream& o
     out << ")";
 }
 
-void PDDLFormatter::write(const GroundFunctionValueImpl& element, std::ostream& out)
+template<FunctionTag F>
+void PDDLFormatter::write(const GroundFunctionValueImpl<F>& element, std::ostream& out)
 {
     out << "(= ";
     write(*element.get_function(), out);
     out << " " << element.get_number() << ")";
 }
+
+template void PDDLFormatter::write(const GroundFunctionValueImpl<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionValueImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionValueImpl<Auxiliary>& element, std::ostream& out);
 
 void PDDLFormatter::write(const ObjectImpl& element, std::ostream& out) { out << element.get_name(); }
 
@@ -579,45 +645,39 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
     if (!element.get_objects().empty())
     {
         out << std::string(m_indent, ' ') << "(:objects ";
-        for (size_t i = 0; i < element.get_objects().size(); ++i)
+        for (const auto& object : element.get_objects())
         {
-            if (i != 0)
-                out << " ";
-            write(*element.get_objects()[i], out);
+            out << " ";
+            write(*object, out);
         }
         out << ")" << std::endl;
     }
 
     if (!element.get_derived_predicates().empty())
     {
-        out << std::string(m_indent, ' ') << "(:predicates ";
-        for (size_t i = 0; i < element.get_derived_predicates().size(); ++i)
+        out << std::string(m_indent, ' ') << "(:predicates";
+        for (const auto& predicate : element.get_derived_predicates())
         {
-            if (i != 0)
-                out << " ";
-            write(*element.get_derived_predicates()[i], out);
+            out << " ";
+            write(*predicate, out);
         }
         out << ")" << std::endl;
     }
 
-    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_function_values().empty()))
+    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_static_function_values().empty()))
     {
-        out << std::string(m_indent, ' ') << "(:init ";
-        for (size_t i = 0; i < element.get_static_initial_literals().size(); ++i)
+        out << std::string(m_indent, ' ') << "(:init";
+        for (const auto& initial : element.get_static_initial_literals())
         {
-            if (i != 0)
-                out << " ";
-            write(*element.get_static_initial_literals()[i], out);
+            write(*initial, out);
         }
-        for (size_t i = 0; i < element.get_fluent_initial_literals().size(); ++i)
+        for (const auto& initial : element.get_fluent_initial_literals())
         {
-            out << " ";
-            write(*element.get_fluent_initial_literals()[i], out);
+            write(*initial, out);
         }
-        for (size_t i = 0; i < element.get_function_values().size(); ++i)
+        for (const auto& initial : element.get_static_function_values())
         {
-            out << " ";
-            write(*element.get_function_values()[i], out);
+            write(*initial, out);
         }
     }
     out << ")" << std::endl;

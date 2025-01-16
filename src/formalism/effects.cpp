@@ -32,23 +32,94 @@ namespace mimir
 {
 
 /**
+ * EffectNumeric
+ */
+
+template<DynamicFunctionTag F>
+EffectNumericImpl<F>::EffectNumericImpl(Index index,
+                                        loki::AssignOperatorEnum assign_operator,
+                                        GroundFunction<F> function,
+                                        FunctionExpression function_expression) :
+    m_index(index),
+    m_assign_operator(assign_operator),
+    m_function(function),
+    m_function_expression(function_expression)
+{
+}
+
+template<DynamicFunctionTag F>
+Index EffectNumericImpl<F>::get_index() const
+{
+    return m_index;
+}
+
+template<DynamicFunctionTag F>
+loki::AssignOperatorEnum EffectNumericImpl<F>::get_assign_operator() const
+{
+    return m_assign_operator;
+}
+
+template<DynamicFunctionTag F>
+const GroundFunction<F>& EffectNumericImpl<F>::get_function() const
+{
+    return m_function;
+}
+
+template<DynamicFunctionTag F>
+const FunctionExpression& EffectNumericImpl<F>::get_function_expression() const
+{
+    return m_function_expression;
+}
+
+template class EffectNumericImpl<Fluent>;
+template class EffectNumericImpl<Auxiliary>;
+
+/**
  * Type 1 effect
  */
 
-EffectStripsImpl::EffectStripsImpl(Index index, LiteralList<Fluent> effects, FunctionExpression function_expression) :
+EffectStripsImpl::EffectStripsImpl(Index index,
+                                   LiteralList<Fluent> effects,
+                                   EffectNumericList<Fluent> fluent_numeric_effects,
+                                   EffectNumericList<Auxiliary> auxiliary_numeric_effects) :
     m_index(index),
     m_effects(std::move(effects)),
-    m_function_expression(std::move(function_expression))
+    m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
+    m_auxiliary_numeric_effects(std::move(auxiliary_numeric_effects))
 {
     assert(is_all_unique(m_effects));
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_numeric_effects.begin(),
+                          m_fluent_numeric_effects.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_auxiliary_numeric_effects.begin(),
+                          m_auxiliary_numeric_effects.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 Index EffectStripsImpl::get_index() const { return m_index; }
 
 const LiteralList<Fluent>& EffectStripsImpl::get_effects() const { return m_effects; }
 
-const FunctionExpression& EffectStripsImpl::get_function_expression() const { return m_function_expression; }
+template<DynamicFunctionTag F>
+const EffectNumericList<F>& EffectStripsImpl::get_numeric_effects() const
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_numeric_effects;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_numeric_effects;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
+
+template const EffectNumericList<Fluent>& EffectStripsImpl::get_numeric_effects() const;
+template const EffectNumericList<Auxiliary>& EffectStripsImpl::get_numeric_effects() const;
 
 /**
  * Type 3 effect
@@ -60,14 +131,16 @@ EffectConditionalImpl::EffectConditionalImpl(Index index,
                                              LiteralList<Fluent> fluent_conditions,
                                              LiteralList<Derived> derived_conditions,
                                              LiteralList<Fluent> effects,
-                                             FunctionExpression function_expression) :
+                                             EffectNumericList<Fluent> fluent_numeric_effects,
+                                             EffectNumericList<Auxiliary> auxiliary_numeric_effects) :
     m_index(index),
     m_quantified_variables(std::move(quantified_variables)),
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
     m_effects(std::move(effects)),
-    m_function_expression(std::move(function_expression))
+    m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
+    m_auxiliary_numeric_effects(std::move(auxiliary_numeric_effects))
 {
     assert(is_all_unique(m_quantified_variables));
     assert(is_all_unique(m_static_conditions));
@@ -81,6 +154,12 @@ EffectConditionalImpl::EffectConditionalImpl(Index index,
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_numeric_effects.begin(),
+                          m_fluent_numeric_effects.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_auxiliary_numeric_effects.begin(),
+                          m_auxiliary_numeric_effects.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 Index EffectConditionalImpl::get_index() const { return m_index; }
@@ -114,9 +193,38 @@ template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Deriv
 
 const LiteralList<Fluent>& EffectConditionalImpl::get_effects() const { return m_effects; }
 
-const FunctionExpression& EffectConditionalImpl::get_function_expression() const { return m_function_expression; }
+template<DynamicFunctionTag F>
+const EffectNumericList<F>& EffectConditionalImpl::get_numeric_effects() const
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_numeric_effects;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_numeric_effects;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
+
+template const EffectNumericList<Fluent>& EffectConditionalImpl::get_numeric_effects() const;
+template const EffectNumericList<Auxiliary>& EffectConditionalImpl::get_numeric_effects() const;
 
 size_t EffectConditionalImpl::get_arity() const { return m_quantified_variables.size(); }
+
+template<DynamicFunctionTag F>
+std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<F>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<Auxiliary>& element);
 
 std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element)
 {
@@ -131,6 +239,16 @@ std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element
     formatter.write(element, out);
     return out;
 }
+
+template<DynamicFunctionTag F>
+std::ostream& operator<<(std::ostream& out, EffectNumeric<F> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, EffectNumeric<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, EffectNumeric<Auxiliary> element);
 
 std::ostream& operator<<(std::ostream& out, EffectStrips element)
 {

@@ -236,6 +236,12 @@ template<FunctionTag F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumber element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element);
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element);
+template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);
 
 }

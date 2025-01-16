@@ -23,30 +23,57 @@
 
 namespace mimir
 {
-GroundFunctionImpl::GroundFunctionImpl(Index index, FunctionSkeleton function_skeleton, ObjectList objects) :
+template<FunctionTag F>
+GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
     m_objects(std::move(objects))
 {
 }
 
-Index GroundFunctionImpl::get_index() const { return m_index; }
+template<FunctionTag F>
+Index GroundFunctionImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const FunctionSkeleton& GroundFunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
+template<FunctionTag F>
+const FunctionSkeleton<F>& GroundFunctionImpl<F>::get_function_skeleton() const
+{
+    return m_function_skeleton;
+}
 
-const ObjectList& GroundFunctionImpl::get_objects() const { return m_objects; }
+template<FunctionTag F>
+const ObjectList& GroundFunctionImpl<F>::get_objects() const
+{
+    return m_objects;
+}
 
-std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl& element)
+template class GroundFunctionImpl<Static>;
+template class GroundFunctionImpl<Fluent>;
+template class GroundFunctionImpl<Auxiliary>;
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, GroundFunction element)
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Auxiliary>& element);
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
 {
     out << *element;
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, GroundFunction<Static> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunction<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, GroundFunction<Auxiliary> element);
 
 }

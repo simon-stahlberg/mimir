@@ -25,7 +25,6 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/predicate_tag.hpp"
 
 #include <algorithm>
 #include <ostream>

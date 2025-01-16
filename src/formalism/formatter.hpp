@@ -33,11 +33,13 @@ private:
     size_t m_indent;
     // The amount of indentation added per nesting
     size_t m_add_indent;
-    // Whether action costs are enabled.
+    // Whether :action-costs is enabled.
     bool m_action_costs;
+    // Whether :numeric-fluents is enabled.
+    bool m_numeric_fluents;
 
 public:
-    PDDLFormatter(size_t indent = 0, size_t add_indent = 4, bool action_costs = false);
+    PDDLFormatter(size_t indent = 0, size_t add_indent = 4, bool action_costs = false, bool numeric_fluents = false);
 
     void write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out);
     void write(const ActionImpl& element, std::ostream& out);
@@ -45,31 +47,39 @@ public:
     void write(const AtomImpl<P>& element, std::ostream& out);
     void write(const AxiomImpl& element, std::ostream& out);
     void write(const DomainImpl& element, std::ostream& out);
+    template<DynamicFunctionTag F>
+    void write(const EffectNumericImpl<F>& element, std::ostream& out);
     void write(const EffectStripsImpl& element, std::ostream& out);
     void write(const EffectConditionalImpl& element, std::ostream& out);
     void write(const FunctionExpressionNumberImpl& element, std::ostream& out);
     void write(const FunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
     void write(const FunctionExpressionMultiOperatorImpl& element, std::ostream& out);
     void write(const FunctionExpressionMinusImpl& element, std::ostream& out);
-    void write(const FunctionExpressionFunctionImpl& element, std::ostream& out);
+    template<FunctionTag F>
+    void write(const FunctionExpressionFunctionImpl<F>& element, std::ostream& out);
     void write(const FunctionExpressionImpl& element, std::ostream& out);
-    void write(const FunctionSkeletonImpl& element, std::ostream& out);
-    void write(const FunctionImpl& element, std::ostream& out);
+    template<FunctionTag F>
+    void write(const FunctionSkeletonImpl<F>& element, std::ostream& out);
+    template<FunctionTag F>
+    void write(const FunctionImpl<F>& element, std::ostream& out);
     template<PredicateTag P>
     void write(const GroundAtomImpl<P>& element, std::ostream& out);
     void write(const GroundFunctionExpressionNumberImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionMultiOperatorImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionMinusImpl& element, std::ostream& out);
-    void write(const GroundFunctionExpressionFunctionImpl& element, std::ostream& out);
+    template<FunctionTag F>
+    void write(const GroundFunctionExpressionFunctionImpl<F>& element, std::ostream& out);
     void write(const GroundFunctionExpressionImpl& element, std::ostream& out);
-    void write(const GroundFunctionImpl& element, std::ostream& out);
+    template<FunctionTag F>
+    void write(const GroundFunctionImpl<F>& element, std::ostream& out);
     template<PredicateTag P>
     void write(const GroundLiteralImpl<P>& element, std::ostream& out);
     template<PredicateTag P>
     void write(const LiteralImpl<P>& element, std::ostream& out);
     void write(const OptimizationMetricImpl& element, std::ostream& out);
-    void write(const GroundFunctionValueImpl& element, std::ostream& out);
+    template<FunctionTag F>
+    void write(const GroundFunctionValueImpl<F>& element, std::ostream& out);
     void write(const ObjectImpl& element, std::ostream& out);
     template<PredicateTag P>
     void write(const PredicateImpl<P>& element, std::ostream& out);

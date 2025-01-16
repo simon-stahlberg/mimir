@@ -23,29 +23,52 @@
 
 namespace mimir
 {
-FunctionImpl::FunctionImpl(Index index, FunctionSkeleton function_skeleton, TermList terms) :
+template<FunctionTag F>
+FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
     m_terms(std::move(terms))
 {
 }
 
-Index FunctionImpl::get_index() const { return m_index; }
+template<FunctionTag F>
+Index FunctionImpl<F>::get_index() const
+{
+    return m_index;
+}
 
-const FunctionSkeleton& FunctionImpl::get_function_skeleton() const { return m_function_skeleton; }
+template<FunctionTag F>
+const FunctionSkeleton<F>& FunctionImpl<F>::get_function_skeleton() const
+{
+    return m_function_skeleton;
+}
 
-const TermList& FunctionImpl::get_terms() const { return m_terms; }
+template<FunctionTag F>
+const TermList& FunctionImpl<F>::get_terms() const
+{
+    return m_terms;
+}
 
-std::ostream& operator<<(std::ostream& out, const FunctionImpl& element)
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, Function element)
+template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Auxiliary>& element);
+
+template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, Function<F> element)
 {
     out << *element;
     return out;
 }
+
+template std::ostream& operator<<(std::ostream& out, Function<Static> element);
+template std::ostream& operator<<(std::ostream& out, Function<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, Function<Auxiliary> element);
 }

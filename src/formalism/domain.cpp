@@ -44,7 +44,9 @@ DomainImpl::DomainImpl(Index index,
                        PredicateList<Static> static_predicates,
                        PredicateList<Fluent> fluent_predicates,
                        PredicateList<Derived> derived_predicates,
-                       FunctionSkeletonList functions,
+                       FunctionSkeletonList<Static> static_functions,
+                       FunctionSkeletonList<Fluent> fluent_functions,
+                       FunctionSkeletonList<Auxiliary> auxiliary_functions,
                        ActionList actions,
                        AxiomList axioms) :
     m_index(index),
@@ -55,7 +57,9 @@ DomainImpl::DomainImpl(Index index,
     m_static_predicates(std::move(static_predicates)),
     m_fluent_predicates(std::move(fluent_predicates)),
     m_derived_predicates(std::move(derived_predicates)),
-    m_functions(std::move(functions)),
+    m_static_functions(std::move(static_functions)),
+    m_fluent_functions(std::move(fluent_functions)),
+    m_auxiliary_functions(std::move(auxiliary_functions)),
     m_actions(std::move(actions)),
     m_axioms(std::move(axioms)),
     m_name_to_static_predicate(),
@@ -66,7 +70,9 @@ DomainImpl::DomainImpl(Index index,
     assert(is_all_unique(m_static_predicates));
     assert(is_all_unique(m_fluent_predicates));
     assert(is_all_unique(m_derived_predicates));
-    assert(is_all_unique(m_functions));
+    assert(is_all_unique(m_static_functions));
+    assert(is_all_unique(m_fluent_functions));
+    assert(is_all_unique(m_auxiliary_functions));
     assert(is_all_unique(m_actions));
     assert(is_all_unique(m_axioms));
     assert(std::is_sorted(m_constants.begin(), m_constants.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -76,7 +82,11 @@ DomainImpl::DomainImpl(Index index,
         std::is_sorted(m_fluent_predicates.begin(), m_fluent_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_derived_predicates.begin(), m_derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_functions.begin(), m_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_static_functions.begin(), m_static_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_functions.begin(), m_fluent_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_auxiliary_functions.begin(),
+                          m_auxiliary_functions.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_actions.begin(), m_actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
@@ -134,7 +144,30 @@ template const PredicateList<Static>& DomainImpl::get_predicates<Static>() const
 template const PredicateList<Fluent>& DomainImpl::get_predicates<Fluent>() const;
 template const PredicateList<Derived>& DomainImpl::get_predicates<Derived>() const;
 
-const FunctionSkeletonList& DomainImpl::get_functions() const { return m_functions; }
+template<FunctionTag F>
+const FunctionSkeletonList<F>& DomainImpl::get_functions() const
+{
+    if constexpr (std::is_same_v<F, Static>)
+    {
+        return m_static_functions;
+    }
+    else if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_functions;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_functions;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
+    }
+}
+
+template const FunctionSkeletonList<Static>& DomainImpl::get_functions<Static>() const;
+template const FunctionSkeletonList<Fluent>& DomainImpl::get_functions<Fluent>() const;
+template const FunctionSkeletonList<Auxiliary>& DomainImpl::get_functions<Auxiliary>() const;
 
 const ActionList& DomainImpl::get_actions() const { return m_actions; }
 

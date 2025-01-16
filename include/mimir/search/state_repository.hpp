@@ -33,8 +33,8 @@ private:
     std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< The axiom evaluator.
     bool m_problem_or_domain_has_axioms;                 ///< flag that indicates whether axiom evaluation must trigger.
 
-    StateImplSet m_states;                   ///< Stores all created extended states.
-    AxiomEvaluationSet m_axiom_evaluations;  ///< Stores all axiom evaluations.
+    StateImplSet m_states;                      ///< Stores all created extended states.
+    DerivedAtomindicesSet m_axiom_evaluations;  ///< Stores all axiom evaluations.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -70,7 +70,7 @@ public:
     /// @param state is the state.
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
-    /// @return the extended successor state and the action cost.
+    /// @return the extended successor state and all auxiliary ground functions values.
     std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
@@ -79,7 +79,7 @@ public:
     /// @param state_derived_atoms are the derived atoms of the state
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
-    /// @return the extended successor state and the action cost.
+    /// @return the extended successor state and all auxiliary ground functions values.
     std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action);
 
     /**
