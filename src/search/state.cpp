@@ -95,6 +95,16 @@ const FlatIndexList& StateImpl::get_atoms() const
 template const FlatIndexList& StateImpl::get_atoms<Fluent>() const;
 template const FlatIndexList& StateImpl::get_atoms<Derived>() const;
 
+const FlatDoubleList& StateImpl::get_numeric_variables() const
+{
+    if (!m_numeric_variables)
+    {
+        return StateImpl::s_empty_numeric_variables;
+    }
+    // StateRepository ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
+    return *reinterpret_cast<const FlatDoubleList*>(m_numeric_variables);
+}
+
 Index& StateImpl::get_index() { return m_index; }
 
 FlatIndexList& StateImpl::get_fluent_atoms()
@@ -104,6 +114,8 @@ FlatIndexList& StateImpl::get_fluent_atoms()
 }
 
 FlatExternalPtr<const FlatIndexList>& StateImpl::get_derived_atoms() { return m_derived_atoms; }
+
+uintptr_t& StateImpl::get_numeric_variables() { return m_numeric_variables; }
 
 /**
  * Pretty printing

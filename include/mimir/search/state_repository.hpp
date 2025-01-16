@@ -48,6 +48,8 @@ private:
 
     FlatIndexList m_state_derived_atoms;
 
+    absl::flat_hash_map<Index, ContinuousCost> m_auxilary_function_to_cost;
+
 public:
     explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
 

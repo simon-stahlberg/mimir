@@ -150,12 +150,12 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
 static void collect_applied_strips_effects(GroundAction action,
                                            FlatBitset& ref_negative_applied_effects,
                                            FlatBitset& ref_positive_applied_effects,
-                                           ContinuousCost& ref_action_cost)
+                                           absl::flat_hash_map<Index, ContinuousCost>& auxilary_function_to_cost)
 {
     const auto& strips_action_effect = action->get_strips_effect();
     insert_into_bitset(strips_action_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(strips_action_effect.get_positive_effects(), ref_positive_applied_effects);
-    ref_action_cost += strips_action_effect.get_cost();
+    for (const auto& ground_numeric_effect : strips_action_effect.get_numeric_effects<Auxiliary>()) {}
 }
 
 static void collect_applied_conditional_effects(GroundAction action,
@@ -163,7 +163,7 @@ static void collect_applied_conditional_effects(GroundAction action,
                                                 const DenseState& dense_state,
                                                 FlatBitset& ref_negative_applied_effects,
                                                 FlatBitset& ref_positive_applied_effects,
-                                                ContinuousCost& ref_action_cost)
+                                                absl::flat_hash_map<Index, ContinuousCost>& auxilary_function_to_cost)
 {
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
@@ -187,6 +187,10 @@ static void collect_applied_conditional_effects(GroundAction action,
 
 std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action)
 {
+    const auto& metric = m_axiom_evaluator->get_problem()->get_optimization_metric();
+
+    m_auxilary_function_to_cost.clear();
+
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
@@ -195,9 +199,6 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
     state_derived_atoms_ptr = nullptr;
-
-    /* Accumulate state-dependent action cost. */
-    auto action_cost = ContinuousCost(0);
 
     /* 1. Set the state index. */
     {
@@ -211,14 +212,14 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
         m_applied_negative_effect_atoms.unset_all();
         m_applied_positive_effect_atoms.unset_all();
 
-        collect_applied_strips_effects(action, m_applied_negative_effect_atoms, m_applied_positive_effect_atoms, action_cost);
+        collect_applied_strips_effects(action, m_applied_negative_effect_atoms, m_applied_positive_effect_atoms, m_auxilary_function_to_cost);
 
         collect_applied_conditional_effects(action,
                                             m_axiom_evaluator->get_axiom_grounder()->get_problem(),
                                             dense_state,
                                             m_applied_negative_effect_atoms,
                                             m_applied_positive_effect_atoms,
-                                            action_cost);
+                                            m_auxilary_function_to_cost);
 
         apply_action_effects(m_applied_negative_effect_atoms, m_applied_positive_effect_atoms, dense_fluent_atoms);
 

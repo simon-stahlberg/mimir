@@ -38,8 +38,10 @@ struct StateImpl
     Index m_index = Index(0);
     FlatIndexList m_fluent_atoms = FlatIndexList();
     FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
+    uintptr_t m_numeric_variables = uintptr_t(0);
 
-    static const FlatIndexList s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
+    static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
+    static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
     template<DynamicPredicateTag P>
@@ -59,12 +61,14 @@ struct StateImpl
     template<DynamicPredicateTag P>
     const FlatIndexList& get_atoms() const;
 
+    const FlatDoubleList& get_numeric_variables() const;
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     ///
     /// Only return the non-extended portion of a state because it implies the extended portion.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(get_atoms<Fluent>())); }
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(get_atoms<Fluent>()), std::as_const(m_numeric_variables)); }
 
 private:
     /* Mutable Getters */
@@ -75,6 +79,7 @@ private:
 
     FlatIndexList& get_fluent_atoms();
     FlatExternalPtr<const FlatIndexList>& get_derived_atoms();
+    uintptr_t& get_numeric_variables();
 };
 
 /// @brief STL does not define operator== for std::span.
