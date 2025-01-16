@@ -33,7 +33,12 @@ private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
-    GroundingTableList<GroundFunction> m_grounding_tables;
+    using GroundedTypeToGroundingTableList =
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>>;
+
+    GroundedTypeToGroundingTableList m_grounding_tables;
 
 public:
     /// @brief Simplest construction
@@ -46,7 +51,8 @@ public:
     FunctionGrounder(FunctionGrounder&& other) = default;
     FunctionGrounder& operator=(FunctionGrounder&& other) = default;
 
-    GroundFunction ground_function(Function function, const ObjectList& binding);
+    template<FunctionTag F>
+    GroundFunction<F> ground_function(Function<F> function, const ObjectList& binding);
 
     /**
      * Getters

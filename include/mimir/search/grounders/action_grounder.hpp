@@ -43,6 +43,9 @@ private:
 
     std::unordered_map<Action, PerActionData> m_per_action_datas;
 
+    template<DynamicFunctionTag F>
+    void ground_and_fill_vector(const EffectNumericList<F>& numeric_effects, GroundEffectNumericList& ref_numeric_effects, FunctionGrounder& function_grounder);
+
 public:
     /// @brief Simplest construction
     ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<FunctionGrounder> function_grounder);

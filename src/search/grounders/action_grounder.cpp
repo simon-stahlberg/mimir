@@ -67,7 +67,8 @@ public:
 
     double operator()(const FunctionExpressionMinusImpl& expr) { return -(*this)(*expr.get_function_expression()); }
 
-    double operator()(const FunctionExpressionFunctionImpl& expr)
+    template<FunctionTag F>
+    double operator()(const FunctionExpressionFunctionImpl<F>& expr)
     {
         return m_problem->get_ground_function_value(m_function_grounder.ground_function(expr.get_function(), m_binding));
     }
@@ -115,6 +116,20 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
             std::make_tuple(std::move(action_builder), GroundingTable<GroundAction>(), std::move(cond_effect_static_consistency_graphs)));
     }
 }
+
+template<DynamicFunctionTag F>
+void ActionGrounder::ground_and_fill_vector(const EffectNumericList<F>& numeric_effects,
+                                            GroundEffectNumericList& ref_numeric_effects,
+                                            FunctionGrounder& function_grounder)
+{
+}
+
+template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Fluent>& numeric_effects,
+                                                     GroundEffectNumericList& ref_numeric_effects,
+                                                     FunctionGrounder& function_grounder);
+template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Auxiliary>& numeric_effects,
+                                                     GroundEffectNumericList& ref_numeric_effects,
+                                                     FunctionGrounder& function_grounder);
 
 GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 {
@@ -190,7 +205,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     positive_derived_precondition.compress();
     negative_derived_precondition.compress();
 
-    /* Strips effects */
+    /* Strips propositional effects */
     auto& strips_effect = action_builder.get_strips_effect();
     auto& positive_effect = strips_effect.get_positive_effects();
     auto& negative_effect = strips_effect.get_negative_effects();
@@ -202,8 +217,13 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     positive_effect.compress();
     negative_effect.compress();
 
-    strips_effect.get_cost() =
-        GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_strips_effect->get_function_expression());
+    /* Strips numerical effects */
+    auto& fluent_numerical_effects = strips_effect.get_numeric_effects<Fluent>();
+    auto& auxiliary_numerical_effects = strips_effect.get_numeric_effects<Auxiliary>();
+    fluent_numerical_effects.clear();
+    auxiliary_numerical_effects.clear();
+    ground_and_fill_vector(lifted_strips_effect->get_numeric_effects<Fluent>(), fluent_numerical_effects, *m_function_grounder);
+    ground_and_fill_vector(lifted_strips_effect->get_numeric_effects<Auxiliary>(), auxiliary_numerical_effects, *m_function_grounder);
 
     /* Conditional effects */
     // Fetch data
@@ -273,8 +293,13 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
                     fill_effects(lifted_cond_effect->get_effects(), binding_cond_effect, cond_simple_effect_j);
 
-                    cond_effect_j.get_cost() =
-                        GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
+                    auto& cond_fluent_numerical_effects_j = strips_effect.get_numeric_effects<Fluent>();
+                    auto& cond_auxiliary_numerical_effects_j = strips_effect.get_numeric_effects<Auxiliary>();
+                    cond_fluent_numerical_effects_j.clear();
+                    cond_auxiliary_numerical_effects_j.clear();
+
+                    ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, *m_function_grounder);
+                    ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Auxiliary>(), cond_auxiliary_numerical_effects_j, *m_function_grounder);
                 }
             }
             else
@@ -314,8 +339,13 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 
                 fill_effects(lifted_cond_effect->get_effects(), binding, cond_simple_effect);
 
-                cond_effect.get_cost() =
-                    GroundAndEvaluateFunctionExpressionVisitor(problem, binding, *m_function_grounder)(*lifted_cond_effect->get_function_expression());
+                auto& cond_fluent_numerical_effects_j = strips_effect.get_numeric_effects<Fluent>();
+                auto& cond_auxiliary_numerical_effects_j = strips_effect.get_numeric_effects<Auxiliary>();
+                cond_fluent_numerical_effects_j.clear();
+                cond_auxiliary_numerical_effects_j.clear();
+
+                ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, *m_function_grounder);
+                ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Auxiliary>(), cond_auxiliary_numerical_effects_j, *m_function_grounder);
             }
         }
     }

@@ -72,6 +72,8 @@ inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
 /* ExternalPtr */
 template<typename T>
 using FlatExternalPtr = cista::offset::external_ptr<T>;
+/* DoubleList */
+using FlatDoubleList = cista::offset::vector<double>;
 
 /// @brief Check whether `value` exists in the given `vec`.
 /// Runs binary search to find a value in a vec.

@@ -30,12 +30,50 @@ FunctionGrounder::FunctionGrounder(Problem problem, std::shared_ptr<PDDLReposito
 {
 }
 
-GroundFunction FunctionGrounder::ground_function(Function function, const ObjectList& binding)
+template<FunctionTag F>
+GroundFunction<F> FunctionGrounder::ground_function(Function<F> function, const ObjectList& binding)
 {
+    /* 1. Access the type specific grounding tables. */
+    auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundFunction<F>> {});
+
+    /* 2. Access the function specific grounding table */
+    const auto function_index = function->get_index();
+    if (function_index >= grounding_tables.size())
+    {
+        grounding_tables.resize(function_index + 1);
+    }
+
+    auto& grounding_table = grounding_tables.at(function_index);
+
+    /* 3. Check if grounding is cached */
+
+    // We have to fetch the literal-relevant part of the binding first.
+    // Note: this is important and saves a lot of memory.
     auto grounded_terms = ObjectList {};
     ground_variables(function->get_terms(), binding, grounded_terms);
-    return m_pddl_repositories->get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
+
+    const auto it = grounding_table.find(grounded_terms);
+    if (it != grounding_table.end())
+    {
+        return it->second;
+    }
+
+    /* 4. Ground the function */
+
+    const auto grounded_function = m_pddl_repositories->get_or_create_ground_function(function->get_function_skeleton(), grounded_terms);
+
+    /* 5. Insert to grounding_table table */
+
+    grounding_table.emplace(std::move(grounded_terms), GroundFunction<F>(grounded_function));
+
+    /* 6. Return the resulting ground literal */
+
+    return grounded_function;
 }
+
+template GroundFunction<Static> FunctionGrounder::ground_function(Function<Static> function, const ObjectList& binding);
+template GroundFunction<Fluent> FunctionGrounder::ground_function(Function<Fluent> function, const ObjectList& binding);
+template GroundFunction<Auxiliary> FunctionGrounder::ground_function(Function<Auxiliary> function, const ObjectList& binding);
 
 Problem FunctionGrounder::get_problem() const { return m_problem; }
 

@@ -177,9 +177,45 @@ FlatIndexList& GroundEffectStrips::get_negative_effects() { return m_negative_ef
 
 const FlatIndexList& GroundEffectStrips::get_negative_effects() const { return m_negative_effects; }
 
-ContinuousCost& GroundEffectStrips::get_cost() { return m_cost; }
+template<DynamicFunctionTag F>
+GroundEffectNumericList& GroundEffectStrips::get_numeric_effects()
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_numeric_effects;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_numeric_effects;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
 
-const ContinuousCost& GroundEffectStrips::get_cost() const { return m_cost; }
+template GroundEffectNumericList& GroundEffectStrips::get_numeric_effects<Fluent>();
+template GroundEffectNumericList& GroundEffectStrips::get_numeric_effects<Auxiliary>();
+
+template<DynamicFunctionTag F>
+const GroundEffectNumericList& GroundEffectStrips::get_numeric_effects() const
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_numeric_effects;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_numeric_effects;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
+
+template const GroundEffectNumericList& GroundEffectStrips::get_numeric_effects<Fluent>() const;
+template const GroundEffectNumericList& GroundEffectStrips::get_numeric_effects<Auxiliary>() const;
 
 /* GroundEffectConditional */
 
@@ -299,9 +335,45 @@ GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_litera
 
 const GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() const { return m_effects; }
 
-ContinuousCost& GroundEffectConditional::get_cost() { return m_cost; }
+template<DynamicFunctionTag F>
+GroundEffectNumericList& GroundEffectConditional::get_numeric_effects()
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_numeric_effects;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_numeric_effects;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
 
-const ContinuousCost& GroundEffectConditional::get_cost() const { return m_cost; }
+template GroundEffectNumericList& GroundEffectConditional::get_numeric_effects<Fluent>();
+template GroundEffectNumericList& GroundEffectConditional::get_numeric_effects<Auxiliary>();
+
+template<DynamicFunctionTag F>
+const GroundEffectNumericList& GroundEffectConditional::get_numeric_effects() const
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_numeric_effects;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_numeric_effects;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
+
+template const GroundEffectNumericList& GroundEffectConditional::get_numeric_effects<Fluent>() const;
+template const GroundEffectNumericList& GroundEffectConditional::get_numeric_effects<Auxiliary>() const;
 
 template<PredicateTag P>
 bool GroundEffectConditional::is_applicable(const FlatBitset& atoms) const
@@ -438,12 +510,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrip
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", "
-       << "negative derived precondition=" << negative_derived_precondition;
+    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition;
 
     return os;
 }
@@ -462,8 +531,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", "
-       << "add effects=" << positive_simple_effects;
+    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects;
 
     return os;
 }
@@ -495,12 +563,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditio
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", "
-       << "negative derived precondition=" << negative_derived_precondition << ", "
+    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition << ", "
        << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_repositories));
 
     return os;
@@ -527,8 +592,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
        << "binding=" << binding << ", "                                                            //
        << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "               //
        << std::make_tuple(strips_effect, std::cref(pddl_repositories))                             //
-       << ", "
-       << "conditional_effects=[";
+       << ", " << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
     {
         os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";

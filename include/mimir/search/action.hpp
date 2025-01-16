@@ -30,6 +30,7 @@
 
 namespace mimir
 {
+
 struct GroundConditionStrips
 {
     FlatIndexList m_positive_static_atoms = FlatIndexList();
@@ -41,13 +42,11 @@ struct GroundConditionStrips
 
     template<PredicateTag P>
     FlatIndexList& get_positive_precondition();
-
     template<PredicateTag P>
     const FlatIndexList& get_positive_precondition() const;
 
     template<PredicateTag P>
     FlatIndexList& get_negative_precondition();
-
     template<PredicateTag P>
     const FlatIndexList& get_negative_precondition() const;
 
@@ -61,20 +60,34 @@ struct GroundConditionStrips
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
+struct GroundEffectNumeric
+{
+    loki::AssignOperatorEnum m_assign_operator;
+    Index m_ground_function;
+    ContinuousCost m_value;
+};
+
+using GroundEffectNumericList = cista::offset::vector<GroundEffectNumeric>;
+
 struct GroundEffectStrips
 {
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
-    ContinuousCost m_cost = ContinuousCost(0.0);
+    GroundEffectNumericList m_fluent_numeric_effects = GroundEffectNumericList();
+    GroundEffectNumericList m_auxiliary_numeric_effects = GroundEffectNumericList();
 
+    /* Propositional effects */
     FlatIndexList& get_positive_effects();
     const FlatIndexList& get_positive_effects() const;
 
     FlatIndexList& get_negative_effects();
     const FlatIndexList& get_negative_effects() const;
 
-    ContinuousCost& get_cost();
-    const ContinuousCost& get_cost() const;
+    /* Numeric effects */
+    template<DynamicFunctionTag F>
+    GroundEffectNumericList& get_numeric_effects();
+    template<DynamicFunctionTag F>
+    const GroundEffectNumericList& get_numeric_effects() const;
 };
 
 /// @brief `GroundEffectFluentLiteral` encapsulates the effect on a single grounded atom.
@@ -96,7 +109,8 @@ struct GroundEffectConditional
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
     GroundEffectFluentLiteralList m_effects = GroundEffectFluentLiteralList();
-    ContinuousCost m_cost = ContinuousCost(0.0);
+    GroundEffectNumericList m_fluent_numeric_effects = GroundEffectNumericList();
+    GroundEffectNumericList m_auxiliary_numeric_effects = GroundEffectNumericList();
 
     /* Precondition */
     template<PredicateTag P>
@@ -109,13 +123,15 @@ struct GroundEffectConditional
     template<PredicateTag P>
     const FlatIndexList& get_negative_precondition() const;
 
-    /* Simple effects */
+    /* Propositional effects */
     GroundEffectFluentLiteralList& get_fluent_effect_literals();
     const GroundEffectFluentLiteralList& get_fluent_effect_literals() const;
 
-    /* Costs */
-    ContinuousCost& get_cost();
-    const ContinuousCost& get_cost() const;
+    /* Numeric effects */
+    template<DynamicFunctionTag F>
+    GroundEffectNumericList& get_numeric_effects();
+    template<DynamicFunctionTag F>
+    const GroundEffectNumericList& get_numeric_effects() const;
 
     /* Utility */
     template<PredicateTag P>
