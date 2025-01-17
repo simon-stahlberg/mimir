@@ -66,9 +66,9 @@ static void update_reached_derived_atoms(const FlatBitset& state_derived_atoms, 
     ref_reached_derived_atoms |= state_derived_atoms;
 }
 
-static void update_derived_atoms_ptr(const FlatIndexList& state_derived_atoms, uintptr_t& state_derived_atoms_ptr)
+static void update_derived_atoms_ptr(const FlatIndexList& state_derived_atoms, FlatExternalPtr<const FlatIndexList>& state_derived_atoms_ptr)
 {
-    state_derived_atoms_ptr = reinterpret_cast<uintptr_t>(&state_derived_atoms);
+    state_derived_atoms_ptr = &state_derived_atoms;
 }
 
 State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
@@ -77,7 +77,7 @@ State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
     state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
-    state_derived_atoms_ptr = uintptr_t(0);
+    state_derived_atoms_ptr = nullptr;
 
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<Fluent>();
     auto& dense_derived_atoms = m_dense_state_builder.get_atoms<Derived>();
@@ -194,7 +194,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     auto& state_derived_atoms_ptr = m_state_builder.get_derived_atoms();
     state_fluent_atoms.clear();
     m_state_derived_atoms.clear();
-    state_derived_atoms_ptr = uintptr_t(0);
+    state_derived_atoms_ptr = nullptr;
 
     /* Accumulate state-dependent action cost. */
     auto action_cost = ContinuousCost(0);

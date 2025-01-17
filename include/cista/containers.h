@@ -5,6 +5,7 @@
 #include "cista/containers/bitvec.h"
 #include "cista/containers/cstring.h"
 #include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/external_ptr.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/fws_multimap.h"
 #include "cista/containers/hash_map.h"

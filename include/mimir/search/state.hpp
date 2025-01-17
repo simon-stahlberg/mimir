@@ -37,7 +37,7 @@ struct StateImpl
 {
     Index m_index = Index(0);
     FlatIndexList m_fluent_atoms = FlatIndexList();
-    uintptr_t m_derived_atoms = uintptr_t(0);
+    FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
 
     static const FlatIndexList s_empty_derived_atoms;  ///< Returned, if m_derived_atoms is a nullptr.
 
@@ -74,7 +74,7 @@ private:
     Index& get_index();
 
     FlatIndexList& get_fluent_atoms();
-    uintptr_t& get_derived_atoms();
+    FlatExternalPtr<const FlatIndexList>& get_derived_atoms();
 };
 
 /// @brief STL does not define operator== for std::span.

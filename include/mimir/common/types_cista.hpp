@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_TYPES_CISTA_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/external_ptr.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
 #include "mimir/common/concepts.hpp"
@@ -68,6 +69,10 @@ inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
     os << "]";
     return os;
 }
+
+/* ExternalPtr */
+template<typename T>
+using FlatExternalPtr = cista::offset::external_ptr<T>;
 
 /// @brief Check whether `value` exists in the given `vec`.
 /// Runs binary search to find a value in a vec.

@@ -19,6 +19,7 @@
 #define MIMIR_COMMON_HASH_CISTA_HPP_
 
 #include "cista/containers/dynamic_bitset.h"
+#include "cista/containers/external_ptr.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/tuple.h"
 #include "cista/containers/vector.h"
@@ -28,6 +29,16 @@
 /**
  * We inject additional hash specializations into the loki::Hash.
  */
+
+/* ExternalPtr */
+
+template<typename T>
+struct loki::Hash<cista::basic_external_ptr<T>>
+{
+    using Type = cista::basic_external_ptr<T>;
+
+    size_t operator()(const Type& ptr) const { return loki::hash_combine(ptr.el_); }
+};
 
 /* DynamicBitset */
 
