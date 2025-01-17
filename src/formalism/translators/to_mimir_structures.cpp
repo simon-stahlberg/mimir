@@ -124,8 +124,6 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         }
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
         {
-            assert((*effect_numeric)->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
-
             // Found function affected by an effect
             m_fluent_functions.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
 
@@ -441,7 +439,7 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
 
 StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    if (m_fexpr_functions.contains(function_skeleton.get_name()) && !m_fluent_functions.contains(function_skeleton.get_name()))
+    if (!m_fexpr_functions.contains(function_skeleton.get_name()))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
                                                                                        translate_common(function_skeleton.get_parameters()));
@@ -630,7 +628,7 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
                     }
                     else if constexpr (std::is_same_v<T, Function<Static>>)
                     {
-                        throw std::logic_error("ToMimirStructures::translate_lifted: FunctionExpressionFunction<Auxiliary> must not exist.");
+                        throw std::logic_error("ToMimirStructures::translate_lifted: Function<Static> must not exist.");
                     }
                     else
                     {
