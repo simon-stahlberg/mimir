@@ -33,8 +33,10 @@ private:
     std::shared_ptr<IAxiomEvaluator> m_axiom_evaluator;  ///< The axiom evaluator.
     bool m_problem_or_domain_has_axioms;                 ///< flag that indicates whether axiom evaluation must trigger.
 
-    StateImplSet m_states;                      ///< Stores all created extended states.
-    DerivedAtomindicesSet m_axiom_evaluations;  ///< Stores all axiom evaluations.
+    StateImplSet m_states;                                          ///< Stores all created extended states.
+    FluentAtomIndicesSet m_fluent_atoms_set;                        ///< Stores all created fluent atom lists.
+    DerivedAtomindicesSet m_derived_atoms_set;                      ///< Stores all created derived atom lists..
+    FluentNumericVariableValuesSet m_fluent_numeric_variables_set;  ///< Stores all created numeric variable lists.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -46,9 +48,11 @@ private:
     FlatBitset m_applied_positive_effect_atoms;
     FlatBitset m_applied_negative_effect_atoms;
 
+    FlatIndexList m_state_fluent_atoms;
     FlatIndexList m_state_derived_atoms;
 
-    absl::flat_hash_map<Index, ContinuousCost> m_auxilary_function_to_cost;
+    absl::flat_hash_map<Index, ContinuousCost> m_fluent_function_to_cost;
+    absl::flat_hash_map<Index, ContinuousCost> m_auxiliary_function_to_cost;
 
 public:
     explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);

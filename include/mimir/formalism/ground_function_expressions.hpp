@@ -192,11 +192,11 @@ public:
 };
 
 /* GroundFunctionExpression */
+// GroundFunctionExpressionFunction<Static> are evaluated during grounding
 using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNumber,
                                                      GroundFunctionExpressionBinaryOperator,
                                                      GroundFunctionExpressionMultiOperator,
                                                      GroundFunctionExpressionMinus,
-                                                     GroundFunctionExpressionFunction<Static>,
                                                      GroundFunctionExpressionFunction<Fluent>,
                                                      GroundFunctionExpressionFunction<Auxiliary>>;
 

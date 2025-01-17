@@ -192,14 +192,13 @@ public:
 };
 
 /* FunctionExpression */
-// TODO: introduce FunctionExpressionCondition, FunctionExpressionEffect?
+// FunctionExpressionFunction<Auxiliary> only appear in numeric effects.
 using FunctionExpressionVariant = std::variant<FunctionExpressionNumber,
                                                FunctionExpressionBinaryOperator,
                                                FunctionExpressionMultiOperator,
                                                FunctionExpressionMinus,
                                                FunctionExpressionFunction<Static>,
-                                               FunctionExpressionFunction<Fluent>,
-                                               FunctionExpressionFunction<Auxiliary>>;
+                                               FunctionExpressionFunction<Fluent>>;
 
 class FunctionExpressionImpl
 {

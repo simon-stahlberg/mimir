@@ -125,7 +125,9 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
         {
             assert((*effect_numeric)->get_assign_operator() == loki::AssignOperatorEnum::INCREASE);
-            assert((*effect_numeric)->get_function()->get_function_skeleton()->get_name() == "total-cost");
+
+            // Found function affected by an effect
+            m_fluent_functions.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
 
             prepare(*(*effect_numeric)->get_function_expression());
         }
@@ -161,7 +163,13 @@ void ToMimirStructures::prepare(const loki::FunctionExpressionMultiOperatorImpl&
     this->prepare(function_expression.get_function_expressions());
 }
 void ToMimirStructures::prepare(const loki::FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-void ToMimirStructures::prepare(const loki::FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
+void ToMimirStructures::prepare(const loki::FunctionExpressionFunctionImpl& function_expression)
+{
+    // Found function that appears in a function expression
+    m_fexpr_functions.insert(function_expression.get_function()->get_function_skeleton()->get_name());
+
+    this->prepare(*function_expression.get_function());
+}
 void ToMimirStructures::prepare(const loki::FunctionExpressionImpl& function_expression)
 {
     std::visit([this](auto&& arg) { return this->prepare(*arg); }, function_expression.get_function_expression());
@@ -686,6 +694,7 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 
     const auto [static_literals, fluent_literals, derived_literals] = translate_lifted(*axiom.get_condition());
 
+    // TODO: make this nicer by storing a predicate in the axiom in loki...
     const auto derived_predicate_name = axiom.get_derived_predicate_name();
     if (!m_derived_predicates_by_name.count(derived_predicate_name))
     {

@@ -119,16 +119,17 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 
 template<DynamicFunctionTag F>
 void ActionGrounder::ground_and_fill_vector(const EffectNumericList<F>& numeric_effects,
-                                            GroundEffectNumericList& ref_numeric_effects,
+                                            GroundEffectNumericList<F>& ref_numeric_effects,
                                             FunctionGrounder& function_grounder)
 {
+    // TODO(numeric)
 }
 
 template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Fluent>& numeric_effects,
-                                                     GroundEffectNumericList& ref_numeric_effects,
+                                                     GroundEffectNumericList<Fluent>& ref_numeric_effects,
                                                      FunctionGrounder& function_grounder);
 template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Auxiliary>& numeric_effects,
-                                                     GroundEffectNumericList& ref_numeric_effects,
+                                                     GroundEffectNumericList<Auxiliary>& ref_numeric_effects,
                                                      FunctionGrounder& function_grounder);
 
 GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)

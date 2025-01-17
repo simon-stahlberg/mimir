@@ -102,20 +102,16 @@ const FlatDoubleList& StateImpl::get_numeric_variables() const
         return StateImpl::s_empty_numeric_variables;
     }
     // StateRepository ensures that m_numeric_variables is a valid pointer to a FlatDoubleList.
-    return *reinterpret_cast<const FlatDoubleList*>(m_numeric_variables);
+    return *m_numeric_variables;
 }
 
 Index& StateImpl::get_index() { return m_index; }
 
-FlatIndexList& StateImpl::get_fluent_atoms()
-{
-    assert(std::is_sorted(get_atoms<Fluent>().begin(), get_atoms<Fluent>().end()));
-    return m_fluent_atoms;
-}
+FlatExternalPtr<const FlatIndexList>& StateImpl::get_fluent_atoms() { return m_fluent_atoms; }
 
 FlatExternalPtr<const FlatIndexList>& StateImpl::get_derived_atoms() { return m_derived_atoms; }
 
-uintptr_t& StateImpl::get_numeric_variables() { return m_numeric_variables; }
+FlatExternalPtr<const FlatDoubleList>& StateImpl::get_numeric_variables() { return m_numeric_variables; }
 
 /**
  * Pretty printing
@@ -145,8 +141,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
               out_derived_ground_atoms.end(),
               [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
-       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State("
+       << "index=" << state->get_index() << ", "
+       << "fluent atoms=" << out_fluent_ground_atoms << ", "
+       << "static atoms=" << out_static_ground_atoms << ", "
+       << "derived atoms=" << out_derived_ground_atoms << ")";
 
     return os;
 }

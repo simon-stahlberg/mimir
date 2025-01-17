@@ -32,8 +32,6 @@ private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<FunctionGrounder> m_function_grounder;
 
-    // TODO: Store and index ground actions per lifted action?
-    // Will make multi threading way easier...
     GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
 
@@ -44,7 +42,8 @@ private:
     std::unordered_map<Action, PerActionData> m_per_action_datas;
 
     template<DynamicFunctionTag F>
-    void ground_and_fill_vector(const EffectNumericList<F>& numeric_effects, GroundEffectNumericList& ref_numeric_effects, FunctionGrounder& function_grounder);
+    void
+    ground_and_fill_vector(const EffectNumericList<F>& numeric_effects, GroundEffectNumericList<F>& ref_numeric_effects, FunctionGrounder& function_grounder);
 
 public:
     /// @brief Simplest construction

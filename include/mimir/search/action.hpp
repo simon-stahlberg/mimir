@@ -60,21 +60,23 @@ struct GroundConditionStrips
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 };
 
+template<DynamicFunctionTag F>
 struct GroundEffectNumeric
 {
     loki::AssignOperatorEnum m_assign_operator;
-    Index m_ground_function;
-    ContinuousCost m_value;
+    FlatExternalPtr<const GroundFunctionImpl<F>> m_function;
+    FlatExternalPtr<const GroundFunctionExpressionImpl> m_function_expression;
 };
 
-using GroundEffectNumericList = cista::offset::vector<GroundEffectNumeric>;
+template<DynamicFunctionTag F>
+using GroundEffectNumericList = cista::offset::vector<GroundEffectNumeric<F>>;
 
 struct GroundEffectStrips
 {
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
-    GroundEffectNumericList m_fluent_numeric_effects = GroundEffectNumericList();
-    GroundEffectNumericList m_auxiliary_numeric_effects = GroundEffectNumericList();
+    GroundEffectNumericList<Fluent> m_fluent_numeric_effects = GroundEffectNumericList<Fluent>();
+    GroundEffectNumericList<Auxiliary> m_auxiliary_numeric_effects = GroundEffectNumericList<Auxiliary>();
 
     /* Propositional effects */
     FlatIndexList& get_positive_effects();
@@ -85,9 +87,9 @@ struct GroundEffectStrips
 
     /* Numeric effects */
     template<DynamicFunctionTag F>
-    GroundEffectNumericList& get_numeric_effects();
+    GroundEffectNumericList<F>& get_numeric_effects();
     template<DynamicFunctionTag F>
-    const GroundEffectNumericList& get_numeric_effects() const;
+    const GroundEffectNumericList<F>& get_numeric_effects() const;
 };
 
 /// @brief `GroundEffectFluentLiteral` encapsulates the effect on a single grounded atom.
@@ -109,8 +111,8 @@ struct GroundEffectConditional
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
     GroundEffectFluentLiteralList m_effects = GroundEffectFluentLiteralList();
-    GroundEffectNumericList m_fluent_numeric_effects = GroundEffectNumericList();
-    GroundEffectNumericList m_auxiliary_numeric_effects = GroundEffectNumericList();
+    GroundEffectNumericList<Fluent> m_fluent_numeric_effects = GroundEffectNumericList<Fluent>();
+    GroundEffectNumericList<Auxiliary> m_auxiliary_numeric_effects = GroundEffectNumericList<Auxiliary>();
 
     /* Precondition */
     template<PredicateTag P>
@@ -129,9 +131,9 @@ struct GroundEffectConditional
 
     /* Numeric effects */
     template<DynamicFunctionTag F>
-    GroundEffectNumericList& get_numeric_effects();
+    GroundEffectNumericList<F>& get_numeric_effects();
     template<DynamicFunctionTag F>
-    const GroundEffectNumericList& get_numeric_effects() const;
+    const GroundEffectNumericList<F>& get_numeric_effects() const;
 
     /* Utility */
     template<PredicateTag P>

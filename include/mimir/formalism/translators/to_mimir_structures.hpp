@@ -35,6 +35,16 @@ using StaticOrFluentOrDerivedLiteral = std::variant<Literal<Static>, Literal<Flu
 using StaticOrFluentOrDerivedGroundAtom = std::variant<GroundAtom<Static>, GroundAtom<Fluent>, GroundAtom<Derived>>;
 using StaticOrFluentOrDerivedGroundLiteral = std::variant<GroundLiteral<Static>, GroundLiteral<Fluent>, GroundLiteral<Derived>>;
 
+using StaticOrFluentOrAuxiliaryFunctionSkeleton = std::variant<FunctionSkeleton<Static>, FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>>;
+using StaticOrFluentOrAuxiliaryFunction = std::variant<Function<Static>, Function<Fluent>, Function<Auxiliary>>;
+
+using StaticOrFluentOrAuxiliaryGroundFunction = std::variant<GroundFunction<Static>, GroundFunction<Fluent>, GroundFunction<Auxiliary>>;
+using StaticOrFluentOrAuxiliaryGroundFunctionValue = std::variant<GroundFunctionValue<Static>, GroundFunctionValue<Fluent>, GroundFunctionValue<Auxiliary>>;
+
+using StaticOrFluentFunctionExpressionFunction = std::variant<FunctionExpressionFunction<Static>, FunctionExpressionFunction<Fluent>>;
+
+using FluentOrAuxiliaryGroundFunctionExpressionFunction = std::variant<GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpressionFunction<Auxiliary>>;
+
 class ToMimirStructures
 {
 private:
@@ -42,10 +52,14 @@ private:
 
     /* Computed in prepare step */
 
-    // Predicate with an action effect
-    std::unordered_set<std::string> m_fluent_predicates;
-    // Derived predicates
-    std::unordered_set<std::string> m_derived_predicates;
+    std::unordered_set<std::string> m_fluent_predicates;   ///< Fluent predicates that appear in an effect
+    std::unordered_set<std::string> m_derived_predicates;  ///< Derived predicates
+
+    // Note1: functions that do not appear in a function expression but in an effect are auxiliary.
+    // Note2: functions that do not appear in a function expression and not in an effect are irrelevant.
+    // Note3: functions that do not appear in an effect are static.
+    std::unordered_set<std::string> m_fexpr_functions;   ///< Functions that appear in a function expression
+    std::unordered_set<std::string> m_fluent_functions;  ///< Functions that appear in an effect
 
     // Whether action costs are enabled
     bool m_action_costs_enabled;
@@ -135,8 +149,8 @@ private:
     FunctionExpression translate_lifted(const loki::FunctionExpressionMinusImpl& function_expression);
     FunctionExpression translate_lifted(const loki::FunctionExpressionFunctionImpl& function_expression);
     FunctionExpression translate_lifted(const loki::FunctionExpressionImpl& function_expression);
-    FunctionSkeleton translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton);
-    Function translate_lifted(const loki::FunctionImpl& function);
+    StaticOrFluentOrAuxiliaryFunctionSkeleton translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton);
+    StaticOrFluentOrAuxiliaryFunction translate_lifted(const loki::FunctionImpl& function);
     std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> translate_lifted(const loki::ConditionImpl& condition);
     std::tuple<EffectStrips, EffectConditionalList> translate_lifted(const loki::EffectImpl& effect);
     Action translate_lifted(const loki::ActionImpl& action);
@@ -159,14 +173,14 @@ private:
     Object translate_grounded(const loki::TermImpl& term);
     StaticOrFluentOrDerivedGroundAtom translate_grounded(const loki::AtomImpl& atom);
     StaticOrFluentOrDerivedGroundLiteral translate_grounded(const loki::LiteralImpl& literal);
-    GroundFunctionValue translate_grounded(const loki::FunctionValueImpl& numeric_fluent);
+    StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(const loki::FunctionValueImpl& numeric_fluent);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionMinusImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionFunctionImpl& function_expression);
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionImpl& function_expression);
-    GroundFunction translate_grounded(const loki::FunctionImpl& function);
+    StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(const loki::FunctionImpl& function);
     std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>> translate_grounded(const loki::ConditionImpl& condition);
     OptimizationMetric translate_grounded(const loki::OptimizationMetricImpl& optimization_metric);
     Problem translate_grounded(const loki::ProblemImpl& problem);
