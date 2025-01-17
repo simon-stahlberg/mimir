@@ -29,12 +29,12 @@ class EffectNumericImpl
 private:
     Index m_index;
     loki::AssignOperatorEnum m_assign_operator;
-    GroundFunction<F> m_function;
+    Function<F> m_function;
     FunctionExpression m_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, FunctionExpression function_expression);
+    EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -49,7 +49,7 @@ public:
 
     Index get_index() const;
     loki::AssignOperatorEnum get_assign_operator() const;
-    const GroundFunction<F>& get_function() const;
+    const Function<F>& get_function() const;
     const FunctionExpression& get_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

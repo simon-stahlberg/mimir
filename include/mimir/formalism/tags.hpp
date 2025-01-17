@@ -64,6 +64,9 @@ template<typename T>
 concept FunctionTag = std::is_same_v<T, Static> || std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;
 
 template<typename T>
+concept StaticOrFluentTag = std::is_same_v<T, Static> || std::is_same_v<T, Fluent>;
+
+template<typename T>
 concept DynamicFunctionTag = std::is_same_v<T, Fluent> || std::is_same_v<T, Auxiliary>;
 
 }

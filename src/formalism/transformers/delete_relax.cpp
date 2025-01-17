@@ -94,7 +94,9 @@ ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_im
 
 EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effect)
 {
-    return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()), this->transform(*effect.get_function_expression()));
+    return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()),
+                                                                 this->transform(effect.get_numeric_effects<Fluent>()),
+                                                                 this->transform(effect.get_numeric_effects<Auxiliary>()));
 }
 
 EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
@@ -116,10 +118,16 @@ EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditional
     auto static_conditions = filter_positive_literals(this->transform(effect.get_conditions<Static>()));
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
-    auto function_expression = this->transform(*effect.get_function_expression());
+    auto fluent_numeric_effects = this->transform(effect.get_numeric_effects<Fluent>());
+    auto auxiliary_numeric_effects = this->transform(effect.get_numeric_effects<Auxiliary>());
 
-    return this->m_pddl_repositories
-        .get_or_create_conditional_effect(parameters, static_conditions, fluent_conditions, derived_conditions, transformed_literals, function_expression);
+    return this->m_pddl_repositories.get_or_create_conditional_effect(parameters,
+                                                                      static_conditions,
+                                                                      fluent_conditions,
+                                                                      derived_conditions,
+                                                                      transformed_literals,
+                                                                      fluent_numeric_effects,
+                                                                      auxiliary_numeric_effects);
 }
 
 Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
@@ -163,7 +171,9 @@ Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
                                                                              this->transform(domain.get_predicates<Static>()),
                                                                              this->transform(domain.get_predicates<Fluent>()),
                                                                              this->transform(domain.get_predicates<Derived>()),
-                                                                             this->transform(domain.get_functions()),
+                                                                             this->transform(domain.get_functions<Static>()),
+                                                                             this->transform(domain.get_functions<Fluent>()),
+                                                                             this->transform(domain.get_functions<Auxiliary>()),
                                                                              this->transform(domain.get_actions()),
                                                                              this->transform(domain.get_axioms()));
 

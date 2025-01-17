@@ -36,10 +36,7 @@ namespace mimir
  */
 
 template<DynamicFunctionTag F>
-EffectNumericImpl<F>::EffectNumericImpl(Index index,
-                                        loki::AssignOperatorEnum assign_operator,
-                                        GroundFunction<F> function,
-                                        FunctionExpression function_expression) :
+EffectNumericImpl<F>::EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) :
     m_index(index),
     m_assign_operator(assign_operator),
     m_function(function),
@@ -60,7 +57,7 @@ loki::AssignOperatorEnum EffectNumericImpl<F>::get_assign_operator() const
 }
 
 template<DynamicFunctionTag F>
-const GroundFunction<F>& EffectNumericImpl<F>::get_function() const
+const Function<F>& EffectNumericImpl<F>::get_function() const
 {
     return m_function;
 }

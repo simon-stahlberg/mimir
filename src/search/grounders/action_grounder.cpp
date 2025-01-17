@@ -35,42 +35,96 @@ private:
     Problem m_problem;
     const ObjectList& m_binding;
     FunctionGrounder& m_function_grounder;
+    PDDLRepositories& m_pddl_repositories;
 
 public:
     GroundAndEvaluateFunctionExpressionVisitor(Problem problem, const ObjectList& binding, FunctionGrounder& ref_function_grounder) :
         m_problem(problem),
         m_binding(binding),
-        m_function_grounder(ref_function_grounder)
+        m_function_grounder(ref_function_grounder),
+        m_pddl_repositories(*m_function_grounder.get_pddl_repositories())
     {
     }
 
-    double operator()(const FunctionExpressionImpl& expr)
+    GroundFunctionExpression operator()(const FunctionExpressionImpl& expr)
     {
-        return std::visit([this](auto&& arg) -> double { return (*this)(*arg); }, expr.get_variant());
+        return std::visit([this](auto&& arg) -> GroundFunctionExpression { return (*this)(*arg); }, expr.get_variant());
     }
 
-    double operator()(const FunctionExpressionNumberImpl& expr) { return expr.get_number(); }
-
-    double operator()(const FunctionExpressionBinaryOperatorImpl& expr)
+    GroundFunctionExpression operator()(const FunctionExpressionNumberImpl& expr)
     {
-        return evaluate_binary(expr.get_binary_operator(), (*this)(*expr.get_left_function_expression()), (*this)(*expr.get_right_function_expression()));
+        return m_pddl_repositories.get_or_create_ground_function_expression(
+            m_pddl_repositories.get_or_create_ground_function_expression_number(expr.get_number()));
     }
 
-    double operator()(const FunctionExpressionMultiOperatorImpl& expr)
+    GroundFunctionExpression operator()(const FunctionExpressionBinaryOperatorImpl& expr)
+    {
+        const auto op = expr.get_binary_operator();
+        const auto ground_lhs = (*this)(*expr.get_left_function_expression());
+        const auto ground_rhs = (*this)(*expr.get_right_function_expression());
+        if (std::holds_alternative<GroundFunctionExpressionNumber>(ground_lhs->get_variant())
+            && std::holds_alternative<GroundFunctionExpressionNumber>(ground_rhs->get_variant()))
+        {
+            return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
+                evaluate_binary(op,
+                                std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number(),
+                                std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number())));
+        }
+
+        return m_pddl_repositories.get_or_create_ground_function_expression(
+            m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(op, ground_lhs, ground_rhs));
+    }
+
+    GroundFunctionExpression operator()(const FunctionExpressionMultiOperatorImpl& expr)
     {
         const auto op = expr.get_multi_operator();
-        return std::accumulate(std::next(expr.get_function_expressions().begin()),  // Start from the second expression
-                               expr.get_function_expressions().end(),
-                               (*this)(*expr.get_function_expressions().front()),  // Initial bounds
-                               [this, op](const auto& value, const auto& child_expr) { return evaluate_multi(op, value, (*this)(*child_expr)); });
+        auto fexpr_numbers = GroundFunctionExpressionList {};
+        auto fexpr_others = GroundFunctionExpressionList {};
+        for (const auto& child_fexpr : expr.get_function_expressions())
+        {
+            const auto ground_child_fexpr = (*this)(*child_fexpr);
+            std::holds_alternative<GroundFunctionExpressionNumber>(ground_child_fexpr->get_variant()) ? fexpr_numbers.push_back(ground_child_fexpr) :
+                                                                                                        fexpr_others.push_back(ground_child_fexpr);
+        }
+
+        if (!fexpr_numbers.empty())
+        {
+            const auto value =
+                std::accumulate(std::next(fexpr_numbers.begin()),  // Start from the second expression
+                                fexpr_numbers.end(),
+                                std::get<GroundFunctionExpressionNumber>(fexpr_numbers.front()->get_variant())->get_number(),  // Initial bounds
+                                [op](const auto& value, const auto& child_expr)
+                                { return evaluate_multi(op, value, std::get<GroundFunctionExpressionNumber>(child_expr->get_variant())->get_number()); });
+
+            fexpr_others.push_back(
+                m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(value)));
+        }
+
+        return m_pddl_repositories.get_or_create_ground_function_expression(
+            m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(op, fexpr_others));
     }
 
-    double operator()(const FunctionExpressionMinusImpl& expr) { return -(*this)(*expr.get_function_expression()); }
-
-    template<FunctionTag F>
-    double operator()(const FunctionExpressionFunctionImpl<F>& expr)
+    GroundFunctionExpression operator()(const FunctionExpressionMinusImpl& expr)
     {
-        return m_problem->get_ground_function_value(m_function_grounder.ground_function(expr.get_function(), m_binding));
+        const auto ground_fexpr = (*this)(*expr.get_function_expression());
+
+        return std::holds_alternative<GroundFunctionExpressionNumber>(ground_fexpr->get_variant()) ?
+                   m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
+                       -std::get<GroundFunctionExpressionNumber>(ground_fexpr->get_variant())->get_number())) :
+                   ground_fexpr;
+    }
+
+    GroundFunctionExpression operator()(const FunctionExpressionFunctionImpl<Fluent>& expr)
+    {
+        return m_pddl_repositories.get_or_create_ground_function_expression(
+            m_pddl_repositories.template get_or_create_ground_function_expression_function<Fluent>(
+                m_function_grounder.ground_function(expr.get_function(), m_binding)));
+    }
+
+    GroundFunctionExpression operator()(const FunctionExpressionFunctionImpl<Static>& expr)
+    {
+        return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
+            m_problem->get_static_function_value(m_function_grounder.ground_function(expr.get_function(), m_binding))));
     }
 };
 
@@ -120,22 +174,26 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 template<DynamicFunctionTag F>
 void ActionGrounder::ground_and_fill_vector(const EffectNumericList<F>& numeric_effects,
                                             GroundEffectNumericList<F>& ref_numeric_effects,
-                                            FunctionGrounder& function_grounder)
+                                            const ObjectList& binding)
 {
-    // TODO(numeric)
+    for (const auto& effect : numeric_effects)
+    {
+        ref_numeric_effects.emplace_back(
+            effect->get_assign_operator(),
+            m_function_grounder->ground_function(effect->get_function(), binding),
+            GroundAndEvaluateFunctionExpressionVisitor(m_function_grounder->get_problem(), binding, *m_function_grounder)(*effect->get_function_expression()));
+    }
 }
 
 template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Fluent>& numeric_effects,
                                                      GroundEffectNumericList<Fluent>& ref_numeric_effects,
-                                                     FunctionGrounder& function_grounder);
+                                                     const ObjectList& binding);
 template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Auxiliary>& numeric_effects,
                                                      GroundEffectNumericList<Auxiliary>& ref_numeric_effects,
-                                                     FunctionGrounder& function_grounder);
+                                                     const ObjectList& binding);
 
 GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
 {
-    const auto problem = m_literal_grounder->get_problem();
-
     /* 1. Check if grounding is cached */
 
     auto& [action_builder, grounding_table, cond_effect_static_consistency_graphs] = m_per_action_datas[action];
@@ -210,8 +268,8 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     auto& auxiliary_numerical_effects = strips_effect.get_numeric_effects<Auxiliary>();
     fluent_numerical_effects.clear();
     auxiliary_numerical_effects.clear();
-    ground_and_fill_vector(lifted_strips_effect->get_numeric_effects<Fluent>(), fluent_numerical_effects, *m_function_grounder);
-    ground_and_fill_vector(lifted_strips_effect->get_numeric_effects<Auxiliary>(), auxiliary_numerical_effects, *m_function_grounder);
+    ground_and_fill_vector(lifted_strips_effect->get_numeric_effects<Fluent>(), fluent_numerical_effects, binding);
+    ground_and_fill_vector(lifted_strips_effect->get_numeric_effects<Auxiliary>(), auxiliary_numerical_effects, binding);
 
     /* Conditional effects */
     // Fetch data
@@ -298,8 +356,8 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     cond_fluent_numerical_effects_j.clear();
                     cond_auxiliary_numerical_effects_j.clear();
 
-                    ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, *m_function_grounder);
-                    ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Auxiliary>(), cond_auxiliary_numerical_effects_j, *m_function_grounder);
+                    ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, binding_cond_effect);
+                    ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Auxiliary>(), cond_auxiliary_numerical_effects_j, binding_cond_effect);
                 }
             }
             else
@@ -353,8 +411,8 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                 cond_fluent_numerical_effects_j.clear();
                 cond_auxiliary_numerical_effects_j.clear();
 
-                ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, *m_function_grounder);
-                ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Auxiliary>(), cond_auxiliary_numerical_effects_j, *m_function_grounder);
+                ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, binding);
+                ground_and_fill_vector(lifted_cond_effect->get_numeric_effects<Auxiliary>(), cond_auxiliary_numerical_effects_j, binding);
             }
         }
     }

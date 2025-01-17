@@ -65,14 +65,22 @@ protected:
         boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, std::unordered_map<GroundLiteral<Static>, GroundLiteral<Static>>>,
         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, std::unordered_map<GroundLiteral<Fluent>, GroundLiteral<Fluent>>>,
         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, std::unordered_map<GroundLiteral<Derived>, GroundLiteral<Derived>>>,
-        boost::hana::pair<boost::hana::type<GroundFunctionValue>, std::unordered_map<GroundFunctionValue, GroundFunctionValue>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionValue<Static>>, std::unordered_map<GroundFunctionValue<Static>, GroundFunctionValue<Static>>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionValue<Fluent>>, std::unordered_map<GroundFunctionValue<Fluent>, GroundFunctionValue<Fluent>>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionValue<Auxiliary>>,
+                          std::unordered_map<GroundFunctionValue<Auxiliary>, GroundFunctionValue<Auxiliary>>>,
+        boost::hana::pair<boost::hana::type<EffectNumeric<Fluent>>, std::unordered_map<EffectNumeric<Fluent>, EffectNumeric<Fluent>>>,
+        boost::hana::pair<boost::hana::type<EffectNumeric<Auxiliary>>, std::unordered_map<EffectNumeric<Auxiliary>, EffectNumeric<Auxiliary>>>,
         boost::hana::pair<boost::hana::type<EffectStrips>, std::unordered_map<EffectStrips, EffectStrips>>,
         boost::hana::pair<boost::hana::type<EffectConditional>, std::unordered_map<EffectConditional, EffectConditional>>,
         boost::hana::pair<boost::hana::type<FunctionExpressionNumber>, std::unordered_map<FunctionExpressionNumber, FunctionExpression>>,
         boost::hana::pair<boost::hana::type<FunctionExpressionBinaryOperator>, std::unordered_map<FunctionExpressionBinaryOperator, FunctionExpression>>,
         boost::hana::pair<boost::hana::type<FunctionExpressionMultiOperator>, std::unordered_map<FunctionExpressionMultiOperator, FunctionExpression>>,
         boost::hana::pair<boost::hana::type<FunctionExpressionMinus>, std::unordered_map<FunctionExpressionMinus, FunctionExpression>>,
-        boost::hana::pair<boost::hana::type<FunctionExpressionFunction>, std::unordered_map<FunctionExpressionFunction, FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionFunction<Static>>, std::unordered_map<FunctionExpressionFunction<Static>, FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionFunction<Fluent>>, std::unordered_map<FunctionExpressionFunction<Fluent>, FunctionExpression>>,
+        boost::hana::pair<boost::hana::type<FunctionExpressionFunction<Auxiliary>>,
+                          std::unordered_map<FunctionExpressionFunction<Auxiliary>, FunctionExpression>>,
         boost::hana::pair<boost::hana::type<FunctionExpression>, std::unordered_map<FunctionExpression, FunctionExpression>>,
         boost::hana::pair<boost::hana::type<GroundFunctionExpressionNumber>, std::unordered_map<GroundFunctionExpressionNumber, GroundFunctionExpression>>,
         boost::hana::pair<boost::hana::type<GroundFunctionExpressionBinaryOperator>,
@@ -80,11 +88,22 @@ protected:
         boost::hana::pair<boost::hana::type<GroundFunctionExpressionMultiOperator>,
                           std::unordered_map<GroundFunctionExpressionMultiOperator, GroundFunctionExpression>>,
         boost::hana::pair<boost::hana::type<GroundFunctionExpressionMinus>, std::unordered_map<GroundFunctionExpressionMinus, GroundFunctionExpression>>,
-        boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunction>, std::unordered_map<GroundFunctionExpressionFunction, GroundFunctionExpression>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunction<Static>>,
+                          std::unordered_map<GroundFunctionExpressionFunction<Static>, GroundFunctionExpression>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunction<Fluent>>,
+                          std::unordered_map<GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpression>>,
+        boost::hana::pair<boost::hana::type<GroundFunctionExpressionFunction<Auxiliary>>,
+                          std::unordered_map<GroundFunctionExpressionFunction<Auxiliary>, GroundFunctionExpression>>,
         boost::hana::pair<boost::hana::type<GroundFunctionExpression>, std::unordered_map<GroundFunctionExpression, GroundFunctionExpression>>,
-        boost::hana::pair<boost::hana::type<FunctionSkeleton>, std::unordered_map<FunctionSkeleton, FunctionSkeleton>>,
-        boost::hana::pair<boost::hana::type<Function>, std::unordered_map<Function, Function>>,
-        boost::hana::pair<boost::hana::type<GroundFunction>, std::unordered_map<GroundFunction, GroundFunction>>,
+        boost::hana::pair<boost::hana::type<FunctionSkeleton<Static>>, std::unordered_map<FunctionSkeleton<Static>, FunctionSkeleton<Static>>>,
+        boost::hana::pair<boost::hana::type<FunctionSkeleton<Fluent>>, std::unordered_map<FunctionSkeleton<Fluent>, FunctionSkeleton<Fluent>>>,
+        boost::hana::pair<boost::hana::type<FunctionSkeleton<Auxiliary>>, std::unordered_map<FunctionSkeleton<Auxiliary>, FunctionSkeleton<Auxiliary>>>,
+        boost::hana::pair<boost::hana::type<Function<Static>>, std::unordered_map<Function<Static>, Function<Static>>>,
+        boost::hana::pair<boost::hana::type<Function<Fluent>>, std::unordered_map<Function<Fluent>, Function<Fluent>>>,
+        boost::hana::pair<boost::hana::type<Function<Auxiliary>>, std::unordered_map<Function<Auxiliary>, Function<Auxiliary>>>,
+        boost::hana::pair<boost::hana::type<GroundFunction<Static>>, std::unordered_map<GroundFunction<Static>, GroundFunction<Static>>>,
+        boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, std::unordered_map<GroundFunction<Fluent>, GroundFunction<Fluent>>>,
+        boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, std::unordered_map<GroundFunction<Auxiliary>, GroundFunction<Auxiliary>>>,
         boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctiveCondition>,
                           std::unordered_map<ExistentiallyQuantifiedConjunctiveCondition, ExistentiallyQuantifiedConjunctiveCondition>>,
         boost::hana::pair<boost::hana::type<Action>, std::unordered_map<Action, Action>>,
@@ -154,11 +173,22 @@ protected:
     {
         this->prepare(*literal.get_atom());
     }
-    void prepare_impl(const GroundFunctionValueImpl& numeric_fluent) { this->prepare(*numeric_fluent.get_function()); }
+    template<FunctionTag F>
+    void prepare_impl(const GroundFunctionValueImpl<F>& numeric_fluent)
+    {
+        this->prepare(*numeric_fluent.get_function());
+    }
+    template<DynamicFunctionTag F>
+    void prepare_impl(const EffectNumericImpl<F>& effect)
+    {
+        this->prepare(*effect.get_function());
+        this->prepare(*effect.get_function_expression());
+    }
     void prepare_impl(const EffectStripsImpl& effect)
     {
         this->prepare(effect.get_effects());
-        this->prepare(*effect.get_function_expression());
+        this->prepare(effect.get_numeric_effects<Fluent>());
+        this->prepare(effect.get_numeric_effects<Auxiliary>());
     }
     void prepare_impl(const EffectConditionalImpl& effect)
     {
@@ -167,7 +197,8 @@ protected:
         this->prepare(effect.get_conditions<Fluent>());
         this->prepare(effect.get_conditions<Derived>());
         this->prepare(effect.get_effects());
-        this->prepare(*effect.get_function_expression());
+        this->prepare(effect.get_numeric_effects<Fluent>());
+        this->prepare(effect.get_numeric_effects<Auxiliary>());
     }
     void prepare_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {
@@ -184,7 +215,11 @@ protected:
     }
     void prepare_impl(const FunctionExpressionMultiOperatorImpl& function_expression) { this->prepare(function_expression.get_function_expressions()); }
     void prepare_impl(const FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-    void prepare_impl(const FunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
+    template<FunctionTag F>
+    void prepare_impl(const FunctionExpressionFunctionImpl<F>& function_expression)
+    {
+        this->prepare(*function_expression.get_function());
+    }
     void prepare_impl(const FunctionExpressionImpl& function_expression)
     {
         std::visit([this](auto&& arg) { return this->prepare(*arg); }, function_expression.get_variant());
@@ -197,18 +232,28 @@ protected:
     }
     void prepare_impl(const GroundFunctionExpressionMultiOperatorImpl& function_expression) { this->prepare(function_expression.get_function_expressions()); }
     void prepare_impl(const GroundFunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-    void prepare_impl(const GroundFunctionExpressionFunctionImpl& function_expression) { this->prepare(*function_expression.get_function()); }
+    template<FunctionTag F>
+    void prepare_impl(const GroundFunctionExpressionFunctionImpl<F>& function_expression)
+    {
+        this->prepare(*function_expression.get_function());
+    }
     void prepare_impl(const GroundFunctionExpressionImpl& function_expression)
     {
         std::visit([this](auto&& arg) { return this->prepare(*arg); }, function_expression.get_variant());
     }
-    void prepare_impl(const FunctionSkeletonImpl& function_skeleton) { this->prepare(function_skeleton.get_parameters()); }
-    void prepare_impl(const FunctionImpl& function)
+    template<FunctionTag F>
+    void prepare_impl(const FunctionSkeletonImpl<F>& function_skeleton)
+    {
+        this->prepare(function_skeleton.get_parameters());
+    }
+    template<FunctionTag F>
+    void prepare_impl(const FunctionImpl<F>& function)
     {
         this->prepare(*function.get_function_skeleton());
         this->prepare(function.get_terms());
     }
-    void prepare_impl(const GroundFunctionImpl& function)
+    template<FunctionTag F>
+    void prepare_impl(const GroundFunctionImpl<F>& function)
     {
         this->prepare(*function.get_function_skeleton());
         this->prepare(function.get_objects());
@@ -231,7 +276,9 @@ protected:
         this->prepare(domain.get_predicates<Static>());
         this->prepare(domain.get_predicates<Fluent>());
         this->prepare(domain.get_predicates<Derived>());
-        this->prepare(domain.get_functions());
+        this->prepare(domain.get_functions<Static>());
+        this->prepare(domain.get_functions<Fluent>());
+        this->prepare(domain.get_functions<Auxiliary>());
         this->prepare(domain.get_actions());
         this->prepare(domain.get_axioms());
     }
@@ -244,7 +291,7 @@ protected:
         this->prepare(problem.get_derived_predicates());
         this->prepare(problem.get_static_initial_literals());
         this->prepare(problem.get_fluent_initial_literals());
-        this->prepare(problem.get_function_values());
+        this->prepare(problem.get_static_function_values());
         this->prepare(problem.get_goal_condition<Static>());
         this->prepare(problem.get_goal_condition<Fluent>());
         this->prepare(problem.get_goal_condition<Derived>());
@@ -372,13 +419,23 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_ground_literal(literal.is_negated(), this->transform(*literal.get_atom()));
     }
-    GroundFunctionValue transform_impl(const GroundFunctionValueImpl& numeric_fluent)
+    template<FunctionTag F>
+    GroundFunctionValue<F> transform_impl(const GroundFunctionValueImpl<F>& numeric_fluent)
     {
         return this->m_pddl_repositories.get_or_create_ground_function_value(this->transform(*numeric_fluent.get_function()), numeric_fluent.get_number());
     }
+    template<DynamicFunctionTag F>
+    EffectNumeric<F> transform_impl(const EffectNumericImpl<F>& effect)
+    {
+        return this->m_pddl_repositories.get_or_create_numeric_effect(effect.get_assign_operator(),
+                                                                      this->transform(*effect.get_function()),
+                                                                      this->transform(*effect.get_function_expression()));
+    }
     EffectStrips transform_impl(const EffectStripsImpl& effect)
     {
-        return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()), this->transform(*effect.get_function_expression()));
+        return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()),
+                                                                     this->transform(effect.get_numeric_effects<Fluent>()),
+                                                                     this->transform(effect.get_numeric_effects<Auxiliary>()));
     }
     EffectConditional transform_impl(const EffectConditionalImpl& effect)
     {
@@ -387,7 +444,8 @@ protected:
                                                                           this->transform(effect.get_conditions<Fluent>()),
                                                                           this->transform(effect.get_conditions<Derived>()),
                                                                           this->transform(effect.get_effects()),
-                                                                          this->transform(*effect.get_function_expression()));
+                                                                          this->transform(effect.get_numeric_effects<Fluent>()),
+                                                                          this->transform(effect.get_numeric_effects<Auxiliary>()));
     }
     ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {
@@ -419,7 +477,8 @@ protected:
         return this->m_pddl_repositories.get_or_create_function_expression(
             this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(*function_expression.get_function_expression())));
     }
-    FunctionExpression transform_impl(const FunctionExpressionFunctionImpl& function_expression)
+    template<FunctionTag F>
+    FunctionExpression transform_impl(const FunctionExpressionFunctionImpl<F>& function_expression)
     {
         return this->m_pddl_repositories.get_or_create_function_expression(
             this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(*function_expression.get_function())));
@@ -452,7 +511,8 @@ protected:
         return this->m_pddl_repositories.get_or_create_ground_function_expression(
             this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(*function_expression.get_function_expression())));
     }
-    GroundFunctionExpression transform_impl(const GroundFunctionExpressionFunctionImpl& function_expression)
+    template<FunctionTag F>
+    GroundFunctionExpression transform_impl(const GroundFunctionExpressionFunctionImpl<F>& function_expression)
     {
         return this->m_pddl_repositories.get_or_create_ground_function_expression(
             this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(*function_expression.get_function())));
@@ -461,15 +521,19 @@ protected:
     {
         return std::visit([this](auto&& arg) { return this->transform(*arg); }, function_expression.get_variant());
     }
-    FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton)
+    template<FunctionTag F>
+    FunctionSkeleton<F> transform_impl(const FunctionSkeletonImpl<F>& function_skeleton)
     {
-        return this->m_pddl_repositories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
+        return this->m_pddl_repositories.template get_or_create_function_skeleton<F>(function_skeleton.get_name(),
+                                                                                     this->transform(function_skeleton.get_parameters()));
     }
-    Function transform_impl(const FunctionImpl& function)
+    template<FunctionTag F>
+    Function<F> transform_impl(const FunctionImpl<F>& function)
     {
         return this->m_pddl_repositories.get_or_create_function(this->transform(*function.get_function_skeleton()), this->transform(function.get_terms()));
     }
-    GroundFunction transform_impl(const GroundFunctionImpl& function)
+    template<FunctionTag F>
+    GroundFunction<F> transform_impl(const GroundFunctionImpl<F>& function)
     {
         return this->m_pddl_repositories.get_or_create_ground_function(this->transform(*function.get_function_skeleton()),
                                                                        this->transform(function.get_objects()));
@@ -495,7 +559,9 @@ protected:
                                                               this->transform(domain.get_predicates<Static>()),
                                                               this->transform(domain.get_predicates<Fluent>()),
                                                               this->transform(domain.get_predicates<Derived>()),
-                                                              this->transform(domain.get_functions()),
+                                                              this->transform(domain.get_functions<Static>()),
+                                                              this->transform(domain.get_functions<Fluent>()),
+                                                              this->transform(domain.get_functions<Auxiliary>()),
                                                               this->transform(domain.get_actions()),
                                                               this->transform(domain.get_axioms()));
     }
@@ -516,7 +582,7 @@ protected:
             this->transform(problem.get_derived_predicates()),
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
-            this->transform(problem.get_function_values()),
+            this->transform(problem.get_static_function_values()),
             this->transform(problem.get_goal_condition<Static>()),
             this->transform(problem.get_goal_condition<Fluent>()),
             this->transform(problem.get_goal_condition<Derived>()),

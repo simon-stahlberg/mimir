@@ -180,22 +180,13 @@ static void collect_applied_conditional_effects(GroundAction action,
     {
         if (conditional_effect.is_applicable(problem, dense_state))
         {
-            for (const auto& effect_literal : conditional_effect.get_fluent_effect_literals())
-            {
-                if (effect_literal.is_negated)
-                {
-                    ref_negative_applied_effects.set(effect_literal.atom_index);
-                }
-                else
-                {
-                    ref_positive_applied_effects.set(effect_literal.atom_index);
-                }
-            }
-            for (const auto& effect_numeric : conditional_effect.get_numeric_effects<Fluent>())
+            insert_into_bitset(conditional_effect.get_strips_effect().get_positive_effects(), ref_positive_applied_effects);
+            insert_into_bitset(conditional_effect.get_strips_effect().get_negative_effects(), ref_negative_applied_effects);
+            for (const auto& effect_numeric : conditional_effect.get_strips_effect().get_numeric_effects<Fluent>())
             {
                 // TODO(numeric)
             }
-            for (const auto& effect_numeric : conditional_effect.get_numeric_effects<Auxiliary>())
+            for (const auto& effect_numeric : conditional_effect.get_strips_effect().get_numeric_effects<Auxiliary>())
             {
                 // TODO(numeric)
             }

@@ -47,7 +47,8 @@ private:
     Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate);
     Predicate<Fluent> transform_impl(const PredicateImpl<Fluent>& predicate);
     Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate);
-    FunctionSkeleton transform_impl(const FunctionSkeletonImpl& function_skeleton);
+    template<FunctionTag F>
+    FunctionSkeleton<F> transform_impl(const FunctionSkeletonImpl<F>& function_skeleton);
 
     EffectConditional transform_impl(const EffectConditionalImpl& effect);
     Axiom transform_impl(const AxiomImpl& axiom);

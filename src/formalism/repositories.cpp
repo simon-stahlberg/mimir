@@ -153,7 +153,7 @@ FunctionExpressionMinus PDDLRepositories::get_or_create_function_expression_minu
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<FunctionTag F>
+template<StaticOrFluentTag F>
 FunctionExpressionFunction<F> PDDLRepositories::get_or_create_function_expression_function(Function<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
@@ -161,7 +161,6 @@ FunctionExpressionFunction<F> PDDLRepositories::get_or_create_function_expressio
 
 template FunctionExpressionFunction<Static> PDDLRepositories::get_or_create_function_expression_function(Function<Static> function);
 template FunctionExpressionFunction<Fluent> PDDLRepositories::get_or_create_function_expression_function(Function<Fluent> function);
-template FunctionExpressionFunction<Auxiliary> PDDLRepositories::get_or_create_function_expression_function(Function<Auxiliary> function);
 
 FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionNumber fexpr)
 {
@@ -183,7 +182,7 @@ FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionE
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<FunctionTag F>
+template<StaticOrFluentTag F>
 FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionExpressionImpl> {}).get_or_create(fexpr);
@@ -191,7 +190,6 @@ FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionE
 
 template FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionFunction<Static> fexpr);
 template FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionFunction<Fluent> fexpr);
-template FunctionExpression PDDLRepositories::get_or_create_function_expression(FunctionExpressionFunction<Auxiliary> fexpr);
 
 GroundFunctionExpressionNumber PDDLRepositories::get_or_create_ground_function_expression_number(double number)
 {
@@ -229,13 +227,12 @@ GroundFunctionExpressionMinus PDDLRepositories::get_or_create_ground_function_ex
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<FunctionTag F>
+template<DynamicFunctionTag F>
 GroundFunctionExpressionFunction<F> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
 }
 
-template GroundFunctionExpressionFunction<Static> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<Static> function);
 template GroundFunctionExpressionFunction<Fluent> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<Fluent> function);
 template GroundFunctionExpressionFunction<Auxiliary> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<Auxiliary> function);
 
@@ -259,13 +256,11 @@ GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_express
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<FunctionTag F>
+template<DynamicFunctionTag F>
 GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
-
-template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Static> fexpr);
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Fluent> fexpr);
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Auxiliary> fexpr);
 
@@ -301,18 +296,16 @@ template FunctionSkeleton<Auxiliary> PDDLRepositories::get_or_create_function_sk
 
 template<DynamicFunctionTag F>
 EffectNumeric<F>
-PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, FunctionExpression function_expression)
+PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<EffectNumericImpl<F>> {})
         .get_or_create(std::move(assign_operator), std::move(function), std::move(function_expression));
 }
 
-template EffectNumeric<Fluent> PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator,
-                                                                              GroundFunction<Fluent> function,
-                                                                              FunctionExpression function_expression);
-template EffectNumeric<Auxiliary> PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator,
-                                                                                 GroundFunction<Auxiliary> function,
-                                                                                 FunctionExpression function_expression);
+template EffectNumeric<Fluent>
+PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Fluent> function, FunctionExpression function_expression);
+template EffectNumeric<Auxiliary>
+PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Auxiliary> function, FunctionExpression function_expression);
 
 EffectStrips PDDLRepositories::get_or_create_strips_effect(LiteralList<Fluent> effects,
                                                            EffectNumericList<Fluent> fluent_numeric_effects,

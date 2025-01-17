@@ -68,17 +68,23 @@ Predicate<Derived> EncodeParameterIndexInVariables::transform_impl(const Predica
     return translated_predicate;
 }
 
-FunctionSkeleton EncodeParameterIndexInVariables::transform_impl(const FunctionSkeletonImpl& function_skeleton)
+template<FunctionTag F>
+FunctionSkeleton<F> EncodeParameterIndexInVariables::transform_impl(const FunctionSkeletonImpl<F>& function_skeleton)
 {
     m_enable_encoding = false;
 
     const auto translated_function_skeleton =
-        this->m_pddl_repositories.get_or_create_function_skeleton(function_skeleton.get_name(), this->transform(function_skeleton.get_parameters()));
+        this->m_pddl_repositories.template get_or_create_function_skeleton<F>(function_skeleton.get_name(),
+                                                                              this->transform(function_skeleton.get_parameters()));
 
     m_enable_encoding = true;
 
     return translated_function_skeleton;
 }
+
+template FunctionSkeleton<Static> EncodeParameterIndexInVariables::transform_impl(const FunctionSkeletonImpl<Static>& function_skeleton);
+template FunctionSkeleton<Fluent> EncodeParameterIndexInVariables::transform_impl(const FunctionSkeletonImpl<Fluent>& function_skeleton);
+template FunctionSkeleton<Auxiliary> EncodeParameterIndexInVariables::transform_impl(const FunctionSkeletonImpl<Auxiliary>& function_skeleton);
 
 EffectConditional EncodeParameterIndexInVariables::transform_impl(const EffectConditionalImpl& effect)
 {
@@ -89,12 +95,14 @@ EffectConditional EncodeParameterIndexInVariables::transform_impl(const EffectCo
         m_variable_to_parameter_index[effect.get_parameters()[i]] = start_index + i;
     }
 
-    const auto translated_conditional_effect = this->m_pddl_repositories.get_or_create_conditional_effect(this->transform(effect.get_parameters()),
-                                                                                                          this->transform(effect.get_conditions<Static>()),
-                                                                                                          this->transform(effect.get_conditions<Fluent>()),
-                                                                                                          this->transform(effect.get_conditions<Derived>()),
-                                                                                                          this->transform(effect.get_effects()),
-                                                                                                          this->transform(*effect.get_function_expression()));
+    const auto translated_conditional_effect =
+        this->m_pddl_repositories.get_or_create_conditional_effect(this->transform(effect.get_parameters()),
+                                                                   this->transform(effect.get_conditions<Static>()),
+                                                                   this->transform(effect.get_conditions<Fluent>()),
+                                                                   this->transform(effect.get_conditions<Derived>()),
+                                                                   this->transform(effect.get_effects()),
+                                                                   this->transform(effect.get_numeric_effects<Fluent>()),
+                                                                   this->transform(effect.get_numeric_effects<Auxiliary>()));
 
     // Erase for next universal effect
     for (size_t i = 0; i < effect.get_arity(); ++i)

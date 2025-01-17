@@ -85,6 +85,8 @@ template<FunctionTag F>
 using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl<F>>;
 template<FunctionTag F>
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
+template<DynamicFunctionTag F>
+using EffectNumericRepository = SegmentedPDDLRepository<EffectNumericImpl<F>>;
 using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
 using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
 using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ExistentiallyQuantifiedConjunctiveConditionImpl>;
@@ -141,6 +143,8 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Static>>, FunctionSkeletonRepository<Static>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Fluent>>, FunctionSkeletonRepository<Fluent>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Auxiliary>>, FunctionSkeletonRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<EffectNumericImpl<Fluent>>, EffectNumericRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<EffectNumericImpl<Auxiliary>>, EffectNumericRepository<Auxiliary>>,
     boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
     boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
     boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository>,
@@ -212,7 +216,7 @@ public:
     FunctionExpressionMinus get_or_create_function_expression_minus(FunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<FunctionTag F>
+    template<StaticOrFluentTag F>
     FunctionExpressionFunction<F> get_or_create_function_expression_function(Function<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -220,7 +224,7 @@ public:
     FunctionExpression get_or_create_function_expression(FunctionExpressionBinaryOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMultiOperator fexpr);
     FunctionExpression get_or_create_function_expression(FunctionExpressionMinus fexpr);
-    template<FunctionTag F>
+    template<StaticOrFluentTag F>
     FunctionExpression get_or_create_function_expression(FunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a number function expression for the given parameters.
@@ -239,7 +243,7 @@ public:
     GroundFunctionExpressionMinus get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<FunctionTag F>
+    template<DynamicFunctionTag F>
     GroundFunctionExpressionFunction<F> get_or_create_ground_function_expression_function(GroundFunction<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -247,7 +251,7 @@ public:
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr);
-    template<FunctionTag F>
+    template<DynamicFunctionTag F>
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a function for the given parameters.
@@ -264,7 +268,7 @@ public:
 
     /// @brief Get or create a numeric effect for the given parameters.
     template<DynamicFunctionTag F>
-    EffectNumeric<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, FunctionExpression function_expression);
+    EffectNumeric<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
     /// @brief Get or create a simple effect for the given parameters.
     EffectStrips get_or_create_strips_effect(LiteralList<Fluent> effects,
