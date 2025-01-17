@@ -31,6 +31,7 @@
 namespace mimir
 {
 
+/*
 struct FunctionExpressionBoundsDeterminer
 {
     std::unordered_map<FunctionSkeleton, std::pair<double, double>>& m_function_skeleton_bounds;
@@ -118,12 +119,13 @@ static double determine_action_cost_lower_bound(Problem problem)
 
     return std::max(lower_bound, 0.);  ///< cap at zero.
 }
+*/
 
 BlindHeuristic::BlindHeuristic(Problem problem) :
-    m_min_action_cost_value(
-        (problem->get_domain()->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS)) ?
-            determine_action_cost_lower_bound(problem) :  ///< If action costs is enabled we approximate a lower bound on the possible action cost in a state.
-            1.)                                           ///< if :action-costs is disabled, each action has cost 1.0
+    m_min_action_cost_value((problem->get_domain()->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS)) ?
+                                0. :  // determine_action_cost_lower_bound(problem) :  ///< If action costs is enabled we approximate a lower bound on the
+                                      // possible action cost in a state.
+                                      1.)  ///< if :action-costs is disabled, each action has cost 1.0
 {
 }
 }

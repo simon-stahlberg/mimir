@@ -50,6 +50,8 @@ ProblemImpl::ProblemImpl(Index index,
                          GroundLiteralList<Static> static_initial_literals,
                          GroundLiteralList<Fluent> fluent_initial_literals,
                          GroundFunctionValueList<Static> static_function_values,
+                         GroundFunctionValueList<Fluent> fluent_function_values,
+                         GroundFunctionValueList<Auxiliary> auxiliary_function_values,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
@@ -65,6 +67,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_static_initial_literals(std::move(static_initial_literals)),
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_static_function_values(std::move(static_function_values)),
+    m_fluent_function_values(std::move(fluent_function_values)),
+    m_auxiliary_function_values(std::move(auxiliary_function_values)),
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
     m_derived_goal_condition(std::move(derived_goal_condition)),
@@ -77,6 +81,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_static_initial_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>())),
     m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
     m_static_function_to_value(),
+    m_fluent_function_to_value(),
+    m_auxiliary_function_to_value(),
     m_static_goal_holds(false),
     m_positive_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, true)),
     m_positive_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, true)),
@@ -116,8 +122,14 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(m_fluent_initial_literals.begin(),
                           m_fluent_initial_literals.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_ground_function_values.begin(),
-                          m_ground_function_values.end(),
+    assert(std::is_sorted(m_static_function_values.begin(),
+                          m_static_function_values.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_fluent_function_values.begin(),
+                          m_fluent_function_values.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_auxiliary_function_values.begin(),
+                          m_auxiliary_function_values.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
@@ -155,9 +167,17 @@ ProblemImpl::ProblemImpl(Index index,
 
     m_positive_static_initial_assignment_set.insert_ground_atoms(m_positive_static_initial_atoms);
 
-    for (const auto numeric_fluent : get_static_function_values())
+    for (const auto static_numeric_value : m_static_function_values)
     {
-        m_static_function_to_value.emplace(numeric_fluent->get_function(), numeric_fluent->get_number());
+        m_static_function_to_value.emplace(static_numeric_value->get_function(), static_numeric_value->get_number());
+    }
+    for (const auto fluent_numeric_value : m_fluent_function_values)
+    {
+        m_fluent_function_to_value.emplace(fluent_numeric_value->get_function(), fluent_numeric_value->get_number());
+    }
+    for (const auto auxiliary_numeric_value : m_auxiliary_function_values)
+    {
+        m_auxiliary_function_to_value.emplace(auxiliary_numeric_value->get_function(), auxiliary_numeric_value->get_number());
     }
 
     /* Goal */
@@ -267,7 +287,30 @@ const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() cons
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
-const GroundFunctionValueList<Static>& ProblemImpl::get_static_function_values() const { return m_static_function_values; }
+template<FunctionTag F>
+const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
+{
+    if constexpr (std::is_same_v<F, Static>)
+    {
+        return m_static_function_values;
+    }
+    else if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_function_values;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_function_values;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
+    }
+}
+
+template const GroundFunctionValueList<Static>& ProblemImpl::get_function_values() const;
+template const GroundFunctionValueList<Fluent>& ProblemImpl::get_function_values() const;
+template const GroundFunctionValueList<Auxiliary>& ProblemImpl::get_function_values() const;
 
 template<PredicateTag P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
@@ -321,17 +364,45 @@ const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { re
 
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 
-const GroundFunctionMap<Static, ContinuousCost>& ProblemImpl::get_static_function_to_value() const { return m_static_function_to_value; }
-
-ContinuousCost ProblemImpl::get_static_function_value(GroundFunction<Static> function) const
+template<FunctionTag F>
+const GroundFunctionMap<F, ContinuousCost>& ProblemImpl::get_function_to_value() const
 {
-    auto it = m_static_function_to_value.find(function);
-    if (it != m_static_function_to_value.end())
+    if constexpr (std::is_same_v<F, Static>)
+    {
+        return m_static_function_to_value;
+    }
+    else if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_function_to_value;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_function_to_value;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
+    }
+}
+
+template const GroundFunctionMap<Static, ContinuousCost>& ProblemImpl::get_function_to_value() const;
+template const GroundFunctionMap<Fluent, ContinuousCost>& ProblemImpl::get_function_to_value() const;
+template const GroundFunctionMap<Auxiliary, ContinuousCost>& ProblemImpl::get_function_to_value() const;
+
+template<FunctionTag F>
+ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
+{
+    auto it = get_function_to_value<F>().find(function);
+    if (it != get_function_to_value<F>().end())
     {
         return it->second;
     }
     throw std::runtime_error("ProblemImpl::get_ground_function_value: missing value for ground function: " + to_string(function));
 }
+
+template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Static> function) const;
+template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Fluent> function) const;
+template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Auxiliary> function) const;
 
 /* Goal */
 bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }

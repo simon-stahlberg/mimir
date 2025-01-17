@@ -413,8 +413,25 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
 
 FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionFunctionImpl& function_expression)
 {
-    return m_pddl_repositories.get_or_create_function_expression(
-        m_pddl_repositories.get_or_create_function_expression_function(translate_lifted(*function_expression.get_function())));
+    return std::visit(
+        [this](auto&& function) -> FunctionExpression
+        {
+            using T = std::decay_t<decltype(function)>;
+            if constexpr (std::is_same_v<T, Function<Static>> || std::is_same_v<T, Function<Fluent>>)
+            {
+                return this->m_pddl_repositories.get_or_create_function_expression(
+                    this->m_pddl_repositories.get_or_create_function_expression_function(function));
+            }
+            else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
+            {
+                throw std::logic_error("ToMimirStructures::translate_lifted: FunctionExpressionFunction<Auxiliary> must not exist.");
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionType.");
+            }
+        },
+        translate_lifted(*function_expression.get_function()));
 }
 
 FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpressionImpl& function_expression)
@@ -422,14 +439,30 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
     return std::visit([this](auto&& arg) { return this->translate_lifted(*arg); }, function_expression.get_function_expression());
 }
 
-FunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
+StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    return m_pddl_repositories.get_or_create_function_skeleton(function_skeleton.get_name(), translate_common(function_skeleton.get_parameters()));
+    if (m_fexpr_functions.contains(function_skeleton.get_name()) && !m_fluent_functions.contains(function_skeleton.get_name()))
+    {
+        return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
+                                                                                       translate_common(function_skeleton.get_parameters()));
+    }
+    else if (m_fluent_functions.contains(function_skeleton.get_name()))
+    {
+        return m_pddl_repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton.get_name(),
+                                                                                    translate_common(function_skeleton.get_parameters()));
+    }
+    else
+    {
+        return m_pddl_repositories.template get_or_create_function_skeleton<Static>(function_skeleton.get_name(),
+                                                                                    translate_common(function_skeleton.get_parameters()));
+    }
 }
 
-Function ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
+StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
 {
-    return m_pddl_repositories.get_or_create_function(translate_lifted(*function.get_function_skeleton()), translate_lifted(function.get_terms()));
+    return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryFunction
+                      { return this->m_pddl_repositories.get_or_create_function(function_skeleton, translate_lifted(function.get_terms())); },
+                      translate_lifted(*function.get_function_skeleton()));
 }
 
 std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
@@ -503,9 +536,9 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
 
 std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
-    using EffectStripsData = std::pair<LiteralList<Fluent>, FunctionExpressionList>;
+    using EffectStripsData = std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>;
     using EffectConditionalData = std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>,
-                                                     std::pair<LiteralList<Fluent>, FunctionExpressionList>,
+                                                     std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>,
                                                      loki::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
 
     const auto translate_effect_func =
@@ -539,6 +572,27 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
             tmp_effect = (*tmp_effect_when)->get_effect();
         }
 
+        // Fetch container to store the effects
+        const bool is_conditional_effect = (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()));
+        auto& data_fluent_literals =
+            is_conditional_effect ?
+                std::get<0>(
+                    ref_effect_conditional_data
+                        [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]) :
+                std::get<0>(ref_effect_strips_data);
+        auto& data_fluent_numeric_effects =
+            is_conditional_effect ?
+                std::get<1>(
+                    ref_effect_conditional_data
+                        [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]) :
+                std::get<1>(ref_effect_strips_data);
+        auto& data_auxiliary_numeric_effects =
+            is_conditional_effect ?
+                std::get<2>(
+                    ref_effect_conditional_data
+                        [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]) :
+                std::get<2>(ref_effect_strips_data);
+
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
         {
@@ -551,37 +605,39 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
 
             const auto fluent_effect = std::get<Literal<Fluent>>(static_or_fluent_or_derived_effect);
 
-            if (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()))
-            {
-                ref_effect_conditional_data
-                    [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
-                        .first.push_back(fluent_effect);
-            }
-            else
-            {
-                ref_effect_strips_data.first.push_back(fluent_effect);
-            }
+            data_fluent_literals.push_back(fluent_effect);
         }
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
         {
-            if ((*effect_numeric)->get_function()->get_function_skeleton()->get_name() != "total-cost"
-                || (*effect_numeric)->get_assign_operator() != loki::AssignOperatorEnum::INCREASE)
-            {
-                throw std::runtime_error("Only increasing total-cost is supported!");
-            }
+            const auto static_fluent_or_auxiliary_function = translate_lifted(*(*effect_numeric)->get_function());
+            const auto function_expression = translate_lifted(*(*effect_numeric)->get_function_expression());
 
-            const auto function_expression = this->translate_lifted(*(*effect_numeric)->get_function_expression());
-
-            if (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()))
-            {
-                ref_effect_conditional_data
-                    [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]
-                        .second.push_back(function_expression);
-            }
-            else
-            {
-                ref_effect_strips_data.second.push_back(function_expression);
-            }
+            std::visit(
+                [&](auto&& function)
+                {
+                    using T = std::decay_t<decltype(function)>;
+                    if constexpr (std::is_same_v<T, Function<Fluent>>)
+                    {
+                        data_fluent_numeric_effects.push_back(
+                            m_pddl_repositories.get_or_create_numeric_effect<Fluent>((*effect_numeric)->get_assign_operator(), function, function_expression));
+                    }
+                    else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
+                    {
+                        data_auxiliary_numeric_effects.push_back(
+                            m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>((*effect_numeric)->get_assign_operator(),
+                                                                                        function,
+                                                                                        function_expression));
+                    }
+                    else if constexpr (std::is_same_v<T, Function<Static>>)
+                    {
+                        throw std::logic_error("ToMimirStructures::translate_lifted: FunctionExpressionFunction<Auxiliary> must not exist.");
+                    }
+                    else
+                    {
+                        static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionType.");
+                    }
+                },
+                static_fluent_or_auxiliary_function);
         }
         else
         {
@@ -610,38 +666,24 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
     }
 
     /* Instantiate STRIPS effect. */
-    const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(
-        effect_strips_data.first,
-        (effect_strips_data.second.size() > 0) ?
-            (effect_strips_data.second.size() == 1) ?
-            effect_strips_data.second.front() :
-            this->m_pddl_repositories.get_or_create_function_expression(
-                this->m_pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, effect_strips_data.second)) :
-            this->m_pddl_repositories.get_or_create_function_expression(
-                this->m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1)));
+    const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(std::get<0>(effect_strips_data),
+                                                                                     std::get<1>(effect_strips_data),
+                                                                                     std::get<2>(effect_strips_data));
 
     /* Instantiate conditional effects. */
     auto conditional_effects = EffectConditionalList {};
     for (const auto& [key, value] : effect_conditional_data)
     {
         const auto& [variables, static_conditions, fluent_conditions, derived_conditions] = key;
-        const auto& [effect_literals, function_expression] = value;
-
-        auto cost_function_expression =
-            (function_expression.size() > 0) ?
-                (function_expression.size() == 1) ?
-                function_expression.front() :
-                this->m_pddl_repositories.get_or_create_function_expression(
-                    this->m_pddl_repositories.get_or_create_function_expression_multi_operator(loki::MultiOperatorEnum::PLUS, function_expression)) :
-                this->m_pddl_repositories.get_or_create_function_expression(
-                    this->m_pddl_repositories.get_or_create_function_expression_number(0));  // always 0 default cost, independent of m_action_costs_enabled
+        const auto& [fluent_literals, fluent_numeric_effects, auxiliary_numeric_effects] = value;
 
         conditional_effects.push_back(this->m_pddl_repositories.get_or_create_conditional_effect(variables,
                                                                                                  static_conditions,
                                                                                                  fluent_conditions,
                                                                                                  derived_conditions,
-                                                                                                 effect_literals,
-                                                                                                 cost_function_expression));
+                                                                                                 fluent_literals,
+                                                                                                 fluent_numeric_effects,
+                                                                                                 auxiliary_numeric_effects));
     }
 
     return std::make_tuple(strips_effect, conditional_effects);
@@ -738,10 +780,8 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
     auto static_predicates = PredicateList<Static> {};
     auto fluent_predicates = PredicateList<Fluent> {};
     auto derived_predicates = PredicateList<Derived> {};
-    for (const auto& predicate : domain.get_predicates())
+    for (const auto& static_or_fluent_or_derived_predicate : translate_common(domain.get_predicates()))
     {
-        const auto static_or_fluent_or_derived_predicate = translate_common(*predicate);
-
         std::visit(
             [&static_predicates, &fluent_predicates, &derived_predicates](auto&& arg)
             {
@@ -762,6 +802,30 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
             static_or_fluent_or_derived_predicate);
     }
 
+    auto static_functions = FunctionSkeletonList<Static> {};
+    auto fluent_functions = FunctionSkeletonList<Fluent> {};
+    auto auxiliary_functions = FunctionSkeletonList<Auxiliary> {};
+    for (const auto& static_or_fluent_or_auxiliary_function : translate_lifted(domain.get_functions()))
+    {
+        std::visit(
+            [&static_functions, &fluent_functions, &auxiliary_functions](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, FunctionSkeletonList<Static>>)
+                {
+                    static_functions.push_back(arg);
+                }
+                else if constexpr (std::is_same_v<T, FunctionSkeletonList<Fluent>>)
+                {
+                    fluent_functions.push_back(arg);
+                }
+                else if constexpr (std::is_same_v<T, FunctionSkeletonList<Auxiliary>>)
+                {
+                    auxiliary_functions.push_back(arg);
+                }
+            },
+            static_or_fluent_or_auxiliary_function);
+    }
     const auto functions = translate_lifted(domain.get_functions());
     const auto actions = translate_lifted(domain.get_actions());
     const auto axioms = translate_lifted(domain.get_axioms());
@@ -781,7 +845,9 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
                                                     uniquify_elements(static_predicates),
                                                     uniquify_elements(fluent_predicates),
                                                     uniquify_elements(derived_predicates),
-                                                    uniquify_elements(functions),
+                                                    uniquify_elements(static_functions),
+                                                    uniquify_elements(fluent_functions),
+                                                    uniquify_elements(auxiliary_functions),
                                                     uniquify_elements(actions),
                                                     uniquify_elements(axioms));
 }
@@ -848,9 +914,13 @@ StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(const
         static_or_fluent_or_derived_ground_atom);
 }
 
-GroundFunctionValue ToMimirStructures::translate_grounded(const loki::FunctionValueImpl& function_value)
+StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_grounded(const loki::FunctionValueImpl& function_value)
 {
-    return m_pddl_repositories.get_or_create_ground_function_value(translate_grounded(*function_value.get_function()), function_value.get_number());
+    const auto static_or_fluent_or_auxiliary_ground_function = translate_grounded(*function_value.get_function());
+
+    return std::visit([&](auto&& ground_function) -> StaticOrFluentOrAuxiliaryGroundFunctionValue
+                      { return m_pddl_repositories.get_or_create_ground_function_value(ground_function, function_value.get_number()); },
+                      static_or_fluent_or_auxiliary_ground_function);
 }
 
 GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression)
@@ -882,8 +952,31 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::Funct
 
 GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionFunctionImpl& function_expression)
 {
-    return m_pddl_repositories.get_or_create_ground_function_expression(
-        m_pddl_repositories.get_or_create_ground_function_expression_function(translate_grounded(*function_expression.get_function())));
+    return std::visit(
+        [this](auto&& ground_function)
+        {
+            using T = std::decay_t<decltype(ground_function)>;
+            if constexpr (std::is_same_v<T, GroundFunction<Static>>)
+            {
+                // TODO(numeric): must fetch static value.
+                return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(0));
+            }
+            else if constexpr (std::is_same_v<T, GroundFunction<Fluent>>)
+            {
+                return m_pddl_repositories.get_or_create_ground_function_expression(
+                    m_pddl_repositories.get_or_create_ground_function_expression_function(ground_function));
+            }
+            else if constexpr (std::is_same_v<T, GroundFunction<Auxiliary>>)
+            {
+                return m_pddl_repositories.get_or_create_ground_function_expression(
+                    m_pddl_repositories.get_or_create_ground_function_expression_function(ground_function));
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundFunctionType.");
+            }
+        },
+        translate_grounded(*function_expression.get_function()));
 }
 
 GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::FunctionExpressionImpl& function_expression)
@@ -891,9 +984,14 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::Funct
     return std::visit([this](auto&& arg) { return this->translate_grounded(*arg); }, function_expression.get_function_expression());
 }
 
-GroundFunction ToMimirStructures::translate_grounded(const loki::FunctionImpl& function)
+StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(const loki::FunctionImpl& function)
 {
-    return m_pddl_repositories.get_or_create_ground_function(translate_lifted(*function.get_function_skeleton()), translate_grounded(function.get_terms()));
+    const auto static_or_fluent_or_auxiliary_function_skeleton = translate_lifted(*function.get_function_skeleton());
+    const auto objects = translate_grounded(function.get_terms());
+
+    return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryGroundFunction
+                      { return m_pddl_repositories.get_or_create_ground_function(function_skeleton, objects); },
+                      static_or_fluent_or_auxiliary_function_skeleton);
 }
 
 std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>
@@ -1026,6 +1124,31 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
             static_or_fluent_or_derived_ground_literal);
     }
 
+    auto static_function_values = GroundFunctionValueList<Static> {};
+    auto fluent_function_values = GroundFunctionValueList<Fluent> {};
+    auto auxiliary_function_values = GroundFunctionValueList<Auxiliary> {};
+    for (const auto static_or_fluent_or_auxiliary_function_value : translate_grounded(problem.get_function_values()))
+    {
+        std::visit(
+            [&static_function_values, &fluent_function_values, &auxiliary_function_values](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, GroundFunctionValue<Static>>)
+                {
+                    static_function_values.push_back(arg);
+                }
+                else if constexpr (std::is_same_v<T, GroundFunctionValue<Fluent>>)
+                {
+                    fluent_function_values.push_back(arg);
+                }
+                else if constexpr (std::is_same_v<T, GroundFunctionValue<Auxiliary>>)
+                {
+                    auxiliary_function_values.push_back(arg);
+                }
+            },
+            static_or_fluent_or_auxiliary_function_value);
+    }
+
     // Add equal atoms, e.g., (= object1 object1)
     // This must occur after parsing the domain
     if (m_equal_predicate)
@@ -1048,7 +1171,9 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                      uniquify_elements(derived_predicates),
                                                      uniquify_elements(static_initial_literals),
                                                      uniquify_elements(fluent_initial_literals),
-                                                     uniquify_elements(translate_grounded(problem.get_function_values())),
+                                                     uniquify_elements(static_function_values),
+                                                     uniquify_elements(fluent_function_values),
+                                                     uniquify_elements(auxiliary_function_values),
                                                      uniquify_elements(static_goal_literals),
                                                      uniquify_elements(fluent_goal_literals),
                                                      uniquify_elements(derived_goal_literals),

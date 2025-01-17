@@ -452,6 +452,8 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                                                 GroundLiteralList<Static> static_initial_literals,
                                                 GroundLiteralList<Fluent> fluent_initial_literals,
                                                 GroundFunctionValueList<Static> static_function_values,
+                                                GroundFunctionValueList<Fluent> fluent_function_values,
+                                                GroundFunctionValueList<Auxiliary> auxiliary_function_values,
                                                 GroundLiteralList<Static> static_goal_condition,
                                                 GroundLiteralList<Fluent> fluent_goal_condition,
                                                 GroundLiteralList<Derived> derived_goal_condition,
@@ -464,6 +466,8 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
     std::sort(static_initial_literals.begin(), static_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_initial_literals.begin(), fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_function_values.begin(), static_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_function_values.begin(), fluent_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(auxiliary_function_values.begin(), auxiliary_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_goal_condition.begin(), static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_goal_condition.begin(), fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_goal_condition.begin(), derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -479,6 +483,8 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                        std::move(static_initial_literals),
                        std::move(fluent_initial_literals),
                        std::move(static_function_values),
+                       std::move(fluent_function_values),
+                       std::move(auxiliary_function_values),
                        std::move(static_goal_condition),
                        std::move(fluent_goal_condition),
                        std::move(derived_goal_condition),

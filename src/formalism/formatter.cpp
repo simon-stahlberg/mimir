@@ -664,7 +664,8 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         out << ")" << std::endl;
     }
 
-    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_static_function_values().empty()))
+    if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_function_values<Static>().empty()
+          && element.get_function_values<Fluent>().empty() && element.get_function_values<Auxiliary>().empty()))
     {
         out << std::string(m_indent, ' ') << "(:init";
         for (const auto& initial : element.get_static_initial_literals())
@@ -675,7 +676,15 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         {
             write(*initial, out);
         }
-        for (const auto& initial : element.get_static_function_values())
+        for (const auto& initial : element.get_function_values<Static>())
+        {
+            write(*initial, out);
+        }
+        for (const auto& initial : element.get_function_values<Fluent>())
+        {
+            write(*initial, out);
+        }
+        for (const auto& initial : element.get_function_values<Auxiliary>())
         {
             write(*initial, out);
         }

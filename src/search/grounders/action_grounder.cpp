@@ -124,7 +124,7 @@ public:
     GroundFunctionExpression operator()(const FunctionExpressionFunctionImpl<Static>& expr)
     {
         return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
-            m_problem->get_static_function_value(m_function_grounder.ground_function(expr.get_function(), m_binding))));
+            m_problem->get_function_value<Static>(m_function_grounder.ground_function(expr.get_function(), m_binding))));
     }
 };
 

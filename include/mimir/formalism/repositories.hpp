@@ -331,6 +331,8 @@ public:
                                   GroundLiteralList<Static> static_initial_literals,
                                   GroundLiteralList<Fluent> fluent_initial_literals,
                                   GroundFunctionValueList<Static> static_function_values,
+                                  GroundFunctionValueList<Fluent> fluent_function_values,
+                                  GroundFunctionValueList<Auxiliary> auxiliary_function_values,
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
                                   GroundLiteralList<Derived> derived_goal_condition,

@@ -49,6 +49,10 @@ const TermList& FunctionImpl<F>::get_terms() const
     return m_terms;
 }
 
+template class FunctionImpl<Static>;
+template class FunctionImpl<Fluent>;
+template class FunctionImpl<Auxiliary>;
+
 template<FunctionTag F>
 std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element)
 {

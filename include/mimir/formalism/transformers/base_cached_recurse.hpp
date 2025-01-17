@@ -291,7 +291,9 @@ protected:
         this->prepare(problem.get_derived_predicates());
         this->prepare(problem.get_static_initial_literals());
         this->prepare(problem.get_fluent_initial_literals());
-        this->prepare(problem.get_static_function_values());
+        this->prepare(problem.get_function_values<Static>());
+        this->prepare(problem.get_function_values<Fluent>());
+        this->prepare(problem.get_function_values<Auxiliary>());
         this->prepare(problem.get_goal_condition<Static>());
         this->prepare(problem.get_goal_condition<Fluent>());
         this->prepare(problem.get_goal_condition<Derived>());
@@ -582,7 +584,9 @@ protected:
             this->transform(problem.get_derived_predicates()),
             this->transform(problem.get_static_initial_literals()),
             this->transform(problem.get_fluent_initial_literals()),
-            this->transform(problem.get_static_function_values()),
+            this->transform(problem.get_function_values<Static>()),
+            this->transform(problem.get_function_values<Fluent>()),
+            this->transform(problem.get_function_values<Auxiliary>()),
             this->transform(problem.get_goal_condition<Static>()),
             this->transform(problem.get_goal_condition<Fluent>()),
             this->transform(problem.get_goal_condition<Derived>()),

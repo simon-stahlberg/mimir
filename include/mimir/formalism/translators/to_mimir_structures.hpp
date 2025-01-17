@@ -43,7 +43,8 @@ using StaticOrFluentOrAuxiliaryGroundFunctionValue = std::variant<GroundFunction
 
 using StaticOrFluentFunctionExpressionFunction = std::variant<FunctionExpressionFunction<Static>, FunctionExpressionFunction<Fluent>>;
 
-using FluentOrAuxiliaryGroundFunctionExpressionFunction = std::variant<GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpressionFunction<Auxiliary>>;
+using StaticOrFluentOrAuxiliaryGroundFunctionExpressionFunction =
+    std::variant<GroundFunctionExpressionFunction<Static>, GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpressionFunction<Auxiliary>>;
 
 class ToMimirStructures
 {

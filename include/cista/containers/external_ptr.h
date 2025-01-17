@@ -19,10 +19,12 @@ struct basic_external_ptr
 
     explicit operator bool() const noexcept { return el_ != 0; }
 
-    friend bool operator==(basic_external_ptr const& a, std::nullptr_t) noexcept { return a.el_ == 0; }
-    friend bool operator==(std::nullptr_t, basic_external_ptr const& a) noexcept { return a.el_ == 0; }
-    friend bool operator!=(basic_external_ptr const& a, std::nullptr_t) noexcept { return a.el_ != 0; }
-    friend bool operator!=(std::nullptr_t, basic_external_ptr const& a) noexcept { return a.el_ != 0; }
+    friend bool operator==(const basic_external_ptr& a, const basic_external_ptr& b) noexcept { return a.el_ == b.el_; }
+    friend bool operator==(const basic_external_ptr& a, std::nullptr_t) noexcept { return a.el_ == 0; }
+    friend bool operator==(std::nullptr_t, const basic_external_ptr& a) noexcept { return a.el_ == 0; }
+    friend bool operator!=(const basic_external_ptr& a, const basic_external_ptr& b) noexcept { return !(a == b); }
+    friend bool operator!=(const basic_external_ptr& a, std::nullptr_t) noexcept { return a.el_ != 0; }
+    friend bool operator!=(std::nullptr_t, const basic_external_ptr& a) noexcept { return a.el_ != 0; }
 
     T* get() const noexcept { return reinterpret_cast<T*>(el_); }
     T* operator->() noexcept { return reinterpret_cast<T*>(el_); }
