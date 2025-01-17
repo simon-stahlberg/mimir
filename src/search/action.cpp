@@ -219,167 +219,20 @@ template const GroundEffectNumericList<Auxiliary>& GroundEffectStrips::get_numer
 
 /* GroundEffectConditional */
 
-template<PredicateTag P>
-FlatIndexList& GroundEffectConditional::get_positive_precondition()
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        assert(std::is_sorted(m_positive_static_atoms.cbegin(), m_positive_static_atoms.cend()));
-        return m_positive_static_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        assert(std::is_sorted(m_positive_fluent_atoms.cbegin(), m_positive_fluent_atoms.cend()));
-        return m_positive_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        assert(std::is_sorted(m_positive_derived_atoms.cbegin(), m_positive_derived_atoms.cend()));
-        return m_positive_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
+/* Precondition */
+GroundConditionStrips& GroundEffectConditional::get_strips_precondition() { return m_strips_condition; }
 
-template FlatIndexList& GroundEffectConditional::get_positive_precondition<Static>();
-template FlatIndexList& GroundEffectConditional::get_positive_precondition<Fluent>();
-template FlatIndexList& GroundEffectConditional::get_positive_precondition<Derived>();
+const GroundConditionStrips& GroundEffectConditional::get_strips_precondition() const { return m_strips_condition; }
 
-template<PredicateTag P>
-const FlatIndexList& GroundEffectConditional::get_positive_precondition() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        assert(std::is_sorted(m_positive_static_atoms.begin(), m_positive_static_atoms.end()));
-        return m_positive_static_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        assert(std::is_sorted(m_positive_fluent_atoms.begin(), m_positive_fluent_atoms.end()));
-        return m_positive_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        assert(std::is_sorted(m_positive_derived_atoms.begin(), m_positive_derived_atoms.end()));
-        return m_positive_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
+/* Effect */
+GroundEffectStrips& GroundEffectConditional::get_strips_effect() { return m_strips_effect; }
 
-template const FlatIndexList& GroundEffectConditional::get_positive_precondition<Static>() const;
-template const FlatIndexList& GroundEffectConditional::get_positive_precondition<Fluent>() const;
-template const FlatIndexList& GroundEffectConditional::get_positive_precondition<Derived>() const;
-
-template<PredicateTag P>
-FlatIndexList& GroundEffectConditional::get_negative_precondition()
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        assert(std::is_sorted(m_negative_static_atoms.cbegin(), m_negative_static_atoms.cend()));
-        return m_negative_static_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        assert(std::is_sorted(m_negative_fluent_atoms.cbegin(), m_negative_fluent_atoms.cend()));
-        return m_negative_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        assert(std::is_sorted(m_negative_derived_atoms.cbegin(), m_negative_derived_atoms.cend()));
-        return m_negative_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
-
-template FlatIndexList& GroundEffectConditional::get_negative_precondition<Static>();
-template FlatIndexList& GroundEffectConditional::get_negative_precondition<Fluent>();
-template FlatIndexList& GroundEffectConditional::get_negative_precondition<Derived>();
-
-template<PredicateTag P>
-const FlatIndexList& GroundEffectConditional::get_negative_precondition() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        assert(std::is_sorted(m_negative_static_atoms.begin(), m_negative_static_atoms.end()));
-        return m_negative_static_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        assert(std::is_sorted(m_negative_fluent_atoms.begin(), m_negative_fluent_atoms.end()));
-        return m_negative_fluent_atoms;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        assert(std::is_sorted(m_negative_derived_atoms.begin(), m_negative_derived_atoms.end()));
-        return m_negative_derived_atoms;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
-
-template const FlatIndexList& GroundEffectConditional::get_negative_precondition<Static>() const;
-template const FlatIndexList& GroundEffectConditional::get_negative_precondition<Fluent>() const;
-template const FlatIndexList& GroundEffectConditional::get_negative_precondition<Derived>() const;
-
-GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() { return m_effects; }
-
-const GroundEffectFluentLiteralList& GroundEffectConditional::get_fluent_effect_literals() const { return m_effects; }
-
-template<DynamicFunctionTag F>
-GroundEffectNumericList<F>& GroundEffectConditional::get_numeric_effects()
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_numeric_effects;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_numeric_effects;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
-
-template GroundEffectNumericList<Fluent>& GroundEffectConditional::get_numeric_effects<Fluent>();
-template GroundEffectNumericList<Auxiliary>& GroundEffectConditional::get_numeric_effects<Auxiliary>();
-
-template<DynamicFunctionTag F>
-const GroundEffectNumericList<F>& GroundEffectConditional::get_numeric_effects() const
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_numeric_effects;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_numeric_effects;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
-
-template const GroundEffectNumericList<Fluent>& GroundEffectConditional::get_numeric_effects<Fluent>() const;
-template const GroundEffectNumericList<Auxiliary>& GroundEffectConditional::get_numeric_effects<Auxiliary>() const;
+const GroundEffectStrips& GroundEffectConditional::get_strips_effect() const { return m_strips_effect; }
 
 template<PredicateTag P>
 bool GroundEffectConditional::is_applicable(const FlatBitset& atoms) const
 {
-    return is_supseteq(atoms, get_positive_precondition<P>())  //
-           && are_disjoint(atoms, get_negative_precondition<P>());
+    return m_strips_condition.is_applicable<P>(atoms);
 }
 
 template bool GroundEffectConditional::is_applicable<Static>(const FlatBitset& atoms) const;
@@ -387,18 +240,18 @@ template bool GroundEffectConditional::is_applicable<Fluent>(const FlatBitset& a
 template bool GroundEffectConditional::is_applicable<Derived>(const FlatBitset& atoms) const;
 
 bool GroundEffectConditional::is_dynamically_applicable(const DenseState& dense_state) const
-{  //
-    return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>());
+{
+    return m_strips_condition.is_dynamically_applicable(dense_state);
 }
 
 bool GroundEffectConditional::is_statically_applicable(Problem problem) const
 {
-    return is_applicable<Static>(problem->get_static_initial_positive_atoms_bitset());
+    return m_strips_condition.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
 bool GroundEffectConditional::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return is_dynamically_applicable(dense_state) && is_statically_applicable(problem);
+    return m_strips_condition.is_applicable(problem, dense_state);
 }
 
 /* GroundActionImpl */
@@ -447,46 +300,9 @@ bool GroundActionImpl::is_applicable(Problem problem, const DenseState& dense_st
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectFluentLiteral, const PDDLRepositories&>& data)
-{
-    const auto& [simple_effect, pddl_repositories] = data;
-
-    const auto& ground_atom = pddl_repositories.get_ground_atom<Fluent>(simple_effect.atom_index);
-
-    if (simple_effect.is_negated)
-    {
-        os << "(not ";
-    }
-
-    os << *ground_atom;
-
-    if (simple_effect.is_negated)
-    {
-        os << ")";
-    }
-
-    return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectFluentLiteralList, const PDDLRepositories&>& data)
-{
-    const auto& [simple_effects, pddl_repositories] = data;
-
-    os << "(and";
-
-    for (const auto& simple_effect : simple_effects)
-    {
-        os << " " << std::make_tuple(simple_effect, std::cref(pddl_repositories));
-    }
-
-    os << ")";
-
-    return os;
-}
-
-template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data)
 {
+    // TODO(numerical): add numeric constraints
     const auto& [strips_precondition_proxy, pddl_repositories] = data;
 
     const auto& positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
@@ -523,6 +339,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrip
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, const PDDLRepositories&>& data)
 {
+    // TODO(numerical): add numeric effects
     const auto& [strips_effect_proxy, pddl_repositories] = data;
 
     const auto& positive_effect_bitset = strips_effect_proxy.get_positive_effects();
@@ -545,35 +362,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditio
 {
     const auto& [cond_effect_proxy, pddl_repositories] = data;
 
-    const auto& positive_static_precondition_bitset = cond_effect_proxy.get_positive_precondition<Static>();
-    const auto& negative_static_precondition_bitset = cond_effect_proxy.get_negative_precondition<Static>();
-    const auto& positive_fluent_precondition_bitset = cond_effect_proxy.get_positive_precondition<Fluent>();
-    const auto& negative_fluent_precondition_bitset = cond_effect_proxy.get_negative_precondition<Fluent>();
-    const auto& positive_derived_precondition_bitset = cond_effect_proxy.get_positive_precondition<Derived>();
-    const auto& negative_derived_precondition_bitset = cond_effect_proxy.get_negative_precondition<Derived>();
-    const auto& simple_effect = cond_effect_proxy.get_fluent_effect_literals();
-
-    auto positive_static_precondition = GroundAtomList<Static> {};
-    auto negative_static_precondition = GroundAtomList<Static> {};
-    auto positive_fluent_precondition = GroundAtomList<Fluent> {};
-    auto negative_fluent_precondition = GroundAtomList<Fluent> {};
-    auto positive_derived_precondition = GroundAtomList<Derived> {};
-    auto negative_derived_precondition = GroundAtomList<Derived> {};
-
-    pddl_repositories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
-
-    os << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", "
-       << "negative derived precondition=" << negative_derived_precondition << ", "
-       << "effect=" << std::make_tuple(simple_effect, std::cref(pddl_repositories));
+    os << std::make_tuple(cond_effect_proxy.get_strips_precondition(), std::cref(pddl_repositories)) << ", "
+       << std::make_tuple(cond_effect_proxy.get_strips_effect(), std::cref(pddl_repositories));
 
     return os;
 }

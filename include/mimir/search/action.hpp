@@ -92,48 +92,18 @@ struct GroundEffectStrips
     const GroundEffectNumericList<F>& get_numeric_effects() const;
 };
 
-/// @brief `GroundEffectFluentLiteral` encapsulates the effect on a single grounded atom.
-/// We cannot consistently use cista::tuple since nested tuples will automatically be flattened.
-struct GroundEffectFluentLiteral
-{
-    bool is_negated = false;
-    Index atom_index = Index(0);
-};
-
-using GroundEffectFluentLiteralList = cista::offset::vector<GroundEffectFluentLiteral>;
-
 struct GroundEffectConditional
 {
-    FlatIndexList m_positive_static_atoms = FlatIndexList();
-    FlatIndexList m_negative_static_atoms = FlatIndexList();
-    FlatIndexList m_positive_fluent_atoms = FlatIndexList();
-    FlatIndexList m_negative_fluent_atoms = FlatIndexList();
-    FlatIndexList m_positive_derived_atoms = FlatIndexList();
-    FlatIndexList m_negative_derived_atoms = FlatIndexList();
-    GroundEffectFluentLiteralList m_effects = GroundEffectFluentLiteralList();
-    GroundEffectNumericList<Fluent> m_fluent_numeric_effects = GroundEffectNumericList<Fluent>();
-    GroundEffectNumericList<Auxiliary> m_auxiliary_numeric_effects = GroundEffectNumericList<Auxiliary>();
+    GroundConditionStrips m_strips_condition = GroundConditionStrips();
+    GroundEffectStrips m_strips_effect = GroundEffectStrips();
 
     /* Precondition */
-    template<PredicateTag P>
-    FlatIndexList& get_positive_precondition();
-    template<PredicateTag P>
-    const FlatIndexList& get_positive_precondition() const;
+    GroundConditionStrips& get_strips_precondition();
+    const GroundConditionStrips& get_strips_precondition() const;
 
-    template<PredicateTag P>
-    FlatIndexList& get_negative_precondition();
-    template<PredicateTag P>
-    const FlatIndexList& get_negative_precondition() const;
-
-    /* Propositional effects */
-    GroundEffectFluentLiteralList& get_fluent_effect_literals();
-    const GroundEffectFluentLiteralList& get_fluent_effect_literals() const;
-
-    /* Numeric effects */
-    template<DynamicFunctionTag F>
-    GroundEffectNumericList<F>& get_numeric_effects();
-    template<DynamicFunctionTag F>
-    const GroundEffectNumericList<F>& get_numeric_effects() const;
+    /* Effect */
+    GroundEffectStrips& get_strips_effect();
+    const GroundEffectStrips& get_strips_effect() const;
 
     /* Utility */
     template<PredicateTag P>
@@ -208,12 +178,6 @@ using GroundActionImplSet = mimir::buffering::UnorderedSet<GroundActionImpl>;
 /**
  * Pretty printing
  */
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectFluentLiteral, const PDDLRepositories&>& data);
-
-template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectFluentLiteralList, const PDDLRepositories&>& data);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data);
