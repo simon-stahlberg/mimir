@@ -27,7 +27,6 @@ HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> appli
 {
     // We simply create a state space and copy the estimates
     auto state_space_options = StateSpaceOptions();
-    state_space_options.use_unit_cost_one = false;
     state_space_options.remove_if_unsolvable = false;
 
     auto state_space = StateSpace::create(applicable_action_generator, state_repository, state_space_options).value();

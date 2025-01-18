@@ -88,21 +88,6 @@ std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr)
 using FlatDoubleList = cista::offset::vector<double>;
 using FlatDoubleListSet = mimir::buffering::UnorderedSet<cista::offset::vector<double>>;
 
-inline std::ostream& operator<<(std::ostream& os, const FlatDoubleList& list)
-{
-    os << "[";
-    size_t i = 0;
-    for (const auto& element : list)
-    {
-        if (i != 0)
-            os << ", ";
-        os << element;
-        ++i;
-    }
-    os << "]";
-    return os;
-}
-
 /// @brief Check whether `value` exists in the given `vec`.
 /// Runs binary search to find a value in a vec.
 /// @param vec is the vector.

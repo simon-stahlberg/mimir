@@ -32,6 +32,7 @@ namespace mimir
 /// @param state_repository is the state repository.
 /// @param out_ground_action_sequence is the resulting state trajectory.
 inline void extract_ground_action_sequence(State start_state,
+                                           const FlatDoubleList& start_auxiliary_function_values,
                                            const IndexList& state_trajectory,
                                            IApplicableActionGenerator& applicable_action_generator,
                                            StateRepository& state_repository,
@@ -45,12 +46,15 @@ inline void extract_ground_action_sequence(State start_state,
     out_ground_action_sequence.clear();
 
     auto state = start_state;
+    auto auxiliary_function_values = &start_auxiliary_function_values;
 
     for (size_t i = 0; i < state_trajectory.size() - 1; ++i)
     {
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
-            const auto [successor_state, cost] = state_repository.get_or_create_successor_state(state, action);
+            const auto [successor_state, auxiliary_function_values_] =
+                state_repository.get_or_create_successor_state(state, action, *auxiliary_function_values);
+            auxiliary_function_values = auxiliary_function_values_;
 
             if (successor_state->get_index() == state_trajectory.at(i + 1))
             {

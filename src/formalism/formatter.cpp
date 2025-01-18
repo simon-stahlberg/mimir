@@ -644,7 +644,7 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
 
     if (!element.get_objects().empty())
     {
-        out << std::string(m_indent, ' ') << "(:objects ";
+        out << std::string(m_indent, ' ') << "(:objects";
         for (const auto& object : element.get_objects())
         {
             out << " ";
@@ -670,22 +670,27 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         out << std::string(m_indent, ' ') << "(:init";
         for (const auto& initial : element.get_static_initial_literals())
         {
+            out << " ";
             write(*initial, out);
         }
         for (const auto& initial : element.get_fluent_initial_literals())
         {
+            out << " ";
             write(*initial, out);
         }
         for (const auto& initial : element.get_function_values<Static>())
         {
+            out << " ";
             write(*initial, out);
         }
         for (const auto& initial : element.get_function_values<Fluent>())
         {
+            out << " ";
             write(*initial, out);
         }
         for (const auto& initial : element.get_function_values<Auxiliary>())
         {
+            out << " ";
             write(*initial, out);
         }
     }
@@ -710,15 +715,12 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
             out << " ";
             write(*literal, out);
         }
-        out << " ))";
+        out << "))" << std::endl;
     }
 
-    if (element.get_optimization_metric().has_value())
-    {
-        out << std::string(m_indent, ' ') << "(:metric ";
-        write(*element.get_optimization_metric().value(), out);
-        out << ")" << std::endl;
-    }
+    out << std::string(m_indent, ' ') << "(:metric ";
+    write(*element.get_optimization_metric(), out);
+    out << ")" << std::endl;
 
     for (const auto& axiom : element.get_axioms())
     {

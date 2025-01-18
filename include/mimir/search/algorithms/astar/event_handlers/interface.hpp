@@ -46,18 +46,17 @@ public:
     virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on generating a successor `state` by applying an action.
-    virtual void
-    on_generate_state(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on generating a relaxed successor `state` by applying an action where
     /// a successor state is relaxed if the f value decreases.
     virtual void
-    on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    on_generate_state_relaxed(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on generated an unrelaxed successor state by applying an action.
     /// a successors state is unrelaxed iff it is not relaxed.
     virtual void
-    on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     virtual void on_close_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
@@ -133,34 +132,31 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, action, action_cost, problem, pddl_repositories);
+            self().on_generate_state_impl(state, action, g_value, problem, pddl_repositories);
         }
     }
 
     void
-    on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) override
+    on_generate_state_relaxed(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, action, action_cost, problem, pddl_repositories);
+            self().on_generate_state_relaxed_impl(state, action, g_value, problem, pddl_repositories);
         }
     }
 
-    void on_generate_state_not_relaxed(State state,
-                                       GroundAction action,
-                                       ContinuousCost action_cost,
-                                       Problem problem,
-                                       const PDDLRepositories& pddl_repositories) override
+    void
+    on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_relaxed_impl(state, action, action_cost, problem, pddl_repositories);
+            self().on_generate_state_relaxed_impl(state, action, g_value, problem, pddl_repositories);
         }
     }
 
@@ -297,18 +293,15 @@ public:
 
     virtual void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) {}
 
+    virtual void on_generate_state_impl(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) {}
+
     virtual void
-    on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories)
+    on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories)
     {
     }
 
     virtual void
-    on_generate_state_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories)
-    {
-    }
-
-    virtual void
-    on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories)
+    on_generate_state_not_relaxed_impl(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories)
     {
     }
 
@@ -350,34 +343,31 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            on_generate_state_impl(state, action, action_cost, problem, pddl_repositories);
+            on_generate_state_impl(state, action, g_value, problem, pddl_repositories);
         }
     }
 
     void
-    on_generate_state_relaxed(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) override
+    on_generate_state_relaxed(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            on_generate_state_relaxed_impl(state, action, action_cost, problem, pddl_repositories);
+            on_generate_state_relaxed_impl(state, action, g_value, problem, pddl_repositories);
         }
     }
 
-    void on_generate_state_not_relaxed(State state,
-                                       GroundAction action,
-                                       ContinuousCost action_cost,
-                                       Problem problem,
-                                       const PDDLRepositories& pddl_repositories) override
+    void
+    on_generate_state_not_relaxed(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            on_generate_state_relaxed_impl(state, action, action_cost, problem, pddl_repositories);
+            on_generate_state_relaxed_impl(state, action, g_value, problem, pddl_repositories);
         }
     }
 

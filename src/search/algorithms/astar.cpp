@@ -17,6 +17,9 @@
 
 #include "mimir/search/algorithms/astar.hpp"
 
+#include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/metric.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
@@ -39,15 +42,20 @@ namespace mimir
  * AStar search node
  */
 
-using AStarSearchNodeImpl = SearchNodeImpl<ContinuousCost, ContinuousCost>;
+using AStarSearchNodeImpl = SearchNodeImpl<FlatExternalPtr<const FlatDoubleList>, ContinuousCost, ContinuousCost>;
 using AStarSearchNode = AStarSearchNodeImpl*;
 using ConstAStarSearchNode = const AStarSearchNodeImpl*;
 
-static void set_g_value(AStarSearchNode node, ContinuousCost g_value) { node->get_property<0>() = g_value; }
-static void set_h_value(AStarSearchNode node, ContinuousCost h_value) { node->get_property<1>() = h_value; }
+static void set_auxiliary_numeric_variables(AStarSearchNode node, const FlatDoubleList* auxiliary_numeric_variables)
+{
+    node->get_property<0>() = auxiliary_numeric_variables;
+}
+static void set_g_value(AStarSearchNode node, ContinuousCost g_value) { node->get_property<1>() = g_value; }
+static void set_h_value(AStarSearchNode node, ContinuousCost h_value) { node->get_property<2>() = h_value; }
 
-static ContinuousCost get_g_value(ConstAStarSearchNode node) { return node->get_property<0>(); }
-static ContinuousCost get_h_value(ConstAStarSearchNode node) { return node->get_property<1>(); }
+static const FlatDoubleList& get_auxiliary_numeric_variables(ConstAStarSearchNode node) { return *node->get_property<0>(); }
+static ContinuousCost get_g_value(ConstAStarSearchNode node) { return node->get_property<1>(); }
+static ContinuousCost get_h_value(ConstAStarSearchNode node) { return node->get_property<2>(); }
 
 static AStarSearchNode
 get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default_node, mimir::buffering::Vector<AStarSearchNodeImpl>& search_nodes)
@@ -66,14 +74,15 @@ get_or_create_search_node(size_t state_index, const AStarSearchNodeImpl& default
 SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                  std::shared_ptr<StateRepository> state_repository,
                                  std::shared_ptr<IHeuristic> heuristic,
-                                 std::optional<State> start_state_,
+                                 std::optional<std::pair<State, const FlatDoubleList*>> start_state_,
                                  std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler_,
                                  std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_,
                                  std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy_)
 {
     assert(applicable_action_generator && state_repository && heuristic);
 
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    const auto [start_state, start_auxiliary_numeric_values] =
+        (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
     const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultAStarAlgorithmEventHandler>();
     const auto goal_strategy =
         (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
@@ -91,11 +100,13 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
         return result;
     }
 
-    auto default_search_node =
-        AStarSearchNodeImpl(SearchNodeStatus::NEW,
-                            std::numeric_limits<Index>::max(),
-                            cista::tuple<ContinuousCost, ContinuousCost> { std::numeric_limits<ContinuousCost>::infinity(), ContinuousCost(0) });
-    auto search_nodes = SearchNodeImplVector<ContinuousCost, ContinuousCost>();
+    auto default_search_node = AStarSearchNodeImpl(
+        SearchNodeStatus::NEW,
+        std::numeric_limits<Index>::max(),
+        cista::tuple<FlatExternalPtr<const FlatDoubleList>, ContinuousCost, ContinuousCost> { nullptr,
+                                                                                              std::numeric_limits<ContinuousCost>::infinity(),
+                                                                                              ContinuousCost(0) });
+    auto search_nodes = SearchNodeImplVector<FlatExternalPtr<const FlatDoubleList>, ContinuousCost, ContinuousCost>();
 
     auto openlist = PriorityQueue<State>();
 
@@ -103,12 +114,14 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
     const auto& pddl_repositories = *applicable_action_generator->get_pddl_repositories();
     event_handler->on_start_search(start_state, problem, pddl_repositories);
 
-    const auto start_g_value = ContinuousCost(0);
+    const auto start_g_value =
+        evaluate(problem->get_optimization_metric()->get_function_expression(), start_state->get_numeric_variables(), *start_auxiliary_numeric_values);
     const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
     const auto start_f_value = start_g_value + start_h_value;
 
     auto start_search_node = get_or_create_search_node(start_state->get_index(), default_search_node, search_nodes);
     start_search_node->get_status() = (start_h_value == std::numeric_limits<ContinuousCost>::infinity()) ? SearchNodeStatus::DEAD_END : SearchNodeStatus::OPEN;
+    set_auxiliary_numeric_variables(start_search_node, start_auxiliary_numeric_values);
     set_g_value(start_search_node, start_g_value);
     set_h_value(start_search_node, start_h_value);
 
@@ -186,7 +199,12 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
             auto plan_actions = GroundActionList {};
             auto state_trajectory = IndexList {};
             extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
-            extract_ground_action_sequence(start_state, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
+            extract_ground_action_sequence(start_state,
+                                           *start_auxiliary_numeric_values,
+                                           state_trajectory,
+                                           *applicable_action_generator,
+                                           *state_repository,
+                                           plan_actions);
             result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
             result.goal_state = state;
             result.status = SearchStatus::SOLVED;
@@ -202,10 +220,15 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
-            const auto [successor_state, action_cost] = state_repository->get_or_create_successor_state(state, action);
+            const auto [successor_state, successor_auxiliary_numeric_values] =
+                state_repository->get_or_create_successor_state(state, action, get_auxiliary_numeric_variables(search_node));
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
-            event_handler->on_generate_state(successor_state, action, action_cost, problem, pddl_repositories);
+            const auto new_successor_g_value = evaluate(problem->get_optimization_metric()->get_function_expression(),
+                                                        successor_state->get_numeric_variables(),
+                                                        *successor_auxiliary_numeric_values);
+
+            event_handler->on_generate_state(successor_state, action, new_successor_g_value, problem, pddl_repositories);
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
@@ -219,13 +242,13 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
             /* Check whether state must be reopened or not. */
 
-            const auto new_successor_g_value = get_g_value(search_node) + action_cost;
             if (new_successor_g_value < get_g_value(successor_search_node))
             {
                 /* Open/Reopen state with updated f_value. */
 
                 successor_search_node->get_status() = SearchNodeStatus::OPEN;
                 successor_search_node->get_parent_state() = state->get_index();
+                set_auxiliary_numeric_variables(successor_search_node, successor_auxiliary_numeric_values);
                 set_g_value(successor_search_node, new_successor_g_value);
                 if (is_new_successor_state)
                 {
@@ -250,14 +273,14 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                     continue;
                 }
 
-                event_handler->on_generate_state_relaxed(successor_state, action, action_cost, problem, pddl_repositories);
+                event_handler->on_generate_state_relaxed(successor_state, action, new_successor_g_value, problem, pddl_repositories);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
                 openlist.insert(successor_f_value, successor_state);
             }
             else
             {
-                event_handler->on_generate_state_not_relaxed(successor_state, action, action_cost, problem, pddl_repositories);
+                event_handler->on_generate_state_not_relaxed(successor_state, action, new_successor_g_value, problem, pddl_repositories);
             }
         }
 

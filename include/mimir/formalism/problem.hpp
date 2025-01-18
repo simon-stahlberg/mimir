@@ -42,7 +42,7 @@ private:
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
     GroundLiteralList<Derived> m_derived_goal_condition;
-    std::optional<OptimizationMetric> m_optimization_metric;
+    OptimizationMetric m_optimization_metric;
     AxiomList m_axioms;
 
     // Below: add additional members if needed and initialize them in the constructor
@@ -58,9 +58,9 @@ private:
 
     GroundAtomList<Fluent> m_positive_fluent_initial_atoms;
 
-    GroundFunctionMap<Static, ContinuousCost> m_static_function_to_value;
-    GroundFunctionMap<Fluent, ContinuousCost> m_fluent_function_to_value;
-    GroundFunctionMap<Auxiliary, ContinuousCost> m_auxiliary_function_to_value;
+    FlatDoubleList m_static_function_to_value;
+    FlatDoubleList m_fluent_function_to_value;
+    FlatDoubleList m_auxiliary_function_to_value;
 
     /* Goal */
     bool m_static_goal_holds;
@@ -88,14 +88,6 @@ private:
     /* Axioms */
     AxiomList m_problem_and_domain_axioms;
 
-    /* Functions */
-    // Stores all fluent functions that are initially available.
-    GroundFunctionList<Fluent> m_fluent_functions;
-    // Stores all auxiliary ground functions that are relevant, i.e., they are used somewhere in the problem, e.g., the metric.
-    // In general, an action might produce additional irrelevant ones, which we do not have to track in a search node.
-    // Ideally, an action would never generate irrelevant ones, but it is difficult to know that before grounding.
-    GroundFunctionList<Auxiliary> m_auxiliary_functions;
-
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
                 Domain domain,
@@ -111,7 +103,7 @@ private:
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
                 GroundLiteralList<Derived> derived_goal_condition,
-                std::optional<OptimizationMetric> optimization_metric,
+                OptimizationMetric optimization_metric,
                 AxiomList axioms);
 
     // Give access to the constructor.
@@ -138,7 +130,7 @@ public:
     const GroundFunctionValueList<F>& get_function_values() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
-    const std::optional<OptimizationMetric>& get_optimization_metric() const;
+    const OptimizationMetric& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
@@ -178,7 +170,7 @@ public:
     const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
 
     template<FunctionTag F>
-    const GroundFunctionMap<F, ContinuousCost>& get_function_to_value() const;
+    const FlatDoubleList& get_function_to_value() const;
     template<FunctionTag F>
     ContinuousCost get_function_value(GroundFunction<F> function) const;
 
@@ -203,10 +195,6 @@ public:
 
     /* Axioms */
     const AxiomList& get_problem_and_domain_axioms() const;
-
-    /* Functions */
-    template<DynamicFunctionTag F>
-    const GroundFunctionList<F>& get_functions() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

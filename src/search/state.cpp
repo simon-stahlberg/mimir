@@ -29,7 +29,11 @@ namespace mimir
 
 /* State */
 
+const FlatIndexList StateImpl::s_empty_fluent_atoms = FlatIndexList();
+
 const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
+
+const FlatDoubleList StateImpl::s_empty_numeric_variables = FlatDoubleList();
 
 template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
@@ -73,6 +77,10 @@ const FlatIndexList& StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
     {
+        if (!m_fluent_atoms)
+        {
+            return StateImpl::s_empty_fluent_atoms;
+        }
         assert(std::is_sorted(m_fluent_atoms->begin(), m_fluent_atoms->end()));
         return *m_fluent_atoms;
     }

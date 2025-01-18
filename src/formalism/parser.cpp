@@ -67,14 +67,10 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     // std::cout << *m_domain << std::endl;
     // std::cout << *m_problem << std::endl;
 
-    // std::cout << "Num actions: " << m_domain->get_actions().size() << std::endl;
-
     // Encode parameter index in variables
     auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);
     m_problem = encode_parameter_index_in_variables.run(*m_problem);
     m_domain = m_problem->get_domain();
-
-    // std::cout << *m_domain << std::endl;
 }
 
 const std::shared_ptr<PDDLRepositories>& PDDLParser::get_pddl_repositories() const { return m_factories; }

@@ -51,18 +51,8 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
 
 std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_initial_state()
 {
-    std::cout << "Num ground fluent functions: "
-              << boost::hana::at_key(m_axiom_evaluator->get_axiom_grounder()->get_pddl_repositories()->get_pddl_type_to_factory(),
-                                     boost::hana::type<GroundFunctionImpl<Fluent>> {})
-                     .size()
-              << std::endl;
-    std::cout << "Num ground auxiliary functions: "
-              << boost::hana::at_key(m_axiom_evaluator->get_axiom_grounder()->get_pddl_repositories()->get_pddl_type_to_factory(),
-                                     boost::hana::type<GroundFunctionImpl<Auxiliary>> {})
-                     .size()
-              << std::endl;
-
-    return get_or_create_state(m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_fluent_initial_atoms());
+    const auto problem = m_axiom_evaluator->get_axiom_grounder()->get_problem();
+    return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_function_to_value<Fluent>());
 }
 
 static void translate_dense_into_sorted_compressed_sparse(const FlatBitset& dense, FlatIndexList& ref_sparse)
@@ -89,7 +79,8 @@ static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numer
     state_numeric_variables_ptr = &state_numeric_variables;
 }
 
-std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms)
+std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms,
+                                                                             const FlatDoubleList& fluent_numeric_variables)
 {
     // Fetch data and initialize it
     auto& state_fluent_atoms_ptr = m_state_builder.get_fluent_atoms();
@@ -107,8 +98,6 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
     dense_derived_atoms.unset_all();
 
     const auto problem = m_axiom_evaluator->get_problem();
-    const auto& fluent_functions = problem->get_functions<Auxiliary>();
-    const auto& auxiliary_functions = problem->get_functions<Auxiliary>();
     m_state_fluent_numeric_variables.clear();
     m_state_auxiliary_numeric_variables.clear();
 
@@ -123,14 +112,8 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
-    for (const auto& function : fluent_functions)
-    {
-        m_state_fluent_numeric_variables.push_back(problem->get_function_value(function));
-    }
-    for (const auto& function : auxiliary_functions)
-    {
-        m_state_auxiliary_numeric_variables.push_back(problem->get_function_value(function));
-    }
+    m_state_fluent_numeric_variables = fluent_numeric_variables;
+    m_state_auxiliary_numeric_variables = problem->get_function_to_value<Auxiliary>();
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(m_state_fluent_numeric_variables);
     const auto [auxiliary_numeric_iter, auxiliary_numeric_inserted] = m_auxiliary_numeric_variables_set.insert(m_state_auxiliary_numeric_variables);
 
@@ -194,6 +177,8 @@ StateRepository::get_or_create_successor_state(State state, GroundAction action,
 }
 
 static void collect_applied_strips_effects(GroundAction action,
+                                           const FlatDoubleList& state_fluent_numeric_variables,
+                                           const FlatDoubleList& state_auxiliary_numeric_variables,
                                            FlatBitset& ref_negative_applied_effects,
                                            FlatBitset& ref_positive_applied_effects,
                                            FlatDoubleList& ref_fluent_numeric_variables,
@@ -204,15 +189,19 @@ static void collect_applied_strips_effects(GroundAction action,
     insert_into_bitset(strips_action_effect.get_positive_effects(), ref_positive_applied_effects);
     for (const auto& effect_numeric : strips_action_effect.get_numeric_effects<Fluent>())
     {
-        // TODO(numeric)
+        ref_fluent_numeric_variables[effect_numeric.get_function()->get_index()] =
+            evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
     }
     for (const auto& effect_numeric : strips_action_effect.get_numeric_effects<Auxiliary>())
     {
-        // TODO(numeric)
+        ref_auxiliary_numeric_variables[effect_numeric.get_function()->get_index()] =
+            evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
     }
 }
 
 static void collect_applied_conditional_effects(GroundAction action,
+                                                const FlatDoubleList& state_fluent_numeric_variables,
+                                                const FlatDoubleList& state_auxiliary_numeric_variables,
                                                 Problem problem,
                                                 const DenseState& dense_state,
                                                 FlatBitset& ref_negative_applied_effects,
@@ -228,11 +217,13 @@ static void collect_applied_conditional_effects(GroundAction action,
             insert_into_bitset(conditional_effect.get_strips_effect().get_negative_effects(), ref_negative_applied_effects);
             for (const auto& effect_numeric : conditional_effect.get_strips_effect().get_numeric_effects<Fluent>())
             {
-                // TODO(numeric)
+                ref_fluent_numeric_variables[effect_numeric.get_function()->get_index()] =
+                    evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
             }
             for (const auto& effect_numeric : conditional_effect.get_strips_effect().get_numeric_effects<Auxiliary>())
             {
-                // TODO(numeric)
+                ref_auxiliary_numeric_variables[effect_numeric.get_function()->get_index()] =
+                    evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
             }
         }
     }
@@ -267,12 +258,16 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
 
     // TODO(numeric): for the beginning we just apply the numeric effects directly instead of collecting them...
     collect_applied_strips_effects(action,
+                                   dense_fluent_numeric_variables,
+                                   m_state_auxiliary_numeric_variables,
                                    m_applied_negative_effect_atoms,
                                    m_applied_positive_effect_atoms,
                                    dense_fluent_numeric_variables,
                                    m_state_auxiliary_numeric_variables);
 
     collect_applied_conditional_effects(action,
+                                        dense_fluent_numeric_variables,
+                                        m_state_auxiliary_numeric_variables,
                                         m_axiom_evaluator->get_axiom_grounder()->get_problem(),
                                         dense_state,
                                         m_applied_negative_effect_atoms,

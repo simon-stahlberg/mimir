@@ -232,10 +232,7 @@ protected:
         this->prepare(problem.get_goal_condition<Static>());
         this->prepare(problem.get_goal_condition<Fluent>());
         this->prepare(problem.get_goal_condition<Derived>());
-        if (problem.get_optimization_metric().has_value())
-        {
-            this->prepare(*problem.get_optimization_metric().value());
-        }
+        this->prepare(*problem.get_optimization_metric());
         this->prepare(problem.get_axioms());
     }
 
@@ -480,24 +477,22 @@ protected:
 
     Problem transform_impl(const ProblemImpl& problem)
     {
-        return this->m_pddl_repositories.get_or_create_problem(
-            problem.get_filepath(),
-            this->transform(*problem.get_domain()),
-            problem.get_name(),
-            this->transform(*problem.get_requirements()),
-            this->transform(problem.get_objects()),
-            this->transform(problem.get_derived_predicates()),
-            this->transform(problem.get_static_initial_literals()),
-            this->transform(problem.get_fluent_initial_literals()),
-            this->transform(problem.get_function_values<Static>()),
-            this->transform(problem.get_function_values<Fluent>()),
-            this->transform(problem.get_function_values<Auxiliary>()),
-            this->transform(problem.get_goal_condition<Static>()),
-            this->transform(problem.get_goal_condition<Fluent>()),
-            this->transform(problem.get_goal_condition<Derived>()),
-            (problem.get_optimization_metric().has_value() ? std::optional<OptimizationMetric>(this->transform(*problem.get_optimization_metric().value())) :
-                                                             std::nullopt),
-            this->transform(problem.get_axioms()));
+        return this->m_pddl_repositories.get_or_create_problem(problem.get_filepath(),
+                                                               this->transform(*problem.get_domain()),
+                                                               problem.get_name(),
+                                                               this->transform(*problem.get_requirements()),
+                                                               this->transform(problem.get_objects()),
+                                                               this->transform(problem.get_derived_predicates()),
+                                                               this->transform(problem.get_static_initial_literals()),
+                                                               this->transform(problem.get_fluent_initial_literals()),
+                                                               this->transform(problem.get_function_values<Static>()),
+                                                               this->transform(problem.get_function_values<Fluent>()),
+                                                               this->transform(problem.get_function_values<Auxiliary>()),
+                                                               this->transform(problem.get_goal_condition<Static>()),
+                                                               this->transform(problem.get_goal_condition<Fluent>()),
+                                                               this->transform(problem.get_goal_condition<Derived>()),
+                                                               this->transform(*problem.get_optimization_metric()),
+                                                               this->transform(problem.get_axioms()));
     }
 
     /// @brief Recursively apply preparation followed by transformation.

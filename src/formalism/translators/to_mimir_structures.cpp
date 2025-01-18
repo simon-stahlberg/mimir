@@ -860,6 +860,30 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
     return m_pddl_repositories.get_or_create_axiom(existentially_quantified_conjunctive_condition, literal);
 }
 
+static std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>>
+get_or_create_total_cost_function(const FunctionSkeletonList<Fluent>& fluent_functions,
+                                  FunctionSkeletonList<Auxiliary>& auxiliary_functions,
+                                  PDDLRepositories& pddl_repositories)
+{
+    for (const auto& function : fluent_functions)
+    {
+        if (function->get_name() == "total-cost")
+            return function;
+    }
+    for (const auto& function : auxiliary_functions)
+    {
+        if (function->get_name() == "total-cost")
+            return function;
+    }
+
+    const auto total_cost_function = pddl_repositories.get_or_create_function_skeleton<Auxiliary>("total-cost", VariableList {});
+
+    std::cout << "[ToMimir] Adding default " << total_cost_function << " to \":functions\"." << std::endl;
+
+    auxiliary_functions.push_back(total_cost_function);
+    return total_cost_function;
+}
+
 Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
 {
     const auto requirements = translate_common(*domain.get_requirements());
@@ -923,6 +947,7 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
             },
             static_or_fluent_or_auxiliary_function);
     }
+    m_total_cost_function = get_or_create_total_cost_function(fluent_functions, auxiliary_functions, m_pddl_repositories);
 
     const auto actions = translate_lifted(domain.get_actions());
     const auto axioms = translate_lifted(domain.get_axioms());
@@ -1179,6 +1204,35 @@ OptimizationMetric ToMimirStructures::translate_grounded(const loki::Optimizatio
                                                                  translate_grounded(*optimization_metric.get_function_expression()));
 }
 
+template<DynamicFunctionTag F>
+static GroundFunctionValue<F> get_or_create_total_cost_function_value(FunctionSkeleton<F> total_cost_function,
+                                                                      GroundFunctionValueList<F>& function_values,
+                                                                      PDDLRepositories& pddl_repositories)
+{
+    for (const auto& function_value : function_values)
+    {
+        if (function_value->get_function()->get_function_skeleton() == total_cost_function)
+        {
+            return function_value;
+        }
+    }
+
+    const auto total_cost_function_value =
+        pddl_repositories.get_or_create_ground_function_value(pddl_repositories.get_or_create_ground_function(total_cost_function, ObjectList {}), 0.);
+
+    std::cout << "[ToMimir] Adding default " << total_cost_function_value << " to \":init\"." << std::endl;
+
+    function_values.push_back(total_cost_function_value);
+    return total_cost_function_value;
+}
+
+template GroundFunctionValue<Fluent> get_or_create_total_cost_function_value(FunctionSkeleton<Fluent> total_cost_function,
+                                                                             GroundFunctionValueList<Fluent>& function_values,
+                                                                             PDDLRepositories& pddl_repositories);
+template GroundFunctionValue<Auxiliary> get_or_create_total_cost_function_value(FunctionSkeleton<Auxiliary> total_cost_function,
+                                                                                GroundFunctionValueList<Auxiliary>& function_values,
+                                                                                PDDLRepositories& pddl_repositories);
+
 Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 {
     // Translate domain first, to get predicate indices 0,1,2,...
@@ -1265,6 +1319,25 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
             },
             static_or_fluent_or_auxiliary_function_value);
     }
+    // Initialize total cost function value if necessary
+    std::visit(
+        [&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
+            {
+                get_or_create_total_cost_function_value(arg, fluent_function_values, m_pddl_repositories);
+            }
+            else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
+            {
+                get_or_create_total_cost_function_value(arg, auxiliary_function_values, m_pddl_repositories);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
+            }
+        },
+        m_total_cost_function);
 
     // Add equal atoms, e.g., (= object1 object1)
     // This must occur after parsing the domain
@@ -1280,6 +1353,26 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
         }
     }
 
+    const auto func_create_default_metric = [&]()
+    {
+        return std::visit(
+            [&](auto&& arg)
+            {
+                const auto metric = m_pddl_repositories.get_or_create_optimization_metric(
+                    loki::OptimizationMetricEnum::MINIMIZE,
+                    m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_function(
+                        m_pddl_repositories.get_or_create_ground_function(arg, ObjectList {}))));
+
+                std::cout << "[ToMimir] Creating default " << metric << std::endl;
+
+                return metric;
+            },
+            m_total_cost_function);
+    };
+
+    const auto metric =
+        (problem.get_optimization_metric().has_value() ? translate_grounded(*problem.get_optimization_metric().value()) : func_create_default_metric());
+
     return m_pddl_repositories.get_or_create_problem(problem.get_filepath(),
                                                      translated_domain,
                                                      problem.get_name(),
@@ -1294,9 +1387,7 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                      uniquify_elements(static_goal_literals),
                                                      uniquify_elements(fluent_goal_literals),
                                                      uniquify_elements(derived_goal_literals),
-                                                     (problem.get_optimization_metric().has_value() ?
-                                                          std::optional<OptimizationMetric>(translate_grounded(*problem.get_optimization_metric().value())) :
-                                                          std::nullopt),
+                                                     metric,
                                                      translate_lifted(problem.get_axioms()));
 }
 

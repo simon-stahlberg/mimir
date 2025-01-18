@@ -57,7 +57,7 @@ ProblemImpl::ProblemImpl(Index index,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
-                         std::optional<OptimizationMetric> optimization_metric,
+                         OptimizationMetric optimization_metric,
                          AxiomList axioms) :
     m_index(index),
     m_filepath(std::move(filepath)),
@@ -104,9 +104,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_negative_static_goal_atoms_indices(),
     m_negative_fluent_goal_atoms_indices(),
     m_negative_derived_goal_atoms_indices(),
-    m_problem_and_domain_axioms(),
-    m_fluent_functions(),
-    m_auxiliary_functions()
+    m_problem_and_domain_axioms()
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -128,13 +126,13 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_function_values.begin(),
                           m_static_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+                          [](const auto& l, const auto& r) { return l->get_function()->get_index() < r->get_function()->get_index(); }));
     assert(std::is_sorted(m_fluent_function_values.begin(),
                           m_fluent_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+                          [](const auto& l, const auto& r) { return l->get_function()->get_index() < r->get_function()->get_index(); }));
     assert(std::is_sorted(m_auxiliary_function_values.begin(),
                           m_auxiliary_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+                          [](const auto& l, const auto& r) { return l->get_function()->get_index() < r->get_function()->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -145,6 +143,22 @@ ProblemImpl::ProblemImpl(Index index,
                           m_derived_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+
+    for (size_t i = 0; i < m_static_function_values.size(); ++i)
+    {
+        assert(m_static_function_values[i]->get_function()->get_index() == i);
+    }
+    for (size_t i = 0; i < m_fluent_function_values.size(); ++i)
+    {
+        assert(m_fluent_function_values[i]->get_function()->get_index() == i);
+    }
+    for (size_t i = 0; i < m_auxiliary_function_values.size(); ++i)
+    {
+        assert(m_auxiliary_function_values[i]->get_function()->get_index() == i);
+    }
+
+    std::cout << "m_fluent_function_values: " << m_fluent_function_values << std::endl;
+    std::cout << "m_auxiliary_function_values: " << m_auxiliary_function_values << std::endl;
 
     /* Additional */
 
@@ -173,15 +187,15 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto static_numeric_value : m_static_function_values)
     {
-        m_static_function_to_value.emplace(static_numeric_value->get_function(), static_numeric_value->get_number());
+        m_static_function_to_value.push_back(static_numeric_value->get_number());
     }
     for (const auto fluent_numeric_value : m_fluent_function_values)
     {
-        m_fluent_function_to_value.emplace(fluent_numeric_value->get_function(), fluent_numeric_value->get_number());
+        m_fluent_function_to_value.push_back(fluent_numeric_value->get_number());
     }
     for (const auto auxiliary_numeric_value : m_auxiliary_function_values)
     {
-        m_auxiliary_function_to_value.emplace(auxiliary_numeric_value->get_function(), auxiliary_numeric_value->get_number());
+        m_auxiliary_function_to_value.push_back(auxiliary_numeric_value->get_number());
     }
 
     /* Goal */
@@ -243,20 +257,6 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_axioms = m_domain->get_axioms();
     m_problem_and_domain_axioms.insert(m_problem_and_domain_axioms.end(), m_axioms.begin(), m_axioms.end());
     assert(is_all_unique(m_problem_and_domain_axioms));
-
-    /* Functions */
-    if (m_optimization_metric.has_value())
-    {
-        collect_ground_functions_recursively(m_optimization_metric.value()->get_function_expression(), m_auxiliary_functions);
-    }
-    uniquify_elements(m_auxiliary_functions);
-    std::sort(m_auxiliary_functions.begin(), m_auxiliary_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    // Assert that indices are consecutive (0, 1, 2, ...)
-    // If they are not consecutive, then we forgot to collect some relevant ones.
-    for (size_t i = 0; i < m_auxiliary_functions.size(); ++i)
-    {
-        assert(m_auxiliary_functions[i]->get_index() == i);
-    }
 
     /**
      * Error checking
@@ -355,7 +355,7 @@ template const GroundLiteralList<Static>& ProblemImpl::get_goal_condition<Static
 template const GroundLiteralList<Fluent>& ProblemImpl::get_goal_condition<Fluent>() const;
 template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Derived>() const;
 
-const std::optional<OptimizationMetric>& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
+const OptimizationMetric& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 
 const AxiomList& ProblemImpl::get_axioms() const { return m_axioms; }
 
@@ -383,7 +383,7 @@ const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { re
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 
 template<FunctionTag F>
-const GroundFunctionMap<F, ContinuousCost>& ProblemImpl::get_function_to_value() const
+const FlatDoubleList& ProblemImpl::get_function_to_value() const
 {
     if constexpr (std::is_same_v<F, Static>)
     {
@@ -403,19 +403,19 @@ const GroundFunctionMap<F, ContinuousCost>& ProblemImpl::get_function_to_value()
     }
 }
 
-template const GroundFunctionMap<Static, ContinuousCost>& ProblemImpl::get_function_to_value() const;
-template const GroundFunctionMap<Fluent, ContinuousCost>& ProblemImpl::get_function_to_value() const;
-template const GroundFunctionMap<Auxiliary, ContinuousCost>& ProblemImpl::get_function_to_value() const;
+template const FlatDoubleList& ProblemImpl::get_function_to_value<Static>() const;
+template const FlatDoubleList& ProblemImpl::get_function_to_value<Fluent>() const;
+template const FlatDoubleList& ProblemImpl::get_function_to_value<Auxiliary>() const;
 
 template<FunctionTag F>
 ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
 {
-    auto it = get_function_to_value<F>().find(function);
-    if (it != get_function_to_value<F>().end())
+    const auto& function_to_value = get_function_to_value<F>();
+    if (function->get_index() > function_to_value.size())
     {
-        return it->second;
+        return std::numeric_limits<ContinuousCost>::quiet_NaN();
     }
-    throw std::runtime_error("ProblemImpl::get_ground_function_value: missing value for ground function: " + to_string(function));
+    return function_to_value[function->get_index()];
 }
 
 template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Static> function) const;
@@ -582,27 +582,6 @@ template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Deriv
 
 /* Axioms */
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
-
-/* Functions */
-template<DynamicFunctionTag F>
-const GroundFunctionList<F>& ProblemImpl::get_functions() const
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_functions;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_functions;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
-
-template const GroundFunctionList<Fluent>& ProblemImpl::get_functions() const;
-template const GroundFunctionList<Auxiliary>& ProblemImpl::get_functions() const;
 
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)

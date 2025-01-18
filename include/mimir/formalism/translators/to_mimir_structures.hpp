@@ -69,6 +69,8 @@ private:
     // Equality predicate that does not occur in predicates section
     std::unordered_map<std::string, Predicate<Derived>> m_derived_predicates_by_name;
     Predicate<Static> m_equal_predicate;
+    // We allow total-cost to be used in constraints, i.e., it is allowed to be fluent.
+    std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>> m_total_cost_function;
 
     /// @brief Prepare all elements in a container.
     template<typename Container>

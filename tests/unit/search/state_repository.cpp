@@ -37,11 +37,12 @@ TEST(MimirTests, SearchStateRepositoryTest)
     auto applicable_action_generator = LiftedApplicableActionGenerator(grounder->get_action_grounder());
     const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
     auto state_repository = StateRepository(axiom_evaluator);
-    auto initial_state = state_repository.get_or_create_initial_state();
+    auto [initial_state, initial_auxiliary_numeric_values] = state_repository.get_or_create_initial_state();
 
     for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state))
     {
-        [[maybe_unused]] const auto [successor_state, action_cost] = state_repository.get_or_create_successor_state(initial_state, action);
+        [[maybe_unused]] const auto [successor_state, successor_auxiliary_numeric_values] =
+            state_repository.get_or_create_successor_state(initial_state, action, *initial_auxiliary_numeric_values);
 
         // cannot nest more because create_applicable_action_generator is in use.
     }

@@ -19,6 +19,7 @@
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
+#include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
 #include <cassert>
@@ -124,48 +125,60 @@ const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant
 
 /* Utils */
 
-template<DynamicFunctionTag F>
-void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<F>& ref_functions)
+ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables)
 {
-    std::visit(
+    return std::visit(
         [&](auto&& arg)
         {
             using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, GroundFunctionExpressionBinaryOperator>)
+            if constexpr (std::is_same_v<T, GroundFunctionExpressionNumber>)
             {
-                collect_ground_functions_recursively(arg->get_left_function_expression(), ref_functions);
-                collect_ground_functions_recursively(arg->get_right_function_expression(), ref_functions);
+                return arg->get_number();
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionBinaryOperator>)
+            {
+                return evaluate_binary(arg->get_binary_operator(),
+                                       evaluate(arg->get_left_function_expression(), fluent_numeric_variables, auxiliary_numeric_variables),
+                                       evaluate(arg->get_right_function_expression(), fluent_numeric_variables, auxiliary_numeric_variables));
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionMultiOperator>)
             {
-                for (const auto& child : arg->get_function_expressions())
-                {
-                    collect_ground_functions_recursively(child, ref_functions);
-                }
+                return std::accumulate(
+                    std::next(arg->get_function_expressions().begin()),  // Start from the second expression
+                    arg->get_function_expressions().end(),
+                    evaluate(arg->get_function_expressions().front(), fluent_numeric_variables, auxiliary_numeric_variables),  // Initial bounds
+                    [&](const auto& value, const auto& child_expr)
+                    { return evaluate_multi(arg->get_multi_operator(), value, evaluate(child_expr, fluent_numeric_variables, auxiliary_numeric_variables)); });
             }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<F>>)
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionMinus>)
             {
-                ref_functions.push_back(arg->get_function());
+                return -evaluate(arg->get_function_expression(), fluent_numeric_variables, auxiliary_numeric_variables);
             }
-            else {}
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Fluent>>)
+            {
+                if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
+                {
+                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value.");
+                }
+
+                return fluent_numeric_variables[arg->get_function()->get_index()];
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Auxiliary>>)
+            {
+                if (arg->get_function()->get_index() >= auxiliary_numeric_variables.size())
+                {
+                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value.");
+                }
+
+                return auxiliary_numeric_variables[arg->get_function()->get_index()];
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "evaluate(...): Missing implementation for GroundFunctionExpressionFunction type.");
+            }
         },
         fexpr->get_variant());
 }
-
-template void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<Fluent>& ref_functions);
-template void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<Auxiliary>& ref_functions);
-
-template<DynamicFunctionTag F>
-GroundFunctionList<F> collect_ground_functions(GroundFunctionExpression fexpr)
-{
-    auto functions = GroundFunctionList<F> {};
-    collect_ground_functions_recursively(fexpr, functions);
-    uniquify_elements(functions);
-    return functions;
-}
-
-template GroundFunctionList<Fluent> collect_ground_functions(GroundFunctionExpression fexpr);
-template GroundFunctionList<Auxiliary> collect_ground_functions(GroundFunctionExpression fexpr);
 
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)

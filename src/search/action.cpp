@@ -20,6 +20,7 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/state.hpp"
@@ -167,6 +168,43 @@ bool GroundConditionStrips::is_applicable(Problem problem, const DenseState& den
     return is_dynamically_applicable(dense_state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
+/* GroundEffectNumeric */
+template<DynamicFunctionTag F>
+loki::AssignOperatorEnum& GroundEffectNumeric<F>::get_assign_operator()
+{
+    return m_assign_operator;
+}
+template<DynamicFunctionTag F>
+loki::AssignOperatorEnum GroundEffectNumeric<F>::get_assign_operator() const
+{
+    return m_assign_operator;
+}
+
+template<DynamicFunctionTag F>
+FlatExternalPtr<const GroundFunctionImpl<F>>& GroundEffectNumeric<F>::get_function()
+{
+    return m_function;
+}
+template<DynamicFunctionTag F>
+FlatExternalPtr<const GroundFunctionImpl<F>> GroundEffectNumeric<F>::get_function() const
+{
+    return m_function;
+}
+
+template<DynamicFunctionTag F>
+FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundEffectNumeric<F>::get_function_expression()
+{
+    return m_function_expression;
+}
+template<DynamicFunctionTag F>
+FlatExternalPtr<const GroundFunctionExpressionImpl> GroundEffectNumeric<F>::get_function_expression() const
+{
+    return m_function_expression;
+}
+
+template struct GroundEffectNumeric<Fluent>;
+template struct GroundEffectNumeric<Auxiliary>;
+
 /* GroundEffectStrips */
 
 FlatIndexList& GroundEffectStrips::get_positive_effects() { return m_positive_effects; }
@@ -296,6 +334,66 @@ bool GroundActionImpl::is_applicable(Problem problem, const DenseState& dense_st
 }
 
 /**
+ * Utils
+ */
+
+template<DynamicFunctionTag F>
+ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables)
+{
+    auto old_value = ContinuousCost(0);
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        if (effect.get_function()->get_index() >= fluent_numeric_variables.size())
+        {
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value.");
+        }
+        old_value = fluent_numeric_variables.at(effect.get_function()->get_index());
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        if (effect.get_function()->get_index() >= auxiliary_numeric_variables.size())
+        {
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value.");
+        }
+        old_value = auxiliary_numeric_variables.at(effect.get_function()->get_index());
+    }
+
+    const auto new_value = evaluate(effect.get_function_expression().get(), fluent_numeric_variables, auxiliary_numeric_variables);
+
+    switch (effect.get_assign_operator())
+    {
+        case loki::AssignOperatorEnum::ASSIGN:
+        {
+            return new_value;
+        }
+        case loki::AssignOperatorEnum::DECREASE:
+        {
+            return old_value - new_value;
+        }
+        case loki::AssignOperatorEnum::INCREASE:
+        {
+            return old_value + new_value;
+        }
+        case loki::AssignOperatorEnum::SCALE_DOWN:
+        {
+            return old_value / new_value;
+        }
+        case loki::AssignOperatorEnum::SCALE_UP:
+        {
+            return old_value * new_value;
+        }
+        default:
+        {
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): Unexpected loki::AssignOperatorEnum.");
+        }
+    }
+}
+
+template double evaluate(GroundEffectNumeric<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+template double
+evaluate(GroundEffectNumeric<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+
+/**
  * Pretty printing
  */
 
@@ -326,12 +424,9 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrip
     pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
     pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
 
-    os << "positive static precondition=" << positive_static_precondition << ", "
-       << "negative static precondition=" << negative_static_precondition << ", "
-       << "positive fluent precondition=" << positive_fluent_precondition << ", "
-       << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", "
-       << "negative derived precondition=" << negative_derived_precondition;
+    os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
+       << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
+       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition;
 
     return os;
 }
@@ -351,8 +446,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", "
-       << "add effects=" << positive_simple_effects;
+    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects;
 
     return os;
 }
@@ -389,8 +483,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
        << "binding=" << binding << ", "                                                            //
        << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "               //
        << std::make_tuple(strips_effect, std::cref(pddl_repositories))                             //
-       << ", "
-       << "conditional_effects=[";
+       << ", " << "conditional_effects=[";
     for (const auto& cond_effect : cond_effects)
     {
         os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";

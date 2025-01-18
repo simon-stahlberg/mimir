@@ -139,10 +139,10 @@ TEST(MimirTests, GraphsTupleGraphAdmissibleChainTest)
     auto tuple_graph_factory_2 = TupleGraphFactory(state_space, 2, false);
     auto tuple_graph_factory_3 = TupleGraphFactory(state_space, 3, false);
 
-    auto tuple_graph_0 = tuple_graph_factory_0.create(state_space->get_state_repository()->get_or_create_initial_state());
-    auto tuple_graph_1 = tuple_graph_factory_1.create(state_space->get_state_repository()->get_or_create_initial_state());
-    auto tuple_graph_2 = tuple_graph_factory_2.create(state_space->get_state_repository()->get_or_create_initial_state());
-    auto tuple_graph_3 = tuple_graph_factory_3.create(state_space->get_state_repository()->get_or_create_initial_state());
+    auto tuple_graph_0 = tuple_graph_factory_0.create(state_space->get_state_repository()->get_or_create_initial_state().first);
+    auto tuple_graph_1 = tuple_graph_factory_1.create(state_space->get_state_repository()->get_or_create_initial_state().first);
+    auto tuple_graph_2 = tuple_graph_factory_2.create(state_space->get_state_repository()->get_or_create_initial_state().first);
+    auto tuple_graph_3 = tuple_graph_factory_3.create(state_space->get_state_repository()->get_or_create_initial_state().first);
 
     auto fluent_goal_atoms = to_ground_atoms(parser.get_problem()->get_goal_condition<Fluent>());
     // We skip constructing derived goal atoms because there are none in visitall.

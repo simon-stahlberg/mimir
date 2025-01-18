@@ -72,7 +72,7 @@ public:
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    std::pair<State, const FlatDoubleList*> get_or_create_state(const GroundAtomList<Fluent>& atoms);
+    std::pair<State, const FlatDoubleList*> get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.

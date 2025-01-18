@@ -40,6 +40,7 @@ struct StateImpl
     FlatExternalPtr<const FlatIndexList> m_derived_atoms = nullptr;
     FlatExternalPtr<const FlatDoubleList> m_numeric_variables = nullptr;
 
+    static const FlatIndexList s_empty_fluent_atoms;        ///< Returned, if m_fluent_atoms is a nullptr.
     static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
     static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
 

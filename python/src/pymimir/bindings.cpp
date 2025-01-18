@@ -248,21 +248,13 @@ public:
         PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_expand_state_impl, state, problem, std::cref(pddl_repositories));
     }
 
-    void
-    on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_impl(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
-        PYBIND11_OVERRIDE(void,
-                          DynamicAStarAlgorithmEventHandlerBase,
-                          on_generate_state_impl,
-                          state,
-                          action,
-                          action_cost,
-                          problem,
-                          std::cref(pddl_repositories));
+        PYBIND11_OVERRIDE(void, DynamicAStarAlgorithmEventHandlerBase, on_generate_state_impl, state, action, g_value, problem, std::cref(pddl_repositories));
     }
     void on_generate_state_relaxed_impl(State state,
                                         GroundAction action,
-                                        ContinuousCost action_cost,
+                                        ContinuousCost g_value,
                                         Problem problem,
                                         const PDDLRepositories& pddl_repositories) override
     {
@@ -271,13 +263,13 @@ public:
                           on_generate_state_relaxed_impl,
                           state,
                           action,
-                          action_cost,
+                          g_value,
                           problem,
                           std::cref(pddl_repositories));
     }
     void on_generate_state_not_relaxed_impl(State state,
                                             GroundAction action,
-                                            ContinuousCost action_cost,
+                                            ContinuousCost g_value,
                                             Problem problem,
                                             const PDDLRepositories& pddl_repositories) override
     {
@@ -286,7 +278,7 @@ public:
                           on_generate_state_not_relaxed_impl,
                           state,
                           action,
-                          action_cost,
+                          g_value,
                           problem,
                           std::cref(pddl_repositories));
     }

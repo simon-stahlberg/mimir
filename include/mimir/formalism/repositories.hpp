@@ -336,7 +336,7 @@ public:
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
                                   GroundLiteralList<Derived> derived_goal_condition,
-                                  std::optional<OptimizationMetric> optimization_metric,
+                                  OptimizationMetric optimization_metric,
                                   AxiomList axioms);
 
     /* Accessors */

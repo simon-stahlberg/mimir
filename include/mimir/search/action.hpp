@@ -63,9 +63,18 @@ struct GroundConditionStrips
 template<DynamicFunctionTag F>
 struct GroundEffectNumeric
 {
-    loki::AssignOperatorEnum m_assign_operator;
-    FlatExternalPtr<const GroundFunctionImpl<F>> m_function;
-    FlatExternalPtr<const GroundFunctionExpressionImpl> m_function_expression;
+    loki::AssignOperatorEnum m_assign_operator = loki::AssignOperatorEnum::ASSIGN;
+    FlatExternalPtr<const GroundFunctionImpl<F>> m_function = nullptr;
+    FlatExternalPtr<const GroundFunctionExpressionImpl> m_function_expression = nullptr;
+
+    loki::AssignOperatorEnum& get_assign_operator();
+    loki::AssignOperatorEnum get_assign_operator() const;
+
+    FlatExternalPtr<const GroundFunctionImpl<F>>& get_function();
+    FlatExternalPtr<const GroundFunctionImpl<F>> get_function() const;
+
+    FlatExternalPtr<const GroundFunctionExpressionImpl>& get_function_expression();
+    FlatExternalPtr<const GroundFunctionExpressionImpl> get_function_expression() const;
 };
 
 template<DynamicFunctionTag F>
@@ -168,6 +177,14 @@ inline bool operator==(const std::span<const GroundAction>& lhs, const std::span
 {
     return (lhs.data() == rhs.data()) && (lhs.size() == rhs.size());
 }
+
+/**
+ * Utils
+ */
+
+template<DynamicFunctionTag F>
+extern ContinuousCost
+evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
 /**
  * Mimir types

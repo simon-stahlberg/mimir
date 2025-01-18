@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_GROUND_FUNCTION_EXPRESSIONS_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
@@ -230,10 +231,8 @@ public:
 
 /* Utils */
 
-template<DynamicFunctionTag F>
-extern void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<F>& ref_functions);
-template<DynamicFunctionTag F>
-extern GroundFunctionList<F> collect_ground_functions(GroundFunctionExpression fexpr);
+extern ContinuousCost
+evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
 /* Printing */
 

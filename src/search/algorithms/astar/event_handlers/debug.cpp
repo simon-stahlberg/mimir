@@ -31,18 +31,18 @@ void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem 
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state,
                                                              GroundAction action,
-                                                             ContinuousCost action_cost,
+                                                             ContinuousCost g_value,
                                                              Problem problem,
                                                              const PDDLRepositories& pddl_repositories) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << " cost:" << action_cost << "\n"
+    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << " g_value:" << g_value << "\n"
               << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
               << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
                                                                      GroundAction action,
-                                                                     ContinuousCost action_cost,
+                                                                     ContinuousCost g_value,
                                                                      Problem problem,
                                                                      const PDDLRepositories& pddl_repositories) const
 {
@@ -50,7 +50,7 @@ void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                          GroundAction action,
-                                                                         ContinuousCost action_cost,
+                                                                         ContinuousCost g_value,
                                                                          Problem problem,
                                                                          const PDDLRepositories& pddl_repositories) const
 {

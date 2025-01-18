@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     {
         auto tuple_graph_factory = TupleGraphFactory(state_space, arity, false);
 
-        auto tuple_graph = tuple_graph_factory.create(state_space->get_state_repository()->get_or_create_initial_state());
+        auto tuple_graph = tuple_graph_factory.create(state_space->get_state_repository()->get_or_create_initial_state().first);
 
         if (tuple_graph.compute_admissible_chain(fluent_goal_atoms) != std::nullopt)
         {
