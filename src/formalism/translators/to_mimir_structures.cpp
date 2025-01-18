@@ -171,7 +171,41 @@ void ToMimirStructures::prepare_lifted(const loki::EffectImpl& effect)
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
         {
             // Found function affected by an effect
-            m_fluent_functions.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
+            const auto name = (*effect_numeric)->get_function()->get_function_skeleton()->get_name();
+            m_fluent_functions.insert(name);
+            switch ((*effect_numeric)->get_assign_operator())
+            {
+                case loki::AssignOperatorEnum::ASSIGN:
+                {
+                    m_increasing_functions.insert(name);
+                    m_decreasing_functions.insert(name);
+                    break;
+                }
+                case loki::AssignOperatorEnum::DECREASE:
+                {
+                    m_decreasing_functions.insert(name);
+                    break;
+                }
+                case loki::AssignOperatorEnum::INCREASE:
+                {
+                    m_increasing_functions.insert(name);
+                    break;
+                }
+                case loki::AssignOperatorEnum::SCALE_DOWN:
+                {
+                    m_decreasing_functions.insert(name);
+                    break;
+                }
+                case loki::AssignOperatorEnum::SCALE_UP:
+                {
+                    m_increasing_functions.insert(name);
+                    break;
+                }
+                default:
+                {
+                    throw std::logic_error("ToMimirStructures::prepare_lifted(effect): Unexpected loki::AssignOperatorEnum.");
+                }
+            }
 
             prepare_lifted(*(*effect_numeric)->get_function_expression());
         }
@@ -304,7 +338,68 @@ void ToMimirStructures::prepare_grounded(const loki::ConditionImpl& condition)
         throw std::logic_error("Expected conjunctive condition.");
     }
 }
-void ToMimirStructures::prepare_grounded(const loki::OptimizationMetricImpl& metric) { prepare_grounded(*metric.get_function_expression()); }
+void ToMimirStructures::prepare_grounded(const loki::OptimizationMetricImpl& metric)
+{
+    prepare_grounded(*metric.get_function_expression());
+
+    const auto func_test_monotonicity = [&]() -> bool
+    {
+        return std::visit(
+            [&](auto&& arg) -> bool
+            {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, loki::FunctionExpressionNumber>)
+                {
+                    return true;
+                }
+                else if constexpr (std::is_same_v<T, loki::FunctionExpressionBinaryOperator>)
+                {
+                    if (arg->get_binary_operator() == loki::BinaryOperatorEnum::MINUS)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                else if constexpr (std::is_same_v<T, loki::FunctionExpressionMultiOperator>)
+                {
+                    return true;
+                }
+                else if constexpr (std::is_same_v<T, loki::FunctionExpressionMinus>)
+                {
+                    return false;
+                }
+                else if constexpr (std::is_same_v<T, loki::FunctionExpressionFunction>)
+                {
+                    if (metric.get_optimization_metric() == loki::OptimizationMetricEnum::MINIMIZE)
+                    {
+                        if (m_decreasing_functions.contains(arg->get_function()->get_function_skeleton()->get_name()))
+                            return false;
+                    }
+                    else if (metric.get_optimization_metric() == loki::OptimizationMetricEnum::MAXIMIZE)
+                    {
+                        if (m_increasing_functions.contains(arg->get_function()->get_function_skeleton()->get_name()))
+                            return false;
+                    }
+                    else
+                    {
+                        throw std::logic_error("ToMimirStructures::prepare_grounded(metric): Unexpected optimization metric.");
+                    }
+                    return true;
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value,
+                                  "ToMimirStructures::prepare_grounded(metric): Missing implementation for GroundFunctionExpressionFunction type.");
+                }
+            },
+            metric.get_function_expression()->get_function_expression());
+    };
+
+    m_is_monotone_metric = func_test_monotonicity();
+
+    std::cout << "[ToMimir] Optimization metric is" << ((!m_is_monotone_metric) ? " NOT " : " ") << "a monotone function." << std::endl;
+}
+
 void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
 {
     prepare_lifted(*problem.get_domain());
@@ -321,6 +416,11 @@ void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
     {
         prepare_grounded(*problem.get_optimization_metric().value());
     }
+    else
+    {
+        // This is a bit ugly but necessary due to the optional. Assumes the default (minimize (total-cost))
+        m_is_monotone_metric = !m_decreasing_functions.contains("total-cost");
+    }
     prepare_lifted(problem.get_axioms());
 
     for (const auto& derived_predicate : problem.get_derived_predicates())
@@ -335,12 +435,14 @@ void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
 
 StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    if (!m_lifted_fexpr_functions.contains(function_skeleton.get_name()))
+    // If the metric is monotone, we can instantiate auxiliary functions and store them in a search node.
+    if (m_is_monotone_metric && !m_lifted_fexpr_functions.contains(function_skeleton.get_name()))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
                                                                                        translate_common(function_skeleton.get_parameters()));
     }
-    else if (m_fluent_functions.contains(function_skeleton.get_name()))
+    else if (m_fluent_functions.contains(function_skeleton.get_name())
+             || (!m_is_monotone_metric && !m_lifted_fexpr_functions.contains(function_skeleton.get_name())))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton.get_name(),
                                                                                     translate_common(function_skeleton.get_parameters()));
@@ -623,6 +725,28 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
     throw std::logic_error("Expected conjunctive condition.");
 }
 
+template<DynamicFunctionTag F>
+static EffectNumeric<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton<F> total_cost_function,
+                                                                bool action_costs_enabled,
+                                                                EffectNumericList<F>& numeric_effects,
+                                                                PDDLRepositories& pddl_repositories)
+{
+    for (const auto& effect : numeric_effects)
+    {
+        if (effect->get_function()->get_function_skeleton()->get_name() == "total-cost")
+            return effect;
+    }
+
+    const auto total_cost_numeric_effect = pddl_repositories.get_or_create_numeric_effect(
+        loki::AssignOperatorEnum::INCREASE,
+        pddl_repositories.get_or_create_function(total_cost_function, TermList {}),
+        pddl_repositories.get_or_create_function_expression(pddl_repositories.get_or_create_function_expression_number(action_costs_enabled ? 0 : 1)));
+
+    numeric_effects.push_back(total_cost_numeric_effect);
+
+    return total_cost_numeric_effect;
+}
+
 std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
     using EffectStripsData = std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>;
@@ -699,6 +823,7 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
                     }
                     else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
                     {
+                        std::cout << "Instantiated auxiliary numeric effect " << std::endl;
                         data_auxiliary_numeric_effects.push_back(
                             m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>((*effect_numeric)->get_assign_operator(),
                                                                                         function,
@@ -743,18 +868,26 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
 
     /* Instantiate STRIPS effect. */
     auto& [strips_effect_fluent_literals, strips_effect_fluent_numeric_effects, strips_effect_auxiliary_numeric_effects] = effect_strips_data;
-    const bool strips_effect_has_total_cost = std::any_of(strips_effect_auxiliary_numeric_effects.begin(),
-                                                          strips_effect_auxiliary_numeric_effects.end(),
-                                                          [](auto&& arg) { return arg->get_function()->get_function_skeleton()->get_name() == "total-cost"; });
-    if (!strips_effect_has_total_cost)
-    {
-        strips_effect_auxiliary_numeric_effects.push_back(m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>(
-            loki::AssignOperatorEnum::INCREASE,
-            m_pddl_repositories.get_or_create_function<Auxiliary>(m_pddl_repositories.get_or_create_function_skeleton<Auxiliary>("total-cost", VariableList {}),
-                                                                  TermList {}),
-            m_pddl_repositories.get_or_create_function_expression(
-                m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1))));
-    }
+    // Instantiate total cost effect if necessary.
+    std::visit(
+        [&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
+            {
+                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, strips_effect_fluent_numeric_effects, m_pddl_repositories);
+            }
+            else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
+            {
+                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, strips_effect_auxiliary_numeric_effects, m_pddl_repositories);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
+            }
+        },
+        m_total_cost_function);
+
     const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(strips_effect_fluent_literals,
                                                                                      strips_effect_fluent_numeric_effects,
                                                                                      strips_effect_auxiliary_numeric_effects);
@@ -1400,7 +1533,17 @@ Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
 ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_pddl_repositories(pddl_repositories),
     m_fluent_predicates(),
-    m_equal_predicate(nullptr)
+    m_derived_predicates(),
+    m_lifted_fexpr_functions(),
+    m_grounded_fexpr_functions(),
+    m_fluent_functions(),
+    m_increasing_functions(),
+    m_decreasing_functions(),
+    m_is_monotone_metric(),
+    m_action_costs_enabled(),
+    m_derived_predicates_by_name(),
+    m_equal_predicate(nullptr),
+    m_total_cost_function()
 {
 }
 }
