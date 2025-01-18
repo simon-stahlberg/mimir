@@ -820,7 +820,6 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
                     }
                     else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
                     {
-                        std::cout << "Instantiated auxiliary numeric effect " << std::endl;
                         data_auxiliary_numeric_effects.push_back(
                             m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>((*effect_numeric)->get_assign_operator(),
                                                                                         function,
