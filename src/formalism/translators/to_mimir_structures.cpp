@@ -572,24 +572,11 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
 
         // Fetch container to store the effects
         const bool is_conditional_effect = (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()));
-        auto& data_fluent_literals =
-            is_conditional_effect ?
-                std::get<0>(
-                    ref_effect_conditional_data
-                        [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]) :
-                std::get<0>(ref_effect_strips_data);
-        auto& data_fluent_numeric_effects =
-            is_conditional_effect ?
-                std::get<1>(
-                    ref_effect_conditional_data
-                        [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]) :
-                std::get<1>(ref_effect_strips_data);
-        auto& data_auxiliary_numeric_effects =
-            is_conditional_effect ?
-                std::get<2>(
-                    ref_effect_conditional_data
-                        [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))]) :
-                std::get<2>(ref_effect_strips_data);
+        auto& [data_fluent_literals, data_fluent_numeric_effects, data_auxiliary_numeric_effects] =
+            (is_conditional_effect) ?
+                ref_effect_conditional_data
+                    [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))] :
+                ref_effect_strips_data;
 
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
@@ -664,9 +651,22 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
     }
 
     /* Instantiate STRIPS effect. */
-    const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(std::get<0>(effect_strips_data),
-                                                                                     std::get<1>(effect_strips_data),
-                                                                                     std::get<2>(effect_strips_data));
+    auto& [strips_effect_fluent_literals, strips_effect_fluent_numeric_effects, strips_effect_auxiliary_numeric_effects] = effect_strips_data;
+    const bool strips_effect_has_total_cost = std::any_of(strips_effect_auxiliary_numeric_effects.begin(),
+                                                          strips_effect_auxiliary_numeric_effects.end(),
+                                                          [](auto&& arg) { return arg->get_function()->get_function_skeleton()->get_name() == "total-cost"; });
+    if (!strips_effect_has_total_cost)
+    {
+        strips_effect_auxiliary_numeric_effects.push_back(m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>(
+            loki::AssignOperatorEnum::INCREASE,
+            m_pddl_repositories.get_or_create_function<Auxiliary>(m_pddl_repositories.get_or_create_function_skeleton<Auxiliary>("total-cost", VariableList {}),
+                                                                  TermList {}),
+            m_pddl_repositories.get_or_create_function_expression(
+                m_pddl_repositories.get_or_create_function_expression_number(m_action_costs_enabled ? 0 : 1))));
+    }
+    const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(strips_effect_fluent_literals,
+                                                                                     strips_effect_fluent_numeric_effects,
+                                                                                     strips_effect_auxiliary_numeric_effects);
 
     /* Instantiate conditional effects. */
     auto conditional_effects = EffectConditionalList {};
