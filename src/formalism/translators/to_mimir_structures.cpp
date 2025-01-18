@@ -469,63 +469,31 @@ Object ToMimirStructures::translate_common(const loki::ObjectImpl& object)
     return m_pddl_repositories.get_or_create_object(object.get_name());
 }
 
-enum class PredicateTagEnum
-{
-    STATIC,
-    FLUENT,
-    DERIVED,
-    UNKNOWN,
-};
-
 StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(const loki::PredicateImpl& predicate)
 {
-    // Determine predicate category
-    auto predicate_category = PredicateTagEnum::UNKNOWN;
+    auto parameters = translate_common(predicate.get_parameters());
+
     if (m_fluent_predicates.count(predicate.get_name()) && !m_derived_predicates.count(predicate.get_name()))
     {
-        predicate_category = PredicateTagEnum::FLUENT;
+        return m_pddl_repositories.get_or_create_predicate<Fluent>(predicate.get_name(), parameters);
     }
     else if (m_derived_predicates.count(predicate.get_name()))
     {
-        predicate_category = PredicateTagEnum::DERIVED;
-    }
-    else
-    {
-        predicate_category = PredicateTagEnum::STATIC;
-    }
-    if (predicate.get_name() == "=")
-    {
-        predicate_category = PredicateTagEnum::STATIC;
-    }
-
-    std::optional<StaticOrFluentOrDerivedPredicate> result;
-
-    auto parameters = translate_common(predicate.get_parameters());
-    if (predicate_category == PredicateTagEnum::FLUENT)
-    {
-        result = StaticOrFluentOrDerivedPredicate(m_pddl_repositories.get_or_create_predicate<Fluent>(predicate.get_name(), parameters));
-    }
-    else if (predicate_category == PredicateTagEnum::STATIC)
-    {
-        result = StaticOrFluentOrDerivedPredicate(m_pddl_repositories.get_or_create_predicate<Static>(predicate.get_name(), parameters));
-    }
-    else if (predicate_category == PredicateTagEnum::DERIVED)
-    {
         const auto derived_predicate = m_pddl_repositories.get_or_create_predicate<Derived>(predicate.get_name(), parameters);
+
         m_derived_predicates_by_name.emplace(derived_predicate->get_name(), derived_predicate);
-        result = StaticOrFluentOrDerivedPredicate(derived_predicate);
+
+        return derived_predicate;
     }
     else
     {
-        throw std::logic_error("Expected predicate type to be known. Contact the developers for a fix.");
-    }
-    assert(result.has_value());
+        const auto static_predicate = m_pddl_repositories.get_or_create_predicate<Static>(predicate.get_name(), parameters);
 
-    if (predicate.get_name() == "=")
-    {
-        m_equal_predicate = std::get<Predicate<Static>>(result.value());
+        if (predicate.get_name() == "=")
+            m_equal_predicate = static_predicate;
+
+        return static_predicate;
     }
-    return result.value();
 }
 
 /**
