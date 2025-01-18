@@ -145,6 +145,10 @@ template const FlatIndexList& GroundConditionStrips::get_negative_precondition<S
 template const FlatIndexList& GroundConditionStrips::get_negative_precondition<Fluent>() const;
 template const FlatIndexList& GroundConditionStrips::get_negative_precondition<Derived>() const;
 
+GroundConditionNumericList& GroundConditionStrips::get_numeric_constraints() { return m_numeric_constraints; }
+
+const GroundConditionNumericList& GroundConditionStrips::get_numeric_constraints() const { return m_numeric_constraints; }
+
 template<PredicateTag P>
 bool GroundConditionStrips::is_applicable(const FlatBitset& atoms) const
 {

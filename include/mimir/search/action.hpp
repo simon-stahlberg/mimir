@@ -31,6 +31,15 @@
 namespace mimir
 {
 
+struct GroundConditionNumeric
+{
+    loki::BinaryComparatorEnum m_binary_comparator;
+    FlatExternalPtr<const GroundFunctionExpressionImpl> m_left_function_expression;
+    FlatExternalPtr<const GroundFunctionExpressionImpl> m_right_function_expression;
+};
+
+using GroundConditionNumericList = cista::offset::vector<GroundConditionNumeric>;
+
 struct GroundConditionStrips
 {
     FlatIndexList m_positive_static_atoms = FlatIndexList();
@@ -39,6 +48,7 @@ struct GroundConditionStrips
     FlatIndexList m_negative_fluent_atoms = FlatIndexList();
     FlatIndexList m_positive_derived_atoms = FlatIndexList();
     FlatIndexList m_negative_derived_atoms = FlatIndexList();
+    GroundConditionNumericList m_numeric_constraints = GroundConditionNumericList();
 
     template<PredicateTag P>
     FlatIndexList& get_positive_precondition();
@@ -49,6 +59,9 @@ struct GroundConditionStrips
     FlatIndexList& get_negative_precondition();
     template<PredicateTag P>
     const FlatIndexList& get_negative_precondition() const;
+
+    GroundConditionNumericList& get_numeric_constraints();
+    const GroundConditionNumericList& get_numeric_constraints() const;
 
     template<PredicateTag P>
     bool is_applicable(const FlatBitset& atoms) const;
