@@ -132,8 +132,14 @@ protected:
         this->prepare(effect.get_conditions<Static>());
         this->prepare(effect.get_conditions<Fluent>());
         this->prepare(effect.get_conditions<Derived>());
+        this->prepare(effect.get_numeric_constraints());
         this->prepare(effect.get_effects());
         this->prepare(effect.get_numeric_effects<Auxiliary>());
+    }
+    void prepare_impl(const NumericConstraintImpl& condition)
+    {
+        this->prepare(*condition.get_function_expression_left());
+        this->prepare(*condition.get_function_expression_right());
     }
     void prepare_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {
@@ -141,6 +147,7 @@ protected:
         this->prepare(condition.get_literals<Static>());
         this->prepare(condition.get_literals<Fluent>());
         this->prepare(condition.get_literals<Derived>());
+        this->prepare(condition.get_numeric_constraints());
     }
     void prepare_impl(const FunctionExpressionNumberImpl& function_expression) {}
     void prepare_impl(const FunctionExpressionBinaryOperatorImpl& function_expression)
@@ -353,16 +360,24 @@ protected:
                                                                           this->transform(effect.get_conditions<Static>()),
                                                                           this->transform(effect.get_conditions<Fluent>()),
                                                                           this->transform(effect.get_conditions<Derived>()),
+                                                                          this->transform(effect.get_numeric_constraints()),
                                                                           this->transform(effect.get_effects()),
                                                                           this->transform(effect.get_numeric_effects<Fluent>()),
                                                                           this->transform(effect.get_numeric_effects<Auxiliary>()));
+    }
+    NumericConstraint transform_impl(const NumericConstraintImpl& condition)
+    {
+        return this->m_pddl_repositories.get_or_create_numeric_constraint(condition.get_binary_comparator(),
+                                                                          this->transform(*condition.get_function_expression_left()),
+                                                                          this->transform(*condition.get_function_expression_right()));
     }
     ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {
         return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(this->transform(condition.get_parameters()),
                                                                                                       this->transform(condition.get_literals<Static>()),
                                                                                                       this->transform(condition.get_literals<Fluent>()),
-                                                                                                      this->transform(condition.get_literals<Derived>()));
+                                                                                                      this->transform(condition.get_literals<Derived>()),
+                                                                                                      this->transform(condition.get_numeric_constraints()));
     }
     FunctionExpressionNumber transform_impl(const FunctionExpressionNumberImpl& function_expression)
     {

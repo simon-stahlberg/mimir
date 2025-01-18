@@ -167,7 +167,8 @@ template<FunctionTag F>
 using GroundFunctionValueList = std::vector<GroundFunctionValue<F>>;
 
 class NumericConstraintImpl;
-using NumericConstraint = const NumericConstraintImpl;
+using NumericConstraint = const NumericConstraintImpl*;
+using NumericConstraintList = std::vector<NumericConstraint>;
 
 class ObjectImpl;
 using Object = const ObjectImpl*;

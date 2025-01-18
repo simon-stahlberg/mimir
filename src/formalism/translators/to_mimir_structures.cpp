@@ -99,6 +99,11 @@ void ToMimirStructures::prepare_lifted(const loki::ConditionImpl& condition)
             {
                 prepare_lifted(*(*condition_literal)->get_literal());
             }
+            else if (const auto condition_numeric = std::get_if<loki::ConditionNumericConstraint>(&part->get_condition()))
+            {
+                prepare_lifted(*(*condition_numeric)->get_function_expression_left());
+                prepare_lifted(*(*condition_numeric)->get_function_expression_right());
+            }
             else
             {
                 // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
@@ -617,6 +622,13 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
     return std::visit([this](auto&& arg) { return this->translate_lifted(*arg); }, function_expression.get_function_expression());
 }
 
+NumericConstraint ToMimirStructures::translate_lifted(const loki::ConditionNumericConstraintImpl& condition)
+{
+    return m_pddl_repositories.get_or_create_numeric_constraint(condition.get_binary_comparator(),
+                                                                translate_lifted(*condition.get_function_expression_left()),
+                                                                translate_lifted(*condition.get_function_expression_right()));
+}
+
 StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
 {
     return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryFunction
@@ -624,7 +636,8 @@ StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(const loki
                       translate_common(*function.get_function_skeleton()));
 }
 
-std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
+std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>
+ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
 
@@ -658,6 +671,8 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
         auto static_literals = LiteralList<Static> {};
         auto fluent_literals = LiteralList<Fluent> {};
         auto derived_literals = LiteralList<Derived> {};
+        auto numeric_constraints = NumericConstraintList {};
+
         for (const auto& part : (*condition_and)->get_conditions())
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&part->get_condition()))
@@ -666,6 +681,12 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
 
                 func_insert_literal(static_or_fluent_literal, static_literals, fluent_literals, derived_literals);
             }
+            else if (const auto condition_numeric_constraint = std::get_if<loki::ConditionNumericConstraint>(&part->get_condition()))
+            {
+                const auto numeric_constraint = translate_lifted(*(*condition_numeric_constraint));
+
+                numeric_constraints.push_back(numeric_constraint);
+            }
             else
             {
                 // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
@@ -673,19 +694,20 @@ std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMim
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(static_literals, fluent_literals, derived_literals);
+        return std::make_tuple(static_literals, fluent_literals, derived_literals, numeric_constraints);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition_ptr->get_condition()))
     {
         auto static_literals = LiteralList<Static> {};
         auto fluent_literals = LiteralList<Fluent> {};
         auto derived_literals = LiteralList<Derived> {};
+        auto numeric_constraints = NumericConstraintList {};
 
         const auto static_or_fluent_or_derived_literal = translate_lifted(*(*condition_literal)->get_literal());
 
         func_insert_literal(static_or_fluent_or_derived_literal, static_literals, fluent_literals, derived_literals);
 
-        return std::make_tuple(static_literals, fluent_literals, derived_literals);
+        return std::make_tuple(static_literals, fluent_literals, derived_literals, numeric_constraints);
     }
 
     // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -718,9 +740,10 @@ static EffectNumeric<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton
 std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
 {
     using EffectStripsData = std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>;
-    using EffectConditionalData = std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>,
-                                                     std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>,
-                                                     loki::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>>>;
+    using EffectConditionalData =
+        std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>,
+                           std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>,
+                           loki::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>>>;
 
     const auto translate_effect_func =
         [&](const loki::Effect& effect, EffectStripsData& ref_effect_strips_data, EffectConditionalData& ref_effect_conditional_data)
@@ -740,26 +763,32 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
         auto static_conditions = LiteralList<Static> {};
         auto fluent_conditions = LiteralList<Fluent> {};
         auto derived_conditions = LiteralList<Derived> {};
+        auto numeric_constraints = NumericConstraintList {};
         if (const auto tmp_effect_when = std::get_if<loki::EffectCompositeWhen>(&tmp_effect->get_effect()))
         {
-            const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*(*tmp_effect_when)->get_condition());
+            const auto [static_literals_, fluent_literals_, derived_literals_, numeric_constraints_] = translate_lifted(*(*tmp_effect_when)->get_condition());
             static_conditions = static_literals_;
             fluent_conditions = fluent_literals_;
             derived_conditions = derived_literals_;
+            numeric_constraints = numeric_constraints_;
             std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
             std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
             std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
             tmp_effect = (*tmp_effect_when)->get_effect();
         }
 
         // Fetch container to store the effects
-        const bool is_conditional_effect = (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty()));
+        const bool is_conditional_effect =
+            (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty() && numeric_constraints.empty()));
         auto& [data_fluent_literals, data_fluent_numeric_effects, data_auxiliary_numeric_effects] =
-            (is_conditional_effect) ?
-                ref_effect_conditional_data
-                    [std::make_tuple(std::move(parameters), std::move(static_conditions), std::move(fluent_conditions), std::move(derived_conditions))] :
-                ref_effect_strips_data;
+            (is_conditional_effect) ? ref_effect_conditional_data[std::make_tuple(std::move(parameters),
+                                                                                  std::move(static_conditions),
+                                                                                  std::move(fluent_conditions),
+                                                                                  std::move(derived_conditions),
+                                                                                  std::move(numeric_constraints))] :
+                                      ref_effect_strips_data;
 
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
@@ -864,13 +893,14 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
     auto conditional_effects = EffectConditionalList {};
     for (const auto& [key, value] : effect_conditional_data)
     {
-        const auto& [variables, static_conditions, fluent_conditions, derived_conditions] = key;
+        const auto& [variables, static_conditions, fluent_conditions, derived_conditions, numeric_constraints] = key;
         const auto& [fluent_literals, fluent_numeric_effects, auxiliary_numeric_effects] = value;
 
         conditional_effects.push_back(this->m_pddl_repositories.get_or_create_conditional_effect(variables,
                                                                                                  static_conditions,
                                                                                                  fluent_conditions,
                                                                                                  derived_conditions,
+                                                                                                 numeric_constraints,
                                                                                                  fluent_literals,
                                                                                                  fluent_numeric_effects,
                                                                                                  auxiliary_numeric_effects));
@@ -885,12 +915,14 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
     auto static_literals = LiteralList<Static> {};
     auto fluent_literals = LiteralList<Fluent> {};
     auto derived_literals = LiteralList<Derived> {};
+    auto numeric_constraints = NumericConstraintList {};
     if (action.get_condition().has_value())
     {
-        const auto [static_literals_, fluent_literals_, derived_literals_] = translate_lifted(*action.get_condition().value());
+        const auto [static_literals_, fluent_literals_, derived_literals_, numeric_constraints_] = translate_lifted(*action.get_condition().value());
         static_literals = static_literals_;
         fluent_literals = fluent_literals_;
         derived_literals = derived_literals_;
+        numeric_constraints = numeric_constraints_;
     }
 
     // We sort the additional parameters to enforce some additional approximate syntactic equivalence.
@@ -901,7 +933,8 @@ Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
         m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(translated_parameters),
                                                                                          std::move(static_literals),
                                                                                          std::move(fluent_literals),
-                                                                                         std::move(derived_literals));
+                                                                                         std::move(derived_literals),
+                                                                                         std::move(numeric_constraints));
 
     // 2. Translate effects
     auto strips_effect = EffectStrips {};
@@ -924,7 +957,7 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
     auto parameters = translate_common(axiom.get_parameters());
 
-    const auto [static_literals, fluent_literals, derived_literals] = translate_lifted(*axiom.get_condition());
+    const auto [static_literals, fluent_literals, derived_literals, numeric_constraints] = translate_lifted(*axiom.get_condition());
 
     // TODO: make this nicer by storing a predicate in the axiom in loki...
     const auto derived_predicate_name = axiom.get_derived_predicate_name();
@@ -956,7 +989,8 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
         m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
                                                                                          std::move(static_literals),
                                                                                          std::move(fluent_literals),
-                                                                                         std::move(derived_literals));
+                                                                                         std::move(derived_literals),
+                                                                                         std::move(numeric_constraints));
 
     return m_pddl_repositories.get_or_create_axiom(existentially_quantified_conjunctive_condition, literal);
 }

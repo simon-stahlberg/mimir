@@ -85,18 +85,24 @@ ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_im
     auto static_literals = filter_positive_literals(this->transform(condition.get_literals<Static>()));
     auto fluent_literals = filter_positive_literals(this->transform(condition.get_literals<Fluent>()));
     auto derived_literals = filter_positive_literals(this->transform(condition.get_literals<Derived>()));
+    auto numeric_constraints = NumericConstraintList {};
 
     return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
                                                                                                   std::move(static_literals),
                                                                                                   std::move(fluent_literals),
-                                                                                                  std::move(derived_literals));
+                                                                                                  std::move(derived_literals),
+                                                                                                  std::move(numeric_constraints));
 }
 
 EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effect)
 {
-    return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect.get_effects()),
-                                                                 this->transform(effect.get_numeric_effects<Fluent>()),
-                                                                 this->transform(effect.get_numeric_effects<Auxiliary>()));
+    auto fluent_literals = filter_positive_literals(this->transform(effect.get_effects()));
+    auto fluent_numeric_effects = EffectNumericList<Fluent> {};
+    auto auxiliary_numeric_effects = EffectNumericList<Auxiliary> {};
+
+    return this->m_pddl_repositories.get_or_create_strips_effect(std::move(fluent_literals),
+                                                                 std::move(fluent_numeric_effects),
+                                                                 std::move(auxiliary_numeric_effects));
 }
 
 EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
@@ -118,6 +124,7 @@ EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditional
     auto static_conditions = filter_positive_literals(this->transform(effect.get_conditions<Static>()));
     auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
     auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
+    auto numeric_constraints = NumericConstraintList {};
     auto fluent_numeric_effects = this->transform(effect.get_numeric_effects<Fluent>());
     auto auxiliary_numeric_effects = this->transform(effect.get_numeric_effects<Auxiliary>());
 
@@ -125,6 +132,7 @@ EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditional
                                                                       static_conditions,
                                                                       fluent_conditions,
                                                                       derived_conditions,
+                                                                      numeric_constraints,
                                                                       transformed_literals,
                                                                       fluent_numeric_effects,
                                                                       auxiliary_numeric_effects);

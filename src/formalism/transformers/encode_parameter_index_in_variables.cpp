@@ -100,6 +100,7 @@ EffectConditional EncodeParameterIndexInVariables::transform_impl(const EffectCo
                                                                    this->transform(effect.get_conditions<Static>()),
                                                                    this->transform(effect.get_conditions<Fluent>()),
                                                                    this->transform(effect.get_conditions<Derived>()),
+                                                                   this->transform(effect.get_numeric_constraints()),
                                                                    this->transform(effect.get_effects()),
                                                                    this->transform(effect.get_numeric_effects<Fluent>()),
                                                                    this->transform(effect.get_numeric_effects<Auxiliary>()));

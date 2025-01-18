@@ -174,7 +174,8 @@ private:
     FunctionExpression translate_lifted(const loki::FunctionExpressionFunctionImpl& function_expression);
     FunctionExpression translate_lifted(const loki::FunctionExpressionImpl& function_expression);
     StaticOrFluentOrAuxiliaryFunction translate_lifted(const loki::FunctionImpl& function);
-    std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> translate_lifted(const loki::ConditionImpl& condition);
+    NumericConstraint translate_lifted(const loki::ConditionNumericConstraintImpl& condition);
+    std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList> translate_lifted(const loki::ConditionImpl& condition);
     std::tuple<EffectStrips, EffectConditionalList> translate_lifted(const loki::EffectImpl& effect);
     Action translate_lifted(const loki::ActionImpl& action);
     Axiom translate_lifted(const loki::AxiomImpl& axiom);

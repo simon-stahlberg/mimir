@@ -115,6 +115,7 @@ private:
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
+    NumericConstraintList m_numeric_constraints;
     LiteralList<Fluent> m_effects;
     EffectNumericList<Fluent> m_fluent_numeric_effects;
     EffectNumericList<Auxiliary> m_auxiliary_numeric_effects;
@@ -126,6 +127,7 @@ private:
                           LiteralList<Static> static_conditions,
                           LiteralList<Fluent> fluent_conditions,
                           LiteralList<Derived> derived_conditions,
+                          NumericConstraintList numeric_constraints,
                           LiteralList<Fluent> effects,
                           EffectNumericList<Fluent> fluent_numeric_effects,
                           EffectNumericList<Auxiliary> auxiliary_numeric_effects);
@@ -145,6 +147,7 @@ public:
     const VariableList& get_parameters() const;
     template<PredicateTag P>
     const LiteralList<P>& get_conditions() const;
+    const NumericConstraintList& get_numeric_constraints() const;
     const LiteralList<Fluent>& get_effects() const;
     template<DynamicFunctionTag F>
     const EffectNumericList<F>& get_numeric_effects() const;
@@ -160,6 +163,7 @@ public:
                                      std::as_const(m_static_conditions),
                                      std::as_const(m_fluent_conditions),
                                      std::as_const(m_derived_conditions),
+                                     std::as_const(m_numeric_constraints),
                                      std::as_const(m_effects),
                                      std::as_const(m_fluent_numeric_effects),
                                      std::as_const(m_auxiliary_numeric_effects));

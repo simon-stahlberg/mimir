@@ -23,6 +23,7 @@
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -127,6 +128,7 @@ EffectConditionalImpl::EffectConditionalImpl(Index index,
                                              LiteralList<Static> static_conditions,
                                              LiteralList<Fluent> fluent_conditions,
                                              LiteralList<Derived> derived_conditions,
+                                             NumericConstraintList numeric_constraints,
                                              LiteralList<Fluent> effects,
                                              EffectNumericList<Fluent> fluent_numeric_effects,
                                              EffectNumericList<Auxiliary> auxiliary_numeric_effects) :
@@ -135,6 +137,7 @@ EffectConditionalImpl::EffectConditionalImpl(Index index,
     m_static_conditions(std::move(static_conditions)),
     m_fluent_conditions(std::move(fluent_conditions)),
     m_derived_conditions(std::move(derived_conditions)),
+    m_numeric_constraints(std::move(numeric_constraints)),
     m_effects(std::move(effects)),
     m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
     m_auxiliary_numeric_effects(std::move(auxiliary_numeric_effects))
@@ -150,6 +153,9 @@ EffectConditionalImpl::EffectConditionalImpl(Index index,
         std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_numeric_constraints.begin(),
+                          m_numeric_constraints.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_fluent_numeric_effects.begin(),
                           m_fluent_numeric_effects.end(),
@@ -187,6 +193,8 @@ const LiteralList<P>& EffectConditionalImpl::get_conditions() const
 template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static>() const;
 template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
 template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
+
+const NumericConstraintList& EffectConditionalImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
 const LiteralList<Fluent>& EffectConditionalImpl::get_effects() const { return m_effects; }
 

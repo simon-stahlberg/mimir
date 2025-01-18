@@ -20,7 +20,9 @@
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
+#include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
+#include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/variable.hpp"
 
 namespace mimir
@@ -32,7 +34,8 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
                                                                                                  LiteralList<Derived> derived_conditions,
                                                                                                  GroundLiteralList<Static> nullary_static_conditions,
                                                                                                  GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                                                                                 GroundLiteralList<Derived> nullary_derived_conditions) :
+                                                                                                 GroundLiteralList<Derived> nullary_derived_conditions,
+                                                                                                 NumericConstraintList numeric_constraints) :
     m_index(index),
     m_parameters(std::move(parameters)),
     m_static_conditions(std::move(static_conditions)),
@@ -40,12 +43,17 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
     m_derived_conditions(std::move(derived_conditions)),
     m_nullary_static_conditions(std::move(nullary_static_conditions)),
     m_nullary_fluent_conditions(std::move(nullary_fluent_conditions)),
-    m_nullary_derived_conditions(std::move(nullary_derived_conditions))
+    m_nullary_derived_conditions(std::move(nullary_derived_conditions)),
+    m_numeric_constraints(std::move(numeric_constraints))
 {
     assert(is_all_unique(m_parameters));
     assert(is_all_unique(m_static_conditions));
     assert(is_all_unique(m_fluent_conditions));
     assert(is_all_unique(m_derived_conditions));
+    assert(is_all_unique(m_nullary_static_conditions));
+    assert(is_all_unique(m_nullary_fluent_conditions));
+    assert(is_all_unique(m_nullary_derived_conditions));
+    assert(is_all_unique(numeric_constraints));
 
     assert(
         std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -53,6 +61,17 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
         std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(
         std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_nullary_static_conditions.begin(),
+                          m_nullary_static_conditions.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_nullary_fluent_conditions.begin(),
+                          m_nullary_fluent_conditions.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_nullary_derived_conditions.begin(),
+                          m_nullary_derived_conditions.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(
+        std::is_sorted(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
 Index ExistentiallyQuantifiedConjunctiveConditionImpl::get_index() const { return m_index; }
@@ -108,6 +127,8 @@ const GroundLiteralList<P>& ExistentiallyQuantifiedConjunctiveConditionImpl::get
 template const GroundLiteralList<Static>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals<Static>() const;
 template const GroundLiteralList<Fluent>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals<Fluent>() const;
 template const GroundLiteralList<Derived>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals<Derived>() const;
+
+const NumericConstraintList& ExistentiallyQuantifiedConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
 size_t ExistentiallyQuantifiedConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
 

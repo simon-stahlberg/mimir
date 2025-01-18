@@ -33,6 +33,7 @@
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
+#include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -65,7 +66,8 @@ void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl&
             write(*parameter, out);
         }
     }
-    if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty())
+    if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty()
+        && element.get_numeric_constraints().empty())
     {
         out << "()";
     }
@@ -83,6 +85,11 @@ void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl&
             write(*condition, out);
         }
         for (const auto& condition : element.get_literals<Derived>())
+        {
+            out << " ";
+            write(*condition, out);
+        }
+        for (const auto& condition : element.get_numeric_constraints())
         {
             out << " ";
             write(*condition, out);
@@ -595,6 +602,15 @@ void PDDLFormatter::write(const OptimizationMetricImpl& element, std::ostream& o
 {
     out << "(" << to_string(element.get_optimization_metric()) << " ";
     write(*element.get_function_expression(), out);
+    out << ")";
+}
+
+void PDDLFormatter::write(const NumericConstraintImpl& element, std::ostream& out)
+{
+    out << "(" << to_string(element.get_binary_comparator()) << " ";
+    write(*element.get_function_expression_left(), out);
+    out << " ";
+    write(*element.get_function_expression_right(), out);
     out << ")";
 }
 

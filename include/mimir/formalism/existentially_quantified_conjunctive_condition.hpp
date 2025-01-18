@@ -33,6 +33,7 @@ private:
     GroundLiteralList<Static> m_nullary_static_conditions;
     GroundLiteralList<Fluent> m_nullary_fluent_conditions;
     GroundLiteralList<Derived> m_nullary_derived_conditions;
+    NumericConstraintList m_numeric_constraints;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -43,7 +44,8 @@ private:
                                                     LiteralList<Derived> derived_conditions,
                                                     GroundLiteralList<Static> nullary_static_conditions,
                                                     GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                                    GroundLiteralList<Derived> nullary_derived_conditions);
+                                                    GroundLiteralList<Derived> nullary_derived_conditions,
+                                                    NumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -62,6 +64,7 @@ public:
     const LiteralList<P>& get_literals() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
+    const NumericConstraintList& get_numeric_constraints() const;
 
     size_t get_arity() const;
 
@@ -73,7 +76,8 @@ public:
         return std::forward_as_tuple(std::as_const(m_parameters),
                                      std::as_const(m_static_conditions),
                                      std::as_const(m_fluent_conditions),
-                                     std::as_const(m_derived_conditions));
+                                     std::as_const(m_derived_conditions),
+                                     std::as_const(m_numeric_constraints));
     }
 };
 

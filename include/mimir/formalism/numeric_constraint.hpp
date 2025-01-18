@@ -26,14 +26,15 @@ namespace mimir
 class NumericConstraintImpl
 {
 private:
-    loki::BinaryComparatorEnum m_comparator;
+    Index m_index;
+    loki::BinaryComparatorEnum m_binary_comparator;
     FunctionExpression m_function_expression_left;
     FunctionExpression m_function_expression_right;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     NumericConstraintImpl(Index index,
-                          loki::BinaryComparatorEnum comparator,
+                          loki::BinaryComparatorEnum binary_comparator,
                           FunctionExpression function_expression_left,
                           FunctionExpression function_expression_right);
 
@@ -49,7 +50,7 @@ public:
     NumericConstraintImpl& operator=(NumericConstraintImpl&& other) = default;
 
     Index get_index() const;
-    loki::BinaryComparatorEnum get_comparator() const;
+    loki::BinaryComparatorEnum get_binary_comparator() const;
     const FunctionExpression& get_function_expression_left() const;
     const FunctionExpression& get_function_expression_right() const;
 
@@ -58,7 +59,7 @@ public:
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_comparator), std::as_const(m_function_expression_left), std::as_const(m_function_expression_right));
+        return std::forward_as_tuple(std::as_const(m_binary_comparator), std::as_const(m_function_expression_left), std::as_const(m_function_expression_right));
     }
 };
 

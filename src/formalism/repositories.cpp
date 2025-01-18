@@ -324,6 +324,7 @@ EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableLis
                                                                      LiteralList<Static> static_conditions,
                                                                      LiteralList<Fluent> fluent_conditions,
                                                                      LiteralList<Derived> derived_conditions,
+                                                                     NumericConstraintList numeric_constraints,
                                                                      LiteralList<Fluent> effects,
                                                                      EffectNumericList<Fluent> fluent_numeric_effects,
                                                                      EffectNumericList<Auxiliary> auxiliary_numeric_effects)
@@ -332,6 +333,7 @@ EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableLis
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(auxiliary_numeric_effects.begin(), auxiliary_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -341,25 +343,42 @@ EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableLis
                        std::move(static_conditions),
                        std::move(fluent_conditions),
                        std::move(derived_conditions),
+                       std::move(numeric_constraints),
                        std::move(effects),
                        std::move(fluent_numeric_effects),
                        std::move(auxiliary_numeric_effects));
+}
+
+NumericConstraint PDDLRepositories::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
+                                                                     FunctionExpression function_expression_left,
+                                                                     FunctionExpression function_expression_right)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericConstraintImpl> {})
+        .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
 }
 
 ExistentiallyQuantifiedConjunctiveCondition
 PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
                                                                                LiteralList<Static> static_conditions,
                                                                                LiteralList<Fluent> fluent_conditions,
-                                                                               LiteralList<Derived> derived_conditions)
+                                                                               LiteralList<Derived> derived_conditions,
+                                                                               NumericConstraintList numeric_constraints)
 {
     /* Canonize before uniqueness test */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     auto nullary_static_conditions = ground_nullary_literals(static_conditions, *this);
     auto nullary_fluent_conditions = ground_nullary_literals(fluent_conditions, *this);
     auto nullary_derived_conditions = ground_nullary_literals(derived_conditions, *this);
+
+    std::sort(nullary_static_conditions.begin(), nullary_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(nullary_fluent_conditions.begin(), nullary_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(nullary_derived_conditions.begin(),
+              nullary_derived_conditions.end(),
+              [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl> {})
         .get_or_create(std::move(parameters),
@@ -368,7 +387,8 @@ PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(V
                        std::move(derived_conditions),
                        std::move(nullary_static_conditions),
                        std::move(nullary_fluent_conditions),
-                       std::move(nullary_derived_conditions));
+                       std::move(nullary_derived_conditions),
+                       std::move(numeric_constraints));
 }
 
 Action PDDLRepositories::get_or_create_action(std::string name,
