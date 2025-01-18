@@ -29,16 +29,19 @@ DenseState::DenseState(State state)
 {
     insert_into_bitset(state->get_atoms<Fluent>(), m_fluent_atoms);
     insert_into_bitset(state->get_atoms<Derived>(), m_derived_atoms);
+    m_numeric_variables = state->get_numeric_variables();
 }
 
 void DenseState::translate(State state, DenseState& out_state)
 {
     auto& fluent_atoms = out_state.get_atoms<Fluent>();
     auto& derived_atoms = out_state.get_atoms<Derived>();
+    auto& numeric_variables = out_state.get_numeric_variables();
     fluent_atoms.unset_all();
     derived_atoms.unset_all();
     insert_into_bitset(state->get_atoms<Fluent>(), fluent_atoms);
     insert_into_bitset(state->get_atoms<Derived>(), derived_atoms);
+    numeric_variables = state->get_numeric_variables();
 }
 
 template<DynamicPredicateTag P>
@@ -125,4 +128,6 @@ FlatBitset& DenseState::get_atoms()
 
 template FlatBitset& DenseState::get_atoms<Fluent>();
 template FlatBitset& DenseState::get_atoms<Derived>();
+
+FlatDoubleList& DenseState::get_numeric_variables() { return m_numeric_variables; }
 }

@@ -33,6 +33,7 @@ struct DenseState
     Index m_index = Index(0);
     FlatBitset m_fluent_atoms = FlatBitset();
     FlatBitset m_derived_atoms = FlatBitset();
+    FlatDoubleList m_numeric_variables = FlatDoubleList();
 
     DenseState() = default;
     DenseState(State state);
@@ -62,6 +63,8 @@ struct DenseState
 
     template<DynamicPredicateTag P>
     FlatBitset& get_atoms();
+
+    FlatDoubleList& get_numeric_variables();
 };
 
 }

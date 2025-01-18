@@ -228,6 +228,15 @@ public:
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_ground_function_expression)); }
 };
 
+/* Utils */
+
+template<DynamicFunctionTag F>
+extern void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<F>& ref_functions);
+template<DynamicFunctionTag F>
+extern GroundFunctionList<F> collect_ground_functions(GroundFunctionExpression fexpr);
+
+/* Printing */
+
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);

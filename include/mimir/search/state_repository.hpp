@@ -53,9 +53,8 @@ private:
 
     FlatIndexList m_state_fluent_atoms;
     FlatIndexList m_state_derived_atoms;
-
-    absl::flat_hash_map<Index, ContinuousCost> m_fluent_function_to_cost;
-    absl::flat_hash_map<Index, ContinuousCost> m_auxiliary_function_to_cost;
+    FlatDoubleList m_state_fluent_numeric_variables;
+    FlatDoubleList m_state_auxiliary_numeric_variables;
 
 public:
     explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
@@ -67,20 +66,21 @@ public:
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
-    State get_or_create_initial_state();
+    std::pair<State, const FlatDoubleList*> get_or_create_initial_state();
 
     /// @brief Get or create the extended state for a given set of ground `atoms`.
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    State get_or_create_state(const GroundAtomList<Fluent>& atoms);
+    std::pair<State, const FlatDoubleList*> get_or_create_state(const GroundAtomList<Fluent>& atoms);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and all auxiliary ground functions values.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action);
+    std::pair<State, const FlatDoubleList*>
+    get_or_create_successor_state(State state, GroundAction action, const FlatDoubleList& auxiliary_numeric_state_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
     /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
@@ -89,7 +89,8 @@ public:
     /// @param action is the ground action.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and all auxiliary ground functions values.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action);
+    std::pair<State, const FlatDoubleList*>
+    get_or_create_successor_state(DenseState& dense_state, GroundAction action, const FlatDoubleList& auxiliary_numeric_state_variables);
 
     /**
      * Getters

@@ -74,8 +74,7 @@ void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionMinusImpl& 
 }
 void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionFunctionImpl& function_expression)
 {
-    // Found function that appears in a function expression
-    m_fexpr_functions.insert(function_expression.get_function()->get_function_skeleton()->get_name());
+    m_lifted_fexpr_functions.insert(function_expression.get_function()->get_function_skeleton()->get_name());
 
     this->prepare_lifted(*function_expression.get_function());
 }
@@ -260,6 +259,8 @@ void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionMinusImpl
 }
 void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionFunctionImpl& function_expression)
 {
+    m_grounded_fexpr_functions.insert(function_expression.get_function()->get_function_skeleton()->get_name());
+
     this->prepare_grounded(*function_expression.get_function());
 }
 void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionImpl& function_expression)
@@ -334,7 +335,7 @@ void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
 
 StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    if (!m_fexpr_functions.contains(function_skeleton.get_name()))
+    if (!m_lifted_fexpr_functions.contains(function_skeleton.get_name()))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
                                                                                        translate_common(function_skeleton.get_parameters()));
@@ -897,7 +898,6 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
     auto static_functions = FunctionSkeletonList<Static> {};
     auto fluent_functions = FunctionSkeletonList<Fluent> {};
     auto auxiliary_functions = FunctionSkeletonList<Auxiliary> {};
-    std::cout << "Num functions: " << domain.get_functions() << std::endl;
     for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain.get_functions()))
     {
         std::visit(

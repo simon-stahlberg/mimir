@@ -122,6 +122,52 @@ size_t GroundFunctionExpressionImpl::get_index() const { return m_index; }
 
 const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant() const { return m_ground_function_expression; }
 
+/* Utils */
+
+template<DynamicFunctionTag F>
+void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<F>& ref_functions)
+{
+    std::visit(
+        [&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, GroundFunctionExpressionBinaryOperator>)
+            {
+                collect_ground_functions_recursively(arg->get_left_function_expression(), ref_functions);
+                collect_ground_functions_recursively(arg->get_right_function_expression(), ref_functions);
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionMultiOperator>)
+            {
+                for (const auto& child : arg->get_function_expressions())
+                {
+                    collect_ground_functions_recursively(child, ref_functions);
+                }
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<F>>)
+            {
+                ref_functions.push_back(arg->get_function());
+            }
+            else {}
+        },
+        fexpr->get_variant());
+}
+
+template void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<Fluent>& ref_functions);
+template void collect_ground_functions_recursively(GroundFunctionExpression fexpr, GroundFunctionList<Auxiliary>& ref_functions);
+
+template<DynamicFunctionTag F>
+GroundFunctionList<F> collect_ground_functions(GroundFunctionExpression fexpr)
+{
+    auto functions = GroundFunctionList<F> {};
+    collect_ground_functions_recursively(fexpr, functions);
+    uniquify_elements(functions);
+    return functions;
+}
+
+template GroundFunctionList<Fluent> collect_ground_functions(GroundFunctionExpression fexpr);
+template GroundFunctionList<Auxiliary> collect_ground_functions(GroundFunctionExpression fexpr);
+
+/* Printing */
 std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element)
 {
     auto formatter = PDDLFormatter();

@@ -24,6 +24,8 @@
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_function.hpp"
+#include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -102,7 +104,9 @@ ProblemImpl::ProblemImpl(Index index,
     m_negative_static_goal_atoms_indices(),
     m_negative_fluent_goal_atoms_indices(),
     m_negative_derived_goal_atoms_indices(),
-    m_problem_and_domain_axioms()
+    m_problem_and_domain_axioms(),
+    m_fluent_functions(),
+    m_auxiliary_functions()
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -239,6 +243,20 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_axioms = m_domain->get_axioms();
     m_problem_and_domain_axioms.insert(m_problem_and_domain_axioms.end(), m_axioms.begin(), m_axioms.end());
     assert(is_all_unique(m_problem_and_domain_axioms));
+
+    /* Functions */
+    if (m_optimization_metric.has_value())
+    {
+        collect_ground_functions_recursively(m_optimization_metric.value()->get_function_expression(), m_auxiliary_functions);
+    }
+    uniquify_elements(m_auxiliary_functions);
+    std::sort(m_auxiliary_functions.begin(), m_auxiliary_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    // Assert that indices are consecutive (0, 1, 2, ...)
+    // If they are not consecutive, then we forgot to collect some relevant ones.
+    for (size_t i = 0; i < m_auxiliary_functions.size(); ++i)
+    {
+        assert(m_auxiliary_functions[i]->get_index() == i);
+    }
 
     /**
      * Error checking
@@ -565,6 +583,28 @@ template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Deriv
 /* Axioms */
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
 
+/* Functions */
+template<DynamicFunctionTag F>
+const GroundFunctionList<F>& ProblemImpl::get_functions() const
+{
+    if constexpr (std::is_same_v<F, Fluent>)
+    {
+        return m_fluent_functions;
+    }
+    else if constexpr (std::is_same_v<F, Auxiliary>)
+    {
+        return m_auxiliary_functions;
+    }
+    else
+    {
+        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
+    }
+}
+
+template const GroundFunctionList<Fluent>& ProblemImpl::get_functions() const;
+template const GroundFunctionList<Auxiliary>& ProblemImpl::get_functions() const;
+
+/* Printing */
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)
 {
     auto formatter = PDDLFormatter();

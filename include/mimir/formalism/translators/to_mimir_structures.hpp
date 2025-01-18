@@ -59,8 +59,9 @@ private:
     // Note1: functions that do not appear in a function expression but in an effect are auxiliary.
     // Note2: functions that do not appear in a function expression and not in an effect are irrelevant.
     // Note3: functions that do not appear in an effect are static.
-    std::unordered_set<std::string> m_fexpr_functions;   ///< Functions that appear in a function expression
-    std::unordered_set<std::string> m_fluent_functions;  ///< Functions that appear in an effect
+    std::unordered_set<std::string> m_lifted_fexpr_functions;    ///< Functions that appear in a lifted function expression, i.e., numeric effect or  constraint
+    std::unordered_set<std::string> m_grounded_fexpr_functions;  ///< Functions that appear in a grounded function expression, i.e., metric
+    std::unordered_set<std::string> m_fluent_functions;          ///< Functions that appear in an effect
 
     // Whether action costs are enabled
     bool m_action_costs_enabled;

@@ -88,6 +88,14 @@ private:
     /* Axioms */
     AxiomList m_problem_and_domain_axioms;
 
+    /* Functions */
+    // Stores all fluent functions that are initially available.
+    GroundFunctionList<Fluent> m_fluent_functions;
+    // Stores all auxiliary ground functions that are relevant, i.e., they are used somewhere in the problem, e.g., the metric.
+    // In general, an action might produce additional irrelevant ones, which we do not have to track in a search node.
+    // Ideally, an action would never generate irrelevant ones, but it is difficult to know that before grounding.
+    GroundFunctionList<Auxiliary> m_auxiliary_functions;
+
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
                 Domain domain,
@@ -195,6 +203,10 @@ public:
 
     /* Axioms */
     const AxiomList& get_problem_and_domain_axioms() const;
+
+    /* Functions */
+    template<DynamicFunctionTag F>
+    const GroundFunctionList<F>& get_functions() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

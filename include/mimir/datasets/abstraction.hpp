@@ -36,11 +36,8 @@ namespace mimir
  */
 
 template<typename T>
-concept IsAbstraction = requires(T a, State state)
-{
-    {
-        a.get_vertex_index(state)
-        } -> std::same_as<Index>;
+concept IsAbstraction = requires(T a, State state) {
+    { a.get_vertex_index(state) } -> std::same_as<Index>;
 };
 
 /**
@@ -87,7 +84,6 @@ private:
 
         /* Transitions */
         virtual const GroundActionsEdgeList& get_edges() const = 0;
-        virtual ContinuousCost get_edge_cost(Index edge) const = 0;
         virtual std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, ForwardTraversal>> get_forward_adjacent_edges(Index vertex) const = 0;
         virtual std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, BackwardTraversal>>
         get_backward_adjacent_edges(Index vertex) const = 0;
@@ -151,7 +147,6 @@ private:
 
         /* Transitions */
         const GroundActionsEdgeList& get_edges() const override { return m_abstraction.get_edges(); }
-        ContinuousCost get_edge_cost(Index edge) const override { return m_abstraction.get_edge_cost(edge); }
         std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, ForwardTraversal>> get_forward_adjacent_edges(Index vertex) const override
         {
             return m_abstraction.template get_adjacent_edges<ForwardTraversal>(vertex);
@@ -185,8 +180,10 @@ private:
 
 public:
     template<IsAbstraction A>
-    requires IsStaticGraph<typename A::GraphType>
-    explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction))) {}
+        requires IsStaticGraph<typename A::GraphType>
+    explicit Abstraction(A abstraction) : m_pimpl(std::make_unique<AbstractionModel<A>>(std::move(abstraction)))
+    {
+    }
 
     // Copy operations
     Abstraction(const Abstraction& other) : m_pimpl { other.m_pimpl->clone() } {}
@@ -242,7 +239,6 @@ public:
 
     /* Transitions */
     const GroundActionsEdgeList& get_edges() const { return m_pimpl->get_edges(); }
-    ContinuousCost get_edge_cost(Index edge) const { return m_pimpl->get_edge_cost(edge); }
     template<IsTraversalDirection Direction>
     std::ranges::subrange<StaticAdjacentEdgeConstIterator<GroundActionsEdge, Direction>> get_adjacent_edges(Index vertex) const
     {

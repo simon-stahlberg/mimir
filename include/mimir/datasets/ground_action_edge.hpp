@@ -29,12 +29,10 @@
 namespace mimir
 {
 
-using GroundActionEdge = Edge<GroundAction, ContinuousCost>;
+using GroundActionEdge = Edge<GroundAction>;
 using GroundActionEdgeList = std::vector<GroundActionEdge>;
 
 inline GroundAction get_creating_action(const GroundActionEdge& edge) { return edge.get_property<0>(); }
-
-inline ContinuousCost get_cost(const GroundActionEdge& edge) { return edge.get_property<1>(); }
 
 }
 

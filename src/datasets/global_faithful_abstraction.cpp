@@ -56,14 +56,12 @@ Index GlobalFaithfulAbstractState::get_faithful_abstraction_vertex_index() const
  */
 
 GlobalFaithfulAbstraction::GlobalFaithfulAbstraction(bool mark_true_goal_literals,
-                                                     bool use_unit_cost_one,
                                                      Index index,
                                                      std::shared_ptr<const FaithfulAbstractionList> abstractions,
                                                      GlobalFaithfulAbstractStateList states,
                                                      size_t num_isomorphic_states,
                                                      size_t num_non_isomorphic_states) :
     m_mark_true_goal_literals(mark_true_goal_literals),
-    m_use_unit_cost_one(use_unit_cost_one),
     m_index(index),
     m_abstractions(std::move(abstractions)),
     m_states(std::move(states)),
@@ -170,7 +168,6 @@ GlobalFaithfulAbstraction::create(const std::vector<std::tuple<std::shared_ptr<I
         relevant_faithful_abstractions->push_back(std::move(faithful_abstraction));
 
         abstractions.push_back(GlobalFaithfulAbstraction(options.fa_options.mark_true_goal_literals,
-                                                         options.fa_options.use_unit_cost_one,
                                                          abstraction_index,
                                                          std::const_pointer_cast<const FaithfulAbstractionList>(relevant_faithful_abstractions),
                                                          std::move(states),
@@ -227,8 +224,6 @@ template ContinuousCostMatrix GlobalFaithfulAbstraction::compute_pairwise_shorte
 Problem GlobalFaithfulAbstraction::get_problem() const { return m_abstractions->at(m_index).get_problem(); }
 
 bool GlobalFaithfulAbstraction::get_mark_true_goal_literals() const { return m_mark_true_goal_literals; }
-
-bool GlobalFaithfulAbstraction::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 Index GlobalFaithfulAbstraction::get_index() const { return m_index; }
 
@@ -337,11 +332,6 @@ template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeI
 GlobalFaithfulAbstraction::get_adjacent_edge_indices<ForwardTraversal>(Index vertex) const;
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_edge_indices<BackwardTraversal>(Index vertex) const;
-
-ContinuousCost GlobalFaithfulAbstraction::get_edge_cost(Index edge) const
-{
-    return (m_use_unit_cost_one) ? 1 : m_abstractions->at(m_index).get_edge_cost(edge);
-}
 
 size_t GlobalFaithfulAbstraction::get_num_edges() const { return m_abstractions->at(m_index).get_num_edges(); }
 
