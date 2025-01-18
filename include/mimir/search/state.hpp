@@ -89,9 +89,6 @@ inline bool operator==(const std::span<const State>& lhs, const std::span<const 
 }
 
 using StateImplSet = mimir::buffering::UnorderedSet<StateImpl>;
-using FluentAtomIndicesSet = mimir::buffering::UnorderedSet<FlatIndexList>;
-using DerivedAtomindicesSet = mimir::buffering::UnorderedSet<FlatIndexList>;
-using FluentNumericVariableValuesSet = mimir::buffering::UnorderedSet<cista::offset::vector<double>>;
 
 /**
  * Pretty printing

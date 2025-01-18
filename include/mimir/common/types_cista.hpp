@@ -22,7 +22,9 @@
 #include "cista/containers/external_ptr.h"
 #include "cista/containers/flexible_index_vector.h"
 #include "cista/containers/vector.h"
+#include "mimir/buffering/unordered_set.h"
 #include "mimir/common/concepts.hpp"
+#include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 
@@ -34,6 +36,7 @@ namespace mimir
 /* Bitset */
 
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
+using FlatBitsetSet = mimir::buffering::UnorderedSet<FlatBitset>;
 
 inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 {
@@ -53,12 +56,13 @@ inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 /* IndexList */
 
 using FlatIndexList = cista::offset::flexible_index_vector<Index>;
+using FlatIndexListSet = mimir::buffering::UnorderedSet<FlatIndexList>;
 
-inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
+inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& list)
 {
     os << "[";
     size_t i = 0;
-    for (const auto& element : set)
+    for (const auto& element : list)
     {
         if (i != 0)
             os << ", ";
@@ -72,8 +76,32 @@ inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& set)
 /* ExternalPtr */
 template<typename T>
 using FlatExternalPtr = cista::offset::external_ptr<T>;
+
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr)
+{
+    os << *ptr;
+    return os;
+}
+
 /* DoubleList */
 using FlatDoubleList = cista::offset::vector<double>;
+using FlatDoubleListSet = mimir::buffering::UnorderedSet<cista::offset::vector<double>>;
+
+inline std::ostream& operator<<(std::ostream& os, const FlatDoubleList& list)
+{
+    os << "[";
+    size_t i = 0;
+    for (const auto& element : list)
+    {
+        if (i != 0)
+            os << ", ";
+        os << element;
+        ++i;
+    }
+    os << "]";
+    return os;
+}
 
 /// @brief Check whether `value` exists in the given `vec`.
 /// Runs binary search to find a value in a vec.

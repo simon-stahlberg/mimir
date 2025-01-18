@@ -90,6 +90,10 @@ DomainImpl::DomainImpl(Index index,
     assert(std::is_sorted(m_actions.begin(), m_actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
+    std::cout << "static functions: " << m_static_functions << std::endl;
+    std::cout << "fluent functions: " << m_fluent_functions << std::endl;
+    std::cout << "auxiliary functions: " << m_auxiliary_functions << std::endl;
+
     /* Additional */
     for (const auto& object : m_constants)
     {

@@ -28,52 +28,99 @@
 
 namespace mimir
 {
-void ToMimirStructures::prepare(const loki::RequirementsImpl& requirements) {}
-void ToMimirStructures::prepare(const loki::TypeImpl& type) { prepare(type.get_bases()); }
-void ToMimirStructures::prepare(const loki::ObjectImpl& object) { prepare(object.get_bases()); }
-void ToMimirStructures::prepare(const loki::VariableImpl& variable) {}
-void ToMimirStructures::prepare(const loki::TermImpl& term)
+/**
+ * Prepare common
+ */
+void ToMimirStructures::prepare_common(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    std::visit([this](auto&& arg) { return this->prepare(*arg); }, term.get_object_or_variable());
+    prepare_common(function_skeleton.get_parameters());
+    prepare_common(*function_skeleton.get_type());
 }
-void ToMimirStructures::prepare(const loki::ParameterImpl& parameter) { prepare(*parameter.get_variable()); }
-void ToMimirStructures::prepare(const loki::PredicateImpl& predicate) { prepare(predicate.get_parameters()); }
-void ToMimirStructures::prepare(const loki::AtomImpl& atom)
+void ToMimirStructures::prepare_common(const loki::ObjectImpl& object) { prepare_common(object.get_bases()); }
+void ToMimirStructures::prepare_common(const loki::ParameterImpl& parameter) { prepare_common(*parameter.get_variable()); }
+void ToMimirStructures::prepare_common(const loki::PredicateImpl& predicate) { prepare_common(predicate.get_parameters()); }
+void ToMimirStructures::prepare_common(const loki::RequirementsImpl& requirements) {}
+void ToMimirStructures::prepare_common(const loki::TypeImpl& type) { prepare_common(type.get_bases()); }
+void ToMimirStructures::prepare_common(const loki::VariableImpl& variable) {}
+
+/**
+ * Prepare lifted
+ */
+
+void ToMimirStructures::prepare_lifted(const loki::TermImpl& term)
 {
-    prepare(*atom.get_predicate());
-    prepare(atom.get_terms());
+    std::visit([this](auto&& arg) { return this->prepare_common(*arg); }, term.get_object_or_variable());
 }
-void ToMimirStructures::prepare(const loki::LiteralImpl& literal) { prepare(*literal.get_atom()); }
-void ToMimirStructures::prepare(const loki::FunctionValueImpl& function_value) { prepare(*function_value.get_function()); }
-void ToMimirStructures::prepare(const loki::ConditionLiteralImpl& condition) { prepare(*condition.get_literal()); }
-void ToMimirStructures::prepare(const loki::ConditionAndImpl& condition) { prepare(condition.get_conditions()); }
-void ToMimirStructures::prepare(const loki::ConditionOrImpl& condition) { prepare(condition.get_conditions()); }
-void ToMimirStructures::prepare(const loki::ConditionNotImpl& condition) { prepare(*condition.get_condition()); }
-void ToMimirStructures::prepare(const loki::ConditionImplyImpl& condition)
+
+void ToMimirStructures::prepare_lifted(const loki::AtomImpl& atom)
 {
-    prepare(*condition.get_condition_left());
-    prepare(*condition.get_condition_right());
+    prepare_common(*atom.get_predicate());
+    prepare_lifted(atom.get_terms());
 }
-void ToMimirStructures::prepare(const loki::ConditionExistsImpl& condition)
+void ToMimirStructures::prepare_lifted(const loki::LiteralImpl& literal) { prepare_lifted(*literal.get_atom()); }
+void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionNumberImpl& function_expression) {}
+void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
 {
-    prepare(condition.get_parameters());
-    prepare(*condition.get_condition());
+    prepare_lifted(*function_expression.get_left_function_expression());
+    prepare_lifted(*function_expression.get_right_function_expression());
 }
-void ToMimirStructures::prepare(const loki::ConditionForallImpl& condition)
+void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
 {
-    prepare(condition.get_parameters());
-    prepare(*condition.get_condition());
+    this->prepare_lifted(function_expression.get_function_expressions());
 }
-void ToMimirStructures::prepare(const loki::ConditionNumericConstraintImpl& condition)
+void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionMinusImpl& function_expression)
 {
-    prepare(*condition.get_function_expression_left());
-    prepare(*condition.get_function_expression_right());
+    this->prepare_lifted(*function_expression.get_function_expression());
 }
-void ToMimirStructures::prepare(const loki::ConditionImpl& condition)
+void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionFunctionImpl& function_expression)
 {
-    std::visit([this](auto&& arg) { return this->prepare(*arg); }, condition.get_condition());
+    // Found function that appears in a function expression
+    m_fexpr_functions.insert(function_expression.get_function()->get_function_skeleton()->get_name());
+
+    this->prepare_lifted(*function_expression.get_function());
 }
-void ToMimirStructures::prepare(const loki::EffectImpl& effect)
+void ToMimirStructures::prepare_lifted(const loki::FunctionExpressionImpl& function_expression)
+{
+    std::visit([this](auto&& arg) { return this->prepare_lifted(*arg); }, function_expression.get_function_expression());
+}
+void ToMimirStructures::prepare_lifted(const loki::FunctionImpl& function)
+{
+    prepare_common(*function.get_function_skeleton());
+    prepare_lifted(function.get_terms());
+}
+void ToMimirStructures::prepare_lifted(const loki::ConditionImpl& condition)
+{
+    auto condition_ptr = &condition;
+
+    if (const auto condition_and = std::get_if<loki::ConditionAnd>(&condition_ptr->get_condition()))
+    {
+        for (const auto& part : (*condition_and)->get_conditions())
+        {
+            if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&part->get_condition()))
+            {
+                prepare_lifted(*(*condition_literal)->get_literal());
+            }
+            else
+            {
+                // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
+                throw std::logic_error("Expected literal in conjunctive condition.");
+            }
+        }
+    }
+    else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition_ptr->get_condition()))
+    {
+        prepare_lifted(*(*condition_literal)->get_literal());
+    }
+    else
+    {
+        // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
+
+        throw std::logic_error("Expected conjunctive condition.");
+    }
+}
+
+void ToMimirStructures::prepare_lifted(const loki::EffectImpl& effect)
 {
     const auto prepare_effect_func = [&](const loki::Effect& arg_effect)
     {
@@ -82,7 +129,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         // 2. Prepare universal part
         if (const auto& tmp_effect_forall = std::get_if<loki::EffectCompositeForall>(&tmp_effect->get_effect()))
         {
-            prepare((*tmp_effect_forall)->get_parameters());
+            prepare_common((*tmp_effect_forall)->get_parameters());
 
             tmp_effect = (*tmp_effect_forall)->get_effect();
         }
@@ -96,7 +143,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
                 {
                     if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&part->get_condition()))
                     {
-                        prepare(*(*condition_literal)->get_literal());
+                        prepare_lifted(*(*condition_literal)->get_literal());
                     }
                     else
                     {
@@ -108,7 +155,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
             }
             else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&(*tmp_effect_when)->get_condition()->get_condition()))
             {
-                prepare(*(*condition_literal)->get_literal());
+                prepare_lifted(*(*condition_literal)->get_literal());
             }
 
             tmp_effect = (*tmp_effect_when)->get_effect();
@@ -117,7 +164,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         // 4. Parse simple effect
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
         {
-            prepare(*(*effect_literal)->get_literal());
+            prepare_lifted(*(*effect_literal)->get_literal());
 
             // Found predicate affected by an effect
             m_fluent_predicates.insert((*effect_literal)->get_literal()->get_atom()->get_predicate()->get_name());
@@ -127,7 +174,7 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
             // Found function affected by an effect
             m_fluent_functions.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
 
-            prepare(*(*effect_numeric)->get_function_expression());
+            prepare_lifted(*(*effect_numeric)->get_function_expression());
         }
         else
         {
@@ -150,87 +197,130 @@ void ToMimirStructures::prepare(const loki::EffectImpl& effect)
         prepare_effect_func(&effect);
     }
 }
-void ToMimirStructures::prepare(const loki::FunctionExpressionNumberImpl& function_expression) {}
-void ToMimirStructures::prepare(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
+void ToMimirStructures::prepare_lifted(const loki::ActionImpl& action)
 {
-    prepare(*function_expression.get_left_function_expression());
-    prepare(*function_expression.get_right_function_expression());
-}
-void ToMimirStructures::prepare(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
-{
-    this->prepare(function_expression.get_function_expressions());
-}
-void ToMimirStructures::prepare(const loki::FunctionExpressionMinusImpl& function_expression) { this->prepare(*function_expression.get_function_expression()); }
-void ToMimirStructures::prepare(const loki::FunctionExpressionFunctionImpl& function_expression)
-{
-    // Found function that appears in a function expression
-    m_fexpr_functions.insert(function_expression.get_function()->get_function_skeleton()->get_name());
-
-    this->prepare(*function_expression.get_function());
-}
-void ToMimirStructures::prepare(const loki::FunctionExpressionImpl& function_expression)
-{
-    std::visit([this](auto&& arg) { return this->prepare(*arg); }, function_expression.get_function_expression());
-}
-void ToMimirStructures::prepare(const loki::FunctionSkeletonImpl& function_skeleton)
-{
-    prepare(function_skeleton.get_parameters());
-    prepare(*function_skeleton.get_type());
-}
-void ToMimirStructures::prepare(const loki::FunctionImpl& function)
-{
-    prepare(*function.get_function_skeleton());
-    prepare(function.get_terms());
-}
-void ToMimirStructures::prepare(const loki::ActionImpl& action)
-{
-    prepare(action.get_parameters());
+    prepare_common(action.get_parameters());
     if (action.get_condition().has_value())
     {
-        prepare(*action.get_condition().value());
+        prepare_lifted(*action.get_condition().value());
     }
     if (action.get_effect().has_value())
     {
-        prepare(*action.get_effect().value());
+        prepare_lifted(*action.get_effect().value());
     }
 }
-void ToMimirStructures::prepare(const loki::AxiomImpl& axiom)
+void ToMimirStructures::prepare_lifted(const loki::AxiomImpl& axiom)
 {
-    prepare(axiom.get_parameters());
-    prepare(*axiom.get_condition());
+    prepare_common(axiom.get_parameters());
+    prepare_lifted(*axiom.get_condition());
 
     m_derived_predicates.insert(axiom.get_derived_predicate_name());
 }
-void ToMimirStructures::prepare(const loki::DomainImpl& domain)
+void ToMimirStructures::prepare_lifted(const loki::DomainImpl& domain)
 {
-    prepare(*domain.get_requirements());
-    prepare(domain.get_types());
-    prepare(domain.get_constants());
-    prepare(domain.get_predicates());
-    prepare(domain.get_functions());
-    prepare(domain.get_actions());
-    prepare(domain.get_axioms());
+    prepare_common(*domain.get_requirements());
+    prepare_common(domain.get_types());
+    prepare_common(domain.get_constants());
+    prepare_common(domain.get_predicates());
+    prepare_common(domain.get_functions());
+    prepare_lifted(domain.get_actions());
+    prepare_lifted(domain.get_axioms());
 
     m_action_costs_enabled = domain.get_requirements()->test(loki::RequirementEnum::ACTION_COSTS);
 }
-void ToMimirStructures::prepare(const loki::OptimizationMetricImpl& metric) { prepare(*metric.get_function_expression()); }
-void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
+
+/**
+ * Prepare grounded
+ */
+
+void ToMimirStructures::prepare_grounded(const loki::TermImpl& term)
 {
-    prepare(*problem.get_domain());
-    prepare(*problem.get_requirements());
-    prepare(problem.get_objects());
-    prepare(problem.get_derived_predicates());
-    prepare(problem.get_initial_literals());
-    prepare(problem.get_function_values());
+    std::visit([this](auto&& arg) { return this->prepare_common(*arg); }, term.get_object_or_variable());
+}
+
+void ToMimirStructures::prepare_grounded(const loki::AtomImpl& atom)
+{
+    prepare_common(*atom.get_predicate());
+    prepare_grounded(atom.get_terms());
+}
+void ToMimirStructures::prepare_grounded(const loki::LiteralImpl& literal) { prepare_grounded(*literal.get_atom()); }
+void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionNumberImpl& function_expression) {}
+void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression)
+{
+    prepare_grounded(*function_expression.get_left_function_expression());
+    prepare_grounded(*function_expression.get_right_function_expression());
+}
+void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionMultiOperatorImpl& function_expression)
+{
+    this->prepare_grounded(function_expression.get_function_expressions());
+}
+void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionMinusImpl& function_expression)
+{
+    this->prepare_grounded(*function_expression.get_function_expression());
+}
+void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionFunctionImpl& function_expression)
+{
+    this->prepare_grounded(*function_expression.get_function());
+}
+void ToMimirStructures::prepare_grounded(const loki::FunctionExpressionImpl& function_expression)
+{
+    std::visit([this](auto&& arg) { return this->prepare_grounded(*arg); }, function_expression.get_function_expression());
+}
+void ToMimirStructures::prepare_grounded(const loki::FunctionImpl& function)
+{
+    prepare_common(*function.get_function_skeleton());
+    prepare_grounded(function.get_terms());
+}
+void ToMimirStructures::prepare_grounded(const loki::FunctionValueImpl& function_value) { prepare_grounded(*function_value.get_function()); }
+void ToMimirStructures::prepare_grounded(const loki::ConditionImpl& condition)
+{
+    auto condition_ptr = &condition;
+
+    if (const auto condition_and = std::get_if<loki::ConditionAnd>(&condition_ptr->get_condition()))
+    {
+        for (const auto& part : (*condition_and)->get_conditions())
+        {
+            if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&part->get_condition()))
+            {
+                prepare_grounded(*(*condition_literal)->get_literal());
+            }
+            else
+            {
+                // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
+
+                throw std::logic_error("Expected literal in conjunctive condition.");
+            }
+        }
+    }
+    else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition_ptr->get_condition()))
+    {
+        prepare_grounded(*(*condition_literal)->get_literal());
+    }
+    else
+    {
+        // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
+
+        throw std::logic_error("Expected conjunctive condition.");
+    }
+}
+void ToMimirStructures::prepare_grounded(const loki::OptimizationMetricImpl& metric) { prepare_grounded(*metric.get_function_expression()); }
+void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
+{
+    prepare_lifted(*problem.get_domain());
+    prepare_common(*problem.get_requirements());
+    prepare_common(problem.get_objects());
+    prepare_common(problem.get_derived_predicates());
+    prepare_grounded(problem.get_initial_literals());
+    prepare_grounded(problem.get_function_values());
     if (problem.get_goal_condition().has_value())
     {
-        prepare(*problem.get_goal_condition().value());
+        prepare_lifted(*problem.get_goal_condition().value());
     }
     if (problem.get_optimization_metric().has_value())
     {
-        prepare(*problem.get_optimization_metric().value());
+        prepare_grounded(*problem.get_optimization_metric().value());
     }
-    prepare(problem.get_axioms());
+    prepare_lifted(problem.get_axioms());
 
     for (const auto& derived_predicate : problem.get_derived_predicates())
     {
@@ -242,15 +332,26 @@ void ToMimirStructures::prepare(const loki::ProblemImpl& problem)
  * Common
  */
 
-VariableList ToMimirStructures::translate_common(const loki::ParameterList& parameters)
+StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(const loki::FunctionSkeletonImpl& function_skeleton)
 {
-    auto result = VariableList {};
-    for (const auto& parameter : parameters)
+    if (!m_fexpr_functions.contains(function_skeleton.get_name()))
     {
-        result.push_back(translate_common(*parameter->get_variable()));
+        return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
+                                                                                       translate_common(function_skeleton.get_parameters()));
     }
-    return result;
+    else if (m_fluent_functions.contains(function_skeleton.get_name()))
+    {
+        return m_pddl_repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton.get_name(),
+                                                                                    translate_common(function_skeleton.get_parameters()));
+    }
+    else
+    {
+        return m_pddl_repositories.template get_or_create_function_skeleton<Static>(function_skeleton.get_name(),
+                                                                                    translate_common(function_skeleton.get_parameters()));
+    }
 }
+
+Variable ToMimirStructures::translate_common(const loki::ParameterImpl& parameter) { return translate_common(*parameter.get_variable()); }
 
 Requirements ToMimirStructures::translate_common(const loki::RequirementsImpl& requirements)
 {
@@ -354,6 +455,10 @@ StaticOrFluentOrDerivedAtom ToMimirStructures::translate_lifted(const loki::Atom
             {
                 return m_pddl_repositories.get_or_create_atom(arg, translate_lifted(atom.get_terms()));
             }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
+            }
         },
         static_or_fluent__or_derived_predicate);
 }
@@ -377,6 +482,10 @@ StaticOrFluentOrDerivedLiteral ToMimirStructures::translate_lifted(const loki::L
             else if constexpr (std::is_same_v<T, Atom<Derived>>)
             {
                 return m_pddl_repositories.get_or_create_literal(literal.is_negated(), arg);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Atom type.");
             }
         },
         static_or_fluent_or_derived_atom);
@@ -426,7 +535,7 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
             }
             else
             {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionType.");
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Function type.");
             }
         },
         translate_lifted(*function_expression.get_function()));
@@ -437,30 +546,11 @@ FunctionExpression ToMimirStructures::translate_lifted(const loki::FunctionExpre
     return std::visit([this](auto&& arg) { return this->translate_lifted(*arg); }, function_expression.get_function_expression());
 }
 
-StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_lifted(const loki::FunctionSkeletonImpl& function_skeleton)
-{
-    if (!m_fexpr_functions.contains(function_skeleton.get_name()))
-    {
-        return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
-                                                                                       translate_common(function_skeleton.get_parameters()));
-    }
-    else if (m_fluent_functions.contains(function_skeleton.get_name()))
-    {
-        return m_pddl_repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton.get_name(),
-                                                                                    translate_common(function_skeleton.get_parameters()));
-    }
-    else
-    {
-        return m_pddl_repositories.template get_or_create_function_skeleton<Static>(function_skeleton.get_name(),
-                                                                                    translate_common(function_skeleton.get_parameters()));
-    }
-}
-
 StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(const loki::FunctionImpl& function)
 {
     return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryFunction
                       { return this->m_pddl_repositories.get_or_create_function(function_skeleton, translate_lifted(function.get_terms())); },
-                      translate_lifted(*function.get_function_skeleton()));
+                      translate_common(*function.get_function_skeleton()));
 }
 
 std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>> ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
@@ -619,7 +709,7 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
                     }
                     else
                     {
-                        static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionType.");
+                        static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Function type.");
                     }
                 },
                 static_fluent_or_auxiliary_function);
@@ -796,6 +886,10 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
                 {
                     derived_predicates.push_back(arg);
                 }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
+                }
             },
             static_or_fluent_or_derived_predicate);
     }
@@ -803,28 +897,33 @@ Domain ToMimirStructures::translate_lifted(const loki::DomainImpl& domain)
     auto static_functions = FunctionSkeletonList<Static> {};
     auto fluent_functions = FunctionSkeletonList<Fluent> {};
     auto auxiliary_functions = FunctionSkeletonList<Auxiliary> {};
-    for (const auto& static_or_fluent_or_auxiliary_function : translate_lifted(domain.get_functions()))
+    std::cout << "Num functions: " << domain.get_functions() << std::endl;
+    for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain.get_functions()))
     {
         std::visit(
             [&static_functions, &fluent_functions, &auxiliary_functions](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, FunctionSkeletonList<Static>>)
+                if constexpr (std::is_same_v<T, FunctionSkeleton<Static>>)
                 {
                     static_functions.push_back(arg);
                 }
-                else if constexpr (std::is_same_v<T, FunctionSkeletonList<Fluent>>)
+                else if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
                 {
                     fluent_functions.push_back(arg);
                 }
-                else if constexpr (std::is_same_v<T, FunctionSkeletonList<Auxiliary>>)
+                else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
                 {
                     auxiliary_functions.push_back(arg);
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
                 }
             },
             static_or_fluent_or_auxiliary_function);
     }
-    const auto functions = translate_lifted(domain.get_functions());
+
     const auto actions = translate_lifted(domain.get_actions());
     const auto axioms = translate_lifted(domain.get_axioms());
 
@@ -884,6 +983,10 @@ StaticOrFluentOrDerivedGroundAtom ToMimirStructures::translate_grounded(const lo
             {
                 return m_pddl_repositories.get_or_create_ground_atom(arg, translate_grounded(atom.get_terms()));
             }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for Predicate type.");
+            }
         },
         static_or_fluent_or_derived_predicate);
 }
@@ -907,6 +1010,10 @@ StaticOrFluentOrDerivedGroundLiteral ToMimirStructures::translate_grounded(const
             else if constexpr (std::is_same_v<T, GroundAtom<Derived>>)
             {
                 return m_pddl_repositories.get_or_create_ground_literal(literal.is_negated(), arg);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundAtom type.");
             }
         },
         static_or_fluent_or_derived_ground_atom);
@@ -971,7 +1078,7 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::Funct
             }
             else
             {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundFunctionType.");
+                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundFunction type.");
             }
         },
         translate_grounded(*function_expression.get_function()));
@@ -984,7 +1091,7 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::Funct
 
 StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(const loki::FunctionImpl& function)
 {
-    const auto static_or_fluent_or_auxiliary_function_skeleton = translate_lifted(*function.get_function_skeleton());
+    const auto static_or_fluent_or_auxiliary_function_skeleton = translate_common(*function.get_function_skeleton());
     const auto objects = translate_grounded(function.get_terms());
 
     return std::visit([&](auto&& function_skeleton) -> StaticOrFluentOrAuxiliaryGroundFunction
@@ -1017,6 +1124,10 @@ ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
                 else if constexpr (std::is_same_v<T, GroundLiteral<Derived>>)
                 {
                     ref_derived_ground_literals.push_back(arg);
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundLiteral type.");
                 }
             },
             static_or_fluent_or_derived_literal);
@@ -1118,6 +1229,10 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                 {
                     derived_initial_literals.push_back(arg);
                 }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundLiteral type.");
+                }
             },
             static_or_fluent_or_derived_ground_literal);
     }
@@ -1142,6 +1257,10 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                 else if constexpr (std::is_same_v<T, GroundFunctionValue<Auxiliary>>)
                 {
                     auxiliary_function_values.push_back(arg);
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for GroundFunctionValue type.");
                 }
             },
             static_or_fluent_or_auxiliary_function_value);
@@ -1183,7 +1302,7 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
 
 Problem ToMimirStructures::run(const loki::ProblemImpl& problem)
 {
-    prepare(problem);
+    prepare_grounded(problem);
     return translate_grounded(problem);
 }
 
