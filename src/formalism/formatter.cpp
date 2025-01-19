@@ -758,6 +758,11 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
             out << " ";
             write(*literal, out);
         }
+        for (const auto& constraint : element.get_numeric_goal_condition())
+        {
+            out << " ";
+            write(*constraint, out);
+        }
         out << "))" << std::endl;
     }
 

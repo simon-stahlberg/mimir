@@ -411,40 +411,6 @@ ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& flu
     }
 }
 
-bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables)
-{
-    const auto left_value = evaluate(effect->get_left_function_expression(), fluent_numeric_variables);
-    const auto right_value = evaluate(effect->get_right_function_expression(), fluent_numeric_variables);
-
-    switch (effect->get_binary_comparator())
-    {
-        case loki::BinaryComparatorEnum::EQUAL:
-        {
-            return left_value == right_value;
-        }
-        case loki::BinaryComparatorEnum::GREATER:
-        {
-            return left_value > right_value;
-        }
-        case loki::BinaryComparatorEnum::GREATER_EQUAL:
-        {
-            return left_value >= right_value;
-        }
-        case loki::BinaryComparatorEnum::LESS:
-        {
-            return left_value < right_value;
-        }
-        case loki::BinaryComparatorEnum::LESS_EQUAL:
-        {
-            return left_value <= right_value;
-        }
-        default:
-        {
-            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): Unexpected loki::BinaryComparatorEnum.");
-        }
-    }
-}
-
 template double evaluate(GroundEffectNumeric<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 template double
 evaluate(GroundEffectNumeric<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);

@@ -44,6 +44,48 @@ const GroundFunctionExpression& GroundNumericConstraintImpl::get_left_function_e
 
 const GroundFunctionExpression& GroundNumericConstraintImpl::get_right_function_expression() const { return m_right_function_expression; }
 
+/**
+ * Utils
+ */
+
+bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables)
+{
+    const auto left_value = evaluate(effect->get_left_function_expression(), fluent_numeric_variables);
+    const auto right_value = evaluate(effect->get_right_function_expression(), fluent_numeric_variables);
+
+    switch (effect->get_binary_comparator())
+    {
+        case loki::BinaryComparatorEnum::EQUAL:
+        {
+            return left_value == right_value;
+        }
+        case loki::BinaryComparatorEnum::GREATER:
+        {
+            return left_value > right_value;
+        }
+        case loki::BinaryComparatorEnum::GREATER_EQUAL:
+        {
+            return left_value >= right_value;
+        }
+        case loki::BinaryComparatorEnum::LESS:
+        {
+            return left_value < right_value;
+        }
+        case loki::BinaryComparatorEnum::LESS_EQUAL:
+        {
+            return left_value <= right_value;
+        }
+        default:
+        {
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): Unexpected loki::BinaryComparatorEnum.");
+        }
+    }
+}
+
+/**
+ * Printing
+ */
+
 std::ostream& operator<<(std::ostream& out, const GroundNumericConstraintImpl& element)
 {
     auto formatter = PDDLFormatter();

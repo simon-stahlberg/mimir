@@ -196,8 +196,6 @@ template<DynamicFunctionTag F>
 extern ContinuousCost
 evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
-extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables);
-
 /**
  * Mimir types
  */

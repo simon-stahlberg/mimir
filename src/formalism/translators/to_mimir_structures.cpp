@@ -1123,8 +1123,13 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(const loki::Funct
             using T = std::decay_t<decltype(ground_function)>;
             if constexpr (std::is_same_v<T, GroundFunction<Static>>)
             {
-                // TODO(numeric): must fetch static value.
-                return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(0));
+                if (!m_static_function_to_value.contains(ground_function))
+                {
+                    throw std::runtime_error("ToMimirStructures::translate_grounded(function_expression): undefined static function value "
+                                             + to_string(ground_function) + ".");
+                }
+                return m_pddl_repositories.get_or_create_ground_function_expression(
+                    m_pddl_repositories.get_or_create_ground_function_expression_number(m_static_function_to_value.at(ground_function)));
             }
             else if constexpr (std::is_same_v<T, GroundFunction<Fluent>>)
             {
@@ -1309,21 +1314,6 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     auto objects = translate_common(problem.get_objects());
     objects.insert(objects.end(), constants.begin(), constants.end());
 
-    auto static_goal_literals = GroundLiteralList<Static> {};
-    auto fluent_goal_literals = GroundLiteralList<Fluent> {};
-    auto derived_goal_literals = GroundLiteralList<Derived> {};
-    auto numeric_goal_constraints = GroundNumericConstraintList {};
-    if (problem.get_goal_condition().has_value())
-    {
-        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
-            translate_grounded(*problem.get_goal_condition().value());
-
-        static_goal_literals = static_goal_literals_;
-        fluent_goal_literals = fluent_goal_literals_;
-        derived_goal_literals = derived_goal_literals_;
-        numeric_goal_constraints = numeric_goal_constraints_;
-    }
-
     // Derive static and fluent initial literals
     auto static_initial_literals = GroundLiteralList<Static> {};
     auto fluent_initial_literals = GroundLiteralList<Fluent> {};
@@ -1401,6 +1391,11 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
             }
         },
         m_total_cost_function);
+    // Initialize member that is used in numeric goal grounding.
+    for (const auto& function_value : static_function_values)
+    {
+        m_static_function_to_value.emplace(function_value->get_function(), function_value->get_number());
+    }
 
     // Add equal atoms, e.g., (= object1 object1)
     // This must occur after parsing the domain
@@ -1432,6 +1427,21 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
             },
             m_total_cost_function);
     };
+
+    auto static_goal_literals = GroundLiteralList<Static> {};
+    auto fluent_goal_literals = GroundLiteralList<Fluent> {};
+    auto derived_goal_literals = GroundLiteralList<Derived> {};
+    auto numeric_goal_constraints = GroundNumericConstraintList {};
+    if (problem.get_goal_condition().has_value())
+    {
+        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
+            translate_grounded(*problem.get_goal_condition().value());
+
+        static_goal_literals = static_goal_literals_;
+        fluent_goal_literals = fluent_goal_literals_;
+        derived_goal_literals = derived_goal_literals_;
+        numeric_goal_constraints = numeric_goal_constraints_;
+    }
 
     const auto metric =
         (problem.get_optimization_metric().has_value() ? translate_grounded(*problem.get_optimization_metric().value()) : func_create_default_metric());
@@ -1471,7 +1481,8 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_action_costs_enabled(),
     m_derived_predicates_by_name(),
     m_equal_predicate(nullptr),
-    m_total_cost_function()
+    m_total_cost_function(),
+    m_static_function_to_value()
 {
 }
 }

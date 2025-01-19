@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUND_NUMERIC_CONSTRAINT_HPP_
 #define MIMIR_FORMALISM_GROUND_NUMERIC_CONSTRAINT_HPP_
 
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
@@ -61,6 +62,16 @@ public:
         return std::forward_as_tuple(std::as_const(m_binary_comparator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
     }
 };
+
+/**
+ * Utils
+ */
+
+extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables);
+
+/**
+ * Printing
+ */
 
 std::ostream& operator<<(std::ostream& os, const GroundNumericConstraintImpl& element);
 

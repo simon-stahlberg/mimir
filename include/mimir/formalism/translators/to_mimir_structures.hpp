@@ -72,6 +72,8 @@ private:
     // We allow total-cost to be used in constraints, i.e., it is allowed to be fluent.
     std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>> m_total_cost_function;
 
+    GroundFunctionMap<Static, ContinuousCost> m_static_function_to_value;
+
     /// @brief Prepare all elements in a container.
     template<typename Container>
     void prepare_common(const Container& input)

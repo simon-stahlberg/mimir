@@ -35,6 +35,20 @@ const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
 
 const FlatDoubleList StateImpl::s_empty_numeric_variables = FlatDoubleList();
 
+bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint) const { return evaluate(numeric_constraint, get_numeric_variables()); }
+
+bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints) const
+{
+    for (const auto& constraint : numeric_constraints)
+    {
+        if (!numeric_constraint_holds(constraint))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 template<DynamicPredicateTag P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
