@@ -1084,7 +1084,7 @@ StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_ground
     const auto static_or_fluent_or_auxiliary_ground_function = translate_grounded(*function_value.get_function());
 
     return std::visit([&](auto&& ground_function) -> StaticOrFluentOrAuxiliaryGroundFunctionValue
-                      { return std::make_pair(ground_function, function_value.get_number()); },
+                      { return m_pddl_repositories.get_or_create_ground_function_value(ground_function, function_value.get_number()); },
                       static_or_fluent_or_auxiliary_ground_function);
 }
 
@@ -1159,7 +1159,14 @@ StaticOrFluentOrAuxiliaryGroundFunction ToMimirStructures::translate_grounded(co
                       static_or_fluent_or_auxiliary_function_skeleton);
 }
 
-std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>
+GroundNumericConstraint ToMimirStructures::translate_grounded(const loki::ConditionNumericConstraintImpl& condition)
+{
+    return m_pddl_repositories.get_or_create_ground_numeric_constraint(condition.get_binary_comparator(),
+                                                                       translate_grounded(*condition.get_function_expression_left()),
+                                                                       translate_grounded(*condition.get_function_expression_right()));
+}
+
+std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
 ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
 {
     auto condition_ptr = &condition;
@@ -1198,6 +1205,8 @@ ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
         auto static_ground_literals = GroundLiteralList<Static> {};
         auto fluent_ground_literals = GroundLiteralList<Fluent> {};
         auto derived_ground_literals = GroundLiteralList<Derived> {};
+        auto numeric_constraints = GroundNumericConstraintList {};
+
         for (const auto& part : (*condition_and)->get_conditions())
         {
             if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&part->get_condition()))
@@ -1206,6 +1215,10 @@ ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
 
                 func_insert_ground_literal(static_or_fluent_ground_literal, static_ground_literals, fluent_ground_literals, derived_ground_literals);
             }
+            else if (const auto condition_numeric = std::get_if<loki::ConditionNumericConstraint>(&part->get_condition()))
+            {
+                numeric_constraints.push_back(translate_grounded(**condition_numeric));
+            }
             else
             {
                 // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *part) << std::endl;
@@ -1213,19 +1226,31 @@ ToMimirStructures::translate_grounded(const loki::ConditionImpl& condition)
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals);
+        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals, numeric_constraints);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition_ptr->get_condition()))
     {
         auto static_ground_literals = GroundLiteralList<Static> {};
         auto fluent_ground_literals = GroundLiteralList<Fluent> {};
         auto derived_ground_literals = GroundLiteralList<Derived> {};
+        auto numeric_constraints = GroundNumericConstraintList {};
 
         const auto static_or_fluent_or_derived_ground_literal = translate_grounded(*(*condition_literal)->get_literal());
 
         func_insert_ground_literal(static_or_fluent_or_derived_ground_literal, static_ground_literals, fluent_ground_literals, derived_ground_literals);
 
-        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals);
+        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals, numeric_constraints);
+    }
+    else if (const auto& condition_numeric = std::get_if<loki::ConditionNumericConstraint>(&condition_ptr->get_condition()))
+    {
+        auto static_ground_literals = GroundLiteralList<Static> {};
+        auto fluent_ground_literals = GroundLiteralList<Fluent> {};
+        auto derived_ground_literals = GroundLiteralList<Derived> {};
+        auto numeric_constraints = GroundNumericConstraintList {};
+
+        numeric_constraints.push_back(translate_grounded(**condition_numeric));
+
+        return std::make_tuple(static_ground_literals, fluent_ground_literals, derived_ground_literals, numeric_constraints);
     }
 
     // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -1246,13 +1271,14 @@ static GroundFunctionValue<F> get_or_create_total_cost_function_value(FunctionSk
 {
     for (const auto& function_value : function_values)
     {
-        if (function_value.first->get_function_skeleton() == total_cost_function)
+        if (function_value->get_function()->get_function_skeleton() == total_cost_function)
         {
             return function_value;
         }
     }
 
-    const auto total_cost_function_value = std::make_pair(pddl_repositories.get_or_create_ground_function(total_cost_function, ObjectList {}), 0.);
+    const auto total_cost_function_value =
+        pddl_repositories.get_or_create_ground_function_value(pddl_repositories.get_or_create_ground_function(total_cost_function, ObjectList {}), 0.);
 
     std::cout << "[ToMimir] Adding default " << total_cost_function_value << " to \":init\"." << std::endl;
 
@@ -1286,13 +1312,16 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
     auto static_goal_literals = GroundLiteralList<Static> {};
     auto fluent_goal_literals = GroundLiteralList<Fluent> {};
     auto derived_goal_literals = GroundLiteralList<Derived> {};
+    auto numeric_goal_constraints = GroundNumericConstraintList {};
     if (problem.get_goal_condition().has_value())
     {
-        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_] = translate_grounded(*problem.get_goal_condition().value());
+        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
+            translate_grounded(*problem.get_goal_condition().value());
 
         static_goal_literals = static_goal_literals_;
         fluent_goal_literals = fluent_goal_literals_;
         derived_goal_literals = derived_goal_literals_;
+        numeric_goal_constraints = numeric_goal_constraints_;
     }
 
     // Derive static and fluent initial literals
@@ -1421,6 +1450,7 @@ Problem ToMimirStructures::translate_grounded(const loki::ProblemImpl& problem)
                                                      uniquify_elements(static_goal_literals),
                                                      uniquify_elements(fluent_goal_literals),
                                                      uniquify_elements(derived_goal_literals),
+                                                     numeric_goal_constraints,
                                                      metric,
                                                      translate_lifted(problem.get_axioms()));
 }

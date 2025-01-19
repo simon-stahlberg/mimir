@@ -160,13 +160,19 @@ class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
 
 template<FunctionTag F>
-using GroundFunctionValue = std::pair<GroundFunction<F>, ContinuousCost>;
+class GroundFunctionValueImpl;
+template<FunctionTag F>
+using GroundFunctionValue = const GroundFunctionValueImpl<F>*;
 template<FunctionTag F>
 using GroundFunctionValueList = std::vector<GroundFunctionValue<F>>;
 
 class NumericConstraintImpl;
 using NumericConstraint = const NumericConstraintImpl*;
 using NumericConstraintList = std::vector<NumericConstraint>;
+
+class GroundNumericConstraintImpl;
+using GroundNumericConstraint = const GroundNumericConstraintImpl*;
+using GroundNumericConstraintList = std::vector<GroundNumericConstraint>;
 
 class ObjectImpl;
 using Object = const ObjectImpl*;

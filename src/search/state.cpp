@@ -133,7 +133,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
     auto fluent_ground_atoms = GroundAtomList<Fluent> {};
     auto static_ground_atoms = GroundAtomList<Static> {};
     auto derived_ground_atoms = GroundAtomList<Derived> {};
-    auto fluent_function_values = GroundFunctionValueList<Fluent> {};
+    auto fluent_function_values = std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> {};
 
     pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), fluent_ground_atoms);
     pddl_repositories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), static_ground_atoms);

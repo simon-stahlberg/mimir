@@ -357,6 +357,14 @@ NumericConstraint PDDLRepositories::get_or_create_numeric_constraint(loki::Binar
         .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
 }
 
+GroundNumericConstraint PDDLRepositories::get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
+                                                                                  GroundFunctionExpression function_expression_left,
+                                                                                  GroundFunctionExpression function_expression_right)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericConstraintImpl> {})
+        .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
+}
+
 ExistentiallyQuantifiedConjunctiveCondition
 PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
                                                                                LiteralList<Static> static_conditions,
@@ -414,6 +422,16 @@ OptimizationMetric PDDLRepositories::get_or_create_optimization_metric(loki::Opt
     return boost::hana::at_key(m_repositories, boost::hana::type<OptimizationMetricImpl> {}).get_or_create(std::move(metric), std::move(function_expression));
 }
 
+template<FunctionTag F>
+GroundFunctionValue<F> PDDLRepositories::get_or_create_ground_function_value(GroundFunction<F> function, double number)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionValueImpl<F>> {}).get_or_create(std::move(function), std::move(number));
+}
+
+template GroundFunctionValue<Static> PDDLRepositories::get_or_create_ground_function_value(GroundFunction<Static> function, double number);
+template GroundFunctionValue<Fluent> PDDLRepositories::get_or_create_ground_function_value(GroundFunction<Fluent> function, double number);
+template GroundFunctionValue<Auxiliary> PDDLRepositories::get_or_create_ground_function_value(GroundFunction<Auxiliary> function, double number);
+
 Domain PDDLRepositories::get_or_create_domain(std::optional<fs::path> filepath,
                                               std::string name,
                                               Requirements requirements,
@@ -467,6 +485,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                                                 GroundLiteralList<Static> static_goal_condition,
                                                 GroundLiteralList<Fluent> fluent_goal_condition,
                                                 GroundLiteralList<Derived> derived_goal_condition,
+                                                GroundNumericConstraintList numeric_goal_condition,
                                                 OptimizationMetric optimization_metric,
                                                 AxiomList axioms)
 {
@@ -475,18 +494,13 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
     std::sort(derived_predicates.begin(), derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_initial_literals.begin(), static_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_initial_literals.begin(), fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(static_function_values.begin(),
-              static_function_values.end(),
-              [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); });
-    std::sort(fluent_function_values.begin(),
-              fluent_function_values.end(),
-              [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); });
-    std::sort(auxiliary_function_values.begin(),
-              auxiliary_function_values.end(),
-              [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); });
+    std::sort(static_function_values.begin(), static_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(fluent_function_values.begin(), fluent_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(auxiliary_function_values.begin(), auxiliary_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_goal_condition.begin(), static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_goal_condition.begin(), fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_goal_condition.begin(), derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+    std::sort(numeric_goal_condition.begin(), numeric_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(axioms.begin(), axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ProblemImpl> {})
@@ -504,6 +518,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                        std::move(static_goal_condition),
                        std::move(fluent_goal_condition),
                        std::move(derived_goal_condition),
+                       std::move(numeric_goal_condition),
                        std::move(optimization_metric),
                        std::move(axioms));
 }
@@ -525,7 +540,8 @@ template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t a
 // GroundFunction
 
 template<FunctionTag F>
-void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values, GroundFunctionValueList<F>& out_ground_function_values) const
+void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
+                                                  std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const
 {
     out_ground_function_values.clear();
 
@@ -537,23 +553,26 @@ void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values, 
     }
 }
 
-template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values, GroundFunctionValueList<Static>& out_ground_function_values) const;
-template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values, GroundFunctionValueList<Fluent>& out_ground_function_values) const;
-template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values, GroundFunctionValueList<Auxiliary>& out_ground_function_values) const;
+template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
+                                                           std::vector<std::pair<GroundFunction<Static>, ContinuousCost>>& out_ground_function_values) const;
+template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
+                                                           std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>>& out_ground_function_values) const;
+template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
+                                                           std::vector<std::pair<GroundFunction<Auxiliary>, ContinuousCost>>& out_ground_function_values) const;
 
 template<FunctionTag F>
-GroundFunctionValueList<F> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const
+std::vector<std::pair<GroundFunction<F>, ContinuousCost>> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const
 {
-    auto ground_function_values = GroundFunctionValueList<F> {};
+    auto ground_function_values = std::vector<std::pair<GroundFunction<F>, ContinuousCost>> {};
 
     get_ground_function_values(values, ground_function_values);
 
     return ground_function_values;
 }
 
-template GroundFunctionValueList<Static> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const;
-template GroundFunctionValueList<Fluent> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const;
-template GroundFunctionValueList<Auxiliary> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const;
+template std::vector<std::pair<GroundFunction<Static>, ContinuousCost>> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const;
+template std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const;
+template std::vector<std::pair<GroundFunction<Auxiliary>, ContinuousCost>> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const;
 
 // Object
 Object PDDLRepositories::get_object(size_t object_index) const

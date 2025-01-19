@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/grounders/function_expression_grounder.hpp"
+#include "mimir/search/grounders/function_grounder.hpp"
 
 namespace mimir
 {
@@ -27,11 +28,12 @@ NumericConstraintGrounder::NumericConstraintGrounder(std::shared_ptr<FunctionExp
 {
 }
 
-GroundConditionNumeric NumericConstraintGrounder::ground(NumericConstraint numeric_constraint, const ObjectList& binding)
+GroundNumericConstraint NumericConstraintGrounder::ground(NumericConstraint numeric_constraint, const ObjectList& binding)
 {
-    return GroundConditionNumeric(numeric_constraint->get_binary_comparator(),
-                                  m_fexpr_grounder->ground(numeric_constraint->get_left_function_expression(), binding),
-                                  m_fexpr_grounder->ground(numeric_constraint->get_right_function_expression(), binding));
+    return m_fexpr_grounder->get_function_grounder()->get_pddl_repositories()->get_or_create_ground_numeric_constraint(
+        numeric_constraint->get_binary_comparator(),
+        m_fexpr_grounder->ground(numeric_constraint->get_left_function_expression(), binding),
+        m_fexpr_grounder->ground(numeric_constraint->get_right_function_expression(), binding));
 }
 
 const std::shared_ptr<FunctionExpressionGrounder>& NumericConstraintGrounder::get_fexpr_grounder() const { return m_fexpr_grounder; }

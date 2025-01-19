@@ -100,6 +100,7 @@ protected:
                                                           PDDLElementTranslationCache<GroundFunction<Fluent>>,
                                                           PDDLElementTranslationCache<GroundFunction<Auxiliary>>,
                                                           PDDLElementTranslationCache<NumericConstraint>,
+                                                          PDDLElementTranslationCache<GroundNumericConstraint>,
                                                           PDDLElementTranslationCache<ExistentiallyQuantifiedConjunctiveCondition>,
                                                           PDDLElementTranslationCache<Action>,
                                                           PDDLElementTranslationCache<Axiom>,
@@ -169,9 +170,9 @@ protected:
         this->prepare(literal->get_atom());
     }
     template<FunctionTag F>
-    void prepare_impl(GroundFunctionValue<F> numeric_fluent)
+    void prepare_impl(GroundFunctionValue<F> function_value)
     {
-        this->prepare(numeric_fluent.first);
+        this->prepare(function_value->get_function());
     }
     template<DynamicFunctionTag F>
     void prepare_impl(EffectNumeric<F> effect)
@@ -196,6 +197,11 @@ protected:
         this->prepare(effect->get_numeric_effects<Auxiliary>());
     }
     void prepare_impl(NumericConstraint condition)
+    {
+        this->prepare(condition->get_left_function_expression());
+        this->prepare(condition->get_right_function_expression());
+    }
+    void prepare_impl(GroundNumericConstraint condition)
     {
         this->prepare(condition->get_left_function_expression());
         this->prepare(condition->get_right_function_expression());
@@ -298,6 +304,7 @@ protected:
         this->prepare(problem->get_goal_condition<Static>());
         this->prepare(problem->get_goal_condition<Fluent>());
         this->prepare(problem->get_goal_condition<Derived>());
+        this->prepare(problem->get_numeric_goal_condition());
         this->prepare(problem->get_optimization_metric());
         this->prepare(problem->get_axioms());
     }
@@ -410,9 +417,9 @@ protected:
         return this->m_pddl_repositories.get_or_create_ground_literal(literal->is_negated(), this->transform(literal->get_atom()));
     }
     template<FunctionTag F>
-    GroundFunctionValue<F> transform_impl(GroundFunctionValue<F> numeric_fluent)
+    GroundFunctionValue<F> transform_impl(GroundFunctionValue<F> function_value)
     {
-        return { this->transform(numeric_fluent.first), numeric_fluent.second };
+        return this->m_pddl_repositories.get_or_create_ground_function_value(this->transform(function_value->get_function()), function_value->get_number());
     }
     template<DynamicFunctionTag F>
     EffectNumeric<F> transform_impl(EffectNumeric<F> effect)
@@ -443,6 +450,12 @@ protected:
         return this->m_pddl_repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
                                                                           this->transform(condition->get_left_function_expression()),
                                                                           this->transform(condition->get_right_function_expression()));
+    }
+    GroundNumericConstraint transform_impl(GroundNumericConstraint condition)
+    {
+        return this->m_pddl_repositories.get_or_create_ground_numeric_constraint(condition->get_binary_comparator(),
+                                                                                 this->transform(condition->get_left_function_expression()),
+                                                                                 this->transform(condition->get_right_function_expression()));
     }
     ExistentiallyQuantifiedConjunctiveCondition transform_impl(ExistentiallyQuantifiedConjunctiveCondition condition)
     {
@@ -579,6 +592,7 @@ protected:
                                                                this->transform(problem->get_goal_condition<Static>()),
                                                                this->transform(problem->get_goal_condition<Fluent>()),
                                                                this->transform(problem->get_goal_condition<Derived>()),
+                                                               this->transform(problem->get_numeric_goal_condition()),
                                                                this->transform(problem->get_optimization_metric()),
                                                                this->transform(problem->get_axioms()));
     }

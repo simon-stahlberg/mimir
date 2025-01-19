@@ -30,7 +30,9 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_constraint.hpp"
@@ -84,12 +86,15 @@ using FunctionRepository = SegmentedPDDLRepository<FunctionImpl<F>>;
 template<FunctionTag F>
 using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl<F>>;
 template<FunctionTag F>
+using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl<F>>;
+template<FunctionTag F>
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
 template<DynamicFunctionTag F>
 using EffectNumericRepository = SegmentedPDDLRepository<EffectNumericImpl<F>>;
 using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
 using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
 using NumericConstraintRepository = SegmentedPDDLRepository<NumericConstraintImpl>;
+using GroundNumericConstraintRepository = SegmentedPDDLRepository<GroundNumericConstraintImpl>;
 using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ExistentiallyQuantifiedConjunctiveConditionImpl>;
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
@@ -139,6 +144,9 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<GroundFunctionImpl<Static>>, GroundFunctionRepository<Static>>,
     boost::hana::pair<boost::hana::type<GroundFunctionImpl<Fluent>>, GroundFunctionRepository<Fluent>>,
     boost::hana::pair<boost::hana::type<GroundFunctionImpl<Auxiliary>>, GroundFunctionRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Static>>, GroundFunctionValueRepository<Static>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Fluent>>, GroundFunctionValueRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Auxiliary>>, GroundFunctionValueRepository<Auxiliary>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Static>>, FunctionSkeletonRepository<Static>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Fluent>>, FunctionSkeletonRepository<Fluent>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Auxiliary>>, FunctionSkeletonRepository<Auxiliary>>,
@@ -147,6 +155,7 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
     boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
     boost::hana::pair<boost::hana::type<NumericConstraintImpl>, NumericConstraintRepository>,
+    boost::hana::pair<boost::hana::type<GroundNumericConstraintImpl>, GroundNumericConstraintRepository>,
     boost::hana::pair<boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository>,
     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
@@ -287,6 +296,11 @@ public:
                                                        FunctionExpression function_expression_left,
                                                        FunctionExpression function_expression_right);
 
+    /// @brief Get or create a numeric constraint for the given parameters.
+    GroundNumericConstraint get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
+                                                                    GroundFunctionExpression function_expression_left,
+                                                                    GroundFunctionExpression function_expression_right);
+
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
     ExistentiallyQuantifiedConjunctiveCondition get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
                                                                                                              LiteralList<Static> static_conditions,
@@ -306,6 +320,10 @@ public:
 
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
+
+    /// @brief Get or create an optimization metric for the given parameters.
+    template<FunctionTag F>
+    GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
 
     /// @brief Get or create a domain for the given parameters.
     Domain get_or_create_domain(std::optional<fs::path> filepath,
@@ -336,6 +354,7 @@ public:
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
                                   GroundLiteralList<Derived> derived_goal_condition,
+                                  GroundNumericConstraintList numeric_goal_condition,
                                   OptimizationMetric optimization_metric,
                                   AxiomList axioms);
 
@@ -362,10 +381,10 @@ public:
 
     // GroundFunction
     template<FunctionTag F>
-    void get_ground_function_values(const FlatDoubleList& values, GroundFunctionValueList<F>& out_ground_function_values) const;
+    void get_ground_function_values(const FlatDoubleList& values, std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const;
 
     template<FunctionTag F>
-    GroundFunctionValueList<F> get_ground_function_values(const FlatDoubleList& values) const;
+    std::vector<std::pair<GroundFunction<F>, ContinuousCost>> get_ground_function_values(const FlatDoubleList& values) const;
 
     // Object
     Object get_object(size_t object_index) const;

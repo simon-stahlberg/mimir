@@ -26,6 +26,7 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -56,6 +57,7 @@ ProblemImpl::ProblemImpl(Index index,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
+                         GroundNumericConstraintList numeric_goal_condition,
                          OptimizationMetric optimization_metric,
                          AxiomList axioms) :
     m_index(index),
@@ -73,6 +75,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
     m_derived_goal_condition(std::move(derived_goal_condition)),
+    m_numeric_goal_condition(std::move(numeric_goal_condition)),
     m_optimization_metric(std::move(optimization_metric)),
     m_axioms(std::move(axioms)),
     m_problem_and_domain_derived_predicates(),
@@ -125,13 +128,13 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_function_values.begin(),
                           m_static_function_values.end(),
-                          [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); }));
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_fluent_function_values.begin(),
                           m_fluent_function_values.end(),
-                          [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); }));
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_auxiliary_function_values.begin(),
                           m_auxiliary_function_values.end(),
-                          [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); }));
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -141,19 +144,22 @@ ProblemImpl::ProblemImpl(Index index,
     assert(std::is_sorted(m_derived_goal_condition.begin(),
                           m_derived_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(std::is_sorted(m_numeric_goal_condition.begin(),
+                          m_numeric_goal_condition.end(),
+                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
     for (size_t i = 0; i < m_static_function_values.size(); ++i)
     {
-        assert(m_static_function_values[i].first->get_index() == i);
+        assert(m_static_function_values[i]->get_index() == i);
     }
     for (size_t i = 0; i < m_fluent_function_values.size(); ++i)
     {
-        assert(m_fluent_function_values[i].first->get_index() == i);
+        assert(m_fluent_function_values[i]->get_index() == i);
     }
     for (size_t i = 0; i < m_auxiliary_function_values.size(); ++i)
     {
-        assert(m_auxiliary_function_values[i].first->get_index() == i);
+        assert(m_auxiliary_function_values[i]->get_index() == i);
     }
 
     std::cout << "m_fluent_function_values: " << m_fluent_function_values << std::endl;
@@ -186,15 +192,15 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto static_numeric_value : m_static_function_values)
     {
-        m_static_function_to_value.push_back(static_numeric_value.second);
+        m_static_function_to_value.push_back(static_numeric_value->get_number());
     }
     for (const auto fluent_numeric_value : m_fluent_function_values)
     {
-        m_fluent_function_to_value.push_back(fluent_numeric_value.second);
+        m_fluent_function_to_value.push_back(fluent_numeric_value->get_number());
     }
     for (const auto auxiliary_numeric_value : m_auxiliary_function_values)
     {
-        m_auxiliary_function_to_value.push_back(auxiliary_numeric_value.second);
+        m_auxiliary_function_to_value.push_back(auxiliary_numeric_value->get_number());
     }
 
     /* Goal */
@@ -353,6 +359,8 @@ const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
 template const GroundLiteralList<Static>& ProblemImpl::get_goal_condition<Static>() const;
 template const GroundLiteralList<Fluent>& ProblemImpl::get_goal_condition<Fluent>() const;
 template const GroundLiteralList<Derived>& ProblemImpl::get_goal_condition<Derived>() const;
+
+const GroundNumericConstraintList& ProblemImpl::get_numeric_goal_condition() const { return m_numeric_goal_condition; }
 
 const OptimizationMetric& ProblemImpl::get_optimization_metric() const { return m_optimization_metric; }
 

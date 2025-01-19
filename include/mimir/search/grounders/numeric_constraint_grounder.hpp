@@ -44,7 +44,7 @@ public:
     NumericConstraintGrounder(NumericConstraintGrounder&& other) = default;
     NumericConstraintGrounder& operator=(NumericConstraintGrounder&& other) = default;
 
-    GroundConditionNumeric ground(NumericConstraint numeric_constraint, const ObjectList& binding);
+    GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
 
     /**
      * Getters

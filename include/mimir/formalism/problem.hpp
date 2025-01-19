@@ -21,6 +21,7 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/ground_numeric_constraint.hpp"
 
 namespace mimir
 {
@@ -42,6 +43,7 @@ private:
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
     GroundLiteralList<Derived> m_derived_goal_condition;
+    GroundNumericConstraintList m_numeric_goal_condition;
     OptimizationMetric m_optimization_metric;
     AxiomList m_axioms;
 
@@ -103,6 +105,7 @@ private:
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
                 GroundLiteralList<Derived> derived_goal_condition,
+                GroundNumericConstraintList numeric_goal_condition,
                 OptimizationMetric optimization_metric,
                 AxiomList axioms);
 
@@ -130,6 +133,7 @@ public:
     const GroundFunctionValueList<F>& get_function_values() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
+    const GroundNumericConstraintList& get_numeric_goal_condition() const;
     const OptimizationMetric& get_optimization_metric() const;
     const AxiomList& get_axioms() const;
 
@@ -150,6 +154,7 @@ public:
                                      std::as_const(m_static_goal_condition),
                                      std::as_const(m_fluent_goal_condition),
                                      std::as_const(m_derived_goal_condition),
+                                     std::as_const(m_numeric_goal_condition),
                                      std::as_const(m_optimization_metric),
                                      std::as_const(m_axioms));
     }

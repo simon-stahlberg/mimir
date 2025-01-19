@@ -31,16 +31,6 @@
 namespace mimir
 {
 
-/* GroundConditionNumeric */
-loki::BinaryComparatorEnum& GroundConditionNumeric::get_binary_comparator() { return m_binary_comparator; }
-loki::BinaryComparatorEnum GroundConditionNumeric::get_binary_comparator() const { return m_binary_comparator; }
-
-FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundConditionNumeric::get_left_function_expression() { return m_left_function_expression; }
-FlatExternalPtr<const GroundFunctionExpressionImpl> GroundConditionNumeric::get_left_function_expression() const { return m_left_function_expression; }
-
-FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundConditionNumeric::get_right_function_expression() { return m_right_function_expression; }
-FlatExternalPtr<const GroundFunctionExpressionImpl> GroundConditionNumeric::get_right_function_expression() const { return m_right_function_expression; }
-
 /* GroundConditionStrips */
 
 template<PredicateTag P>
@@ -174,7 +164,7 @@ bool GroundConditionStrips::is_applicable(const FlatDoubleList& fluent_numeric_v
 {
     for (const auto& constraint : get_numeric_constraints())
     {
-        if (!evaluate(constraint, fluent_numeric_variables))
+        if (!evaluate(constraint.get(), fluent_numeric_variables))
             return false;
     }
     return true;
@@ -421,12 +411,12 @@ ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& flu
     }
 }
 
-bool evaluate(GroundConditionNumeric effect, const FlatDoubleList& fluent_numeric_variables)
+bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    const auto left_value = evaluate(effect.get_left_function_expression().get(), fluent_numeric_variables);
-    const auto right_value = evaluate(effect.get_right_function_expression().get(), fluent_numeric_variables);
+    const auto left_value = evaluate(effect->get_left_function_expression(), fluent_numeric_variables);
+    const auto right_value = evaluate(effect->get_right_function_expression(), fluent_numeric_variables);
 
-    switch (effect.get_binary_comparator())
+    switch (effect->get_binary_comparator())
     {
         case loki::BinaryComparatorEnum::EQUAL:
         {
@@ -462,14 +452,6 @@ evaluate(GroundEffectNumeric<Auxiliary> effect, const FlatDoubleList& fluent_num
 /**
  * Pretty printing
  */
-
-std::ostream& operator<<(std::ostream& os, const GroundConditionNumeric& element)
-{
-    os << "(" << to_string(element.get_binary_comparator()) << " " << element.get_left_function_expression() << " " << element.get_right_function_expression()
-       << ")";
-
-    return os;
-}
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data)

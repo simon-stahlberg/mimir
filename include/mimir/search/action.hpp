@@ -31,23 +31,7 @@
 namespace mimir
 {
 
-struct GroundConditionNumeric
-{
-    loki::BinaryComparatorEnum m_binary_comparator;
-    FlatExternalPtr<const GroundFunctionExpressionImpl> m_left_function_expression;
-    FlatExternalPtr<const GroundFunctionExpressionImpl> m_right_function_expression;
-
-    loki::BinaryComparatorEnum& get_binary_comparator();
-    loki::BinaryComparatorEnum get_binary_comparator() const;
-
-    FlatExternalPtr<const GroundFunctionExpressionImpl>& get_left_function_expression();
-    FlatExternalPtr<const GroundFunctionExpressionImpl> get_left_function_expression() const;
-
-    FlatExternalPtr<const GroundFunctionExpressionImpl>& get_right_function_expression();
-    FlatExternalPtr<const GroundFunctionExpressionImpl> get_right_function_expression() const;
-};
-
-using GroundConditionNumericList = cista::offset::vector<GroundConditionNumeric>;
+using GroundConditionNumericList = cista::offset::vector<FlatExternalPtr<const GroundNumericConstraintImpl>>;
 
 struct GroundConditionStrips
 {
@@ -212,7 +196,7 @@ template<DynamicFunctionTag F>
 extern ContinuousCost
 evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
-extern bool evaluate(GroundConditionNumeric effect, const FlatDoubleList& fluent_numeric_variables);
+extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Mimir types
@@ -224,13 +208,8 @@ using GroundActionImplSet = mimir::buffering::UnorderedSet<GroundActionImpl>;
  * Pretty printing
  */
 
-std::ostream& operator<<(std::ostream& os, const GroundConditionNumeric& element);
-
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data);
-
-template<DynamicFunctionTag F>
-std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<F>& element);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, const PDDLRepositories&>& data);

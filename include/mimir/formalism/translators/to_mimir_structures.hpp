@@ -201,7 +201,9 @@ private:
     GroundFunctionExpression translate_grounded(const loki::FunctionExpressionImpl& function_expression);
     StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(const loki::FunctionImpl& function);
     StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(const loki::FunctionValueImpl& numeric_fluent);
-    std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>> translate_grounded(const loki::ConditionImpl& condition);
+    GroundNumericConstraint translate_grounded(const loki::ConditionNumericConstraintImpl& condition);
+    std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
+    translate_grounded(const loki::ConditionImpl& condition);
     OptimizationMetric translate_grounded(const loki::OptimizationMetricImpl& optimization_metric);
     Problem translate_grounded(const loki::ProblemImpl& problem);
 

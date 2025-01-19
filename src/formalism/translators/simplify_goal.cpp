@@ -36,6 +36,10 @@ static loki::Condition simplify_goal_condition(const loki::ConditionImpl& goal_c
     {
         return &goal_condition;
     }
+    else if (std::get_if<loki::ConditionNumericConstraint>(&goal_condition.get_condition()))
+    {
+        return &goal_condition;
+    }
     else if (const auto condition_and = std::get_if<loki::ConditionAnd>(&goal_condition.get_condition()))
     {
         auto parts = loki::ConditionList {};
