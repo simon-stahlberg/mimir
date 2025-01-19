@@ -19,6 +19,7 @@
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/ground_function.hpp"
 
@@ -158,7 +159,8 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             {
                 if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
                 {
-                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value.");
+                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value "
+                                           + to_string(arg->get_function()) + ".");
                 }
 
                 return fluent_numeric_variables[arg->get_function()->get_index()];
@@ -167,7 +169,8 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             {
                 if (arg->get_function()->get_index() >= auxiliary_numeric_variables.size())
                 {
-                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value.");
+                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value "
+                                           + to_string(arg->get_function()) + ".");
                 }
 
                 return auxiliary_numeric_variables[arg->get_function()->get_index()];
@@ -212,7 +215,8 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             {
                 if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
                 {
-                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value.");
+                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value "
+                                           + to_string(arg->get_function()) + ".");
                 }
 
                 return fluent_numeric_variables[arg->get_function()->get_index()];

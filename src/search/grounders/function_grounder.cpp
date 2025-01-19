@@ -31,7 +31,7 @@ FunctionGrounder::FunctionGrounder(Problem problem, std::shared_ptr<PDDLReposito
 }
 
 template<FunctionTag F>
-GroundFunction<F> FunctionGrounder::ground_function(Function<F> function, const ObjectList& binding)
+GroundFunction<F> FunctionGrounder::ground(Function<F> function, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundFunction<F>> {});
@@ -71,9 +71,9 @@ GroundFunction<F> FunctionGrounder::ground_function(Function<F> function, const 
     return grounded_function;
 }
 
-template GroundFunction<Static> FunctionGrounder::ground_function(Function<Static> function, const ObjectList& binding);
-template GroundFunction<Fluent> FunctionGrounder::ground_function(Function<Fluent> function, const ObjectList& binding);
-template GroundFunction<Auxiliary> FunctionGrounder::ground_function(Function<Auxiliary> function, const ObjectList& binding);
+template GroundFunction<Static> FunctionGrounder::ground(Function<Static> function, const ObjectList& binding);
+template GroundFunction<Fluent> FunctionGrounder::ground(Function<Fluent> function, const ObjectList& binding);
+template GroundFunction<Auxiliary> FunctionGrounder::ground(Function<Auxiliary> function, const ObjectList& binding);
 
 Problem FunctionGrounder::get_problem() const { return m_problem; }
 

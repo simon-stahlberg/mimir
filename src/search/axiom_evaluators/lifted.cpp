@@ -44,7 +44,9 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     /* 3. Initialize condition grounders */
     for (const auto& axiom : m_grounder->get_problem()->get_problem_and_domain_axioms())
     {
-        m_condition_grounders.emplace(axiom, SatisficingBindingGenerator(m_grounder->get_literal_grounder(), axiom->get_precondition()));
+        m_condition_grounders.emplace(
+            axiom,
+            SatisficingBindingGenerator(m_grounder->get_literal_grounder(), m_grounder->get_numeric_constraint_grounder(), axiom->get_precondition()));
     }
 }
 
@@ -100,7 +102,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                 {
                     const auto num_ground_axioms = m_grounder->get_num_ground_axioms();
 
-                    const auto ground_axiom = m_grounder->ground_axiom(axiom, std::move(binding));
+                    const auto ground_axiom = m_grounder->ground(axiom, std::move(binding));
 
                     assert(ground_axiom->is_applicable(m_grounder->get_problem(), dense_state));
 

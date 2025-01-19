@@ -44,7 +44,6 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
     m_applied_negative_effect_atoms(),
     m_state_fluent_atoms(),
     m_state_derived_atoms(),
-    m_state_fluent_numeric_variables(),
     m_state_auxiliary_numeric_variables()
 {
 }
@@ -94,11 +93,11 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
 
     auto& dense_fluent_atoms = m_dense_state_builder.get_atoms<Fluent>();
     auto& dense_derived_atoms = m_dense_state_builder.get_atoms<Derived>();
+    auto& dense_numeric_variables = m_dense_state_builder.get_numeric_variables();
     dense_fluent_atoms.unset_all();
     dense_derived_atoms.unset_all();
 
     const auto problem = m_axiom_evaluator->get_problem();
-    m_state_fluent_numeric_variables.clear();
     m_state_auxiliary_numeric_variables.clear();
 
     /* 1. Set state index */
@@ -112,9 +111,9 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
     /* 2. Construct non-extended state */
 
     /* 2.1 Numeric state variables */
-    m_state_fluent_numeric_variables = fluent_numeric_variables;
+    dense_numeric_variables = fluent_numeric_variables;
     m_state_auxiliary_numeric_variables = problem->get_function_to_value<Auxiliary>();
-    const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(m_state_fluent_numeric_variables);
+    const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_numeric_variables);
     const auto [auxiliary_numeric_iter, auxiliary_numeric_inserted] = m_auxiliary_numeric_variables_set.insert(m_state_auxiliary_numeric_variables);
 
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);

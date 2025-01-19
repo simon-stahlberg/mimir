@@ -24,8 +24,11 @@ Grounder::Grounder(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repos
     m_pddl_repositories(std::move(pddl_repositories)),
     m_literal_grounder(std::make_shared<LiteralGrounder>(m_problem, m_pddl_repositories)),
     m_function_grounder(std::make_shared<FunctionGrounder>(m_problem, m_pddl_repositories)),
-    m_action_grounder(std::make_shared<ActionGrounder>(m_literal_grounder, m_function_grounder)),
-    m_axiom_grounder(std::make_shared<AxiomGrounder>(m_literal_grounder))
+    m_function_expression_grounder(std::make_shared<FunctionExpressionGrounder>(m_function_grounder)),
+    m_numeric_constraint_grounder(std::make_shared<NumericConstraintGrounder>(m_function_expression_grounder)),
+    m_numeric_effect_grounder(std::make_shared<NumericEffectGrounder>(m_function_grounder, m_function_expression_grounder)),
+    m_action_grounder(std::make_shared<ActionGrounder>(m_literal_grounder, m_numeric_constraint_grounder, m_numeric_effect_grounder)),
+    m_axiom_grounder(std::make_shared<AxiomGrounder>(m_literal_grounder, m_numeric_constraint_grounder))
 {
 }
 
@@ -36,6 +39,12 @@ const std::shared_ptr<PDDLRepositories>& Grounder::get_pddl_repositories() const
 const std::shared_ptr<LiteralGrounder>& Grounder::get_literal_grounder() const { return m_literal_grounder; }
 
 const std::shared_ptr<FunctionGrounder>& Grounder::get_function_grounder() const { return m_function_grounder; }
+
+const std::shared_ptr<FunctionExpressionGrounder>& Grounder::get_function_expression_grounder() const { return m_function_expression_grounder; }
+
+const std::shared_ptr<NumericConstraintGrounder>& Grounder::get_numeric_constraint_grounder() const { return m_numeric_constraint_grounder; }
+
+const std::shared_ptr<NumericEffectGrounder>& Grounder::get_numeric_effect_grounder() const { return m_numeric_effect_grounder; }
 
 const std::shared_ptr<ActionGrounder>& Grounder::get_action_grounder() const { return m_action_grounder; }
 

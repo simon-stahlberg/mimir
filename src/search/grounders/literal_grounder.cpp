@@ -32,7 +32,7 @@ LiteralGrounder::LiteralGrounder(Problem problem, std::shared_ptr<PDDLRepositori
 }
 
 template<PredicateTag P>
-GroundLiteral<P> LiteralGrounder::ground_literal(Literal<P> literal, const ObjectList& binding)
+GroundLiteral<P> LiteralGrounder::ground(Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundLiteral<P>> {});
@@ -73,6 +73,10 @@ GroundLiteral<P> LiteralGrounder::ground_literal(Literal<P> literal, const Objec
     return grounded_literal;
 }
 
+template GroundLiteral<Static> LiteralGrounder::ground(Literal<Static> literal, const ObjectList& binding);
+template GroundLiteral<Fluent> LiteralGrounder::ground(Literal<Fluent> literal, const ObjectList& binding);
+template GroundLiteral<Derived> LiteralGrounder::ground(Literal<Derived> literal, const ObjectList& binding);
+
 template<PredicateTag P>
 void LiteralGrounder::ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
                                              FlatBitset& ref_positive_bitset,
@@ -81,7 +85,7 @@ void LiteralGrounder::ground_and_fill_bitset(const std::vector<Literal<P>>& lite
 {
     for (const auto& literal : literals)
     {
-        const auto grounded_literal = ground_literal(literal, binding);
+        const auto grounded_literal = ground(literal, binding);
 
         if (grounded_literal->is_negated())
         {
@@ -115,7 +119,7 @@ void LiteralGrounder::ground_and_fill_vector(const std::vector<Literal<P>>& lite
 {
     for (const auto& literal : literals)
     {
-        const auto grounded_literal = ground_literal(literal, binding);
+        const auto grounded_literal = ground(literal, binding);
 
         if (grounded_literal->is_negated())
         {

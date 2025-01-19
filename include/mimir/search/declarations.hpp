@@ -55,10 +55,13 @@ using StateMap = std::unordered_map<State, T>;
 struct DenseState;
 
 /* Grounders */
-class LiteralGrounder;
-class FunctionGrounder;
 class ActionGrounder;
 class AxiomGrounder;
+class FunctionExpressionGrounder;
+class FunctionGrounder;
+class LiteralGrounder;
+class NumericConstraintGrounder;
+class NumericEffectGrounder;
 class Grounder;
 
 /* DeleteRelaxedProblemExplorator */
@@ -87,8 +90,6 @@ class LiftedAxiomEvaluator;
 
 class AxiomEvaluatorWorkspace;
 class LiftedAxiomEvaluatorWorkspace;
-
-class AxiomGrounder;
 
 class IGroundedAxiomEvaluatorEventHandler;
 class ILiftedAxiomEvaluatorEventHandler;

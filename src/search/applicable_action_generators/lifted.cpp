@@ -52,7 +52,9 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : m_grounder->get_problem()->get_domain()->get_actions())
     {
-        m_action_precondition_grounders.emplace(action, SatisficingBindingGenerator(m_grounder->get_literal_grounder(), action->get_precondition()));
+        m_action_precondition_grounders.emplace(
+            action,
+            SatisficingBindingGenerator(m_grounder->get_literal_grounder(), m_grounder->get_numeric_constraint_grounder(), action->get_precondition()));
     }
 }
 
@@ -92,7 +94,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
         {
             const auto num_ground_actions = m_grounder->get_num_ground_actions();
 
-            const auto ground_action = m_grounder->ground_action(action, std::move(binding));
+            const auto ground_action = m_grounder->ground(action, std::move(binding));
 
             assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state));
 

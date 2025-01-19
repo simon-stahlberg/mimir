@@ -24,8 +24,9 @@
 
 namespace mimir
 {
-AxiomGrounder::AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder) :
+AxiomGrounder::AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder) :
     m_literal_grounder(std::move(literal_grounder)),
+    m_numeric_constraint_grounder(std::move(numeric_constraint_grounder)),
     m_axioms(),
     m_axioms_by_index(),
     m_per_axiom_data()
@@ -33,7 +34,7 @@ AxiomGrounder::AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder) 
 }
 
 /// @brief Ground an axiom and return a view onto it.
-GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
+GroundAxiom AxiomGrounder::ground(Axiom axiom, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -98,10 +99,9 @@ GroundAxiom AxiomGrounder::ground_axiom(Axiom axiom, ObjectList binding)
     // by restricting the binding to only the relevant part
     const auto effect_literal_arity = axiom->get_literal()->get_atom()->get_arity();
     const auto is_complete_binding_relevant_for_head = (binding.size() == effect_literal_arity);
-    const auto grounded_literal =
-        is_complete_binding_relevant_for_head ?
-            m_literal_grounder->ground_literal(axiom->get_literal(), binding) :
-            m_literal_grounder->ground_literal(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
+    const auto grounded_literal = is_complete_binding_relevant_for_head ?
+                                      m_literal_grounder->ground(axiom->get_literal(), binding) :
+                                      m_literal_grounder->ground(axiom->get_literal(), ObjectList(binding.begin(), binding.begin() + effect_literal_arity));
     assert(!grounded_literal->is_negated());
     axiom_builder.get_derived_effect().is_negated = false;
     axiom_builder.get_derived_effect().atom_index = grounded_literal->get_atom()->get_index();
@@ -133,6 +133,8 @@ Problem AxiomGrounder::get_problem() const { return m_literal_grounder->get_prob
 const std::shared_ptr<PDDLRepositories>& AxiomGrounder::get_pddl_repositories() const { return m_literal_grounder->get_pddl_repositories(); }
 
 const std::shared_ptr<LiteralGrounder>& AxiomGrounder::get_literal_grounder() const { return m_literal_grounder; }
+
+const std::shared_ptr<NumericConstraintGrounder>& AxiomGrounder::get_numeric_constraint_grounder() const { return m_numeric_constraint_grounder; }
 
 size_t AxiomGrounder::get_num_ground_axioms() const { return m_axioms_by_index.size(); }
 

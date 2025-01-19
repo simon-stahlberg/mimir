@@ -52,7 +52,7 @@ public:
     FunctionGrounder& operator=(FunctionGrounder&& other) = default;
 
     template<FunctionTag F>
-    GroundFunction<F> ground_function(Function<F> function, const ObjectList& binding);
+    GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
 
     /**
      * Getters

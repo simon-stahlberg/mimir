@@ -50,7 +50,7 @@ public:
     LiteralGrounder& operator=(LiteralGrounder&& other) = default;
 
     template<PredicateTag P>
-    GroundLiteral<P> ground_literal(Literal<P> literal, const ObjectList& binding);
+    GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
 
     template<PredicateTag P>
     void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,

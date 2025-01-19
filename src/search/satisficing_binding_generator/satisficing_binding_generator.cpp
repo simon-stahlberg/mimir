@@ -26,6 +26,7 @@
 #include "mimir/formalism/tags.hpp"
 #include "mimir/formalism/variable.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
+#include "mimir/search/grounders/numeric_constraint_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
 
@@ -75,7 +76,7 @@ bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>&
 {
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_literal_grounder->ground_literal(literal, binding);
+        auto ground_literal = m_literal_grounder->ground(literal, binding);
 
         if (ground_literal->is_negated() == atom_indices.get(ground_literal->get_atom()->get_index()))
         {
@@ -86,13 +87,27 @@ bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>&
     return true;
 }
 
+bool SatisficingBindingGenerator::is_valid_dynamic_binding(const NumericConstraintList& constraints,
+                                                           const FlatDoubleList& fluent_numeric_variables,
+                                                           const ObjectList& binding)
+{
+    for (const auto& constraint : constraints)
+    {
+        if (!evaluate(m_numeric_constraint_grounder->ground(constraint, binding), fluent_numeric_variables))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
 bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
     const auto problem = m_literal_grounder->get_problem();
 
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_literal_grounder->ground_literal(literal, binding);
+        auto ground_literal = m_literal_grounder->ground(literal, binding);
 
         if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
         {
@@ -105,9 +120,11 @@ bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Stat
 
 bool SatisficingBindingGenerator::is_valid_binding(const DenseState& dense_state, const ObjectList& binding)
 {
-    return is_valid_static_binding(m_precondition->get_literals<Static>(), binding)                                          // We need to test all
-           && is_valid_dynamic_binding(m_precondition->get_literals<Fluent>(), dense_state.get_atoms<Fluent>(), binding)     // types of conditions
-           && is_valid_dynamic_binding(m_precondition->get_literals<Derived>(), dense_state.get_atoms<Derived>(), binding);  // due to over-approx.
+    //  We need to test all types of conditions due to over-approx.
+    return is_valid_static_binding(m_precondition->get_literals<Static>(), binding)
+           && is_valid_dynamic_binding(m_precondition->get_literals<Fluent>(), dense_state.get_atoms<Fluent>(), binding)
+           && is_valid_dynamic_binding(m_precondition->get_literals<Derived>(), dense_state.get_atoms<Derived>(), binding)
+           && is_valid_dynamic_binding(m_precondition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding);
 }
 
 mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(const DenseState& dense_state)
@@ -206,15 +223,21 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Den
 }
 
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
+                                                         std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
                                                          ExistentiallyQuantifiedConjunctiveCondition precondition) :
-    SatisficingBindingGenerator(std::move(literal_grounder), precondition, std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
+    SatisficingBindingGenerator(std::move(literal_grounder),
+                                std::move(numeric_constraint_grounder),
+                                precondition,
+                                std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
 {
 }
 
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
+                                                         std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
                                                          ExistentiallyQuantifiedConjunctiveCondition precondition,
                                                          std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
     m_literal_grounder(literal_grounder),
+    m_numeric_constraint_grounder(numeric_constraint_grounder),
     m_precondition(precondition),
     m_event_handler(event_handler),
     m_static_consistency_graph(m_literal_grounder->get_problem(), 0, m_precondition->get_parameters().size(), m_precondition->get_literals<Static>()),
@@ -294,19 +317,19 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseStat
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : m_precondition->get_literals<Static>())
         {
-            static_grounded_literals.emplace_back(m_literal_grounder->ground_literal(static_literal, binding));
+            static_grounded_literals.emplace_back(m_literal_grounder->ground(static_literal, binding));
         }
 
         GroundLiteralList<Fluent> fluent_grounded_literals;
         for (const auto& fluent_literal : m_precondition->get_literals<Fluent>())
         {
-            fluent_grounded_literals.emplace_back(m_literal_grounder->ground_literal(fluent_literal, binding));
+            fluent_grounded_literals.emplace_back(m_literal_grounder->ground(fluent_literal, binding));
         }
 
         GroundLiteralList<Derived> derived_grounded_literals;
         for (const auto& derived_literal : m_precondition->get_literals<Derived>())
         {
-            derived_grounded_literals.emplace_back(m_literal_grounder->ground_literal(derived_literal, binding));
+            derived_grounded_literals.emplace_back(m_literal_grounder->ground(derived_literal, binding));
         }
 
         co_yield std::make_pair(binding, std::make_tuple(static_grounded_literals, fluent_grounded_literals, derived_grounded_literals));

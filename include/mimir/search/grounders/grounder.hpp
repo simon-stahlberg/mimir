@@ -22,8 +22,11 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/grounders/axiom_grounder.hpp"
+#include "mimir/search/grounders/function_expression_grounder.hpp"
 #include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
+#include "mimir/search/grounders/numeric_constraint_grounder.hpp"
+#include "mimir/search/grounders/numeric_effect_grounder.hpp"
 
 namespace mimir
 {
@@ -36,6 +39,9 @@ private:
 
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<FunctionGrounder> m_function_grounder;
+    std::shared_ptr<FunctionExpressionGrounder> m_function_expression_grounder;
+    std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
+    std::shared_ptr<NumericEffectGrounder> m_numeric_effect_grounder;
     std::shared_ptr<ActionGrounder> m_action_grounder;
     std::shared_ptr<AxiomGrounder> m_axiom_grounder;
 
@@ -59,6 +65,9 @@ public:
 
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
     const std::shared_ptr<FunctionGrounder>& get_function_grounder() const;
+    const std::shared_ptr<FunctionExpressionGrounder>& get_function_expression_grounder() const;
+    const std::shared_ptr<NumericConstraintGrounder>& get_numeric_constraint_grounder() const;
+    const std::shared_ptr<NumericEffectGrounder>& get_numeric_effect_grounder() const;
     const std::shared_ptr<ActionGrounder>& get_action_grounder() const;
     const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const;
 };

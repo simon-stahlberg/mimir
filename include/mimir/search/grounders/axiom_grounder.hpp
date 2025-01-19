@@ -30,6 +30,7 @@ class AxiomGrounder
 {
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
+    std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
 
     // TODO: Store and index ground axioms per lifted axiom?
     // Will make multi threading way easier...
@@ -42,7 +43,7 @@ private:
     std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
 
 public:
-    explicit AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder);
+    AxiomGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder);
 
     // Uncopyable
     AxiomGrounder(const AxiomGrounder& other) = delete;
@@ -52,7 +53,7 @@ public:
     AxiomGrounder& operator=(AxiomGrounder&& other) = default;
 
     /// @brief Ground an axiom and return a view onto it.
-    GroundAxiom ground_axiom(Axiom axiom, ObjectList binding);
+    GroundAxiom ground(Axiom axiom, ObjectList binding);
 
     /**
      * Getters
@@ -61,6 +62,7 @@ public:
     Problem get_problem() const;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
+    const std::shared_ptr<NumericConstraintGrounder>& get_numeric_constraint_grounder() const;
 
     const GroundAxiomList& get_ground_axioms() const;
     GroundAxiom get_ground_axiom(Index axiom_index) const;

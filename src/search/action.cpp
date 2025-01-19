@@ -375,7 +375,8 @@ ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& flu
     {
         if (effect.get_function()->get_index() >= fluent_numeric_variables.size())
         {
-            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value.");
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value "
+                                   + to_string(effect.get_function()) + ".");
         }
         old_value = fluent_numeric_variables.at(effect.get_function()->get_index());
     }
@@ -383,8 +384,8 @@ ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& flu
     {
         if (effect.get_function()->get_index() >= auxiliary_numeric_variables.size())
         {
-            std::cout << effect.get_function() << std::endl;
-            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value.");
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value "
+                                   + to_string(effect.get_function()) + ".");
         }
         old_value = auxiliary_numeric_variables.at(effect.get_function()->get_index());
     }

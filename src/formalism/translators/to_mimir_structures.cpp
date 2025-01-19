@@ -764,6 +764,7 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
 
     /* Instantiate STRIPS effect. */
     auto& [strips_effect_fluent_literals, strips_effect_fluent_numeric_effects, strips_effect_auxiliary_numeric_effects] = effect_strips_data;
+
     // Instantiate total cost effect if necessary.
     std::visit(
         [&](auto&& arg)

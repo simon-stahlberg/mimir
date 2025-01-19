@@ -142,7 +142,7 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
         for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(pddl_repositories->get_axiom(axiom->get_axiom_index())))
         {
             auto axiom_arguments = pddl_repositories->get_objects_from_indices(axiom->get_object_indices());
-            auto grounded_axiom = m_grounder->get_axiom_grounder()->ground_axiom(unrelaxed_axiom, std::move(axiom_arguments));
+            auto grounded_axiom = m_grounder->get_axiom_grounder()->ground(unrelaxed_axiom, std::move(axiom_arguments));
             if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
@@ -180,7 +180,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
         for (const auto& unrelaxed_action : m_delete_relax_transformer.get_unrelaxed_actions(pddl_repositories->get_action(action->get_action_index())))
         {
             auto action_arguments = pddl_repositories->get_objects_from_indices(action->get_object_indices());
-            auto grounded_action = m_grounder->get_action_grounder()->ground_action(unrelaxed_action, std::move(action_arguments));
+            auto grounded_action = m_grounder->get_action_grounder()->ground(unrelaxed_action, std::move(action_arguments));
             if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);

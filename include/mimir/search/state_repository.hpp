@@ -53,7 +53,6 @@ private:
 
     FlatIndexList m_state_fluent_atoms;
     FlatIndexList m_state_derived_atoms;
-    FlatDoubleList m_state_fluent_numeric_variables;
     FlatDoubleList m_state_auxiliary_numeric_variables;
 
 public:

@@ -30,7 +30,8 @@ class ActionGrounder
 {
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
-    std::shared_ptr<FunctionGrounder> m_function_grounder;
+    std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
+    std::shared_ptr<NumericEffectGrounder> m_numeric_effect_grounder;
 
     GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
@@ -49,7 +50,9 @@ private:
 
 public:
     /// @brief Simplest construction
-    ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<FunctionGrounder> function_grounder);
+    ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder,
+                   std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
+                   std::shared_ptr<NumericEffectGrounder> numeric_effect_grounder);
 
     // Uncopyable
     ActionGrounder(const ActionGrounder& other) = delete;
@@ -59,7 +62,7 @@ public:
     ActionGrounder& operator=(ActionGrounder&& other) = default;
 
     /// @brief Ground an action and return a view onto it.
-    GroundAction ground_action(Action action, ObjectList binding);
+    GroundAction ground(Action action, ObjectList binding);
 
     /**
      * Getters
@@ -68,7 +71,8 @@ public:
     Problem get_problem() const;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
-    const std::shared_ptr<FunctionGrounder>& get_function_grounder() const;
+    const std::shared_ptr<NumericConstraintGrounder>& get_numeric_constraint_grounder() const;
+    const std::shared_ptr<NumericEffectGrounder>& get_numeric_effect_grounder() const;
 
     const GroundActionList& get_ground_actions() const;
     GroundAction get_ground_action(Index action_index) const;

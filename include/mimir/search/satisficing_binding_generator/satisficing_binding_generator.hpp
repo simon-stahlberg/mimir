@@ -45,6 +45,7 @@ class SatisficingBindingGenerator
 {
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
+    std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
     ExistentiallyQuantifiedConjunctiveCondition m_precondition;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
@@ -66,6 +67,8 @@ private:
     template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
 
+    bool is_valid_dynamic_binding(const NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+
     bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
 
     bool is_valid_binding(const DenseState& dense_state, const ObjectList& binding);
@@ -79,9 +82,12 @@ private:
     general_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
 
 public:
-    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder, ExistentiallyQuantifiedConjunctiveCondition precondition);
+    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
+                                std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
+                                ExistentiallyQuantifiedConjunctiveCondition precondition);
 
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
+                                std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
                                 ExistentiallyQuantifiedConjunctiveCondition precondition,
                                 std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 

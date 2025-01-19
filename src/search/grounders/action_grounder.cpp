@@ -23,115 +23,21 @@
 #include "mimir/search/grounders/function_grounder.hpp"
 #include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/grounders/literal_grounder.hpp"
+#include "mimir/search/grounders/numeric_constraint_grounder.hpp"
+#include "mimir/search/grounders/numeric_effect_grounder.hpp"
 
 #include <bit>
 
 namespace mimir
 {
 
-class GroundAndEvaluateFunctionExpressionVisitor
-{
-private:
-    Problem m_problem;
-    const ObjectList& m_binding;
-    FunctionGrounder& m_function_grounder;
-    PDDLRepositories& m_pddl_repositories;
-
-public:
-    GroundAndEvaluateFunctionExpressionVisitor(Problem problem, const ObjectList& binding, FunctionGrounder& ref_function_grounder) :
-        m_problem(problem),
-        m_binding(binding),
-        m_function_grounder(ref_function_grounder),
-        m_pddl_repositories(*m_function_grounder.get_pddl_repositories())
-    {
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionImpl& expr)
-    {
-        return std::visit([this](auto&& arg) -> GroundFunctionExpression { return (*this)(*arg); }, expr.get_variant());
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionNumberImpl& expr)
-    {
-        return m_pddl_repositories.get_or_create_ground_function_expression(
-            m_pddl_repositories.get_or_create_ground_function_expression_number(expr.get_number()));
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionBinaryOperatorImpl& expr)
-    {
-        const auto op = expr.get_binary_operator();
-        const auto ground_lhs = (*this)(*expr.get_left_function_expression());
-        const auto ground_rhs = (*this)(*expr.get_right_function_expression());
-        if (std::holds_alternative<GroundFunctionExpressionNumber>(ground_lhs->get_variant())
-            && std::holds_alternative<GroundFunctionExpressionNumber>(ground_rhs->get_variant()))
-        {
-            return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
-                evaluate_binary(op,
-                                std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number(),
-                                std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number())));
-        }
-
-        return m_pddl_repositories.get_or_create_ground_function_expression(
-            m_pddl_repositories.get_or_create_ground_function_expression_binary_operator(op, ground_lhs, ground_rhs));
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionMultiOperatorImpl& expr)
-    {
-        const auto op = expr.get_multi_operator();
-        auto fexpr_numbers = GroundFunctionExpressionList {};
-        auto fexpr_others = GroundFunctionExpressionList {};
-        for (const auto& child_fexpr : expr.get_function_expressions())
-        {
-            const auto ground_child_fexpr = (*this)(*child_fexpr);
-            std::holds_alternative<GroundFunctionExpressionNumber>(ground_child_fexpr->get_variant()) ? fexpr_numbers.push_back(ground_child_fexpr) :
-                                                                                                        fexpr_others.push_back(ground_child_fexpr);
-        }
-
-        if (!fexpr_numbers.empty())
-        {
-            const auto value =
-                std::accumulate(std::next(fexpr_numbers.begin()),  // Start from the second expression
-                                fexpr_numbers.end(),
-                                std::get<GroundFunctionExpressionNumber>(fexpr_numbers.front()->get_variant())->get_number(),  // Initial bounds
-                                [op](const auto& value, const auto& child_expr)
-                                { return evaluate_multi(op, value, std::get<GroundFunctionExpressionNumber>(child_expr->get_variant())->get_number()); });
-
-            fexpr_others.push_back(
-                m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(value)));
-        }
-
-        return m_pddl_repositories.get_or_create_ground_function_expression(
-            m_pddl_repositories.get_or_create_ground_function_expression_multi_operator(op, fexpr_others));
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionMinusImpl& expr)
-    {
-        const auto ground_fexpr = (*this)(*expr.get_function_expression());
-
-        return std::holds_alternative<GroundFunctionExpressionNumber>(ground_fexpr->get_variant()) ?
-                   m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
-                       -std::get<GroundFunctionExpressionNumber>(ground_fexpr->get_variant())->get_number())) :
-                   ground_fexpr;
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionFunctionImpl<Fluent>& expr)
-    {
-        return m_pddl_repositories.get_or_create_ground_function_expression(
-            m_pddl_repositories.template get_or_create_ground_function_expression_function<Fluent>(
-                m_function_grounder.ground_function(expr.get_function(), m_binding)));
-    }
-
-    GroundFunctionExpression operator()(const FunctionExpressionFunctionImpl<Static>& expr)
-    {
-        return m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_number(
-            m_problem->get_function_value<Static>(m_function_grounder.ground_function(expr.get_function(), m_binding))));
-    }
-};
-
 /// @brief Simplest construction
-ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder, std::shared_ptr<FunctionGrounder> function_grounder) :
+ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder,
+                               std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
+                               std::shared_ptr<NumericEffectGrounder> numeric_effect_grounder) :
     m_literal_grounder(std::move(literal_grounder)),
-    m_function_grounder(std::move(function_grounder)),
+    m_numeric_constraint_grounder(std::move(numeric_constraint_grounder)),
+    m_numeric_effect_grounder(std::move(numeric_effect_grounder)),
     m_actions(),
     m_actions_by_index(),
     m_per_action_datas()
@@ -177,11 +83,7 @@ void ActionGrounder::ground_and_fill_vector(const NumericConstraintList& numeric
 {
     for (const auto& condition : numeric_constraints)
     {
-        ref_numeric_constraints.emplace_back(condition->get_binary_comparator(),
-                                             GroundAndEvaluateFunctionExpressionVisitor(m_function_grounder->get_problem(), binding, *m_function_grounder)(
-                                                 *condition->get_left_function_expression()),
-                                             GroundAndEvaluateFunctionExpressionVisitor(m_function_grounder->get_problem(), binding, *m_function_grounder)(
-                                                 *condition->get_right_function_expression()));
+        ref_numeric_constraints.push_back(m_numeric_constraint_grounder->ground(condition, binding));
     }
 }
 
@@ -192,10 +94,7 @@ void ActionGrounder::ground_and_fill_vector(const EffectNumericList<F>& numeric_
 {
     for (const auto& effect : numeric_effects)
     {
-        ref_numeric_effects.emplace_back(
-            effect->get_assign_operator(),
-            m_function_grounder->ground_function(effect->get_function(), binding),
-            GroundAndEvaluateFunctionExpressionVisitor(m_function_grounder->get_problem(), binding, *m_function_grounder)(*effect->get_function_expression()));
+        ref_numeric_effects.push_back(m_numeric_effect_grounder->ground(effect, binding));
     }
 }
 
@@ -206,7 +105,7 @@ template void ActionGrounder::ground_and_fill_vector(const EffectNumericList<Aux
                                                      GroundEffectNumericList<Auxiliary>& ref_numeric_effects,
                                                      const ObjectList& binding);
 
-GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
+GroundAction ActionGrounder::ground(Action action, ObjectList binding)
 {
     /* 1. Check if grounding is cached */
 
@@ -462,7 +361,9 @@ const std::shared_ptr<PDDLRepositories>& ActionGrounder::get_pddl_repositories()
 
 const std::shared_ptr<LiteralGrounder>& ActionGrounder::get_literal_grounder() const { return m_literal_grounder; }
 
-const std::shared_ptr<FunctionGrounder>& ActionGrounder::get_function_grounder() const { return m_function_grounder; }
+const std::shared_ptr<NumericConstraintGrounder>& ActionGrounder::get_numeric_constraint_grounder() const { return m_numeric_constraint_grounder; }
+
+const std::shared_ptr<NumericEffectGrounder>& ActionGrounder::get_numeric_effect_grounder() const { return m_numeric_effect_grounder; }
 
 const GroundActionList& ActionGrounder::get_ground_actions() const { return m_actions_by_index; }
 
