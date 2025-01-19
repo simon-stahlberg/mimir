@@ -79,7 +79,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     m_grounder(std::move(grounder)),
     m_delete_relax_transformer(*m_grounder->get_pddl_repositories(),
                                false),  // We have to use input grounders pddl_repositories to map the relaxed actions/axioms back to unrelaxed actions/axioms
-    m_delete_free_problem(m_delete_relax_transformer.run(*m_grounder->get_problem())),
+    m_delete_free_problem(m_delete_relax_transformer.run(m_grounder->get_problem())),
     m_delete_free_grounder(
         std::make_shared<Grounder>(m_delete_free_problem,
                                    m_grounder->get_pddl_repositories())),  // important to instantiate the grounder for the delete-free problem!

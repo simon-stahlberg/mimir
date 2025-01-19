@@ -26,7 +26,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -126,13 +125,13 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_function_values.begin(),
                           m_static_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_function()->get_index() < r->get_function()->get_index(); }));
+                          [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); }));
     assert(std::is_sorted(m_fluent_function_values.begin(),
                           m_fluent_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_function()->get_index() < r->get_function()->get_index(); }));
+                          [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); }));
     assert(std::is_sorted(m_auxiliary_function_values.begin(),
                           m_auxiliary_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_function()->get_index() < r->get_function()->get_index(); }));
+                          [](const auto& l, const auto& r) { return l.first->get_index() < r.first->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -146,15 +145,15 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (size_t i = 0; i < m_static_function_values.size(); ++i)
     {
-        assert(m_static_function_values[i]->get_function()->get_index() == i);
+        assert(m_static_function_values[i].first->get_index() == i);
     }
     for (size_t i = 0; i < m_fluent_function_values.size(); ++i)
     {
-        assert(m_fluent_function_values[i]->get_function()->get_index() == i);
+        assert(m_fluent_function_values[i].first->get_index() == i);
     }
     for (size_t i = 0; i < m_auxiliary_function_values.size(); ++i)
     {
-        assert(m_auxiliary_function_values[i]->get_function()->get_index() == i);
+        assert(m_auxiliary_function_values[i].first->get_index() == i);
     }
 
     std::cout << "m_fluent_function_values: " << m_fluent_function_values << std::endl;
@@ -187,15 +186,15 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto static_numeric_value : m_static_function_values)
     {
-        m_static_function_to_value.push_back(static_numeric_value->get_number());
+        m_static_function_to_value.push_back(static_numeric_value.second);
     }
     for (const auto fluent_numeric_value : m_fluent_function_values)
     {
-        m_fluent_function_to_value.push_back(fluent_numeric_value->get_number());
+        m_fluent_function_to_value.push_back(fluent_numeric_value.second);
     }
     for (const auto auxiliary_numeric_value : m_auxiliary_function_values)
     {
-        m_auxiliary_function_to_value.push_back(auxiliary_numeric_value->get_number());
+        m_auxiliary_function_to_value.push_back(auxiliary_numeric_value.second);
     }
 
     /* Goal */

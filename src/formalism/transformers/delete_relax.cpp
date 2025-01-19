@@ -42,7 +42,7 @@ EffectConditionalList DeleteRelaxTransformer::transform_impl(const EffectConditi
     auto positive_conditional_effects = EffectConditionalList {};
     for (const auto& conditional_effect : effects)
     {
-        const auto positive_conditional_effect = this->transform(*conditional_effect);
+        const auto positive_conditional_effect = this->transform(conditional_effect);
         if (positive_conditional_effect)
         {
             positive_conditional_effects.push_back(positive_conditional_effect);
@@ -56,7 +56,7 @@ ActionList DeleteRelaxTransformer::transform_impl(const ActionList& actions)
     auto relaxed_actions = ActionList {};
     for (const auto& action : actions)
     {
-        const auto relaxed_action = this->transform(*action);
+        const auto relaxed_action = this->transform(action);
         if (relaxed_action)
         {
             relaxed_actions.push_back(relaxed_action);
@@ -70,7 +70,7 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     auto relaxed_axioms = AxiomList {};
     for (const auto& axiom : axioms)
     {
-        const auto relaxed_axiom = this->transform(*axiom);
+        const auto relaxed_axiom = this->transform(axiom);
         if (relaxed_axiom)
         {
             relaxed_axioms.push_back(relaxed_axiom);
@@ -79,12 +79,12 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
-ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
+ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_impl(ExistentiallyQuantifiedConjunctiveCondition condition)
 {
-    auto parameters = this->transform(condition.get_parameters());
-    auto static_literals = filter_positive_literals(this->transform(condition.get_literals<Static>()));
-    auto fluent_literals = filter_positive_literals(this->transform(condition.get_literals<Fluent>()));
-    auto derived_literals = filter_positive_literals(this->transform(condition.get_literals<Derived>()));
+    auto parameters = this->transform(condition->get_parameters());
+    auto static_literals = filter_positive_literals(this->transform(condition->get_literals<Static>()));
+    auto fluent_literals = filter_positive_literals(this->transform(condition->get_literals<Fluent>()));
+    auto derived_literals = filter_positive_literals(this->transform(condition->get_literals<Derived>()));
     auto numeric_constraints = NumericConstraintList {};
 
     return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
@@ -94,9 +94,9 @@ ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_im
                                                                                                   std::move(numeric_constraints));
 }
 
-EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effect)
+EffectStrips DeleteRelaxTransformer::transform_impl(EffectStrips effect)
 {
-    auto fluent_literals = filter_positive_literals(this->transform(effect.get_effects()));
+    auto fluent_literals = filter_positive_literals(this->transform(effect->get_effects()));
     auto fluent_numeric_effects = EffectNumericList<Fluent> {};
     auto auxiliary_numeric_effects = EffectNumericList<Auxiliary> {};
 
@@ -105,10 +105,10 @@ EffectStrips DeleteRelaxTransformer::transform_impl(const EffectStripsImpl& effe
                                                                  std::move(auxiliary_numeric_effects));
 }
 
-EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditionalImpl& effect)
+EffectConditional DeleteRelaxTransformer::transform_impl(EffectConditional effect)
 {
     auto transformed_literals = LiteralList<Fluent> {};
-    for (const auto& literal : this->transform(effect.get_effects()))
+    for (const auto& literal : this->transform(effect->get_effects()))
     {
         if (literal)
         {
@@ -120,13 +120,13 @@ EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditional
         return nullptr;
     }
 
-    auto parameters = this->transform(effect.get_parameters());
-    auto static_conditions = filter_positive_literals(this->transform(effect.get_conditions<Static>()));
-    auto fluent_conditions = filter_positive_literals(this->transform(effect.get_conditions<Fluent>()));
-    auto derived_conditions = filter_positive_literals(this->transform(effect.get_conditions<Derived>()));
+    auto parameters = this->transform(effect->get_parameters());
+    auto static_conditions = filter_positive_literals(this->transform(effect->get_conditions<Static>()));
+    auto fluent_conditions = filter_positive_literals(this->transform(effect->get_conditions<Fluent>()));
+    auto derived_conditions = filter_positive_literals(this->transform(effect->get_conditions<Derived>()));
     auto numeric_constraints = NumericConstraintList {};
-    auto fluent_numeric_effects = this->transform(effect.get_numeric_effects<Fluent>());
-    auto auxiliary_numeric_effects = this->transform(effect.get_numeric_effects<Auxiliary>());
+    auto fluent_numeric_effects = this->transform(effect->get_numeric_effects<Fluent>());
+    auto auxiliary_numeric_effects = this->transform(effect->get_numeric_effects<Auxiliary>());
 
     return this->m_pddl_repositories.get_or_create_conditional_effect(parameters,
                                                                       static_conditions,
@@ -138,57 +138,39 @@ EffectConditional DeleteRelaxTransformer::transform_impl(const EffectConditional
                                                                       auxiliary_numeric_effects);
 }
 
-Action DeleteRelaxTransformer::transform_impl(const ActionImpl& action)
+Action DeleteRelaxTransformer::transform_impl(Action action)
 {
-    auto strips_effect = this->transform(*action.get_strips_effect());
-    auto conditional_effects = this->transform(action.get_conditional_effects());
+    auto strips_effect = this->transform(action->get_strips_effect());
+    auto conditional_effects = this->transform(action->get_conditional_effects());
 
     if (m_remove_useless_actions_and_axioms && strips_effect->get_effects().empty() && conditional_effects.empty())
     {
         return nullptr;
     }
 
-    auto precondition = this->transform(*action.get_precondition());
+    auto precondition = this->transform(action->get_precondition());
 
     auto delete_relaxed_action =
-        this->m_pddl_repositories.get_or_create_action(action.get_name(), action.get_original_arity(), precondition, strips_effect, conditional_effects);
+        this->m_pddl_repositories.get_or_create_action(action->get_name(), action->get_original_arity(), precondition, strips_effect, conditional_effects);
 
-    m_delete_to_normal_actions[delete_relaxed_action].push_back(&action);
+    m_delete_to_normal_actions[delete_relaxed_action].push_back(action);
 
     return delete_relaxed_action;
 }
 
-Axiom DeleteRelaxTransformer::transform_impl(const AxiomImpl& axiom)
+Axiom DeleteRelaxTransformer::transform_impl(Axiom axiom)
 {
-    auto precondition = this->transform(*axiom.get_precondition());
-    const auto literal = this->transform(*axiom.get_literal());
+    auto precondition = this->transform(axiom->get_precondition());
+    const auto literal = this->transform(axiom->get_literal());
 
     auto delete_relaxed_axiom = this->m_pddl_repositories.get_or_create_axiom(precondition, literal);
 
-    m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(&axiom);
+    m_delete_to_normal_axioms[delete_relaxed_axiom].push_back(axiom);
 
     return delete_relaxed_axiom;
 }
 
-Domain DeleteRelaxTransformer::transform_impl(const DomainImpl& domain)
-{
-    auto transformed_domain = this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
-                                                                             domain.get_name(),
-                                                                             this->transform(*domain.get_requirements()),
-                                                                             this->transform(domain.get_constants()),
-                                                                             this->transform(domain.get_predicates<Static>()),
-                                                                             this->transform(domain.get_predicates<Fluent>()),
-                                                                             this->transform(domain.get_predicates<Derived>()),
-                                                                             this->transform(domain.get_functions<Static>()),
-                                                                             this->transform(domain.get_functions<Fluent>()),
-                                                                             this->transform(domain.get_functions<Auxiliary>()),
-                                                                             this->transform(domain.get_actions()),
-                                                                             this->transform(domain.get_axioms()));
-
-    return transformed_domain;
-}
-
-Problem DeleteRelaxTransformer::run_impl(const ProblemImpl& problem)
+Problem DeleteRelaxTransformer::run_impl(Problem problem)
 {
     this->prepare(problem);
     return this->transform(problem);

@@ -176,41 +176,7 @@ void ToMimirStructures::prepare_lifted(const loki::EffectImpl& effect)
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
         {
             // Found function affected by an effect
-            const auto name = (*effect_numeric)->get_function()->get_function_skeleton()->get_name();
-            m_fluent_functions.insert(name);
-            switch ((*effect_numeric)->get_assign_operator())
-            {
-                case loki::AssignOperatorEnum::ASSIGN:
-                {
-                    m_increasing_functions.insert(name);
-                    m_decreasing_functions.insert(name);
-                    break;
-                }
-                case loki::AssignOperatorEnum::DECREASE:
-                {
-                    m_decreasing_functions.insert(name);
-                    break;
-                }
-                case loki::AssignOperatorEnum::INCREASE:
-                {
-                    m_increasing_functions.insert(name);
-                    break;
-                }
-                case loki::AssignOperatorEnum::SCALE_DOWN:
-                {
-                    m_decreasing_functions.insert(name);
-                    break;
-                }
-                case loki::AssignOperatorEnum::SCALE_UP:
-                {
-                    m_increasing_functions.insert(name);
-                    break;
-                }
-                default:
-                {
-                    throw std::logic_error("ToMimirStructures::prepare_lifted(effect): Unexpected loki::AssignOperatorEnum.");
-                }
-            }
+            m_fluent_functions.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
 
             prepare_lifted(*(*effect_numeric)->get_function_expression());
         }
@@ -343,67 +309,7 @@ void ToMimirStructures::prepare_grounded(const loki::ConditionImpl& condition)
         throw std::logic_error("Expected conjunctive condition.");
     }
 }
-void ToMimirStructures::prepare_grounded(const loki::OptimizationMetricImpl& metric)
-{
-    prepare_grounded(*metric.get_function_expression());
-
-    const auto func_test_monotonicity = [&]() -> bool
-    {
-        return std::visit(
-            [&](auto&& arg) -> bool
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, loki::FunctionExpressionNumber>)
-                {
-                    return true;
-                }
-                else if constexpr (std::is_same_v<T, loki::FunctionExpressionBinaryOperator>)
-                {
-                    if (arg->get_binary_operator() == loki::BinaryOperatorEnum::MINUS)
-                    {
-                        return false;
-                    }
-                    return true;
-                }
-                else if constexpr (std::is_same_v<T, loki::FunctionExpressionMultiOperator>)
-                {
-                    return true;
-                }
-                else if constexpr (std::is_same_v<T, loki::FunctionExpressionMinus>)
-                {
-                    return false;
-                }
-                else if constexpr (std::is_same_v<T, loki::FunctionExpressionFunction>)
-                {
-                    if (metric.get_optimization_metric() == loki::OptimizationMetricEnum::MINIMIZE)
-                    {
-                        if (m_decreasing_functions.contains(arg->get_function()->get_function_skeleton()->get_name()))
-                            return false;
-                    }
-                    else if (metric.get_optimization_metric() == loki::OptimizationMetricEnum::MAXIMIZE)
-                    {
-                        if (m_increasing_functions.contains(arg->get_function()->get_function_skeleton()->get_name()))
-                            return false;
-                    }
-                    else
-                    {
-                        throw std::logic_error("ToMimirStructures::prepare_grounded(metric): Unexpected optimization metric.");
-                    }
-                    return true;
-                }
-                else
-                {
-                    static_assert(dependent_false<T>::value,
-                                  "ToMimirStructures::prepare_grounded(metric): Missing implementation for GroundFunctionExpressionFunction type.");
-                }
-            },
-            metric.get_function_expression()->get_function_expression());
-    };
-
-    m_is_monotone_metric = func_test_monotonicity();
-
-    std::cout << "[ToMimir] Optimization metric is" << ((!m_is_monotone_metric) ? " NOT " : " ") << "a monotone function." << std::endl;
-}
+void ToMimirStructures::prepare_grounded(const loki::OptimizationMetricImpl& metric) { prepare_grounded(*metric.get_function_expression()); }
 
 void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
 {
@@ -421,11 +327,6 @@ void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
     {
         prepare_grounded(*problem.get_optimization_metric().value());
     }
-    else
-    {
-        // This is a bit ugly but necessary due to the optional. Assumes the default (minimize (total-cost))
-        m_is_monotone_metric = !m_decreasing_functions.contains("total-cost");
-    }
     prepare_lifted(problem.get_axioms());
 
     for (const auto& derived_predicate : problem.get_derived_predicates())
@@ -441,13 +342,12 @@ void ToMimirStructures::prepare_grounded(const loki::ProblemImpl& problem)
 StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(const loki::FunctionSkeletonImpl& function_skeleton)
 {
     // If the metric is monotone, we can instantiate auxiliary functions and store them in a search node.
-    if (m_is_monotone_metric && !m_lifted_fexpr_functions.contains(function_skeleton.get_name()))
+    if (!m_lifted_fexpr_functions.contains(function_skeleton.get_name()))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton.get_name(),
                                                                                        translate_common(function_skeleton.get_parameters()));
     }
-    else if (m_fluent_functions.contains(function_skeleton.get_name())
-             || (!m_is_monotone_metric && !m_lifted_fexpr_functions.contains(function_skeleton.get_name())))
+    else if (m_fluent_functions.contains(function_skeleton.get_name()))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton.get_name(),
                                                                                     translate_common(function_skeleton.get_parameters()));
@@ -1183,7 +1083,7 @@ StaticOrFluentOrAuxiliaryGroundFunctionValue ToMimirStructures::translate_ground
     const auto static_or_fluent_or_auxiliary_ground_function = translate_grounded(*function_value.get_function());
 
     return std::visit([&](auto&& ground_function) -> StaticOrFluentOrAuxiliaryGroundFunctionValue
-                      { return m_pddl_repositories.get_or_create_ground_function_value(ground_function, function_value.get_number()); },
+                      { return std::make_pair(ground_function, function_value.get_number()); },
                       static_or_fluent_or_auxiliary_ground_function);
 }
 
@@ -1345,14 +1245,13 @@ static GroundFunctionValue<F> get_or_create_total_cost_function_value(FunctionSk
 {
     for (const auto& function_value : function_values)
     {
-        if (function_value->get_function()->get_function_skeleton() == total_cost_function)
+        if (function_value.first->get_function_skeleton() == total_cost_function)
         {
             return function_value;
         }
     }
 
-    const auto total_cost_function_value =
-        pddl_repositories.get_or_create_ground_function_value(pddl_repositories.get_or_create_ground_function(total_cost_function, ObjectList {}), 0.);
+    const auto total_cost_function_value = std::make_pair(pddl_repositories.get_or_create_ground_function(total_cost_function, ObjectList {}), 0.);
 
     std::cout << "[ToMimir] Adding default " << total_cost_function_value << " to \":init\"." << std::endl;
 
@@ -1538,9 +1437,6 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_lifted_fexpr_functions(),
     m_grounded_fexpr_functions(),
     m_fluent_functions(),
-    m_increasing_functions(),
-    m_decreasing_functions(),
-    m_is_monotone_metric(),
     m_action_costs_enabled(),
     m_derived_predicates_by_name(),
     m_equal_predicate(nullptr),

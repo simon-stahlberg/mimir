@@ -30,7 +30,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -95,8 +94,6 @@ using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<Exist
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
-template<FunctionTag F>
-using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl<F>>;
 using DomainRepository = SegmentedPDDLRepository<DomainImpl>;
 using ProblemRepository = SegmentedPDDLRepository<ProblemImpl>;
 
@@ -154,9 +151,6 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
-    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Static>>, GroundFunctionValueRepository<Static>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Fluent>>, GroundFunctionValueRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<GroundFunctionValueImpl<Auxiliary>>, GroundFunctionValueRepository<Auxiliary>>,
     boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
     boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
 
@@ -313,10 +307,6 @@ public:
     /// @brief Get or create an optimization metric for the given parameters.
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
 
-    /// @brief Get or create an optimization metric for the given parameters.
-    template<FunctionTag F>
-    GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
-
     /// @brief Get or create a domain for the given parameters.
     Domain get_or_create_domain(std::optional<fs::path> filepath,
                                 std::string name,
@@ -369,6 +359,13 @@ public:
 
     template<PredicateTag P>
     auto get_ground_atoms() const;
+
+    // GroundFunction
+    template<FunctionTag F>
+    void get_ground_function_values(const FlatDoubleList& values, GroundFunctionValueList<F>& out_ground_function_values) const;
+
+    template<FunctionTag F>
+    GroundFunctionValueList<F> get_ground_function_values(const FlatDoubleList& values) const;
 
     // Object
     Object get_object(size_t object_index) const;

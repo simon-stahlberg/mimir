@@ -64,12 +64,12 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_problem = to_mimir_structures_translator.run(*problem);
     m_domain = m_problem->get_domain();
 
-    // std::cout << *m_domain << std::endl;
-    // std::cout << *m_problem << std::endl;
+    std::cout << *m_domain << std::endl;
+    std::cout << *m_problem << std::endl;
 
     // Encode parameter index in variables
     auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);
-    m_problem = encode_parameter_index_in_variables.run(*m_problem);
+    m_problem = encode_parameter_index_in_variables.run(m_problem);
     m_domain = m_problem->get_domain();
 }
 

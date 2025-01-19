@@ -41,20 +41,19 @@ private:
     std::unordered_map<Variable, size_t> m_variable_to_parameter_index;
     bool m_enable_encoding;
 
-    Variable transform_impl(const VariableImpl& variable);
+    Variable transform_impl(Variable variable);
 
     // Do not rename within predicates or function skeleton
-    Predicate<Static> transform_impl(const PredicateImpl<Static>& predicate);
-    Predicate<Fluent> transform_impl(const PredicateImpl<Fluent>& predicate);
-    Predicate<Derived> transform_impl(const PredicateImpl<Derived>& predicate);
+    template<PredicateTag P>
+    Predicate<P> transform_impl(Predicate<P> predicate);
     template<FunctionTag F>
-    FunctionSkeleton<F> transform_impl(const FunctionSkeletonImpl<F>& function_skeleton);
+    FunctionSkeleton<F> transform_impl(FunctionSkeleton<F> function_skeleton);
 
-    EffectConditional transform_impl(const EffectConditionalImpl& effect);
-    Axiom transform_impl(const AxiomImpl& axiom);
-    Action transform_impl(const ActionImpl& action);
+    EffectConditional transform_impl(EffectConditional effect);
+    Axiom transform_impl(Axiom axiom);
+    Action transform_impl(Action action);
 
-    Problem run_impl(const ProblemImpl& problem);
+    Problem run_impl(Problem problem);
 
 public:
     EncodeParameterIndexInVariables(PDDLRepositories& pddl_repositories);

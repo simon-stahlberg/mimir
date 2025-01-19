@@ -46,15 +46,14 @@ private:
     AxiomList transform_impl(const AxiomList& axioms);
 
     template<PredicateTag P>
-    Literal<P> transform_impl(const LiteralImpl<P>& literal);
-    ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition);
-    EffectStrips transform_impl(const EffectStripsImpl& effect);
-    EffectConditional transform_impl(const EffectConditionalImpl& effect);
-    Action transform_impl(const ActionImpl& action);
-    Axiom transform_impl(const AxiomImpl& axiom);
-    Domain transform_impl(const DomainImpl& domain);
+    Literal<P> transform_impl(Literal<P> literal);
+    ExistentiallyQuantifiedConjunctiveCondition transform_impl(ExistentiallyQuantifiedConjunctiveCondition condition);
+    EffectStrips transform_impl(EffectStrips effect);
+    EffectConditional transform_impl(EffectConditional effect);
+    Action transform_impl(Action action);
+    Axiom transform_impl(Axiom axiom);
 
-    Problem run_impl(const ProblemImpl& problem);
+    Problem run_impl(Problem problem);
 
 public:
     /// @brief
@@ -80,7 +79,7 @@ LiteralList<P> DeleteRelaxTransformer::transform_impl(const LiteralList<P>& lite
     auto positive_literals = LiteralList<P> {};
     for (const auto& literal : literals)
     {
-        const auto positive_literal = this->transform(*literal);
+        const auto positive_literal = this->transform(literal);
         if (positive_literal)
         {
             positive_literals.push_back(positive_literal);
@@ -90,14 +89,14 @@ LiteralList<P> DeleteRelaxTransformer::transform_impl(const LiteralList<P>& lite
 }
 
 template<PredicateTag P>
-Literal<P> DeleteRelaxTransformer::transform_impl(const LiteralImpl<P>& literal)
+Literal<P> DeleteRelaxTransformer::transform_impl(Literal<P> literal)
 {
-    if (literal.is_negated())
+    if (literal->is_negated())
     {
         return nullptr;
     }
 
-    const auto atom = this->transform(*literal.get_atom());
+    const auto atom = this->transform(literal->get_atom());
 
     return this->m_pddl_repositories.get_or_create_literal(false, atom);
 }

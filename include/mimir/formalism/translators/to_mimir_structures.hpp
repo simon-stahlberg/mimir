@@ -62,10 +62,6 @@ private:
     std::unordered_set<std::string> m_lifted_fexpr_functions;    ///< Functions that appear in a lifted function expression, i.e., numeric effect or  constraint
     std::unordered_set<std::string> m_grounded_fexpr_functions;  ///< Functions that appear in a grounded function expression, i.e., metric
     std::unordered_set<std::string> m_fluent_functions;          ///< Functions that appear in an effect
-    std::unordered_set<std::string> m_increasing_functions;      ///< Functions that increase their value
-    std::unordered_set<std::string> m_decreasing_functions;      ///< Functions that decrease their value
-    bool m_is_monotone_metric;  ///< If metric minimizes, then all associated functions must not decrease. If metric maximizes, then all associated functions
-                                ///< must not increase.
 
     // Whether action costs are enabled
     bool m_action_costs_enabled;

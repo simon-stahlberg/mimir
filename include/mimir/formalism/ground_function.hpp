@@ -57,6 +57,9 @@ template<FunctionTag F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element);
 
 template<FunctionTag F>
+extern std::ostream& operator<<(std::ostream& out, const GroundFunctionValue<F>& element);
+
+template<FunctionTag F>
 extern std::ostream& operator<<(std::ostream& out, GroundFunction<F> element);
 
 }

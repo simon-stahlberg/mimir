@@ -130,27 +130,23 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<Problem, State, cons
 {
     const auto [problem, state, pddl_repositories] = data;
 
-    auto out_fluent_ground_atoms = GroundAtomList<Fluent> {};
-    auto out_static_ground_atoms = GroundAtomList<Static> {};
-    auto out_derived_ground_atoms = GroundAtomList<Derived> {};
+    auto fluent_ground_atoms = GroundAtomList<Fluent> {};
+    auto static_ground_atoms = GroundAtomList<Static> {};
+    auto derived_ground_atoms = GroundAtomList<Derived> {};
+    auto fluent_function_values = GroundFunctionValueList<Fluent> {};
 
-    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), out_fluent_ground_atoms);
-    pddl_repositories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), out_static_ground_atoms);
-    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), out_derived_ground_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Fluent>(), fluent_ground_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(problem->get_static_initial_positive_atoms_bitset(), static_ground_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(state->get_atoms<Derived>(), derived_ground_atoms);
+    pddl_repositories.get_ground_function_values(state->get_numeric_variables(), fluent_function_values);
 
     // Sort by name for easier comparison
-    std::sort(out_fluent_ground_atoms.begin(),
-              out_fluent_ground_atoms.end(),
-              [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
-    std::sort(out_static_ground_atoms.begin(),
-              out_static_ground_atoms.end(),
-              [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
-    std::sort(out_derived_ground_atoms.begin(),
-              out_derived_ground_atoms.end(),
-              [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
+    std::sort(fluent_ground_atoms.begin(), fluent_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
+    std::sort(static_ground_atoms.begin(), static_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
+    std::sort(derived_ground_atoms.begin(), derived_ground_atoms.end(), [](const auto& lhs, const auto& rhs) { return to_string(*lhs) < to_string(*rhs); });
 
-    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << out_fluent_ground_atoms << ", " << "static atoms=" << out_static_ground_atoms
-       << ", " << "derived atoms=" << out_derived_ground_atoms << ")";
+    os << "State(" << "index=" << state->get_index() << ", " << "fluent atoms=" << fluent_ground_atoms << ", " << "static atoms=" << static_ground_atoms << ", "
+       << "derived atoms=" << derived_ground_atoms << ", " << "fluent numerics=" << fluent_function_values << ")";
 
     return os;
 }

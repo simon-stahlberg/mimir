@@ -66,6 +66,18 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Fl
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Auxiliary>& element);
 
 template<FunctionTag F>
+std::ostream& operator<<(std::ostream& out, const GroundFunctionValue<F>& element)
+{
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionValue<Static>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionValue<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundFunctionValue<Auxiliary>& element);
+
+template<FunctionTag F>
 std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
 {
     out << *element;

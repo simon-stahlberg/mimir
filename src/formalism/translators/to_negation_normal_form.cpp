@@ -38,6 +38,13 @@ loki::Condition ToNNFTranslator::translate_impl(const loki::ConditionNotImpl& co
         return this->translate(*this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_literal(
             this->m_pddl_repositories.get_or_create_literal(!(*condition_lit)->get_literal()->is_negated(), (*condition_lit)->get_literal()->get_atom()))));
     }
+    else if (const auto condition_numeric = std::get_if<loki::ConditionNumericConstraint>(&translated_nested_condition->get_condition()))
+    {
+        return this->translate(*this->m_pddl_repositories.get_or_create_condition(
+            this->m_pddl_repositories.get_or_create_condition_numeric_constraint((*condition_numeric)->get_binary_comparator(),
+                                                                                 (*condition_numeric)->get_function_expression_left(),
+                                                                                 (*condition_numeric)->get_function_expression_right())));
+    }
     else if (const auto condition_not = std::get_if<loki::ConditionNot>(&translated_nested_condition->get_condition()))
     {
         return this->translate(*(*condition_not)->get_condition());

@@ -28,7 +28,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"

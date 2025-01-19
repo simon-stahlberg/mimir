@@ -29,7 +29,6 @@
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
@@ -615,16 +614,16 @@ void PDDLFormatter::write(const NumericConstraintImpl& element, std::ostream& ou
 }
 
 template<FunctionTag F>
-void PDDLFormatter::write(const GroundFunctionValueImpl<F>& element, std::ostream& out)
+void PDDLFormatter::write(const GroundFunctionValue<F>& element, std::ostream& out)
 {
     out << "(= ";
-    write(*element.get_function(), out);
-    out << " " << element.get_number() << ")";
+    write(*element.first, out);
+    out << " " << element.second << ")";
 }
 
-template void PDDLFormatter::write(const GroundFunctionValueImpl<Static>& element, std::ostream& out);
-template void PDDLFormatter::write(const GroundFunctionValueImpl<Fluent>& element, std::ostream& out);
-template void PDDLFormatter::write(const GroundFunctionValueImpl<Auxiliary>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionValue<Static>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionValue<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundFunctionValue<Auxiliary>& element, std::ostream& out);
 
 void PDDLFormatter::write(const ObjectImpl& element, std::ostream& out) { out << element.get_name(); }
 
@@ -697,17 +696,17 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
         for (const auto& initial : element.get_function_values<Static>())
         {
             out << " ";
-            write(*initial, out);
+            write(initial, out);
         }
         for (const auto& initial : element.get_function_values<Fluent>())
         {
             out << " ";
-            write(*initial, out);
+            write(initial, out);
         }
         for (const auto& initial : element.get_function_values<Auxiliary>())
         {
             out << " ";
-            write(*initial, out);
+            write(initial, out);
         }
     }
     out << ")" << std::endl;

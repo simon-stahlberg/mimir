@@ -80,7 +80,7 @@ public:
     void write(const OptimizationMetricImpl& element, std::ostream& out);
     void write(const NumericConstraintImpl& element, std::ostream& out);
     template<FunctionTag F>
-    void write(const GroundFunctionValueImpl<F>& element, std::ostream& out);
+    void write(const GroundFunctionValue<F>& element, std::ostream& out);
     void write(const ObjectImpl& element, std::ostream& out);
     template<PredicateTag P>
     void write(const PredicateImpl<P>& element, std::ostream& out);

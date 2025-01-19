@@ -46,7 +46,7 @@ private:
 
 public:
     template<typename T>
-    void prepare(const T& element)
+    auto prepare(const T& element)
     {
         self().prepare_base(element);
     }
@@ -58,7 +58,7 @@ public:
     }
 
     /// @brief Collect information and apply problem transformation.
-    Problem run(const ProblemImpl& problem) { return self().run_base(problem); }
+    Problem run(Problem problem) { return self().run_base(problem); }
 };
 }
 
