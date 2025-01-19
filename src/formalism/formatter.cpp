@@ -608,9 +608,9 @@ void PDDLFormatter::write(const OptimizationMetricImpl& element, std::ostream& o
 void PDDLFormatter::write(const NumericConstraintImpl& element, std::ostream& out)
 {
     out << "(" << to_string(element.get_binary_comparator()) << " ";
-    write(*element.get_function_expression_left(), out);
+    write(*element.get_left_function_expression(), out);
     out << " ";
-    write(*element.get_function_expression_right(), out);
+    write(*element.get_right_function_expression(), out);
     out << ")";
 }
 

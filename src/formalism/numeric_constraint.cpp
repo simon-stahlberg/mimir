@@ -23,12 +23,12 @@ namespace mimir
 {
 NumericConstraintImpl::NumericConstraintImpl(Index index,
                                              loki::BinaryComparatorEnum binary_comparator,
-                                             FunctionExpression function_expression_left,
-                                             FunctionExpression function_expression_right) :
+                                             FunctionExpression left_function_expression,
+                                             FunctionExpression right_function_expression) :
     m_index(index),
     m_binary_comparator(binary_comparator),
-    m_function_expression_left(function_expression_left),
-    m_function_expression_right(function_expression_right)
+    m_left_function_expression(left_function_expression),
+    m_right_function_expression(right_function_expression)
 {
 }
 
@@ -36,9 +36,9 @@ Index NumericConstraintImpl::get_index() const { return m_index; }
 
 loki::BinaryComparatorEnum NumericConstraintImpl::get_binary_comparator() const { return m_binary_comparator; }
 
-const FunctionExpression& NumericConstraintImpl::get_function_expression_left() const { return m_function_expression_left; }
+const FunctionExpression& NumericConstraintImpl::get_left_function_expression() const { return m_left_function_expression; }
 
-const FunctionExpression& NumericConstraintImpl::get_function_expression_right() const { return m_function_expression_right; }
+const FunctionExpression& NumericConstraintImpl::get_right_function_expression() const { return m_right_function_expression; }
 
 std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element)
 {

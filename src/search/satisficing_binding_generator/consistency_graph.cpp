@@ -323,6 +323,17 @@ template bool Vertex::consistent_literals(const LiteralList<Static>& literals, c
 template bool Vertex::consistent_literals(const LiteralList<Fluent>& literals, const AssignmentSet<Fluent>& assignment_set) const;
 template bool Vertex::consistent_literals(const LiteralList<Derived>& literals, const AssignmentSet<Derived>& assignment_set) const;
 
+bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraints,
+                                 const FlatDoubleList& fluent_numeric_values,
+                                 const FlatDoubleList& auxiliary_numeric_values) const
+{
+    // TODO(numeric): we need to check whether the assignment [x/o] of the vertex results is consistent.
+    // The idea is to apply interval arithmetic. For this purpose we need a data structure that allows us to retrieve
+    // the cost interval of partially grounded functions.
+    // Lets assume we have a function f(?v1,...,?vn) and we substitute ?vi/o
+    // TBD
+}
+
 /**
  * Edge
  */

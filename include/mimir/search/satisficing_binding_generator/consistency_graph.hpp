@@ -20,6 +20,7 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 
@@ -64,6 +65,10 @@ public:
     /// The meaning of the result being true is that the edge remains consistent.
     template<PredicateTag P>
     bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
+
+    bool consistent_literals(const NumericConstraintList& numeric_constraints,
+                             const FlatDoubleList& fluent_numeric_values,
+                             const FlatDoubleList& auxiliary_numeric_values) const;
 
     VertexIndex get_index() const { return m_index; }
     ParameterIndex get_parameter_index() const { return m_parameter_index; }

@@ -204,8 +204,8 @@ protected:
     }
     void prepare_impl(const NumericConstraintImpl& condition)
     {
-        this->prepare(*condition.get_function_expression_left());
-        this->prepare(*condition.get_function_expression_right());
+        this->prepare(*condition.get_left_function_expression());
+        this->prepare(*condition.get_right_function_expression());
     }
     void prepare_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {
@@ -458,8 +458,8 @@ protected:
     NumericConstraint transform_impl(const NumericConstraintImpl& condition)
     {
         return this->m_pddl_repositories.get_or_create_numeric_constraint(condition.get_binary_comparator(),
-                                                                          this->transform(*condition.get_function_expression_left()),
-                                                                          this->transform(*condition.get_function_expression_right()));
+                                                                          this->transform(*condition.get_left_function_expression()),
+                                                                          this->transform(*condition.get_right_function_expression()));
     }
     ExistentiallyQuantifiedConjunctiveCondition transform_impl(const ExistentiallyQuantifiedConjunctiveConditionImpl& condition)
     {

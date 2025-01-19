@@ -107,6 +107,8 @@ const FlatBitset& DenseState::get_atoms() const
 template const FlatBitset& DenseState::get_atoms<Fluent>() const;
 template const FlatBitset& DenseState::get_atoms<Derived>() const;
 
+const FlatDoubleList& DenseState::get_numeric_variables() const { return m_numeric_variables; }
+
 Index& DenseState::get_index() { return m_index; }
 
 template<DynamicPredicateTag P>

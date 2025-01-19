@@ -59,6 +59,8 @@ struct DenseState
     template<DynamicPredicateTag P>
     const FlatBitset& get_atoms() const;
 
+    const FlatDoubleList& get_numeric_variables() const;
+
     Index& get_index();
 
     template<DynamicPredicateTag P>

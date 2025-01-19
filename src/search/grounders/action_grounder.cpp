@@ -171,6 +171,20 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
     }
 }
 
+void ActionGrounder::ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
+                                            GroundConditionNumericList& ref_numeric_constraints,
+                                            const ObjectList& binding)
+{
+    for (const auto& condition : numeric_constraints)
+    {
+        ref_numeric_constraints.emplace_back(condition->get_binary_comparator(),
+                                             GroundAndEvaluateFunctionExpressionVisitor(m_function_grounder->get_problem(), binding, *m_function_grounder)(
+                                                 *condition->get_left_function_expression()),
+                                             GroundAndEvaluateFunctionExpressionVisitor(m_function_grounder->get_problem(), binding, *m_function_grounder)(
+                                                 *condition->get_right_function_expression()));
+    }
+}
+
 template<DynamicFunctionTag F>
 void ActionGrounder::ground_and_fill_vector(const EffectNumericList<F>& numeric_effects,
                                             GroundEffectNumericList<F>& ref_numeric_effects,
@@ -226,12 +240,14 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     auto& negative_static_precondition = strips_precondition.get_negative_precondition<Static>();
     auto& positive_derived_precondition = strips_precondition.get_positive_precondition<Derived>();
     auto& negative_derived_precondition = strips_precondition.get_negative_precondition<Derived>();
+    auto& numeric_constraints = strips_precondition.get_numeric_constraints();
     positive_fluent_precondition.clear();
     negative_fluent_precondition.clear();
     positive_static_precondition.clear();
     negative_static_precondition.clear();
     positive_derived_precondition.clear();
     negative_derived_precondition.clear();
+    numeric_constraints.clear();
     m_literal_grounder->ground_and_fill_vector(action->get_precondition()->get_literals<Fluent>(),
                                                positive_fluent_precondition,
                                                negative_fluent_precondition,
@@ -250,6 +266,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
     negative_static_precondition.compress();
     positive_derived_precondition.compress();
     negative_derived_precondition.compress();
+    ground_and_fill_vector(action->get_precondition()->get_numeric_constraints(), numeric_constraints, binding);
 
     /* Strips propositional effects */
     auto& strips_effect = action_builder.get_strips_effect();
@@ -312,6 +329,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     auto& cond_negative_static_precondition_j = cond_strips_precondition_j.get_negative_precondition<Static>();
                     auto& cond_positive_derived_precondition_j = cond_strips_precondition_j.get_positive_precondition<Derived>();
                     auto& cond_negative_derived_precondition_j = cond_strips_precondition_j.get_negative_precondition<Derived>();
+                    auto& cond_numeric_constraints_j = cond_strips_precondition_j.get_numeric_constraints();
                     auto& cond_strips_effect_j = cond_effect_j.get_strips_effect();
                     auto& cond_positive_effect_j = cond_strips_effect_j.get_positive_effects();
                     auto& cond_negative_effect_j = cond_strips_effect_j.get_negative_effects();
@@ -321,6 +339,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     cond_negative_static_precondition_j.clear();
                     cond_positive_derived_precondition_j.clear();
                     cond_negative_derived_precondition_j.clear();
+                    cond_numeric_constraints_j.clear();
                     cond_positive_effect_j.clear();
                     cond_negative_effect_j.clear();
 
@@ -343,6 +362,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                     cond_negative_static_precondition_j.compress();
                     cond_positive_derived_precondition_j.compress();
                     cond_negative_derived_precondition_j.compress();
+                    ground_and_fill_vector(lifted_cond_effect->get_numeric_constraints(), cond_numeric_constraints_j, binding_cond_effect);
 
                     /* Propositional effect */
                     m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_effects(),
@@ -370,6 +390,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                 auto& cond_negative_static_precondition = cond_strips_precondition.get_negative_precondition<Static>();
                 auto& cond_positive_derived_precondition = cond_strips_precondition.get_positive_precondition<Derived>();
                 auto& cond_negative_derived_precondition = cond_strips_precondition.get_negative_precondition<Derived>();
+                auto& cond_numeric_constraints = cond_strips_precondition.get_numeric_constraints();
                 auto& cond_strips_effect = cond_effect.get_strips_effect();
                 auto& cond_positive_effect = cond_strips_effect.get_positive_effects();
                 auto& cond_negative_effect = cond_strips_effect.get_negative_effects();
@@ -379,6 +400,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                 cond_negative_static_precondition.clear();
                 cond_positive_derived_precondition.clear();
                 cond_negative_derived_precondition.clear();
+                cond_numeric_constraints.clear();
                 cond_positive_effect.clear();
                 cond_negative_effect.clear();
 
@@ -401,6 +423,7 @@ GroundAction ActionGrounder::ground_action(Action action, ObjectList binding)
                 cond_negative_static_precondition.compress();
                 cond_positive_derived_precondition.compress();
                 cond_negative_derived_precondition.compress();
+                ground_and_fill_vector(lifted_cond_effect->get_numeric_constraints(), cond_numeric_constraints, binding);
 
                 /* Propositional effect */
                 m_literal_grounder->ground_and_fill_vector(lifted_cond_effect->get_effects(), cond_positive_effect, cond_negative_effect, binding);

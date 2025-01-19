@@ -31,6 +31,16 @@
 namespace mimir
 {
 
+/* GroundConditionNumeric */
+loki::BinaryComparatorEnum& GroundConditionNumeric::get_binary_comparator() { return m_binary_comparator; }
+loki::BinaryComparatorEnum GroundConditionNumeric::get_binary_comparator() const { return m_binary_comparator; }
+
+FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundConditionNumeric::get_left_function_expression() { return m_left_function_expression; }
+FlatExternalPtr<const GroundFunctionExpressionImpl> GroundConditionNumeric::get_left_function_expression() const { return m_left_function_expression; }
+
+FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundConditionNumeric::get_right_function_expression() { return m_right_function_expression; }
+FlatExternalPtr<const GroundFunctionExpressionImpl> GroundConditionNumeric::get_right_function_expression() const { return m_right_function_expression; }
+
 /* GroundConditionStrips */
 
 template<PredicateTag P>
@@ -160,9 +170,20 @@ template bool GroundConditionStrips::is_applicable<Static>(const FlatBitset& ato
 template bool GroundConditionStrips::is_applicable<Fluent>(const FlatBitset& atoms) const;
 template bool GroundConditionStrips::is_applicable<Derived>(const FlatBitset& atoms) const;
 
+bool GroundConditionStrips::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
+{
+    for (const auto& constraint : get_numeric_constraints())
+    {
+        if (!evaluate(constraint, fluent_numeric_variables))
+            return false;
+    }
+    return true;
+}
+
 bool GroundConditionStrips::is_dynamically_applicable(const DenseState& dense_state) const
 {  //
-    return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>());
+    return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>())
+           && is_applicable(dense_state.get_numeric_variables());
 }
 
 bool GroundConditionStrips::is_statically_applicable(const FlatBitset& static_positive_atoms) const { return is_applicable<Static>(static_positive_atoms); }
@@ -281,6 +302,11 @@ template bool GroundEffectConditional::is_applicable<Static>(const FlatBitset& a
 template bool GroundEffectConditional::is_applicable<Fluent>(const FlatBitset& atoms) const;
 template bool GroundEffectConditional::is_applicable<Derived>(const FlatBitset& atoms) const;
 
+bool GroundEffectConditional::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
+{
+    return m_strips_condition.is_applicable(fluent_numeric_variables);
+}
+
 bool GroundEffectConditional::is_dynamically_applicable(const DenseState& dense_state) const
 {
     return m_strips_condition.is_dynamically_applicable(dense_state);
@@ -394,6 +420,40 @@ ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& flu
     }
 }
 
+bool evaluate(GroundConditionNumeric effect, const FlatDoubleList& fluent_numeric_variables)
+{
+    const auto left_value = evaluate(effect.get_left_function_expression().get(), fluent_numeric_variables);
+    const auto right_value = evaluate(effect.get_right_function_expression().get(), fluent_numeric_variables);
+
+    switch (effect.get_binary_comparator())
+    {
+        case loki::BinaryComparatorEnum::EQUAL:
+        {
+            return left_value == right_value;
+        }
+        case loki::BinaryComparatorEnum::GREATER:
+        {
+            return left_value > right_value;
+        }
+        case loki::BinaryComparatorEnum::GREATER_EQUAL:
+        {
+            return left_value >= right_value;
+        }
+        case loki::BinaryComparatorEnum::LESS:
+        {
+            return left_value < right_value;
+        }
+        case loki::BinaryComparatorEnum::LESS_EQUAL:
+        {
+            return left_value <= right_value;
+        }
+        default:
+        {
+            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): Unexpected loki::BinaryComparatorEnum.");
+        }
+    }
+}
+
 template double evaluate(GroundEffectNumeric<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 template double
 evaluate(GroundEffectNumeric<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
@@ -401,6 +461,14 @@ evaluate(GroundEffectNumeric<Auxiliary> effect, const FlatDoubleList& fluent_num
 /**
  * Pretty printing
  */
+
+std::ostream& operator<<(std::ostream& os, const GroundConditionNumeric& element)
+{
+    os << "(" << to_string(element.get_binary_comparator()) << " " << element.get_left_function_expression() << " " << element.get_right_function_expression()
+       << ")";
+
+    return os;
+}
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data)
@@ -431,10 +499,22 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrip
 
     os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
        << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
-       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition;
+       << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition << ", "
+       << "numeric constraints=" << strips_precondition_proxy.get_numeric_constraints();
 
     return os;
 }
+
+template<DynamicFunctionTag F>
+std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<F>& element)
+{
+    os << "(" << to_string(element.get_assign_operator()) << " " << element.get_function() << " " << element.get_function_expression() << ")";
+
+    return os;
+}
+
+template std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<Fluent>& data);
+template std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<Auxiliary>& data);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, const PDDLRepositories&>& data)
@@ -444,6 +524,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
 
     const auto& positive_effect_bitset = strips_effect_proxy.get_positive_effects();
     const auto& negative_effect_bitset = strips_effect_proxy.get_negative_effects();
+    const auto& fluent_numeric_effects = strips_effect_proxy.get_numeric_effects<Fluent>();
+    const auto& auxiliary_numeric_effects = strips_effect_proxy.get_numeric_effects<Auxiliary>();
 
     auto positive_simple_effects = GroundAtomList<Fluent> {};
     auto negative_simple_effects = GroundAtomList<Fluent> {};
@@ -451,7 +533,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects;
+    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects
+       << ", fluent numeric effects=" << fluent_numeric_effects << ", auxiliary numeric effects=" << auxiliary_numeric_effects;
 
     return os;
 }

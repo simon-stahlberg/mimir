@@ -28,15 +28,15 @@ class NumericConstraintImpl
 private:
     Index m_index;
     loki::BinaryComparatorEnum m_binary_comparator;
-    FunctionExpression m_function_expression_left;
-    FunctionExpression m_function_expression_right;
+    FunctionExpression m_left_function_expression;
+    FunctionExpression m_right_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     NumericConstraintImpl(Index index,
                           loki::BinaryComparatorEnum binary_comparator,
-                          FunctionExpression function_expression_left,
-                          FunctionExpression function_expression_right);
+                          FunctionExpression left_function_expression,
+                          FunctionExpression right_function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -51,15 +51,15 @@ public:
 
     Index get_index() const;
     loki::BinaryComparatorEnum get_binary_comparator() const;
-    const FunctionExpression& get_function_expression_left() const;
-    const FunctionExpression& get_function_expression_right() const;
+    const FunctionExpression& get_left_function_expression() const;
+    const FunctionExpression& get_right_function_expression() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_binary_comparator), std::as_const(m_function_expression_left), std::as_const(m_function_expression_right));
+        return std::forward_as_tuple(std::as_const(m_binary_comparator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
     }
 };
 

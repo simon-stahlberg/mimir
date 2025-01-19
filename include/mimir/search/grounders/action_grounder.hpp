@@ -41,6 +41,9 @@ private:
 
     std::unordered_map<Action, PerActionData> m_per_action_datas;
 
+    void
+    ground_and_fill_vector(const NumericConstraintList& numeric_constraints, GroundConditionNumericList& ref_numeric_constraints, const ObjectList& binding);
+
     template<DynamicFunctionTag F>
     void ground_and_fill_vector(const EffectNumericList<F>& numeric_effects, GroundEffectNumericList<F>& ref_numeric_effects, const ObjectList& binding);
 

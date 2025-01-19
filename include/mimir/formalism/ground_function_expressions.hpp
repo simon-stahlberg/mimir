@@ -234,6 +234,8 @@ public:
 extern ContinuousCost
 evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
+extern ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables);
+
 /* Printing */
 
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionNumberImpl& element);
