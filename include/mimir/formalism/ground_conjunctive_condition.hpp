@@ -28,7 +28,6 @@
 
 namespace mimir
 {
-
 class GroundConjunctiveCondition
 {
 private:

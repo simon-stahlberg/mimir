@@ -31,16 +31,12 @@
 
 namespace mimir
 {
-
 struct GroundEffectDerivedLiteral
 {
     bool is_negated = false;
     Index atom_index = Index(0);
 };
 
-/**
- * GroundAxiom
- */
 class GroundAxiomImpl
 {
 private:
