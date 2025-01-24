@@ -29,7 +29,7 @@
 namespace mimir
 {
 
-struct GroundConditionStrips
+class GroundConjunctiveCondition
 {
 private:
     FlatIndexList m_positive_static_atoms = FlatIndexList();
@@ -82,7 +82,7 @@ public:
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const PDDLRepositories&>& data);
 
 }
 

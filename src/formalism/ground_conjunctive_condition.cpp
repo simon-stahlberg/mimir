@@ -30,10 +30,10 @@
 namespace mimir
 {
 
-/* GroundConditionStrips */
+/* GroundConjunctiveCondition */
 
 template<PredicateTag P>
-FlatIndexList& GroundConditionStrips::get_positive_precondition()
+FlatIndexList& GroundConjunctiveCondition::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -56,12 +56,12 @@ FlatIndexList& GroundConditionStrips::get_positive_precondition()
     }
 }
 
-template FlatIndexList& GroundConditionStrips::get_positive_precondition<Static>();
-template FlatIndexList& GroundConditionStrips::get_positive_precondition<Fluent>();
-template FlatIndexList& GroundConditionStrips::get_positive_precondition<Derived>();
+template FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Static>();
+template FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Fluent>();
+template FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Derived>();
 
 template<PredicateTag P>
-const FlatIndexList& GroundConditionStrips::get_positive_precondition() const
+const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -84,12 +84,12 @@ const FlatIndexList& GroundConditionStrips::get_positive_precondition() const
     }
 }
 
-template const FlatIndexList& GroundConditionStrips::get_positive_precondition<Static>() const;
-template const FlatIndexList& GroundConditionStrips::get_positive_precondition<Fluent>() const;
-template const FlatIndexList& GroundConditionStrips::get_positive_precondition<Derived>() const;
+template const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Static>() const;
+template const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Fluent>() const;
+template const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Derived>() const;
 
 template<PredicateTag P>
-FlatIndexList& GroundConditionStrips::get_negative_precondition()
+FlatIndexList& GroundConjunctiveCondition::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -112,12 +112,12 @@ FlatIndexList& GroundConditionStrips::get_negative_precondition()
     }
 }
 
-template FlatIndexList& GroundConditionStrips::get_negative_precondition<Static>();
-template FlatIndexList& GroundConditionStrips::get_negative_precondition<Fluent>();
-template FlatIndexList& GroundConditionStrips::get_negative_precondition<Derived>();
+template FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Static>();
+template FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Fluent>();
+template FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Derived>();
 
 template<PredicateTag P>
-const FlatIndexList& GroundConditionStrips::get_negative_precondition() const
+const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -140,26 +140,26 @@ const FlatIndexList& GroundConditionStrips::get_negative_precondition() const
     }
 }
 
-template const FlatIndexList& GroundConditionStrips::get_negative_precondition<Static>() const;
-template const FlatIndexList& GroundConditionStrips::get_negative_precondition<Fluent>() const;
-template const FlatIndexList& GroundConditionStrips::get_negative_precondition<Derived>() const;
+template const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Static>() const;
+template const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Fluent>() const;
+template const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Derived>() const;
 
-FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConditionStrips::get_numeric_constraints() { return m_numeric_constraints; }
+FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveCondition::get_numeric_constraints() { return m_numeric_constraints; }
 
-const FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConditionStrips::get_numeric_constraints() const { return m_numeric_constraints; }
+const FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveCondition::get_numeric_constraints() const { return m_numeric_constraints; }
 
 template<PredicateTag P>
-bool GroundConditionStrips::is_applicable(const FlatBitset& atoms) const
+bool GroundConjunctiveCondition::is_applicable(const FlatBitset& atoms) const
 {
     return is_supseteq(atoms, get_positive_precondition<P>())  //
            && are_disjoint(atoms, get_negative_precondition<P>());
 }
 
-template bool GroundConditionStrips::is_applicable<Static>(const FlatBitset& atoms) const;
-template bool GroundConditionStrips::is_applicable<Fluent>(const FlatBitset& atoms) const;
-template bool GroundConditionStrips::is_applicable<Derived>(const FlatBitset& atoms) const;
+template bool GroundConjunctiveCondition::is_applicable<Static>(const FlatBitset& atoms) const;
+template bool GroundConjunctiveCondition::is_applicable<Fluent>(const FlatBitset& atoms) const;
+template bool GroundConjunctiveCondition::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-bool GroundConditionStrips::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
+bool GroundConjunctiveCondition::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
 {
     for (const auto& constraint : get_numeric_constraints())
     {
@@ -169,15 +169,18 @@ bool GroundConditionStrips::is_applicable(const FlatDoubleList& fluent_numeric_v
     return true;
 }
 
-bool GroundConditionStrips::is_dynamically_applicable(const DenseState& dense_state) const
+bool GroundConjunctiveCondition::is_dynamically_applicable(const DenseState& dense_state) const
 {  //
     return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>())
            && is_applicable(dense_state.get_numeric_variables());
 }
 
-bool GroundConditionStrips::is_statically_applicable(const FlatBitset& static_positive_atoms) const { return is_applicable<Static>(static_positive_atoms); }
+bool GroundConjunctiveCondition::is_statically_applicable(const FlatBitset& static_positive_atoms) const
+{
+    return is_applicable<Static>(static_positive_atoms);
+}
 
-bool GroundConditionStrips::is_applicable(Problem problem, const DenseState& dense_state) const
+bool GroundConjunctiveCondition::is_applicable(Problem problem, const DenseState& dense_state) const
 {
     return is_dynamically_applicable(dense_state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
@@ -187,7 +190,7 @@ bool GroundConditionStrips::is_applicable(Problem problem, const DenseState& den
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionStrips, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const PDDLRepositories&>& data)
 {
     // TODO(numerical): add numeric constraints
     const auto& [strips_precondition_proxy, pddl_repositories] = data;

@@ -33,6 +33,16 @@ namespace mimir
 
 /* GroundEffectNumeric */
 template<DynamicFunctionTag F>
+GroundEffectNumeric<F>::GroundEffectNumeric(loki::AssignOperatorEnum assign_operator,
+                                            GroundFunction<F> function,
+                                            GroundFunctionExpression function_expression) :
+    m_assign_operator(assign_operator),
+    m_function(function),
+    m_function_expression(function_expression)
+{
+}
+
+template<DynamicFunctionTag F>
 loki::AssignOperatorEnum& GroundEffectNumeric<F>::get_assign_operator()
 {
     return m_assign_operator;
@@ -65,8 +75,8 @@ FlatExternalPtr<const GroundFunctionExpressionImpl> GroundEffectNumeric<F>::get_
     return m_function_expression;
 }
 
-template struct GroundEffectNumeric<Fluent>;
-template struct GroundEffectNumeric<Auxiliary>;
+template class GroundEffectNumeric<Fluent>;
+template class GroundEffectNumeric<Auxiliary>;
 
 /* GroundEffectStrips */
 
@@ -121,9 +131,9 @@ template const GroundEffectNumericList<Auxiliary>& GroundEffectStrips::get_numer
 /* GroundEffectConditional */
 
 /* Precondition */
-GroundConditionStrips& GroundEffectConditional::get_strips_precondition() { return m_strips_condition; }
+GroundConjunctiveCondition& GroundEffectConditional::get_strips_precondition() { return m_strips_condition; }
 
-const GroundConditionStrips& GroundEffectConditional::get_strips_precondition() const { return m_strips_condition; }
+const GroundConjunctiveCondition& GroundEffectConditional::get_strips_precondition() const { return m_strips_condition; }
 
 /* Effect */
 GroundEffectStrips& GroundEffectConditional::get_strips_effect() { return m_strips_effect; }

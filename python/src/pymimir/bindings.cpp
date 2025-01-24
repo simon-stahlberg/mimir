@@ -858,24 +858,24 @@ void init_pymimir(py::module_& m)
         .def_readonly("is_negated", &GroundEffectFluentLiteral::is_negated)
         .def_readonly("atom_index", &GroundEffectFluentLiteral::atom_index);
 
-    py::class_<GroundConditionStrips>(m, "GroundConditionStrips")
+    py::class_<GroundConjunctiveCondition>(m, "GroundConjunctiveCondition")
         .def("get_fluent_positive_condition",
-             py::overload_cast<>(&GroundConditionStrips::get_positive_precondition<Fluent>, py::const_),
+             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Fluent>, py::const_),
              py::return_value_policy::copy)
         .def("get_static_positive_condition",
-             py::overload_cast<>(&GroundConditionStrips::get_positive_precondition<Static>, py::const_),
+             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Static>, py::const_),
              py::return_value_policy::copy)
         .def("get_derived_positive_condition",
-             py::overload_cast<>(&GroundConditionStrips::get_positive_precondition<Derived>, py::const_),
+             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Derived>, py::const_),
              py::return_value_policy::copy)
         .def("get_fluent_negative_condition",
-             py::overload_cast<>(&GroundConditionStrips::get_negative_precondition<Fluent>, py::const_),
+             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Fluent>, py::const_),
              py::return_value_policy::copy)
         .def("get_static_negative_condition",
-             py::overload_cast<>(&GroundConditionStrips::get_negative_precondition<Static>, py::const_),
+             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Static>, py::const_),
              py::return_value_policy::copy)
         .def("get_derived_negative_condition",
-             py::overload_cast<>(&GroundConditionStrips::get_negative_precondition<Derived>, py::const_),
+             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Derived>, py::const_),
              py::return_value_policy::copy);
     py::class_<GroundEffectConditional>(m, "GroundEffectConditional")
         .def("get_fluent_positive_condition",

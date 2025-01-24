@@ -38,9 +38,9 @@ FlatIndexList& GroundAxiomImpl::get_object_indices() { return m_objects; }
 
 const FlatIndexList& GroundAxiomImpl::get_object_indices() const { return m_objects; }
 
-GroundConditionStrips& GroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
+GroundConjunctiveCondition& GroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
 
-const GroundConditionStrips& GroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
+const GroundConjunctiveCondition& GroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
 
 GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_effect; }
 

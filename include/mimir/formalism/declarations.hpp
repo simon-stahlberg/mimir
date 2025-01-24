@@ -61,7 +61,7 @@ using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;
 using AxiomSet = std::unordered_set<Axiom>;
 
-struct GroundAxiomImpl;
+class GroundAxiomImpl;
 using GroundAxiom = const GroundAxiomImpl*;
 using GroundAxiomList = std::vector<GroundAxiom>;
 using GroundAxiomSet = std::unordered_set<GroundAxiom>;
@@ -217,8 +217,6 @@ using VariableSet = std::unordered_set<Variable>;
 
 class ConjunctiveConditionImpl;
 using ConjunctiveCondition = const ConjunctiveConditionImpl*;
-
-struct GroundConditionStrips;
 
 class TermImpl;
 using Term = const TermImpl*;

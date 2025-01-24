@@ -43,7 +43,7 @@ private:
     Index m_index = Index(0);
     Index m_action_index = Index(0);
     FlatIndexList m_objects = FlatIndexList();
-    GroundConditionStrips m_strips_precondition = GroundConditionStrips();
+    GroundConjunctiveCondition m_strips_precondition = GroundConjunctiveCondition();
     GroundEffectStrips m_strips_effect = GroundEffectStrips();
     GroundEffectConditionalList m_conditional_effects = GroundEffectConditionalList();
 
@@ -57,8 +57,8 @@ public:
     const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
-    GroundConditionStrips& get_strips_precondition();
-    const GroundConditionStrips& get_strips_precondition() const;
+    GroundConjunctiveCondition& get_strips_precondition();
+    const GroundConjunctiveCondition& get_strips_precondition() const;
     GroundEffectStrips& get_strips_effect();
     const GroundEffectStrips& get_strips_effect() const;
     /* Conditional effects */

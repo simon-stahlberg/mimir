@@ -106,7 +106,7 @@ from _pymimir import (
     DefaultLiftedApplicableActionGeneratorEventHandler,
     DefaultSIWAlgorithmEventHandler,
     DeleteRelaxedProblemExplorator,
-    GroundConditionStrips,
+    GroundConjunctiveCondition,
     GroundEffectStrips,
     GroundEffectFluentLiteral,
     GroundEffectDerivedLiteral,

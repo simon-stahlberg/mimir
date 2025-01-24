@@ -41,14 +41,16 @@ struct GroundEffectDerivedLiteral
 /**
  * GroundAxiom
  */
-struct GroundAxiomImpl
+class GroundAxiomImpl
 {
+private:
     Index m_index = Index(0);
     Index m_axiom_index = Index(0);
     FlatIndexList m_objects = FlatIndexList();
-    GroundConditionStrips m_strips_precondition = GroundConditionStrips();
+    GroundConjunctiveCondition m_strips_precondition = GroundConjunctiveCondition();
     GroundEffectDerivedLiteral m_effect = GroundEffectDerivedLiteral();
 
+public:
     Index& get_index();
     Index get_index() const;
 
@@ -59,8 +61,8 @@ struct GroundAxiomImpl
     const FlatIndexList& get_object_indices() const;
 
     /* STRIPS part */
-    GroundConditionStrips& get_strips_precondition();
-    const GroundConditionStrips& get_strips_precondition() const;
+    GroundConjunctiveCondition& get_strips_precondition();
+    const GroundConjunctiveCondition& get_strips_precondition() const;
 
     /* Effect*/
     GroundEffectDerivedLiteral& get_derived_effect();
@@ -78,6 +80,8 @@ struct GroundAxiomImpl
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_objects)); }
+
+    auto cista_members() noexcept { return std::tie(m_index, m_axiom_index, m_objects, m_strips_precondition, m_effect); }
 };
 
 /**

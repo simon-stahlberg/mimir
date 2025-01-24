@@ -33,11 +33,16 @@ namespace mimir
 {
 
 template<DynamicFunctionTag F>
-struct GroundEffectNumeric
+class GroundEffectNumeric
 {
+private:
     loki::AssignOperatorEnum m_assign_operator = loki::AssignOperatorEnum::ASSIGN;
     FlatExternalPtr<const GroundFunctionImpl<F>> m_function = nullptr;
     FlatExternalPtr<const GroundFunctionExpressionImpl> m_function_expression = nullptr;
+
+public:
+    GroundEffectNumeric() = default;
+    GroundEffectNumeric(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
 
     loki::AssignOperatorEnum& get_assign_operator();
     loki::AssignOperatorEnum get_assign_operator() const;
@@ -47,18 +52,22 @@ struct GroundEffectNumeric
 
     FlatExternalPtr<const GroundFunctionExpressionImpl>& get_function_expression();
     FlatExternalPtr<const GroundFunctionExpressionImpl> get_function_expression() const;
+
+    auto cista_members() noexcept { return std::tie(m_assign_operator, m_function, m_function_expression); }
 };
 
 template<DynamicFunctionTag F>
 using GroundEffectNumericList = cista::offset::vector<GroundEffectNumeric<F>>;
 
-struct GroundEffectStrips
+class GroundEffectStrips
 {
+private:
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
     GroundEffectNumericList<Fluent> m_fluent_numeric_effects = GroundEffectNumericList<Fluent>();
     GroundEffectNumericList<Auxiliary> m_auxiliary_numeric_effects = GroundEffectNumericList<Auxiliary>();
 
+public:
     /* Propositional effects */
     FlatIndexList& get_positive_effects();
     const FlatIndexList& get_positive_effects() const;
@@ -71,16 +80,20 @@ struct GroundEffectStrips
     GroundEffectNumericList<F>& get_numeric_effects();
     template<DynamicFunctionTag F>
     const GroundEffectNumericList<F>& get_numeric_effects() const;
+
+    auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effects); }
 };
 
-struct GroundEffectConditional
+class GroundEffectConditional
 {
-    GroundConditionStrips m_strips_condition = GroundConditionStrips();
+private:
+    GroundConjunctiveCondition m_strips_condition = GroundConjunctiveCondition();
     GroundEffectStrips m_strips_effect = GroundEffectStrips();
 
+public:
     /* Precondition */
-    GroundConditionStrips& get_strips_precondition();
-    const GroundConditionStrips& get_strips_precondition() const;
+    GroundConjunctiveCondition& get_strips_precondition();
+    const GroundConjunctiveCondition& get_strips_precondition() const;
 
     /* Effect */
     GroundEffectStrips& get_strips_effect();
@@ -97,6 +110,8 @@ struct GroundEffectConditional
     bool is_statically_applicable(Problem problem) const;
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
+
+    auto cista_members() noexcept { return std::tie(m_strips_condition, m_strips_effect); }
 };
 
 using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditional>;
