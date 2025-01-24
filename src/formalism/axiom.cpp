@@ -29,21 +29,22 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition precondition, Literal<Derived> literal) :
+AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<Derived> literal) :
     m_index(index),
-    m_precondition(std::move(precondition)),
+    m_conjunctive_condition(std::move(conjunctive_condition)),
     m_literal(std::move(literal))
 {
+    assert(conjunctive_condition);
     assert(!literal->is_negated());
 }
 
 Index AxiomImpl::get_index() const { return m_index; }
 
-const VariableList& AxiomImpl::get_parameters() const { return m_precondition->get_parameters(); }
+const VariableList& AxiomImpl::get_parameters() const { return m_conjunctive_condition->get_parameters(); }
 
 const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
 
-const ConjunctiveCondition& AxiomImpl::get_precondition() const { return m_precondition; }
+const ConjunctiveCondition& AxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
 

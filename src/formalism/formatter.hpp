@@ -48,9 +48,9 @@ public:
     void write(const AxiomImpl& element, std::ostream& out);
     void write(const DomainImpl& element, std::ostream& out);
     template<DynamicFunctionTag F>
-    void write(const EffectNumericImpl<F>& element, std::ostream& out);
-    void write(const EffectStripsImpl& element, std::ostream& out);
-    void write(const EffectConditionalImpl& element, std::ostream& out);
+    void write(const NumericEffectImpl<F>& element, std::ostream& out);
+    void write(const ConjunctiveEffectImpl& element, std::ostream& out);
+    void write(const ConditionalEffectImpl& element, std::ostream& out);
     void write(const FunctionExpressionNumberImpl& element, std::ostream& out);
     void write(const FunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
     void write(const FunctionExpressionMultiOperatorImpl& element, std::ostream& out);

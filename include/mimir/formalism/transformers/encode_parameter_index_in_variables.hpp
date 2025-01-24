@@ -49,7 +49,7 @@ private:
     template<FunctionTag F>
     FunctionSkeleton<F> transform_impl(FunctionSkeleton<F> function_skeleton);
 
-    EffectConditional transform_impl(EffectConditional effect);
+    ConditionalEffect transform_impl(ConditionalEffect effect);
     Axiom transform_impl(Axiom axiom);
     Action transform_impl(Action action);
 

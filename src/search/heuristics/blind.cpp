@@ -106,8 +106,9 @@ static double determine_action_cost_lower_bound(Problem problem)
     for (const auto& action : problem->get_domain()->get_actions())
     {
         {
-            const auto [lower, upper] = FunctionExpressionBoundsDeterminer(function_skeleton_bounds)(*action->get_strips_effect()->get_function_expression());
-            lower_bound = std::min(lower_bound, lower);
+            const auto [lower, upper] =
+FunctionExpressionBoundsDeterminer(function_skeleton_bounds)(*action->get_conjunctive_effect()->get_function_expression()); lower_bound = std::min(lower_bound,
+lower);
         }
         for (const auto& conditional_effect : action->get_conditional_effects())
         {

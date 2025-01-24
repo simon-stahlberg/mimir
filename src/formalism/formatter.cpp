@@ -119,30 +119,30 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     out << ")\n";
 
     out << std::string(m_indent, ' ') << ":conditions ";
-    if (element.get_precondition()->get_literals<Static>().empty() && element.get_precondition()->get_literals<Fluent>().empty()
-        && element.get_precondition()->get_literals<Derived>().empty())
+    if (element.get_conjunctive_condition()->get_literals<Static>().empty() && element.get_conjunctive_condition()->get_literals<Fluent>().empty()
+        && element.get_conjunctive_condition()->get_literals<Derived>().empty())
     {
         out << "()\n";
     }
     else
     {
         out << "(and";
-        for (const auto& condition : element.get_precondition()->get_literals<Static>())
+        for (const auto& condition : element.get_conjunctive_condition()->get_literals<Static>())
         {
             out << " ";
             write(*condition, out);
         }
-        for (const auto& condition : element.get_precondition()->get_literals<Fluent>())
+        for (const auto& condition : element.get_conjunctive_condition()->get_literals<Fluent>())
         {
             out << " ";
             write(*condition, out);
         }
-        for (const auto& condition : element.get_precondition()->get_literals<Derived>())
+        for (const auto& condition : element.get_conjunctive_condition()->get_literals<Derived>())
         {
             out << " ";
             write(*condition, out);
         }
-        for (const auto& condition : element.get_precondition()->get_numeric_constraints())
+        for (const auto& condition : element.get_conjunctive_condition()->get_numeric_constraints())
         {
             out << " ";
             write(*condition, out);
@@ -151,8 +151,8 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << std::string(m_indent, ' ') << ":effects ";
-    if (element.get_strips_effect()->get_effects().empty() && element.get_strips_effect()->get_numeric_effects<Fluent>().empty()
-        && element.get_strips_effect()->get_numeric_effects<Auxiliary>().empty() && element.get_conditional_effects().empty())
+    if (element.get_conjunctive_effect()->get_literals().empty() && element.get_conjunctive_effect()->get_numeric_effects<Fluent>().empty()
+        && element.get_conjunctive_effect()->get_numeric_effects<Auxiliary>().empty() && element.get_conditional_effects().empty())
     {
         out << "()\n";
     }
@@ -160,7 +160,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     {
         out << "(and ";
 
-        write(*element.get_strips_effect(), out);
+        write(*element.get_conjunctive_effect(), out);
 
         for (const auto& effect : element.get_conditional_effects())
         {
@@ -201,22 +201,22 @@ void PDDLFormatter::write(const AxiomImpl& element, std::ostream& out)
     m_indent += m_add_indent;
 
     out << std::string(m_indent, ' ') << "(and";
-    for (const auto& condition : element.get_precondition()->get_literals<Static>())
+    for (const auto& condition : element.get_conjunctive_condition()->get_literals<Static>())
     {
         out << " ";
         write(*condition, out);
     }
-    for (const auto& condition : element.get_precondition()->get_literals<Fluent>())
+    for (const auto& condition : element.get_conjunctive_condition()->get_literals<Fluent>())
     {
         out << " ";
         write(*condition, out);
     }
-    for (const auto& condition : element.get_precondition()->get_literals<Derived>())
+    for (const auto& condition : element.get_conjunctive_condition()->get_literals<Derived>())
     {
         out << " ";
         write(*condition, out);
     }
-    for (const auto& condition : element.get_precondition()->get_numeric_constraints())
+    for (const auto& condition : element.get_conjunctive_condition()->get_numeric_constraints())
     {
         out << " ";
         write(*condition, out);
@@ -312,7 +312,7 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
 }
 
 template<DynamicFunctionTag F>
-void PDDLFormatter::write(const EffectNumericImpl<F>& element, std::ostream& out)
+void PDDLFormatter::write(const NumericEffectImpl<F>& element, std::ostream& out)
 {
     out << "(" << to_string(element.get_assign_operator()) << " ";
     write(*element.get_function(), out);
@@ -321,9 +321,9 @@ void PDDLFormatter::write(const EffectNumericImpl<F>& element, std::ostream& out
     out << ")";
 }
 
-void PDDLFormatter::write(const EffectStripsImpl& element, std::ostream& out)
+void PDDLFormatter::write(const ConjunctiveEffectImpl& element, std::ostream& out)
 {
-    for (const auto& literal : element.get_effects())
+    for (const auto& literal : element.get_literals())
     {
         write(*literal, out);
         out << " ";
@@ -340,73 +340,11 @@ void PDDLFormatter::write(const EffectStripsImpl& element, std::ostream& out)
     }
 }
 
-void PDDLFormatter::write(const EffectConditionalImpl& element, std::ostream& out)
+void PDDLFormatter::write(const ConditionalEffectImpl& element, std::ostream& out)
 {
-    if (!element.get_parameters().empty())
-    {
-        out << "(forall (";
-        for (size_t i = 0; i < element.get_parameters().size(); ++i)
-        {
-            if (i != 0)
-            {
-                out << " ";
-            }
-            write(*element.get_parameters()[i], out);
-        }
-        out << ") ";  // end quantifiers
-    }
-
-    if (!(element.get_conditions<Static>().empty() && element.get_conditions<Fluent>().empty() && element.get_conditions<Derived>().empty()))
-    {
-        out << "(when (and";
-        for (const auto& condition : element.get_conditions<Static>())
-        {
-            out << " ";
-            write(*condition, out);
-        }
-        for (const auto& condition : element.get_conditions<Fluent>())
-        {
-            out << " ";
-            write(*condition, out);
-        }
-        for (const auto& condition : element.get_conditions<Derived>())
-        {
-            out << " ";
-            write(*condition, out);
-        }
-        out << ")";  // end condition and
-    }
-
-    out << " (and";
-    for (const auto& effect : element.get_effects())
-    {
-        out << " ";
-        write(*effect, out);
-    }
-    for (const auto& effect : element.get_numeric_effects<Fluent>())
-    {
-        out << " ";
-        write(*effect, out);
-    }
-    // if (m_action_costs || m_numeric_fluents)  // If action costs is enabled, we can print the auxiliary total-cost effects.
-    {
-        for (const auto& effect : element.get_numeric_effects<Auxiliary>())
-        {
-            out << " ";
-            write(*effect, out);
-        }
-    }
-    out << ")";  // end effect and
-
-    if (!(element.get_conditions<Static>().empty() && element.get_conditions<Fluent>().empty() && element.get_conditions<Derived>().empty()))
-    {
-        out << ")";  // end effect when
-    }
-
-    if (!element.get_parameters().empty())
-    {
-        out << ")";  // end effect forall
-    }
+    write(*element.get_conjunctive_condition(), out);
+    out << " ";
+    write(*element.get_conjunctive_effect(), out);
 }
 
 void PDDLFormatter::write(const FunctionExpressionNumberImpl& element, std::ostream& out) { out << element.get_number(); }

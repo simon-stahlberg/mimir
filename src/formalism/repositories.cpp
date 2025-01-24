@@ -295,58 +295,36 @@ template FunctionSkeleton<Fluent> PDDLRepositories::get_or_create_function_skele
 template FunctionSkeleton<Auxiliary> PDDLRepositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
 
 template<DynamicFunctionTag F>
-EffectNumeric<F>
+NumericEffect<F>
 PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectNumericImpl<F>> {})
+    return boost::hana::at_key(m_repositories, boost::hana::type<NumericEffectImpl<F>> {})
         .get_or_create(std::move(assign_operator), std::move(function), std::move(function_expression));
 }
 
-template EffectNumeric<Fluent>
+template NumericEffect<Fluent>
 PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Fluent> function, FunctionExpression function_expression);
-template EffectNumeric<Auxiliary>
+template NumericEffect<Auxiliary>
 PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Auxiliary> function, FunctionExpression function_expression);
 
-EffectStrips PDDLRepositories::get_or_create_strips_effect(LiteralList<Fluent> effects,
-                                                           EffectNumericList<Fluent> fluent_numeric_effects,
-                                                           EffectNumericList<Auxiliary> auxiliary_numeric_effects)
+ConjunctiveEffect PDDLRepositories::get_or_create_conjunctive_effect(VariableList parameters,
+                                                                     LiteralList<Fluent> effects,
+                                                                     NumericEffectList<Fluent> fluent_numeric_effects,
+                                                                     NumericEffectList<Auxiliary> auxiliary_numeric_effects)
 {
     /* Canonize before uniqueness test. */
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(auxiliary_numeric_effects.begin(), auxiliary_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectStripsImpl> {})
-        .get_or_create(std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effects));
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveEffectImpl> {})
+        .get_or_create(std::move(parameters), std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effects));
 }
 
-EffectConditional PDDLRepositories::get_or_create_conditional_effect(VariableList parameters,
-                                                                     LiteralList<Static> static_conditions,
-                                                                     LiteralList<Fluent> fluent_conditions,
-                                                                     LiteralList<Derived> derived_conditions,
-                                                                     NumericConstraintList numeric_constraints,
-                                                                     LiteralList<Fluent> effects,
-                                                                     EffectNumericList<Fluent> fluent_numeric_effects,
-                                                                     EffectNumericList<Auxiliary> auxiliary_numeric_effects)
+ConditionalEffect PDDLRepositories::get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect)
 {
-    /* Canonize before uniqueness test. */
-    std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(auxiliary_numeric_effects.begin(), auxiliary_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-
-    return boost::hana::at_key(m_repositories, boost::hana::type<EffectConditionalImpl> {})
-        .get_or_create(std::move(parameters),
-                       std::move(static_conditions),
-                       std::move(fluent_conditions),
-                       std::move(derived_conditions),
-                       std::move(numeric_constraints),
-                       std::move(effects),
-                       std::move(fluent_numeric_effects),
-                       std::move(auxiliary_numeric_effects));
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConditionalEffectImpl> {})
+        .get_or_create(std::move(conjunctive_condition), std::move(conjunctive_effect));
 }
 
 NumericConstraint PDDLRepositories::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
@@ -365,11 +343,11 @@ GroundNumericConstraint PDDLRepositories::get_or_create_ground_numeric_constrain
         .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
 }
 
-ConjunctiveCondition PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
-                                                                                                    LiteralList<Static> static_conditions,
-                                                                                                    LiteralList<Fluent> fluent_conditions,
-                                                                                                    LiteralList<Derived> derived_conditions,
-                                                                                                    NumericConstraintList numeric_constraints)
+ConjunctiveCondition PDDLRepositories::get_or_create_conjunctive_condition(VariableList parameters,
+                                                                           LiteralList<Static> static_conditions,
+                                                                           LiteralList<Fluent> fluent_conditions,
+                                                                           LiteralList<Derived> derived_conditions,
+                                                                           NumericConstraintList numeric_constraints)
 {
     /* Canonize before uniqueness test */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -400,20 +378,20 @@ ConjunctiveCondition PDDLRepositories::get_or_create_existentially_quantified_co
 
 Action PDDLRepositories::get_or_create_action(std::string name,
                                               size_t original_arity,
-                                              ConjunctiveCondition precondition,
-                                              EffectStrips strips_effect,
-                                              EffectConditionalList conditional_effects)
+                                              ConjunctiveCondition conjunctive_condition,
+                                              ConjunctiveEffect conjunctive_effect,
+                                              ConditionalEffectList conditional_effects)
 {
     /* Canonize before uniqueness test */
     std::sort(conditional_effects.begin(), conditional_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ActionImpl> {})
-        .get_or_create(std::move(name), original_arity, std::move(precondition), std::move(strips_effect), std::move(conditional_effects));
+        .get_or_create(std::move(name), original_arity, std::move(conjunctive_condition), std::move(conjunctive_effect), std::move(conditional_effects));
 }
 
-Axiom PDDLRepositories::get_or_create_axiom(ConjunctiveCondition precondition, Literal<Derived> literal)
+Axiom PDDLRepositories::get_or_create_axiom(ConjunctiveCondition conjunctive_condition, Literal<Derived> literal)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(precondition), std::move(literal));
+    return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(conjunctive_condition), std::move(literal));
 }
 
 OptimizationMetric PDDLRepositories::get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression)

@@ -90,12 +90,12 @@ using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValu
 template<FunctionTag F>
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
 template<DynamicFunctionTag F>
-using EffectNumericRepository = SegmentedPDDLRepository<EffectNumericImpl<F>>;
-using EffectStripsRepository = SegmentedPDDLRepository<EffectStripsImpl>;
-using EffectUniversalRepository = SegmentedPDDLRepository<EffectConditionalImpl>;
+using NumericEffectRepository = SegmentedPDDLRepository<NumericEffectImpl<F>>;
+using ConjunctiveEffectRepository = SegmentedPDDLRepository<ConjunctiveEffectImpl>;
+using ConditionalEffectRepository = SegmentedPDDLRepository<ConditionalEffectImpl>;
 using NumericConstraintRepository = SegmentedPDDLRepository<NumericConstraintImpl>;
 using GroundNumericConstraintRepository = SegmentedPDDLRepository<GroundNumericConstraintImpl>;
-using UniversallyQuantifiedConjunctionRepository = SegmentedPDDLRepository<ConjunctiveConditionImpl>;
+using ConjunctiveConditionRepository = SegmentedPDDLRepository<ConjunctiveConditionImpl>;
 using ActionRepository = SegmentedPDDLRepository<ActionImpl>;
 using AxiomRepository = SegmentedPDDLRepository<AxiomImpl>;
 using OptimizationMetricRepository = SegmentedPDDLRepository<OptimizationMetricImpl>;
@@ -150,13 +150,13 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Static>>, FunctionSkeletonRepository<Static>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Fluent>>, FunctionSkeletonRepository<Fluent>>,
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Auxiliary>>, FunctionSkeletonRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<EffectNumericImpl<Fluent>>, EffectNumericRepository<Fluent>>,
-    boost::hana::pair<boost::hana::type<EffectNumericImpl<Auxiliary>>, EffectNumericRepository<Auxiliary>>,
-    boost::hana::pair<boost::hana::type<EffectStripsImpl>, EffectStripsRepository>,
-    boost::hana::pair<boost::hana::type<EffectConditionalImpl>, EffectUniversalRepository>,
+    boost::hana::pair<boost::hana::type<NumericEffectImpl<Fluent>>, NumericEffectRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<NumericEffectImpl<Auxiliary>>, NumericEffectRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<ConjunctiveEffectImpl>, ConjunctiveEffectRepository>,
+    boost::hana::pair<boost::hana::type<ConditionalEffectImpl>, ConditionalEffectRepository>,
     boost::hana::pair<boost::hana::type<NumericConstraintImpl>, NumericConstraintRepository>,
     boost::hana::pair<boost::hana::type<GroundNumericConstraintImpl>, GroundNumericConstraintRepository>,
-    boost::hana::pair<boost::hana::type<ConjunctiveConditionImpl>, UniversallyQuantifiedConjunctionRepository>,
+    boost::hana::pair<boost::hana::type<ConjunctiveConditionImpl>, ConjunctiveConditionRepository>,
     boost::hana::pair<boost::hana::type<ActionImpl>, ActionRepository>,
     boost::hana::pair<boost::hana::type<AxiomImpl>, AxiomRepository>,
     boost::hana::pair<boost::hana::type<OptimizationMetricImpl>, OptimizationMetricRepository>,
@@ -274,22 +274,16 @@ public:
 
     /// @brief Get or create a numeric effect for the given parameters.
     template<DynamicFunctionTag F>
-    EffectNumeric<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
+    NumericEffect<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
     /// @brief Get or create a simple effect for the given parameters.
-    EffectStrips get_or_create_strips_effect(LiteralList<Fluent> effects,
-                                             EffectNumericList<Fluent> fluent_numeric_effects,
-                                             EffectNumericList<Auxiliary> auxiliary_numeric_effects);
+    ConjunctiveEffect get_or_create_conjunctive_effect(VariableList parameters,
+                                                       LiteralList<Fluent> effects,
+                                                       NumericEffectList<Fluent> fluent_numeric_effects,
+                                                       NumericEffectList<Auxiliary> auxiliary_numeric_effects);
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
-    EffectConditional get_or_create_conditional_effect(VariableList parameters,
-                                                       LiteralList<Static> static_conditions,
-                                                       LiteralList<Fluent> fluent_conditions,
-                                                       LiteralList<Derived> derived_conditions,
-                                                       NumericConstraintList numeric_constraints,
-                                                       LiteralList<Fluent> effects,
-                                                       EffectNumericList<Fluent> fluent_numeric_effects,
-                                                       EffectNumericList<Auxiliary> auxiliary_numeric_effects);
+    ConditionalEffect get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
 
     /// @brief Get or create a numeric constraint for the given parameters.
     NumericConstraint get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
@@ -302,18 +296,18 @@ public:
                                                                     GroundFunctionExpression function_expression_right);
 
     /// @brief Get or create a existentially quantified conjunctive condition for the given parameters.
-    ConjunctiveCondition get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
-                                                                                      LiteralList<Static> static_conditions,
-                                                                                      LiteralList<Fluent> fluent_conditions,
-                                                                                      LiteralList<Derived> derived_conditions,
-                                                                                      NumericConstraintList numeric_constraints);
+    ConjunctiveCondition get_or_create_conjunctive_condition(VariableList parameters,
+                                                             LiteralList<Static> static_conditions,
+                                                             LiteralList<Fluent> fluent_conditions,
+                                                             LiteralList<Derived> derived_conditions,
+                                                             NumericConstraintList numeric_constraints);
 
     /// @brief Get or create an action for the given parameters.
     Action get_or_create_action(std::string name,
                                 size_t original_arity,
-                                ConjunctiveCondition precondition,
-                                EffectStrips strips_effect,
-                                EffectConditionalList conditional_effects);
+                                ConjunctiveCondition conjunctive_condition,
+                                ConjunctiveEffect conjunctive_effect,
+                                ConditionalEffectList conditional_effects);
 
     /// @brief Get or create a derived predicate for the given parameters.
     Axiom get_or_create_axiom(ConjunctiveCondition precondition, Literal<Derived> effect_literal);

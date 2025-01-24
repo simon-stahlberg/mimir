@@ -77,8 +77,8 @@ static std::vector<size_t> compute_ground_atom_order(const PDDLRepositories& pdd
 
 DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<Grounder> grounder) :
     m_grounder(std::move(grounder)),
-    m_delete_relax_transformer(*m_grounder->get_pddl_repositories(),
-                               false),  // We have to use input grounders pddl_repositories to map the relaxed actions/axioms back to unrelaxed actions/axioms
+    m_delete_relax_transformer(*m_grounder->get_pddl_repositories()),  ///< We have to use input grounders pddl_repositories to map the relaxed actions/axioms
+                                                                       /// back to unrelaxed actions/axioms
     m_delete_free_problem(m_delete_relax_transformer.run(m_grounder->get_problem())),
     m_delete_free_grounder(
         std::make_shared<Grounder>(m_delete_free_problem,
@@ -93,6 +93,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
+
+    std::cout << m_delete_free_problem << std::endl;
 
     do
     {

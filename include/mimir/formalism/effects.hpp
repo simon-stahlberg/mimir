@@ -24,7 +24,7 @@ namespace mimir
 {
 
 template<DynamicFunctionTag F>
-class EffectNumericImpl
+class NumericEffectImpl
 {
 private:
     Index m_index;
@@ -34,7 +34,7 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
+    NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -42,10 +42,10 @@ private:
 
 public:
     // moveable but not copyable
-    EffectNumericImpl(const EffectNumericImpl& other) = delete;
-    EffectNumericImpl& operator=(const EffectNumericImpl& other) = delete;
-    EffectNumericImpl(EffectNumericImpl&& other) = default;
-    EffectNumericImpl& operator=(EffectNumericImpl&& other) = default;
+    NumericEffectImpl(const NumericEffectImpl& other) = delete;
+    NumericEffectImpl& operator=(const NumericEffectImpl& other) = delete;
+    NumericEffectImpl(NumericEffectImpl&& other) = default;
+    NumericEffectImpl& operator=(NumericEffectImpl&& other) = default;
 
     Index get_index() const;
     loki::AssignOperatorEnum get_assign_operator() const;
@@ -64,20 +64,22 @@ public:
 /**
  * Type 1 effects
  */
-class EffectStripsImpl
+class ConjunctiveEffectImpl
 {
 private:
     Index m_index;
-    LiteralList<Fluent> m_effects;
-    EffectNumericList<Fluent> m_fluent_numeric_effects;
-    EffectNumericList<Auxiliary> m_auxiliary_numeric_effects;
+    VariableList m_parameters;
+    LiteralList<Fluent> m_literals;
+    NumericEffectList<Fluent> m_fluent_numeric_effects;
+    NumericEffectList<Auxiliary> m_auxiliary_numeric_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectStripsImpl(Index index,
-                     LiteralList<Fluent> effects,
-                     EffectNumericList<Fluent> fluent_numeric_effects,
-                     EffectNumericList<Auxiliary> auxiliary_numeric_effects);
+    ConjunctiveEffectImpl(Index index,
+                          VariableList parameters,
+                          LiteralList<Fluent> literals,
+                          NumericEffectList<Fluent> fluent_numeric_effects,
+                          NumericEffectList<Auxiliary> auxiliary_numeric_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -85,52 +87,39 @@ private:
 
 public:
     // moveable but not copyable
-    EffectStripsImpl(const EffectStripsImpl& other) = delete;
-    EffectStripsImpl& operator=(const EffectStripsImpl& other) = delete;
-    EffectStripsImpl(EffectStripsImpl&& other) = default;
-    EffectStripsImpl& operator=(EffectStripsImpl&& other) = default;
+    ConjunctiveEffectImpl(const ConjunctiveEffectImpl& other) = delete;
+    ConjunctiveEffectImpl& operator=(const ConjunctiveEffectImpl& other) = delete;
+    ConjunctiveEffectImpl(ConjunctiveEffectImpl&& other) = default;
+    ConjunctiveEffectImpl& operator=(ConjunctiveEffectImpl&& other) = default;
 
     Index get_index() const;
-    const LiteralList<Fluent>& get_effects() const;
+    const VariableList& get_parameters() const;
+    const LiteralList<Fluent>& get_literals() const;
     template<DynamicFunctionTag F>
-    const EffectNumericList<F>& get_numeric_effects() const;
+    const NumericEffectList<F>& get_numeric_effects() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifiable_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_effects), std::as_const(m_fluent_numeric_effects), std::as_const(m_auxiliary_numeric_effects));
+        return std::forward_as_tuple(std::as_const(m_literals), std::as_const(m_fluent_numeric_effects), std::as_const(m_auxiliary_numeric_effects));
     }
 };
 
 /**
  * Type 2 effects
  */
-class EffectConditionalImpl
+class ConditionalEffectImpl
 {
 private:
     Index m_index;
-    VariableList m_quantified_variables;
-    LiteralList<Static> m_static_conditions;
-    LiteralList<Fluent> m_fluent_conditions;
-    LiteralList<Derived> m_derived_conditions;
-    NumericConstraintList m_numeric_constraints;
-    LiteralList<Fluent> m_effects;
-    EffectNumericList<Fluent> m_fluent_numeric_effects;
-    EffectNumericList<Auxiliary> m_auxiliary_numeric_effects;
+    ConjunctiveCondition m_conjunctive_condition;
+    ConjunctiveEffect m_conjunctive_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    EffectConditionalImpl(Index index,
-                          VariableList quantified_variables,
-                          LiteralList<Static> static_conditions,
-                          LiteralList<Fluent> fluent_conditions,
-                          LiteralList<Derived> derived_conditions,
-                          NumericConstraintList numeric_constraints,
-                          LiteralList<Fluent> effects,
-                          EffectNumericList<Fluent> fluent_numeric_effects,
-                          EffectNumericList<Auxiliary> auxiliary_numeric_effects);
+    ConditionalEffectImpl(Index index, ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -138,47 +127,32 @@ private:
 
 public:
     // moveable but not copyable
-    EffectConditionalImpl(const EffectConditionalImpl& other) = delete;
-    EffectConditionalImpl& operator=(const EffectConditionalImpl& other) = delete;
-    EffectConditionalImpl(EffectConditionalImpl&& other) = default;
-    EffectConditionalImpl& operator=(EffectConditionalImpl&& other) = default;
+    ConditionalEffectImpl(const ConditionalEffectImpl& other) = delete;
+    ConditionalEffectImpl& operator=(const ConditionalEffectImpl& other) = delete;
+    ConditionalEffectImpl(ConditionalEffectImpl&& other) = default;
+    ConditionalEffectImpl& operator=(ConditionalEffectImpl&& other) = default;
 
     Index get_index() const;
-    const VariableList& get_parameters() const;
-    template<PredicateTag P>
-    const LiteralList<P>& get_conditions() const;
-    const NumericConstraintList& get_numeric_constraints() const;
-    const LiteralList<Fluent>& get_effects() const;
-    template<DynamicFunctionTag F>
-    const EffectNumericList<F>& get_numeric_effects() const;
+    const ConjunctiveCondition& get_conjunctive_condition() const;
+    const ConjunctiveEffect& get_conjunctive_effect() const;
 
     size_t get_arity() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
-    {
-        return std::forward_as_tuple(std::as_const(m_quantified_variables),
-                                     std::as_const(m_static_conditions),
-                                     std::as_const(m_fluent_conditions),
-                                     std::as_const(m_derived_conditions),
-                                     std::as_const(m_numeric_constraints),
-                                     std::as_const(m_effects),
-                                     std::as_const(m_fluent_numeric_effects),
-                                     std::as_const(m_auxiliary_numeric_effects));
-    }
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_conjunctive_condition), std::as_const(m_conjunctive_effect)); }
 };
 
 template<DynamicFunctionTag F>
-extern std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<F>& element);
-extern std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element);
-extern std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element);
+extern std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element);
 
 template<DynamicFunctionTag F>
-extern std::ostream& operator<<(std::ostream& out, EffectNumeric<F> element);
-extern std::ostream& operator<<(std::ostream& out, EffectStrips element);
-extern std::ostream& operator<<(std::ostream& out, EffectConditional element);
+extern std::ostream& operator<<(std::ostream& out, NumericEffect<F> element);
+extern std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element);
+extern std::ostream& operator<<(std::ostream& out, ConditionalEffect element);
 
 }
 

@@ -46,7 +46,7 @@ class SatisficingBindingGenerator
 private:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
-    ConjunctiveCondition m_precondition;
+    ConjunctiveCondition m_conjunctive_condition;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
@@ -84,11 +84,11 @@ private:
 public:
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                 std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                ConjunctiveCondition precondition);
+                                ConjunctiveCondition conjunctive_condition);
 
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                 std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                ConjunctiveCondition precondition,
+                                ConjunctiveCondition conjunctive_condition,
                                 std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler);
 
     mimir::generator<ObjectList>
@@ -110,7 +110,7 @@ public:
 
     const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
 
-    const ConjunctiveCondition& get_precondition() const;
+    const ConjunctiveCondition& get_conjunctive_condition() const;
     const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };

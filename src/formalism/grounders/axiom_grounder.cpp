@@ -60,28 +60,28 @@ GroundAxiom AxiomGrounder::ground(Axiom axiom, ObjectList binding)
     objects.compress();
 
     /* Precondition */
-    auto& strips_precondition = axiom_builder.get_strips_precondition();
-    auto& positive_fluent_precondition = strips_precondition.get_positive_precondition<Fluent>();
-    auto& negative_fluent_precondition = strips_precondition.get_negative_precondition<Fluent>();
-    auto& positive_static_precondition = strips_precondition.get_positive_precondition<Static>();
-    auto& negative_static_precondition = strips_precondition.get_negative_precondition<Static>();
-    auto& positive_derived_precondition = strips_precondition.get_positive_precondition<Derived>();
-    auto& negative_derived_precondition = strips_precondition.get_negative_precondition<Derived>();
+    auto& conjunctive_condition = axiom_builder.get_conjunctive_condition();
+    auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<Fluent>();
+    auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<Fluent>();
+    auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<Static>();
+    auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<Static>();
+    auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<Derived>();
+    auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<Derived>();
     positive_fluent_precondition.clear();
     negative_fluent_precondition.clear();
     positive_static_precondition.clear();
     negative_static_precondition.clear();
     positive_derived_precondition.clear();
     negative_derived_precondition.clear();
-    m_literal_grounder->ground_and_fill_vector(axiom->get_precondition()->get_literals<Fluent>(),
+    m_literal_grounder->ground_and_fill_vector(axiom->get_conjunctive_condition()->get_literals<Fluent>(),
                                                positive_fluent_precondition,
                                                negative_fluent_precondition,
                                                binding);
-    m_literal_grounder->ground_and_fill_vector(axiom->get_precondition()->get_literals<Static>(),
+    m_literal_grounder->ground_and_fill_vector(axiom->get_conjunctive_condition()->get_literals<Static>(),
                                                positive_static_precondition,
                                                negative_static_precondition,
                                                binding);
-    m_literal_grounder->ground_and_fill_vector(axiom->get_precondition()->get_literals<Derived>(),
+    m_literal_grounder->ground_and_fill_vector(axiom->get_conjunctive_condition()->get_literals<Derived>(),
                                                positive_derived_precondition,
                                                negative_derived_precondition,
                                                binding);

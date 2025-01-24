@@ -41,17 +41,17 @@ Index& GroundActionImpl::get_action_index() { return m_action_index; }
 
 Index GroundActionImpl::get_action_index() const { return m_action_index; }
 
-FlatIndexList& GroundActionImpl::get_objects() { return m_objects; }
+FlatIndexList& GroundActionImpl::get_objects() { return m_object_indices; }
 
-const FlatIndexList& GroundActionImpl::get_object_indices() const { return m_objects; }
+const FlatIndexList& GroundActionImpl::get_object_indices() const { return m_object_indices; }
 
-GroundConjunctiveCondition& GroundActionImpl::get_strips_precondition() { return m_strips_precondition; }
+GroundConjunctiveCondition& GroundActionImpl::get_conjunctive_condition() { return m_conjunctive_precondition; }
 
-const GroundConjunctiveCondition& GroundActionImpl::get_strips_precondition() const { return m_strips_precondition; }
+const GroundConjunctiveCondition& GroundActionImpl::get_conjunctive_condition() const { return m_conjunctive_precondition; }
 
-GroundEffectStrips& GroundActionImpl::get_strips_effect() { return m_strips_effect; }
+GroundConjunctiveEffect& GroundActionImpl::get_conjunctive_effect() { return m_conjunctive_effect; }
 
-const GroundEffectStrips& GroundActionImpl::get_strips_effect() const { return m_strips_effect; }
+const GroundConjunctiveEffect& GroundActionImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() { return m_conditional_effects; }
 
@@ -59,17 +59,17 @@ const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() c
 
 bool GroundActionImpl::is_dynamically_applicable(const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_dynamically_applicable(dense_state);
+    return get_conjunctive_condition().is_dynamically_applicable(dense_state);
 }
 
 bool GroundActionImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
 {
-    return get_strips_precondition().is_statically_applicable(static_positive_atoms);
+    return get_conjunctive_condition().is_statically_applicable(static_positive_atoms);
 }
 
 bool GroundActionImpl::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_applicable(problem, dense_state);
+    return get_conjunctive_condition().is_applicable(problem, dense_state);
 }
 
 /**
@@ -87,18 +87,18 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAction, const 
         binding.push_back(pddl_repositories.get_object(object_index));
     }
 
-    const auto& strips_precondition = action->get_strips_precondition();
-    const auto& strips_effect = action->get_strips_effect();
-    const auto& cond_effects = action->get_conditional_effects();
+    const auto& conjunctive_condition = action->get_conjunctive_condition();
+    const auto& conjunctive_effect = action->get_conjunctive_effect();
+    const auto& conditional_effects = action->get_conditional_effects();
 
     os << "Action("                                                                                //
        << "index=" << action->get_index() << ", "                                                  //
        << "name=" << pddl_repositories.get_action(action->get_action_index())->get_name() << ", "  //
        << "binding=" << binding << ", "                                                            //
-       << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "               //
-       << std::make_tuple(strips_effect, std::cref(pddl_repositories))                             //
+       << std::make_tuple(conjunctive_condition, std::cref(pddl_repositories)) << ", "             //
+       << std::make_tuple(conjunctive_effect, std::cref(pddl_repositories))                        //
        << ", " << "conditional_effects=[";
-    for (const auto& cond_effect : cond_effects)
+    for (const auto& cond_effect : conditional_effects)
     {
         os << "[" << std::make_tuple(cond_effect, std::cref(pddl_repositories)) << "], ";
     }

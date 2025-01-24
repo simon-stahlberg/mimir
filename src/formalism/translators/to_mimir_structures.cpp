@@ -536,8 +536,7 @@ StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(const loki
                       translate_common(*function.get_function_skeleton()));
 }
 
-std::tuple<LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>
-ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
+ConjunctiveCondition ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition, const VariableList& parameters)
 {
     auto condition_ptr = &condition;
 
@@ -594,7 +593,7 @@ ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
                 throw std::logic_error("Expected literal in conjunctive condition.");
             }
         }
-        return std::make_tuple(static_literals, fluent_literals, derived_literals, numeric_constraints);
+        return m_pddl_repositories.get_or_create_conjunctive_condition(parameters, static_literals, fluent_literals, derived_literals, numeric_constraints);
     }
     else if (const auto condition_literal = std::get_if<loki::ConditionLiteral>(&condition_ptr->get_condition()))
     {
@@ -607,7 +606,7 @@ ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 
         func_insert_literal(static_or_fluent_or_derived_literal, static_literals, fluent_literals, derived_literals);
 
-        return std::make_tuple(static_literals, fluent_literals, derived_literals, numeric_constraints);
+        return m_pddl_repositories.get_or_create_conjunctive_condition(parameters, static_literals, fluent_literals, derived_literals, numeric_constraints);
     }
 
     // std::cout << std::visit([](auto&& arg) { return arg.str(); }, *condition_ptr) << std::endl;
@@ -616,9 +615,9 @@ ToMimirStructures::translate_lifted(const loki::ConditionImpl& condition)
 }
 
 template<DynamicFunctionTag F>
-static EffectNumeric<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton<F> total_cost_function,
+static NumericEffect<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton<F> total_cost_function,
                                                                 bool action_costs_enabled,
-                                                                EffectNumericList<F>& numeric_effects,
+                                                                NumericEffectList<F>& numeric_effects,
                                                                 PDDLRepositories& pddl_repositories)
 {
     for (const auto& effect : numeric_effects)
@@ -637,16 +636,14 @@ static EffectNumeric<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton
     return total_cost_numeric_effect;
 }
 
-std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect)
+std::tuple<ConjunctiveEffect, ConditionalEffectList> ToMimirStructures::translate_lifted(const loki::EffectImpl& effect, const VariableList& parameters)
 {
-    using EffectStripsData = std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>;
-    using EffectConditionalData =
-        std::unordered_map<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>,
-                           std::tuple<LiteralList<Fluent>, EffectNumericList<Fluent>, EffectNumericList<Auxiliary>>,
-                           loki::Hash<std::tuple<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>>>;
+    using ConjunctiveEffectData = std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, NumericEffectList<Auxiliary>>;
+    using ConditionalEffectData =
+        std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, NumericEffectList<Auxiliary>>>;
 
     const auto translate_effect_func =
-        [&](const loki::Effect& effect, EffectStripsData& ref_effect_strips_data, EffectConditionalData& ref_effect_conditional_data)
+        [&](const loki::Effect& effect, ConjunctiveEffectData& ref_conjunctive_effect_data, ConditionalEffectData& ref_conditional_effect_data)
     {
         auto tmp_effect = effect;
 
@@ -660,35 +657,17 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
         }
 
         /* 2. Parse conditional part */
-        auto static_conditions = LiteralList<Static> {};
-        auto fluent_conditions = LiteralList<Fluent> {};
-        auto derived_conditions = LiteralList<Derived> {};
-        auto numeric_constraints = NumericConstraintList {};
+        auto conjunctive_condition = ConjunctiveCondition { nullptr };
         if (const auto tmp_effect_when = std::get_if<loki::EffectCompositeWhen>(&tmp_effect->get_effect()))
         {
-            const auto [static_literals_, fluent_literals_, derived_literals_, numeric_constraints_] = translate_lifted(*(*tmp_effect_when)->get_condition());
-            static_conditions = static_literals_;
-            fluent_conditions = fluent_literals_;
-            derived_conditions = derived_literals_;
-            numeric_constraints = numeric_constraints_;
-            std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-            std::sort(fluent_conditions.begin(), fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-            std::sort(derived_conditions.begin(), derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-            std::sort(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+            conjunctive_condition = translate_lifted(*(*tmp_effect_when)->get_condition(), parameters);
 
             tmp_effect = (*tmp_effect_when)->get_effect();
         }
 
         // Fetch container to store the effects
-        const bool is_conditional_effect =
-            (!(parameters.empty() && static_conditions.empty() && fluent_conditions.empty() && derived_conditions.empty() && numeric_constraints.empty()));
         auto& [data_fluent_literals, data_fluent_numeric_effects, data_auxiliary_numeric_effects] =
-            (is_conditional_effect) ? ref_effect_conditional_data[std::make_tuple(std::move(parameters),
-                                                                                  std::move(static_conditions),
-                                                                                  std::move(fluent_conditions),
-                                                                                  std::move(derived_conditions),
-                                                                                  std::move(numeric_constraints))] :
-                                      ref_effect_strips_data;
+            (conjunctive_condition) ? ref_conditional_effect_data[conjunctive_condition] : ref_conjunctive_effect_data;
 
         /* 3. Parse effect part */
         if (const auto& effect_literal = std::get_if<loki::EffectLiteral>(&tmp_effect->get_effect()))
@@ -746,24 +725,25 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
 
     /* Parse the effect */
     auto effect_ptr = &effect;
-    auto effect_strips_data = EffectStripsData {};
-    auto effect_conditional_data = EffectConditionalData {};
+    auto conjunctive_effect_data = ConjunctiveEffectData {};
+    auto conditional_effect_data = ConditionalEffectData {};
     // Parse conjunctive part
     if (const auto& effect_and = std::get_if<loki::EffectAnd>(&effect_ptr->get_effect()))
     {
         for (const auto& nested_effect : (*effect_and)->get_effects())
         {
-            translate_effect_func(nested_effect, effect_strips_data, effect_conditional_data);
+            translate_effect_func(nested_effect, conjunctive_effect_data, conditional_effect_data);
         }
     }
     else
     {
         // Parse non conjunctive
-        translate_effect_func(effect_ptr, effect_strips_data, effect_conditional_data);
+        translate_effect_func(effect_ptr, conjunctive_effect_data, conditional_effect_data);
     }
 
-    /* Instantiate STRIPS effect. */
-    auto& [strips_effect_fluent_literals, strips_effect_fluent_numeric_effects, strips_effect_auxiliary_numeric_effects] = effect_strips_data;
+    /* Instantiate conjunctive effect. */
+    auto& [conjunctive_effect_fluent_literals, conjunctive_effect_fluent_numeric_effects, conjunctive_effect_auxiliary_numeric_effects] =
+        conjunctive_effect_data;
 
     // Instantiate total cost effect if necessary.
     std::visit(
@@ -772,11 +752,11 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
             {
-                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, strips_effect_fluent_numeric_effects, m_pddl_repositories);
+                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_fluent_numeric_effects, m_pddl_repositories);
             }
             else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
             {
-                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, strips_effect_auxiliary_numeric_effects, m_pddl_repositories);
+                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_auxiliary_numeric_effects, m_pddl_repositories);
             }
             else
             {
@@ -785,71 +765,63 @@ std::tuple<EffectStrips, EffectConditionalList> ToMimirStructures::translate_lif
         },
         m_total_cost_function);
 
-    const auto strips_effect = this->m_pddl_repositories.get_or_create_strips_effect(strips_effect_fluent_literals,
-                                                                                     strips_effect_fluent_numeric_effects,
-                                                                                     strips_effect_auxiliary_numeric_effects);
+    const auto conjunctive_effect = this->m_pddl_repositories.get_or_create_conjunctive_effect(parameters,
+                                                                                               conjunctive_effect_fluent_literals,
+                                                                                               conjunctive_effect_fluent_numeric_effects,
+                                                                                               conjunctive_effect_auxiliary_numeric_effects);
 
     /* Instantiate conditional effects. */
-    auto conditional_effects = EffectConditionalList {};
-    for (const auto& [key, value] : effect_conditional_data)
+    auto conditional_effects = ConditionalEffectList {};
+    for (const auto& [cond_conjunctive_condition, value] : conditional_effect_data)
     {
-        const auto& [variables, static_conditions, fluent_conditions, derived_conditions, numeric_constraints] = key;
-        const auto& [fluent_literals, fluent_numeric_effects, auxiliary_numeric_effects] = value;
+        const auto& [cond_effect_fluent_literals, cond_effect_fluent_numeric_effects, cond_effect_auxiliary_numeric_effects] = value;
 
-        conditional_effects.push_back(this->m_pddl_repositories.get_or_create_conditional_effect(variables,
-                                                                                                 static_conditions,
-                                                                                                 fluent_conditions,
-                                                                                                 derived_conditions,
-                                                                                                 numeric_constraints,
-                                                                                                 fluent_literals,
-                                                                                                 fluent_numeric_effects,
-                                                                                                 auxiliary_numeric_effects));
+        conditional_effects.push_back(this->m_pddl_repositories.get_or_create_conditional_effect(
+            cond_conjunctive_condition,
+            this->m_pddl_repositories.get_or_create_conjunctive_effect(parameters,
+                                                                       cond_effect_fluent_literals,
+                                                                       cond_effect_fluent_numeric_effects,
+                                                                       cond_effect_auxiliary_numeric_effects)));
     }
 
-    return std::make_tuple(strips_effect, conditional_effects);
+    return { conjunctive_effect, conditional_effects };
 }
 
 Action ToMimirStructures::translate_lifted(const loki::ActionImpl& action)
 {
-    // 1. Translate conditions
-    auto static_literals = LiteralList<Static> {};
-    auto fluent_literals = LiteralList<Fluent> {};
-    auto derived_literals = LiteralList<Derived> {};
-    auto numeric_constraints = NumericConstraintList {};
-    if (action.get_condition().has_value())
-    {
-        const auto [static_literals_, fluent_literals_, derived_literals_, numeric_constraints_] = translate_lifted(*action.get_condition().value());
-        static_literals = static_literals_;
-        fluent_literals = fluent_literals_;
-        derived_literals = derived_literals_;
-        numeric_constraints = numeric_constraints_;
-    }
-
     // We sort the additional parameters to enforce some additional approximate syntactic equivalence.
     auto translated_parameters = translate_common(action.get_parameters());
     std::sort(translated_parameters.begin() + action.get_original_arity(), translated_parameters.end());
 
-    auto existentially_quantified_conjunctive_condition =
-        m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(translated_parameters),
-                                                                                         std::move(static_literals),
-                                                                                         std::move(fluent_literals),
-                                                                                         std::move(derived_literals),
-                                                                                         std::move(numeric_constraints));
+    // 1. Translate conditions
+    auto conjunctive_condition = ConjunctiveCondition { nullptr };
+    if (action.get_condition().has_value())
+    {
+        conjunctive_condition = translate_lifted(*action.get_condition().value(), translated_parameters);
+    }
 
     // 2. Translate effects
-    auto strips_effect = EffectStrips {};
-    auto conditional_effects = EffectConditionalList {};
+    auto conjunctive_effect = ConjunctiveEffect { nullptr };
+    auto conditional_effects = ConditionalEffectList {};
     if (action.get_effect().has_value())
     {
-        const auto [strips_effect_, conditional_effects_] = translate_lifted(*action.get_effect().value());
-        strips_effect = strips_effect_;
+        const auto [conjunctive_effect_, conditional_effects_] = translate_lifted(*action.get_effect().value(), translated_parameters);
+        conjunctive_effect = conjunctive_effect_;
         conditional_effects = conditional_effects_;
+    }
+    else
+    {
+        // TODO: We are missing total-cost effect...
+        conjunctive_effect = m_pddl_repositories.get_or_create_conjunctive_effect(translated_parameters,
+                                                                                  LiteralList<Fluent> {},
+                                                                                  NumericEffectList<Fluent> {},
+                                                                                  NumericEffectList<Auxiliary> {});
     }
 
     return m_pddl_repositories.get_or_create_action(action.get_name(),
                                                     action.get_original_arity(),
-                                                    existentially_quantified_conjunctive_condition,
-                                                    strips_effect,
+                                                    conjunctive_condition,
+                                                    conjunctive_effect,
                                                     conditional_effects);
 }
 
@@ -857,7 +829,7 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
 {
     auto parameters = translate_common(axiom.get_parameters());
 
-    const auto [static_literals, fluent_literals, derived_literals, numeric_constraints] = translate_lifted(*axiom.get_condition());
+    const auto conjunctive_condition = translate_lifted(*axiom.get_condition(), parameters);
 
     // TODO: make this nicer by storing a predicate in the axiom in loki...
     const auto derived_predicate_name = axiom.get_derived_predicate_name();
@@ -885,14 +857,7 @@ Axiom ToMimirStructures::translate_lifted(const loki::AxiomImpl& axiom)
     // Our axiom heads are always true literals
     const auto literal = m_pddl_repositories.get_or_create_literal(false, m_pddl_repositories.get_or_create_atom(derived_predicate, terms));
 
-    auto existentially_quantified_conjunctive_condition =
-        m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(std::move(parameters),
-                                                                                         std::move(static_literals),
-                                                                                         std::move(fluent_literals),
-                                                                                         std::move(derived_literals),
-                                                                                         std::move(numeric_constraints));
-
-    return m_pddl_repositories.get_or_create_axiom(existentially_quantified_conjunctive_condition, literal);
+    return m_pddl_repositories.get_or_create_axiom(conjunctive_condition, literal);
 }
 
 static std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>>

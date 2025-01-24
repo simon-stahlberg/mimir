@@ -71,18 +71,18 @@ using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
 
 template<DynamicFunctionTag F>
-class EffectNumericImpl;
+class NumericEffectImpl;
 template<DynamicFunctionTag F>
-using EffectNumeric = const EffectNumericImpl<F>*;
+using NumericEffect = const NumericEffectImpl<F>*;
 template<DynamicFunctionTag F>
-using EffectNumericList = std::vector<EffectNumeric<F>>;
+using NumericEffectList = std::vector<NumericEffect<F>>;
 
-class EffectStripsImpl;
-using EffectStrips = const EffectStripsImpl*;
+class ConjunctiveEffectImpl;
+using ConjunctiveEffect = const ConjunctiveEffectImpl*;
 
-class EffectConditionalImpl;
-using EffectConditional = const EffectConditionalImpl*;
-using EffectConditionalList = std::vector<EffectConditional>;
+class ConditionalEffectImpl;
+using ConditionalEffect = const ConditionalEffectImpl*;
+using ConditionalEffectList = std::vector<ConditionalEffect>;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;

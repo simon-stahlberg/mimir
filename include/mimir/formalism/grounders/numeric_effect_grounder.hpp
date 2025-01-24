@@ -32,8 +32,8 @@ private:
     std::shared_ptr<FunctionExpressionGrounder> m_fexpr_grounder;
 
     // using GroundedTypeToGroundingTableList =
-    //     boost::hana::map<boost::hana::pair<boost::hana::type<GroundEffectNumeric<Fluent>>, GroundingTableList<GroundEffectNumeric<Fluent>>>,
-    //                      boost::hana::pair<boost::hana::type<GroundEffectNumeric<Auxiliary>>, GroundingTableList<GroundEffectNumeric<Auxiliary>>>>;
+    //     boost::hana::map<boost::hana::pair<boost::hana::type<GroundNumericEffect<Fluent>>, GroundingTableList<GroundNumericEffect<Fluent>>>,
+    //                      boost::hana::pair<boost::hana::type<GroundNumericEffect<Auxiliary>>, GroundingTableList<GroundNumericEffect<Auxiliary>>>>;
 
     // GroundedTypeToGroundingTableList m_grounding_tables;
 
@@ -49,7 +49,7 @@ public:
     NumericEffectGrounder& operator=(NumericEffectGrounder&& other) = default;
 
     template<DynamicFunctionTag F>
-    GroundEffectNumeric<F> ground(EffectNumeric<F> numeric_effect, const ObjectList& binding);
+    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
 
     /**
      * Getters

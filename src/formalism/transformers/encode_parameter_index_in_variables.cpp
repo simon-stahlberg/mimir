@@ -69,29 +69,25 @@ template FunctionSkeleton<Static> EncodeParameterIndexInVariables::transform_imp
 template FunctionSkeleton<Fluent> EncodeParameterIndexInVariables::transform_impl(FunctionSkeleton<Fluent> function_skeleton);
 template FunctionSkeleton<Auxiliary> EncodeParameterIndexInVariables::transform_impl(FunctionSkeleton<Auxiliary> function_skeleton);
 
-EffectConditional EncodeParameterIndexInVariables::transform_impl(EffectConditional effect)
+ConditionalEffect EncodeParameterIndexInVariables::transform_impl(ConditionalEffect effect)
 {
     // Determine variable parameter indices
     const auto start_index = m_variable_to_parameter_index.size();
     for (size_t i = 0; i < effect->get_arity(); ++i)
     {
-        m_variable_to_parameter_index[effect->get_parameters()[i]] = start_index + i;
+        m_variable_to_parameter_index[effect->get_conjunctive_condition()->get_parameters()[i]] = start_index + i;
     }
 
+    // Ensure in order translation
+    const auto translated_conjunctive_condition = this->transform(effect->get_conjunctive_condition());
+    const auto translated_conjunctive_effect = this->transform(effect->get_conjunctive_effect());
     const auto translated_conditional_effect =
-        this->m_pddl_repositories.get_or_create_conditional_effect(this->transform(effect->get_parameters()),
-                                                                   this->transform(effect->get_conditions<Static>()),
-                                                                   this->transform(effect->get_conditions<Fluent>()),
-                                                                   this->transform(effect->get_conditions<Derived>()),
-                                                                   this->transform(effect->get_numeric_constraints()),
-                                                                   this->transform(effect->get_effects()),
-                                                                   this->transform(effect->get_numeric_effects<Fluent>()),
-                                                                   this->transform(effect->get_numeric_effects<Auxiliary>()));
+        this->m_pddl_repositories.get_or_create_conditional_effect(translated_conjunctive_condition, translated_conjunctive_effect);
 
     // Erase for next universal effect
     for (size_t i = 0; i < effect->get_arity(); ++i)
     {
-        m_variable_to_parameter_index.erase(effect->get_parameters()[i]);
+        m_variable_to_parameter_index.erase(effect->get_conjunctive_condition()->get_parameters()[i]);
     }
 
     return translated_conditional_effect;
@@ -107,9 +103,10 @@ Axiom EncodeParameterIndexInVariables::transform_impl(Axiom axiom)
         m_variable_to_parameter_index[axiom->get_parameters()[i]] = i;
     }
 
-    const auto translated_precondition = this->transform(axiom->get_precondition());
-
-    const auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(std::move(translated_precondition), this->transform(axiom->get_literal()));
+    // Ensure in order translation
+    const auto translated_conjunctive_condition = this->transform(axiom->get_conjunctive_condition());
+    const auto translated_literal = this->transform(axiom->get_literal());
+    const auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(translated_conjunctive_condition, translated_literal);
 
     // Ensure that other translations definitely not use parameter indices
     m_variable_to_parameter_index.clear();
@@ -127,14 +124,14 @@ Action EncodeParameterIndexInVariables::transform_impl(Action action)
         m_variable_to_parameter_index[action->get_parameters()[i]] = i;
     }
 
-    const auto translated_precondition = this->transform(action->get_precondition());
-
+    // Ensure in order translation
+    const auto translated_precondition = this->transform(action->get_conjunctive_condition());
+    const auto translated_conjunctive_effect = this->transform(action->get_conjunctive_effect());
     const auto translated_conditional_effects = this->transform(action->get_conditional_effects());
-
     const auto translated_action = this->m_pddl_repositories.get_or_create_action(action->get_name(),
                                                                                   action->get_original_arity(),
-                                                                                  std::move(translated_precondition),
-                                                                                  this->transform(action->get_strips_effect()),
+                                                                                  translated_precondition,
+                                                                                  translated_conjunctive_effect,
                                                                                   translated_conditional_effects);
 
     // Ensure that other translations definitely not use parameter indices

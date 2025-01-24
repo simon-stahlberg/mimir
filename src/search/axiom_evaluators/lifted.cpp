@@ -46,7 +46,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     {
         m_condition_grounders.emplace(
             axiom,
-            SatisficingBindingGenerator(m_grounder->get_literal_grounder(), m_grounder->get_numeric_constraint_grounder(), axiom->get_precondition()));
+            SatisficingBindingGenerator(m_grounder->get_literal_grounder(), m_grounder->get_numeric_constraint_grounder(), axiom->get_conjunctive_condition()));
     }
 }
 
@@ -91,7 +91,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_precondition(), dense_state))
+                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), dense_state))
                 {
                     continue;
                 }

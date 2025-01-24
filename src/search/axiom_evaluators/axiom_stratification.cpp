@@ -39,7 +39,7 @@ AxiomPartition::AxiomPartition(AxiomSet axioms,
     {
         bool is_relevant_first = true;
 
-        for (const auto& literal : axiom->get_precondition()->get_literals<Derived>())
+        for (const auto& literal : axiom->get_conjunctive_condition()->get_literals<Derived>())
         {
             const auto& predicate = literal->get_atom()->get_predicate();
 
@@ -115,7 +115,7 @@ static std::vector<PredicateSet<Derived>> compute_stratification(const AxiomList
     {
         const auto head_predicate = axiom->get_literal()->get_atom()->get_predicate();
 
-        for (const auto& condition : axiom->get_precondition()->get_literals<Derived>())
+        for (const auto& condition : axiom->get_conjunctive_condition()->get_literals<Derived>())
         {
             const auto condition_predicate = condition->get_atom()->get_predicate();
             if (condition->is_negated())

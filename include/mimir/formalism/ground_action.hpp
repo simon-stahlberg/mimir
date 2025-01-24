@@ -37,9 +37,9 @@ class GroundActionImpl
 private:
     Index m_index = Index(0);
     Index m_action_index = Index(0);
-    FlatIndexList m_objects = FlatIndexList();
-    GroundConjunctiveCondition m_strips_precondition = GroundConjunctiveCondition();
-    GroundEffectStrips m_strips_effect = GroundEffectStrips();
+    FlatIndexList m_object_indices = FlatIndexList();
+    GroundConjunctiveCondition m_conjunctive_precondition = GroundConjunctiveCondition();
+    GroundConjunctiveEffect m_conjunctive_effect = GroundConjunctiveEffect();
     GroundEffectConditionalList m_conditional_effects = GroundEffectConditionalList();
 
 public:
@@ -51,11 +51,11 @@ public:
     Index get_action_index() const;
     const FlatIndexList& get_object_indices() const;
 
-    /* STRIPS part */
-    GroundConjunctiveCondition& get_strips_precondition();
-    const GroundConjunctiveCondition& get_strips_precondition() const;
-    GroundEffectStrips& get_strips_effect();
-    const GroundEffectStrips& get_strips_effect() const;
+    /* Conjunctive part */
+    GroundConjunctiveCondition& get_conjunctive_condition();
+    const GroundConjunctiveCondition& get_conjunctive_condition() const;
+    GroundConjunctiveEffect& get_conjunctive_effect();
+    const GroundConjunctiveEffect& get_conjunctive_effect() const;
     /* Conditional effects */
     GroundEffectConditionalList& get_conditional_effects();
     const GroundEffectConditionalList& get_conditional_effects() const;
@@ -71,9 +71,12 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_action_index), std::as_const(m_objects)); }
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_action_index), std::as_const(m_object_indices)); }
 
-    auto cista_members() noexcept { return std::tie(m_index, m_action_index, m_objects, m_strips_precondition, m_strips_effect, m_conditional_effects); }
+    auto cista_members() noexcept
+    {
+        return std::tie(m_index, m_action_index, m_object_indices, m_conjunctive_precondition, m_conjunctive_effect, m_conditional_effects);
+    }
 };
 
 /// @brief STL does not define operator== for std::span.

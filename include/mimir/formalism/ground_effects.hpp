@@ -33,7 +33,7 @@ namespace mimir
 {
 
 template<DynamicFunctionTag F>
-class GroundEffectNumeric
+class GroundNumericEffect
 {
 private:
     loki::AssignOperatorEnum m_assign_operator = loki::AssignOperatorEnum::ASSIGN;
@@ -41,8 +41,8 @@ private:
     FlatExternalPtr<const GroundFunctionExpressionImpl> m_function_expression = nullptr;
 
 public:
-    GroundEffectNumeric() = default;
-    GroundEffectNumeric(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
+    GroundNumericEffect() = default;
+    GroundNumericEffect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
 
     loki::AssignOperatorEnum& get_assign_operator();
     loki::AssignOperatorEnum get_assign_operator() const;
@@ -57,15 +57,15 @@ public:
 };
 
 template<DynamicFunctionTag F>
-using GroundEffectNumericList = cista::offset::vector<GroundEffectNumeric<F>>;
+using GroundNumericEffectList = cista::offset::vector<GroundNumericEffect<F>>;
 
-class GroundEffectStrips
+class GroundConjunctiveEffect
 {
 private:
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
-    GroundEffectNumericList<Fluent> m_fluent_numeric_effects = GroundEffectNumericList<Fluent>();
-    GroundEffectNumericList<Auxiliary> m_auxiliary_numeric_effects = GroundEffectNumericList<Auxiliary>();
+    GroundNumericEffectList<Fluent> m_fluent_numeric_effects = GroundNumericEffectList<Fluent>();
+    GroundNumericEffectList<Auxiliary> m_auxiliary_numeric_effects = GroundNumericEffectList<Auxiliary>();
 
 public:
     /* Propositional effects */
@@ -77,27 +77,27 @@ public:
 
     /* Numeric effects */
     template<DynamicFunctionTag F>
-    GroundEffectNumericList<F>& get_numeric_effects();
+    GroundNumericEffectList<F>& get_numeric_effects();
     template<DynamicFunctionTag F>
-    const GroundEffectNumericList<F>& get_numeric_effects() const;
+    const GroundNumericEffectList<F>& get_numeric_effects() const;
 
     auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effects); }
 };
 
-class GroundEffectConditional
+class GroundConditionalEffect
 {
 private:
-    GroundConjunctiveCondition m_strips_condition = GroundConjunctiveCondition();
-    GroundEffectStrips m_strips_effect = GroundEffectStrips();
+    GroundConjunctiveCondition m_conjunctive_condition = GroundConjunctiveCondition();
+    GroundConjunctiveEffect m_conjunctive_effect = GroundConjunctiveEffect();
 
 public:
     /* Precondition */
-    GroundConjunctiveCondition& get_strips_precondition();
-    const GroundConjunctiveCondition& get_strips_precondition() const;
+    GroundConjunctiveCondition& get_conjunctive_condition();
+    const GroundConjunctiveCondition& get_conjunctive_condition() const;
 
     /* Effect */
-    GroundEffectStrips& get_strips_effect();
-    const GroundEffectStrips& get_strips_effect() const;
+    GroundConjunctiveEffect& get_conjunctive_effect();
+    const GroundConjunctiveEffect& get_conjunctive_effect() const;
 
     /* Utility */
     template<PredicateTag P>
@@ -111,10 +111,10 @@ public:
 
     bool is_applicable(Problem problem, const DenseState& dense_state) const;
 
-    auto cista_members() noexcept { return std::tie(m_strips_condition, m_strips_effect); }
+    auto cista_members() noexcept { return std::tie(m_conjunctive_condition, m_conjunctive_effect); }
 };
 
-using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditional>;
+using GroundEffectConditionalList = cista::offset::vector<GroundConditionalEffect>;
 
 /**
  * Utils
@@ -122,21 +122,21 @@ using GroundEffectConditionalList = cista::offset::vector<GroundEffectConditiona
 
 template<DynamicFunctionTag F>
 extern ContinuousCost
-evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
 template<DynamicFunctionTag F>
 extern ContinuousCost
-evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
 /**
  * Pretty printing
  */
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditional, const PDDLRepositories&>& data);
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const PDDLRepositories&>& data);
 
 }
 

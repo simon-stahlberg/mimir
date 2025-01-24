@@ -175,23 +175,23 @@ StateRepository::get_or_create_successor_state(State state, GroundAction action,
     return get_or_create_successor_state(m_dense_state_builder, action, auxiliary_numeric_state_variables);
 }
 
-static void collect_applied_strips_effects(GroundAction action,
-                                           const FlatDoubleList& state_fluent_numeric_variables,
-                                           const FlatDoubleList& state_auxiliary_numeric_variables,
-                                           FlatBitset& ref_negative_applied_effects,
-                                           FlatBitset& ref_positive_applied_effects,
-                                           FlatDoubleList& ref_fluent_numeric_variables,
-                                           FlatDoubleList& ref_auxiliary_numeric_variables)
+static void collect_applied_conjunctive_effects(GroundAction action,
+                                                const FlatDoubleList& state_fluent_numeric_variables,
+                                                const FlatDoubleList& state_auxiliary_numeric_variables,
+                                                FlatBitset& ref_negative_applied_effects,
+                                                FlatBitset& ref_positive_applied_effects,
+                                                FlatDoubleList& ref_fluent_numeric_variables,
+                                                FlatDoubleList& ref_auxiliary_numeric_variables)
 {
-    const auto& strips_action_effect = action->get_strips_effect();
-    insert_into_bitset(strips_action_effect.get_negative_effects(), ref_negative_applied_effects);
-    insert_into_bitset(strips_action_effect.get_positive_effects(), ref_positive_applied_effects);
-    for (const auto& effect_numeric : strips_action_effect.get_numeric_effects<Fluent>())
+    const auto& conjunctive_effect = action->get_conjunctive_effect();
+    insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
+    insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
+    for (const auto& numeric_effect : conjunctive_effect.get_numeric_effects<Fluent>())
     {
-        ref_fluent_numeric_variables[effect_numeric.get_function()->get_index()] =
-            evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
+        ref_fluent_numeric_variables[numeric_effect.get_function()->get_index()] =
+            evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
     }
-    for (const auto& effect_numeric : strips_action_effect.get_numeric_effects<Auxiliary>())
+    for (const auto& effect_numeric : conjunctive_effect.get_numeric_effects<Auxiliary>())
     {
         ref_auxiliary_numeric_variables[effect_numeric.get_function()->get_index()] =
             evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
@@ -212,14 +212,14 @@ static void collect_applied_conditional_effects(GroundAction action,
     {
         if (conditional_effect.is_applicable(problem, dense_state))
         {
-            insert_into_bitset(conditional_effect.get_strips_effect().get_positive_effects(), ref_positive_applied_effects);
-            insert_into_bitset(conditional_effect.get_strips_effect().get_negative_effects(), ref_negative_applied_effects);
-            for (const auto& effect_numeric : conditional_effect.get_strips_effect().get_numeric_effects<Fluent>())
+            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
+            insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);
+            for (const auto& effect_numeric : conditional_effect.get_conjunctive_effect().get_numeric_effects<Fluent>())
             {
                 ref_fluent_numeric_variables[effect_numeric.get_function()->get_index()] =
                     evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
             }
-            for (const auto& effect_numeric : conditional_effect.get_strips_effect().get_numeric_effects<Auxiliary>())
+            for (const auto& effect_numeric : conditional_effect.get_conjunctive_effect().get_numeric_effects<Auxiliary>())
             {
                 ref_auxiliary_numeric_variables[effect_numeric.get_function()->get_index()] =
                     evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
@@ -256,13 +256,13 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
     m_applied_positive_effect_atoms.unset_all();
 
     // TODO(numeric): for the beginning we just apply the numeric effects directly instead of collecting them...
-    collect_applied_strips_effects(action,
-                                   dense_fluent_numeric_variables,
-                                   m_state_auxiliary_numeric_variables,
-                                   m_applied_negative_effect_atoms,
-                                   m_applied_positive_effect_atoms,
-                                   dense_fluent_numeric_variables,
-                                   m_state_auxiliary_numeric_variables);
+    collect_applied_conjunctive_effects(action,
+                                        dense_fluent_numeric_variables,
+                                        m_state_auxiliary_numeric_variables,
+                                        m_applied_negative_effect_atoms,
+                                        m_applied_positive_effect_atoms,
+                                        dense_fluent_numeric_variables,
+                                        m_state_auxiliary_numeric_variables);
 
     collect_applied_conditional_effects(action,
                                         dense_fluent_numeric_variables,

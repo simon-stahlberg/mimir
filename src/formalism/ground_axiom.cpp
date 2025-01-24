@@ -34,31 +34,31 @@ Index& GroundAxiomImpl::get_axiom() { return m_axiom_index; }
 
 Index GroundAxiomImpl::get_axiom_index() const { return m_axiom_index; }
 
-FlatIndexList& GroundAxiomImpl::get_object_indices() { return m_objects; }
+FlatIndexList& GroundAxiomImpl::get_object_indices() { return m_object_indices; }
 
-const FlatIndexList& GroundAxiomImpl::get_object_indices() const { return m_objects; }
+const FlatIndexList& GroundAxiomImpl::get_object_indices() const { return m_object_indices; }
 
-GroundConjunctiveCondition& GroundAxiomImpl::get_strips_precondition() { return m_strips_precondition; }
+GroundConjunctiveCondition& GroundAxiomImpl::get_conjunctive_condition() { return m_conjunctive_condition; }
 
-const GroundConjunctiveCondition& GroundAxiomImpl::get_strips_precondition() const { return m_strips_precondition; }
+const GroundConjunctiveCondition& GroundAxiomImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_effect; }
+GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_literal; }
 
-const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_effect; }
+const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_literal; }
 
 bool GroundAxiomImpl::is_dynamically_applicable(const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_dynamically_applicable(dense_state);
+    return get_conjunctive_condition().is_dynamically_applicable(dense_state);
 }
 
 bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
 {
-    return get_strips_precondition().is_statically_applicable(static_positive_atoms);
+    return get_conjunctive_condition().is_statically_applicable(static_positive_atoms);
 }
 
 bool GroundAxiomImpl::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return get_strips_precondition().is_applicable(problem, dense_state);
+    return get_conjunctive_condition().is_applicable(problem, dense_state);
 }
 
 /**
@@ -98,13 +98,13 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundAxiom, const P
         binding.push_back(pddl_repositories.get_object(object_index));
     }
 
-    const auto& strips_precondition = axiom->get_strips_precondition();
+    const auto& conjunctive_condition = axiom->get_conjunctive_condition();
 
     os << "Axiom("                                                                                                                          //
        << "index=" << axiom->get_index() << ", "                                                                                            //
        << "name=" << pddl_repositories.get_axiom(axiom->get_axiom_index())->get_literal()->get_atom()->get_predicate()->get_name() << ", "  //
        << "binding=" << binding << ", "                                                                                                     //
-       << std::make_tuple(strips_precondition, std::cref(pddl_repositories)) << ", "                                                        //
+       << std::make_tuple(conjunctive_condition, std::cref(pddl_repositories)) << ", "                                                      //
        << "effect=" << std::make_tuple(axiom->get_derived_effect(), std::cref(pddl_repositories)) << ")";
 
     return os;

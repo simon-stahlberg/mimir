@@ -31,9 +31,9 @@
 namespace mimir
 {
 
-/* GroundEffectNumeric */
+/* GroundNumericEffect */
 template<DynamicFunctionTag F>
-GroundEffectNumeric<F>::GroundEffectNumeric(loki::AssignOperatorEnum assign_operator,
+GroundNumericEffect<F>::GroundNumericEffect(loki::AssignOperatorEnum assign_operator,
                                             GroundFunction<F> function,
                                             GroundFunctionExpression function_expression) :
     m_assign_operator(assign_operator),
@@ -43,53 +43,53 @@ GroundEffectNumeric<F>::GroundEffectNumeric(loki::AssignOperatorEnum assign_oper
 }
 
 template<DynamicFunctionTag F>
-loki::AssignOperatorEnum& GroundEffectNumeric<F>::get_assign_operator()
+loki::AssignOperatorEnum& GroundNumericEffect<F>::get_assign_operator()
 {
     return m_assign_operator;
 }
 template<DynamicFunctionTag F>
-loki::AssignOperatorEnum GroundEffectNumeric<F>::get_assign_operator() const
+loki::AssignOperatorEnum GroundNumericEffect<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
 template<DynamicFunctionTag F>
-FlatExternalPtr<const GroundFunctionImpl<F>>& GroundEffectNumeric<F>::get_function()
+FlatExternalPtr<const GroundFunctionImpl<F>>& GroundNumericEffect<F>::get_function()
 {
     return m_function;
 }
 template<DynamicFunctionTag F>
-FlatExternalPtr<const GroundFunctionImpl<F>> GroundEffectNumeric<F>::get_function() const
+FlatExternalPtr<const GroundFunctionImpl<F>> GroundNumericEffect<F>::get_function() const
 {
     return m_function;
 }
 
 template<DynamicFunctionTag F>
-FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundEffectNumeric<F>::get_function_expression()
+FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundNumericEffect<F>::get_function_expression()
 {
     return m_function_expression;
 }
 template<DynamicFunctionTag F>
-FlatExternalPtr<const GroundFunctionExpressionImpl> GroundEffectNumeric<F>::get_function_expression() const
+FlatExternalPtr<const GroundFunctionExpressionImpl> GroundNumericEffect<F>::get_function_expression() const
 {
     return m_function_expression;
 }
 
-template class GroundEffectNumeric<Fluent>;
-template class GroundEffectNumeric<Auxiliary>;
+template class GroundNumericEffect<Fluent>;
+template class GroundNumericEffect<Auxiliary>;
 
-/* GroundEffectStrips */
+/* GroundConjunctiveEffect */
 
-FlatIndexList& GroundEffectStrips::get_positive_effects() { return m_positive_effects; }
+FlatIndexList& GroundConjunctiveEffect::get_positive_effects() { return m_positive_effects; }
 
-const FlatIndexList& GroundEffectStrips::get_positive_effects() const { return m_positive_effects; }
+const FlatIndexList& GroundConjunctiveEffect::get_positive_effects() const { return m_positive_effects; }
 
-FlatIndexList& GroundEffectStrips::get_negative_effects() { return m_negative_effects; }
+FlatIndexList& GroundConjunctiveEffect::get_negative_effects() { return m_negative_effects; }
 
-const FlatIndexList& GroundEffectStrips::get_negative_effects() const { return m_negative_effects; }
+const FlatIndexList& GroundConjunctiveEffect::get_negative_effects() const { return m_negative_effects; }
 
 template<DynamicFunctionTag F>
-GroundEffectNumericList<F>& GroundEffectStrips::get_numeric_effects()
+GroundNumericEffectList<F>& GroundConjunctiveEffect::get_numeric_effects()
 {
     if constexpr (std::is_same_v<F, Fluent>)
     {
@@ -105,11 +105,11 @@ GroundEffectNumericList<F>& GroundEffectStrips::get_numeric_effects()
     }
 }
 
-template GroundEffectNumericList<Fluent>& GroundEffectStrips::get_numeric_effects<Fluent>();
-template GroundEffectNumericList<Auxiliary>& GroundEffectStrips::get_numeric_effects<Auxiliary>();
+template GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_numeric_effects<Fluent>();
+template GroundNumericEffectList<Auxiliary>& GroundConjunctiveEffect::get_numeric_effects<Auxiliary>();
 
 template<DynamicFunctionTag F>
-const GroundEffectNumericList<F>& GroundEffectStrips::get_numeric_effects() const
+const GroundNumericEffectList<F>& GroundConjunctiveEffect::get_numeric_effects() const
 {
     if constexpr (std::is_same_v<F, Fluent>)
     {
@@ -125,49 +125,49 @@ const GroundEffectNumericList<F>& GroundEffectStrips::get_numeric_effects() cons
     }
 }
 
-template const GroundEffectNumericList<Fluent>& GroundEffectStrips::get_numeric_effects<Fluent>() const;
-template const GroundEffectNumericList<Auxiliary>& GroundEffectStrips::get_numeric_effects<Auxiliary>() const;
+template const GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_numeric_effects<Fluent>() const;
+template const GroundNumericEffectList<Auxiliary>& GroundConjunctiveEffect::get_numeric_effects<Auxiliary>() const;
 
-/* GroundEffectConditional */
+/* GroundConditionalEffect */
 
 /* Precondition */
-GroundConjunctiveCondition& GroundEffectConditional::get_strips_precondition() { return m_strips_condition; }
+GroundConjunctiveCondition& GroundConditionalEffect::get_conjunctive_condition() { return m_conjunctive_condition; }
 
-const GroundConjunctiveCondition& GroundEffectConditional::get_strips_precondition() const { return m_strips_condition; }
+const GroundConjunctiveCondition& GroundConditionalEffect::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
 /* Effect */
-GroundEffectStrips& GroundEffectConditional::get_strips_effect() { return m_strips_effect; }
+GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect() { return m_conjunctive_effect; }
 
-const GroundEffectStrips& GroundEffectConditional::get_strips_effect() const { return m_strips_effect; }
+const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
 template<PredicateTag P>
-bool GroundEffectConditional::is_applicable(const FlatBitset& atoms) const
+bool GroundConditionalEffect::is_applicable(const FlatBitset& atoms) const
 {
-    return m_strips_condition.is_applicable<P>(atoms);
+    return m_conjunctive_condition.is_applicable<P>(atoms);
 }
 
-template bool GroundEffectConditional::is_applicable<Static>(const FlatBitset& atoms) const;
-template bool GroundEffectConditional::is_applicable<Fluent>(const FlatBitset& atoms) const;
-template bool GroundEffectConditional::is_applicable<Derived>(const FlatBitset& atoms) const;
+template bool GroundConditionalEffect::is_applicable<Static>(const FlatBitset& atoms) const;
+template bool GroundConditionalEffect::is_applicable<Fluent>(const FlatBitset& atoms) const;
+template bool GroundConditionalEffect::is_applicable<Derived>(const FlatBitset& atoms) const;
 
-bool GroundEffectConditional::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
+bool GroundConditionalEffect::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
 {
-    return m_strips_condition.is_applicable(fluent_numeric_variables);
+    return m_conjunctive_condition.is_applicable(fluent_numeric_variables);
 }
 
-bool GroundEffectConditional::is_dynamically_applicable(const DenseState& dense_state) const
+bool GroundConditionalEffect::is_dynamically_applicable(const DenseState& dense_state) const
 {
-    return m_strips_condition.is_dynamically_applicable(dense_state);
+    return m_conjunctive_condition.is_dynamically_applicable(dense_state);
 }
 
-bool GroundEffectConditional::is_statically_applicable(Problem problem) const
+bool GroundConditionalEffect::is_statically_applicable(Problem problem) const
 {
-    return m_strips_condition.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
+    return m_conjunctive_condition.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
 }
 
-bool GroundEffectConditional::is_applicable(Problem problem, const DenseState& dense_state) const
+bool GroundConditionalEffect::is_applicable(Problem problem, const DenseState& dense_state) const
 {
-    return m_strips_condition.is_applicable(problem, dense_state);
+    return m_conjunctive_condition.is_applicable(problem, dense_state);
 }
 
 /**
@@ -175,7 +175,7 @@ bool GroundEffectConditional::is_applicable(Problem problem, const DenseState& d
  */
 
 template<DynamicFunctionTag F>
-ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables)
+ContinuousCost evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables)
 {
     auto old_value = ContinuousCost(0);
     if constexpr (std::is_same_v<F, Fluent>)
@@ -228,35 +228,35 @@ ContinuousCost evaluate(GroundEffectNumeric<F> effect, const FlatDoubleList& flu
     }
 }
 
-template double evaluate(GroundEffectNumeric<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+template double evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 template double
-evaluate(GroundEffectNumeric<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
 
 /**
  * Pretty printing
  */
 
 template<DynamicFunctionTag F>
-std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<F>& element)
+std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<F>& element)
 {
     os << "(" << to_string(element.get_assign_operator()) << " " << element.get_function() << " " << element.get_function_expression() << ")";
 
     return os;
 }
 
-template std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<Fluent>& data);
-template std::ostream& operator<<(std::ostream& os, const GroundEffectNumeric<Auxiliary>& data);
+template std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<Fluent>& data);
+template std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<Auxiliary>& data);
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data)
 {
     // TODO(numerical): add numeric effects
-    const auto& [strips_effect_proxy, pddl_repositories] = data;
+    const auto& [conjunctive_effect, pddl_repositories] = data;
 
-    const auto& positive_effect_bitset = strips_effect_proxy.get_positive_effects();
-    const auto& negative_effect_bitset = strips_effect_proxy.get_negative_effects();
-    const auto& fluent_numeric_effects = strips_effect_proxy.get_numeric_effects<Fluent>();
-    const auto& auxiliary_numeric_effects = strips_effect_proxy.get_numeric_effects<Auxiliary>();
+    const auto& positive_effect_bitset = conjunctive_effect.get_positive_effects();
+    const auto& negative_effect_bitset = conjunctive_effect.get_negative_effects();
+    const auto& fluent_numeric_effects = conjunctive_effect.get_numeric_effects<Fluent>();
+    const auto& auxiliary_numeric_effects = conjunctive_effect.get_numeric_effects<Auxiliary>();
 
     auto positive_simple_effects = GroundAtomList<Fluent> {};
     auto negative_simple_effects = GroundAtomList<Fluent> {};
@@ -271,12 +271,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectStrips, 
 }
 
 template<>
-std::ostream& operator<<(std::ostream& os, const std::tuple<GroundEffectConditional, const PDDLRepositories&>& data)
+std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConditionalEffect, const PDDLRepositories&>& data)
 {
     const auto& [cond_effect_proxy, pddl_repositories] = data;
 
-    os << std::make_tuple(cond_effect_proxy.get_strips_precondition(), std::cref(pddl_repositories)) << ", "
-       << std::make_tuple(cond_effect_proxy.get_strips_effect(), std::cref(pddl_repositories));
+    os << std::make_tuple(cond_effect_proxy.get_conjunctive_condition(), std::cref(pddl_repositories)) << ", "
+       << std::make_tuple(cond_effect_proxy.get_conjunctive_effect(), std::cref(pddl_repositories));
 
     return os;
 }

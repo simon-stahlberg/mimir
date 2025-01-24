@@ -26,12 +26,12 @@ class AxiomImpl
 {
 private:
     Index m_index;
-    ConjunctiveCondition m_precondition;
+    ConjunctiveCondition m_conjunctive_condition;
     Literal<Derived> m_literal;
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    AxiomImpl(Index index, ConjunctiveCondition precondition, Literal<Derived> literal);
+    AxiomImpl(Index index, ConjunctiveCondition conjunctive_condition, Literal<Derived> literal);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -46,7 +46,7 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    const ConjunctiveCondition& get_precondition() const;
+    const ConjunctiveCondition& get_conjunctive_condition() const;
     const Literal<Derived>& get_literal() const;
 
     size_t get_arity() const;
@@ -54,7 +54,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_precondition), std::as_const(m_literal)); }
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_conjunctive_condition), std::as_const(m_literal)); }
 };
 
 extern std::ostream& operator<<(std::ostream& out, const AxiomImpl& element);

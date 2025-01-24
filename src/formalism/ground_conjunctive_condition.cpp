@@ -193,14 +193,14 @@ template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCondition, const PDDLRepositories&>& data)
 {
     // TODO(numerical): add numeric constraints
-    const auto& [strips_precondition_proxy, pddl_repositories] = data;
+    const auto& [conjunctive_condition, pddl_repositories] = data;
 
-    const auto& positive_static_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Static>();
-    const auto& negative_static_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Static>();
-    const auto& positive_fluent_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Fluent>();
-    const auto& negative_fluent_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Fluent>();
-    const auto& positive_derived_precondition_bitset = strips_precondition_proxy.get_positive_precondition<Derived>();
-    const auto& negative_derived_precondition_bitset = strips_precondition_proxy.get_negative_precondition<Derived>();
+    const auto& positive_static_precondition_bitset = conjunctive_condition.get_positive_precondition<Static>();
+    const auto& negative_static_precondition_bitset = conjunctive_condition.get_negative_precondition<Static>();
+    const auto& positive_fluent_precondition_bitset = conjunctive_condition.get_positive_precondition<Fluent>();
+    const auto& negative_fluent_precondition_bitset = conjunctive_condition.get_negative_precondition<Fluent>();
+    const auto& positive_derived_precondition_bitset = conjunctive_condition.get_positive_precondition<Derived>();
+    const auto& negative_derived_precondition_bitset = conjunctive_condition.get_negative_precondition<Derived>();
 
     auto positive_static_precondition = GroundAtomList<Static> {};
     auto negative_static_precondition = GroundAtomList<Static> {};
@@ -219,7 +219,7 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCon
     os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
        << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
        << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition << ", "
-       << "numeric constraints=" << strips_precondition_proxy.get_numeric_constraints();
+       << "numeric constraints=" << conjunctive_condition.get_numeric_constraints();
 
     return os;
 }

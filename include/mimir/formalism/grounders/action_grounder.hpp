@@ -46,7 +46,7 @@ private:
                                 const ObjectList& binding);
 
     template<DynamicFunctionTag F>
-    void ground_and_fill_vector(const EffectNumericList<F>& numeric_effects, GroundEffectNumericList<F>& ref_numeric_effects, const ObjectList& binding);
+    void ground_and_fill_vector(const NumericEffectList<F>& numeric_effects, GroundNumericEffectList<F>& ref_numeric_effects, const ObjectList& binding);
 
 public:
     /// @brief Simplest construction

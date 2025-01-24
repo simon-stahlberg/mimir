@@ -190,10 +190,10 @@ MatchTree<T>::NodeIndex MatchTree<T>::MatchTree::build_recursively(const size_t 
     auto dontcare_elements = std::vector<T> {};
     for (const auto& element : elements)
     {
-        const bool positive_condition = (is_fluent) ? contains(element->get_strips_precondition().template get_positive_precondition<Fluent>(), atom_index) :
-                                                      contains(element->get_strips_precondition().template get_positive_precondition<Derived>(), atom_index);
-        const bool negative_condition = (is_fluent) ? contains(element->get_strips_precondition().template get_negative_precondition<Fluent>(), atom_index) :
-                                                      contains(element->get_strips_precondition().template get_negative_precondition<Derived>(), atom_index);
+        const bool positive_condition = (is_fluent) ? contains(element->get_conjunctive_condition().template get_positive_precondition<Fluent>(), atom_index) :
+                                                      contains(element->get_conjunctive_condition().template get_positive_precondition<Derived>(), atom_index);
+        const bool negative_condition = (is_fluent) ? contains(element->get_conjunctive_condition().template get_negative_precondition<Fluent>(), atom_index) :
+                                                      contains(element->get_conjunctive_condition().template get_negative_precondition<Derived>(), atom_index);
 
         if (positive_condition && negative_condition)
         {

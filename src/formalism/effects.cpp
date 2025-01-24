@@ -21,6 +21,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -38,7 +39,7 @@ namespace mimir
  */
 
 template<DynamicFunctionTag F>
-EffectNumericImpl<F>::EffectNumericImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) :
+NumericEffectImpl<F>::NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) :
     m_index(index),
     m_assign_operator(assign_operator),
     m_function(function),
@@ -47,47 +48,49 @@ EffectNumericImpl<F>::EffectNumericImpl(Index index, loki::AssignOperatorEnum as
 }
 
 template<DynamicFunctionTag F>
-Index EffectNumericImpl<F>::get_index() const
+Index NumericEffectImpl<F>::get_index() const
 {
     return m_index;
 }
 
 template<DynamicFunctionTag F>
-loki::AssignOperatorEnum EffectNumericImpl<F>::get_assign_operator() const
+loki::AssignOperatorEnum NumericEffectImpl<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
 template<DynamicFunctionTag F>
-const Function<F>& EffectNumericImpl<F>::get_function() const
+const Function<F>& NumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
 template<DynamicFunctionTag F>
-const FunctionExpression& EffectNumericImpl<F>::get_function_expression() const
+const FunctionExpression& NumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
 }
 
-template class EffectNumericImpl<Fluent>;
-template class EffectNumericImpl<Auxiliary>;
+template class NumericEffectImpl<Fluent>;
+template class NumericEffectImpl<Auxiliary>;
 
 /**
  * Type 1 effect
  */
 
-EffectStripsImpl::EffectStripsImpl(Index index,
-                                   LiteralList<Fluent> effects,
-                                   EffectNumericList<Fluent> fluent_numeric_effects,
-                                   EffectNumericList<Auxiliary> auxiliary_numeric_effects) :
+ConjunctiveEffectImpl::ConjunctiveEffectImpl(Index index,
+                                             VariableList parameters,
+                                             LiteralList<Fluent> effects,
+                                             NumericEffectList<Fluent> fluent_numeric_effects,
+                                             NumericEffectList<Auxiliary> auxiliary_numeric_effects) :
     m_index(index),
-    m_effects(std::move(effects)),
+    m_parameters(std::move(parameters)),
+    m_literals(std::move(effects)),
     m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
     m_auxiliary_numeric_effects(std::move(auxiliary_numeric_effects))
 {
-    assert(is_all_unique(m_effects));
-    assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(is_all_unique(m_literals));
+    assert(std::is_sorted(m_literals.begin(), m_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_fluent_numeric_effects.begin(),
                           m_fluent_numeric_effects.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
@@ -96,12 +99,14 @@ EffectStripsImpl::EffectStripsImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-Index EffectStripsImpl::get_index() const { return m_index; }
+Index ConjunctiveEffectImpl::get_index() const { return m_index; }
 
-const LiteralList<Fluent>& EffectStripsImpl::get_effects() const { return m_effects; }
+const VariableList& ConjunctiveEffectImpl::get_parameters() const { return m_parameters; }
+
+const LiteralList<Fluent>& ConjunctiveEffectImpl::get_literals() const { return m_literals; }
 
 template<DynamicFunctionTag F>
-const EffectNumericList<F>& EffectStripsImpl::get_numeric_effects() const
+const NumericEffectList<F>& ConjunctiveEffectImpl::get_numeric_effects() const
 {
     if constexpr (std::is_same_v<F, Fluent>)
     {
@@ -117,129 +122,49 @@ const EffectNumericList<F>& EffectStripsImpl::get_numeric_effects() const
     }
 }
 
-template const EffectNumericList<Fluent>& EffectStripsImpl::get_numeric_effects() const;
-template const EffectNumericList<Auxiliary>& EffectStripsImpl::get_numeric_effects() const;
+template const NumericEffectList<Fluent>& ConjunctiveEffectImpl::get_numeric_effects() const;
+template const NumericEffectList<Auxiliary>& ConjunctiveEffectImpl::get_numeric_effects() const;
 
 /**
  * Type 3 effect
  */
 
-EffectConditionalImpl::EffectConditionalImpl(Index index,
-                                             VariableList quantified_variables,
-                                             LiteralList<Static> static_conditions,
-                                             LiteralList<Fluent> fluent_conditions,
-                                             LiteralList<Derived> derived_conditions,
-                                             NumericConstraintList numeric_constraints,
-                                             LiteralList<Fluent> effects,
-                                             EffectNumericList<Fluent> fluent_numeric_effects,
-                                             EffectNumericList<Auxiliary> auxiliary_numeric_effects) :
+ConditionalEffectImpl::ConditionalEffectImpl(Index index, ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect) :
     m_index(index),
-    m_quantified_variables(std::move(quantified_variables)),
-    m_static_conditions(std::move(static_conditions)),
-    m_fluent_conditions(std::move(fluent_conditions)),
-    m_derived_conditions(std::move(derived_conditions)),
-    m_numeric_constraints(std::move(numeric_constraints)),
-    m_effects(std::move(effects)),
-    m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
-    m_auxiliary_numeric_effects(std::move(auxiliary_numeric_effects))
+    m_conjunctive_condition(std::move(conjunctive_condition)),
+    m_conjunctive_effect(std::move(conjunctive_effect))
 {
-    assert(is_all_unique(m_quantified_variables));
-    assert(is_all_unique(m_static_conditions));
-    assert(is_all_unique(m_fluent_conditions));
-    assert(is_all_unique(m_derived_conditions));
-    assert(is_all_unique(m_effects));
-    assert(
-        std::is_sorted(m_static_conditions.begin(), m_static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_fluent_conditions.begin(), m_fluent_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(
-        std::is_sorted(m_derived_conditions.begin(), m_derived_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_numeric_constraints.begin(),
-                          m_numeric_constraints.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_effects.begin(), m_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_fluent_numeric_effects.begin(),
-                          m_fluent_numeric_effects.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_auxiliary_numeric_effects.begin(),
-                          m_auxiliary_numeric_effects.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
+    assert(conjunctive_condition);
+    assert(conjunctive_effect);
 }
 
-Index EffectConditionalImpl::get_index() const { return m_index; }
+Index ConditionalEffectImpl::get_index() const { return m_index; }
 
-const VariableList& EffectConditionalImpl::get_parameters() const { return m_quantified_variables; }
+const ConjunctiveCondition& ConditionalEffectImpl::get_conjunctive_condition() const { return m_conjunctive_condition; }
 
-template<PredicateTag P>
-const LiteralList<P>& EffectConditionalImpl::get_conditions() const
-{
-    if constexpr (std::is_same_v<P, Static>)
-    {
-        return m_static_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Fluent>)
-    {
-        return m_fluent_conditions;
-    }
-    else if constexpr (std::is_same_v<P, Derived>)
-    {
-        return m_derived_conditions;
-    }
-    else
-    {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
-    }
-}
+const ConjunctiveEffect& ConditionalEffectImpl::get_conjunctive_effect() const { return m_conjunctive_effect; }
 
-template const LiteralList<Static>& EffectConditionalImpl::get_conditions<Static>() const;
-template const LiteralList<Fluent>& EffectConditionalImpl::get_conditions<Fluent>() const;
-template const LiteralList<Derived>& EffectConditionalImpl::get_conditions<Derived>() const;
-
-const NumericConstraintList& EffectConditionalImpl::get_numeric_constraints() const { return m_numeric_constraints; }
-
-const LiteralList<Fluent>& EffectConditionalImpl::get_effects() const { return m_effects; }
+size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition->get_arity(); }
 
 template<DynamicFunctionTag F>
-const EffectNumericList<F>& EffectConditionalImpl::get_numeric_effects() const
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_numeric_effects;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_numeric_effects;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
-
-template const EffectNumericList<Fluent>& EffectConditionalImpl::get_numeric_effects() const;
-template const EffectNumericList<Auxiliary>& EffectConditionalImpl::get_numeric_effects() const;
-
-size_t EffectConditionalImpl::get_arity() const { return m_quantified_variables.size(); }
-
-template<DynamicFunctionTag F>
-std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<F>& element)
+std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<Fluent>& element);
-template std::ostream& operator<<(std::ostream& out, const EffectNumericImpl<Auxiliary>& element);
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<Auxiliary>& element);
 
-std::ostream& operator<<(std::ostream& out, const EffectStripsImpl& element)
+std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element)
+std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
@@ -247,22 +172,22 @@ std::ostream& operator<<(std::ostream& out, const EffectConditionalImpl& element
 }
 
 template<DynamicFunctionTag F>
-std::ostream& operator<<(std::ostream& out, EffectNumeric<F> element)
+std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
 {
     out << *element;
     return out;
 }
 
-template std::ostream& operator<<(std::ostream& out, EffectNumeric<Fluent> element);
-template std::ostream& operator<<(std::ostream& out, EffectNumeric<Auxiliary> element);
+template std::ostream& operator<<(std::ostream& out, NumericEffect<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, NumericEffect<Auxiliary> element);
 
-std::ostream& operator<<(std::ostream& out, EffectStrips element)
+std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element)
 {
     out << *element;
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, EffectConditional element)
+std::ostream& operator<<(std::ostream& out, ConditionalEffect element)
 {
     out << *element;
     return out;

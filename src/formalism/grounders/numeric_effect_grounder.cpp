@@ -30,15 +30,15 @@ NumericEffectGrounder::NumericEffectGrounder(std::shared_ptr<FunctionGrounder> f
 }
 
 template<DynamicFunctionTag F>
-GroundEffectNumeric<F> NumericEffectGrounder::ground(EffectNumeric<F> numeric_effect, const ObjectList& binding)
+GroundNumericEffect<F> NumericEffectGrounder::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
 {
-    return GroundEffectNumeric<F>(numeric_effect->get_assign_operator(),
+    return GroundNumericEffect<F>(numeric_effect->get_assign_operator(),
                                   m_function_grounder->ground(numeric_effect->get_function(), binding),
                                   m_fexpr_grounder->ground(numeric_effect->get_function_expression(), binding));
 }
 
-template GroundEffectNumeric<Fluent> NumericEffectGrounder::ground(EffectNumeric<Fluent> numeric_effect, const ObjectList& binding);
-template GroundEffectNumeric<Auxiliary> NumericEffectGrounder::ground(EffectNumeric<Auxiliary> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<Fluent> NumericEffectGrounder::ground(NumericEffect<Fluent> numeric_effect, const ObjectList& binding);
+template GroundNumericEffect<Auxiliary> NumericEffectGrounder::ground(NumericEffect<Auxiliary> numeric_effect, const ObjectList& binding);
 
 /**
  * Getters

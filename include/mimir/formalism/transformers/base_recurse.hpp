@@ -110,26 +110,22 @@ protected:
         this->prepare(function_value->get_function());
     }
     template<DynamicFunctionTag F>
-    void prepare_impl(EffectNumeric<F> effect)
+    void prepare_impl(NumericEffect<F> effect)
     {
         this->prepare(effect->get_function());
         this->prepare(effect->get_function_expression());
     }
-    void prepare_impl(EffectStrips effect)
+    void prepare_impl(ConjunctiveEffect effect)
     {
-        this->prepare(effect->get_effects());
+        this->prepare(effect->get_parameters());
+        this->prepare(effect->get_literals());
         this->prepare(effect->get_numeric_effects<Fluent>());
         this->prepare(effect->get_numeric_effects<Auxiliary>());
     }
-    void prepare_impl(EffectConditional effect)
+    void prepare_impl(ConditionalEffect effect)
     {
-        this->prepare(effect->get_parameters());
-        this->prepare(effect->get_conditions<Static>());
-        this->prepare(effect->get_conditions<Fluent>());
-        this->prepare(effect->get_conditions<Derived>());
-        this->prepare(effect->get_numeric_constraints());
-        this->prepare(effect->get_effects());
-        this->prepare(effect->get_numeric_effects<Auxiliary>());
+        this->prepare(effect->get_conjunctive_condition());
+        this->prepare(effect->get_conjunctive_effect());
     }
     void prepare_impl(NumericConstraint condition)
     {
@@ -202,13 +198,13 @@ protected:
     }
     void prepare_impl(Action action)
     {
-        this->prepare(action->get_precondition());
-        this->prepare(action->get_strips_effect());
+        this->prepare(action->get_conjunctive_condition());
+        this->prepare(action->get_conjunctive_effect());
         this->prepare(action->get_conditional_effects());
     }
     void prepare_impl(Axiom axiom)
     {
-        this->prepare(axiom->get_precondition());
+        this->prepare(axiom->get_conjunctive_condition());
         this->prepare(axiom->get_literal());
     }
     void prepare_impl(Domain domain)
@@ -333,28 +329,23 @@ protected:
         return this->m_pddl_repositories.get_or_create_ground_function_value(this->transform(function_value->get_function()), function_value->get_number());
     }
     template<DynamicFunctionTag F>
-    EffectNumeric<F> transform_impl(EffectNumeric<F> effect)
+    NumericEffect<F> transform_impl(NumericEffect<F> effect)
     {
         return this->m_pddl_repositories.get_or_create_numeric_effect(effect->get_assign_operator(),
                                                                       this->transform(effect->get_function()),
                                                                       this->transform(effect->get_function_expression()));
     }
-    EffectStrips transform_impl(EffectStrips effect)
+    ConjunctiveEffect transform_impl(ConjunctiveEffect effect)
     {
-        return this->m_pddl_repositories.get_or_create_strips_effect(this->transform(effect->get_effects()),
-                                                                     this->transform(effect->get_numeric_effects<Fluent>()),
-                                                                     this->transform(effect->get_numeric_effects<Auxiliary>()));
-    }
-    EffectConditional transform_impl(EffectConditional effect)
-    {
-        return this->m_pddl_repositories.get_or_create_conditional_effect(this->transform(effect->get_parameters()),
-                                                                          this->transform(effect->get_conditions<Static>()),
-                                                                          this->transform(effect->get_conditions<Fluent>()),
-                                                                          this->transform(effect->get_conditions<Derived>()),
-                                                                          this->transform(effect->get_numeric_constraints()),
-                                                                          this->transform(effect->get_effects()),
+        return this->m_pddl_repositories.get_or_create_conjunctive_effect(this->transform(effect->get_parameters()),
+                                                                          this->transform(effect->get_literals()),
                                                                           this->transform(effect->get_numeric_effects<Fluent>()),
                                                                           this->transform(effect->get_numeric_effects<Auxiliary>()));
+    }
+    ConditionalEffect transform_impl(ConditionalEffect effect)
+    {
+        return this->m_pddl_repositories.get_or_create_conditional_effect(this->transform(effect->get_conjunctive_condition()),
+                                                                          this->transform(effect->get_conjunctive_effect()));
     }
     NumericConstraint transform_impl(NumericConstraint condition)
     {
@@ -370,11 +361,11 @@ protected:
     }
     ConjunctiveCondition transform_impl(ConjunctiveCondition condition)
     {
-        return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(this->transform(condition->get_parameters()),
-                                                                                                      this->transform(condition->get_literals<Static>()),
-                                                                                                      this->transform(condition->get_literals<Fluent>()),
-                                                                                                      this->transform(condition->get_literals<Derived>()),
-                                                                                                      this->transform(condition->get_numeric_constraints()));
+        return this->m_pddl_repositories.get_or_create_conjunctive_condition(this->transform(condition->get_parameters()),
+                                                                             this->transform(condition->get_literals<Static>()),
+                                                                             this->transform(condition->get_literals<Fluent>()),
+                                                                             this->transform(condition->get_literals<Derived>()),
+                                                                             this->transform(condition->get_numeric_constraints()));
     }
     FunctionExpressionNumber transform_impl(FunctionExpressionNumber function_expression)
     {
@@ -459,13 +450,13 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_action(action->get_name(),
                                                               action->get_original_arity(),
-                                                              this->transform(action->get_precondition()),
-                                                              this->transform(action->get_strips_effect()),
+                                                              this->transform(action->get_conjunctive_condition()),
+                                                              this->transform(action->get_conjunctive_effect()),
                                                               this->transform(action->get_conditional_effects()));
     }
     Axiom transform_impl(Axiom axiom)
     {
-        return this->m_pddl_repositories.get_or_create_axiom(this->transform(axiom->get_precondition()), this->transform(axiom->get_literal()));
+        return this->m_pddl_repositories.get_or_create_axiom(this->transform(axiom->get_conjunctive_condition()), this->transform(axiom->get_literal()));
     }
     Domain transform_impl(Domain domain)
     {

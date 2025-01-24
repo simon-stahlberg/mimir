@@ -28,18 +28,18 @@ private:
     Index m_index;
     std::string m_name;
     size_t m_original_arity;
-    ConjunctiveCondition m_precondition;
-    EffectStrips m_strips_effect;
-    EffectConditionalList m_conditional_effects;
+    ConjunctiveCondition m_conjunctive_condition;
+    ConjunctiveEffect m_conjunctive_effect;
+    ConditionalEffectList m_conditional_effects;
 
     // Below: add additional members if needed and initialize them in the constructor
 
     ActionImpl(Index index,
                std::string name,
                size_t original_arity,
-               ConjunctiveCondition precondition,
-               EffectStrips strips_effect,
-               EffectConditionalList conditional_effects);
+               ConjunctiveCondition conjunctive_condition,
+               ConjunctiveEffect conjunctive_effect,
+               ConditionalEffectList conditional_effects);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -56,9 +56,9 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    const ConjunctiveCondition& get_precondition() const;
-    const EffectStrips& get_strips_effect() const;
-    const EffectConditionalList& get_conditional_effects() const;
+    const ConjunctiveCondition& get_conjunctive_condition() const;
+    const ConjunctiveEffect& get_conjunctive_effect() const;
+    const ConditionalEffectList& get_conditional_effects() const;
 
     size_t get_arity() const;
 
@@ -69,8 +69,8 @@ public:
     {
         return std::forward_as_tuple(std::as_const(m_name),
                                      std::as_const(m_original_arity),
-                                     std::as_const(m_precondition),
-                                     std::as_const(m_strips_effect),
+                                     std::as_const(m_conjunctive_condition),
+                                     std::as_const(m_conjunctive_effect),
                                      std::as_const(m_conditional_effects));
     }
 };

@@ -42,9 +42,9 @@ class GroundAxiomImpl
 private:
     Index m_index = Index(0);
     Index m_axiom_index = Index(0);
-    FlatIndexList m_objects = FlatIndexList();
-    GroundConjunctiveCondition m_strips_precondition = GroundConjunctiveCondition();
-    GroundEffectDerivedLiteral m_effect = GroundEffectDerivedLiteral();
+    FlatIndexList m_object_indices = FlatIndexList();
+    GroundConjunctiveCondition m_conjunctive_condition = GroundConjunctiveCondition();
+    GroundEffectDerivedLiteral m_literal = GroundEffectDerivedLiteral();
 
 public:
     Index& get_index();
@@ -56,9 +56,9 @@ public:
     FlatIndexList& get_object_indices();
     const FlatIndexList& get_object_indices() const;
 
-    /* STRIPS part */
-    GroundConjunctiveCondition& get_strips_precondition();
-    const GroundConjunctiveCondition& get_strips_precondition() const;
+    /* Conjunctive part */
+    GroundConjunctiveCondition& get_conjunctive_condition();
+    const GroundConjunctiveCondition& get_conjunctive_condition() const;
 
     /* Effect*/
     GroundEffectDerivedLiteral& get_derived_effect();
@@ -75,9 +75,9 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_objects)); }
+    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_object_indices)); }
 
-    auto cista_members() noexcept { return std::tie(m_index, m_axiom_index, m_objects, m_strips_precondition, m_effect); }
+    auto cista_members() noexcept { return std::tie(m_index, m_axiom_index, m_object_indices, m_conjunctive_condition, m_literal); }
 };
 
 /**
