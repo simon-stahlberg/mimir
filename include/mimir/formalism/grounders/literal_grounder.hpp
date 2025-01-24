@@ -15,13 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_LITERAL_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDERS_LITERAL_GROUNDER_HPP_
+#ifndef MIMIR_FORMALISM_GROUNDERS_LITERAL_GROUNDER_HPP_
+#define MIMIR_FORMALISM_GROUNDERS_LITERAL_GROUNDER_HPP_
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/grounders/grounding_table.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/grounding_table.hpp"
 
 namespace mimir
 {

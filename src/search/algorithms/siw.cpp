@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/siw.hpp"
 
+#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
@@ -25,7 +26,6 @@
 #include "mimir/search/algorithms/siw/goal_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 

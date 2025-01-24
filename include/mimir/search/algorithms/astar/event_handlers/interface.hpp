@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_ALGORITHMS_ASTAR_EVENT_HANDLERS_INTERFACE_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/algorithms/astar/event_handlers/statistics.hpp"
 #include "mimir/search/state.hpp"
 

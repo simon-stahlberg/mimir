@@ -17,7 +17,7 @@
 
 #include "mimir/search/axiom_evaluators/lifted/event_handlers/debug.hpp"
 
-#include "mimir/search/axiom.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>

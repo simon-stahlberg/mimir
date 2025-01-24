@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/axiom.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"

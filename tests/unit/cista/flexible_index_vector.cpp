@@ -19,7 +19,7 @@
 
 #include "cista/serialization.h"
 #include "mimir/common/hash_cista.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
 
 #include <bitset>
 #include <gtest/gtest.h>

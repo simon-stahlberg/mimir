@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash_cista.hpp"

@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_PLAN_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir

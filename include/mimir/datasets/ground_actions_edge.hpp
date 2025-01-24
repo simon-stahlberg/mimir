@@ -19,8 +19,8 @@
 #define MIMIR_DATASETS_GROUND_ACTIONS_EDGE_HPP_
 
 #include "mimir/datasets/declarations.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/graphs/graph_edges.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/state.hpp"
 
 #include <span>

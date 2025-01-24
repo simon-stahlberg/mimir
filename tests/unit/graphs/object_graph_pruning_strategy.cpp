@@ -17,10 +17,10 @@
 
 #include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
+#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/grounders/grounder.hpp"
 
 #include <gtest/gtest.h>
 

@@ -15,15 +15,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_HPP_
-#define MIMIR_SEARCH_AXIOM_HPP_
+#ifndef MIMIR_FORMALISM_GROUND_AXIOM_HPP_
+#define MIMIR_FORMALISM_GROUND_AXIOM_HPP_
 
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>

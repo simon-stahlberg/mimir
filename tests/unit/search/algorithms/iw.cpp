@@ -18,6 +18,7 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
@@ -26,7 +27,6 @@
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
-#include "mimir/search/grounders/grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 

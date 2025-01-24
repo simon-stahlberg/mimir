@@ -18,6 +18,8 @@
 #include "mimir/search/algorithms/astar.hpp"
 
 #include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/grounders/action_grounder.hpp"
+#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/astar/event_handlers.hpp"
@@ -25,8 +27,6 @@
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
 #include "mimir/search/heuristics/interface.hpp"
 #include "mimir/search/openlists/interface.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"

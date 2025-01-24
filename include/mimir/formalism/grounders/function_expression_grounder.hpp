@@ -15,42 +15,41 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_NUMERIC_CONSTRAINT_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDERS_NUMERIC_CONSTRAINT_GROUNDER_HPP_
+#ifndef MIMIR_FORMALISM_GROUNDERS_FUNCTION_EXPRESSION_GROUNDER_HPP_
+#define MIMIR_FORMALISM_GROUNDERS_FUNCTION_EXPRESSION_GROUNDER_HPP_
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/grounders/grounding_table.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/grounders/grounding_table.hpp"
 
 namespace mimir
 {
-class NumericConstraintGrounder
+class FunctionExpressionGrounder
 {
 private:
-    std::shared_ptr<FunctionExpressionGrounder> m_fexpr_grounder;
+    std::shared_ptr<FunctionGrounder> m_function_grounder;
 
-    // GroundingTableList<GroundConditionNumeric> m_grounding_tables;
+    // GroundingTableList<GroundFunctionExpression> m_grounding_tables;
 
 public:
     /// @brief Simplest construction
-    explicit NumericConstraintGrounder(std::shared_ptr<FunctionExpressionGrounder> fexpr_grounder);
+    explicit FunctionExpressionGrounder(std::shared_ptr<FunctionGrounder> function_grounder);
 
     // Uncopyable
-    NumericConstraintGrounder(const NumericConstraintGrounder& other) = delete;
-    NumericConstraintGrounder& operator=(const NumericConstraintGrounder& other) = delete;
+    FunctionExpressionGrounder(const FunctionExpressionGrounder& other) = delete;
+    FunctionExpressionGrounder& operator=(const FunctionExpressionGrounder& other) = delete;
     // Moveable
-    NumericConstraintGrounder(NumericConstraintGrounder&& other) = default;
-    NumericConstraintGrounder& operator=(NumericConstraintGrounder&& other) = default;
+    FunctionExpressionGrounder(FunctionExpressionGrounder&& other) = default;
+    FunctionExpressionGrounder& operator=(FunctionExpressionGrounder&& other) = default;
 
-    GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
+    GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
 
     /**
      * Getters
      */
 
-    const std::shared_ptr<FunctionExpressionGrounder>& get_fexpr_grounder() const;
+    const std::shared_ptr<FunctionGrounder>& get_function_grounder() const;
 };
 
 }  // namespace mimir

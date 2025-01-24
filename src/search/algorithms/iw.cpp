@@ -18,6 +18,7 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
@@ -31,7 +32,6 @@
 #include "mimir/search/algorithms/utils.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/plan.hpp"
 #include "mimir/search/state_repository.hpp"
 

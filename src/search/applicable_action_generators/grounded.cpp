@@ -17,9 +17,9 @@
 
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 
+#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 #include "mimir/search/state_repository.hpp"
 

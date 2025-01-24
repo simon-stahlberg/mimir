@@ -17,10 +17,10 @@
 
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
-#include "mimir/search/grounders/action_grounder.hpp"
 #include "mimir/search/state.hpp"
 
 #include <boost/dynamic_bitset.hpp>

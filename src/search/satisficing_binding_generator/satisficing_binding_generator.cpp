@@ -19,14 +19,14 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/assignment_set.hpp"
+#include "mimir/formalism/grounders/literal_grounder.hpp"
+#include "mimir/formalism/grounders/numeric_constraint_grounder.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/tags.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
-#include "mimir/search/grounders/numeric_constraint_grounder.hpp"
 #include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
 

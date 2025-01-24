@@ -19,6 +19,7 @@
 
 #include "mimir/datasets/state_space.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/languages/description_logics/constructor_repositories.hpp"
@@ -26,7 +27,6 @@
 #include "mimir/languages/description_logics/constructors.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
-#include "mimir/search/grounders/grounder.hpp"
 
 #include <gtest/gtest.h>
 

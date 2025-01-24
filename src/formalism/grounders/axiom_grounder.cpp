@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounders/axiom_grounder.hpp"
+#include "mimir/formalism/grounders/axiom_grounder.hpp"
 
 #include "mimir/common/memory.hpp"
+#include "mimir/formalism/grounders/literal_grounder.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
 
 namespace mimir
 {

@@ -19,13 +19,13 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/action.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
 
 namespace mimir
 {

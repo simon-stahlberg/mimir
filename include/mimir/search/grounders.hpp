@@ -22,11 +22,11 @@
  * Include all specializations here
  */
 
-#include "mimir/search/grounders/action_grounder.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
-#include "mimir/search/grounders/grounder.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
-#include "mimir/search/grounders/variable_grounder.hpp"
+#include "mimir/formalism/grounders/action_grounder.hpp"
+#include "mimir/formalism/grounders/axiom_grounder.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
+#include "mimir/formalism/grounders/literal_grounder.hpp"
+#include "mimir/formalism/grounders/variable_grounder.hpp"
 #include "mimir/search/match_tree.hpp"
 
 #endif

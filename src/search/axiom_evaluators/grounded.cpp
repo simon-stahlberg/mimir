@@ -19,12 +19,12 @@
 
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
+#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
 
 namespace mimir
 {

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounders/grounder.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
 
 namespace mimir
 {

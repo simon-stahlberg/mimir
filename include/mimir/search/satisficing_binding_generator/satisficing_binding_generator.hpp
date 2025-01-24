@@ -21,9 +21,9 @@
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/grounders/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 
 #include <boost/dynamic_bitset/dynamic_bitset.hpp>
 

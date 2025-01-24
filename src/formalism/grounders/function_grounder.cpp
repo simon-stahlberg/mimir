@@ -15,11 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounders/function_grounder.hpp"
+#include "mimir/formalism/grounders/function_grounder.hpp"
 
+#include "mimir/formalism/grounders/variable_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
-#include "mimir/search/grounders/variable_grounder.hpp"
 
 namespace mimir
 {

@@ -17,7 +17,7 @@
 
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/debug.hpp"
 
-#include "mimir/search/axiom.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/match_tree.hpp"
 #include "mimir/search/state.hpp"
 

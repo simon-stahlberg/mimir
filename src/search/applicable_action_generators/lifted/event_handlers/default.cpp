@@ -17,7 +17,7 @@
 
 #include "mimir/search/applicable_action_generators/lifted/event_handlers/default.hpp"
 
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>

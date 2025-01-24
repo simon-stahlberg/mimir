@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_ACTION_HPP_
-#define MIMIR_SEARCH_ACTION_HPP_
+#ifndef MIMIR_FORMALISM_GROUND_ACTION_HPP_
+#define MIMIR_FORMALISM_GROUND_ACTION_HPP_
 
 #include "mimir/buffering/unordered_set.h"
 #include "mimir/buffering/vector.h"

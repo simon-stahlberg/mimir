@@ -18,10 +18,10 @@
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 
 #include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
+#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/grounders/axiom_grounder.hpp"
 
 namespace mimir
 {

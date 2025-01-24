@@ -67,18 +67,18 @@
  * Search
  */
 
-#include "mimir/search/action.hpp"
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/formalism/grounders/consistency_graph.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
-#include "mimir/search/axiom.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/grounders.hpp"
 #include "mimir/search/heuristics.hpp"
 #include "mimir/search/openlists.hpp"
-#include "mimir/search/satisficing_binding_generator/consistency_graph.hpp"
 #include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
 #include "mimir/search/search_node.hpp"
 #include "mimir/search/state.hpp"

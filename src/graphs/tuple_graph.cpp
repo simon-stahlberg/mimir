@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/tuple_graph.hpp"
 
-#include "mimir/search/grounders/action_grounder.hpp"
+#include "mimir/formalism/grounders/action_grounder.hpp"
 
 namespace mimir
 {

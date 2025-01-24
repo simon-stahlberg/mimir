@@ -15,16 +15,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/grounders/action_grounder.hpp"
+#include "mimir/formalism/grounders/action_grounder.hpp"
 
 #include "mimir/common/itertools.hpp"
 #include "mimir/common/memory.hpp"
+#include "mimir/formalism/grounders/function_grounder.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
+#include "mimir/formalism/grounders/literal_grounder.hpp"
+#include "mimir/formalism/grounders/numeric_constraint_grounder.hpp"
+#include "mimir/formalism/grounders/numeric_effect_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/grounders/function_grounder.hpp"
-#include "mimir/search/grounders/grounder.hpp"
-#include "mimir/search/grounders/literal_grounder.hpp"
-#include "mimir/search/grounders/numeric_constraint_grounder.hpp"
-#include "mimir/search/grounders/numeric_effect_grounder.hpp"
 
 #include <bit>
 

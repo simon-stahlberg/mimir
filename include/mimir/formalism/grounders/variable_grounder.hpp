@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_VARIABLE_GROUNDER_HPP_
-#define MIMIR_SEARCH_GROUNDERS_VARIABLE_GROUNDER_HPP_
+#ifndef MIMIR_FORMALISM_GROUNDERS_VARIABLE_GROUNDER_HPP_
+#define MIMIR_FORMALISM_GROUNDERS_VARIABLE_GROUNDER_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
