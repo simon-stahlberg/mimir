@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounders/grounding_table.hpp"
-#include "mimir/search/declarations.hpp"
 
 #include <unordered_map>
 #include <vector>

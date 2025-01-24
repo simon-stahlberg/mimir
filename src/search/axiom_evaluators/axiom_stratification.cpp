@@ -19,7 +19,7 @@
 
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/literal.hpp"
 

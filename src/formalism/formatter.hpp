@@ -41,7 +41,7 @@ private:
 public:
     PDDLFormatter(size_t indent = 0, size_t add_indent = 4, bool action_costs = false, bool numeric_fluents = false);
 
-    void write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out);
+    void write(const ConjunctiveConditionImpl& element, std::ostream& out);
     void write(const ActionImpl& element, std::ostream& out);
     template<PredicateTag P>
     void write(const AtomImpl<P>& element, std::ostream& out);

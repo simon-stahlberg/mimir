@@ -26,7 +26,6 @@
 #include "mimir/formalism/grounders/literal_grounder.hpp"
 #include "mimir/formalism/grounders/numeric_constraint_grounder.hpp"
 #include "mimir/formalism/grounders/numeric_effect_grounder.hpp"
-#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {

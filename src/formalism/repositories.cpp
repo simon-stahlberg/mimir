@@ -365,12 +365,11 @@ GroundNumericConstraint PDDLRepositories::get_or_create_ground_numeric_constrain
         .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
 }
 
-ExistentiallyQuantifiedConjunctiveCondition
-PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
-                                                                               LiteralList<Static> static_conditions,
-                                                                               LiteralList<Fluent> fluent_conditions,
-                                                                               LiteralList<Derived> derived_conditions,
-                                                                               NumericConstraintList numeric_constraints)
+ConjunctiveCondition PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(VariableList parameters,
+                                                                                                    LiteralList<Static> static_conditions,
+                                                                                                    LiteralList<Fluent> fluent_conditions,
+                                                                                                    LiteralList<Derived> derived_conditions,
+                                                                                                    NumericConstraintList numeric_constraints)
 {
     /* Canonize before uniqueness test */
     std::sort(static_conditions.begin(), static_conditions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -388,7 +387,7 @@ PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(V
               nullary_derived_conditions.end(),
               [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
-    return boost::hana::at_key(m_repositories, boost::hana::type<ExistentiallyQuantifiedConjunctiveConditionImpl> {})
+    return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveConditionImpl> {})
         .get_or_create(std::move(parameters),
                        std::move(static_conditions),
                        std::move(fluent_conditions),
@@ -401,7 +400,7 @@ PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition(V
 
 Action PDDLRepositories::get_or_create_action(std::string name,
                                               size_t original_arity,
-                                              ExistentiallyQuantifiedConjunctiveCondition precondition,
+                                              ConjunctiveCondition precondition,
                                               EffectStrips strips_effect,
                                               EffectConditionalList conditional_effects)
 {
@@ -412,7 +411,7 @@ Action PDDLRepositories::get_or_create_action(std::string name,
         .get_or_create(std::move(name), original_arity, std::move(precondition), std::move(strips_effect), std::move(conditional_effects));
 }
 
-Axiom PDDLRepositories::get_or_create_axiom(ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> literal)
+Axiom PDDLRepositories::get_or_create_axiom(ConjunctiveCondition precondition, Literal<Derived> literal)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AxiomImpl> {}).get_or_create(std::move(precondition), std::move(literal));
 }

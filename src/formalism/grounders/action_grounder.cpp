@@ -78,7 +78,7 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 }
 
 void ActionGrounder::ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
-                                            GroundConditionNumericList& ref_numeric_constraints,
+                                            FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints,
                                             const ObjectList& binding)
 {
     for (const auto& condition : numeric_constraints)

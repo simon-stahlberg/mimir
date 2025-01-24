@@ -21,7 +21,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/grounders/grounding_table.hpp"
-#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {

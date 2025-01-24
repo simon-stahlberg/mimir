@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_FORMALISM_EXISTENTIALLY_QUANTIFIED_CONJUNCTIVE_CONDITION_HPP_
-#define MIMIR_FORMALISM_EXISTENTIALLY_QUANTIFIED_CONJUNCTIVE_CONDITION_HPP_
+#ifndef MIMIR_FORMALISM_CONJUNCTIVE_CONDITION_HPP_
+#define MIMIR_FORMALISM_CONJUNCTIVE_CONDITION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
 {
-class ExistentiallyQuantifiedConjunctiveConditionImpl
+class ConjunctiveConditionImpl
 {
 private:
     Index m_index;
@@ -37,15 +37,15 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    ExistentiallyQuantifiedConjunctiveConditionImpl(Index index,
-                                                    VariableList parameters,
-                                                    LiteralList<Static> static_conditions,
-                                                    LiteralList<Fluent> fluent_conditions,
-                                                    LiteralList<Derived> derived_conditions,
-                                                    GroundLiteralList<Static> nullary_static_conditions,
-                                                    GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                                    GroundLiteralList<Derived> nullary_derived_conditions,
-                                                    NumericConstraintList numeric_constraints);
+    ConjunctiveConditionImpl(Index index,
+                             VariableList parameters,
+                             LiteralList<Static> static_conditions,
+                             LiteralList<Fluent> fluent_conditions,
+                             LiteralList<Derived> derived_conditions,
+                             GroundLiteralList<Static> nullary_static_conditions,
+                             GroundLiteralList<Fluent> nullary_fluent_conditions,
+                             GroundLiteralList<Derived> nullary_derived_conditions,
+                             NumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -53,10 +53,10 @@ private:
 
 public:
     // moveable but not copyable
-    ExistentiallyQuantifiedConjunctiveConditionImpl(const ExistentiallyQuantifiedConjunctiveConditionImpl& other) = delete;
-    ExistentiallyQuantifiedConjunctiveConditionImpl& operator=(const ExistentiallyQuantifiedConjunctiveConditionImpl& other) = delete;
-    ExistentiallyQuantifiedConjunctiveConditionImpl(ExistentiallyQuantifiedConjunctiveConditionImpl&& other) = default;
-    ExistentiallyQuantifiedConjunctiveConditionImpl& operator=(ExistentiallyQuantifiedConjunctiveConditionImpl&& other) = default;
+    ConjunctiveConditionImpl(const ConjunctiveConditionImpl& other) = delete;
+    ConjunctiveConditionImpl& operator=(const ConjunctiveConditionImpl& other) = delete;
+    ConjunctiveConditionImpl(ConjunctiveConditionImpl&& other) = default;
+    ConjunctiveConditionImpl& operator=(ConjunctiveConditionImpl&& other) = default;
 
     Index get_index() const;
     const VariableList& get_parameters() const;
@@ -81,9 +81,9 @@ public:
     }
 };
 
-extern std::ostream& operator<<(std::ostream& out, const ExistentiallyQuantifiedConjunctiveConditionImpl& element);
+extern std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element);
 
-extern std::ostream& operator<<(std::ostream& out, ExistentiallyQuantifiedConjunctiveCondition element);
+extern std::ostream& operator<<(std::ostream& out, ConjunctiveCondition element);
 
 }
 

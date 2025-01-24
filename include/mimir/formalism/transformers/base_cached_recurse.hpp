@@ -101,7 +101,7 @@ protected:
                                                           PDDLElementTranslationCache<GroundFunction<Auxiliary>>,
                                                           PDDLElementTranslationCache<NumericConstraint>,
                                                           PDDLElementTranslationCache<GroundNumericConstraint>,
-                                                          PDDLElementTranslationCache<ExistentiallyQuantifiedConjunctiveCondition>,
+                                                          PDDLElementTranslationCache<ConjunctiveCondition>,
                                                           PDDLElementTranslationCache<Action>,
                                                           PDDLElementTranslationCache<Axiom>,
                                                           PDDLElementTranslationCache<Domain>,
@@ -206,7 +206,7 @@ protected:
         this->prepare(condition->get_left_function_expression());
         this->prepare(condition->get_right_function_expression());
     }
-    void prepare_impl(ExistentiallyQuantifiedConjunctiveCondition condition)
+    void prepare_impl(ConjunctiveCondition condition)
     {
         this->prepare(condition->get_parameters());
         this->prepare(condition->get_literals<Static>());
@@ -457,7 +457,7 @@ protected:
                                                                                  this->transform(condition->get_left_function_expression()),
                                                                                  this->transform(condition->get_right_function_expression()));
     }
-    ExistentiallyQuantifiedConjunctiveCondition transform_impl(ExistentiallyQuantifiedConjunctiveCondition condition)
+    ConjunctiveCondition transform_impl(ConjunctiveCondition condition)
     {
         return this->m_pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(this->transform(condition->get_parameters()),
                                                                                                       this->transform(condition->get_literals<Static>()),

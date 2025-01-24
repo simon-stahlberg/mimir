@@ -28,7 +28,7 @@ private:
     Index m_index;
     std::string m_name;
     size_t m_original_arity;
-    ExistentiallyQuantifiedConjunctiveCondition m_precondition;
+    ConjunctiveCondition m_precondition;
     EffectStrips m_strips_effect;
     EffectConditionalList m_conditional_effects;
 
@@ -37,7 +37,7 @@ private:
     ActionImpl(Index index,
                std::string name,
                size_t original_arity,
-               ExistentiallyQuantifiedConjunctiveCondition precondition,
+               ConjunctiveCondition precondition,
                EffectStrips strips_effect,
                EffectConditionalList conditional_effects);
 
@@ -56,7 +56,7 @@ public:
     const std::string& get_name() const;
     size_t get_original_arity() const;
     const VariableList& get_parameters() const;
-    const ExistentiallyQuantifiedConjunctiveCondition& get_precondition() const;
+    const ConjunctiveCondition& get_precondition() const;
     const EffectStrips& get_strips_effect() const;
     const EffectConditionalList& get_conditional_effects() const;
 

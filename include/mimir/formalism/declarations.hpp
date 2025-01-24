@@ -44,6 +44,11 @@ class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;
 
+class GroundActionImpl;
+using GroundAction = const GroundActionImpl*;
+using GroundActionList = std::vector<GroundAction>;
+using GroundActionSet = std::unordered_set<GroundAction>;
+
 template<PredicateTag P>
 class AtomImpl;
 template<PredicateTag P>
@@ -55,6 +60,11 @@ class AxiomImpl;
 using Axiom = const AxiomImpl*;
 using AxiomList = std::vector<Axiom>;
 using AxiomSet = std::unordered_set<Axiom>;
+
+struct GroundAxiomImpl;
+using GroundAxiom = const GroundAxiomImpl*;
+using GroundAxiomList = std::vector<GroundAxiom>;
+using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 
 class DomainImpl;
 using Domain = const DomainImpl*;
@@ -205,12 +215,27 @@ using Variable = const VariableImpl*;
 using VariableList = std::vector<Variable>;
 using VariableSet = std::unordered_set<Variable>;
 
-class ExistentiallyQuantifiedConjunctiveConditionImpl;
-using ExistentiallyQuantifiedConjunctiveCondition = const ExistentiallyQuantifiedConjunctiveConditionImpl*;
+class ConjunctiveConditionImpl;
+using ConjunctiveCondition = const ConjunctiveConditionImpl*;
+
+struct GroundConditionStrips;
 
 class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
+
+/**
+ * Grounders
+ */
+
+class ActionGrounder;
+class AxiomGrounder;
+class FunctionExpressionGrounder;
+class FunctionGrounder;
+class LiteralGrounder;
+class NumericConstraintGrounder;
+class NumericEffectGrounder;
+class Grounder;
 
 }
 

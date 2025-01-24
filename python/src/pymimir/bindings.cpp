@@ -669,17 +669,11 @@ void init_pymimir(py::module_& m)
         .def("get_function_expression", &OptimizationMetricImpl::get_function_expression, py::return_value_policy::reference_internal)
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
-    py::class_<ExistentiallyQuantifiedConjunctiveConditionImpl>(m, "ExistentiallyQuantifiedConjunctiveCondition")  //
-        .def("get_parameters", &ExistentiallyQuantifiedConjunctiveConditionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_precondition", &ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_fluent_conditions",
-             &ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Fluent>,
-             py::keep_alive<0, 1>(),
-             py::return_value_policy::copy)
-        .def("get_derived_conditions",
-             &ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Derived>,
-             py::keep_alive<0, 1>(),
-             py::return_value_policy::copy);
+    py::class_<ConjunctiveConditionImpl>(m, "ConjunctiveCondition")  //
+        .def("get_parameters", &ConjunctiveConditionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_precondition", &ConjunctiveConditionImpl::get_literals<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_fluent_conditions", &ConjunctiveConditionImpl::get_literals<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_derived_conditions", &ConjunctiveConditionImpl::get_literals<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy);
 
     py::class_<ActionImpl>(m, "Action")  //
         .def("__str__", [](const ActionImpl& self) { return to_string(self); })
@@ -974,7 +968,7 @@ void init_pymimir(py::module_& m)
 
     /* SatisficingBindingGenerator */
     py::class_<SatisficingBindingGenerator>(m, "SatisficingBindingGenerator")  //
-        .def(py::init<std::shared_ptr<LiteralGrounder>, ExistentiallyQuantifiedConjunctiveCondition>(),
+        .def(py::init<std::shared_ptr<LiteralGrounder>, ConjunctiveCondition>(),
              py::arg("literal_grounder"),
              py::arg("existentially_quantified_conjunctive_condition"))
         .def(

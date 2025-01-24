@@ -76,6 +76,8 @@ inline std::ostream& operator<<(std::ostream& os, const FlatIndexList& list)
 /* ExternalPtr */
 template<typename T>
 using FlatExternalPtr = cista::offset::external_ptr<T>;
+template<typename T>
+using FlatExternalPtrList = cista::offset::vector<cista::offset::external_ptr<T>>;
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const FlatExternalPtr<T>& ptr)

@@ -30,7 +30,7 @@ from _pymimir import (
     EffectStrips,
     EffectConditional,
     EffectConditionalList,
-    ExistentiallyQuantifiedConjunctiveCondition,
+    ConjunctiveCondition,
     FluentAtom,
     FluentAtomList,
     FluentGroundAtom,

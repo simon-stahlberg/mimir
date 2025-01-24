@@ -21,7 +21,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounders/grounding_table.hpp"
-#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {

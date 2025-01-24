@@ -30,19 +30,6 @@ namespace mimir
 
 // StateRepository
 class StateRepository;
-class StateRepositoryWorkspace;
-
-// GroundAction
-struct GroundActionImpl;
-using GroundAction = const GroundActionImpl*;
-using GroundActionList = std::vector<GroundAction>;
-using GroundActionSet = std::unordered_set<GroundAction>;
-
-// Axiom
-struct GroundAxiomImpl;
-using GroundAxiom = const GroundAxiomImpl*;
-using GroundAxiomList = std::vector<GroundAxiom>;
-using GroundAxiomSet = std::unordered_set<GroundAxiom>;
 
 // State
 struct StateImpl;
@@ -54,31 +41,13 @@ using StateMap = std::unordered_map<State, T>;
 
 struct DenseState;
 
-/* Grounders */
-class ActionGrounder;
-class AxiomGrounder;
-class FunctionExpressionGrounder;
-class FunctionGrounder;
-class LiteralGrounder;
-class NumericConstraintGrounder;
-class NumericEffectGrounder;
-class Grounder;
-
 /* DeleteRelaxedProblemExplorator */
 class DeleteRelaxedProblemExplorator;
-
-/* AssignmentSet */
-class AssignmentSetWorkspace;
 
 /* ApplicableActionGenerators */
 class IApplicableActionGenerator;
 class GroundedApplicableActionGenerator;
 class LiftedApplicableActionGenerator;
-
-class ApplicableActionGeneratorWorkspace;
-class LiftedApplicableActionGeneratorWorkspace;
-
-class ActionGrounder;
 
 class IGroundedApplicableActionGeneratorEventHandler;
 class ILiftedApplicableActionGeneratorEventHandler;
@@ -88,17 +57,12 @@ class IAxiomEvaluator;
 class GroundedAxiomEvaluator;
 class LiftedAxiomEvaluator;
 
-class AxiomEvaluatorWorkspace;
-class LiftedAxiomEvaluatorWorkspace;
-
 class IGroundedAxiomEvaluatorEventHandler;
 class ILiftedAxiomEvaluatorEventHandler;
 
 /* SatisficingBindingGenerator */
 class SatisficingBindingGenerator;
 class ISatisficingBindingGeneratorEventHandler;
-
-class SatisficingBindingGeneratorWorkspace;
 
 /* MatchTree */
 template<typename T>

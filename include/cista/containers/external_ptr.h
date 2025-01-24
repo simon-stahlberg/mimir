@@ -26,7 +26,8 @@ struct basic_external_ptr
     friend bool operator!=(const basic_external_ptr& a, std::nullptr_t) noexcept { return a.el_ != 0; }
     friend bool operator!=(std::nullptr_t, const basic_external_ptr& a) noexcept { return a.el_ != 0; }
 
-    T* get() const noexcept { return reinterpret_cast<T*>(el_); }
+    T* get() noexcept { return reinterpret_cast<T*>(el_); }
+    const T* get() const noexcept { return reinterpret_cast<const T*>(el_); }
     T* operator->() noexcept { return reinterpret_cast<T*>(el_); }
     T& operator*() noexcept { return *reinterpret_cast<T*>(el_); }
     T const& operator*() const noexcept { return *reinterpret_cast<const T*>(el_); }

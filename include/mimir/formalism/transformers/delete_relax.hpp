@@ -47,7 +47,7 @@ private:
 
     template<PredicateTag P>
     Literal<P> transform_impl(Literal<P> literal);
-    ExistentiallyQuantifiedConjunctiveCondition transform_impl(ExistentiallyQuantifiedConjunctiveCondition condition);
+    ConjunctiveCondition transform_impl(ConjunctiveCondition condition);
     EffectStrips transform_impl(EffectStrips effect);
     EffectConditional transform_impl(EffectConditional effect);
     Action transform_impl(Action action);

@@ -22,8 +22,8 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/atom.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/predicate.hpp"
@@ -36,7 +36,7 @@ namespace mimir
 ActionImpl::ActionImpl(Index index,
                        std::string name,
                        size_t original_arity,
-                       ExistentiallyQuantifiedConjunctiveCondition precondition,
+                       ConjunctiveCondition precondition,
                        EffectStrips strips_effect,
                        EffectConditionalList conditional_effects) :
     m_index(index),
@@ -60,7 +60,7 @@ size_t ActionImpl::get_original_arity() const { return m_original_arity; }
 
 const VariableList& ActionImpl::get_parameters() const { return m_precondition->get_parameters(); }
 
-const ExistentiallyQuantifiedConjunctiveCondition& ActionImpl::get_precondition() const { return m_precondition; }
+const ConjunctiveCondition& ActionImpl::get_precondition() const { return m_precondition; }
 
 const EffectStrips& ActionImpl::get_strips_effect() const { return m_strips_effect; }
 

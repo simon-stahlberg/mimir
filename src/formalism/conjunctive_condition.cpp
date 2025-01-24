@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 
 #include "formatter.hpp"
 #include "mimir/common/collections.hpp"
@@ -27,15 +27,15 @@
 
 namespace mimir
 {
-ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunctiveConditionImpl(Index index,
-                                                                                                 VariableList parameters,
-                                                                                                 LiteralList<Static> static_conditions,
-                                                                                                 LiteralList<Fluent> fluent_conditions,
-                                                                                                 LiteralList<Derived> derived_conditions,
-                                                                                                 GroundLiteralList<Static> nullary_static_conditions,
-                                                                                                 GroundLiteralList<Fluent> nullary_fluent_conditions,
-                                                                                                 GroundLiteralList<Derived> nullary_derived_conditions,
-                                                                                                 NumericConstraintList numeric_constraints) :
+ConjunctiveConditionImpl::ConjunctiveConditionImpl(Index index,
+                                                   VariableList parameters,
+                                                   LiteralList<Static> static_conditions,
+                                                   LiteralList<Fluent> fluent_conditions,
+                                                   LiteralList<Derived> derived_conditions,
+                                                   GroundLiteralList<Static> nullary_static_conditions,
+                                                   GroundLiteralList<Fluent> nullary_fluent_conditions,
+                                                   GroundLiteralList<Derived> nullary_derived_conditions,
+                                                   NumericConstraintList numeric_constraints) :
     m_index(index),
     m_parameters(std::move(parameters)),
     m_static_conditions(std::move(static_conditions)),
@@ -74,12 +74,12 @@ ExistentiallyQuantifiedConjunctiveConditionImpl::ExistentiallyQuantifiedConjunct
         std::is_sorted(numeric_constraints.begin(), numeric_constraints.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
-Index ExistentiallyQuantifiedConjunctiveConditionImpl::get_index() const { return m_index; }
+Index ConjunctiveConditionImpl::get_index() const { return m_index; }
 
-const VariableList& ExistentiallyQuantifiedConjunctiveConditionImpl::get_parameters() const { return m_parameters; }
+const VariableList& ConjunctiveConditionImpl::get_parameters() const { return m_parameters; }
 
 template<PredicateTag P>
-const LiteralList<P>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals() const
+const LiteralList<P>& ConjunctiveConditionImpl::get_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -99,12 +99,12 @@ const LiteralList<P>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_liter
     }
 }
 
-template const LiteralList<Static>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Static>() const;
-template const LiteralList<Fluent>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Fluent>() const;
-template const LiteralList<Derived>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_literals<Derived>() const;
+template const LiteralList<Static>& ConjunctiveConditionImpl::get_literals<Static>() const;
+template const LiteralList<Fluent>& ConjunctiveConditionImpl::get_literals<Fluent>() const;
+template const LiteralList<Derived>& ConjunctiveConditionImpl::get_literals<Derived>() const;
 
 template<PredicateTag P>
-const GroundLiteralList<P>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals() const
+const GroundLiteralList<P>& ConjunctiveConditionImpl::get_nullary_ground_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
     {
@@ -124,22 +124,22 @@ const GroundLiteralList<P>& ExistentiallyQuantifiedConjunctiveConditionImpl::get
     }
 }
 
-template const GroundLiteralList<Static>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals<Static>() const;
-template const GroundLiteralList<Fluent>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals<Fluent>() const;
-template const GroundLiteralList<Derived>& ExistentiallyQuantifiedConjunctiveConditionImpl::get_nullary_ground_literals<Derived>() const;
+template const GroundLiteralList<Static>& ConjunctiveConditionImpl::get_nullary_ground_literals<Static>() const;
+template const GroundLiteralList<Fluent>& ConjunctiveConditionImpl::get_nullary_ground_literals<Fluent>() const;
+template const GroundLiteralList<Derived>& ConjunctiveConditionImpl::get_nullary_ground_literals<Derived>() const;
 
-const NumericConstraintList& ExistentiallyQuantifiedConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
+const NumericConstraintList& ConjunctiveConditionImpl::get_numeric_constraints() const { return m_numeric_constraints; }
 
-size_t ExistentiallyQuantifiedConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
+size_t ConjunctiveConditionImpl::get_arity() const { return m_parameters.size(); }
 
-std::ostream& operator<<(std::ostream& out, const ExistentiallyQuantifiedConjunctiveConditionImpl& element)
+std::ostream& operator<<(std::ostream& out, const ConjunctiveConditionImpl& element)
 {
     auto formatter = PDDLFormatter();
     formatter.write(element, out);
     return out;
 }
 
-std::ostream& operator<<(std::ostream& out, ExistentiallyQuantifiedConjunctiveCondition element)
+std::ostream& operator<<(std::ostream& out, ConjunctiveCondition element)
 {
     out << *element;
     return out;

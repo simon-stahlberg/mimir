@@ -20,9 +20,9 @@
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/atom.hpp"
 #include "mimir/formalism/axiom.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
@@ -56,7 +56,7 @@ PDDLFormatter::PDDLFormatter(size_t indent, size_t add_indent, bool action_costs
 {
 }
 
-void PDDLFormatter::write(const ExistentiallyQuantifiedConjunctiveConditionImpl& element, std::ostream& out)
+void PDDLFormatter::write(const ConjunctiveConditionImpl& element, std::ostream& out)
 {
     if (!element.get_parameters().empty())
     {

@@ -53,7 +53,7 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
     return true;
 }
 
-bool nullary_conditions_hold(ExistentiallyQuantifiedConjunctiveCondition precondition, const DenseState& dense_state)
+bool nullary_conditions_hold(ConjunctiveCondition precondition, const DenseState& dense_state)
 {
     return nullary_literals_hold(precondition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
            && nullary_literals_hold(precondition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>());
@@ -224,7 +224,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Den
 
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                                          std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                         ExistentiallyQuantifiedConjunctiveCondition precondition) :
+                                                         ConjunctiveCondition precondition) :
     SatisficingBindingGenerator(std::move(literal_grounder),
                                 std::move(numeric_constraint_grounder),
                                 precondition,
@@ -234,7 +234,7 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
 
 SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
                                                          std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                         ExistentiallyQuantifiedConjunctiveCondition precondition,
+                                                         ConjunctiveCondition precondition,
                                                          std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
     m_literal_grounder(literal_grounder),
     m_numeric_constraint_grounder(numeric_constraint_grounder),
@@ -338,7 +338,7 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseStat
 
 const std::shared_ptr<LiteralGrounder>& SatisficingBindingGenerator::get_literal_grounder() const { return m_literal_grounder; }
 
-const ExistentiallyQuantifiedConjunctiveCondition& SatisficingBindingGenerator::get_precondition() const { return m_precondition; }
+const ConjunctiveCondition& SatisficingBindingGenerator::get_precondition() const { return m_precondition; }
 
 const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
 

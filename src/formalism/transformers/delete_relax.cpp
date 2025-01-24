@@ -79,7 +79,7 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
-ExistentiallyQuantifiedConjunctiveCondition DeleteRelaxTransformer::transform_impl(ExistentiallyQuantifiedConjunctiveCondition condition)
+ConjunctiveCondition DeleteRelaxTransformer::transform_impl(ConjunctiveCondition condition)
 {
     auto parameters = this->transform(condition->get_parameters());
     auto static_literals = filter_positive_literals(this->transform(condition->get_literals<Static>()));

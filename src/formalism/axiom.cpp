@@ -21,7 +21,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/existentially_quantified_conjunctive_condition.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/variable.hpp"
 
@@ -29,7 +29,7 @@
 
 namespace mimir
 {
-AxiomImpl::AxiomImpl(Index index, ExistentiallyQuantifiedConjunctiveCondition precondition, Literal<Derived> literal) :
+AxiomImpl::AxiomImpl(Index index, ConjunctiveCondition precondition, Literal<Derived> literal) :
     m_index(index),
     m_precondition(std::move(precondition)),
     m_literal(std::move(literal))
@@ -43,7 +43,7 @@ const VariableList& AxiomImpl::get_parameters() const { return m_precondition->g
 
 const Literal<Derived>& AxiomImpl::get_literal() const { return m_literal; }
 
-const ExistentiallyQuantifiedConjunctiveCondition& AxiomImpl::get_precondition() const { return m_precondition; }
+const ConjunctiveCondition& AxiomImpl::get_precondition() const { return m_precondition; }
 
 size_t AxiomImpl::get_arity() const { return get_parameters().size(); }
 
