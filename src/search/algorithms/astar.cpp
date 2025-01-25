@@ -116,6 +116,10 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
     const auto start_g_value =
         evaluate(problem->get_optimization_metric()->get_function_expression(), start_state->get_numeric_variables(), *start_auxiliary_numeric_values);
+    if (start_g_value == UNDEFINED_CONTINUOUS_COST)
+    {
+        throw std::runtime_error("find_solution_astar(...): evaluating the metric on the start state yielded NaN.");
+    }
     const auto start_h_value = heuristic->compute_heuristic(start_state, goal_strategy->test_dynamic_goal(start_state));
     const auto start_f_value = start_g_value + start_h_value;
 
@@ -227,6 +231,10 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
             const auto new_successor_g_value = evaluate(problem->get_optimization_metric()->get_function_expression(),
                                                         successor_state->get_numeric_variables(),
                                                         *successor_auxiliary_numeric_values);
+            if (new_successor_g_value == UNDEFINED_CONTINUOUS_COST)
+            {
+                throw std::runtime_error("find_solution_astar(...): evaluating the metric on the successor state yielded NaN.");
+            }
 
             event_handler->on_generate_state(successor_state, action, new_successor_g_value, problem, pddl_repositories);
 

@@ -189,13 +189,23 @@ static void collect_applied_conjunctive_effects(GroundAction action,
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
     for (const auto& numeric_effect : conjunctive_effect.get_numeric_effects<Fluent>())
     {
-        ref_fluent_numeric_variables[numeric_effect.get_function()->get_index()] =
-            evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
+        const auto index = numeric_effect.get_function()->get_index();
+        if (index >= ref_fluent_numeric_variables.size())
+        {
+            ref_fluent_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+        }
+
+        ref_fluent_numeric_variables[index] = evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
     }
-    for (const auto& effect_numeric : conjunctive_effect.get_numeric_effects<Auxiliary>())
+    for (const auto& numeric_effect : conjunctive_effect.get_numeric_effects<Auxiliary>())
     {
-        ref_auxiliary_numeric_variables[effect_numeric.get_function()->get_index()] =
-            evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
+        const auto index = numeric_effect.get_function()->get_index();
+        if (index >= ref_auxiliary_numeric_variables.size())
+        {
+            ref_auxiliary_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+        }
+
+        ref_auxiliary_numeric_variables[index] = evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
     }
 }
 
@@ -215,15 +225,25 @@ static void collect_applied_conditional_effects(GroundAction action,
         {
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);
-            for (const auto& effect_numeric : conditional_effect.get_conjunctive_effect().get_numeric_effects<Fluent>())
+            for (const auto& numeric_effect : conditional_effect.get_conjunctive_effect().get_numeric_effects<Fluent>())
             {
-                ref_fluent_numeric_variables[effect_numeric.get_function()->get_index()] =
-                    evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
+                const auto index = numeric_effect.get_function()->get_index();
+                if (index >= ref_fluent_numeric_variables.size())
+                {
+                    ref_fluent_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+                }
+
+                ref_fluent_numeric_variables[index] = evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
             }
-            for (const auto& effect_numeric : conditional_effect.get_conjunctive_effect().get_numeric_effects<Auxiliary>())
+            for (const auto& numeric_effect : conditional_effect.get_conjunctive_effect().get_numeric_effects<Auxiliary>())
             {
-                ref_auxiliary_numeric_variables[effect_numeric.get_function()->get_index()] =
-                    evaluate(effect_numeric, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
+                const auto index = numeric_effect.get_function()->get_index();
+                if (index >= ref_auxiliary_numeric_variables.size())
+                {
+                    ref_auxiliary_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+                }
+
+                ref_auxiliary_numeric_variables[index] = evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
             }
         }
     }

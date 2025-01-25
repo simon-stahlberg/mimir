@@ -159,8 +159,7 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             {
                 if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
                 {
-                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value "
-                                           + to_string(arg->get_function()) + ".");
+                    return UNDEFINED_CONTINUOUS_COST;
                 }
 
                 return fluent_numeric_variables[arg->get_function()->get_index()];
@@ -169,8 +168,7 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             {
                 if (arg->get_function()->get_index() >= auxiliary_numeric_variables.size())
                 {
-                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value "
-                                           + to_string(arg->get_function()) + ".");
+                    return UNDEFINED_CONTINUOUS_COST;
                 }
 
                 return auxiliary_numeric_variables[arg->get_function()->get_index()];
@@ -215,20 +213,19 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             {
                 if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
                 {
-                    throw std::logic_error("evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value "
-                                           + to_string(arg->get_function()) + ".");
+                    return UNDEFINED_CONTINUOUS_COST;
                 }
 
                 return fluent_numeric_variables[arg->get_function()->get_index()];
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Auxiliary>>)
             {
-                throw std::logic_error(
-                    "evaluate(fexpr, fluent_numeric_variables, auxiliary_numeric_variables): Unexpected GroundFunctionExpressionFunction<Auxiliary>.");
+                throw std::logic_error("evaluate(fexpr, fluent_numeric_variables): Unexpected GroundFunctionExpressionFunction<Auxiliary>.");
             }
             else
             {
-                static_assert(dependent_false<T>::value, "evaluate(...): Missing implementation for GroundFunctionExpressionFunction type.");
+                static_assert(dependent_false<T>::value,
+                              "evaluate(fexpr, fluent_numeric_variables): Missing implementation for GroundFunctionExpressionFunction type.");
             }
         },
         fexpr->get_variant());

@@ -150,8 +150,7 @@ ContinuousCost evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& flu
     {
         if (effect.get_function()->get_index() >= fluent_numeric_variables.size())
         {
-            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined fluent function value "
-                                   + to_string(effect.get_function()) + ".");
+            return UNDEFINED_CONTINUOUS_COST;
         }
         old_value = fluent_numeric_variables.at(effect.get_function()->get_index());
     }
@@ -159,13 +158,17 @@ ContinuousCost evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& flu
     {
         if (effect.get_function()->get_index() >= auxiliary_numeric_variables.size())
         {
-            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): undefined auxiliary function value "
-                                   + to_string(effect.get_function()) + ".");
+            return UNDEFINED_CONTINUOUS_COST;
         }
         old_value = auxiliary_numeric_variables.at(effect.get_function()->get_index());
     }
 
     const auto new_value = evaluate(effect.get_function_expression().get(), fluent_numeric_variables, auxiliary_numeric_variables);
+
+    if (new_value == UNDEFINED_CONTINUOUS_COST)
+    {
+        return UNDEFINED_CONTINUOUS_COST;
+    }
 
     switch (effect.get_assign_operator())
     {

@@ -20,6 +20,7 @@
 
 #include <array>
 #include <cstdint>
+#include <limits>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -42,6 +43,8 @@ using ContinuousCostMatrix = std::vector<ContinuousCostList>;
 using DiscreteCost = int32_t;
 using DiscreteCostList = std::vector<DiscreteCost>;
 using DiscreteCostMatrix = std::vector<ContinuousCostList>;
+
+static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
 }
 
 #endif

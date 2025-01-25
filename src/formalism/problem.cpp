@@ -420,7 +420,7 @@ ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
     const auto& function_to_value = get_function_to_value<F>();
     if (function->get_index() > function_to_value.size())
     {
-        return std::numeric_limits<ContinuousCost>::quiet_NaN();
+        return UNDEFINED_CONTINUOUS_COST;
     }
     return function_to_value[function->get_index()];
 }
