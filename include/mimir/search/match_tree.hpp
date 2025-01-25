@@ -46,6 +46,7 @@ private:
     {
         FLUENT_SELECTOR,
         DERIVED_SELECTOR,
+        NUMERIC_CONSTRAINT_SELECTOR,
         GENERATOR,
     };
 
