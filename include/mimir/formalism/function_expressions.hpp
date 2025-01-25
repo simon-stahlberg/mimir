@@ -234,6 +234,11 @@ public:
 
 inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, double val_right)
 {
+    if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
+    {
+        return UNDEFINED_CONTINUOUS_COST;
+    }
+
     switch (op)
     {
         case loki::BinaryOperatorEnum::DIV:
@@ -263,6 +268,11 @@ inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, doub
 
 inline double evaluate_multi(loki::MultiOperatorEnum op, double val_left, double val_right)
 {
+    if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
+    {
+        return UNDEFINED_CONTINUOUS_COST;
+    }
+
     switch (op)
     {
         case loki::MultiOperatorEnum::MUL:
