@@ -677,7 +677,8 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
     }
     out << ")" << std::endl;
 
-    if (!(element.get_goal_condition<Static>().empty() && element.get_goal_condition<Fluent>().empty() && element.get_goal_condition<Derived>().empty()))
+    if (!(element.get_goal_condition<Static>().empty() && element.get_goal_condition<Fluent>().empty() && element.get_goal_condition<Derived>().empty()
+          && element.get_numeric_goal_condition().empty()))
     {
         out << std::string(m_indent, ' ') << "(:goal ";
         out << "(and";
