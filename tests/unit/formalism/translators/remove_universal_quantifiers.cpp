@@ -40,15 +40,15 @@ TEST(MimirTests, FormalismTranslatorsRemoveUniversalQuantifiers)
     // std::cout << *problem << std::endl;
 
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_repositories());
-    auto translated_problem = remove_types_translator.run(*problem);
+    auto translated_problem = remove_types_translator.run(problem);
     [[maybe_unused]] auto translated_domain = translated_problem->get_domain();
 
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
-    translated_problem = to_nnf_translator.run(*translated_problem);
+    translated_problem = to_nnf_translator.run(translated_problem);
     translated_domain = translated_problem->get_domain();
 
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_repositories(), to_nnf_translator);
-    translated_problem = remove_universal_quantifiers_translator.run(*translated_problem);
+    translated_problem = remove_universal_quantifiers_translator.run(translated_problem);
     translated_domain = translated_problem->get_domain();
 
     // std::cout << "\nTranslated domain and problem" << std::endl;

@@ -45,16 +45,16 @@ private:
      *
      * 1. (phi or psi) > e  => (phi > e) and (psi > e)
      */
-    loki::Effect translate_impl(const loki::EffectCompositeWhenImpl& effect);
+    loki::Effect translate_impl(loki::EffectCompositeWhen effect);
     /**
      * Split actions and actions at conditions
      *
      * 2. <(phi or psi), e>  => <phi, e> and <psi, e>
      */
-    loki::Domain translate_impl(const loki::DomainImpl& domain);
-    loki::Problem translate_impl(const loki::ProblemImpl& problem);
+    loki::Domain translate_impl(loki::Domain domain);
+    loki::Problem translate_impl(loki::Problem problem);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     explicit SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_repositories);

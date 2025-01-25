@@ -42,9 +42,9 @@ private:
     std::unordered_set<std::string> m_simple_and_derived_predicate_names;
 
     /// @brief Collect all existing simple and derived predicate names.
-    void prepare_impl(const loki::PredicateImpl& predicate);
+    void prepare_impl(loki::Predicate predicate);
 
-    loki::Problem translate_impl(const loki::ProblemImpl& problem);
+    loki::Problem translate_impl(loki::Problem problem);
 
 public:
     explicit SimplifyGoalTranslator(loki::PDDLRepositories& pddl_repositories);

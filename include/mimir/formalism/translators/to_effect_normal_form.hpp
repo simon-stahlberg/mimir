@@ -52,25 +52,25 @@ private:
      * 1. e and (phi > e)          =>  e
      * 2. e1 and (e2 and e3)       =>  e1 and e2 and e3
      */
-    loki::Effect translate_impl(const loki::EffectAndImpl& effect);
+    loki::Effect translate_impl(loki::EffectAnd effect);
     /**
      * 3. forall(vars1, forall(vars2, e))    =>  forall(vars1+vars2, e)
      * 4. forall(vars, (e1 and e2))          => forall(vars, e1) and forall(vars, e2)
      */
-    loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect);
+    loki::Effect translate_impl(loki::EffectCompositeForall effect);
     /**
      * 5. phi > (psi > e)    =>  (phi and psi) > e
      * 6. phi > (e1 and e2)  =>  (phi > e1) and (phi > e2)
      * 7. phi > forall(vars, e)  => forall(vars, phi > e)
      * 8. exists(vars, phi) > e  => forall(vars, phi > e)
      */
-    loki::Effect translate_impl(const loki::EffectCompositeWhenImpl& effect);
+    loki::Effect translate_impl(loki::EffectCompositeWhen effect);
     /**
      * Flatten conjunctions.
      *
      * 9. phi and (psi and chi)  =>  phi and psi and chi
      */
-    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
+    loki::Condition translate_impl(loki::ConditionAnd condition);
 
     /**
      * Flatten function expression binary operator
@@ -122,7 +122,7 @@ private:
      * 2. Handle constants
      * (- 5 3)           =>  2
      */
-    // loki::FunctionExpression translate_impl(const loki::FunctionExpressionBinaryOperatorImpl& fexpr);
+    // loki::FunctionExpression translate_impl(const loki::FunctionExpressionBinaryOperator fexpr);
 
     /**
      * Flatten function expression multi operator
@@ -158,9 +158,9 @@ private:
      * 3. Combine constants
      * (* f 3 4)         =>  (* f 12)
      */
-    // loki::FunctionExpression translate_impl(const loki::FunctionExpressionMultiOperatorImpl& fexpr);
+    // loki::FunctionExpression translate_impl(const loki::FunctionExpressionMultiOperator fexpr);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     explicit ToENFTranslator(loki::PDDLRepositories& pddl_repositories);

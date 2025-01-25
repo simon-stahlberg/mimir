@@ -324,7 +324,6 @@ protected:
 
         return transformed;
     }
-
     /// @brief Translate a container of elements into a container of elements.
     template<IsBackInsertibleRange Range>
     auto transform_base(const Range& input)
@@ -346,11 +345,6 @@ protected:
 
         return output;
     }
-
-    /// @brief Cache the translation.
-    /// @tparam T
-    /// @param element
-    /// @return
     template<typename T>
     auto transform_base(const T& element)
     {

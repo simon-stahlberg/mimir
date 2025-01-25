@@ -45,24 +45,24 @@ private:
 
     bool m_renaming_enabled;
 
-    loki::Variable translate_impl(const loki::VariableImpl& variable);
+    loki::Variable translate_impl(loki::Variable variable);
 
     /**
      * Keep variable names of parameters in these constructs, i.e., turn off renaming
      */
-    loki::Predicate translate_impl(const loki::PredicateImpl& predicate);
-    loki::FunctionSkeleton translate_impl(const loki::FunctionSkeletonImpl& function_skeleton);
+    loki::Predicate translate_impl(loki::Predicate predicate);
+    loki::FunctionSkeleton translate_impl(loki::FunctionSkeleton function_skeleton);
 
     /**
      * Rename variables names of parameters in these constructs, i.e., turn on renaming
      */
-    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
-    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
-    loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect);
-    loki::Action translate_impl(const loki::ActionImpl& action);
-    loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
+    loki::Condition translate_impl(loki::ConditionExists condition);
+    loki::Condition translate_impl(loki::ConditionForall condition);
+    loki::Effect translate_impl(loki::EffectCompositeForall effect);
+    loki::Action translate_impl(loki::Action action);
+    loki::Axiom translate_impl(loki::Axiom axiom);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     explicit RenameQuantifiedVariablesTranslator(loki::PDDLRepositories& pddl_repositories);

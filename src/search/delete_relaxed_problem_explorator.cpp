@@ -94,8 +94,6 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
 
-    std::cout << m_delete_free_problem << std::endl;
-
     do
     {
         reached_delete_free_explore_fixpoint = true;

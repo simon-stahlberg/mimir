@@ -60,7 +60,7 @@ private:
      * 1. A -> B   =>  not A or B
      * 2. A <-> B  =>  (not A or B) and (A or not B)
      */
-    loki::Condition translate_impl(const loki::ConditionImplyImpl& condition);
+    loki::Condition translate_impl(loki::ConditionImply condition);
     /**
      * Push negation inwards.
      *
@@ -71,33 +71,33 @@ private:
      * 7. not forall x A  =>  exists x not A
      * 8. not (A -> B)    =>  not (not A or B)  =>  A and not B
      */
-    loki::Condition translate_impl(const loki::ConditionNotImpl& condition);
+    loki::Condition translate_impl(loki::ConditionNot condition);
     /**
      * Flatten conjunctions.
      *
      * 9. A and (B and C)  =>  A and B and C
      */
-    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
+    loki::Condition translate_impl(loki::ConditionAnd condition);
     /**
      * Flatten disjunctions.
      *
      * 10. A or (B or C)  =>  A or B or C
      */
-    loki::Condition translate_impl(const loki::ConditionOrImpl& condition);
+    loki::Condition translate_impl(loki::ConditionOr condition);
     /**
      * Flatten existential quantifiers.
      *
      * 11. exists(vars1, exists(vars2, A))  =>  exists(vars1+vars2, A)
      */
-    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    loki::Condition translate_impl(loki::ConditionExists condition);
     /**
      * Flatten universal quantifiers.
      *
      * 12. forall(vars1, forall(vars2, A))  =>  forall(vars1+vars2, A)
      */
-    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
+    loki::Condition translate_impl(loki::ConditionForall condition);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     explicit ToNNFTranslator(loki::PDDLRepositories& pddl_repositories);

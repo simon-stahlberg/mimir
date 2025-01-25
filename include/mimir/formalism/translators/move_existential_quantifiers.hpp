@@ -44,25 +44,25 @@ private:
      *
      * 1. and(phi, exists(vars, psi))       =>  exists(vars, and(phi, psi))
      */
-    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
+    loki::Condition translate_impl(loki::ConditionAnd condition);
     /**
      * Flatten existential quantifier
      *
      * 2. exists(vars, exists(vars', phi))  =>  exists(vars + vars', phi)
      */
-    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    loki::Condition translate_impl(loki::ConditionExists condition);
 
     /**
      * Remove existential from the the root into the action parameters
      */
-    loki::Action translate_impl(const loki::ActionImpl& action);
+    loki::Action translate_impl(loki::Action action);
 
     /**
      * Remove existential from the the root into the action parameters
      */
-    loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
+    loki::Axiom translate_impl(loki::Axiom axiom);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     explicit MoveExistentialQuantifiersTranslator(loki::PDDLRepositories& pddl_repositories);

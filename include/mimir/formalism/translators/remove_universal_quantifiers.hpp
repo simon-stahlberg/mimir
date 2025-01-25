@@ -53,7 +53,7 @@ private:
     public:
         Scope(std::unordered_map<loki::Variable, loki::Parameter> variable_to_parameter, const Scope* parent_scope = nullptr);
 
-        std::optional<loki::Parameter> get_parameter(const loki::Variable& variable) const;
+        std::optional<loki::Parameter> get_parameter(loki::Variable variable) const;
     };
 
     class ScopeStack
@@ -79,20 +79,20 @@ private:
     std::unordered_set<loki::Predicate> m_derived_predicates;
     std::unordered_set<loki::Axiom> m_axioms;
     // Cache translations
-    std::unordered_map<const loki::ConditionForallImpl*, loki::Condition> m_condition_to_substituted_condition;
+    std::unordered_map<loki::ConditionForall, loki::Condition> m_condition_to_substituted_condition;
 
     /// @brief Collect all existing simple and derived predicate names.
-    void prepare_impl(const loki::PredicateImpl& predicate);
+    void prepare_impl(loki::Predicate predicate);
 
     /// @brief Translate the condition while keeping track of scopes
-    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
-    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
-    loki::Action translate_impl(const loki::ActionImpl& action);
-    loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
-    loki::Domain translate_impl(const loki::DomainImpl& domain);
-    loki::Problem translate_impl(const loki::ProblemImpl& problem);
+    loki::Condition translate_impl(loki::ConditionExists condition);
+    loki::Condition translate_impl(loki::ConditionForall condition);
+    loki::Action translate_impl(loki::Action action);
+    loki::Axiom translate_impl(loki::Axiom axiom);
+    loki::Domain translate_impl(loki::Domain domain);
+    loki::Problem translate_impl(loki::Problem problem);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_repositories, ToNNFTranslator& to_nnf_translator);

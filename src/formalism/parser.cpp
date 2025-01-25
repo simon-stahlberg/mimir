@@ -21,42 +21,42 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
 
     // Negation normal form translator
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
-    problem = to_nnf_translator.run(*problem);
+    problem = to_nnf_translator.run(problem);
 
     // Rename quantified variables
     auto rename_quantifed_variables_translator = RenameQuantifiedVariablesTranslator(domain_parser.get_repositories());
-    problem = rename_quantifed_variables_translator.run(*problem);
+    problem = rename_quantifed_variables_translator.run(problem);
 
     // Simplify goal
     auto simplify_goal_translator = SimplifyGoalTranslator(domain_parser.get_repositories());
-    problem = simplify_goal_translator.run(*problem);
+    problem = simplify_goal_translator.run(problem);
 
     // Remove universal quantifiers
     auto remove_universal_quantifiers_translator = RemoveUniversalQuantifiersTranslator(domain_parser.get_repositories(), to_nnf_translator);
-    problem = remove_universal_quantifiers_translator.run(*problem);
+    problem = remove_universal_quantifiers_translator.run(problem);
 
     // To disjunctive normal form
     auto to_dnf_translator = ToDNFTranslator(domain_parser.get_repositories(), to_nnf_translator);
-    problem = to_dnf_translator.run(*problem);
+    problem = to_dnf_translator.run(problem);
 
     // Split disjunctive conditions
     auto split_disjunctive_conditions = SplitDisjunctiveConditionsTranslator(domain_parser.get_repositories());
-    problem = split_disjunctive_conditions.run(*problem);
+    problem = split_disjunctive_conditions.run(problem);
 
     // Remove types
     auto remove_types_translator = RemoveTypesTranslator(domain_parser.get_repositories());
-    problem = remove_types_translator.run(*problem);
+    problem = remove_types_translator.run(problem);
 
     // Move existential quantifers
     auto move_existential_quantifiers_translator = MoveExistentialQuantifiersTranslator(domain_parser.get_repositories());
-    problem = move_existential_quantifiers_translator.run(*problem);
+    problem = move_existential_quantifiers_translator.run(problem);
 
     // To effect normal form
     auto to_enf_translator = ToENFTranslator(domain_parser.get_repositories());
-    problem = to_enf_translator.run(*problem);
+    problem = to_enf_translator.run(problem);
 
-    // std::cout << *problem->get_domain() << std::endl;
-    // std::cout << *problem << std::endl;
+    std::cout << *problem->get_domain() << std::endl;
+    std::cout << *problem << std::endl;
 
     // To mimir structures
     auto tmp_mimir_pddl_repositories = PDDLRepositories();

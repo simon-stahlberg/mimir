@@ -76,66 +76,66 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
     return uniquify_elements(split_axioms);
 }
 
-loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(const loki::EffectCompositeWhenImpl& effect)
+loki::Effect SplitDisjunctiveConditionsTranslator::translate_impl(loki::EffectCompositeWhen effect)
 {
-    const auto& condition = effect.get_condition();
+    const auto& condition = effect->get_condition();
     if (condition && std::holds_alternative<loki::ConditionOr>(condition->get_condition()))
     {
         auto split_effects = loki::EffectList {};
         for (const auto part : std::get<loki::ConditionOr>(condition->get_condition())->get_conditions())
         {
             split_effects.push_back(this->m_pddl_repositories.get_or_create_effect(
-                this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*part), this->translate(*effect.get_effect()))));
+                this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(part), this->translate(effect->get_effect()))));
         }
         return this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_and(split_effects));
     }
     else
     {
         return this->m_pddl_repositories.get_or_create_effect(
-            this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(*effect.get_condition()), this->translate(*effect.get_effect())));
+            this->m_pddl_repositories.get_or_create_effect_composite_when(this->translate(effect->get_condition()), this->translate(effect->get_effect())));
     }
 }
 
-loki::Domain SplitDisjunctiveConditionsTranslator::translate_impl(const loki::DomainImpl& domain)
+loki::Domain SplitDisjunctiveConditionsTranslator::translate_impl(loki::Domain domain)
 {
     // Split actions
-    auto translated_actions = split_actions_at_disjunction(this->translate(domain.get_actions()), this->m_pddl_repositories);
+    auto translated_actions = split_actions_at_disjunction(this->translate(domain->get_actions()), this->m_pddl_repositories);
 
     // Split axioms
-    auto translated_axioms = split_axioms_at_disjunction(this->translate(domain.get_axioms()), this->m_pddl_repositories);
+    auto translated_axioms = split_axioms_at_disjunction(this->translate(domain->get_axioms()), this->m_pddl_repositories);
 
-    return this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
-                                                          domain.get_name(),
-                                                          this->translate(*domain.get_requirements()),
-                                                          this->translate(domain.get_types()),
-                                                          this->translate(domain.get_constants()),
-                                                          this->translate(domain.get_predicates()),
-                                                          this->translate(domain.get_functions()),
+    return this->m_pddl_repositories.get_or_create_domain(domain->get_filepath(),
+                                                          domain->get_name(),
+                                                          this->translate(domain->get_requirements()),
+                                                          this->translate(domain->get_types()),
+                                                          this->translate(domain->get_constants()),
+                                                          this->translate(domain->get_predicates()),
+                                                          this->translate(domain->get_functions()),
                                                           translated_actions,
                                                           translated_axioms);
 }
 
-loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(const loki::ProblemImpl& problem)
+loki::Problem SplitDisjunctiveConditionsTranslator::translate_impl(loki::Problem problem)
 {
     // Split axioms
-    auto translated_axioms = split_axioms_at_disjunction(this->translate(problem.get_axioms()), this->m_pddl_repositories);
+    auto translated_axioms = split_axioms_at_disjunction(this->translate(problem->get_axioms()), this->m_pddl_repositories);
 
     return this->m_pddl_repositories.get_or_create_problem(
-        problem.get_filepath(),
-        this->translate(*problem.get_domain()),
-        problem.get_name(),
-        this->translate(*problem.get_requirements()),
-        this->translate(problem.get_objects()),
-        this->translate(problem.get_derived_predicates()),
-        this->translate(problem.get_initial_literals()),
-        this->translate(problem.get_function_values()),
-        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt),
-        (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
-                                                         std::nullopt),
+        problem->get_filepath(),
+        this->translate(problem->get_domain()),
+        problem->get_name(),
+        this->translate(problem->get_requirements()),
+        this->translate(problem->get_objects()),
+        this->translate(problem->get_derived_predicates()),
+        this->translate(problem->get_initial_literals()),
+        this->translate(problem->get_function_values()),
+        (problem->get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(problem->get_goal_condition().value())) : std::nullopt),
+        (problem->get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(problem->get_optimization_metric().value())) :
+                                                          std::nullopt),
         translated_axioms);
 }
 
-loki::Problem SplitDisjunctiveConditionsTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
+loki::Problem SplitDisjunctiveConditionsTranslator::run_impl(loki::Problem problem) { return this->translate(problem); }
 
 SplitDisjunctiveConditionsTranslator::SplitDisjunctiveConditionsTranslator(loki::PDDLRepositories& pddl_repositories) :
     BaseCachedRecurseTranslator<SplitDisjunctiveConditionsTranslator>(pddl_repositories)

@@ -173,13 +173,6 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
     auto& negative_effect = conjunctive_effect.get_negative_effects();
     positive_effect.clear();
     negative_effect.clear();
-    std::cout << reinterpret_cast<uintptr_t>(action->get_conjunctive_effect()) << std::endl;
-    for (const auto& literal : action->get_conjunctive_effect()->get_literals())
-    {
-        std::cout << reinterpret_cast<uintptr_t>(literal) << std::endl;
-        std::cout << literal << std::endl;
-    }
-    std::cout << action->get_conjunctive_effect()->get_literals() << std::endl;
     m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_effect()->get_literals(), positive_effect, negative_effect, binding);
     positive_effect.compress();
     negative_effect.compress();

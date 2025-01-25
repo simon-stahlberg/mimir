@@ -22,9 +22,9 @@
 namespace mimir
 {
 
-loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
+loki::Effect ToENFTranslator::translate_impl(loki::EffectAnd effect)
 {
-    auto translated_nested_effects = this->translate(effect.get_effects());
+    auto translated_nested_effects = this->translate(effect->get_effects());
 
     // Collect type information of nested effects.
     auto effect_literals = std::unordered_set<loki::Effect> {};
@@ -63,13 +63,13 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectAndImpl& effect)
     }
 
     // 3. e1 and (e2 and e3)  =>  e1 and e2 and e3
-    return flatten(*this->m_pddl_repositories.get_or_create_effect_and(translated_nested_effects), this->m_pddl_repositories);
+    return flatten(this->m_pddl_repositories.get_or_create_effect_and(translated_nested_effects), this->m_pddl_repositories);
 }
 
-loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeForallImpl& effect)
+loki::Effect ToENFTranslator::translate_impl(loki::EffectCompositeForall effect)
 {
-    auto translated_parameters = this->translate(effect.get_parameters());
-    auto translated_nested_effect = this->translate(*effect.get_effect());
+    auto translated_parameters = this->translate(effect->get_parameters());
+    auto translated_nested_effect = this->translate(effect->get_effect());
 
     if (const auto translated_nested_effect_and = std::get_if<loki::EffectAnd>(&translated_nested_effect->get_effect()))
     {
@@ -80,22 +80,21 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeForallIm
             result_parts.push_back(
                 this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, part)));
         }
-        return this->translate(*this->m_pddl_repositories.get_or_create_effect_and(result_parts));
+        return this->translate(this->m_pddl_repositories.get_or_create_effect_and(result_parts));
     }
     // 5. forall(vars1, forall(vars2, e))  =>  forall(vars1+vars2, e)
-    return flatten(*this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect),
-                   this->m_pddl_repositories);
+    return flatten(this->m_pddl_repositories.get_or_create_effect_composite_forall(translated_parameters, translated_nested_effect), this->m_pddl_repositories);
 }
 
-loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl& effect)
+loki::Effect ToENFTranslator::translate_impl(loki::EffectCompositeWhen effect)
 {
-    const auto translated_condition = this->translate(*effect.get_condition());
-    const auto translated_nested_effect = this->translate(*effect.get_effect());
+    const auto translated_condition = this->translate(effect->get_condition());
+    const auto translated_nested_effect = this->translate(effect->get_effect());
 
     if (const auto translated_nested_effect_when = std::get_if<loki::EffectCompositeWhen>(&translated_nested_effect->get_effect()))
     {
         // 6. phi > (psi > e)  =>  (phi and psi) > e
-        return this->translate(*this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_when(
+        return this->translate(this->m_pddl_repositories.get_or_create_effect(this->m_pddl_repositories.get_or_create_effect_composite_when(
             this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_and(
                 loki::ConditionList { translated_condition, (*translated_nested_effect_when)->get_condition() })),
             (*translated_nested_effect_when)->get_effect())));
@@ -109,12 +108,12 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl
             parts.push_back(this->m_pddl_repositories.get_or_create_effect(
                 this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, translated_nested_effect)));
         }
-        return this->translate(*this->m_pddl_repositories.get_or_create_effect_and(parts));
+        return this->translate(this->m_pddl_repositories.get_or_create_effect_and(parts));
     }
     else if (const auto translated_nested_effect_forall = std::get_if<loki::EffectCompositeForall>(&translated_nested_effect->get_effect()))
     {
         // 8. phi > forall(vars, e)  => forall(vars, phi > e)
-        return this->translate(*this->m_pddl_repositories.get_or_create_effect_composite_forall(
+        return this->translate(this->m_pddl_repositories.get_or_create_effect_composite_forall(
             (*translated_nested_effect_forall)->get_parameters(),
             this->m_pddl_repositories.get_or_create_effect(
                 this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, (*translated_nested_effect_forall)->get_effect()))));
@@ -122,7 +121,7 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl
     else if (const auto translated_condition_exists = std::get_if<loki::ConditionExists>(&translated_condition->get_condition()))
     {
         // 9. exists(vars, phi) > e  => forall(vars, phi > e)
-        return this->translate(*this->m_pddl_repositories.get_or_create_effect_composite_forall(
+        return this->translate(this->m_pddl_repositories.get_or_create_effect_composite_forall(
             (*translated_condition_exists)->get_parameters(),
             this->m_pddl_repositories.get_or_create_effect(
                 this->m_pddl_repositories.get_or_create_effect_composite_when((*translated_condition_exists)->get_condition(), translated_nested_effect))));
@@ -132,13 +131,13 @@ loki::Effect ToENFTranslator::translate_impl(const loki::EffectCompositeWhenImpl
         this->m_pddl_repositories.get_or_create_effect_composite_when(translated_condition, translated_nested_effect));
 }
 
-loki::Condition ToENFTranslator::translate_impl(const loki::ConditionAndImpl& condition)
+loki::Condition ToENFTranslator::translate_impl(loki::ConditionAnd condition)
 {
     // 10. A and (B and C)  =>  A and B and C
-    return flatten(*this->m_pddl_repositories.get_or_create_condition_and(this->translate(condition.get_conditions())), this->m_pddl_repositories);
+    return flatten(this->m_pddl_repositories.get_or_create_condition_and(this->translate(condition->get_conditions())), this->m_pddl_repositories);
 }
 
-loki::Problem ToENFTranslator::run_impl(const loki::ProblemImpl& problem) { return this->translate(problem); }
+loki::Problem ToENFTranslator::run_impl(loki::Problem problem) { return this->translate(problem); }
 
 ToENFTranslator::ToENFTranslator(loki::PDDLRepositories& pddl_repositories) : BaseCachedRecurseTranslator(pddl_repositories) {}
 

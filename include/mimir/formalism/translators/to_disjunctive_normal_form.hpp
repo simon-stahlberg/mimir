@@ -53,23 +53,23 @@ private:
      *
      * 1. A and (B or C)  =>  A and B or A and C
      */
-    loki::Condition translate_impl(const loki::ConditionAndImpl& condition);
+    loki::Condition translate_impl(loki::ConditionAnd condition);
     /**
      * Apply flattening of conjunctions.
      *
      * 2. A or (B or C)  =>  A or B or C
      */
-    loki::Condition translate_impl(const loki::ConditionOrImpl& condition);
+    loki::Condition translate_impl(loki::ConditionOr condition);
     /**
      * 3. exists(vars, A or B)  =>  exists(vars, A) or exists(vars, B)
      */
-    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
+    loki::Condition translate_impl(loki::ConditionExists condition);
     /**
      * 4. forall(vars, A or B)  =>  forall(vars, A) or forall(vars, B)
      */
-    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
+    loki::Condition translate_impl(loki::ConditionForall condition);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     ToDNFTranslator(loki::PDDLRepositories& pddl_repositories, ToNNFTranslator& to_nnf_translator);

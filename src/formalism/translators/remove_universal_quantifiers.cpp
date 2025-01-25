@@ -30,7 +30,7 @@ RemoveUniversalQuantifiersTranslator::Scope::Scope(std::unordered_map<loki::Vari
 {
 }
 
-std::optional<loki::Parameter> RemoveUniversalQuantifiersTranslator::Scope::get_parameter(const loki::Variable& variable) const
+std::optional<loki::Parameter> RemoveUniversalQuantifiersTranslator::Scope::get_parameter(loki::Variable variable) const
 {
     auto it = m_variable_to_parameter.find(variable);
     if (it != m_variable_to_parameter.end())
@@ -64,38 +64,35 @@ void RemoveUniversalQuantifiersTranslator::ScopeStack::close_scope()
 
 const RemoveUniversalQuantifiersTranslator::Scope& RemoveUniversalQuantifiersTranslator::ScopeStack::get() const { return *m_stack.back(); }
 
-void RemoveUniversalQuantifiersTranslator::prepare_impl(const loki::PredicateImpl& predicate)
-{
-    m_simple_and_derived_predicate_names.insert(predicate.get_name());
-}
+void RemoveUniversalQuantifiersTranslator::prepare_impl(loki::Predicate predicate) { m_simple_and_derived_predicate_names.insert(predicate->get_name()); }
 
-loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ConditionExistsImpl& condition)
+loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(loki::ConditionExists condition)
 {
-    m_scopes.open_scope(condition.get_parameters());
+    m_scopes.open_scope(condition->get_parameters());
 
     auto result = this->m_pddl_repositories.get_or_create_condition(
-        this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition.get_parameters()), this->translate(*condition.get_condition())));
+        this->m_pddl_repositories.get_or_create_condition_exists(this->translate(condition->get_parameters()), this->translate(condition->get_condition())));
 
     m_scopes.close_scope();
     return result;
 }
 
-loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ConditionForallImpl& condition)
+loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(loki::ConditionForall condition)
 {
     // Access already computed axioms
-    auto it = m_condition_to_substituted_condition.find(&condition);
+    auto it = m_condition_to_substituted_condition.find(condition);
     if (it != m_condition_to_substituted_condition.end())
     {
         return it->second;
     }
 
-    const auto& scope = m_scopes.open_scope(condition.get_parameters());
+    const auto& scope = m_scopes.open_scope(condition->get_parameters());
 
     // Free(exists(vars, phi)) become parameters. We obtain their types from the parameters in the parent scope.
     auto head_parameters = loki::ParameterList {};
     auto terms = loki::TermList {};
     for (const auto free_variable : collect_free_variables(*this->m_pddl_repositories.get_or_create_condition(
-             this->m_pddl_repositories.get_or_create_condition_forall(condition.get_parameters(), condition.get_condition()))))
+             this->m_pddl_repositories.get_or_create_condition_forall(condition->get_parameters(), condition->get_condition()))))
     {
         const auto optional_parameter = scope.get_parameter(free_variable);
         assert(optional_parameter.has_value());
@@ -105,17 +102,17 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
     }
     // Important: all other parameters are appended to the axiom parameters
     auto axiom_parameters = head_parameters;
-    for (const auto& parameter : condition.get_parameters())
+    for (const auto& parameter : condition->get_parameters())
     {
         axiom_parameters.push_back(parameter);
     }
     head_parameters.shrink_to_fit();
     axiom_parameters.shrink_to_fit();
 
-    const auto axiom_condition = this->translate(*this->m_pddl_repositories.get_or_create_condition(
+    const auto axiom_condition = this->translate(this->m_pddl_repositories.get_or_create_condition(
         this->m_pddl_repositories.get_or_create_condition_exists(axiom_parameters,
-                                                                 m_to_nnf_translator.translate(*this->m_pddl_repositories.get_or_create_condition(
-                                                                     this->m_pddl_repositories.get_or_create_condition_not(condition.get_condition()))))));
+                                                                 m_to_nnf_translator.translate(this->m_pddl_repositories.get_or_create_condition(
+                                                                     this->m_pddl_repositories.get_or_create_condition_not(condition->get_condition()))))));
 
     const auto axiom_name = create_unique_axiom_name(this->m_next_axiom_index, this->m_simple_and_derived_predicate_names);
     const auto predicate = this->m_pddl_repositories.get_or_create_predicate(axiom_name, head_parameters);
@@ -127,27 +124,27 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(const loki:
 
     m_axioms.insert(axiom);
 
-    m_condition_to_substituted_condition.emplace(&condition, substituted_condition);
+    m_condition_to_substituted_condition.emplace(condition, substituted_condition);
 
     m_scopes.close_scope();
 
     return substituted_condition;
 }
 
-loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ActionImpl& action)
+loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(loki::Action action)
 {
-    this->m_scopes.open_scope(action.get_parameters());
+    this->m_scopes.open_scope(action->get_parameters());
 
     // Translate condition and effect
     auto translated_condition =
-        (action.get_condition().has_value() ? std::optional<loki::Condition>(this->translate(*action.get_condition().value())) : std::nullopt);
-    auto translated_effect = (action.get_effect().has_value() ? std::optional<loki::Effect>(this->translate(*action.get_effect().value())) : std::nullopt);
+        (action->get_condition().has_value() ? std::optional<loki::Condition>(this->translate(action->get_condition().value())) : std::nullopt);
+    auto translated_effect = (action->get_effect().has_value() ? std::optional<loki::Effect>(this->translate(action->get_effect().value())) : std::nullopt);
 
     // Turn free variables into parameters
-    auto translated_parameters = this->translate(action.get_parameters());
+    auto translated_parameters = this->translate(action->get_parameters());
 
-    auto translated_action = this->m_pddl_repositories.get_or_create_action(action.get_name(),
-                                                                            action.get_original_arity(),
+    auto translated_action = this->m_pddl_repositories.get_or_create_action(action->get_name(),
+                                                                            action->get_original_arity(),
                                                                             translated_parameters,
                                                                             translated_condition,
                                                                             translated_effect);
@@ -157,72 +154,72 @@ loki::Action RemoveUniversalQuantifiersTranslator::translate_impl(const loki::Ac
     return translated_action;
 }
 
-loki::Axiom RemoveUniversalQuantifiersTranslator::translate_impl(const loki::AxiomImpl& axiom)
+loki::Axiom RemoveUniversalQuantifiersTranslator::translate_impl(loki::Axiom axiom)
 {
-    this->m_scopes.open_scope(axiom.get_parameters());
+    this->m_scopes.open_scope(axiom->get_parameters());
 
     // Translate condition and literal
-    auto translated_condition = this->translate(*axiom.get_condition());
+    auto translated_condition = this->translate(axiom->get_condition());
 
     // Turn free variables into parameters
-    auto translated_parameters = this->translate(axiom.get_parameters());
+    auto translated_parameters = this->translate(axiom->get_parameters());
 
-    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(axiom.get_derived_predicate_name(),
+    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
                                                                           translated_parameters,
                                                                           translated_condition,
-                                                                          axiom.get_num_parameters_to_ground_head());
+                                                                          axiom->get_num_parameters_to_ground_head());
 
     this->m_scopes.close_scope();
 
     return translated_axiom;
 }
 
-loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(const loki::DomainImpl& domain)
+loki::Domain RemoveUniversalQuantifiersTranslator::translate_impl(loki::Domain domain)
 {
     // Clear containers that store derived predicates and axioms obtained during translation.
     m_axioms.clear();
     m_derived_predicates.clear();
 
     // Translate existing axioms.
-    auto translated_axioms = this->translate(domain.get_axioms());
+    auto translated_axioms = this->translate(domain->get_axioms());
 
     // Translate universal quantifiers in conditions to axioms.
-    auto translated_actions = this->translate(domain.get_actions());
+    auto translated_actions = this->translate(domain->get_actions());
 
     // Combine all axioms.
     translated_axioms.insert(translated_axioms.end(), m_axioms.begin(), m_axioms.end());
     translated_axioms = uniquify_elements(translated_axioms);
 
-    auto translated_predicates = this->translate(domain.get_predicates());
+    auto translated_predicates = this->translate(domain->get_predicates());
     translated_predicates.insert(translated_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
 
-    return this->m_pddl_repositories.get_or_create_domain(domain.get_filepath(),
-                                                          domain.get_name(),
-                                                          this->translate(*domain.get_requirements()),
-                                                          this->translate(domain.get_types()),
-                                                          this->translate(domain.get_constants()),
+    return this->m_pddl_repositories.get_or_create_domain(domain->get_filepath(),
+                                                          domain->get_name(),
+                                                          this->translate(domain->get_requirements()),
+                                                          this->translate(domain->get_types()),
+                                                          this->translate(domain->get_constants()),
                                                           translated_predicates,
-                                                          this->translate(domain.get_functions()),
+                                                          this->translate(domain->get_functions()),
                                                           translated_actions,
                                                           translated_axioms);
 }
 
-loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::ProblemImpl& problem)
+loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(loki::Problem problem)
 {
     // Translate the domain
-    auto translated_domain = this->translate(*problem.get_domain());
+    auto translated_domain = this->translate(problem->get_domain());
 
     // Clear containers that store derived predicates and axioms obtained during translation.
     m_axioms.clear();
     m_derived_predicates.clear();
 
     // Translate existing derived predicates and axioms.
-    auto translated_derived_predicates = this->translate(problem.get_derived_predicates());
-    auto translated_axioms = this->translate(problem.get_axioms());
+    auto translated_derived_predicates = this->translate(problem->get_derived_predicates());
+    auto translated_axioms = this->translate(problem->get_axioms());
 
     // Translate the goal condition
     auto translated_goal =
-        (problem.get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(*problem.get_goal_condition().value())) : std::nullopt);
+        (problem->get_goal_condition().has_value() ? std::optional<loki::Condition>(this->translate(problem->get_goal_condition().value())) : std::nullopt);
 
     // Combine all derived predicates and axioms.
     translated_derived_predicates.insert(translated_derived_predicates.end(), m_derived_predicates.begin(), m_derived_predicates.end());
@@ -231,24 +228,24 @@ loki::Problem RemoveUniversalQuantifiersTranslator::translate_impl(const loki::P
     translated_axioms = uniquify_elements(translated_axioms);
 
     return this->m_pddl_repositories.get_or_create_problem(
-        problem.get_filepath(),
+        problem->get_filepath(),
         translated_domain,
-        problem.get_name(),
-        this->translate(*problem.get_requirements()),
-        this->translate(problem.get_objects()),
+        problem->get_name(),
+        this->translate(problem->get_requirements()),
+        this->translate(problem->get_objects()),
         translated_derived_predicates,
-        this->translate(problem.get_initial_literals()),
-        this->translate(problem.get_function_values()),
+        this->translate(problem->get_initial_literals()),
+        this->translate(problem->get_function_values()),
         translated_goal,
-        (problem.get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(*problem.get_optimization_metric().value())) :
-                                                         std::nullopt),
+        (problem->get_optimization_metric().has_value() ? std::optional<loki::OptimizationMetric>(this->translate(problem->get_optimization_metric().value())) :
+                                                          std::nullopt),
         translated_axioms);
 }
 
-loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(const loki::ProblemImpl& problem)
+loki::Problem RemoveUniversalQuantifiersTranslator::run_impl(loki::Problem problem)
 {
     this->prepare(problem);
-    return this->translate(*this->m_to_nnf_translator.run(problem));
+    return this->translate(this->m_to_nnf_translator.run(problem));
 }
 
 RemoveUniversalQuantifiersTranslator::RemoveUniversalQuantifiersTranslator(loki::PDDLRepositories& pddl_repositories, ToNNFTranslator& to_nnf_translator) :

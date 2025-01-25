@@ -47,7 +47,7 @@ private:
 
 public:
     template<typename T>
-    void prepare(const T& element)
+    auto prepare(const T& element)
     {
         self().prepare_base(element);
     }
@@ -59,7 +59,7 @@ public:
     }
 
     /// @brief Collect information and apply problem translation.
-    loki::Problem run(const loki::ProblemImpl& problem) { return self().run_base(problem); }
+    loki::Problem run(loki::Problem problem) { return self().run_base(problem); }
 };
 
 }

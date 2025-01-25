@@ -40,7 +40,7 @@ TEST(MimirTests, FormalismTranslatorsToNegationNormalForm)
     // std::cout << *problem << std::endl;
 
     auto to_nnf_translator = ToNNFTranslator(domain_parser.get_repositories());
-    auto translated_problem = to_nnf_translator.run(*problem);
+    auto translated_problem = to_nnf_translator.run(problem);
     [[maybe_unused]] auto translated_domain = translated_problem->get_domain();
 
     // std::cout << "\nTranslated domain and problem" << std::endl;

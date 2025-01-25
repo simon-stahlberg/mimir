@@ -41,17 +41,17 @@ private:
     /**
      * Translate
      */
-    loki::Object translate_impl(const loki::ObjectImpl& object);
-    loki::Parameter translate_impl(const loki::ParameterImpl& parameter);
-    loki::Condition translate_impl(const loki::ConditionExistsImpl& condition);
-    loki::Condition translate_impl(const loki::ConditionForallImpl& condition);
-    loki::Effect translate_impl(const loki::EffectCompositeForallImpl& effect);
-    loki::Action translate_impl(const loki::ActionImpl& action);
-    loki::Axiom translate_impl(const loki::AxiomImpl& axiom);
-    loki::Domain translate_impl(const loki::DomainImpl& domain);
-    loki::Problem translate_impl(const loki::ProblemImpl& problem);
+    loki::Object translate_impl(loki::Object object);
+    loki::Parameter translate_impl(loki::Parameter parameter);
+    loki::Condition translate_impl(loki::ConditionExists condition);
+    loki::Condition translate_impl(loki::ConditionForall condition);
+    loki::Effect translate_impl(loki::EffectCompositeForall effect);
+    loki::Action translate_impl(loki::Action action);
+    loki::Axiom translate_impl(loki::Axiom axiom);
+    loki::Domain translate_impl(loki::Domain domain);
+    loki::Problem translate_impl(loki::Problem problem);
 
-    loki::Problem run_impl(const loki::ProblemImpl& problem);
+    loki::Problem run_impl(loki::Problem problem);
 
 public:
     explicit RemoveTypesTranslator(loki::PDDLRepositories& pddl_repositories);
