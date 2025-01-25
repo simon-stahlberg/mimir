@@ -18,7 +18,7 @@
 #ifndef MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 #define MIMIR_FORMALISM_TRANSLATORS_TO_MIMIR_STRUCTURES_HPP_
 
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <loki/loki.hpp>
 #include <tuple>
@@ -75,59 +75,59 @@ private:
     GroundFunctionMap<Static, ContinuousCost> m_static_function_to_value;
 
     /// @brief Prepare all elements in a container.
-    template<typename Container>
-    void prepare_common(const Container& input)
+    template<std::ranges::forward_range Range>
+    void prepare_common(const Range& range)
     {
-        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare_common(*arg); });
+        std::for_each(std::begin(range), std::end(range), [this](auto&& arg) { this->prepare_common(arg); });
     }
-    void prepare_common(const loki::FunctionSkeletonImpl& function_skeleton);
-    void prepare_common(const loki::ObjectImpl& object);
-    void prepare_common(const loki::ParameterImpl& parameter);
-    void prepare_common(const loki::PredicateImpl& predicate);
-    void prepare_common(const loki::RequirementsImpl& requirements);
-    void prepare_common(const loki::TypeImpl& type);
-    void prepare_common(const loki::VariableImpl& variable);
+    void prepare_common(loki::FunctionSkeleton function_skeleton);
+    void prepare_common(loki::Object object);
+    void prepare_common(loki::Parameter parameter);
+    void prepare_common(loki::Predicate predicate);
+    void prepare_common(loki::Requirements requirements);
+    void prepare_common(loki::Type type);
+    void prepare_common(loki::Variable variable);
 
-    template<typename Container>
-    void prepare_lifted(const Container& input)
+    template<std::ranges::forward_range Range>
+    void prepare_lifted(const Range& range)
     {
-        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare_lifted(*arg); });
+        std::for_each(std::begin(range), std::end(range), [this](auto&& arg) { this->prepare_lifted(arg); });
     }
-    void prepare_lifted(const loki::TermImpl& term);
-    void prepare_lifted(const loki::AtomImpl& atom);
-    void prepare_lifted(const loki::LiteralImpl& literal);
-    void prepare_lifted(const loki::FunctionExpressionNumberImpl& function_expression);
-    void prepare_lifted(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
-    void prepare_lifted(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
-    void prepare_lifted(const loki::FunctionExpressionMinusImpl& function_expression);
-    void prepare_lifted(const loki::FunctionExpressionFunctionImpl& function_expression);
-    void prepare_lifted(const loki::FunctionExpressionImpl& function_expression);
-    void prepare_lifted(const loki::FunctionImpl& function);
-    void prepare_lifted(const loki::ConditionImpl& condition);
-    void prepare_lifted(const loki::EffectImpl& effect);
-    void prepare_lifted(const loki::ActionImpl& action);
-    void prepare_lifted(const loki::AxiomImpl& axiom);
-    void prepare_lifted(const loki::DomainImpl& domain);
+    void prepare_lifted(loki::Term term);
+    void prepare_lifted(loki::Atom atom);
+    void prepare_lifted(loki::Literal literal);
+    void prepare_lifted(loki::FunctionExpressionNumber function_expression);
+    void prepare_lifted(loki::FunctionExpressionBinaryOperator function_expression);
+    void prepare_lifted(loki::FunctionExpressionMultiOperator function_expression);
+    void prepare_lifted(loki::FunctionExpressionMinus function_expression);
+    void prepare_lifted(loki::FunctionExpressionFunction function_expression);
+    void prepare_lifted(loki::FunctionExpression function_expression);
+    void prepare_lifted(loki::Function function);
+    void prepare_lifted(loki::Condition condition);
+    void prepare_lifted(loki::Effect effect);
+    void prepare_lifted(loki::Action action);
+    void prepare_lifted(loki::Axiom axiom);
+    void prepare_lifted(loki::Domain domain);
 
-    template<typename Container>
-    void prepare_grounded(const Container& input)
+    template<std::ranges::forward_range Range>
+    void prepare_grounded(const Range& range)
     {
-        std::for_each(std::begin(input), std::end(input), [this](auto&& arg) { this->prepare_grounded(*arg); });
+        std::for_each(std::begin(range), std::end(range), [this](auto&& arg) { this->prepare_grounded(arg); });
     }
-    void prepare_grounded(const loki::TermImpl& term);
-    void prepare_grounded(const loki::AtomImpl& atom);
-    void prepare_grounded(const loki::LiteralImpl& literal);
-    void prepare_grounded(const loki::FunctionExpressionNumberImpl& function_expression);
-    void prepare_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
-    void prepare_grounded(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
-    void prepare_grounded(const loki::FunctionExpressionMinusImpl& function_expression);
-    void prepare_grounded(const loki::FunctionExpressionFunctionImpl& function_expression);
-    void prepare_grounded(const loki::FunctionExpressionImpl& function_expression);
-    void prepare_grounded(const loki::FunctionImpl& function);
-    void prepare_grounded(const loki::FunctionValueImpl& function_value);
-    void prepare_grounded(const loki::ConditionImpl& condition);
-    void prepare_grounded(const loki::OptimizationMetricImpl& metric);
-    void prepare_grounded(const loki::ProblemImpl& problem);
+    void prepare_grounded(loki::Term term);
+    void prepare_grounded(loki::Atom atom);
+    void prepare_grounded(loki::Literal literal);
+    void prepare_grounded(loki::FunctionExpressionNumber function_expression);
+    void prepare_grounded(loki::FunctionExpressionBinaryOperator function_expression);
+    void prepare_grounded(loki::FunctionExpressionMultiOperator function_expression);
+    void prepare_grounded(loki::FunctionExpressionMinus function_expression);
+    void prepare_grounded(loki::FunctionExpressionFunction function_expression);
+    void prepare_grounded(loki::FunctionExpression function_expression);
+    void prepare_grounded(loki::Function function);
+    void prepare_grounded(loki::FunctionValue function_value);
+    void prepare_grounded(loki::Condition condition);
+    void prepare_grounded(loki::OptimizationMetric metric);
+    void prepare_grounded(loki::Problem problem);
 
     /**
      * Common translations.
@@ -135,18 +135,18 @@ private:
     template<typename T>
     auto translate_common(const std::vector<const T*>& input)
     {
-        using ReturnType = decltype(this->translate_common(std::declval<T>()));
+        using ReturnType = decltype(this->translate_common(std::declval<const T*>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(*arg); });
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_common(arg); });
         return output;
     }
-    StaticOrFluentOrAuxiliaryFunctionSkeleton translate_common(const loki::FunctionSkeletonImpl& function_skeleton);
-    Object translate_common(const loki::ObjectImpl& object);
-    Variable translate_common(const loki::ParameterImpl& parameter);
-    StaticOrFluentOrDerivedPredicate translate_common(const loki::PredicateImpl& predicate);
-    Requirements translate_common(const loki::RequirementsImpl& requirements);
-    Variable translate_common(const loki::VariableImpl& variable);
+    StaticOrFluentOrAuxiliaryFunctionSkeleton translate_common(loki::FunctionSkeleton function_skeleton);
+    Object translate_common(loki::Object object);
+    Variable translate_common(loki::Parameter parameter);
+    StaticOrFluentOrDerivedPredicate translate_common(const loki::Predicate predicate);
+    Requirements translate_common(loki::Requirements requirements);
+    Variable translate_common(loki::Variable variable);
 
     /**
      * Lifted translation.
@@ -156,28 +156,28 @@ private:
     template<typename T>
     auto translate_lifted(const std::vector<const T*>& input)
     {
-        using ReturnType = decltype(this->translate_lifted(std::declval<T>()));
+        using ReturnType = decltype(this->translate_lifted(std::declval<const T*>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_lifted(*arg); });
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_lifted(arg); });
         return output;
     }
-    Term translate_lifted(const loki::TermImpl& term);
-    StaticOrFluentOrDerivedAtom translate_lifted(const loki::AtomImpl& atom);
-    StaticOrFluentOrDerivedLiteral translate_lifted(const loki::LiteralImpl& literal);
-    FunctionExpression translate_lifted(const loki::FunctionExpressionNumberImpl& function_expression);
-    FunctionExpression translate_lifted(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
-    FunctionExpression translate_lifted(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
-    FunctionExpression translate_lifted(const loki::FunctionExpressionMinusImpl& function_expression);
-    FunctionExpression translate_lifted(const loki::FunctionExpressionFunctionImpl& function_expression);
-    FunctionExpression translate_lifted(const loki::FunctionExpressionImpl& function_expression);
-    StaticOrFluentOrAuxiliaryFunction translate_lifted(const loki::FunctionImpl& function);
-    NumericConstraint translate_lifted(const loki::ConditionNumericConstraintImpl& condition);
-    ConjunctiveCondition translate_lifted(const loki::ConditionImpl& condition, const VariableList& parameters);
-    std::tuple<ConjunctiveEffect, ConditionalEffectList> translate_lifted(const loki::EffectImpl& effect, const VariableList& parameters);
-    Action translate_lifted(const loki::ActionImpl& action);
-    Axiom translate_lifted(const loki::AxiomImpl& axiom);
-    Domain translate_lifted(const loki::DomainImpl& domain);
+    Term translate_lifted(loki::Term term);
+    StaticOrFluentOrDerivedAtom translate_lifted(loki::Atom atom);
+    StaticOrFluentOrDerivedLiteral translate_lifted(loki::Literal literal);
+    FunctionExpression translate_lifted(loki::FunctionExpressionNumber function_expression);
+    FunctionExpression translate_lifted(loki::FunctionExpressionBinaryOperator function_expression);
+    FunctionExpression translate_lifted(loki::FunctionExpressionMultiOperator function_expression);
+    FunctionExpression translate_lifted(loki::FunctionExpressionMinus function_expression);
+    FunctionExpression translate_lifted(loki::FunctionExpressionFunction function_expression);
+    FunctionExpression translate_lifted(loki::FunctionExpression function_expression);
+    StaticOrFluentOrAuxiliaryFunction translate_lifted(loki::Function function);
+    NumericConstraint translate_lifted(loki::ConditionNumericConstraint condition);
+    ConjunctiveCondition translate_lifted(loki::Condition condition, const VariableList& parameters);
+    std::tuple<ConjunctiveEffect, ConditionalEffectList> translate_lifted(loki::Effect effect, const VariableList& parameters);
+    Action translate_lifted(loki::Action action);
+    Axiom translate_lifted(loki::Axiom axiom);
+    Domain translate_lifted(loki::Domain domain);
 
     /**
      * Grounded translation
@@ -186,33 +186,33 @@ private:
     template<typename T>
     auto translate_grounded(const std::vector<const T*>& input)
     {
-        using ReturnType = decltype(this->translate_grounded(std::declval<T>()));
+        using ReturnType = decltype(this->translate_grounded(std::declval<const T*>()));
         auto output = std::vector<ReturnType> {};
         output.reserve(input.size());
-        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_grounded(*arg); });
+        std::transform(std::begin(input), std::end(input), std::back_inserter(output), [this](auto&& arg) { return this->translate_grounded(arg); });
         return output;
     }
-    Object translate_grounded(const loki::TermImpl& term);
-    StaticOrFluentOrDerivedGroundAtom translate_grounded(const loki::AtomImpl& atom);
-    StaticOrFluentOrDerivedGroundLiteral translate_grounded(const loki::LiteralImpl& literal);
-    GroundFunctionExpression translate_grounded(const loki::FunctionExpressionNumberImpl& function_expression);
-    GroundFunctionExpression translate_grounded(const loki::FunctionExpressionBinaryOperatorImpl& function_expression);
-    GroundFunctionExpression translate_grounded(const loki::FunctionExpressionMultiOperatorImpl& function_expression);
-    GroundFunctionExpression translate_grounded(const loki::FunctionExpressionMinusImpl& function_expression);
-    GroundFunctionExpression translate_grounded(const loki::FunctionExpressionFunctionImpl& function_expression);
-    GroundFunctionExpression translate_grounded(const loki::FunctionExpressionImpl& function_expression);
-    StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(const loki::FunctionImpl& function);
-    StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(const loki::FunctionValueImpl& numeric_fluent);
-    GroundNumericConstraint translate_grounded(const loki::ConditionNumericConstraintImpl& condition);
+    Object translate_grounded(loki::Term term);
+    StaticOrFluentOrDerivedGroundAtom translate_grounded(loki::Atom atom);
+    StaticOrFluentOrDerivedGroundLiteral translate_grounded(loki::Literal literal);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionNumber function_expression);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionBinaryOperator function_expression);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionMultiOperator function_expression);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionMinus function_expression);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpressionFunction function_expression);
+    GroundFunctionExpression translate_grounded(loki::FunctionExpression function_expression);
+    StaticOrFluentOrAuxiliaryGroundFunction translate_grounded(loki::Function function);
+    StaticOrFluentOrAuxiliaryGroundFunctionValue translate_grounded(loki::FunctionValue numeric_fluent);
+    GroundNumericConstraint translate_grounded(loki::ConditionNumericConstraint condition);
     std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>, GroundNumericConstraintList>
-    translate_grounded(const loki::ConditionImpl& condition);
-    OptimizationMetric translate_grounded(const loki::OptimizationMetricImpl& optimization_metric);
-    Problem translate_grounded(const loki::ProblemImpl& problem);
+    translate_grounded(loki::Condition condition);
+    OptimizationMetric translate_grounded(loki::OptimizationMetric optimization_metric);
+    Problem translate_grounded(loki::Problem problem);
 
 public:
     explicit ToMimirStructures(PDDLRepositories& pddl_repositories);
 
-    Problem run(const loki::ProblemImpl& problem);
+    Problem run(loki::Problem problem);
 };
 
 }
