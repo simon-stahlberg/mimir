@@ -233,6 +233,9 @@ static void collect_applied_conditional_effects(GroundAction action,
                     ref_fluent_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
                 }
 
+                // TODO: action might be applicable and sets values to undefined...
+                // How should such actions be treated?
+                // Same in all other cases below.
                 ref_fluent_numeric_variables[index] = evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
             }
             for (const auto& numeric_effect : conditional_effect.get_conjunctive_effect().get_numeric_effects<Auxiliary>())
