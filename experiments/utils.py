@@ -157,6 +157,6 @@ SUITE_IPC2023_NUMERIC = [
     "rover",
     "sailing",
     "settlersnumeric",
-    "suguar",
+    "sugar",
     "tpp"
 ]
