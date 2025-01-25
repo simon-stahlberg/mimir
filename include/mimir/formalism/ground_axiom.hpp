@@ -64,12 +64,6 @@ public:
     GroundEffectDerivedLiteral& get_derived_effect();
     const GroundEffectDerivedLiteral& get_derived_effect() const;
 
-    bool is_dynamically_applicable(const DenseState& dense_state) const;
-
-    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
-
-    bool is_applicable(Problem problem, const DenseState& dense_state) const;
-
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     ///

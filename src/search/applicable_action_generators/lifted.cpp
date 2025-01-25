@@ -20,6 +20,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/lifted/event_handlers.hpp"
 #include "mimir/search/state.hpp"
 
@@ -97,7 +98,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 
             const auto ground_action = m_grounder->ground(action, std::move(binding));
 
-            assert(ground_action->is_applicable(m_grounder->get_problem(), dense_state));
+            assert(is_applicable(ground_action, m_grounder->get_problem(), dense_state));
 
             m_event_handler->on_ground_action(ground_action);
 

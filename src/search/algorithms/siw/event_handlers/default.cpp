@@ -21,11 +21,9 @@
 
 namespace mimir
 {
-void DefaultSIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) const {}
+void DefaultSIWAlgorithmEventHandler::on_start_search_impl(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) const {}
 
-void DefaultSIWAlgorithmEventHandler::on_start_subproblem_search_impl(const Problem problem,
-                                                                      const State initial_state,
-                                                                      const PDDLRepositories& pddl_repositories) const
+void DefaultSIWAlgorithmEventHandler::on_start_subproblem_search_impl(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) const
 {
     std::cout << "[SIW] Started search." << std::endl;
 }

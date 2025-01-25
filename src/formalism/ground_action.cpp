@@ -22,8 +22,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/dense_state.hpp"
-#include "mimir/search/state.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -56,21 +54,6 @@ const GroundConjunctiveEffect& GroundActionImpl::get_conjunctive_effect() const 
 GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() { return m_conditional_effects; }
 
 const GroundEffectConditionalList& GroundActionImpl::get_conditional_effects() const { return m_conditional_effects; }
-
-bool GroundActionImpl::is_dynamically_applicable(const DenseState& dense_state) const
-{
-    return get_conjunctive_condition().is_dynamically_applicable(dense_state);
-}
-
-bool GroundActionImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
-{
-    return get_conjunctive_condition().is_statically_applicable(static_positive_atoms);
-}
-
-bool GroundActionImpl::is_applicable(Problem problem, const DenseState& dense_state) const
-{
-    return get_conjunctive_condition().is_applicable(problem, dense_state);
-}
 
 /**
  * Pretty printing

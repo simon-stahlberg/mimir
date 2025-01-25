@@ -24,7 +24,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
-#include "mimir/search/declarations.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -100,17 +99,6 @@ public:
     const GroundConjunctiveEffect& get_conjunctive_effect() const;
 
     /* Utility */
-    template<PredicateTag P>
-    bool is_applicable(const FlatBitset& atoms) const;
-
-    bool is_applicable(const FlatDoubleList& fluent_numeric_variables) const;
-
-    bool is_dynamically_applicable(const DenseState& dense_state) const;
-
-    bool is_statically_applicable(Problem problem) const;
-
-    bool is_applicable(Problem problem, const DenseState& dense_state) const;
-
     auto cista_members() noexcept { return std::tie(m_conjunctive_condition, m_conjunctive_effect); }
 };
 

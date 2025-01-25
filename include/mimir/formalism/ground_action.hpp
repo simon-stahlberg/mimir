@@ -25,7 +25,6 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 #include "mimir/formalism/ground_effects.hpp"
-#include "mimir/search/declarations.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -59,12 +58,6 @@ public:
     /* Conditional effects */
     GroundEffectConditionalList& get_conditional_effects();
     const GroundEffectConditionalList& get_conditional_effects() const;
-
-    bool is_dynamically_applicable(const DenseState& dense_state) const;
-
-    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
-
-    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.

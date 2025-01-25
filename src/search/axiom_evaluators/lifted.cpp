@@ -20,6 +20,7 @@
 #include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/lifted/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
@@ -104,7 +105,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
                     const auto ground_axiom = m_grounder->ground(axiom, std::move(binding));
 
-                    assert(ground_axiom->is_applicable(m_grounder->get_problem(), dense_state));
+                    assert(is_applicable(ground_axiom, m_grounder->get_problem(), dense_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 

@@ -32,9 +32,9 @@ private:
     /* Implement IWAlgorithmEventHandlerBase interface */
     friend class IWAlgorithmEventHandlerBase<DefaultIWAlgorithmEventHandler>;
 
-    void on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) const;
+    void on_start_search_impl(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) const;
 
-    void on_start_arity_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories, int arity) const;
+    void on_start_arity_search_impl(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories, size_t arity) const;
 
     void on_end_arity_search_impl(const BrFSAlgorithmStatistics& brfs_statistics) const;
 

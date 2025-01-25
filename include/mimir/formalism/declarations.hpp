@@ -80,9 +80,13 @@ using NumericEffectList = std::vector<NumericEffect<F>>;
 class ConjunctiveEffectImpl;
 using ConjunctiveEffect = const ConjunctiveEffectImpl*;
 
+class GroundConjunctiveEffect;
+
 class ConditionalEffectImpl;
 using ConditionalEffect = const ConditionalEffectImpl*;
 using ConditionalEffectList = std::vector<ConditionalEffect>;
+
+class GroundConditionalEffect;
 
 class FunctionExpressionNumberImpl;
 using FunctionExpressionNumber = const FunctionExpressionNumberImpl*;
@@ -217,6 +221,8 @@ using VariableSet = std::unordered_set<Variable>;
 
 class ConjunctiveConditionImpl;
 using ConjunctiveCondition = const ConjunctiveConditionImpl*;
+
+class GroundConjunctiveCondition;
 
 class TermImpl;
 using Term = const TermImpl*;

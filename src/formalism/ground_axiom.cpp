@@ -46,21 +46,6 @@ GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() { return m_lit
 
 const GroundEffectDerivedLiteral& GroundAxiomImpl::get_derived_effect() const { return m_literal; }
 
-bool GroundAxiomImpl::is_dynamically_applicable(const DenseState& dense_state) const
-{
-    return get_conjunctive_condition().is_dynamically_applicable(dense_state);
-}
-
-bool GroundAxiomImpl::is_statically_applicable(const FlatBitset& static_positive_atoms) const
-{
-    return get_conjunctive_condition().is_statically_applicable(static_positive_atoms);
-}
-
-bool GroundAxiomImpl::is_applicable(Problem problem, const DenseState& dense_state) const
-{
-    return get_conjunctive_condition().is_applicable(problem, dense_state);
-}
-
 /**
  * Pretty printing
  */

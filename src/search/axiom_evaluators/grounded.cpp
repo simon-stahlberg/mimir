@@ -23,6 +23,7 @@
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/dense_state.hpp"
 
@@ -78,7 +79,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                     continue;
                 }
 
-                assert(grounded_axiom->is_applicable(m_grounder->get_problem(), dense_state));
+                assert(is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 

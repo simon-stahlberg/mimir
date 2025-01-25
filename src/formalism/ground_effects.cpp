@@ -22,8 +22,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/dense_state.hpp"
-#include "mimir/search/state.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -139,36 +137,6 @@ const GroundConjunctiveCondition& GroundConditionalEffect::get_conjunctive_condi
 GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect() { return m_conjunctive_effect; }
 
 const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect() const { return m_conjunctive_effect; }
-
-template<PredicateTag P>
-bool GroundConditionalEffect::is_applicable(const FlatBitset& atoms) const
-{
-    return m_conjunctive_condition.is_applicable<P>(atoms);
-}
-
-template bool GroundConditionalEffect::is_applicable<Static>(const FlatBitset& atoms) const;
-template bool GroundConditionalEffect::is_applicable<Fluent>(const FlatBitset& atoms) const;
-template bool GroundConditionalEffect::is_applicable<Derived>(const FlatBitset& atoms) const;
-
-bool GroundConditionalEffect::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
-{
-    return m_conjunctive_condition.is_applicable(fluent_numeric_variables);
-}
-
-bool GroundConditionalEffect::is_dynamically_applicable(const DenseState& dense_state) const
-{
-    return m_conjunctive_condition.is_dynamically_applicable(dense_state);
-}
-
-bool GroundConditionalEffect::is_statically_applicable(Problem problem) const
-{
-    return m_conjunctive_condition.is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
-}
-
-bool GroundConditionalEffect::is_applicable(Problem problem, const DenseState& dense_state) const
-{
-    return m_conjunctive_condition.is_applicable(problem, dense_state);
-}
 
 /**
  * Utils

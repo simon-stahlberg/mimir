@@ -21,7 +21,6 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/dense_state.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>
@@ -52,17 +51,6 @@ public:
 
     FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints();
     const FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints() const;
-
-    template<PredicateTag P>
-    bool is_applicable(const FlatBitset& atoms) const;
-
-    bool is_applicable(const FlatDoubleList& fluent_numeric_variables) const;
-
-    bool is_dynamically_applicable(const DenseState& dense_state) const;
-
-    bool is_statically_applicable(const FlatBitset& static_positive_atoms) const;
-
-    bool is_applicable(Problem problem, const DenseState& dense_state) const;
 
     auto cista_members() noexcept
     {

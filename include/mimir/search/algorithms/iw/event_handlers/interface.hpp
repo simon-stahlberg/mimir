@@ -22,6 +22,7 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
@@ -38,10 +39,10 @@ public:
     virtual ~IIWAlgorithmEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_arity_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories, int arity) = 0;
+    virtual void on_start_arity_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories, size_t arity) = 0;
 
     /// @brief React on starting a search.
     virtual void on_end_arity_search(const BrFSAlgorithmStatistics& brfs_statistics) = 0;
@@ -85,7 +86,7 @@ private:
 public:
     explicit IWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) override
     {
         m_statistics = IWAlgorithmStatistics();
 
@@ -97,7 +98,7 @@ public:
         }
     }
 
-    void on_start_arity_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories, int arity) override
+    void on_start_arity_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories, size_t arity) override
     {
         if (!m_quiet)
         {

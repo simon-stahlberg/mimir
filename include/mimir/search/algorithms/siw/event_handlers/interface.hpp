@@ -23,6 +23,7 @@
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/siw/event_handlers/statistics.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
@@ -39,10 +40,10 @@ public:
     virtual ~ISIWAlgorithmEventHandler() = default;
 
     /// @brief React on starting a search.
-    virtual void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on starting a search.
-    virtual void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_start_subproblem_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on starting a search.
     virtual void on_end_subproblem_search(const IWAlgorithmStatistics& iw_statistics) = 0;
@@ -86,7 +87,7 @@ private:
 public:
     explicit SIWAlgorithmEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_start_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) override
+    void on_start_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) override
     {
         m_statistics = SIWAlgorithmStatistics();
 
@@ -98,7 +99,7 @@ public:
         }
     }
 
-    void on_start_subproblem_search(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) override
+    void on_start_subproblem_search(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {

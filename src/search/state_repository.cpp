@@ -25,6 +25,7 @@
 #include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 
 namespace mimir
@@ -210,7 +211,7 @@ static void collect_applied_conditional_effects(GroundAction action,
 {
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
-        if (conditional_effect.is_applicable(problem, dense_state))
+        if (is_applicable(conditional_effect, problem, dense_state))
         {
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);

@@ -21,12 +21,12 @@
 
 namespace mimir
 {
-void DefaultIWAlgorithmEventHandler::on_start_search_impl(const Problem problem, const State initial_state, const PDDLRepositories& pddl_repositories) const {}
+void DefaultIWAlgorithmEventHandler::on_start_search_impl(Problem problem, State initial_state, const PDDLRepositories& pddl_repositories) const {}
 
-void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(const Problem problem,
-                                                                const State initial_state,
+void DefaultIWAlgorithmEventHandler::on_start_arity_search_impl(Problem problem,
+                                                                State initial_state,
                                                                 const PDDLRepositories& pddl_repositories,
-                                                                int arity) const
+                                                                size_t arity) const
 {
     std::cout << "[IW] Start search with arity " << arity << std::endl;
 }

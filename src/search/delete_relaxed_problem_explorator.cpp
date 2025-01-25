@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/formalism/grounders/axiom_grounder.hpp"
+#include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
@@ -143,7 +144,7 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
         {
             auto axiom_arguments = pddl_repositories->get_objects_from_indices(axiom->get_object_indices());
             auto grounded_axiom = m_grounder->get_axiom_grounder()->ground(unrelaxed_axiom, std::move(axiom_arguments));
-            if (grounded_axiom->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
+            if (is_statically_applicable(grounded_axiom, problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_axioms.push_back(grounded_axiom);
             }
@@ -181,7 +182,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
         {
             auto action_arguments = pddl_repositories->get_objects_from_indices(action->get_object_indices());
             auto grounded_action = m_grounder->get_action_grounder()->ground(unrelaxed_action, std::move(action_arguments));
-            if (grounded_action->is_statically_applicable(problem->get_static_initial_positive_atoms_bitset()))
+            if (is_statically_applicable(grounded_action, problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);
             }

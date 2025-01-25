@@ -22,7 +22,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/repositories.hpp"
-#include "mimir/search/state.hpp"
 
 #include <ostream>
 #include <tuple>
@@ -147,43 +146,6 @@ template const FlatIndexList& GroundConjunctiveCondition::get_negative_precondit
 FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveCondition::get_numeric_constraints() { return m_numeric_constraints; }
 
 const FlatExternalPtrList<const GroundNumericConstraintImpl>& GroundConjunctiveCondition::get_numeric_constraints() const { return m_numeric_constraints; }
-
-template<PredicateTag P>
-bool GroundConjunctiveCondition::is_applicable(const FlatBitset& atoms) const
-{
-    return is_supseteq(atoms, get_positive_precondition<P>())  //
-           && are_disjoint(atoms, get_negative_precondition<P>());
-}
-
-template bool GroundConjunctiveCondition::is_applicable<Static>(const FlatBitset& atoms) const;
-template bool GroundConjunctiveCondition::is_applicable<Fluent>(const FlatBitset& atoms) const;
-template bool GroundConjunctiveCondition::is_applicable<Derived>(const FlatBitset& atoms) const;
-
-bool GroundConjunctiveCondition::is_applicable(const FlatDoubleList& fluent_numeric_variables) const
-{
-    for (const auto& constraint : get_numeric_constraints())
-    {
-        if (!evaluate(constraint.get(), fluent_numeric_variables))
-            return false;
-    }
-    return true;
-}
-
-bool GroundConjunctiveCondition::is_dynamically_applicable(const DenseState& dense_state) const
-{  //
-    return is_applicable<Fluent>(dense_state.get_atoms<Fluent>()) && is_applicable<Derived>(dense_state.get_atoms<Derived>())
-           && is_applicable(dense_state.get_numeric_variables());
-}
-
-bool GroundConjunctiveCondition::is_statically_applicable(const FlatBitset& static_positive_atoms) const
-{
-    return is_applicable<Static>(static_positive_atoms);
-}
-
-bool GroundConjunctiveCondition::is_applicable(Problem problem, const DenseState& dense_state) const
-{
-    return is_dynamically_applicable(dense_state) && is_statically_applicable(problem->get_static_initial_positive_atoms_bitset());
-}
 
 /**
  * Pretty printing
