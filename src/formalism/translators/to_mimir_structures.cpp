@@ -1380,7 +1380,7 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
                     m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_function(
                         m_pddl_repositories.get_or_create_ground_function(arg, ObjectList {}))));
 
-                std::cout << "[ToMimir] Creating default " << metric << std::endl;
+                std::cout << "[ToMimir] Adding default " << metric << " to \":metric\"." << std::endl;
 
                 return metric;
             },

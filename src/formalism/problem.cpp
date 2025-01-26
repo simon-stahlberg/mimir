@@ -149,9 +149,6 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
-    std::cout << "m_fluent_function_values: " << m_fluent_function_values << std::endl;
-    std::cout << "m_auxiliary_function_values: " << m_auxiliary_function_values << std::endl;
-
     /* Additional */
 
     m_problem_and_domain_derived_predicates = m_domain->get_predicates<Derived>();
@@ -177,6 +174,8 @@ ProblemImpl::ProblemImpl(Index index,
 
     m_positive_static_initial_assignment_set.insert_ground_atoms(m_positive_static_initial_atoms);
 
+    // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
+    // In principle, we could compress and define those values during search when applying an action that assigns it.
     for (const auto static_numeric_value : m_static_function_values)
     {
         const auto index = static_numeric_value->get_function()->get_index();
