@@ -18,7 +18,6 @@
 #include "mimir/formalism/ground_axiom.hpp"
 
 #include "mimir/common/hash_cista.hpp"
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/repositories.hpp"
 
 namespace mimir

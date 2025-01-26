@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/formalism/grounders/axiom_grounder.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"

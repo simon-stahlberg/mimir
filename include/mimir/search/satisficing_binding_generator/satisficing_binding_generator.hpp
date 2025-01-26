@@ -20,6 +20,7 @@
 
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/algorithms/kpkc.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/grounders/consistency_graph.hpp"
 #include "mimir/search/declarations.hpp"

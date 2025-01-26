@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 

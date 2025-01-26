@@ -21,7 +21,6 @@
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
-#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 #include <optional>

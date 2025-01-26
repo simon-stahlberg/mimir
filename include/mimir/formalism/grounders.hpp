@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_GROUNDERS_HPP_
-#define MIMIR_SEARCH_GROUNDERS_HPP_
+#ifndef MIMIR_FORMALISM_GROUNDERS_HPP_
+#define MIMIR_FORMALISM_GROUNDERS_HPP_
 
 /**
  * Include all specializations here
@@ -24,9 +24,12 @@
 
 #include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/formalism/grounders/axiom_grounder.hpp"
+#include "mimir/formalism/grounders/function_expression_grounder.hpp"
+#include "mimir/formalism/grounders/function_grounder.hpp"
 #include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/formalism/grounders/literal_grounder.hpp"
+#include "mimir/formalism/grounders/numeric_constraint_grounder.hpp"
+#include "mimir/formalism/grounders/numeric_effect_grounder.hpp"
 #include "mimir/formalism/grounders/variable_grounder.hpp"
-#include "mimir/search/match_tree.hpp"
 
 #endif

@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_DELETE_RELAXED_PROBLEM_EXPLORATOR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"

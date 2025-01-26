@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/assignment_set_utils.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/literal.hpp"
 
 #include <cassert>
 #include <limits>

@@ -40,6 +40,9 @@ namespace mimir
  * Forward declarations
  */
 
+template<PredicateTag P>
+class AssignmentSet;
+
 class ActionImpl;
 using Action = const ActionImpl*;
 using ActionList = std::vector<Action>;

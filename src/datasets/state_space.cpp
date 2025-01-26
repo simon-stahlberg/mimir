@@ -19,6 +19,7 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"

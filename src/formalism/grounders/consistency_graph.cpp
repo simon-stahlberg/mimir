@@ -19,6 +19,7 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/effects.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"

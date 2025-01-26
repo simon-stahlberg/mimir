@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_AXIOM_EVALUATOR_LIFTED_HPP_
 #define MIMIR_SEARCH_AXIOM_EVALUATOR_LIFTED_HPP_
 
+#include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"

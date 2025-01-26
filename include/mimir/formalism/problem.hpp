@@ -21,7 +21,6 @@
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/ground_numeric_constraint.hpp"
 
 namespace mimir
 {
