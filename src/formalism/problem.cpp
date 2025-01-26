@@ -149,19 +149,6 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_axioms.begin(), m_axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
-    for (size_t i = 0; i < m_static_function_values.size(); ++i)
-    {
-        assert(m_static_function_values[i]->get_index() == i);
-    }
-    for (size_t i = 0; i < m_fluent_function_values.size(); ++i)
-    {
-        assert(m_fluent_function_values[i]->get_index() == i);
-    }
-    for (size_t i = 0; i < m_auxiliary_function_values.size(); ++i)
-    {
-        assert(m_auxiliary_function_values[i]->get_index() == i);
-    }
-
     std::cout << "m_fluent_function_values: " << m_fluent_function_values << std::endl;
     std::cout << "m_auxiliary_function_values: " << m_auxiliary_function_values << std::endl;
 
@@ -192,15 +179,49 @@ ProblemImpl::ProblemImpl(Index index,
 
     for (const auto static_numeric_value : m_static_function_values)
     {
-        m_static_function_to_value.push_back(static_numeric_value->get_number());
+        const auto index = static_numeric_value->get_function()->get_index();
+        const auto value = static_numeric_value->get_number();
+        if (index >= m_static_function_to_value.size())
+        {
+            m_static_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+        }
+        m_static_function_to_value[index] = value;
     }
     for (const auto fluent_numeric_value : m_fluent_function_values)
     {
-        m_fluent_function_to_value.push_back(fluent_numeric_value->get_number());
+        const auto index = fluent_numeric_value->get_function()->get_index();
+        const auto value = fluent_numeric_value->get_number();
+        if (index >= m_fluent_function_to_value.size())
+        {
+            m_fluent_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+        }
+        m_fluent_function_to_value[index] = value;
     }
     for (const auto auxiliary_numeric_value : m_auxiliary_function_values)
     {
-        m_auxiliary_function_to_value.push_back(auxiliary_numeric_value->get_number());
+        const auto index = auxiliary_numeric_value->get_function()->get_index();
+        const auto value = auxiliary_numeric_value->get_number();
+        if (index >= m_auxiliary_function_to_value.size())
+        {
+            m_auxiliary_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
+        }
+        m_auxiliary_function_to_value[index] = value;
+    }
+    for (size_t i = 0; i < m_fluent_function_to_value.size(); ++i)
+    {
+        if (m_fluent_function_to_value[i] == UNDEFINED_CONTINUOUS_COST)
+        {
+            std::cout << "Problem::Problem(...): m_fluent_function_to_value contains undefined values. We could optimize by compressing the indexing."
+                      << std::endl;
+        }
+    }
+    for (size_t i = 0; i < m_auxiliary_function_to_value.size(); ++i)
+    {
+        if (m_auxiliary_function_to_value[i] == UNDEFINED_CONTINUOUS_COST)
+        {
+            std::cout << "Problem::Problem(...): m_fluent_function_to_value contains undefined values. We could optimize by compressing the indexing."
+                      << std::endl;
+        }
     }
 
     /* Goal */
