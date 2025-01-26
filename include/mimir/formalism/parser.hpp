@@ -24,7 +24,6 @@
 
 namespace mimir
 {
-
 class PDDLParser
 {
 private:
