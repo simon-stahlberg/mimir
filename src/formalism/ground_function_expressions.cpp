@@ -207,7 +207,13 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionMinus>)
             {
-                return -evaluate(arg->get_function_expression(), fluent_numeric_variables);
+                const auto val = evaluate(arg->get_function_expression(), fluent_numeric_variables);
+                if (val == UNDEFINED_CONTINUOUS_COST)
+                {
+                    return UNDEFINED_CONTINUOUS_COST;
+                }
+
+                return -val;
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Fluent>>)
             {

@@ -54,7 +54,7 @@ GroundFunctionExpression FunctionExpressionGrounder::ground(FunctionExpression f
                     return pddl_repositories.get_or_create_ground_function_expression(pddl_repositories.get_or_create_ground_function_expression_number(
                         evaluate_binary(op,
                                         std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number(),
-                                        std::get<GroundFunctionExpressionNumber>(ground_lhs->get_variant())->get_number())));
+                                        std::get<GroundFunctionExpressionNumber>(ground_rhs->get_variant())->get_number())));
                 }
 
                 return pddl_repositories.get_or_create_ground_function_expression(

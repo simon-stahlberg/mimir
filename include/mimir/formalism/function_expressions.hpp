@@ -244,7 +244,8 @@ inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, doub
         case loki::BinaryOperatorEnum::DIV:
         {
             if (val_right == 0.)
-                throw std::logic_error("Division by zero is undefined.");
+                return UNDEFINED_CONTINUOUS_COST;
+
             return val_left / val_right;
         }
         case loki::BinaryOperatorEnum::MINUS:
