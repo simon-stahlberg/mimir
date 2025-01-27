@@ -61,7 +61,6 @@ class IGroundedAxiomEvaluatorEventHandler;
 class ILiftedAxiomEvaluatorEventHandler;
 
 /* SatisficingBindingGenerator */
-class SatisficingBindingGenerator;
 class ISatisficingBindingGeneratorEventHandler;
 
 /* MatchTree */

@@ -22,7 +22,7 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
+#include "mimir/search/satisficing_binding_generators/action.hpp"
 
 namespace mimir
 {
@@ -36,7 +36,7 @@ private:
     std::shared_ptr<ActionGrounder> m_grounder;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
-    std::unordered_map<Action, SatisficingBindingGenerator> m_action_precondition_grounders;
+    std::unordered_map<Action, ActionSatisficingBindingGenerator> m_action_precondition_grounders;
 
     /* Memory for reuse */
     DenseState m_dense_state;

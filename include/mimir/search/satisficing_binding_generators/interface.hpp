@@ -15,10 +15,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
+#ifndef MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_INTERFACE_HPP_
+#define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_INTERFACE_HPP_
 
+#include "mimir/algorithms/generator.hpp"
+#include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/assignment_set.hpp"
+#include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/effects.hpp"
+#include "mimir/formalism/grounders/consistency_graph.hpp"
+#include "mimir/formalism/grounders/function_expression_grounder.hpp"
 #include "mimir/formalism/grounders/literal_grounder.hpp"
 #include "mimir/formalism/grounders/numeric_constraint_grounder.hpp"
 #include "mimir/formalism/literal.hpp"
@@ -27,43 +34,104 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/tags.hpp"
 #include "mimir/formalism/variable.hpp"
-#include "mimir/search/satisficing_binding_generator/event_handlers/default.hpp"
+#include "mimir/search/applicability.hpp"
+#include "mimir/search/declarations.hpp"
+#include "mimir/search/dense_state.hpp"
+#include "mimir/search/satisficing_binding_generators/event_handlers/default.hpp"
 #include "mimir/search/state.hpp"
+
+#include <boost/dynamic_bitset/dynamic_bitset.hpp>
 
 namespace mimir
 {
 
 /**
- * Utils
- */
-
-template<PredicateTag P>
-static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const FlatBitset& atom_indices)
-{
-    for (const auto& literal : literals)
-    {
-        assert(literal->get_atom()->get_arity() == 0);
-
-        if (literal->is_negated() == atom_indices.get(literal->get_atom()->get_index()))
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const DenseState& dense_state)
-{
-    return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
-           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>());
-}
-
-/**
  * SatisficingBindingGenerator
  */
 
-static void clear_full_consistency_graph(std::vector<boost::dynamic_bitset<>>& full_consistency_graph)
+template<typename Derived_>
+class SatisficingBindingGenerator
+{
+private:
+    std::shared_ptr<LiteralGrounder> m_literal_grounder;
+    std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
+    ConjunctiveCondition m_conjunctive_condition;
+    std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
+
+    consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
+
+    /* Memory for reuse */
+    DenseState m_dense_state;
+    GroundAtomList<Fluent> m_fluent_atoms;
+    GroundAtomList<Derived> m_derived_atoms;
+    AssignmentSet<Fluent> m_fluent_assignment_set;
+    AssignmentSet<Derived> m_derived_assignment_set;
+    std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
+    KPKCWorkspace m_kpkc_workspace;
+
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+
+    template<DynamicPredicateTag P>
+    bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
+
+    bool is_valid_dynamic_binding(const NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+
+    template<DynamicFunctionTag F>
+    bool is_valid_dynamic_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+
+    bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
+
+    bool is_valid_binding(const DenseState& dense_state, const ObjectList& binding);
+
+    mimir::generator<ObjectList> nullary_case(const DenseState& dense_state);
+
+    mimir::generator<ObjectList>
+    unary_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
+
+    mimir::generator<ObjectList>
+    general_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
+
+public:
+    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
+                                std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
+                                ConjunctiveCondition conjunctive_condition,
+                                std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
+
+    mimir::generator<ObjectList>
+    create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
+
+    mimir::generator<ObjectList> create_binding_generator(const DenseState& dense_state,
+                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                          const AssignmentSet<Derived>& derived_assignment_set);
+
+    mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    create_ground_conjunction_generator(State state);
+
+    mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
+    create_ground_conjunction_generator(const DenseState& dense_state);
+
+    /**
+     * Getters
+     */
+
+    const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
+
+    const ConjunctiveCondition& get_conjunctive_condition() const;
+    const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
+    const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
+};
+
+/**
+ * Implementations
+ */
+
+/**
+ * Helpers
+ */
+
+inline void clear_full_consistency_graph(std::vector<boost::dynamic_bitset<>>& full_consistency_graph)
 {
     for (auto& row : full_consistency_graph)
     {
@@ -71,8 +139,13 @@ static void clear_full_consistency_graph(std::vector<boost::dynamic_bitset<>>& f
     }
 }
 
+/**
+ * SatisficingBindingGenerator
+ */
+
+template<typename Derived_>
 template<DynamicPredicateTag P>
-bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding)
+bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding)
 {
     for (const auto& literal : literals)
     {
@@ -87,9 +160,10 @@ bool SatisficingBindingGenerator::is_valid_dynamic_binding(const LiteralList<P>&
     return true;
 }
 
-bool SatisficingBindingGenerator::is_valid_dynamic_binding(const NumericConstraintList& constraints,
-                                                           const FlatDoubleList& fluent_numeric_variables,
-                                                           const ObjectList& binding)
+template<typename Derived_>
+bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const NumericConstraintList& constraints,
+                                                                     const FlatDoubleList& fluent_numeric_variables,
+                                                                     const ObjectList& binding)
 {
     for (const auto& constraint : constraints)
     {
@@ -101,7 +175,26 @@ bool SatisficingBindingGenerator::is_valid_dynamic_binding(const NumericConstrai
     return true;
 }
 
-bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
+template<typename Derived_>
+template<DynamicFunctionTag F>
+bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const NumericEffectList<F>& effects,
+                                                                     const FlatDoubleList& fluent_numeric_variables,
+                                                                     const ObjectList& binding)
+{
+    auto& function_expression_grounder = *m_numeric_constraint_grounder->get_fexpr_grounder();
+
+    for (const auto& effect : effects)
+    {
+        if (evaluate(function_expression_grounder.ground(effect->get_function_expression(), binding), fluent_numeric_variables) == UNDEFINED_CONTINUOUS_COST)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<typename Derived_>
+bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
     const auto problem = m_literal_grounder->get_problem();
 
@@ -118,7 +211,8 @@ bool SatisficingBindingGenerator::is_valid_static_binding(const LiteralList<Stat
     return true;
 }
 
-bool SatisficingBindingGenerator::is_valid_binding(const DenseState& dense_state, const ObjectList& binding)
+template<typename Derived_>
+bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const DenseState& dense_state, const ObjectList& binding)
 {
     //  We need to test all types of conditions due to over-approx.
     return is_valid_static_binding(m_conjunctive_condition->get_literals<Static>(), binding)
@@ -127,7 +221,8 @@ bool SatisficingBindingGenerator::is_valid_binding(const DenseState& dense_state
            && is_valid_dynamic_binding(m_conjunctive_condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding);
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(const DenseState& dense_state)
+template<typename Derived_>
+mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::nullary_case(const DenseState& dense_state)
 {
     // There are no parameters, meaning that the preconditions are already fully ground. Simply check if the single ground action is applicable.
     auto binding = ObjectList {};
@@ -142,9 +237,10 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::nullary_case(const Den
     }
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const DenseState& dense_state,
-                                                                     const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                     const AssignmentSet<Derived>& derived_assignment_sets)
+template<typename Derived_>
+mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
+                                                                               const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                                               const AssignmentSet<Derived>& derived_assignment_sets)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
@@ -165,9 +261,10 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::unary_case(const Dense
     }
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const DenseState& dense_state,
-                                                                       const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                       const AssignmentSet<Derived>& derived_assignment_sets)
+template<typename Derived_>
+mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_state,
+                                                                                 const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                                                                 const AssignmentSet<Derived>& derived_assignment_sets)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
@@ -222,24 +319,15 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::general_case(const Den
     };
 }
 
-SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                         std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                         ConjunctiveCondition conjunctive_condition) :
-    SatisficingBindingGenerator(std::move(literal_grounder),
-                                std::move(numeric_constraint_grounder),
-                                conjunctive_condition,
-                                std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())
-{
-}
-
-SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                         std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                         ConjunctiveCondition conjunctive_condition,
-                                                         std::shared_ptr<ISatisficingBindingGeneratorEventHandler> event_handler) :
+template<typename Derived_>
+SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
+                                                                   std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
+                                                                   ConjunctiveCondition conjunctive_condition,
+                                                                   std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
     m_literal_grounder(literal_grounder),
     m_numeric_constraint_grounder(numeric_constraint_grounder),
     m_conjunctive_condition(conjunctive_condition),
-    m_event_handler(event_handler),
+    m_event_handler(event_handler.value_or(std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())),
     m_static_consistency_graph(m_literal_grounder->get_problem(),
                                0,
                                m_conjunctive_condition->get_parameters().size(),
@@ -255,18 +343,20 @@ SatisficingBindingGenerator::SatisficingBindingGenerator(std::shared_ptr<Literal
 {
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(State state,
-                                                                                   const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                                   const AssignmentSet<Derived>& derived_assignment_set)
+template<typename Derived_>
+mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(State state,
+                                                                                             const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                                                             const AssignmentSet<Derived>& derived_assignment_set)
 {
     DenseState::translate(state, m_dense_state);
 
     return create_binding_generator(m_dense_state, fluent_assignment_set, derived_assignment_set);
 }
 
-mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generator(const DenseState& dense_state,
-                                                                                   const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                                   const AssignmentSet<Derived>& derived_assignment_set)
+template<typename Derived_>
+mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState& dense_state,
+                                                                                             const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                                                             const AssignmentSet<Derived>& derived_assignment_set)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -287,16 +377,18 @@ mimir::generator<ObjectList> SatisficingBindingGenerator::create_binding_generat
     }
 }
 
+template<typename Derived_>
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-SatisficingBindingGenerator::create_ground_conjunction_generator(State state)
+SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(State state)
 {
     DenseState::translate(state, m_dense_state);
 
     return create_ground_conjunction_generator(m_dense_state);
 }
 
+template<typename Derived_>
 mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
-SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseState& dense_state)
+SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const DenseState& dense_state)
 {
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
@@ -339,21 +431,30 @@ SatisficingBindingGenerator::create_ground_conjunction_generator(const DenseStat
     }
 }
 
-const std::shared_ptr<LiteralGrounder>& SatisficingBindingGenerator::get_literal_grounder() const { return m_literal_grounder; }
-
-const ConjunctiveCondition& SatisficingBindingGenerator::get_conjunctive_condition() const { return m_conjunctive_condition; }
-
-const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator::get_event_handler() const { return m_event_handler; }
-
-const consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator::get_static_consistency_graph() const { return m_static_consistency_graph; }
-
-std::ostream& operator<<(std::ostream& out, const SatisficingBindingGenerator& condition_grounder)
+template<typename Derived_>
+const std::shared_ptr<LiteralGrounder>& SatisficingBindingGenerator<Derived_>::get_literal_grounder() const
 {
-    out << "Condition Grounder:" << std::endl;
-    out << " - Precondition: " << condition_grounder.get_conjunctive_condition() << std::endl;
-    // TODO: There are some issues with the printers, perhaps move them in a single compilation unit.
-    // out << " - Static Consistency Graph: " << std::tie(condition_grounder.get_static_consistency_graph(), *condition_grounder.get_pddl_repositories())
-    //     << std::endl;
-    return out;
+    return m_literal_grounder;
 }
+
+template<typename Derived_>
+const ConjunctiveCondition& SatisficingBindingGenerator<Derived_>::get_conjunctive_condition() const
+{
+    return m_conjunctive_condition;
 }
+
+template<typename Derived_>
+const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& SatisficingBindingGenerator<Derived_>::get_event_handler() const
+{
+    return m_event_handler;
+}
+
+template<typename Derived_>
+const consistency_graph::StaticConsistencyGraph& SatisficingBindingGenerator<Derived_>::get_static_consistency_graph() const
+{
+    return m_static_consistency_graph;
+}
+
+}
+
+#endif

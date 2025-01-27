@@ -18,12 +18,15 @@
 #include "mimir/search/applicability.hpp"
 
 #include "mimir/common/types_cista.hpp"
+#include "mimir/formalism/conjunctive_condition.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 #include "mimir/formalism/ground_effects.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
+#include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/declarations.hpp"
@@ -32,6 +35,32 @@
 
 namespace mimir
 {
+
+/**
+ * ConjunctiveCondition
+ */
+
+template<PredicateTag P>
+static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const FlatBitset& atom_indices)
+{
+    for (const auto& literal : literals)
+    {
+        assert(literal->get_atom()->get_arity() == 0);
+
+        if (literal->is_negated() == atom_indices.get(literal->get_atom()->get_index()))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const DenseState& dense_state)
+{
+    return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
+           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>());
+}
 
 /**
  * GroundConjunctiveCondition

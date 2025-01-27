@@ -47,7 +47,7 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     {
         m_condition_grounders.emplace(
             axiom,
-            SatisficingBindingGenerator(m_grounder->get_literal_grounder(), m_grounder->get_numeric_constraint_grounder(), axiom->get_conjunctive_condition()));
+            AxiomSatisficingBindingGenerator(m_grounder->get_literal_grounder(), m_grounder->get_numeric_constraint_grounder(), axiom));
     }
 }
 

@@ -23,7 +23,7 @@
 #include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generator/satisficing_binding_generator.hpp"
+#include "mimir/search/satisficing_binding_generators/axiom.hpp"
 
 namespace mimir
 {
@@ -34,7 +34,7 @@ private:
     std::shared_ptr<AxiomGrounder> m_grounder;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
-    std::unordered_map<Axiom, SatisficingBindingGenerator> m_condition_grounders;
+    std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
 
     std::vector<AxiomPartition> m_partitioning;
 
