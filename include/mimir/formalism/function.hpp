@@ -32,6 +32,8 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
+    // TODO: we might want to store a vector indicating the argument positions relevant to the function to compress the keys in the grounding tables.
+
     FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms);
 
     // Give access to the constructor.

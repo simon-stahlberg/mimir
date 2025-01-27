@@ -30,10 +30,29 @@ FunctionExpressionGrounder::FunctionExpressionGrounder(std::shared_ptr<FunctionG
 
 GroundFunctionExpression FunctionExpressionGrounder::ground(FunctionExpression fexpr, const ObjectList& binding)
 {
+    // 1. Fetch data
     const auto problem = m_function_grounder->get_problem();
     auto& pddl_repositories = *m_function_grounder->get_pddl_repositories();
 
-    return std::visit(
+    /* 2. Access the fexpr specific grounding table */
+    const auto fexpr_index = fexpr->get_index();
+    if (fexpr_index >= m_grounding_tables.size())
+    {
+        m_grounding_tables.resize(fexpr_index + 1);
+    }
+
+    auto& grounding_table = m_grounding_tables.at(fexpr_index);
+
+    /* 3. Check if grounding is cached */
+
+    const auto it = grounding_table.find(binding);
+    if (it != grounding_table.end())
+    {
+        return it->second;
+    }
+
+    /* 4. Ground the function expression */
+    const auto grounded_fexpr = std::visit(
         [&](auto&& arg) -> GroundFunctionExpression
         {
             using T = std::decay_t<decltype(arg)>;
@@ -116,6 +135,14 @@ GroundFunctionExpression FunctionExpressionGrounder::ground(FunctionExpression f
             }
         },
         fexpr->get_variant());
+
+    /* 5. Insert to grounding_table table */
+
+    grounding_table.emplace(binding, GroundFunctionExpression(grounded_fexpr));
+
+    /* 6. Return the resulting ground literal */
+
+    return grounded_fexpr;
 }
 
 const std::shared_ptr<FunctionGrounder>& FunctionExpressionGrounder::get_function_grounder() const { return m_function_grounder; }

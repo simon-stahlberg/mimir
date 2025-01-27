@@ -29,7 +29,7 @@ class FunctionExpressionGrounder
 private:
     std::shared_ptr<FunctionGrounder> m_function_grounder;
 
-    // GroundingTableList<GroundFunctionExpression> m_grounding_tables;
+    GroundingTableList<GroundFunctionExpression> m_grounding_tables;
 
 public:
     /// @brief Simplest construction
