@@ -52,7 +52,7 @@ namespace mimir
 template<typename Derived_>
 class SatisficingBindingGenerator
 {
-private:
+protected:
     std::shared_ptr<LiteralGrounder> m_literal_grounder;
     std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
     ConjunctiveCondition m_conjunctive_condition;
@@ -77,9 +77,6 @@ private:
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
 
     bool is_valid_dynamic_binding(const NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
-
-    template<DynamicFunctionTag F>
-    bool is_valid_dynamic_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
 
     bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
 
@@ -176,24 +173,6 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const Numer
 }
 
 template<typename Derived_>
-template<DynamicFunctionTag F>
-bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const NumericEffectList<F>& effects,
-                                                                     const FlatDoubleList& fluent_numeric_variables,
-                                                                     const ObjectList& binding)
-{
-    auto& function_expression_grounder = *m_numeric_constraint_grounder->get_fexpr_grounder();
-
-    for (const auto& effect : effects)
-    {
-        if (evaluate(function_expression_grounder.ground(effect->get_function_expression(), binding), fluent_numeric_variables) == UNDEFINED_CONTINUOUS_COST)
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
     const auto problem = m_literal_grounder->get_problem();
@@ -218,7 +197,8 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const DenseState& d
     return is_valid_static_binding(m_conjunctive_condition->get_literals<Static>(), binding)
            && is_valid_dynamic_binding(m_conjunctive_condition->get_literals<Fluent>(), dense_state.get_atoms<Fluent>(), binding)
            && is_valid_dynamic_binding(m_conjunctive_condition->get_literals<Derived>(), dense_state.get_atoms<Derived>(), binding)
-           && is_valid_dynamic_binding(m_conjunctive_condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding);
+           && is_valid_dynamic_binding(m_conjunctive_condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding)
+           && self().is_valid_dynamic_binding_impl(dense_state, binding);
 }
 
 template<typename Derived_>

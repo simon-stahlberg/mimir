@@ -30,7 +30,14 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<ActionSatisficingBindingGenerator>;
 
+    bool is_valid_dynamic_binding_impl(const DenseState& dense_state, const ObjectList& binding);
+
+private:
+    /* Declare additional private members and functions. */
     Action m_action;
+
+    template<DynamicFunctionTag F>
+    bool is_valid_dynamic_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
 
 public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::create_binding_generator;

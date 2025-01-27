@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/action.hpp"
 
+#include "mimir/formalism/effects.hpp"
 #include "mimir/search/satisficing_binding_generators/action.hpp"
 
 namespace mimir
@@ -33,4 +34,47 @@ ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(std::shared
     m_action(action)
 {
 }
+
+bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding_impl(const DenseState& dense_state, const ObjectList& binding)
+{
+    const auto& fluent_numeric_variables = dense_state.get_numeric_variables();
+
+    return is_valid_dynamic_binding(m_action->get_conjunctive_effect()->template get_numeric_effects<Fluent>(), fluent_numeric_variables, binding)
+           && is_valid_dynamic_binding(m_action->get_conjunctive_effect()->template get_numeric_effects<Auxiliary>(), fluent_numeric_variables, binding)
+           && std::all_of(
+               m_action->get_conditional_effects().begin(),
+               m_action->get_conditional_effects().end(),
+               [&](auto&& arg)
+               {
+                   return is_valid_dynamic_binding(arg->get_conjunctive_effect()->template get_numeric_effects<Fluent>(), fluent_numeric_variables, binding)
+                          && is_valid_dynamic_binding(arg->get_conjunctive_effect()->template get_numeric_effects<Auxiliary>(),
+                                                      fluent_numeric_variables,
+                                                      binding);
+               });
+}
+
+template<DynamicFunctionTag F>
+bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEffectList<F>& effects,
+                                                                 const FlatDoubleList& fluent_numeric_variables,
+                                                                 const ObjectList& binding)
+{
+    auto& function_expression_grounder = *this->m_numeric_constraint_grounder->get_fexpr_grounder();
+
+    for (const auto& effect : effects)
+    {
+        if (evaluate(function_expression_grounder.ground(effect->get_function_expression(), binding), fluent_numeric_variables) == UNDEFINED_CONTINUOUS_COST)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+template bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEffectList<Fluent>& effects,
+                                                                          const FlatDoubleList& fluent_numeric_variables,
+                                                                          const ObjectList& binding);
+template bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEffectList<Auxiliary>& effects,
+                                                                          const FlatDoubleList& fluent_numeric_variables,
+                                                                          const ObjectList& binding);
+
 }
