@@ -33,8 +33,6 @@ private:
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    // TODO: we might want to store a vector indicating the argument positions relevant to the literal to compress the keys in the grounding tables.
-
     LiteralImpl(Index index, bool is_negated, Atom<P> atom);
 
     // Give access to the constructor.

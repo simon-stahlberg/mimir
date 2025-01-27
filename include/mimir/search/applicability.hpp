@@ -43,6 +43,16 @@ extern bool is_statically_applicable(const GroundConjunctiveCondition& conjuncti
 extern bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Problem problem, const DenseState& dense_state);
 
 /**
+ * GroundConjunctiveEffect
+ */
+
+extern bool is_dynamically_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state);
+
+extern bool is_statically_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem);
+
+extern bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem, const DenseState& dense_state);
+
+/**
  * GroundConditionalEffect
  */
 

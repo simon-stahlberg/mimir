@@ -208,6 +208,8 @@ private:
 
     FunctionExpressionImpl(size_t index, FunctionExpressionVariant function_expression);
 
+    // Below: add additional members if needed and initialize them in the constructor
+
     // TODO: we might want to store a vector indicating the argument positions relevant to the function expression to compress the keys in the grounding tables.
 
     // Give access to the constructor.

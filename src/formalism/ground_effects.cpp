@@ -148,24 +148,21 @@ ContinuousCost evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& flu
     auto old_value = ContinuousCost(0);
     if constexpr (std::is_same_v<F, Fluent>)
     {
-        if (effect.get_function()->get_index() >= fluent_numeric_variables.size())
-        {
-            return UNDEFINED_CONTINUOUS_COST;
-        }
-        old_value = fluent_numeric_variables.at(effect.get_function()->get_index());
+        old_value = (effect.get_function()->get_index() < auxiliary_numeric_variables.size()) ?
+                        fluent_numeric_variables.at(effect.get_function()->get_index()) :
+                        UNDEFINED_CONTINUOUS_COST;
     }
     else if constexpr (std::is_same_v<F, Auxiliary>)
     {
-        if (effect.get_function()->get_index() >= auxiliary_numeric_variables.size())
-        {
-            return UNDEFINED_CONTINUOUS_COST;
-        }
-        old_value = auxiliary_numeric_variables.at(effect.get_function()->get_index());
+        old_value = (effect.get_function()->get_index() < auxiliary_numeric_variables.size()) ?
+                        auxiliary_numeric_variables.at(effect.get_function()->get_index()) :
+                        UNDEFINED_CONTINUOUS_COST;
     }
 
     const auto new_value = evaluate(effect.get_function_expression().get(), fluent_numeric_variables, auxiliary_numeric_variables);
 
-    if (new_value == UNDEFINED_CONTINUOUS_COST)
+    if ((new_value == UNDEFINED_CONTINUOUS_COST)
+        || (old_value == UNDEFINED_CONTINUOUS_COST && effect.get_assign_operator() != loki::AssignOperatorEnum::ASSIGN))
     {
         return UNDEFINED_CONTINUOUS_COST;
     }
