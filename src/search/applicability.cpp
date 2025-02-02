@@ -109,31 +109,31 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
  * GroundConjunctiveEffect
  */
 
-template<FunctionTag F>
-bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const FlatBitset& atoms)
+template<DynamicFunctionTag F>
+bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables)
 {
+    for (const auto& effect : effects)
+    {
+        if (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) == UNDEFINED_CONTINUOUS_COST)
+        {
+            return false;
+        }
+    }
+    return true;
 }
+
+template bool is_applicable(const GroundNumericEffectList<Fluent>& effects, const FlatDoubleList& fluent_numeric_variables);
+template bool is_applicable(const GroundNumericEffectList<Auxiliary>& effects, const FlatDoubleList& fluent_numeric_variables);
 
 bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    // return is_applicable(conjunctive_effect.get_numeric_effects<Fluent>(), fluent_numeric_variables)
-    //        && is_applicable(conjunctive_effect.get_numeric_effects<Auxiliary>(), fluent_numeric_variables);
-    // TODO
+    return is_applicable(conjunctive_effect.get_numeric_effects<Fluent>(), fluent_numeric_variables)
+           && is_applicable(conjunctive_effect.get_numeric_effects<Auxiliary>(), fluent_numeric_variables);
 }
 
-bool is_dynamically_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state)
+bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state)
 {
-    // TODO
-}
-
-bool is_statically_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem)
-{
-    // TODO
-}
-
-bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem, const DenseState& dense_state)
-{
-    // TODO
+    return is_applicable(conjunctive_effect, dense_state.get_numeric_variables());
 }
 
 /**
