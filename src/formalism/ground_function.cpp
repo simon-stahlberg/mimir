@@ -49,6 +49,12 @@ const ObjectList& GroundFunctionImpl<F>::get_objects() const
     return m_objects;
 }
 
+template<FunctionTag F>
+size_t GroundFunctionImpl<F>::get_arity() const
+{
+    return m_objects.size();
+}
+
 template class GroundFunctionImpl<Static>;
 template class GroundFunctionImpl<Fluent>;
 template class GroundFunctionImpl<Auxiliary>;

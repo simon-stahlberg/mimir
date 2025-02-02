@@ -17,7 +17,9 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 
+#include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/term.hpp"
@@ -45,26 +47,30 @@ Assignment::Assignment(Index first_index, Index first_object, Index second_index
  */
 
 template<PredicateTag P>
-AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects)
+AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects), m_per_predicate_assignment_set()
 {
+    /* Allocate */
     auto max_predicate_index = Index(0);
     for (const auto& predicate : predicates)
     {
         max_predicate_index = std::max(max_predicate_index, predicate->get_index());
     }
-    per_predicate_assignment_set.resize(max_predicate_index + 1);
+    m_per_predicate_assignment_set.resize(max_predicate_index + 1);
 
     for (const auto& predicate : predicates)
     {
-        auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+        auto& assignment_set = m_per_predicate_assignment_set.at(predicate->get_index());
         assignment_set.resize(num_assignments(predicate->get_arity(), m_num_objects));
     }
+
+    /* Initialize */
+    reset();
 }
 
 template<PredicateTag P>
-void AssignmentSet<P>::clear()
+void AssignmentSet<P>::reset()
 {
-    for (auto& assignment_set : per_predicate_assignment_set)
+    for (auto& assignment_set : m_per_predicate_assignment_set)
     {
         std::fill(assignment_set.begin(), assignment_set.end(), false);
     }
@@ -78,7 +84,7 @@ void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms
         const auto& arity = ground_atom->get_arity();
         const auto& predicate = ground_atom->get_predicate();
         const auto& arguments = ground_atom->get_objects();
-        auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+        auto& assignment_set = m_per_predicate_assignment_set.at(predicate->get_index());
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
@@ -102,7 +108,7 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     const auto& arity = ground_atom->get_arity();
     const auto& predicate = ground_atom->get_predicate();
     const auto& arguments = ground_atom->get_objects();
-    auto& assignment_set = per_predicate_assignment_set.at(predicate->get_index());
+    auto& assignment_set = m_per_predicate_assignment_set.at(predicate->get_index());
 
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
@@ -122,5 +128,107 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 template class AssignmentSet<Static>;
 template class AssignmentSet<Fluent>;
 template class AssignmentSet<Derived>;
+
+/**
+ * NumericAssignmentSet
+ */
+
+NumericAssignmentSet::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<Fluent>& function_skeletons) :
+    m_num_objects(num_objects),
+    m_per_function_skeleton_bounds_set()
+{
+    /* Allocate */
+    auto max_function_skeleton_index = Index(0);
+    for (const auto& function_skeleton : function_skeletons)
+    {
+        max_function_skeleton_index = std::max(max_function_skeleton_index, function_skeleton->get_index());
+    }
+    m_per_function_skeleton_bounds_set.resize(max_function_skeleton_index + 1);
+
+    for (const auto& function_skeleton : function_skeletons)
+    {
+        auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
+        assignment_set.resize(num_assignments(function_skeleton->get_arity(), m_num_objects));
+    }
+
+    /* Initialize */
+    reset();
+}
+
+void NumericAssignmentSet::reset()
+{
+    for (auto& assignment_set : m_per_function_skeleton_bounds_set)
+    {
+        std::fill(assignment_set.begin(), assignment_set.end(), Bounds<ContinuousCost>::unbounded);
+    }
+}
+
+void NumericAssignmentSet::insert_ground_function_values(const GroundFunctionList<Fluent>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values)
+{
+    /* Validate inputs. */
+    assert(ground_fluent_functions.size() == fluent_numeric_values.size());
+    for (size_t i = 0; i < ground_fluent_functions.size(); ++i)
+    {
+        assert(ground_fluent_functions[i]->get_index() == i);
+    }
+
+    /* Initialize bookkeeping. */
+    m_ground_function_to_value.clear();
+    for (size_t i = 0; i < ground_fluent_functions.size(); ++i)
+    {
+        m_ground_function_to_value.emplace_back(ground_fluent_functions[i], fluent_numeric_values[i]);
+    }
+    std::sort(m_ground_function_to_value.begin(), m_ground_function_to_value.end(), [](auto&& lhs, auto&& rhs) { return lhs.second < rhs.second; });
+
+    /* Compute upper bound in forward iteration. */
+    for (const auto [function, value] : m_ground_function_to_value)
+    {
+        const auto& arity = function->get_arity();
+        const auto& function_skeleton = function->get_function_skeleton();
+        const auto& arguments = function->get_objects();
+        auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
+
+        for (size_t first_index = 0; first_index < arity; ++first_index)
+        {
+            const auto& first_object = arguments[first_index];
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)].upper = value;
+
+            for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
+            {
+                const auto& second_object = arguments[second_index];
+                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                                                   arity,
+                                                   m_num_objects)]
+                    .upper = value;
+            }
+        }
+    }
+
+    /* Compute lower bound in backward iteration. */
+    for (auto it = m_ground_function_to_value.rbegin(); it != m_ground_function_to_value.rend(); ++it)
+    {
+        auto [function, value] = *it;
+
+        const auto& arity = function->get_arity();
+        const auto& function_skeleton = function->get_function_skeleton();
+        const auto& arguments = function->get_objects();
+        auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
+
+        for (size_t first_index = 0; first_index < arity; ++first_index)
+        {
+            const auto& first_object = arguments[first_index];
+            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)].lower = value;
+
+            for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
+            {
+                const auto& second_object = arguments[second_index];
+                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                                                   arity,
+                                                   m_num_objects)]
+                    .lower = value;
+            }
+        }
+    }
+}
 
 }

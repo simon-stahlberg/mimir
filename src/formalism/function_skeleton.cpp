@@ -48,6 +48,12 @@ const VariableList& FunctionSkeletonImpl<F>::get_parameters() const
     return m_parameters;
 }
 
+template<FunctionTag F>
+size_t FunctionSkeletonImpl<F>::get_arity() const
+{
+    return m_parameters.size();
+}
+
 template class FunctionSkeletonImpl<Static>;
 template class FunctionSkeletonImpl<Fluent>;
 template class FunctionSkeletonImpl<Auxiliary>;

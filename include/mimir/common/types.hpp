@@ -54,6 +54,19 @@ struct Bounds
     A lower;
     A upper;
 
+    // Static unbounded instance
+    inline static const Bounds unbounded = []
+    {
+        if constexpr (std::is_floating_point_v<A>)
+        {
+            return Bounds { std::numeric_limits<A>::infinity(), -std::numeric_limits<A>::infinity() };
+        }
+        else
+        {
+            return Bounds { std::numeric_limits<A>::max(), std::numeric_limits<A>::min() };
+        }
+    }();
+
     bool is_bounded() const { return lower <= upper; }
     bool is_unbounded() const
     {

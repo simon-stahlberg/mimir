@@ -47,14 +47,14 @@ private:
     size_t m_num_objects;
 
     // The underlying function
-    std::vector<std::vector<bool>> per_predicate_assignment_set;
+    std::vector<std::vector<bool>> m_per_predicate_assignment_set;
 
 public:
     /// @brief Construct from a given set of ground atoms.
     AssignmentSet(size_t num_objects, const PredicateList<P>& predicates);
 
     /// @brief Clears all ground atoms from the assignment set.
-    void clear();
+    void reset();
 
     /// @brief Insert ground atoms into the assignment set.
     void insert_ground_atoms(const GroundAtomList<P>& ground_atoms);
@@ -67,7 +67,7 @@ public:
      */
 
     size_t get_num_objects() const { return m_num_objects; }
-    const std::vector<std::vector<bool>>& get_per_predicate_assignment_set() const { return per_predicate_assignment_set; }
+    const std::vector<std::vector<bool>>& get_per_predicate_assignment_set() const { return m_per_predicate_assignment_set; }
 };
 
 /// @brief `NumericAssignmentSet` is a helper class representing a set of functions
@@ -83,21 +83,21 @@ class NumericAssignmentSet
 {
 private:
     size_t m_num_objects;
-    std::vector<std::vector<Bounds<ContinuousCost>>> per_function_skeleton_bounds_set;
+    std::vector<std::vector<Bounds<ContinuousCost>>> m_per_function_skeleton_bounds_set;
 
     /* temporaries for reuse */
 
     // This lets us easily compute the bounds for partial substitutions by sorting the vector by the cost,
     // followed by computing upper bounds in a forward iteration,
     // followed by computing lower bounds in a backward iteration.
-    std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> ground_function_to_value;
+    std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> m_ground_function_to_value;
 
 public:
     /// @brief Construct from a given set of ground atoms.
-    NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<Fluent>& functions);
+    NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<Fluent>& function_skeletons);
 
-    /// @brief Sets all function skeleton bounds to unrestricted, i.e., [inf,-inf].
-    void clear();
+    /// @brief Resets all function skeleton bounds to unrestricted, i.e., [inf,-inf].
+    void reset();
 
     /// @brief Insert fluent ground function values into the assignment set.
     void insert_ground_function_values(const GroundFunctionList<Fluent>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values);
@@ -107,7 +107,7 @@ public:
      */
 
     size_t get_num_objects() const { return m_num_objects; }
-    const std::vector<std::vector<Bounds<ContinuousCost>>>& get_per_function_skeleton_bounds_set() const { return per_function_skeleton_bounds_set; }
+    const std::vector<std::vector<Bounds<ContinuousCost>>>& get_per_function_skeleton_bounds_set() const { return m_per_function_skeleton_bounds_set; }
 };
 
 }

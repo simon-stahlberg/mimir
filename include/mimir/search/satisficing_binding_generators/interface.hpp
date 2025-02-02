@@ -380,11 +380,11 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
     }
 
     m_literal_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
-    m_fluent_assignment_set.clear();
+    m_fluent_assignment_set.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
     m_literal_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
-    m_derived_assignment_set.clear();
+    m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
     for (const auto& binding : create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set))
