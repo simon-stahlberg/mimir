@@ -18,6 +18,8 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 
+#include "mimir/common/types.hpp"
+#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set_utils.hpp"
 #include "mimir/formalism/declarations.hpp"
 
@@ -29,9 +31,9 @@
 namespace mimir
 {
 
-/// @brief AssignmentSet is a helper class representing a set of functions
+/// @brief `AssignmentSet` is a helper class representing a set of functions
 /// f : Predicates x Params(A) x Object x Params(A) x Object -> {true, false} where
-///   1. f(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j)
+///   1. f(p,i,o,j,o') = true iff there exists an atom p(...,o_i,...,o'_j,...)
 ///   2. f(p,i,o,-1,-1) = true iff there exists an atom p(...,o_i,...)
 /// with respective meanings
 ///   1. the assignment [i/o], [j/o'] is consistent
@@ -66,6 +68,46 @@ public:
 
     size_t get_num_objects() const { return m_num_objects; }
     const std::vector<std::vector<bool>>& get_per_predicate_assignment_set() const { return per_predicate_assignment_set; }
+};
+
+/// @brief `NumericAssignmentSet` is a helper class representing a set of functions
+/// f : FunctionSkeleton x Params(A) x Object x Params(A) x Object -> Bounds<ContinuousCost> where
+///   1. f(p,i,o,j,o') = [l,r] iff min_{...} h(...,o_i,...,o'_j,...) = l and max_{...} h(...,o_i,...,o'_j,...) = r
+///   2. f(p,i,o,-1,-1) = [l,r] iff min_{...} h(...,o_i,...) = l and max_{...} h(...,o_i,...) = r
+///   3. for all others, we have f(p,i,o,j,o') = [inf,-inf] and f(p,i,o,-1,-1) = [inf,-inf]
+/// with respective meanings
+///   1. the assignment [i/o], [j/o'] results in partial function evaluation [l,r]
+///   2. the assignment [i/o] results in partial function evaluation [l,r]
+/// Using the `NumericAssignmentSet` we can efficiently evaluate numeric constraints partially.
+class NumericAssignmentSet
+{
+private:
+    size_t m_num_objects;
+    std::vector<std::vector<Bounds<ContinuousCost>>> per_function_skeleton_bounds_set;
+
+    /* temporaries for reuse */
+
+    // This lets us easily compute the bounds for partial substitutions by sorting the inner vector by the cost,
+    // followed by computing upper bounds in a forward iteration,
+    // followed by computing lower bounds in a backward iteration.
+    std::vector<std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>>> values_by_function_skeleton;
+
+public:
+    /// @brief Construct from a given set of ground atoms.
+    NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<Fluent>& functions);
+
+    /// @brief Sets all function skeleton bounds to unrestricted, i.e., [inf,-inf].
+    void clear();
+
+    /// @brief Insert fluent ground function values into the assignment set.
+    void insert_ground_function_values(const GroundFunctionList<Fluent>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values);
+
+    /**
+     * Getters
+     */
+
+    size_t get_num_objects() const { return m_num_objects; }
+    const std::vector<std::vector<Bounds<ContinuousCost>>>& get_per_function_skeleton_bounds_set() const { return per_function_skeleton_bounds_set; }
 };
 
 }

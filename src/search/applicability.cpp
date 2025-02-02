@@ -109,8 +109,13 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
  * GroundConjunctiveEffect
  */
 
+/// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects are well-defined.
+/// @tparam F
+/// @param effects
+/// @param fluent_numeric_variables
+/// @return
 template<DynamicFunctionTag F>
-bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables)
+static bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables)
 {
     for (const auto& effect : effects)
     {
@@ -122,10 +127,11 @@ bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleLi
     return true;
 }
 
-template bool is_applicable(const GroundNumericEffectList<Fluent>& effects, const FlatDoubleList& fluent_numeric_variables);
-template bool is_applicable(const GroundNumericEffectList<Auxiliary>& effects, const FlatDoubleList& fluent_numeric_variables);
-
-bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const FlatDoubleList& fluent_numeric_variables)
+/// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects in the conjunctive effect are well-defined.
+/// @param conjunctive_effect
+/// @param fluent_numeric_variables
+/// @return
+static bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const FlatDoubleList& fluent_numeric_variables)
 {
     return is_applicable(conjunctive_effect.get_numeric_effects<Fluent>(), fluent_numeric_variables)
            && is_applicable(conjunctive_effect.get_numeric_effects<Auxiliary>(), fluent_numeric_variables);
@@ -187,7 +193,16 @@ bool is_statically_applicable(GroundAction action, const FlatBitset& static_posi
 
 bool is_applicable(GroundAction action, Problem problem, const DenseState& dense_state)
 {
-    return is_applicable(action->get_conjunctive_condition(), problem, dense_state);
+    return is_applicable(action->get_conjunctive_condition(), problem, dense_state)  //
+           && is_applicable(action->get_conjunctive_effect(), dense_state)
+           && std::all_of(action->get_conditional_effects().begin(),
+                          action->get_conditional_effects().end(),
+                          [&](auto&& arg)
+                          {
+                              // If the conditional effect is applicable, then the conjunctive effect must be applicable
+                              return !is_applicable(arg.get_conjunctive_condition(), problem, dense_state)
+                                     || is_applicable(arg.get_conjunctive_effect(), dense_state);
+                          });
 }
 
 /**

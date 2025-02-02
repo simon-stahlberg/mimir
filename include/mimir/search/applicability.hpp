@@ -29,7 +29,7 @@ namespace mimir
  * ConjunctiveCondition
  */
 
-/// @brief Returns true if all nullary literals in the precondition hold, false otherwise.
+/// @brief Return true iff all nullary literals in the precondition hold, false otherwise.
 extern bool nullary_conditions_hold(ConjunctiveCondition precondition, const DenseState& dense_state);
 
 /**
@@ -46,11 +46,11 @@ extern bool is_applicable(const GroundConjunctiveCondition& conjunctive_conditio
  * GroundConjunctiveEffect
  */
 
-extern bool is_dynamically_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state);
-
-extern bool is_statically_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem);
-
-extern bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, Problem problem, const DenseState& dense_state);
+/// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects in the conjunctive effect are well-defined.
+/// @param conjunctive_effect
+/// @param dense_state
+/// @return
+extern bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state);
 
 /**
  * GroundConditionalEffect
