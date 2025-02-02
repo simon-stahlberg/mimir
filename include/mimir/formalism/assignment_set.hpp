@@ -88,8 +88,7 @@ private:
     /* temporaries for reuse */
 
     // This lets us easily compute the bounds for partial substitutions by sorting the vector by the cost,
-    // followed by computing upper bounds in a forward iteration,
-    // followed by computing lower bounds in a backward iteration.
+    // followed by computing lower and upper bounds using minimization and maximization.
     std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> m_ground_function_to_value;
 
 public:

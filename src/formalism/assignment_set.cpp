@@ -180,7 +180,7 @@ void NumericAssignmentSet::insert_ground_function_values(const GroundFunctionLis
     }
     std::sort(m_ground_function_to_value.begin(), m_ground_function_to_value.end(), [](auto&& lhs, auto&& rhs) { return lhs.second < rhs.second; });
 
-    /* Compute upper bound in forward iteration. */
+    /* Compute lower and upper bounds. */
     for (const auto [function, value] : m_ground_function_to_value)
     {
         const auto& arity = function->get_arity();
@@ -191,41 +191,19 @@ void NumericAssignmentSet::insert_ground_function_values(const GroundFunctionLis
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)].upper = value;
+            auto& single_assignment_bound = assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)];
+            single_assignment_bound.lower = std::min(single_assignment_bound.lower, value);
+            single_assignment_bound.upper = std::max(single_assignment_bound.upper, value);
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
                 const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
-                                                   arity,
-                                                   m_num_objects)]
-                    .upper = value;
-            }
-        }
-    }
-
-    /* Compute lower bound in backward iteration. */
-    for (auto it = m_ground_function_to_value.rbegin(); it != m_ground_function_to_value.rend(); ++it)
-    {
-        auto [function, value] = *it;
-
-        const auto& arity = function->get_arity();
-        const auto& function_skeleton = function->get_function_skeleton();
-        const auto& arguments = function->get_objects();
-        auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
-
-        for (size_t first_index = 0; first_index < arity; ++first_index)
-        {
-            const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)].lower = value;
-
-            for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
-            {
-                const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
-                                                   arity,
-                                                   m_num_objects)]
-                    .lower = value;
+                auto& double_assignment_bound =
+                    assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                                                       arity,
+                                                       m_num_objects)];
+                double_assignment_bound.lower = std::min(double_assignment_bound.lower, value);
+                double_assignment_bound.upper = std::max(double_assignment_bound.upper, value);
             }
         }
     }
