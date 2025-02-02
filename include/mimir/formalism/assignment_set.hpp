@@ -87,10 +87,10 @@ private:
 
     /* temporaries for reuse */
 
-    // This lets us easily compute the bounds for partial substitutions by sorting the inner vector by the cost,
+    // This lets us easily compute the bounds for partial substitutions by sorting the vector by the cost,
     // followed by computing upper bounds in a forward iteration,
     // followed by computing lower bounds in a backward iteration.
-    std::vector<std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>>> values_by_function_skeleton;
+    std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> ground_function_to_value;
 
 public:
     /// @brief Construct from a given set of ground atoms.
