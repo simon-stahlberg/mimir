@@ -22,22 +22,6 @@
 
 namespace mimir
 {
-enum class FunctionMonotonicityEnum
-{
-    MONOTONICALLY_INCREASING = 0,  ///< f(x) <= f(y) for all x < y
-    STRICTLY_INCREASING = 1,       ///< f(x) < f(y) for all x < y
-    MONOTONICALLY_DECREASING = 2,  ///< f(x) >= f(y) for all x < y
-    STRICTLY_DECREASING = 3,       ///< f(x) > f(y) for all x < y
-    CONSTANT = 4,                  ///< f(x) = c for c in R
-    ARBITRARY = 5,
-};
-
-enum class FunctionRangeEnum
-{
-    NONNEGATIVE = 0,  /// f(x) >= 0 for all x
-    ARBITRARY = 2,
-};
-
 template<FunctionTag F>
 class FunctionSkeletonImpl
 {

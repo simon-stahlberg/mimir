@@ -61,7 +61,13 @@ private:
     // Note3: functions that do not appear in an effect are static.
     std::unordered_set<std::string> m_lifted_fexpr_functions;    ///< Functions that appear in a lifted function expression, i.e., numeric effect or  constraint
     std::unordered_set<std::string> m_grounded_fexpr_functions;  ///< Functions that appear in a grounded function expression, i.e., metric
-    std::unordered_set<std::string> m_fluent_functions;          ///< Functions that appear in an effect
+    std::unordered_set<std::string> m_effect_function_skeletons;  ///< Functions that appear in an effect
+
+    // TODO: We cannot do the current way of moving functions that do not occur in a condition into auxiliaries
+    // If the metric is a composite function over a single function f that does not occur in a condition, i.e., action precondition or conditional effect
+    // precondition, it may appear in conditional effect changes, then f is an auxiliary, e.g., (total-cost)
+    std::unordered_set<std::string> m_applicability_function_skeletons;  ///< Functions that affect action applicability
+    std::unordered_set<std::string> m_metric_function_skeletons;         ///< Functions that appear in a metric
 
     // Whether action costs are enabled
     bool m_action_costs_enabled;

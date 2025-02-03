@@ -175,7 +175,7 @@ void ToMimirStructures::prepare_lifted(loki::Effect effect)
         else if (const auto& effect_numeric = std::get_if<loki::EffectNumeric>(&tmp_effect->get_effect()))
         {
             // Found function affected by an effect
-            m_fluent_functions.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
+            m_effect_function_skeletons.insert((*effect_numeric)->get_function()->get_function_skeleton()->get_name());
 
             prepare_lifted((*effect_numeric)->get_function_expression());
         }
@@ -346,7 +346,7 @@ StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(lo
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton->get_name(),
                                                                                        translate_common(function_skeleton->get_parameters()));
     }
-    else if (m_fluent_functions.contains(function_skeleton->get_name()))
+    else if (m_effect_function_skeletons.contains(function_skeleton->get_name()))
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Fluent>(function_skeleton->get_name(),
                                                                                     translate_common(function_skeleton->get_parameters()));
@@ -1436,7 +1436,7 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_derived_predicates(),
     m_lifted_fexpr_functions(),
     m_grounded_fexpr_functions(),
-    m_fluent_functions(),
+    m_effect_function_skeletons(),
     m_action_costs_enabled(),
     m_derived_predicates_by_name(),
     m_equal_predicate(nullptr),
