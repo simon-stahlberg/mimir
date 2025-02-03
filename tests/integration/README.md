@@ -19,7 +19,7 @@ Run the following sequence of commands to download, configure, build, and instal
 
 1. Configure the dependencies CMake project with the desired installation path:
 ```console
-cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs
+cmake -S dependencies -B dependencies/build -DCMAKE_INSTALL_PREFIX=dependencies/installs -DCMAKE_PREFIX_PATH=$PWD/dependencies/installs
 ```
 2. Download, build, and install all dependencies:
 ```console

@@ -73,7 +73,7 @@ struct StateImpl
     ///
     /// Only return the non-extended portion of a state because it implies the extended portion.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_fluent_atoms), std::as_const(m_numeric_variables)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_fluent_atoms), std::as_const(m_numeric_variables)); }
 
 private:
     /* Mutable Getters */

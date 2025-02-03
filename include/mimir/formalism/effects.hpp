@@ -55,7 +55,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
+    auto identifying_members() const
     {
         return std::forward_as_tuple(std::as_const(m_assign_operator), std::as_const(m_function), std::as_const(m_function_expression));
     }
@@ -101,7 +101,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const
+    auto identifying_members() const
     {
         return std::forward_as_tuple(std::as_const(m_literals), std::as_const(m_fluent_numeric_effects), std::as_const(m_auxiliary_numeric_effects));
     }
@@ -141,7 +141,7 @@ public:
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_conjunctive_condition), std::as_const(m_conjunctive_effect)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_conjunctive_condition), std::as_const(m_conjunctive_effect)); }
 };
 
 template<DynamicFunctionTag F>

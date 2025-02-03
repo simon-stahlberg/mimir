@@ -68,7 +68,7 @@ public:
     ///
     /// Only return the lifted schema index and the binding because they imply the rest.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifiable_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_object_indices)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_axiom_index), std::as_const(m_object_indices)); }
 
     auto cista_members() noexcept { return std::tie(m_index, m_axiom_index, m_object_indices, m_conjunctive_condition, m_literal); }
 };

@@ -148,9 +148,8 @@ ContinuousCost evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& flu
     auto old_value = ContinuousCost(0);
     if constexpr (std::is_same_v<F, Fluent>)
     {
-        old_value = (effect.get_function()->get_index() < auxiliary_numeric_variables.size()) ?
-                        fluent_numeric_variables.at(effect.get_function()->get_index()) :
-                        UNDEFINED_CONTINUOUS_COST;
+        old_value = (effect.get_function()->get_index() < fluent_numeric_variables.size()) ? fluent_numeric_variables.at(effect.get_function()->get_index()) :
+                                                                                             UNDEFINED_CONTINUOUS_COST;
     }
     else if constexpr (std::is_same_v<F, Auxiliary>)
     {
