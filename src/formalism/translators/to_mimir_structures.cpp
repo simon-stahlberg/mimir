@@ -29,6 +29,90 @@
 
 namespace mimir
 {
+
+static void collect_function_skeleton_names(loki::FunctionExpression fexpr, std::unordered_set<std::string> function_skeleton_names)
+{
+    std::visit(
+        [&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, loki::FunctionExpressionNumber>) {}
+            else if constexpr (std::is_same_v<T, loki::FunctionExpressionBinaryOperator>)
+            {
+                collect_function_skeleton_names(arg->get_left_function_expression(), function_skeleton_names);
+                collect_function_skeleton_names(arg->get_right_function_expression(), function_skeleton_names);
+            }
+            else if constexpr (std::is_same_v<T, loki::FunctionExpressionMultiOperator>)
+            {
+                for (const auto& part : arg->get_function_expressions())
+                {
+                    collect_function_skeleton_names(part, function_skeleton_names);
+                }
+            }
+            else if constexpr (std::is_same_v<T, loki::FunctionExpressionMinus>) {}
+            else if constexpr (std::is_same_v<T, loki::FunctionExpressionFunction>)
+            {
+                function_skeleton_names.insert(arg->get_function()->get_function_skeleton()->get_name());
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "collect_function_skeleton_names: Missing implementation for FunctionExpression type.");
+            }
+        },
+        fexpr->get_function_expression());
+}
+
+static void collect_function_skeleton_names(loki::Condition condition, std::unordered_set<std::string> function_skeleton_names)
+{
+    std::visit(
+        [&](auto&& arg)
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, loki::ConditionLiteral>) {}
+            else if constexpr (std::is_same_v<T, loki::ConditionAnd>)
+            {
+                for (const auto& part : arg->get_conditions())
+                {
+                    collect_function_skeleton_names(part, function_skeleton_names);
+                }
+            }
+            else if constexpr (std::is_same_v<T, loki::ConditionOr>)
+            {
+                for (const auto& part : arg->get_conditions())
+                {
+                    collect_function_skeleton_names(part, function_skeleton_names);
+                }
+            }
+            else if constexpr (std::is_same_v<T, loki::ConditionNot>)
+            {
+                collect_function_skeleton_names(arg->get_condition(), function_skeleton_names);
+            }
+            else if constexpr (std::is_same_v<T, loki::ConditionImply>)
+            {
+                collect_function_skeleton_names(arg->get_condition_left(), function_skeleton_names);
+                collect_function_skeleton_names(arg->get_condition_right(), function_skeleton_names);
+            }
+            else if constexpr (std::is_same_v<T, loki::ConditionExists>)
+            {
+                collect_function_skeleton_names(arg->get_condition(), function_skeleton_names);
+            }
+            else if constexpr (std::is_same_v<T, loki::ConditionForall>)
+            {
+                collect_function_skeleton_names(arg->get_condition(), function_skeleton_names);
+            }
+            else if constexpr (std::is_same_v<T, loki::ConditionNumericConstraint>)
+            {
+                collect_function_skeleton_names(arg->get_function_expression_left(), function_skeleton_names);
+                collect_function_skeleton_names(arg->get_function_expression_right(), function_skeleton_names);
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "collect_function_skeleton_names: Missing implementation for Condition type.");
+            }
+        },
+        condition->get_condition());
+}
+
 /**
  * Prepare common
  */
@@ -263,7 +347,7 @@ void ToMimirStructures::prepare_grounded(loki::FunctionExpressionMinus function_
 }
 void ToMimirStructures::prepare_grounded(loki::FunctionExpressionFunction function_expression)
 {
-    m_grounded_fexpr_functions.insert(function_expression->get_function()->get_function_skeleton()->get_name());
+    m_grounded_metric_fexpr_functions.insert(function_expression->get_function()->get_function_skeleton()->get_name());
 
     this->prepare_grounded(function_expression->get_function());
 }
@@ -321,10 +405,16 @@ void ToMimirStructures::prepare_grounded(loki::Problem problem)
     if (problem->get_goal_condition().has_value())
     {
         prepare_lifted(problem->get_goal_condition().value());
+
+        collect_function_skeleton_names(problem->get_goal_condition().value(), m_grounded_goal_fexpr_functions);
     }
     if (problem->get_optimization_metric().has_value())
     {
         prepare_grounded(problem->get_optimization_metric().value());
+
+        m_has_metric_defined = true;
+
+        collect_function_skeleton_names(problem->get_optimization_metric().value()->get_function_expression(), m_grounded_metric_fexpr_functions);
     }
     prepare_lifted(problem->get_axioms());
 
@@ -340,8 +430,14 @@ void ToMimirStructures::prepare_grounded(loki::Problem problem)
 
 StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(loki::FunctionSkeleton function_skeleton)
 {
-    // If the metric is monotone, we can instantiate auxiliary functions and store them in a search node.
-    if (!m_lifted_fexpr_functions.contains(function_skeleton->get_name()))
+    // If the metric is a composite of a single nullary function (1), e.g., total-cost,
+    // which never occurs in a condition such as goal (2), or action precondition, conditional effect precondition (3),
+    // then we dont have to store the ground function in the state.
+    if ((!m_has_metric_defined && function_skeleton->get_name() == "total-cost")          // special case where we will introduce it
+        || (m_grounded_metric_fexpr_functions.size() == 1                                 // (1)
+            && m_grounded_metric_fexpr_functions.contains(function_skeleton->get_name())  // (1)
+            && !m_grounded_goal_fexpr_functions.contains(function_skeleton->get_name())   // (2)
+            && !m_lifted_fexpr_functions.contains(function_skeleton->get_name())))        // (3)
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton->get_name(),
                                                                                        translate_common(function_skeleton->get_parameters()));
@@ -742,24 +838,27 @@ std::tuple<ConjunctiveEffect, ConditionalEffectList> ToMimirStructures::translat
         conjunctive_effect_data;
 
     // Instantiate total cost effect if necessary.
-    std::visit(
-        [&](auto&& arg)
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
+    if (!m_has_metric_defined)
+    {
+        std::visit(
+            [&](auto&& arg)
             {
-                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_fluent_numeric_effects, m_pddl_repositories);
-            }
-            else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
-            {
-                get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_auxiliary_numeric_effects, m_pddl_repositories);
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
-            }
-        },
-        m_total_cost_function);
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
+                {
+                    get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_fluent_numeric_effects, m_pddl_repositories);
+                }
+                else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
+                {
+                    get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_auxiliary_numeric_effects, m_pddl_repositories);
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
+                }
+            },
+            m_total_cost_function);
+    }
 
     const auto conjunctive_effect = this->m_pddl_repositories.get_or_create_conjunctive_effect(parameters,
                                                                                                conjunctive_effect_fluent_literals,
@@ -943,7 +1042,10 @@ Domain ToMimirStructures::translate_lifted(loki::Domain domain)
             },
             static_or_fluent_or_auxiliary_function);
     }
-    m_total_cost_function = get_or_create_total_cost_function(fluent_functions, auxiliary_functions, m_pddl_repositories);
+    if (!m_has_metric_defined)
+    {
+        m_total_cost_function = get_or_create_total_cost_function(fluent_functions, auxiliary_functions, m_pddl_repositories);
+    }
 
     const auto actions = translate_lifted(domain->get_actions());
     const auto axioms = translate_lifted(domain->get_axioms());
@@ -1332,24 +1434,27 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
             static_or_fluent_or_auxiliary_function_value);
     }
     // Initialize total cost function value if necessary
-    std::visit(
-        [&](auto&& arg)
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
+    if (!m_has_metric_defined)
+    {
+        std::visit(
+            [&](auto&& arg)
             {
-                get_or_create_total_cost_function_value(arg, fluent_function_values, m_pddl_repositories);
-            }
-            else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
-            {
-                get_or_create_total_cost_function_value(arg, auxiliary_function_values, m_pddl_repositories);
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
-            }
-        },
-        m_total_cost_function);
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
+                {
+                    get_or_create_total_cost_function_value(arg, fluent_function_values, m_pddl_repositories);
+                }
+                else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
+                {
+                    get_or_create_total_cost_function_value(arg, auxiliary_function_values, m_pddl_repositories);
+                }
+                else
+                {
+                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
+                }
+            },
+            m_total_cost_function);
+    }
     // Initialize member that is used in numeric goal grounding.
     for (const auto& function_value : static_function_values)
     {
@@ -1370,6 +1475,21 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
         }
     }
 
+    auto static_goal_literals = GroundLiteralList<Static> {};
+    auto fluent_goal_literals = GroundLiteralList<Fluent> {};
+    auto derived_goal_literals = GroundLiteralList<Derived> {};
+    auto numeric_goal_constraints = GroundNumericConstraintList {};
+    if (problem->get_goal_condition().has_value())
+    {
+        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
+            translate_grounded(problem->get_goal_condition().value());
+
+        static_goal_literals = static_goal_literals_;
+        fluent_goal_literals = fluent_goal_literals_;
+        derived_goal_literals = derived_goal_literals_;
+        numeric_goal_constraints = numeric_goal_constraints_;
+    }
+
     const auto func_create_default_metric = [&]()
     {
         return std::visit(
@@ -1386,24 +1506,7 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
             },
             m_total_cost_function);
     };
-
-    auto static_goal_literals = GroundLiteralList<Static> {};
-    auto fluent_goal_literals = GroundLiteralList<Fluent> {};
-    auto derived_goal_literals = GroundLiteralList<Derived> {};
-    auto numeric_goal_constraints = GroundNumericConstraintList {};
-    if (problem->get_goal_condition().has_value())
-    {
-        const auto [static_goal_literals_, fluent_goal_literals_, derived_goal_literals_, numeric_goal_constraints_] =
-            translate_grounded(problem->get_goal_condition().value());
-
-        static_goal_literals = static_goal_literals_;
-        fluent_goal_literals = fluent_goal_literals_;
-        derived_goal_literals = derived_goal_literals_;
-        numeric_goal_constraints = numeric_goal_constraints_;
-    }
-
-    const auto metric =
-        (problem->get_optimization_metric().has_value() ? translate_grounded(problem->get_optimization_metric().value()) : func_create_default_metric());
+    const auto metric = (m_has_metric_defined ? translate_grounded(problem->get_optimization_metric().value()) : func_create_default_metric());
 
     return m_pddl_repositories.get_or_create_problem(problem->get_filepath(),
                                                      translated_domain,
@@ -1435,9 +1538,11 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_fluent_predicates(),
     m_derived_predicates(),
     m_lifted_fexpr_functions(),
-    m_grounded_fexpr_functions(),
+    m_grounded_metric_fexpr_functions(),
+    m_grounded_goal_fexpr_functions(),
     m_effect_function_skeletons(),
-    m_action_costs_enabled(),
+    m_action_costs_enabled(false),
+    m_has_metric_defined(false),
     m_derived_predicates_by_name(),
     m_equal_predicate(nullptr),
     m_total_cost_function(),

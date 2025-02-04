@@ -46,6 +46,9 @@ using StaticOrFluentFunctionExpressionFunction = std::variant<FunctionExpression
 using StaticOrFluentOrAuxiliaryGroundFunctionExpressionFunction =
     std::variant<GroundFunctionExpressionFunction<Static>, GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpressionFunction<Auxiliary>>;
 
+// TODO: move as much out of the translation to mimir structures to let it focus on the core aspect.
+// 1) move the instantiation of total-cost into a separate translator.
+// 2) move the instantiation of the equal predicate into a separate translator.
 class ToMimirStructures
 {
 private:
@@ -56,22 +59,13 @@ private:
     std::unordered_set<std::string> m_fluent_predicates;   ///< Fluent predicates that appear in an effect
     std::unordered_set<std::string> m_derived_predicates;  ///< Derived predicates
 
-    // Note1: functions that do not appear in a function expression but in an effect are auxiliary.
-    // Note2: functions that do not appear in a function expression and not in an effect are irrelevant.
-    // Note3: functions that do not appear in an effect are static.
-    std::unordered_set<std::string> m_lifted_fexpr_functions;    ///< Functions that appear in a lifted function expression, i.e., numeric effect or  constraint
-    std::unordered_set<std::string> m_grounded_fexpr_functions;  ///< Functions that appear in a grounded function expression, i.e., metric
-    std::unordered_set<std::string> m_effect_function_skeletons;  ///< Functions that appear in an effect
+    std::unordered_set<std::string> m_lifted_fexpr_functions;  ///< Functions that appear in a lifted function expression, i.e., numeric effect or constraint
+    std::unordered_set<std::string> m_grounded_metric_fexpr_functions;  ///< Functions that appear in a grounded metric function expression
+    std::unordered_set<std::string> m_grounded_goal_fexpr_functions;    ///< Functions that appear in a grounded goal function expression
+    std::unordered_set<std::string> m_effect_function_skeletons;        ///< Functions that appear in an effect
 
-    // TODO: We cannot do the current way of moving functions that do not occur in a condition into auxiliaries
-    // If the metric is a composite function over a single function f that does not occur in a condition, i.e., action precondition or conditional effect
-    // precondition, it may appear in conditional effect changes, then f is an auxiliary, e.g., (total-cost)
-    std::unordered_set<std::string> m_applicability_function_skeletons;  ///< Functions that affect action applicability
-    std::unordered_set<std::string> m_metric_function_skeletons;         ///< Functions that appear in a metric
-    std::unordered_set<std::string> m_goal_function_skeletons;           ///< Functions that appear in a goal
-
-    // Whether action costs are enabled
-    bool m_action_costs_enabled;
+    bool m_action_costs_enabled;  ///< Whether action costs are enabled
+    bool m_has_metric_defined;    ///< Whether a metric is defined
 
     // Equality predicate that does not occur in predicates section
     std::unordered_map<std::string, Predicate<Derived>> m_derived_predicates_by_name;
