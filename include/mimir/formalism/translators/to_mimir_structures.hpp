@@ -68,6 +68,7 @@ private:
     // precondition, it may appear in conditional effect changes, then f is an auxiliary, e.g., (total-cost)
     std::unordered_set<std::string> m_applicability_function_skeletons;  ///< Functions that affect action applicability
     std::unordered_set<std::string> m_metric_function_skeletons;         ///< Functions that appear in a metric
+    std::unordered_set<std::string> m_goal_function_skeletons;           ///< Functions that appear in a goal
 
     // Whether action costs are enabled
     bool m_action_costs_enabled;

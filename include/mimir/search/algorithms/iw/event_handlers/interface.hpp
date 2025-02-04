@@ -18,14 +18,14 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_IW_EVENT_HANDLERS_INTERFACE_HPP_
 
-#include "mimir/formalism/ground_action.hpp"
-#include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/statistics.hpp"
 #include "mimir/search/algorithms/iw/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
 
 #include <chrono>
 #include <concepts>
+#include <cstdint>
 
 namespace mimir
 {

@@ -18,8 +18,8 @@
 #ifndef MIMIR_SEARCH_ALGORITHMS_UTILS_HPP_
 #define MIMIR_SEARCH_ALGORITHMS_UTILS_HPP_
 
+#include "mimir/search/declarations.hpp"
 #include "mimir/search/plan.hpp"
-#include "mimir/search/state.hpp"
 
 #include <optional>
 
@@ -45,4 +45,5 @@ struct SearchResult
 };
 
 }
+
 #endif

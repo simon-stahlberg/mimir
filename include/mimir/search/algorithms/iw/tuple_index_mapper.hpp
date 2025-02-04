@@ -20,7 +20,7 @@
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/iw/types.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 #include <array>
 #include <string>

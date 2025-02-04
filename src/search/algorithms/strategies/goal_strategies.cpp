@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/problem.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {

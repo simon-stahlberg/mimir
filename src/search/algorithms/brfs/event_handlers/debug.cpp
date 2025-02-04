@@ -18,7 +18,9 @@
 #include "mimir/search/algorithms/brfs/event_handlers/debug.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {

@@ -19,7 +19,7 @@
 #define MIMIR_DATASETS_STATE_VERTEX_HPP_
 
 #include "mimir/graphs/graph_vertices.hpp"
-#include "mimir/search/state.hpp"
+#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {

@@ -26,7 +26,6 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash_cista.hpp"
 #include "mimir/common/types.hpp"
-#include "mimir/formalism/declarations.hpp"
 
 #include <algorithm>
 #include <ostream>
@@ -36,7 +35,6 @@ namespace mimir
 /* Bitset */
 
 using FlatBitset = cista::offset::dynamic_bitset<uint64_t>;
-using FlatBitsetSet = mimir::buffering::UnorderedSet<FlatBitset>;
 
 inline std::ostream& operator<<(std::ostream& os, const FlatBitset& set)
 {
