@@ -178,6 +178,7 @@ protected:
     void prepare_impl(loki::Axiom axiom)
     {
         this->prepare(axiom->get_parameters());
+        this->prepare(axiom->get_literal());
         this->prepare(axiom->get_condition());
     }
     void prepare_impl(loki::Domain domain)
@@ -420,10 +421,9 @@ protected:
     }
     loki::Axiom translate_impl(loki::Axiom axiom)
     {
-        return this->m_pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                             this->translate(axiom->get_parameters()),
-                                                             this->translate(axiom->get_condition()),
-                                                             axiom->get_num_parameters_to_ground_head());
+        return this->m_pddl_repositories.get_or_create_axiom(this->translate(axiom->get_parameters()),
+                                                             this->translate(axiom->get_literal()),
+                                                             this->translate(axiom->get_condition()));
     }
     loki::Domain translate_impl(loki::Domain domain)
     {

@@ -299,9 +299,10 @@ void ToMimirStructures::prepare_lifted(loki::Action action)
 void ToMimirStructures::prepare_lifted(loki::Axiom axiom)
 {
     prepare_common(axiom->get_parameters());
+    prepare_lifted(axiom->get_literal());
     prepare_lifted(axiom->get_condition());
 
-    m_derived_predicates.insert(axiom->get_derived_predicate_name());
+    m_derived_predicates.insert(axiom->get_literal()->get_atom()->get_predicate()->get_name());
 }
 void ToMimirStructures::prepare_lifted(loki::Domain domain)
 {
@@ -479,17 +480,11 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predi
     }
     else if (m_derived_predicates.count(predicate->get_name()))
     {
-        const auto derived_predicate = m_pddl_repositories.get_or_create_predicate<Derived>(predicate->get_name(), parameters);
-
-        m_derived_predicates_by_name.emplace(derived_predicate->get_name(), derived_predicate);
-
-        return derived_predicate;
+        return m_pddl_repositories.get_or_create_predicate<Derived>(predicate->get_name(), parameters);
     }
     else
     {
-        const auto static_predicate = m_pddl_repositories.get_or_create_predicate<Static>(predicate->get_name(), parameters);
-
-        return static_predicate;
+        return m_pddl_repositories.get_or_create_predicate<Static>(predicate->get_name(), parameters);
     }
 }
 
@@ -922,34 +917,22 @@ Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom)
     auto parameters = translate_common(axiom->get_parameters());
 
     const auto conjunctive_condition = translate_lifted(axiom->get_condition(), parameters);
+    const auto literal = translate_lifted(axiom->get_literal());
 
-    // TODO: make this nicer by storing a predicate in the axiom in loki...
-    const auto derived_predicate_name = axiom->get_derived_predicate_name();
-    if (!m_derived_predicates_by_name.count(derived_predicate_name))
-    {
-        // Create a derived predicate that resulted from translation
-        // and is not part of the predicates section.
-        // The parameters of the derived predicate are only those needed for ground the head
-        // and do not contain other parameters obtained from other free variables.
-        m_derived_predicates_by_name.emplace(derived_predicate_name,
-                                             m_pddl_repositories.get_or_create_predicate<Derived>(
-                                                 derived_predicate_name,
-                                                 VariableList(parameters.begin(), parameters.begin() + axiom->get_num_parameters_to_ground_head())));
-    }
-    const auto derived_predicate = m_derived_predicates_by_name.at(axiom->get_derived_predicate_name());
-
-    // The number of terms is only as large as needed and matches the derived predicate
-    auto terms = TermList {};
-    for (size_t i = 0; i < axiom->get_num_parameters_to_ground_head(); ++i)
-    {
-        terms.push_back(m_pddl_repositories.get_or_create_term(parameters[i]));
-    }
-    assert(terms.size() == derived_predicate->get_arity());
-
-    // Our axiom heads are always true literals
-    const auto literal = m_pddl_repositories.get_or_create_literal(false, m_pddl_repositories.get_or_create_atom(derived_predicate, terms));
-
-    return m_pddl_repositories.get_or_create_axiom(conjunctive_condition, literal);
+    return std::visit(
+        [&](auto&& arg) -> Axiom
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, Literal<Derived>>)
+            {
+                return m_pddl_repositories.get_or_create_axiom(conjunctive_condition, arg);
+            }
+            else
+            {
+                throw std::runtime_error("ToMimirStructures::translate_lifted: Expected Literal<Derived> in axiom head.");
+            }
+        },
+        literal);
 }
 
 static std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>>
@@ -1518,7 +1501,6 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_effect_function_skeletons(),
     m_action_costs_enabled(false),
     m_has_metric_defined(false),
-    m_derived_predicates_by_name(),
     m_total_cost_function(),
     m_static_function_to_value()
 {

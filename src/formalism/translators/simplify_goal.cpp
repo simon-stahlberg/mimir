@@ -57,7 +57,7 @@ static loki::Condition simplify_goal_condition(loki::Condition goal_condition,
     const auto atom = pddl_repositories.get_or_create_atom(predicate, loki::TermList {});
     const auto literal = pddl_repositories.get_or_create_literal(false, atom);
     const auto substituted_condition = pddl_repositories.get_or_create_condition(pddl_repositories.get_or_create_condition_literal(literal));
-    const auto axiom = pddl_repositories.get_or_create_axiom(axiom_name, loki::ParameterList {}, goal_condition, 0);
+    const auto axiom = pddl_repositories.get_or_create_axiom(loki::ParameterList {}, literal, goal_condition);
     axioms.insert(axiom);
 
     return substituted_condition;

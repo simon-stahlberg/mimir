@@ -94,6 +94,7 @@ loki::Action MoveExistentialQuantifiersTranslator::translate_impl(loki::Action a
 loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(loki::Axiom axiom)
 {
     auto parameters = this->translate(axiom->get_parameters());
+    auto literal = this->translate(axiom->get_literal());
     auto condition = this->translate(axiom->get_condition());
 
     if (const auto condition_exists = std::get_if<loki::ConditionExists>(&condition->get_condition()))
@@ -109,10 +110,7 @@ loki::Axiom MoveExistentialQuantifiersTranslator::translate_impl(loki::Axiom axi
         condition = (*condition_exists)->get_condition();
     }
 
-    return this->m_pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                         parameters,
-                                                         condition,
-                                                         axiom->get_num_parameters_to_ground_head());
+    return this->m_pddl_repositories.get_or_create_axiom(parameters, literal, condition);
 }
 
 loki::Problem MoveExistentialQuantifiersTranslator::run_impl(loki::Problem problem) { return this->translate(problem); }

@@ -102,12 +102,10 @@ loki::Axiom RenameQuantifiedVariablesTranslator::translate_impl(loki::Axiom axio
     increment_num_quantifications(axiom->get_parameters(), m_num_quantifications);
 
     const auto translated_parameters = this->translate(axiom->get_parameters());
+    const auto translated_literal = this->translate(axiom->get_literal());
     const auto translated_conditions = this->translate(axiom->get_condition());
 
-    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                                          translated_parameters,
-                                                                          translated_conditions,
-                                                                          axiom->get_num_parameters_to_ground_head());
+    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(translated_parameters, translated_literal, translated_conditions);
 
     return translated_axiom;
 }

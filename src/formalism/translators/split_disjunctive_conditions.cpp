@@ -62,10 +62,7 @@ static loki::AxiomList split_axioms_at_disjunction(const loki::AxiomList& axioms
         {
             for (const auto& part : std::get<loki::ConditionOr>(condition->get_condition())->get_conditions())
             {
-                split_axioms.push_back(pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                                             axiom->get_parameters(),
-                                                                             part,
-                                                                             axiom->get_num_parameters_to_ground_head()));
+                split_axioms.push_back(pddl_repositories.get_or_create_axiom(axiom->get_parameters(), axiom->get_literal(), part));
             }
         }
         else

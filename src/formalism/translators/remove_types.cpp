@@ -194,10 +194,10 @@ loki::Axiom RemoveTypesTranslator::translate_impl(loki::Axiom axiom)
     conditions.push_back(this->translate(axiom->get_condition()));
     auto translated_condition = this->m_pddl_repositories.get_or_create_condition(this->m_pddl_repositories.get_or_create_condition_and(conditions));
 
-    return this->m_pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                         translated_parameters,
-                                                         translated_condition,
-                                                         axiom->get_num_parameters_to_ground_head());
+    // Translate effect
+    auto translated_literal = this->translate(axiom->get_literal());
+
+    return this->m_pddl_repositories.get_or_create_axiom(translated_parameters, translated_literal, translated_condition);
 }
 
 loki::Action RemoveTypesTranslator::translate_impl(loki::Action action)

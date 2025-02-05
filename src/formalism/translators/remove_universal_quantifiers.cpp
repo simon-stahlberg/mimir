@@ -120,7 +120,9 @@ loki::Condition RemoveUniversalQuantifiersTranslator::translate_impl(loki::Condi
     const auto atom = this->m_pddl_repositories.get_or_create_atom(predicate, terms);
     const auto substituted_condition = this->m_pddl_repositories.get_or_create_condition(
         this->m_pddl_repositories.get_or_create_condition_literal(this->m_pddl_repositories.get_or_create_literal(true, atom)));
-    const auto axiom = this->m_pddl_repositories.get_or_create_axiom(axiom_name, axiom_parameters, axiom_condition, head_parameters.size());
+    const auto axiom_literal = this->m_pddl_repositories.get_or_create_literal(false, atom);
+
+    const auto axiom = this->m_pddl_repositories.get_or_create_axiom(axiom_parameters, axiom_literal, axiom_condition);
 
     m_axioms.insert(axiom);
 
@@ -159,15 +161,13 @@ loki::Axiom RemoveUniversalQuantifiersTranslator::translate_impl(loki::Axiom axi
     this->m_scopes.open_scope(axiom->get_parameters());
 
     // Translate condition and literal
+    auto translated_literal = this->translate(axiom->get_literal());
     auto translated_condition = this->translate(axiom->get_condition());
 
     // Turn free variables into parameters
     auto translated_parameters = this->translate(axiom->get_parameters());
 
-    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(axiom->get_derived_predicate_name(),
-                                                                          translated_parameters,
-                                                                          translated_condition,
-                                                                          axiom->get_num_parameters_to_ground_head());
+    auto translated_axiom = this->m_pddl_repositories.get_or_create_axiom(translated_parameters, translated_literal, translated_condition);
 
     this->m_scopes.close_scope();
 
