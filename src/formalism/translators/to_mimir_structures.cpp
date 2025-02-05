@@ -489,9 +489,6 @@ StaticOrFluentOrDerivedPredicate ToMimirStructures::translate_common(loki::Predi
     {
         const auto static_predicate = m_pddl_repositories.get_or_create_predicate<Static>(predicate->get_name(), parameters);
 
-        if (predicate->get_name() == "=")
-            m_equal_predicate = static_predicate;
-
         return static_predicate;
     }
 }
@@ -1050,14 +1047,6 @@ Domain ToMimirStructures::translate_lifted(loki::Domain domain)
     const auto actions = translate_lifted(domain->get_actions());
     const auto axioms = translate_lifted(domain->get_axioms());
 
-    // Add equal predicate that was hidden from predicate section
-    // This must occur after translating all domain contents
-    if (m_equal_predicate)
-    {
-        predicates.push_back(m_equal_predicate);
-        static_predicates.push_back(m_equal_predicate);
-    }
-
     return m_pddl_repositories.get_or_create_domain(domain->get_filepath(),
                                                     domain->get_name(),
                                                     requirements,
@@ -1461,20 +1450,6 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
         m_static_function_to_value.emplace(function_value->get_function(), function_value->get_number());
     }
 
-    // Add equal atoms, e.g., (= object1 object1)
-    // This must occur after parsing the domain
-    if (m_equal_predicate)
-    {
-        for (const auto& object : objects)
-        {
-            const auto equal_literal = m_pddl_repositories.get_or_create_ground_literal(
-                false,
-                m_pddl_repositories.get_or_create_ground_atom(m_equal_predicate, ObjectList { object, object }));
-
-            static_initial_literals.push_back(equal_literal);
-        }
-    }
-
     auto static_goal_literals = GroundLiteralList<Static> {};
     auto fluent_goal_literals = GroundLiteralList<Fluent> {};
     auto derived_goal_literals = GroundLiteralList<Derived> {};
@@ -1544,7 +1519,6 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_action_costs_enabled(false),
     m_has_metric_defined(false),
     m_derived_predicates_by_name(),
-    m_equal_predicate(nullptr),
     m_total_cost_function(),
     m_static_function_to_value()
 {

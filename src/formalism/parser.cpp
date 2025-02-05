@@ -2,7 +2,6 @@
 
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/transformers.hpp"
-#include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
 #include "mimir/formalism/translators.hpp"
 
 #include <loki/loki.hpp>
@@ -57,6 +56,9 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
 
     // std::cout << *problem->get_domain() << std::endl;
     // std::cout << *problem << std::endl;
+
+    auto initialize_equality_translator = InitializeEqualityTranslator(domain_parser.get_repositories());
+    problem = initialize_equality_translator.run(problem);
 
     // To mimir structures
     auto tmp_mimir_pddl_repositories = PDDLRepositories();
