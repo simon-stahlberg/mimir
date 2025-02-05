@@ -282,6 +282,7 @@ bool consistent_literals_helper(const LiteralList<P>& literals, const Assignment
             continue;
         }
 
+        assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
         const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
         const auto& terms = literal->get_atom()->get_terms();
         auto assignment_iterator = IteratorType(terms, element);
@@ -293,6 +294,8 @@ bool consistent_literals_helper(const LiteralList<P>& literals, const Assignment
             assert(assignment.first_index < assignment.second_index);
 
             const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
+
+            assert(assignment_rank < predicate_assignment_set.size());
             const auto true_assignment = predicate_assignment_set[assignment_rank];
 
             if (!negated && !true_assignment)

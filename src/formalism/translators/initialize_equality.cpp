@@ -25,10 +25,12 @@ static loki::Predicate get_or_create_equality_predicate(loki::PDDLRepositories& 
 {
     const auto object_type = pddl_repositories.get_or_create_type("object", loki::TypeList {});
 
+    // Attention: this must match the way it is instantiated in Loki or otherwise, we may not fetch an existing = predicate, which loki currently instantiates.
     return pddl_repositories.get_or_create_predicate(
         "=",
-        loki::ParameterList { pddl_repositories.get_or_create_parameter(pddl_repositories.get_or_create_variable("arg1"), loki::TypeList { object_type }),
-                              pddl_repositories.get_or_create_parameter(pddl_repositories.get_or_create_variable("arg2"), loki::TypeList { object_type }) });
+        loki::ParameterList {
+            pddl_repositories.get_or_create_parameter(pddl_repositories.get_or_create_variable("?left_arg"), loki::TypeList { object_type }),
+            pddl_repositories.get_or_create_parameter(pddl_repositories.get_or_create_variable("?right_arg"), loki::TypeList { object_type }) });
 }
 
 static loki::Literal get_or_create_equality_literal(loki::Predicate equality_predicate, loki::Object object, loki::PDDLRepositories& pddl_repositories)

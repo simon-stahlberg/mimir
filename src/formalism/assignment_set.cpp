@@ -17,6 +17,7 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 
+#include "mimir/common/printers.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_function.hpp"
