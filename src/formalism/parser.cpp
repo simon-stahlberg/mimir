@@ -60,6 +60,9 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     auto initialize_equality_translator = InitializeEqualityTranslator(domain_parser.get_repositories());
     problem = initialize_equality_translator.run(problem);
 
+    auto initialize_metric_translator = InitializeMetricTranslator(domain_parser.get_repositories());
+    problem = initialize_metric_translator.run(problem);
+
     // To mimir structures
     auto tmp_mimir_pddl_repositories = PDDLRepositories();
     auto to_mimir_structures_translator = ToMimirStructures(tmp_mimir_pddl_repositories);

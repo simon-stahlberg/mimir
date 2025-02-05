@@ -55,20 +55,17 @@ private:
 
     /* Computed in prepare step */
 
+    // For type analysis of predicates.
     std::unordered_set<std::string> m_fluent_predicates;   ///< Fluent predicates that appear in an effect
     std::unordered_set<std::string> m_derived_predicates;  ///< Derived predicates
 
+    // For type analysis of functions.
     std::unordered_set<std::string> m_lifted_fexpr_functions;  ///< Functions that appear in a lifted function expression, i.e., numeric effect or constraint
     std::unordered_set<std::string> m_grounded_metric_fexpr_functions;  ///< Functions that appear in a grounded metric function expression
     std::unordered_set<std::string> m_grounded_goal_fexpr_functions;    ///< Functions that appear in a grounded goal function expression
     std::unordered_set<std::string> m_effect_function_skeletons;        ///< Functions that appear in an effect
 
-    bool m_action_costs_enabled;  ///< Whether action costs are enabled
-    bool m_has_metric_defined;    ///< Whether a metric is defined
-
-    // We allow total-cost to be used in constraints, i.e., it is allowed to be fluent.
-    std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>> m_total_cost_function;
-
+    // To substitute ground functions in ground function expressions.
     GroundFunctionMap<Static, ContinuousCost> m_static_function_to_value;
 
     /// @brief Prepare all elements in a container.

@@ -313,8 +313,6 @@ void ToMimirStructures::prepare_lifted(loki::Domain domain)
     prepare_common(domain->get_functions());
     prepare_lifted(domain->get_actions());
     prepare_lifted(domain->get_axioms());
-
-    m_action_costs_enabled = domain->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS);
 }
 
 /**
@@ -413,8 +411,6 @@ void ToMimirStructures::prepare_grounded(loki::Problem problem)
     {
         prepare_grounded(problem->get_optimization_metric().value());
 
-        m_has_metric_defined = true;
-
         collect_function_skeleton_names(problem->get_optimization_metric().value()->get_function_expression(), m_grounded_metric_fexpr_functions);
     }
     prepare_lifted(problem->get_axioms());
@@ -434,11 +430,10 @@ StaticOrFluentOrAuxiliaryFunctionSkeleton ToMimirStructures::translate_common(lo
     // If the metric is a composite of a single nullary function (1), e.g., total-cost,
     // which never occurs in a condition such as goal (2), or action precondition, conditional effect precondition (3),
     // then we dont have to store the ground function in the state.
-    if ((!m_has_metric_defined && function_skeleton->get_name() == "total-cost")          // special case where we will introduce it
-        || (m_grounded_metric_fexpr_functions.size() == 1                                 // (1)
-            && m_grounded_metric_fexpr_functions.contains(function_skeleton->get_name())  // (1)
-            && !m_grounded_goal_fexpr_functions.contains(function_skeleton->get_name())   // (2)
-            && !m_lifted_fexpr_functions.contains(function_skeleton->get_name())))        // (3)
+    if ((m_grounded_metric_fexpr_functions.size() == 1                                 // (1)
+         && m_grounded_metric_fexpr_functions.contains(function_skeleton->get_name())  // (1)
+         && !m_grounded_goal_fexpr_functions.contains(function_skeleton->get_name())   // (2)
+         && !m_lifted_fexpr_functions.contains(function_skeleton->get_name())))        // (3)
     {
         return m_pddl_repositories.template get_or_create_function_skeleton<Auxiliary>(function_skeleton->get_name(),
                                                                                        translate_common(function_skeleton->get_parameters()));
@@ -829,29 +824,6 @@ std::tuple<ConjunctiveEffect, ConditionalEffectList> ToMimirStructures::translat
     auto& [conjunctive_effect_fluent_literals, conjunctive_effect_fluent_numeric_effects, conjunctive_effect_auxiliary_numeric_effects] =
         conjunctive_effect_data;
 
-    // Instantiate total cost effect if necessary.
-    if (!m_has_metric_defined)
-    {
-        std::visit(
-            [&](auto&& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
-                {
-                    get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_fluent_numeric_effects, m_pddl_repositories);
-                }
-                else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
-                {
-                    get_or_create_total_cost_numeric_effect(arg, m_action_costs_enabled, conjunctive_effect_auxiliary_numeric_effects, m_pddl_repositories);
-                }
-                else
-                {
-                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
-                }
-            },
-            m_total_cost_function);
-    }
-
     const auto conjunctive_effect = this->m_pddl_repositories.get_or_create_conjunctive_effect(parameters,
                                                                                                conjunctive_effect_fluent_literals,
                                                                                                conjunctive_effect_fluent_numeric_effects,
@@ -898,7 +870,7 @@ Action ToMimirStructures::translate_lifted(loki::Action action)
     }
     else
     {
-        // TODO: We are missing total-cost effect...
+        // TODO: actions without effects are useless....
         conjunctive_effect = m_pddl_repositories.get_or_create_conjunctive_effect(translated_parameters,
                                                                                   LiteralList<Fluent> {},
                                                                                   NumericEffectList<Fluent> {},
@@ -933,30 +905,6 @@ Axiom ToMimirStructures::translate_lifted(loki::Axiom axiom)
             }
         },
         literal);
-}
-
-static std::variant<FunctionSkeleton<Fluent>, FunctionSkeleton<Auxiliary>>
-get_or_create_total_cost_function(const FunctionSkeletonList<Fluent>& fluent_functions,
-                                  FunctionSkeletonList<Auxiliary>& auxiliary_functions,
-                                  PDDLRepositories& pddl_repositories)
-{
-    for (const auto& function : fluent_functions)
-    {
-        if (function->get_name() == "total-cost")
-            return function;
-    }
-    for (const auto& function : auxiliary_functions)
-    {
-        if (function->get_name() == "total-cost")
-            return function;
-    }
-
-    const auto total_cost_function = pddl_repositories.get_or_create_function_skeleton<Auxiliary>("total-cost", VariableList {});
-
-    std::cout << "[ToMimir] Adding default " << total_cost_function << " to \":functions\"." << std::endl;
-
-    auxiliary_functions.push_back(total_cost_function);
-    return total_cost_function;
 }
 
 Domain ToMimirStructures::translate_lifted(loki::Domain domain)
@@ -1021,10 +969,6 @@ Domain ToMimirStructures::translate_lifted(loki::Domain domain)
                 }
             },
             static_or_fluent_or_auxiliary_function);
-    }
-    if (!m_has_metric_defined)
-    {
-        m_total_cost_function = get_or_create_total_cost_function(fluent_functions, auxiliary_functions, m_pddl_repositories);
     }
 
     const auto actions = translate_lifted(domain->get_actions());
@@ -1405,28 +1349,7 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
             },
             static_or_fluent_or_auxiliary_function_value);
     }
-    // Initialize total cost function value if necessary
-    if (!m_has_metric_defined)
-    {
-        std::visit(
-            [&](auto&& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, FunctionSkeleton<Fluent>>)
-                {
-                    get_or_create_total_cost_function_value(arg, fluent_function_values, m_pddl_repositories);
-                }
-                else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
-                {
-                    get_or_create_total_cost_function_value(arg, auxiliary_function_values, m_pddl_repositories);
-                }
-                else
-                {
-                    static_assert(dependent_false<T>::value, "ToMimirStructures::translate_lifted: Missing implementation for FunctionSkeleton type.");
-                }
-            },
-            m_total_cost_function);
-    }
+
     // Initialize member that is used in numeric goal grounding.
     for (const auto& function_value : static_function_values)
     {
@@ -1448,23 +1371,7 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
         numeric_goal_constraints = numeric_goal_constraints_;
     }
 
-    const auto func_create_default_metric = [&]()
-    {
-        return std::visit(
-            [&](auto&& arg)
-            {
-                const auto metric = m_pddl_repositories.get_or_create_optimization_metric(
-                    loki::OptimizationMetricEnum::MINIMIZE,
-                    m_pddl_repositories.get_or_create_ground_function_expression(m_pddl_repositories.get_or_create_ground_function_expression_function(
-                        m_pddl_repositories.get_or_create_ground_function(arg, ObjectList {}))));
-
-                std::cout << "[ToMimir] Adding default " << metric << " to \":metric\"." << std::endl;
-
-                return metric;
-            },
-            m_total_cost_function);
-    };
-    const auto metric = (m_has_metric_defined ? translate_grounded(problem->get_optimization_metric().value()) : func_create_default_metric());
+    const auto metric = translate_grounded(problem->get_optimization_metric().value());
 
     return m_pddl_repositories.get_or_create_problem(problem->get_filepath(),
                                                      translated_domain,
@@ -1499,9 +1406,6 @@ ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_grounded_metric_fexpr_functions(),
     m_grounded_goal_fexpr_functions(),
     m_effect_function_skeletons(),
-    m_action_costs_enabled(false),
-    m_has_metric_defined(false),
-    m_total_cost_function(),
     m_static_function_to_value()
 {
 }
