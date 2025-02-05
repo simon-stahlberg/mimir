@@ -42,8 +42,10 @@ private:
     DenseState m_dense_state;
     GroundAtomList<Fluent> m_fluent_atoms;
     GroundAtomList<Derived> m_derived_atoms;
+    GroundFunctionList<Fluent> m_fluent_functions;
     AssignmentSet<Fluent> m_fluent_assignment_set;
     AssignmentSet<Derived> m_derived_assignment_set;
+    NumericAssignmentSet m_numeric_assignment_set;
 
 public:
     /// @brief Simplest construction

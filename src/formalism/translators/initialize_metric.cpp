@@ -78,6 +78,7 @@ void InitializeMetricTranslator::prepare_impl(loki::Problem problem)
 
 loki::Effect InitializeMetricTranslator::translate_impl(loki::Effect effect)
 {
+    // Note: if metric is defined and :action-costs is disabled, then :numeric-fluents is enabled and we must not add numeric effects.
     if (!m_has_metric_defined && !m_action_costs_enabled)
     {
         if (const auto& effect_and = std::get_if<loki::EffectAnd>(&effect->get_effect()))

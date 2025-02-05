@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_MATCH_TREE_HPP_
 
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
+#include "mimir/formalism/ground_effects.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
 
 namespace mimir

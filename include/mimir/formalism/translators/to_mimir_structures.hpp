@@ -46,8 +46,6 @@ using StaticOrFluentFunctionExpressionFunction = std::variant<FunctionExpression
 using StaticOrFluentOrAuxiliaryGroundFunctionExpressionFunction =
     std::variant<GroundFunctionExpressionFunction<Static>, GroundFunctionExpressionFunction<Fluent>, GroundFunctionExpressionFunction<Auxiliary>>;
 
-// TODO: move as much out of the translation to mimir structures to let it focus on the core aspect.
-// 1) move the instantiation of total-cost into a separate translator.
 class ToMimirStructures
 {
 private:

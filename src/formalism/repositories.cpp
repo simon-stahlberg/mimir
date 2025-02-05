@@ -517,6 +517,20 @@ template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t a
 // GroundFunction
 
 template<FunctionTag F>
+void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions)
+{
+    out_ground_functions.clear();
+
+    const auto& ground_functions = boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {});
+
+    out_ground_functions.insert(out_ground_functions.end(), ground_functions.begin(), ground_functions.begin() + num_ground_functions);
+}
+
+template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Static>& out_ground_functions);
+template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Fluent>& out_ground_functions);
+template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Auxiliary>& out_ground_functions);
+
+template<FunctionTag F>
 void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
                                                   std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const
 {

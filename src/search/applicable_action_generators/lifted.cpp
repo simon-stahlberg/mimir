@@ -47,8 +47,8 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
-    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_problem_and_domain_derived_predicates())
-
+    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_functions<Fluent>())
 {
     /* 2. Initialize the condition grounders for each action schema. */
     for (const auto& action : m_grounder->get_problem()->get_domain()->get_actions())
@@ -70,6 +70,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
 {
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     m_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
     m_fluent_assignment_set.reset();
@@ -78,6 +79,11 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     m_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
+
+    // TODO: use this to evaluate constraints partially
+    // m_numeric_assignment_set.reset();
+    // m_grounder->get_pddl_repositories()->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    // m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
     /* Generate applicable actions */
 
