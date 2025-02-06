@@ -18,7 +18,6 @@
 #ifndef MIMIR_COMMON_BOUNDS_HPP_
 #define MIMIR_COMMON_BOUNDS_HPP_
 
-#include "mimir/common/concepts.hpp"
 #include "mimir/common/types.hpp"
 
 #include <ostream>

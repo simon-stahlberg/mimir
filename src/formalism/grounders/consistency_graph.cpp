@@ -133,6 +133,8 @@ private:
 
     Index get_object_if_overlap(const Term& term)
     {
+        // This code is faster than std::visit.
+
         if (const auto object = std::get_if<Object>(&term->get_variant()))
         {
             return (*object)->get_index();
@@ -324,25 +326,38 @@ static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(Func
     const auto& function_remapping = remapping.at(function);
 
     /* Remap the assignment to the function terms. */
-    auto remapped_assignment = assignment;
-    if (remapped_assignment.first_index != -1)
+    auto remapped_assignment = Assignment();
+    if (function_skeleton->get_arity() > 0)
     {
-        remapped_assignment.first_index = function_remapping.at(remapped_assignment.first_index);
-        if (remapped_assignment.first_index == -1)
+        assert(assignment.first_index != -1);
+        remapped_assignment.first_index = function_remapping.at(assignment.first_index);
+        if (remapped_assignment.first_index != -1)
         {
-            remapped_assignment.first_object = -1;
-            remapped_assignment.second_index = -1;
-            remapped_assignment.second_object = -1;
+            remapped_assignment.first_object = assignment.first_object;
+
+            if (assignment.second_index != -1)
+            {
+                remapped_assignment.second_index = function_remapping.at(assignment.second_index);
+                if (remapped_assignment.second_index != -1)
+                {
+                    remapped_assignment.second_object = assignment.second_object;
+                }
+            }
+        }
+        else
+        {
+            if (assignment.second_index != -1)
+            {
+                remapped_assignment.first_index = function_remapping.at(assignment.second_index);
+                if (remapped_assignment.first_index != -1)
+                {
+                    remapped_assignment.first_index = assignment.second_object;
+                }
+            }
         }
     }
-    if (remapped_assignment.second_index != -1)
-    {
-        remapped_assignment.second_index = function_remapping.at(remapped_assignment.second_index);
-        if (remapped_assignment.second_index == -1)
-        {
-            remapped_assignment.second_object = -1;
-        }
-    }
+    assert((function_skeleton->get_arity() > 0) || (remapped_assignment.first_index == -1 && remapped_assignment.second_index == -1));
+
     // std::cout << "Remapped_assignment: " << remapped_assignment.first_index << " " << remapped_assignment.first_object << " "
     //           << remapped_assignment.second_index << " " << remapped_assignment.second_object << std::endl;
 
