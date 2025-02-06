@@ -265,7 +265,7 @@ struct ElementTypeTraits<Edge>
 };
 
 template<PredicateTag P, IsVertexOrEdge ElementType>
-bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const ElementType& element)
+static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const ElementType& element)
 {
     using IteratorType = typename ElementTypeTraits<ElementType>::IteratorType;
 
@@ -313,6 +313,169 @@ bool consistent_literals_helper(const LiteralList<P>& literals, const Assignment
     return true;
 }
 
+template<StaticOrFluentTag F>
+static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunction<F> fexpr,
+                                                                            const absl::flat_hash_map<Function<F>, IndexList>& remapping,
+                                                                            const Assignment& assignment,
+                                                                            const NumericAssignmentSet<F>& numeric_assignment_set)
+{
+    const auto function = fexpr->get_function();
+    const auto function_skeleton = function->get_function_skeleton();
+    const auto& function_remapping = remapping.at(function);
+    auto remapped_assignment = assignment;
+    if (remapped_assignment.first_index != -1)
+    {
+        remapped_assignment.first_index = function_remapping.at(remapped_assignment.first_index);
+    }
+    if (remapped_assignment.second_index != -1)
+    {
+        remapped_assignment.second_index = function_remapping.at(remapped_assignment.second_index);
+    }
+    const auto rank = get_assignment_rank(remapped_assignment, function_skeleton->get_arity(), numeric_assignment_set.get_num_objects());
+
+    assert(function_skeleton->get_index() < numeric_assignment_set.get_per_function_skeleton_bounds_set().size());
+    const auto& function_assignment_set = numeric_assignment_set.get_per_function_skeleton_bounds_set()[function_skeleton->get_index()];
+
+    assert(rank < function_assignment_set.size());
+    const auto bounds = function_assignment_set[rank];
+
+    return bounds;
+}
+
+static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExpression fexpr,
+                                                                     const absl::flat_hash_map<Function<Static>, IndexList>& static_remapping,
+                                                                     const absl::flat_hash_map<Function<Fluent>, IndexList>& fluent_remapping,
+                                                                     const Assignment& assignment,
+                                                                     const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                                     const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
+{
+    return std::visit(
+        [&](auto&& arg) -> Bounds<ContinuousCost>
+        {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, FunctionExpressionNumber>)
+            {
+                return Bounds<ContinuousCost>(arg->get_number(), arg->get_number());
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
+            {
+                return evaluate_binary_bounds(arg->get_binary_operator(),
+                                              evaluate_function_expression_partially(arg->get_left_function_expression(),
+                                                                                     static_remapping,
+                                                                                     fluent_remapping,
+                                                                                     assignment,
+                                                                                     static_numeric_assignment_set,
+                                                                                     fluent_numeric_assignment_set),
+                                              evaluate_function_expression_partially(arg->get_right_function_expression(),
+                                                                                     static_remapping,
+                                                                                     fluent_remapping,
+                                                                                     assignment,
+                                                                                     static_numeric_assignment_set,
+                                                                                     fluent_numeric_assignment_set));
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
+            {
+                return std::accumulate(std::next(arg->get_function_expressions().begin()),  // Start from the second expression
+                                       arg->get_function_expressions().end(),
+                                       evaluate_function_expression_partially(arg->get_function_expressions().front(),
+                                                                              static_remapping,
+                                                                              fluent_remapping,
+                                                                              assignment,
+                                                                              static_numeric_assignment_set,
+                                                                              fluent_numeric_assignment_set),
+                                       [&](const auto& value, const auto& child_expr)
+                                       {
+                                           return evaluate_multi_bounds(arg->get_multi_operator(),
+                                                                        value,
+                                                                        evaluate_function_expression_partially(child_expr,
+                                                                                                               static_remapping,
+                                                                                                               fluent_remapping,
+                                                                                                               assignment,
+                                                                                                               static_numeric_assignment_set,
+                                                                                                               fluent_numeric_assignment_set));
+                                       });
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
+            {
+                const auto bounds = evaluate_function_expression_partially(arg->get_function_expression(),
+                                                                           static_remapping,
+                                                                           fluent_remapping,
+                                                                           assignment,
+                                                                           static_numeric_assignment_set,
+                                                                           fluent_numeric_assignment_set);
+                return Bounds<ContinuousCost>(-bounds.upper, -bounds.lower);
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
+            {
+                return remap_and_retrieve_bounds_from_assignment_set(arg, static_remapping, assignment, static_numeric_assignment_set);
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
+            {
+                return remap_and_retrieve_bounds_from_assignment_set(arg, fluent_remapping, assignment, fluent_numeric_assignment_set);
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Auxiliary>>)
+            {
+                throw std::runtime_error("computing_remapping(fexpr, term_to_position, remapping): Unexpected FunctionExpression type.");
+            }
+            else
+            {
+                static_assert(dependent_false<T>::value, "collect_terms_helper(fexpr, ref_terms): Missing implementation for FunctionExpression type.");
+            }
+        },
+        fexpr->get_variant());
+}
+
+static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeric_constraint,
+                                                        const Assignment& assignment,
+                                                        const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                        const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
+{
+    return evaluate(numeric_constraint->get_binary_comparator(),
+                    evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
+                                                           numeric_constraint->get_remapping<Static>(),
+                                                           numeric_constraint->get_remapping<Fluent>(),
+                                                           assignment,
+                                                           static_numeric_assignment_set,
+                                                           fluent_numeric_assignment_set),
+                    evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
+                                                           numeric_constraint->get_remapping<Static>(),
+                                                           numeric_constraint->get_remapping<Fluent>(),
+                                                           assignment,
+                                                           static_numeric_assignment_set,
+                                                           fluent_numeric_assignment_set));
+}
+
+template<IsVertexOrEdge ElementType>
+static bool consistent_numeric_constraints_helper(const NumericConstraintList& numeric_constraints,
+                                                  const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                  const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set,
+                                                  const ElementType& element)
+{
+    using IteratorType = typename ElementTypeTraits<ElementType>::IteratorType;
+
+    for (const auto& numeric_constraint : numeric_constraints)
+    {
+        const auto& terms = numeric_constraint->get_terms();
+        const auto arity = terms.size();
+
+        auto assignment_iterator = IteratorType(terms, element);
+
+        while (assignment_iterator.has_next())
+        {
+            const auto assignment = assignment_iterator.next();
+            assert(assignment.first_index < arity);
+            assert(assignment.first_index < assignment.second_index);
+
+            if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 /**
  * Vertex
  */
@@ -328,14 +491,11 @@ template bool Vertex::consistent_literals(const LiteralList<Fluent>& literals, c
 template bool Vertex::consistent_literals(const LiteralList<Derived>& literals, const AssignmentSet<Derived>& assignment_set) const;
 
 bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraints,
-                                 const FlatDoubleList& fluent_numeric_values,
-                                 const FlatDoubleList& auxiliary_numeric_values) const
+                                 const NumericAssignmentSet<Static>& static_assignment_set,
+                                 const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    // TODO(numeric): we need to check whether the assignment [x/o] of the vertex results is consistent.
-    // The idea is to apply interval arithmetic. For this purpose we need a data structure that allows us to retrieve
-    // the cost interval of partially grounded functions.
-    // Lets assume we have a function f(?v1,...,?vn) and we substitute ?vi/o
-    // TBD
+    return true;
+    return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
 
 /**
@@ -351,6 +511,14 @@ bool Edge::consistent_literals(const LiteralList<P>& literals, const AssignmentS
 template bool Edge::consistent_literals(const LiteralList<Static>& literals, const AssignmentSet<Static>& assignment_set) const;
 template bool Edge::consistent_literals(const LiteralList<Fluent>& literals, const AssignmentSet<Fluent>& assignment_set) const;
 template bool Edge::consistent_literals(const LiteralList<Derived>& literals, const AssignmentSet<Derived>& assignment_set) const;
+
+bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
+                               const NumericAssignmentSet<Static>& static_assignment_set,
+                               const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
+{
+    return true;
+    return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
+}
 
 /**
  * StaticConsistencyGraph

@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_GROUNDERS_CONSISTENCY_GRAPH_HPP_
 #define MIMIR_FORMALISM_GROUNDERS_CONSISTENCY_GRAPH_HPP_
 
+#include "mimir/common/bounds.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
@@ -66,8 +67,8 @@ public:
     bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
     bool consistent_literals(const NumericConstraintList& numeric_constraints,
-                             const FlatDoubleList& fluent_numeric_values,
-                             const FlatDoubleList& auxiliary_numeric_values) const;
+                             const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                             const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
 
     VertexIndex get_index() const { return m_index; }
     ParameterIndex get_parameter_index() const { return m_parameter_index; }
@@ -97,6 +98,10 @@ public:
     /// @return
     template<PredicateTag P>
     bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
+
+    bool consistent_literals(const NumericConstraintList& numeric_constraints,
+                             const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                             const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
 
     const Vertex& get_src() const { return m_src; }
     const Vertex& get_dst() const { return m_dst; }

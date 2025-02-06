@@ -18,7 +18,10 @@
 #ifndef MIMIR_FORMALISM_NUMERIC_CONSTRAINT_HPP_
 #define MIMIR_FORMALISM_NUMERIC_CONSTRAINT_HPP_
 
+#include "mimir/common/bounds.hpp"
 #include "mimir/formalism/declarations.hpp"
+
+#include <absl/container/flat_hash_map.h>
 
 namespace mimir
 {
@@ -32,6 +35,10 @@ private:
     FunctionExpression m_right_function_expression;
 
     // Below: add additional members if needed and initialize them in the constructor
+
+    TermList m_terms;                                                     ///< The terms nested in the function expressions to generate assignments
+    absl::flat_hash_map<Function<Static>, IndexList> m_static_remapping;  ///< Remap terms to function terms.
+    absl::flat_hash_map<Function<Fluent>, IndexList> m_fluent_remapping;  ///< Remap terms to function terms.
 
     NumericConstraintImpl(Index index,
                           loki::BinaryComparatorEnum binary_comparator,
@@ -54,6 +61,10 @@ public:
     const FunctionExpression& get_left_function_expression() const;
     const FunctionExpression& get_right_function_expression() const;
 
+    const TermList& get_terms() const;
+    template<StaticOrFluentTag F>
+    const absl::flat_hash_map<Function<F>, IndexList>& get_remapping() const;
+
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
@@ -62,6 +73,46 @@ public:
         return std::forward_as_tuple(std::as_const(m_binary_comparator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
     }
 };
+
+/**
+ * Utils
+ */
+
+template<IsArithmetic A>
+inline bool evaluate(loki::BinaryComparatorEnum comparator, const Bounds<A>& lhs, const Bounds<A>& rhs)
+{
+    switch (comparator)
+    {
+        case loki::BinaryComparatorEnum::EQUAL:
+        {
+            return lhs == rhs;
+        }
+        case loki::BinaryComparatorEnum::GREATER:
+        {
+            return lhs > rhs;
+        }
+        case loki::BinaryComparatorEnum::GREATER_EQUAL:
+        {
+            return lhs >= rhs;
+        }
+        case loki::BinaryComparatorEnum::LESS:
+        {
+            return lhs < rhs;
+        }
+        case loki::BinaryComparatorEnum::LESS_EQUAL:
+        {
+            return lhs <= rhs;
+        }
+        default:
+        {
+            throw std::logic_error("evaluate(comparator, lhs, rhs): Unexpected BinaryComparatorEnum.");
+        }
+    }
+}
+
+/**
+ * Printing
+ */
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintImpl& element);
 

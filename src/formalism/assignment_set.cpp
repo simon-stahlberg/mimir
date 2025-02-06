@@ -134,7 +134,8 @@ template class AssignmentSet<Derived>;
  * NumericAssignmentSet
  */
 
-NumericAssignmentSet::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<Fluent>& function_skeletons) :
+template<StaticOrFluentTag F>
+NumericAssignmentSet<F>::NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons) :
     m_num_objects(num_objects),
     m_per_function_skeleton_bounds_set()
 {
@@ -156,7 +157,8 @@ NumericAssignmentSet::NumericAssignmentSet(size_t num_objects, const FunctionSke
     reset();
 }
 
-void NumericAssignmentSet::reset()
+template<StaticOrFluentTag F>
+void NumericAssignmentSet<F>::reset()
 {
     for (auto& assignment_set : m_per_function_skeleton_bounds_set)
     {
@@ -164,7 +166,8 @@ void NumericAssignmentSet::reset()
     }
 }
 
-void NumericAssignmentSet::insert_ground_function_values(const GroundFunctionList<Fluent>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values)
+template<StaticOrFluentTag F>
+void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunctionList<F>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values)
 {
     /* Validate inputs. */
     assert(ground_fluent_functions.size() == fluent_numeric_values.size());
@@ -193,8 +196,10 @@ void NumericAssignmentSet::insert_ground_function_values(const GroundFunctionLis
         {
             const auto& first_object = arguments[first_index];
             auto& single_assignment_bound = assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)];
-            single_assignment_bound.lower = std::min(single_assignment_bound.lower, value);
-            single_assignment_bound.upper = std::max(single_assignment_bound.upper, value);
+            single_assignment_bound.lower =
+                (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(single_assignment_bound.lower, value);
+            single_assignment_bound.upper =
+                (single_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(single_assignment_bound.upper, value);
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
@@ -203,11 +208,17 @@ void NumericAssignmentSet::insert_ground_function_values(const GroundFunctionLis
                     assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                        arity,
                                                        m_num_objects)];
-                double_assignment_bound.lower = std::min(double_assignment_bound.lower, value);
-                double_assignment_bound.upper = std::max(double_assignment_bound.upper, value);
+                double_assignment_bound.lower = (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ?
+                                                    value :
+                                                    std::min(double_assignment_bound.lower, value);
+                double_assignment_bound.upper =
+                    (single_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(double_assignment_bound.upper, value);
             }
         }
     }
 }
+
+template class NumericAssignmentSet<Static>;
+template class NumericAssignmentSet<Fluent>;
 
 }

@@ -84,6 +84,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_static_initial_atoms_bitset(),
     m_positive_static_initial_atoms_indices(),
     m_positive_static_initial_assignment_set(AssignmentSet<Static>(m_objects.size(), m_domain->get_predicates<Static>())),
+    m_static_initial_numeric_assignment_set(NumericAssignmentSet<Static>(m_objects.size(), m_domain->get_functions<Static>())),
     m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
     m_static_function_to_value(),
     m_fluent_function_to_value(),
@@ -173,16 +174,22 @@ ProblemImpl::ProblemImpl(Index index,
 
     // As the ground functions in the goal might not necessarily be defined, we fill the gaps with undefined.
     // In principle, we could compress and define those values during search when applying an action that assigns it.
+    auto static_functions = GroundFunctionList<Static> {};
     for (const auto static_numeric_value : m_static_function_values)
     {
-        const auto index = static_numeric_value->get_function()->get_index();
+        const auto function = static_numeric_value->get_function();
+        const auto index = function->get_index();
         const auto value = static_numeric_value->get_number();
         if (index >= m_static_function_to_value.size())
         {
+            static_functions.resize(index + 1, nullptr);
             m_static_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
         }
         m_static_function_to_value[index] = value;
+        static_functions[index] = function;
     }
+    m_static_initial_numeric_assignment_set.insert_ground_function_values(static_functions, m_static_function_to_value);
+
     for (const auto fluent_numeric_value : m_fluent_function_values)
     {
         const auto index = fluent_numeric_value->get_function()->get_index();
@@ -382,6 +389,8 @@ const FlatIndexList& ProblemImpl::get_static_initial_positive_atoms_indices() co
 }
 
 const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { return m_positive_static_initial_assignment_set; }
+
+const NumericAssignmentSet<Static>& ProblemImpl::get_static_initial_numeric_assignment_set() const { return m_static_initial_numeric_assignment_set; }
 
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 

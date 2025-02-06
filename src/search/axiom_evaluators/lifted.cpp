@@ -39,8 +39,10 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
                                               m_grounder->get_problem()->get_problem_and_domain_derived_predicates())),
     m_fluent_atoms(),
     m_derived_atoms(),
+    m_fluent_functions(),
     m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
-    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_problem_and_domain_derived_predicates())
+    m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_functions<Fluent>())
 {
     /* 3. Initialize condition grounders */
     for (const auto& axiom : m_grounder->get_problem()->get_problem_and_domain_axioms())
@@ -55,6 +57,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
     const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     /* 1. Initialize assignment set */
 
@@ -67,6 +70,12 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
     m_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
+
+    m_numeric_assignment_set.reset();
+    m_grounder->get_pddl_repositories()->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+
+    const auto& static_numeric_assignment_set = m_grounder->get_problem()->get_static_initial_numeric_assignment_set();
 
     /* 2. Fixed point computation */
 
@@ -99,7 +108,11 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
                 auto& condition_grounder = m_condition_grounders.at(axiom);
 
-                for (auto&& binding : condition_grounder.create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set))
+                for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
+                                                                                  m_fluent_assignment_set,
+                                                                                  m_derived_assignment_set,
+                                                                                  static_numeric_assignment_set,
+                                                                                  m_numeric_assignment_set))
                 {
                     const auto num_ground_axioms = m_grounder->get_num_ground_axioms();
 

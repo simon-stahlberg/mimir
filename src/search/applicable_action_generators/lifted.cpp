@@ -46,6 +46,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(std::shared_ptr
     m_dense_state(),
     m_fluent_atoms(),
     m_derived_atoms(),
+    m_fluent_functions(),
     m_fluent_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
     m_derived_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
     m_numeric_assignment_set(m_grounder->get_problem()->get_objects().size(), m_grounder->get_problem()->get_domain()->get_functions<Fluent>())
@@ -80,10 +81,11 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
-    // TODO: use this to evaluate constraints partially
-    // m_numeric_assignment_set.reset();
-    // m_grounder->get_pddl_repositories()->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
-    // m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+    m_numeric_assignment_set.reset();
+    m_grounder->get_pddl_repositories()->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+
+    const auto& static_numeric_assignment_set = m_grounder->get_problem()->get_static_initial_numeric_assignment_set();
 
     /* Generate applicable actions */
 
@@ -97,7 +99,11 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
             continue;
         }
 
-        for (auto&& binding : condition_grounder.create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set))
+        for (auto&& binding : condition_grounder.create_binding_generator(dense_state,
+                                                                          m_fluent_assignment_set,
+                                                                          m_derived_assignment_set,
+                                                                          static_numeric_assignment_set,
+                                                                          m_numeric_assignment_set))
         {
             const auto num_ground_actions = m_grounder->get_num_ground_actions();
 

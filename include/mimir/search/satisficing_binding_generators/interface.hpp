@@ -84,11 +84,17 @@ protected:
 
     mimir::generator<ObjectList> nullary_case(const DenseState& dense_state);
 
-    mimir::generator<ObjectList>
-    unary_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
+    mimir::generator<ObjectList> unary_case(const DenseState& dense_state,
+                                            const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                            const AssignmentSet<Derived>& derived_assignment_sets,
+                                            const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                            const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
 
-    mimir::generator<ObjectList>
-    general_case(const DenseState& dense_state, const AssignmentSet<Fluent>& fluent_assignment_sets, const AssignmentSet<Derived>& derived_assignment_sets);
+    mimir::generator<ObjectList> general_case(const DenseState& dense_state,
+                                              const AssignmentSet<Fluent>& fluent_assignment_sets,
+                                              const AssignmentSet<Derived>& derived_assignment_sets,
+                                              const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                              const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
 
 public:
     SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
@@ -96,12 +102,17 @@ public:
                                 ConjunctiveCondition conjunctive_condition,
                                 std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 
-    mimir::generator<ObjectList>
-    create_binding_generator(State state, const AssignmentSet<Fluent>& fluent_assignment_set, const AssignmentSet<Derived>& derived_assignment_set);
+    mimir::generator<ObjectList> create_binding_generator(State state,
+                                                          const AssignmentSet<Fluent>& fluent_assignment_set,
+                                                          const AssignmentSet<Derived>& derived_assignment_set,
+                                                          const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                          const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
 
     mimir::generator<ObjectList> create_binding_generator(const DenseState& dense_state,
                                                           const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                          const AssignmentSet<Derived>& derived_assignment_set);
+                                                          const AssignmentSet<Derived>& derived_assignment_set,
+                                                          const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                          const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
 
     mimir::generator<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>>
     create_ground_conjunction_generator(State state);
@@ -220,12 +231,15 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::nullary_case
 template<typename Derived_>
 mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(const DenseState& dense_state,
                                                                                const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                               const AssignmentSet<Derived>& derived_assignment_sets)
+                                                                               const AssignmentSet<Derived>& derived_assignment_sets,
+                                                                               const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                                               const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
     for (const auto& vertex : m_static_consistency_graph.get_vertices())
     {
         if (vertex.consistent_literals(m_conjunctive_condition->get_literals<Fluent>(), fluent_assignment_sets)
-            && vertex.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets))
+            && vertex.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets)
+            && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
             auto binding = ObjectList { m_literal_grounder->get_pddl_repositories()->get_object(vertex.get_object_index()) };
 
@@ -244,7 +258,9 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(c
 template<typename Derived_>
 mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case(const DenseState& dense_state,
                                                                                  const AssignmentSet<Fluent>& fluent_assignment_sets,
-                                                                                 const AssignmentSet<Derived>& derived_assignment_sets)
+                                                                                 const AssignmentSet<Derived>& derived_assignment_sets,
+                                                                                 const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                                                 const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
     if (m_static_consistency_graph.get_edges().size() == 0)
     {
@@ -259,7 +275,8 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
     for (const auto& edge : m_static_consistency_graph.get_edges())
     {
         if (edge.consistent_literals(m_conjunctive_condition->get_literals<Fluent>(), fluent_assignment_sets)
-            && edge.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets))
+            && edge.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets)
+            && edge.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
             const auto first_index = edge.get_src().get_index();
             const auto second_index = edge.get_dst().get_index();
@@ -326,17 +343,21 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(std::shared_p
 template<typename Derived_>
 mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(State state,
                                                                                              const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                                             const AssignmentSet<Derived>& derived_assignment_set)
+                                                                                             const AssignmentSet<Derived>& derived_assignment_set,
+                                                                                             const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                                                             const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
     DenseState::translate(state, m_dense_state);
 
-    return create_binding_generator(m_dense_state, fluent_assignment_set, derived_assignment_set);
+    return create_binding_generator(m_dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
 }
 
 template<typename Derived_>
 mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::create_binding_generator(const DenseState& dense_state,
                                                                                              const AssignmentSet<Fluent>& fluent_assignment_set,
-                                                                                             const AssignmentSet<Derived>& derived_assignment_set)
+                                                                                             const AssignmentSet<Derived>& derived_assignment_set,
+                                                                                             const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                                                             const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
@@ -349,11 +370,11 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::create_bindi
     }
     else if (m_conjunctive_condition->get_arity() == 1)
     {
-        return unary_case(dense_state, fluent_assignment_set, derived_assignment_set);
+        return unary_case(dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
     }
     else
     {
-        return general_case(dense_state, fluent_assignment_set, derived_assignment_set);
+        return general_case(dense_state, fluent_assignment_set, derived_assignment_set, static_numeric_assignment_set, fluent_numeric_assignment_set);
     }
 }
 

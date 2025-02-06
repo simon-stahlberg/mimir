@@ -56,6 +56,7 @@ private:
     FlatBitset m_positive_static_initial_atoms_bitset;
     FlatIndexList m_positive_static_initial_atoms_indices;
     AssignmentSet<Static> m_positive_static_initial_assignment_set;
+    NumericAssignmentSet<Static> m_static_initial_numeric_assignment_set;
 
     GroundAtomList<Fluent> m_positive_fluent_initial_atoms;
 
@@ -170,6 +171,7 @@ public:
     const FlatBitset& get_static_initial_positive_atoms_bitset() const;
     const FlatIndexList& get_static_initial_positive_atoms_indices() const;
     const AssignmentSet<Static>& get_static_assignment_set() const;
+    const NumericAssignmentSet<Static>& get_static_initial_numeric_assignment_set() const;
 
     const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
 

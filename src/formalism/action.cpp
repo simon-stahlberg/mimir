@@ -76,7 +76,7 @@ static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjuncti
             {
                 throw std::runtime_error(
                     "validate_non_conflicting_numeric_effects(conjunctive_effect, ref_fluent_function_to_change, ref_auxiliary_function_change): "
-                    "detected conflicting fluent numeric effects of a lifted action schema that changes it in a different direction "
+                    "detected conflicting auxiliary numeric effects of a lifted action schema that changes it in a different direction "
                     + to_string(auxiliary_numeric_effect));
             }
             // Note: we are a bit softer here. According to PDDL, multiple SCALE_UP and SCALE_DOWN are conflicting
@@ -84,7 +84,7 @@ static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjuncti
             {
                 throw std::runtime_error(
                     "validate_non_conflicting_numeric_effects(conjunctive_effect, ref_fluent_function_to_change, ref_auxiliary_function_change): "
-                    "detected conflicting fluent numeric effects of a lifted action schema that reassigns it "
+                    "detected conflicting auxiliary numeric effects of a lifted action schema that reassigns it "
                     + to_string(auxiliary_numeric_effect));
             }
         }
@@ -98,6 +98,7 @@ static void validate_non_conflicting_numeric_effects(ConjunctiveEffect conjuncti
 /// @brief Validate that the lifted effects are non-conflicting.
 /// This approximates the test on the grounded level but should usually suffice.
 /// To get a more exact test, we could specifically store the effects that might conflict in the grounded case, and then test those in the applicability check.
+/// Axioms could also help here but I want to avoid introducing additional derived variables.
 /// @param conjunctive_effect
 /// @param conditional_effects
 /// @return
@@ -134,6 +135,7 @@ ActionImpl::ActionImpl(Index index,
                           m_conditional_effects.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 
+    // Note: we test on the lifted level as a safety net for now...
     validate_non_conflicting_numeric_effects(m_conjunctive_effect, m_conditional_effects);
 }
 

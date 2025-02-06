@@ -41,8 +41,10 @@ private:
     /* Memory for reuse */
     GroundAtomList<Fluent> m_fluent_atoms;
     GroundAtomList<Derived> m_derived_atoms;
+    GroundFunctionList<Fluent> m_fluent_functions;
     AssignmentSet<Fluent> m_fluent_assignment_set;
     AssignmentSet<Derived> m_derived_assignment_set;
+    NumericAssignmentSet<Fluent> m_numeric_assignment_set;
 
 public:
     explicit LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder);

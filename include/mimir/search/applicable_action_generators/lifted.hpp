@@ -45,7 +45,7 @@ private:
     GroundFunctionList<Fluent> m_fluent_functions;
     AssignmentSet<Fluent> m_fluent_assignment_set;
     AssignmentSet<Derived> m_derived_assignment_set;
-    NumericAssignmentSet m_numeric_assignment_set;
+    NumericAssignmentSet<Fluent> m_numeric_assignment_set;
 
 public:
     /// @brief Simplest construction

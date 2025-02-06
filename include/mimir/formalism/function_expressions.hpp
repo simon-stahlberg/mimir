@@ -18,6 +18,8 @@
 #ifndef MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 #define MIMIR_FORMALISM_FUNCTION_EXPRESSIONS_HPP_
 
+#include "mimir/common/bounds.hpp"
+#include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
@@ -236,7 +238,8 @@ public:
  * Arithmetic operations
  */
 
-inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, double val_right)
+// TODO: generalize to IsArithmetic
+inline ContinuousCost evaluate_binary(loki::BinaryOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
     if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
     {
@@ -271,7 +274,8 @@ inline double evaluate_binary(loki::BinaryOperatorEnum op, double val_left, doub
     }
 }
 
-inline double evaluate_multi(loki::MultiOperatorEnum op, double val_left, double val_right)
+// TODO: generalize to IsArithmetic
+inline ContinuousCost evaluate_multi(loki::MultiOperatorEnum op, ContinuousCost val_left, ContinuousCost val_right)
 {
     if (val_left == UNDEFINED_CONTINUOUS_COST || val_right == UNDEFINED_CONTINUOUS_COST)
     {
@@ -295,28 +299,26 @@ inline double evaluate_multi(loki::MultiOperatorEnum op, double val_left, double
     }
 }
 
-inline std::pair<double, double>
-evaluate_binary_bounds(loki::BinaryOperatorEnum op, std::pair<double, double> lower_upper_lhs, std::pair<double, double> lower_upper_rhs)
+template<IsArithmetic A>
+inline Bounds<A> evaluate_binary_bounds(loki::BinaryOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
 {
-    const auto [lower_lhs, upper_lhs] = lower_upper_lhs;
-    const auto [lower_rhs, upper_rhs] = lower_upper_rhs;
-    const auto alternative1 = evaluate_binary(op, lower_lhs, lower_rhs);
-    const auto alternative2 = evaluate_binary(op, upper_lhs, lower_rhs);
-    const auto alternative3 = evaluate_binary(op, lower_lhs, upper_rhs);
-    const auto alternative4 = evaluate_binary(op, upper_lhs, upper_rhs);
-    return std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    const auto alternative1 = evaluate_binary(op, lhs.lower, rhs.lower);
+    const auto alternative2 = evaluate_binary(op, lhs.upper, rhs.lower);
+    const auto alternative3 = evaluate_binary(op, lhs.lower, rhs.upper);
+    const auto alternative4 = evaluate_binary(op, lhs.upper, rhs.upper);
+    auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    return Bounds<A>(result.first, result.second);
 }
 
-inline std::pair<double, double>
-evaluate_multi_bounds(loki::MultiOperatorEnum op, std::pair<double, double> lower_upper_lhs, std::pair<double, double> lower_upper_rhs)
+template<IsArithmetic A>
+inline Bounds<A> evaluate_multi_bounds(loki::MultiOperatorEnum op, const Bounds<A>& lhs, const Bounds<A>& rhs)
 {
-    const auto [lower_lhs, upper_lhs] = lower_upper_lhs;
-    const auto [lower_rhs, upper_rhs] = lower_upper_rhs;
-    const auto alternative1 = evaluate_multi(op, lower_lhs, lower_rhs);
-    const auto alternative2 = evaluate_multi(op, upper_lhs, lower_rhs);
-    const auto alternative3 = evaluate_multi(op, lower_lhs, upper_rhs);
-    const auto alternative4 = evaluate_multi(op, upper_lhs, upper_rhs);
-    return std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    const auto alternative1 = evaluate_multi(op, lhs.lower, rhs.lower);
+    const auto alternative2 = evaluate_multi(op, lhs.upper, rhs.lower);
+    const auto alternative3 = evaluate_multi(op, lhs.lower, rhs.upper);
+    const auto alternative4 = evaluate_multi(op, lhs.upper, rhs.upper);
+    auto result = std::minmax({ alternative1, alternative2, alternative3, alternative4 });
+    return Bounds<A>(result.first, result.second);
 }
 
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element);

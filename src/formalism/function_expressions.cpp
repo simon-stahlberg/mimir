@@ -120,6 +120,14 @@ size_t FunctionExpressionImpl::get_index() const { return m_index; }
 
 const FunctionExpressionVariant& FunctionExpressionImpl::get_variant() const { return m_function_expression; }
 
+/**
+ * Utils
+ */
+
+/**
+ * Printing
+ */
+
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumberImpl& element)
 {
     auto formatter = PDDLFormatter();

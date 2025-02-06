@@ -42,6 +42,8 @@ namespace mimir
 
 template<PredicateTag P>
 class AssignmentSet;
+template<StaticOrFluentTag F>
+class NumericAssignmentSet;
 
 class ActionImpl;
 using Action = const ActionImpl*;

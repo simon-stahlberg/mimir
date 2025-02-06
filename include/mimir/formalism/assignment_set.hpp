@@ -18,6 +18,7 @@
 #ifndef MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_HPP_
 
+#include "mimir/common/bounds.hpp"
 #include "mimir/common/types.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set_utils.hpp"
@@ -79,6 +80,8 @@ public:
 ///   1. the assignment [i/o], [j/o'] results in partial function evaluation [l,r]
 ///   2. the assignment [i/o] results in partial function evaluation [l,r]
 /// Using the `NumericAssignmentSet` we can efficiently evaluate numeric constraints partially.
+
+template<StaticOrFluentTag F>
 class NumericAssignmentSet
 {
 private:
@@ -89,17 +92,17 @@ private:
 
     // This lets us easily compute the bounds for partial substitutions by sorting the vector by the cost,
     // followed by computing lower and upper bounds using minimization and maximization.
-    std::vector<std::pair<GroundFunction<Fluent>, ContinuousCost>> m_ground_function_to_value;
+    std::vector<std::pair<GroundFunction<F>, ContinuousCost>> m_ground_function_to_value;
 
 public:
     /// @brief Construct from a given set of ground atoms.
-    NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<Fluent>& function_skeletons);
+    NumericAssignmentSet(size_t num_objects, const FunctionSkeletonList<F>& function_skeletons);
 
     /// @brief Resets all function skeleton bounds to unrestricted, i.e., [inf,-inf].
     void reset();
 
     /// @brief Insert fluent ground function values into the assignment set.
-    void insert_ground_function_values(const GroundFunctionList<Fluent>& ground_fluent_functions, const FlatDoubleList& fluent_numeric_values);
+    void insert_ground_function_values(const GroundFunctionList<F>& ground_functions, const FlatDoubleList& numeric_values);
 
     /**
      * Getters

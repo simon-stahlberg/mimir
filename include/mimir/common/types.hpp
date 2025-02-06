@@ -48,39 +48,6 @@ using DiscreteCostMatrix = std::vector<ContinuousCostList>;
 
 static const ContinuousCost UNDEFINED_CONTINUOUS_COST = std::numeric_limits<ContinuousCost>::max();
 
-template<IsArithmetic A>
-struct Bounds
-{
-    A lower;
-    A upper;
-
-    // Static unbounded instance
-    inline static const Bounds unbounded = []
-    {
-        if constexpr (std::is_floating_point_v<A>)
-        {
-            return Bounds { std::numeric_limits<A>::infinity(), -std::numeric_limits<A>::infinity() };
-        }
-        else
-        {
-            return Bounds { std::numeric_limits<A>::max(), std::numeric_limits<A>::min() };
-        }
-    }();
-
-    bool is_bounded() const { return lower <= upper; }
-    bool is_unbounded() const
-    {
-        if constexpr (std::is_floating_point_v<A>)
-        {
-            return lower == std::numeric_limits<A>::infinity() && upper == -std::numeric_limits<A>::infinity();
-        }
-        else
-        {
-            return lower == std::numeric_limits<A>::max() && upper == std::numeric_limits<A>::min();
-        }
-    }
-};
-
 }
 
 #endif
