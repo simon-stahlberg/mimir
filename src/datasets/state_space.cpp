@@ -77,7 +77,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
-    auto [initial_state, initial_auxiliary_functions] = state_repository->get_or_create_initial_state();
+    auto initial_state = state_repository->get_or_create_initial_state();
 
     if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
@@ -91,15 +91,15 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
     auto state_to_vertex_index = StateMap<Index> {};
     state_to_vertex_index.emplace(initial_state, initial_vertex_index);
 
-    auto lifo_queue = std::deque<std::pair<StateVertex, const FlatDoubleList*>>();
-    lifo_queue.emplace_back(graph.get_vertices().at(initial_vertex_index), initial_auxiliary_functions);
+    auto lifo_queue = std::deque<StateVertex>();
+    lifo_queue.emplace_back(graph.get_vertices().at(initial_vertex_index));
 
     auto goal_test = ProblemGoal(problem);
 
     stop_watch.start();
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
-        const auto [vertex, auxiliary_functions] = lifo_queue.back();
+        const auto vertex = lifo_queue.back();
         const auto vertex_index = vertex.get_index();
         lifo_queue.pop_back();
         if (goal_test.test_dynamic_goal(mimir::get_state(vertex)))
@@ -109,8 +109,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
 
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
         {
-            const auto [successor_state, successor_auxiliary_functions] =
-                state_repository->get_or_create_successor_state(mimir::get_state(vertex), action, *auxiliary_functions);
+            const auto [successor_state, successor_state_metric_value] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action, 0);
             const auto it = state_to_vertex_index.find(successor_state);
             const bool exists = (it != state_to_vertex_index.end());
             if (exists)
@@ -129,7 +128,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
 
             graph.add_directed_edge(vertex_index, successor_vertex_index, action);
             state_to_vertex_index.emplace(successor_state, successor_vertex_index);
-            lifo_queue.emplace_back(graph.get_vertices().at(successor_vertex_index), successor_auxiliary_functions);
+            lifo_queue.emplace_back(graph.get_vertices().at(successor_vertex_index));
         }
     }
 

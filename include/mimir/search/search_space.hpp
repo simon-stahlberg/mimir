@@ -31,12 +31,12 @@ namespace mimir
 /// @param applicable_action_generator is the applicable action generator.
 /// @param state_repository is the state repository.
 /// @param out_ground_action_sequence is the resulting state trajectory.
-inline void extract_ground_action_sequence(State start_state,
-                                           const FlatDoubleList& start_auxiliary_function_values,
-                                           const IndexList& state_trajectory,
-                                           IApplicableActionGenerator& applicable_action_generator,
-                                           StateRepository& state_repository,
-                                           GroundActionList& out_ground_action_sequence)
+inline ContinuousCost extract_ground_action_sequence(State start_state,
+                                                     ContinuousCost start_state_metric_value,
+                                                     const IndexList& state_trajectory,
+                                                     IApplicableActionGenerator& applicable_action_generator,
+                                                     StateRepository& state_repository,
+                                                     GroundActionList& out_ground_action_sequence)
 {
     if (start_state->get_index() != state_trajectory.front())
     {
@@ -46,24 +46,24 @@ inline void extract_ground_action_sequence(State start_state,
     out_ground_action_sequence.clear();
 
     auto state = start_state;
-    auto auxiliary_function_values = &start_auxiliary_function_values;
+    auto state_metric_value = start_state_metric_value;
 
     for (size_t i = 0; i < state_trajectory.size() - 1; ++i)
     {
         for (const auto& action : applicable_action_generator.create_applicable_action_generator(state))
         {
-            const auto [successor_state, auxiliary_function_values_] =
-                state_repository.get_or_create_successor_state(state, action, *auxiliary_function_values);
-            auxiliary_function_values = auxiliary_function_values_;
-
+            const auto [successor_state, successor_state_metric_value] = state_repository.get_or_create_successor_state(state, action, state_metric_value);
             if (successor_state->get_index() == state_trajectory.at(i + 1))
             {
                 out_ground_action_sequence.push_back(action);
                 state = successor_state;
+                state_metric_value = successor_state_metric_value;
                 break;
             }
         }
     }
+
+    return state_metric_value;
 }
 
 /// @brief Compute the state trajectory that ends in the the `final_state_index` associated with the `final_search_node`.

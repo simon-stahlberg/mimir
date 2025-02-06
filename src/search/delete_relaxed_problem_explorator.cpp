@@ -89,7 +89,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_grounder->get_axiom_grounder())),
     m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
-    auto [initial_state, initial_auxiliary_functions] = m_delete_free_state_repository.get_or_create_initial_state();
+    auto initial_state = m_delete_free_state_repository.get_or_create_initial_state();
 
     auto dense_state = DenseState(initial_state);
 
@@ -109,7 +109,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
         {
             // Note that get_or_create_successor_state already modifies dense_state to be the successor state.
             // TODO(numeric): in the delete relaxation, we have to remove all numeric constraints and effects.
-            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action, *initial_auxiliary_functions);
+            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action, 0);
         }
 
         // Create and all applicable axioms and apply them

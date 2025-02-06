@@ -54,7 +54,7 @@ ProblemImpl::ProblemImpl(Index index,
                          GroundLiteralList<Fluent> fluent_initial_literals,
                          GroundFunctionValueList<Static> static_function_values,
                          GroundFunctionValueList<Fluent> fluent_function_values,
-                         GroundFunctionValueList<Auxiliary> auxiliary_function_values,
+                         std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                          GroundLiteralList<Static> static_goal_condition,
                          GroundLiteralList<Fluent> fluent_goal_condition,
                          GroundLiteralList<Derived> derived_goal_condition,
@@ -72,7 +72,7 @@ ProblemImpl::ProblemImpl(Index index,
     m_fluent_initial_literals(std::move(fluent_initial_literals)),
     m_static_function_values(std::move(static_function_values)),
     m_fluent_function_values(std::move(fluent_function_values)),
-    m_auxiliary_function_values(std::move(auxiliary_function_values)),
+    m_auxiliary_function_value(auxiliary_function_value),
     m_static_goal_condition(std::move(static_goal_condition)),
     m_fluent_goal_condition(std::move(fluent_goal_condition)),
     m_derived_goal_condition(std::move(derived_goal_condition)),
@@ -87,7 +87,6 @@ ProblemImpl::ProblemImpl(Index index,
     m_positive_fluent_initial_atoms(to_ground_atoms(m_fluent_initial_literals)),
     m_static_function_to_value(),
     m_fluent_function_to_value(),
-    m_auxiliary_function_to_value(),
     m_static_goal_holds(false),
     m_positive_static_goal_atoms(filter_ground_atoms(m_static_goal_condition, true)),
     m_positive_fluent_goal_atoms(filter_ground_atoms(m_fluent_goal_condition, true)),
@@ -132,9 +131,6 @@ ProblemImpl::ProblemImpl(Index index,
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_fluent_function_values.begin(),
                           m_fluent_function_values.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_auxiliary_function_values.begin(),
-                          m_auxiliary_function_values.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_static_goal_condition.begin(),
                           m_static_goal_condition.end(),
@@ -197,27 +193,9 @@ ProblemImpl::ProblemImpl(Index index,
         }
         m_fluent_function_to_value[index] = value;
     }
-    for (const auto auxiliary_numeric_value : m_auxiliary_function_values)
-    {
-        const auto index = auxiliary_numeric_value->get_function()->get_index();
-        const auto value = auxiliary_numeric_value->get_number();
-        if (index >= m_auxiliary_function_to_value.size())
-        {
-            m_auxiliary_function_to_value.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
-        }
-        m_auxiliary_function_to_value[index] = value;
-    }
     for (size_t i = 0; i < m_fluent_function_to_value.size(); ++i)
     {
         if (m_fluent_function_to_value[i] == UNDEFINED_CONTINUOUS_COST)
-        {
-            std::cout << "Problem::Problem(...): m_fluent_function_to_value contains undefined values. We could optimize by compressing the indexing."
-                      << std::endl;
-        }
-    }
-    for (size_t i = 0; i < m_auxiliary_function_to_value.size(); ++i)
-    {
-        if (m_auxiliary_function_to_value[i] == UNDEFINED_CONTINUOUS_COST)
         {
             std::cout << "Problem::Problem(...): m_fluent_function_to_value contains undefined values. We could optimize by compressing the indexing."
                       << std::endl;
@@ -331,7 +309,7 @@ const GroundLiteralList<Static>& ProblemImpl::get_static_initial_literals() cons
 
 const GroundLiteralList<Fluent>& ProblemImpl::get_fluent_initial_literals() const { return m_fluent_initial_literals; }
 
-template<FunctionTag F>
+template<StaticOrFluentTag F>
 const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
 {
     if constexpr (std::is_same_v<F, Static>)
@@ -342,10 +320,6 @@ const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
     {
         return m_fluent_function_values;
     }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_function_values;
-    }
     else
     {
         static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
@@ -354,7 +328,8 @@ const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
 
 template const GroundFunctionValueList<Static>& ProblemImpl::get_function_values() const;
 template const GroundFunctionValueList<Fluent>& ProblemImpl::get_function_values() const;
-template const GroundFunctionValueList<Auxiliary>& ProblemImpl::get_function_values() const;
+
+const std::optional<GroundFunctionValue<Auxiliary>>& ProblemImpl::get_auxiliary_function_value() const { return m_auxiliary_function_value; }
 
 template<PredicateTag P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
@@ -410,7 +385,7 @@ const AssignmentSet<Static>& ProblemImpl::get_static_assignment_set() const { re
 
 const GroundAtomList<Fluent>& ProblemImpl::get_fluent_initial_atoms() const { return m_positive_fluent_initial_atoms; }
 
-template<FunctionTag F>
+template<StaticOrFluentTag F>
 const FlatDoubleList& ProblemImpl::get_function_to_value() const
 {
     if constexpr (std::is_same_v<F, Static>)
@@ -421,10 +396,6 @@ const FlatDoubleList& ProblemImpl::get_function_to_value() const
     {
         return m_fluent_function_to_value;
     }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_function_to_value;
-    }
     else
     {
         static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
@@ -433,9 +404,8 @@ const FlatDoubleList& ProblemImpl::get_function_to_value() const
 
 template const FlatDoubleList& ProblemImpl::get_function_to_value<Static>() const;
 template const FlatDoubleList& ProblemImpl::get_function_to_value<Fluent>() const;
-template const FlatDoubleList& ProblemImpl::get_function_to_value<Auxiliary>() const;
 
-template<FunctionTag F>
+template<StaticOrFluentTag F>
 ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
 {
     const auto& function_to_value = get_function_to_value<F>();
@@ -448,7 +418,6 @@ ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
 
 template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Static> function) const;
 template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Fluent> function) const;
-template ContinuousCost ProblemImpl::get_function_value(GroundFunction<Auxiliary> function) const;
 
 /* Goal */
 bool ProblemImpl::static_goal_holds() const { return m_static_goal_holds; }

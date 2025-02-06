@@ -45,8 +45,12 @@ private:
                                 FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints,
                                 const ObjectList& binding);
 
-    template<DynamicFunctionTag F>
-    void ground_and_fill_vector(const NumericEffectList<F>& numeric_effects, GroundNumericEffectList<F>& ref_numeric_effects, const ObjectList& binding);
+    void
+    ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects, GroundNumericEffectList<Fluent>& ref_numeric_effects, const ObjectList& binding);
+
+    void ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
+                                  cista::optional<GroundNumericEffect<Auxiliary>>& ref_numeric_effect,
+                                  const ObjectList& binding);
 
 public:
     /// @brief Simplest construction

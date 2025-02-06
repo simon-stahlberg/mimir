@@ -64,7 +64,7 @@ private:
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
     GroundNumericEffectList<Fluent> m_fluent_numeric_effects = GroundNumericEffectList<Fluent>();
-    GroundNumericEffectList<Auxiliary> m_auxiliary_numeric_effects = GroundNumericEffectList<Auxiliary>();
+    cista::optional<GroundNumericEffect<Auxiliary>> m_auxiliary_numeric_effect = std::nullopt;
 
 public:
     /* Propositional effects */
@@ -75,12 +75,13 @@ public:
     const FlatIndexList& get_negative_effects() const;
 
     /* Numeric effects */
-    template<DynamicFunctionTag F>
-    GroundNumericEffectList<F>& get_numeric_effects();
-    template<DynamicFunctionTag F>
-    const GroundNumericEffectList<F>& get_numeric_effects() const;
+    GroundNumericEffectList<Fluent>& get_fluent_numeric_effects();
+    const GroundNumericEffectList<Fluent>& get_fluent_numeric_effects() const;
 
-    auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effects); }
+    cista::optional<GroundNumericEffect<Auxiliary>>& get_auxiliary_numeric_effect();
+    const cista::optional<GroundNumericEffect<Auxiliary>>& get_auxiliary_numeric_effect() const;
+
+    auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
 };
 
 class GroundConditionalEffect
@@ -109,12 +110,7 @@ using GroundEffectConditionalList = cista::offset::vector<GroundConditionalEffec
  */
 
 template<DynamicFunctionTag F>
-extern ContinuousCost
-evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
-
-template<DynamicFunctionTag F>
-extern ContinuousCost
-evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+extern std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Pretty printing

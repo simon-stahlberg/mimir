@@ -151,8 +151,8 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     }
 
     out << std::string(m_indent, ' ') << ":effects ";
-    if (element.get_conjunctive_effect()->get_literals().empty() && element.get_conjunctive_effect()->get_numeric_effects<Fluent>().empty()
-        && element.get_conjunctive_effect()->get_numeric_effects<Auxiliary>().empty() && element.get_conditional_effects().empty())
+    if (element.get_conjunctive_effect()->get_literals().empty() && element.get_conjunctive_effect()->get_fluent_numeric_effects().empty()
+        && !element.get_conjunctive_effect()->get_auxiliary_numeric_effect().has_value() && element.get_conditional_effects().empty())
     {
         out << "()\n";
     }
@@ -292,7 +292,7 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
         m_indent -= m_add_indent;
         out << "\n" << std::string(m_indent, ' ') << ")\n";
     }
-    if (!(element.get_functions<Static>().empty() && element.get_functions<Fluent>().empty() && element.get_functions<Auxiliary>().empty()))
+    if (!(element.get_functions<Static>().empty() && element.get_functions<Fluent>().empty() && !element.get_auxiliary_function().has_value()))
     {
         out << std::string(m_indent, ' ') << "(:functions ";
         m_indent += m_add_indent;
@@ -316,16 +316,12 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
                 out << " ";
             write(*element.get_functions<Fluent>()[i], out);
         }
-        if (!element.get_functions<Auxiliary>().empty())
+        if (element.get_auxiliary_function().has_value())
         {
-            out << "\n" << std::string(m_indent, ' ') << "; auxiliary functions:\n" << std::string(m_indent, ' ');
+            out << "\n" << std::string(m_indent, ' ') << "; auxiliary function:\n" << std::string(m_indent, ' ');
+            write(*element.get_auxiliary_function().value(), out);
         }
-        for (size_t i = 0; i < element.get_functions<Auxiliary>().size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            write(*element.get_functions<Auxiliary>()[i], out);
-        }
+
         m_indent -= m_add_indent;
         out << "\n" << std::string(m_indent, ' ') << ")\n";
     }
@@ -362,14 +358,14 @@ void PDDLFormatter::write(const ConjunctiveEffectImpl& element, std::ostream& ou
         write(*literal, out);
         out << " ";
     }
-    for (const auto& numeric_effect : element.get_numeric_effects<Fluent>())
+    for (const auto& numeric_effect : element.get_fluent_numeric_effects())
     {
         write(*numeric_effect, out);
         out << " ";
     }
-    for (const auto& numeric_effect : element.get_numeric_effects<Auxiliary>())
+    if (element.get_auxiliary_numeric_effect().has_value())
     {
-        write(*numeric_effect, out);
+        write(*element.get_auxiliary_numeric_effect().value(), out);
         out << " ";
     }
 }
@@ -680,7 +676,7 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
     }
 
     if (!(element.get_static_initial_literals().empty() && element.get_fluent_initial_literals().empty() && element.get_function_values<Static>().empty()
-          && element.get_function_values<Fluent>().empty() && element.get_function_values<Auxiliary>().empty()))
+          && element.get_function_values<Fluent>().empty() && !element.get_auxiliary_function_value().has_value()))
     {
         out << std::string(m_indent, ' ') << "(:init ";
         m_indent += m_add_indent;
@@ -725,15 +721,10 @@ void PDDLFormatter::write(const ProblemImpl& element, std::ostream& out)
                 out << " ";
             write(*element.get_function_values<Fluent>()[i], out);
         }
-        if (!element.get_function_values<Auxiliary>().empty())
+        if (element.get_auxiliary_function_value().has_value())
         {
-            out << "\n" << std::string(m_indent, ' ') << "; auxiliary function values:\n" << std::string(m_indent, ' ');
-        }
-        for (size_t i = 0; i < element.get_function_values<Auxiliary>().size(); ++i)
-        {
-            if (i != 0)
-                out << " ";
-            write(*element.get_function_values<Auxiliary>()[i], out);
+            out << "\n" << std::string(m_indent, ' ') << "; auxiliary function value:\n" << std::string(m_indent, ' ');
+            write(*element.get_auxiliary_function_value().value(), out);
         }
 
         m_indent -= m_add_indent;

@@ -82,20 +82,17 @@ ConjunctiveEffectImpl::ConjunctiveEffectImpl(Index index,
                                              VariableList parameters,
                                              LiteralList<Fluent> effects,
                                              NumericEffectList<Fluent> fluent_numeric_effects,
-                                             NumericEffectList<Auxiliary> auxiliary_numeric_effects) :
+                                             std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect) :
     m_index(index),
     m_parameters(std::move(parameters)),
     m_literals(std::move(effects)),
     m_fluent_numeric_effects(std::move(fluent_numeric_effects)),
-    m_auxiliary_numeric_effects(std::move(auxiliary_numeric_effects))
+    m_auxiliary_numeric_effect(std::move(auxiliary_numeric_effect))
 {
     assert(is_all_unique(m_literals));
     assert(std::is_sorted(m_literals.begin(), m_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
     assert(std::is_sorted(m_fluent_numeric_effects.begin(),
                           m_fluent_numeric_effects.end(),
-                          [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
-    assert(std::is_sorted(m_auxiliary_numeric_effects.begin(),
-                          m_auxiliary_numeric_effects.end(),
                           [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); }));
 }
 
@@ -105,25 +102,9 @@ const VariableList& ConjunctiveEffectImpl::get_parameters() const { return m_par
 
 const LiteralList<Fluent>& ConjunctiveEffectImpl::get_literals() const { return m_literals; }
 
-template<DynamicFunctionTag F>
-const NumericEffectList<F>& ConjunctiveEffectImpl::get_numeric_effects() const
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_numeric_effects;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_numeric_effects;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
+const NumericEffectList<Fluent>& ConjunctiveEffectImpl::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
 
-template const NumericEffectList<Fluent>& ConjunctiveEffectImpl::get_numeric_effects() const;
-template const NumericEffectList<Auxiliary>& ConjunctiveEffectImpl::get_numeric_effects() const;
+const std::optional<NumericEffect<Auxiliary>>& ConjunctiveEffectImpl::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
 
 /**
  * Type 3 effect

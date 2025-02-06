@@ -280,7 +280,7 @@ public:
     ConjunctiveEffect get_or_create_conjunctive_effect(VariableList parameters,
                                                        LiteralList<Fluent> effects,
                                                        NumericEffectList<Fluent> fluent_numeric_effects,
-                                                       NumericEffectList<Auxiliary> auxiliary_numeric_effects);
+                                                       std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect);
 
     /// @brief Get or create a universal conditional simple effect for the given parameters.
     ConditionalEffect get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect);
@@ -329,7 +329,7 @@ public:
                                 PredicateList<Derived> derived_predicates,
                                 FunctionSkeletonList<Static> static_functions,
                                 FunctionSkeletonList<Fluent> fluent_functions,
-                                FunctionSkeletonList<Auxiliary> auxiliary_functions,
+                                std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function,
                                 ActionList actions,
                                 AxiomList axioms);
 
@@ -344,7 +344,7 @@ public:
                                   GroundLiteralList<Fluent> fluent_initial_literals,
                                   GroundFunctionValueList<Static> static_function_values,
                                   GroundFunctionValueList<Fluent> fluent_function_values,
-                                  GroundFunctionValueList<Auxiliary> auxiliary_function_values,
+                                  std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                                   GroundLiteralList<Static> static_goal_condition,
                                   GroundLiteralList<Fluent> fluent_goal_condition,
                                   GroundLiteralList<Derived> derived_goal_condition,

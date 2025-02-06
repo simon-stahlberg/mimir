@@ -27,6 +27,7 @@
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
+#include "mimir/search/metric.hpp"
 
 namespace mimir
 {
@@ -44,12 +45,11 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
     m_applied_positive_effect_atoms(),
     m_applied_negative_effect_atoms(),
     m_state_fluent_atoms(),
-    m_state_derived_atoms(),
-    m_state_auxiliary_numeric_variables()
+    m_state_derived_atoms()
 {
 }
 
-std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_initial_state()
+State StateRepository::get_or_create_initial_state()
 {
     const auto problem = m_axiom_evaluator->get_axiom_grounder()->get_problem();
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_function_to_value<Fluent>());
@@ -79,8 +79,7 @@ static void update_state_numeric_variables_ptr(const FlatDoubleList& state_numer
     state_numeric_variables_ptr = &state_numeric_variables;
 }
 
-std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms,
-                                                                             const FlatDoubleList& fluent_numeric_variables)
+State StateRepository::get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables)
 {
     // Index
     auto& state_index = m_state_builder.get_index();
@@ -101,7 +100,6 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
 
     // Numeric variables
     auto& dense_fluent_numeric_variables = m_dense_state_builder.get_numeric_variables();
-    m_state_auxiliary_numeric_variables.clear();
     auto& state_fluent_numeric_variables_ptr = m_state_builder.get_numeric_variables();
     state_fluent_numeric_variables_ptr = nullptr;
 
@@ -115,9 +113,8 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
 
     /* 2.1 Numeric state variables */
     dense_fluent_numeric_variables = fluent_numeric_variables;
-    m_state_auxiliary_numeric_variables = m_axiom_evaluator->get_problem()->get_function_to_value<Auxiliary>();
+
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_fluent_numeric_variables);
-    const auto [auxiliary_numeric_iter, auxiliary_numeric_inserted] = m_auxiliary_numeric_variables_set.insert(m_state_auxiliary_numeric_variables);
 
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
 
@@ -139,7 +136,7 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
         auto state_iter = m_states.find(m_state_builder);
         if (state_iter != m_states.end())
         {
-            return { state_iter->get(), auxiliary_numeric_iter->get() };
+            return state_iter->get();
         }
     }
 
@@ -161,22 +158,60 @@ std::pair<State, const FlatDoubleList*> StateRepository::get_or_create_state(con
     }
 
     // Cache and return the extended state.
-    return { m_states.insert(m_state_builder).first->get(), auxiliary_numeric_iter->get() };
+    return m_states.insert(m_state_builder).first->get();
 }
 
-std::pair<State, const FlatDoubleList*>
-StateRepository::get_or_create_successor_state(State state, GroundAction action, const FlatDoubleList& auxiliary_numeric_state_variables)
+std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value)
 {
     DenseState::translate(state, m_dense_state_builder);
 
-    return get_or_create_successor_state(m_dense_state_builder, action, auxiliary_numeric_state_variables);
+    return get_or_create_successor_state(m_dense_state_builder, action, state_metric_value);
 }
 
-template<DynamicFunctionTag F>
-static void collect_applied_numeric_effects(const GroundNumericEffectList<F>& numeric_effects,
-                                            const FlatDoubleList& state_fluent_numeric_variables,
-                                            const FlatDoubleList& state_auxiliary_numeric_variables,
-                                            FlatDoubleList& ref_numeric_variables)
+static void apply_numeric_effect(const std::pair<loki::AssignOperatorEnum, ContinuousCost>& numeric_effect, ContinuousCost& ref_value)
+{
+    const auto [assign_operator, value] = numeric_effect;
+
+    assert(assign_operator == loki::AssignOperatorEnum::ASSIGN || ref_value != UNDEFINED_CONTINUOUS_COST);
+
+    switch (assign_operator)
+    {
+        case loki::AssignOperatorEnum::ASSIGN:
+        {
+            ref_value = value;
+            break;
+        }
+        case loki::AssignOperatorEnum::INCREASE:
+        {
+            ref_value += value;
+            break;
+        }
+        case loki::AssignOperatorEnum::DECREASE:
+        {
+            ref_value -= value;
+            break;
+        }
+        case loki::AssignOperatorEnum::SCALE_UP:
+        {
+            ref_value *= value;
+            break;
+        }
+        case loki::AssignOperatorEnum::SCALE_DOWN:
+        {
+            assert(value != 0);
+            ref_value /= value;
+            break;
+        }
+        default:
+        {
+            throw std::logic_error("apply_numeric_effect(numeric_effect, ref_value): Unexpected loki::AssignOperatorEnum.");
+        }
+    }
+}
+
+static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList<Fluent>& numeric_effects,
+                                                   const FlatDoubleList& numeric_variables,
+                                                   FlatDoubleList& ref_numeric_variables)
 {
     for (const auto& numeric_effect : numeric_effects)
     {
@@ -185,32 +220,42 @@ static void collect_applied_numeric_effects(const GroundNumericEffectList<F>& nu
         {
             ref_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
         }
-        ref_numeric_variables[index] = evaluate(numeric_effect, state_fluent_numeric_variables, state_auxiliary_numeric_variables);
+        const auto assign_operator_and_value = evaluate(numeric_effect, numeric_variables);
+
+        apply_numeric_effect(assign_operator_and_value, ref_numeric_variables[index]);
     }
+}
+
+static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<Auxiliary>& numeric_effect,
+                                                      const FlatDoubleList& numeric_variables,
+                                                      ContinuousCost& ref_successor_state_metric_score)
+{
+    const auto assign_operator_and_value = evaluate(numeric_effect, numeric_variables);
+    assert(assign_operator_and_value.second != UNDEFINED_CONTINUOUS_COST);
+
+    apply_numeric_effect(assign_operator_and_value, ref_successor_state_metric_score);
 }
 
 static void apply_action_effects(GroundAction action,
                                  const FlatDoubleList& state_fluent_numeric_variables,
-                                 const FlatDoubleList& state_auxiliary_numeric_variables,
                                  Problem problem,
                                  const DenseState& dense_state,
                                  FlatBitset& ref_dense_fluent_atoms,
                                  FlatBitset& ref_negative_applied_effects,
                                  FlatBitset& ref_positive_applied_effects,
                                  FlatDoubleList& ref_fluent_numeric_variables,
-                                 FlatDoubleList& ref_auxiliary_numeric_variables)
+                                 ContinuousCost& ref_successor_state_metric_score)
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
-    collect_applied_numeric_effects(conjunctive_effect.get_numeric_effects<Fluent>(),
-                                    state_fluent_numeric_variables,
-                                    state_auxiliary_numeric_variables,
-                                    ref_fluent_numeric_variables);
-    collect_applied_numeric_effects(conjunctive_effect.get_numeric_effects<Auxiliary>(),
-                                    state_fluent_numeric_variables,
-                                    state_auxiliary_numeric_variables,
-                                    ref_auxiliary_numeric_variables);
+    collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(), state_fluent_numeric_variables, ref_fluent_numeric_variables);
+    if (conjunctive_effect.get_auxiliary_numeric_effect().has_value())
+    {
+        collect_applied_auxiliary_numeric_effects(conjunctive_effect.get_auxiliary_numeric_effect().value(),
+                                                  state_fluent_numeric_variables,
+                                                  ref_successor_state_metric_score);
+    }
 
     for (const auto& conditional_effect : action->get_conditional_effects())
     {
@@ -218,24 +263,33 @@ static void apply_action_effects(GroundAction action,
         {
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
-            collect_applied_numeric_effects(conditional_effect.get_conjunctive_effect().get_numeric_effects<Fluent>(),
-                                            state_fluent_numeric_variables,
-                                            state_auxiliary_numeric_variables,
-                                            ref_fluent_numeric_variables);
-            collect_applied_numeric_effects(conditional_effect.get_conjunctive_effect().get_numeric_effects<Auxiliary>(),
-                                            state_fluent_numeric_variables,
-                                            state_auxiliary_numeric_variables,
-                                            ref_auxiliary_numeric_variables);
+            collect_applied_fluent_numeric_effects(conditional_effect.get_conjunctive_effect().get_fluent_numeric_effects(),
+                                                   state_fluent_numeric_variables,
+                                                   ref_fluent_numeric_variables);
+            if (conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().has_value())
+            {
+                collect_applied_auxiliary_numeric_effects(conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().value(),
+                                                          state_fluent_numeric_variables,
+                                                          ref_successor_state_metric_score);
+            }
         }
     }
 
+    // Update propositional state atoms.
     ref_dense_fluent_atoms -= ref_negative_applied_effects;
     ref_dense_fluent_atoms |= ref_positive_applied_effects;
+
+    // Update metric in case of a fluent one.
+    if (!problem->get_domain()->get_auxiliary_function().has_value())
+    {
+        ref_successor_state_metric_score = evaluate(problem->get_optimization_metric()->get_function_expression(), ref_fluent_numeric_variables);
+    }
 }
 
-std::pair<State, const FlatDoubleList*>
-StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action, const FlatDoubleList& auxiliary_numeric_state_variables)
+std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
 {
+    const auto problem = m_axiom_evaluator->get_problem();
+
     m_applied_negative_effect_atoms.unset_all();
     m_applied_positive_effect_atoms.unset_all();
 
@@ -256,9 +310,10 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
 
     // Numeric variables
     auto& dense_fluent_numeric_variables = dense_state.get_numeric_variables();
-    m_state_auxiliary_numeric_variables = auxiliary_numeric_state_variables;
     auto& state_fluent_numeric_variables_ptr = m_state_builder.get_numeric_variables();
     state_fluent_numeric_variables_ptr = nullptr;
+
+    auto successor_state_metric_value = state_metric_value;
 
     /* 1. Set the state index. */
     {
@@ -267,17 +322,15 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
 
     /* 2. Apply action effects to construct non-extended state. */
 
-    // TODO(numeric): add error checking when numeric values change multiple times?
     apply_action_effects(action,
                          dense_fluent_numeric_variables,
-                         m_state_auxiliary_numeric_variables,
-                         m_axiom_evaluator->get_axiom_grounder()->get_problem(),
+                         problem,
                          dense_state,
                          dense_fluent_atoms,
                          m_applied_negative_effect_atoms,
                          m_applied_positive_effect_atoms,
                          dense_fluent_numeric_variables,
-                         m_state_auxiliary_numeric_variables);
+                         successor_state_metric_value);
 
     update_reached_fluent_atoms(dense_fluent_atoms, m_reached_fluent_atoms);
 
@@ -289,13 +342,11 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
     const auto [fluent_numeric_iter, fluent_numeric_inserted] = m_fluent_numeric_variables_set.insert(dense_fluent_numeric_variables);
     update_state_numeric_variables_ptr(**fluent_numeric_iter, state_fluent_numeric_variables_ptr);
 
-    const auto [auxiliary_numeric_iter, auxiliary_numeric_inserted] = m_auxiliary_numeric_variables_set.insert(m_state_auxiliary_numeric_variables);
-
     // Check if non-extended state exists in cache
     const auto state_iter = m_states.find(m_state_builder);
     if (state_iter != m_states.end())
     {
-        return { state_iter->get(), auxiliary_numeric_iter->get() };
+        return { state_iter->get(), successor_state_metric_value };
     }
 
     /* 3. If necessary, apply axioms to construct extended state. */
@@ -316,7 +367,7 @@ StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAc
     }
 
     // Cache and return the extended state.
-    return { m_states.insert(m_state_builder).first->get(), auxiliary_numeric_iter->get() };
+    return { m_states.insert(m_state_builder).first->get(), successor_state_metric_value };
 }
 
 Problem StateRepository::get_problem() const { return m_axiom_evaluator->get_problem(); }

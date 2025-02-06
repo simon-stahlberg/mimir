@@ -310,15 +310,14 @@ PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_o
 ConjunctiveEffect PDDLRepositories::get_or_create_conjunctive_effect(VariableList parameters,
                                                                      LiteralList<Fluent> effects,
                                                                      NumericEffectList<Fluent> fluent_numeric_effects,
-                                                                     NumericEffectList<Auxiliary> auxiliary_numeric_effects)
+                                                                     std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect)
 {
     /* Canonize before uniqueness test. */
     std::sort(effects.begin(), effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_numeric_effects.begin(), fluent_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(auxiliary_numeric_effects.begin(), auxiliary_numeric_effects.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
     return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveEffectImpl> {})
-        .get_or_create(std::move(parameters), std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effects));
+        .get_or_create(std::move(parameters), std::move(effects), std::move(fluent_numeric_effects), std::move(auxiliary_numeric_effect));
 }
 
 ConditionalEffect PDDLRepositories::get_or_create_conditional_effect(ConjunctiveCondition conjunctive_condition, ConjunctiveEffect conjunctive_effect)
@@ -418,7 +417,7 @@ Domain PDDLRepositories::get_or_create_domain(std::optional<fs::path> filepath,
                                               PredicateList<Derived> derived_predicates,
                                               FunctionSkeletonList<Static> static_functions,
                                               FunctionSkeletonList<Fluent> fluent_functions,
-                                              FunctionSkeletonList<Auxiliary> auxiliary_functions,
+                                              std::optional<FunctionSkeleton<Auxiliary>> auxiliary_function,
                                               ActionList actions,
                                               AxiomList axioms)
 {
@@ -429,7 +428,6 @@ Domain PDDLRepositories::get_or_create_domain(std::optional<fs::path> filepath,
     std::sort(derived_predicates.begin(), derived_predicates.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_functions.begin(), static_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_functions.begin(), fluent_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(auxiliary_functions.begin(), auxiliary_functions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(actions.begin(), actions.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(axioms.begin(), axioms.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
@@ -443,7 +441,7 @@ Domain PDDLRepositories::get_or_create_domain(std::optional<fs::path> filepath,
                        std::move(derived_predicates),
                        std::move(static_functions),
                        std::move(fluent_functions),
-                       std::move(auxiliary_functions),
+                       std::move(auxiliary_function),
                        std::move(actions),
                        std::move(axioms));
 }
@@ -458,7 +456,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                                                 GroundLiteralList<Fluent> fluent_initial_literals,
                                                 GroundFunctionValueList<Static> static_function_values,
                                                 GroundFunctionValueList<Fluent> fluent_function_values,
-                                                GroundFunctionValueList<Auxiliary> auxiliary_function_values,
+                                                std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                                                 GroundLiteralList<Static> static_goal_condition,
                                                 GroundLiteralList<Fluent> fluent_goal_condition,
                                                 GroundLiteralList<Derived> derived_goal_condition,
@@ -473,7 +471,6 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
     std::sort(fluent_initial_literals.begin(), fluent_initial_literals.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_function_values.begin(), static_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_function_values.begin(), fluent_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
-    std::sort(auxiliary_function_values.begin(), auxiliary_function_values.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(static_goal_condition.begin(), static_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(fluent_goal_condition.begin(), fluent_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
     std::sort(derived_goal_condition.begin(), derived_goal_condition.end(), [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
@@ -491,7 +488,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                        std::move(fluent_initial_literals),
                        std::move(static_function_values),
                        std::move(fluent_function_values),
-                       std::move(auxiliary_function_values),
+                       std::move(auxiliary_function_value),
                        std::move(static_goal_condition),
                        std::move(fluent_goal_condition),
                        std::move(derived_goal_condition),

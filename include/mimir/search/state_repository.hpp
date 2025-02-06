@@ -38,8 +38,6 @@ private:
     FlatIndexListSet m_fluent_atoms_set;               ///< Stores all created fluent atom lists.
     FlatIndexListSet m_derived_atoms_set;              ///< Stores all created derived atom lists.
     FlatDoubleListSet m_fluent_numeric_variables_set;  ///< Stores all created fluent numeric variable lists.
-    // TODO: This should be move out of the class, since it does not define the state.
-    FlatDoubleListSet m_auxiliary_numeric_variables_set;  ///< Stores all created auxiliary numeric variable lists.
 
     FlatBitset m_reached_fluent_atoms;   ///< Stores all encountered fluent atoms.
     FlatBitset m_reached_derived_atoms;  ///< Stores all encountered derived atoms.
@@ -53,7 +51,6 @@ private:
 
     FlatIndexList m_state_fluent_atoms;
     FlatIndexList m_state_derived_atoms;
-    FlatDoubleList m_state_auxiliary_numeric_variables;
 
 public:
     explicit StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator);
@@ -65,31 +62,30 @@ public:
 
     /// @brief Get or create the extended initial state of the underlying problem.
     /// @return the extended initial state.
-    std::pair<State, const FlatDoubleList*> get_or_create_initial_state();
+    State get_or_create_initial_state();
 
     /// @brief Get or create the extended state for a given set of ground `atoms`.
     /// @param atoms the ground atoms.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended state.
-    std::pair<State, const FlatDoubleList*> get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables);
+    State get_or_create_state(const GroundAtomList<Fluent>& atoms, const FlatDoubleList& fluent_numeric_variables);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given `state`.
     /// @param state is the state.
     /// @param action is the ground action.
+    /// @param state_metric_value is the metric value of the state.
     /// @param workspace is the workspace containing preallocated memory.
-    /// @return the extended successor state and all auxiliary ground functions values.
-    std::pair<State, const FlatDoubleList*>
-    get_or_create_successor_state(State state, GroundAction action, const FlatDoubleList& auxiliary_numeric_state_variables);
+    /// @return the extended successor state and its metric value.
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state, GroundAction action, ContinuousCost state_metric_value);
 
     /// @brief Get or create the extended successor state when applying the given ground `action` in the given state identifed by the `state_fluent_atoms` and
     /// `derived_atoms`. The input parameters `dense_state` are modified, meaning that side effects have to be taken into account.
-    /// @param state_fluent_atoms are the fluent atoms of the state
-    /// @param state_derived_atoms are the derived atoms of the state
+    /// @param dense_state is the dense state.
     /// @param action is the ground action.
+    /// @param state_metric_value is the metric value of the dense state.
     /// @param workspace is the workspace containing preallocated memory.
-    /// @return the extended successor state and all auxiliary ground functions values.
-    std::pair<State, const FlatDoubleList*>
-    get_or_create_successor_state(DenseState& dense_state, GroundAction action, const FlatDoubleList& auxiliary_numeric_state_variables);
+    /// @return the extended successor state and its metric value.
+    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value);
 
     /**
      * Getters

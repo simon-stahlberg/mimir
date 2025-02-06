@@ -75,7 +75,7 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 {
     assert(applicable_action_generator && state_repository);
 
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state().first;
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
     const auto event_handler = (event_handler_.has_value()) ? event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     const auto goal_strategy =
         (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
@@ -154,12 +154,7 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
             auto plan_actions = GroundActionList {};
             auto state_trajectory = IndexList {};
             extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
-            extract_ground_action_sequence(start_state,
-                                           problem->get_function_to_value<Auxiliary>(),
-                                           state_trajectory,
-                                           *applicable_action_generator,
-                                           *state_repository,
-                                           plan_actions);
+            extract_ground_action_sequence(start_state, 0, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
             result.goal_state = state;
             result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
             result.status = SearchStatus::SOLVED;
@@ -174,8 +169,8 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
             /* Open state. */
-            const auto [successor_state, successor_auxiliary_numeric_values] =
-                state_repository->get_or_create_successor_state(state, action, problem->get_function_to_value<Auxiliary>());
+            const auto [successor_state, successor_state_metric_value] =
+                state_repository->get_or_create_successor_state(state, action, get_g_value(search_node));
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
 
             event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);

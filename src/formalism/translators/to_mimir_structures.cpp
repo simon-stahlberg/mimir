@@ -718,9 +718,9 @@ static NumericEffect<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton
 
 std::tuple<ConjunctiveEffect, ConditionalEffectList> ToMimirStructures::translate_lifted(loki::Effect effect, const VariableList& parameters)
 {
-    using ConjunctiveEffectData = std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, NumericEffectList<Auxiliary>>;
+    using ConjunctiveEffectData = std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, std::optional<NumericEffect<Auxiliary>>>;
     using ConditionalEffectData =
-        std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, NumericEffectList<Auxiliary>>>;
+        std::unordered_map<ConjunctiveCondition, std::tuple<LiteralList<Fluent>, NumericEffectList<Fluent>, std::optional<NumericEffect<Auxiliary>>>>;
 
     const auto translate_effect_func =
         [&](loki::Effect effect, ConjunctiveEffectData& ref_conjunctive_effect_data, ConditionalEffectData& ref_conditional_effect_data)
@@ -746,7 +746,7 @@ std::tuple<ConjunctiveEffect, ConditionalEffectList> ToMimirStructures::translat
         }
 
         // Fetch container to store the effects
-        auto& [data_fluent_literals, data_fluent_numeric_effects, data_auxiliary_numeric_effects] =
+        auto& [data_fluent_literals, data_fluent_numeric_effects, data_auxiliary_numeric_effect] =
             (conjunctive_condition) ? ref_conditional_effect_data[conjunctive_condition] : ref_conjunctive_effect_data;
 
         /* 3. Parse effect part */
@@ -779,10 +779,10 @@ std::tuple<ConjunctiveEffect, ConditionalEffectList> ToMimirStructures::translat
                     }
                     else if constexpr (std::is_same_v<T, Function<Auxiliary>>)
                     {
-                        data_auxiliary_numeric_effects.push_back(
-                            m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>((*effect_numeric)->get_assign_operator(),
-                                                                                        function,
-                                                                                        function_expression));
+                        assert(!data_auxiliary_numeric_effect.has_value());
+                        data_auxiliary_numeric_effect = m_pddl_repositories.get_or_create_numeric_effect<Auxiliary>((*effect_numeric)->get_assign_operator(),
+                                                                                                                    function,
+                                                                                                                    function_expression);
                     }
                     else if constexpr (std::is_same_v<T, Function<Static>>)
                     {
@@ -871,10 +871,8 @@ Action ToMimirStructures::translate_lifted(loki::Action action)
     else
     {
         // TODO: actions without effects are useless....
-        conjunctive_effect = m_pddl_repositories.get_or_create_conjunctive_effect(translated_parameters,
-                                                                                  LiteralList<Fluent> {},
-                                                                                  NumericEffectList<Fluent> {},
-                                                                                  NumericEffectList<Auxiliary> {});
+        conjunctive_effect =
+            m_pddl_repositories.get_or_create_conjunctive_effect(translated_parameters, LiteralList<Fluent> {}, NumericEffectList<Fluent> {}, std::nullopt);
     }
 
     return m_pddl_repositories.get_or_create_action(action->get_name(),
@@ -944,11 +942,11 @@ Domain ToMimirStructures::translate_lifted(loki::Domain domain)
 
     auto static_functions = FunctionSkeletonList<Static> {};
     auto fluent_functions = FunctionSkeletonList<Fluent> {};
-    auto auxiliary_functions = FunctionSkeletonList<Auxiliary> {};
+    auto auxiliary_function = std::optional<FunctionSkeleton<Auxiliary>> { std::nullopt };
     for (const auto& static_or_fluent_or_auxiliary_function : translate_common(domain->get_functions()))
     {
         std::visit(
-            [&static_functions, &fluent_functions, &auxiliary_functions](auto&& arg)
+            [&static_functions, &fluent_functions, &auxiliary_function](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, FunctionSkeleton<Static>>)
@@ -961,7 +959,8 @@ Domain ToMimirStructures::translate_lifted(loki::Domain domain)
                 }
                 else if constexpr (std::is_same_v<T, FunctionSkeleton<Auxiliary>>)
                 {
-                    auxiliary_functions.push_back(arg);
+                    assert(!auxiliary_function.has_value());
+                    auxiliary_function = arg;
                 }
                 else
                 {
@@ -983,7 +982,7 @@ Domain ToMimirStructures::translate_lifted(loki::Domain domain)
                                                     uniquify_elements(derived_predicates),
                                                     uniquify_elements(static_functions),
                                                     uniquify_elements(fluent_functions),
-                                                    uniquify_elements(auxiliary_functions),
+                                                    auxiliary_function,
                                                     uniquify_elements(actions),
                                                     uniquify_elements(axioms));
 }
@@ -1323,11 +1322,11 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
 
     auto static_function_values = GroundFunctionValueList<Static> {};
     auto fluent_function_values = GroundFunctionValueList<Fluent> {};
-    auto auxiliary_function_values = GroundFunctionValueList<Auxiliary> {};
+    auto auxiliary_function_value = std::optional<GroundFunctionValue<Auxiliary>> {};
     for (const auto static_or_fluent_or_auxiliary_function_value : translate_grounded(problem->get_function_values()))
     {
         std::visit(
-            [&static_function_values, &fluent_function_values, &auxiliary_function_values](auto&& arg)
+            [&static_function_values, &fluent_function_values, &auxiliary_function_value](auto&& arg)
             {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr (std::is_same_v<T, GroundFunctionValue<Static>>)
@@ -1340,7 +1339,8 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
                 }
                 else if constexpr (std::is_same_v<T, GroundFunctionValue<Auxiliary>>)
                 {
-                    auxiliary_function_values.push_back(arg);
+                    assert(!auxiliary_function_value.has_value());
+                    auxiliary_function_value = arg;
                 }
                 else
                 {
@@ -1383,7 +1383,7 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
                                                      uniquify_elements(fluent_initial_literals),
                                                      uniquify_elements(static_function_values),
                                                      uniquify_elements(fluent_function_values),
-                                                     uniquify_elements(auxiliary_function_values),
+                                                     auxiliary_function_value,
                                                      uniquify_elements(static_goal_literals),
                                                      uniquify_elements(fluent_goal_literals),
                                                      uniquify_elements(derived_goal_literals),

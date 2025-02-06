@@ -37,6 +37,9 @@ private:
     Action m_action;
 
     template<DynamicFunctionTag F>
+    bool is_valid_dynamic_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+
+    template<DynamicFunctionTag F>
     bool is_valid_dynamic_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
 
 public:

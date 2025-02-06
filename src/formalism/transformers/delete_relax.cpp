@@ -122,12 +122,12 @@ ConjunctiveEffect DeleteRelaxTransformer::transform_impl(ConjunctiveEffect effec
 {
     auto fluent_literals = filter_positive_literals(this->transform(effect->get_literals()));
     auto fluent_numeric_effects = NumericEffectList<Fluent> {};
-    auto auxiliary_numeric_effects = NumericEffectList<Auxiliary> {};
+    auto auxiliary_numeric_effect = std::optional<NumericEffect<Auxiliary>> { std::nullopt };
 
     return this->m_pddl_repositories.get_or_create_conjunctive_effect(effect->get_parameters(),
                                                                       std::move(fluent_literals),
                                                                       std::move(fluent_numeric_effects),
-                                                                      std::move(auxiliary_numeric_effects));
+                                                                      std::move(auxiliary_numeric_effect));
 }
 
 ConditionalEffect DeleteRelaxTransformer::transform_impl(ConditionalEffect effect)

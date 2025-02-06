@@ -86,45 +86,13 @@ FlatIndexList& GroundConjunctiveEffect::get_negative_effects() { return m_negati
 
 const FlatIndexList& GroundConjunctiveEffect::get_negative_effects() const { return m_negative_effects; }
 
-template<DynamicFunctionTag F>
-GroundNumericEffectList<F>& GroundConjunctiveEffect::get_numeric_effects()
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_numeric_effects;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_numeric_effects;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
+GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_fluent_numeric_effects() { return m_fluent_numeric_effects; }
 
-template GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_numeric_effects<Fluent>();
-template GroundNumericEffectList<Auxiliary>& GroundConjunctiveEffect::get_numeric_effects<Auxiliary>();
+const GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
 
-template<DynamicFunctionTag F>
-const GroundNumericEffectList<F>& GroundConjunctiveEffect::get_numeric_effects() const
-{
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        return m_fluent_numeric_effects;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        return m_auxiliary_numeric_effects;
-    }
-    else
-    {
-        static_assert(dependent_false<F>::value, "Missing implementation for DynamicFunctionTag.");
-    }
-}
+cista::optional<GroundNumericEffect<Auxiliary>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() { return m_auxiliary_numeric_effect; }
 
-template const GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_numeric_effects<Fluent>() const;
-template const GroundNumericEffectList<Auxiliary>& GroundConjunctiveEffect::get_numeric_effects<Auxiliary>() const;
+const cista::optional<GroundNumericEffect<Auxiliary>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
 
 /* GroundConditionalEffect */
 
@@ -143,61 +111,13 @@ const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect()
  */
 
 template<DynamicFunctionTag F>
-ContinuousCost evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables)
+std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    auto old_value = ContinuousCost(0);
-    if constexpr (std::is_same_v<F, Fluent>)
-    {
-        old_value = (effect.get_function()->get_index() < fluent_numeric_variables.size()) ? fluent_numeric_variables.at(effect.get_function()->get_index()) :
-                                                                                             UNDEFINED_CONTINUOUS_COST;
-    }
-    else if constexpr (std::is_same_v<F, Auxiliary>)
-    {
-        old_value = (effect.get_function()->get_index() < auxiliary_numeric_variables.size()) ?
-                        auxiliary_numeric_variables.at(effect.get_function()->get_index()) :
-                        UNDEFINED_CONTINUOUS_COST;
-    }
-
-    const auto new_value = evaluate(effect.get_function_expression().get(), fluent_numeric_variables, auxiliary_numeric_variables);
-
-    if ((new_value == UNDEFINED_CONTINUOUS_COST)
-        || (old_value == UNDEFINED_CONTINUOUS_COST && effect.get_assign_operator() != loki::AssignOperatorEnum::ASSIGN))
-    {
-        return UNDEFINED_CONTINUOUS_COST;
-    }
-
-    switch (effect.get_assign_operator())
-    {
-        case loki::AssignOperatorEnum::ASSIGN:
-        {
-            return new_value;
-        }
-        case loki::AssignOperatorEnum::DECREASE:
-        {
-            return old_value - new_value;
-        }
-        case loki::AssignOperatorEnum::INCREASE:
-        {
-            return old_value + new_value;
-        }
-        case loki::AssignOperatorEnum::SCALE_DOWN:
-        {
-            return old_value / new_value;
-        }
-        case loki::AssignOperatorEnum::SCALE_UP:
-        {
-            return old_value * new_value;
-        }
-        default:
-        {
-            throw std::logic_error("evaluate(effect, fluent_numeric_variables, auxiliary_numeric_variables): Unexpected loki::AssignOperatorEnum.");
-        }
-    }
+    return { effect.get_assign_operator(), evaluate(effect.get_function_expression().get(), fluent_numeric_variables) };
 }
 
-template double evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
-template double
-evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
+template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables);
+template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Pretty printing
@@ -217,13 +137,12 @@ template std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<Au
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data)
 {
-    // TODO(numerical): add numeric effects
     const auto& [conjunctive_effect, pddl_repositories] = data;
 
     const auto& positive_effect_bitset = conjunctive_effect.get_positive_effects();
     const auto& negative_effect_bitset = conjunctive_effect.get_negative_effects();
-    const auto& fluent_numeric_effects = conjunctive_effect.get_numeric_effects<Fluent>();
-    const auto& auxiliary_numeric_effects = conjunctive_effect.get_numeric_effects<Auxiliary>();
+    const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
+    const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
 
     auto positive_simple_effects = GroundAtomList<Fluent> {};
     auto negative_simple_effects = GroundAtomList<Fluent> {};
@@ -232,7 +151,11 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEff
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
     os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects
-       << ", fluent numeric effects=" << fluent_numeric_effects << ", auxiliary numeric effects=" << auxiliary_numeric_effects;
+       << ", fluent numeric effects=" << fluent_numeric_effects;
+    if (auxiliary_numeric_effect.has_value())
+    {
+        os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();
+    }
 
     return os;
 }

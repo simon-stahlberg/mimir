@@ -109,6 +109,12 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
  * GroundConjunctiveEffect
  */
 
+template<DynamicFunctionTag F>
+static bool is_applicable(const GroundNumericEffect<F>& effect, const FlatDoubleList& fluent_numeric_variables)
+{
+    return (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+}
+
 /// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects are well-defined.
 /// @tparam F
 /// @param effects
@@ -119,7 +125,7 @@ static bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatD
 {
     for (const auto& effect : effects)
     {
-        if (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) == UNDEFINED_CONTINUOUS_COST)
+        if (!is_applicable(effect, fluent_numeric_variables))
         {
             return false;
         }
@@ -133,8 +139,9 @@ static bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatD
 /// @return
 static bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    return is_applicable(conjunctive_effect.get_numeric_effects<Fluent>(), fluent_numeric_variables)
-           && is_applicable(conjunctive_effect.get_numeric_effects<Auxiliary>(), fluent_numeric_variables);
+    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), fluent_numeric_variables)
+           && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
+               || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value(), fluent_numeric_variables));
 }
 
 bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state)

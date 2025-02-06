@@ -87,9 +87,8 @@ void ActionGrounder::ground_and_fill_vector(const NumericConstraintList& numeric
     }
 }
 
-template<DynamicFunctionTag F>
-void ActionGrounder::ground_and_fill_vector(const NumericEffectList<F>& numeric_effects,
-                                            GroundNumericEffectList<F>& ref_numeric_effects,
+void ActionGrounder::ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects,
+                                            GroundNumericEffectList<Fluent>& ref_numeric_effects,
                                             const ObjectList& binding)
 {
     for (const auto& effect : numeric_effects)
@@ -98,12 +97,16 @@ void ActionGrounder::ground_and_fill_vector(const NumericEffectList<F>& numeric_
     }
 }
 
-template void ActionGrounder::ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects,
-                                                     GroundNumericEffectList<Fluent>& ref_numeric_effects,
-                                                     const ObjectList& binding);
-template void ActionGrounder::ground_and_fill_vector(const NumericEffectList<Auxiliary>& numeric_effects,
-                                                     GroundNumericEffectList<Auxiliary>& ref_numeric_effects,
-                                                     const ObjectList& binding);
+void ActionGrounder::ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
+                                              cista::optional<GroundNumericEffect<Auxiliary>>& ref_numeric_effect,
+                                              const ObjectList& binding)
+{
+    if (numeric_effect.has_value())
+    {
+        assert(!ref_numeric_effect.has_value());
+        ref_numeric_effect = m_numeric_effect_grounder->ground(numeric_effect.value(), binding);
+    }
+}
 
 GroundAction ActionGrounder::ground(Action action, ObjectList binding)
 {
@@ -178,12 +181,12 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
     negative_effect.compress();
 
     /* Conjunctive numerical effects */
-    auto& fluent_numerical_effects = conjunctive_effect.get_numeric_effects<Fluent>();
-    auto& auxiliary_numerical_effects = conjunctive_effect.get_numeric_effects<Auxiliary>();
+    auto& fluent_numerical_effects = conjunctive_effect.get_fluent_numeric_effects();
+    auto& auxiliary_numerical_effect = conjunctive_effect.get_auxiliary_numeric_effect();
     fluent_numerical_effects.clear();
-    auxiliary_numerical_effects.clear();
-    ground_and_fill_vector(action->get_conjunctive_effect()->get_numeric_effects<Fluent>(), fluent_numerical_effects, binding);
-    ground_and_fill_vector(action->get_conjunctive_effect()->get_numeric_effects<Auxiliary>(), auxiliary_numerical_effects, binding);
+    auxiliary_numerical_effect = std::nullopt;
+    ground_and_fill_vector(action->get_conjunctive_effect()->get_fluent_numeric_effects(), fluent_numerical_effects, binding);
+    ground_and_fill_optional(action->get_conjunctive_effect()->get_auxiliary_numeric_effect(), auxiliary_numerical_effect, binding);
 
     /* Conditional effects */
     // Fetch data
@@ -270,17 +273,17 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
                                                                binding_cond_effect);
 
                     /* Numeric effect */
-                    auto& cond_fluent_numerical_effects_j = conjunctive_effect.get_numeric_effects<Fluent>();
-                    auto& cond_auxiliary_numerical_effects_j = conjunctive_effect.get_numeric_effects<Auxiliary>();
+                    auto& cond_fluent_numerical_effects_j = conjunctive_effect.get_fluent_numeric_effects();
+                    auto& cond_auxiliary_numerical_effect_j = conjunctive_effect.get_auxiliary_numeric_effect();
                     cond_fluent_numerical_effects_j.clear();
-                    cond_auxiliary_numerical_effects_j.clear();
+                    cond_auxiliary_numerical_effect_j = std::nullopt;
 
-                    ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_numeric_effects<Fluent>(),
+                    ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_fluent_numeric_effects(),
                                            cond_fluent_numerical_effects_j,
                                            binding_cond_effect);
-                    ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_numeric_effects<Auxiliary>(),
-                                           cond_auxiliary_numerical_effects_j,
-                                           binding_cond_effect);
+                    ground_and_fill_optional(lifted_cond_effect->get_conjunctive_effect()->get_auxiliary_numeric_effect(),
+                                             cond_auxiliary_numerical_effect_j,
+                                             binding_cond_effect);
                 }
             }
             else
@@ -335,15 +338,15 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
                                                            binding);
 
                 /* Numeric effect*/
-                auto& cond_fluent_numerical_effects_j = conjunctive_effect.get_numeric_effects<Fluent>();
-                auto& cond_auxiliary_numerical_effects_j = conjunctive_effect.get_numeric_effects<Auxiliary>();
+                auto& cond_fluent_numerical_effects_j = conjunctive_effect.get_fluent_numeric_effects();
+                auto& cond_auxiliary_numerical_effects_j = conjunctive_effect.get_auxiliary_numeric_effect();
                 cond_fluent_numerical_effects_j.clear();
-                cond_auxiliary_numerical_effects_j.clear();
+                cond_auxiliary_numerical_effects_j = std::nullopt;
 
-                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_numeric_effects<Fluent>(), cond_fluent_numerical_effects_j, binding);
-                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_numeric_effects<Auxiliary>(),
-                                       cond_auxiliary_numerical_effects_j,
-                                       binding);
+                ground_and_fill_vector(lifted_cond_effect->get_conjunctive_effect()->get_fluent_numeric_effects(), cond_fluent_numerical_effects_j, binding);
+                ground_and_fill_optional(lifted_cond_effect->get_conjunctive_effect()->get_auxiliary_numeric_effect(),
+                                         cond_auxiliary_numerical_effects_j,
+                                         binding);
             }
         }
     }

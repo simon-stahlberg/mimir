@@ -25,6 +25,7 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/metric.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -105,7 +106,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
-    auto [initial_state, initial_auxiliary_functions] = state_repository->get_or_create_initial_state();
+    auto initial_state = state_repository->get_or_create_initial_state();
 
     if (options.remove_if_unsolvable && !problem->static_goal_holds())
     {
@@ -155,8 +156,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
     concrete_to_abstract_state.emplace(initial_state, abstract_initial_state_index);
 
     /* Initialize search. */
-    auto lifo_queue = std::deque<std::pair<State, const FlatDoubleList*>>();
-    lifo_queue.emplace_back(initial_state, initial_auxiliary_functions);
+    auto lifo_queue = std::deque<State>();
+    lifo_queue.emplace_back(initial_state);
     auto transitions = GroundActionEdgeList {};
     auto abstract_goal_states = IndexSet {};
     auto next_abstract_state_index = Index { 1 };
@@ -166,7 +167,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
 
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
-        const auto [state, auxiliary_functions] = lifo_queue.back();
+        const auto state = lifo_queue.back();
         const auto abstract_state_index = concrete_to_abstract_state.at(state);
 
         lifo_queue.pop_back();
@@ -178,7 +179,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
 
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
-            const auto [successor_state, successor_auxiliary_functions] = state_repository->get_or_create_successor_state(state, action, *auxiliary_functions);
+            const auto [successor_state, successor_state_metric_value] = state_repository->get_or_create_successor_state(state, action, 0);
 
             // Regenerate concrete state
             const auto concrete_successor_state_exists = concrete_to_abstract_state.count(successor_state);
@@ -217,7 +218,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
                 if (options.compute_complete_abstraction_mapping)
                 {
                     concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
-                    lifo_queue.emplace_back(successor_state, successor_auxiliary_functions);
+                    lifo_queue.emplace_back(successor_state);
                 }
             }
             else
@@ -229,7 +230,7 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
                 transitions.emplace_back(transitions.size(), abstract_state_index, abstract_successor_state_index, action);
 
                 concrete_to_abstract_state.emplace(successor_state, abstract_successor_state_index);
-                lifo_queue.emplace_back(successor_state, successor_auxiliary_functions);
+                lifo_queue.emplace_back(successor_state);
             }
 
             if (concrete_to_abstract_state.size() >= options.max_num_concrete_states)

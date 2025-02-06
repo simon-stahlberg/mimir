@@ -71,7 +71,7 @@ private:
     VariableList m_parameters;
     LiteralList<Fluent> m_literals;
     NumericEffectList<Fluent> m_fluent_numeric_effects;
-    NumericEffectList<Auxiliary> m_auxiliary_numeric_effects;
+    std::optional<NumericEffect<Auxiliary>> m_auxiliary_numeric_effect;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -79,7 +79,7 @@ private:
                           VariableList parameters,
                           LiteralList<Fluent> literals,
                           NumericEffectList<Fluent> fluent_numeric_effects,
-                          NumericEffectList<Auxiliary> auxiliary_numeric_effects);
+                          std::optional<NumericEffect<Auxiliary>> auxiliary_numeric_effect);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -95,15 +95,15 @@ public:
     Index get_index() const;
     const VariableList& get_parameters() const;
     const LiteralList<Fluent>& get_literals() const;
-    template<DynamicFunctionTag F>
-    const NumericEffectList<F>& get_numeric_effects() const;
+    const NumericEffectList<Fluent>& get_fluent_numeric_effects() const;
+    const std::optional<NumericEffect<Auxiliary>>& get_auxiliary_numeric_effect() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_literals), std::as_const(m_fluent_numeric_effects), std::as_const(m_auxiliary_numeric_effects));
+        return std::forward_as_tuple(std::as_const(m_literals), std::as_const(m_fluent_numeric_effects), std::as_const(m_auxiliary_numeric_effect));
     }
 };
 

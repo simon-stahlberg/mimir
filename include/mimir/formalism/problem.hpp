@@ -38,7 +38,7 @@ private:
     GroundLiteralList<Fluent> m_fluent_initial_literals;
     GroundFunctionValueList<Static> m_static_function_values;
     GroundFunctionValueList<Fluent> m_fluent_function_values;
-    GroundFunctionValueList<Auxiliary> m_auxiliary_function_values;
+    std::optional<GroundFunctionValue<Auxiliary>> m_auxiliary_function_value;
     GroundLiteralList<Static> m_static_goal_condition;
     GroundLiteralList<Fluent> m_fluent_goal_condition;
     GroundLiteralList<Derived> m_derived_goal_condition;
@@ -61,7 +61,6 @@ private:
 
     FlatDoubleList m_static_function_to_value;
     FlatDoubleList m_fluent_function_to_value;
-    FlatDoubleList m_auxiliary_function_to_value;
 
     /* Goal */
     bool m_static_goal_holds;
@@ -100,7 +99,7 @@ private:
                 GroundLiteralList<Fluent> fluent_initial_literals,
                 GroundFunctionValueList<Static> static_function_values,
                 GroundFunctionValueList<Fluent> fluent_function_values,
-                GroundFunctionValueList<Auxiliary> auxiliary_function_values,
+                std::optional<GroundFunctionValue<Auxiliary>> auxiliary_function_value,
                 GroundLiteralList<Static> static_goal_condition,
                 GroundLiteralList<Fluent> fluent_goal_condition,
                 GroundLiteralList<Derived> derived_goal_condition,
@@ -128,8 +127,9 @@ public:
     const PredicateList<Derived>& get_derived_predicates() const;
     const GroundLiteralList<Static>& get_static_initial_literals() const;
     const GroundLiteralList<Fluent>& get_fluent_initial_literals() const;
-    template<FunctionTag F>
+    template<StaticOrFluentTag F>
     const GroundFunctionValueList<F>& get_function_values() const;
+    const std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value() const;
     template<PredicateTag P>
     const GroundLiteralList<P>& get_goal_condition() const;
     const GroundNumericConstraintList& get_numeric_goal_condition() const;
@@ -149,7 +149,7 @@ public:
                                      std::as_const(m_fluent_initial_literals),
                                      std::as_const(m_static_function_values),
                                      std::as_const(m_fluent_function_values),
-                                     std::as_const(m_auxiliary_function_values),
+                                     std::as_const(m_auxiliary_function_value),
                                      std::as_const(m_static_goal_condition),
                                      std::as_const(m_fluent_goal_condition),
                                      std::as_const(m_derived_goal_condition),
@@ -173,9 +173,9 @@ public:
 
     const GroundAtomList<Fluent>& get_fluent_initial_atoms() const;
 
-    template<FunctionTag F>
+    template<StaticOrFluentTag F>
     const FlatDoubleList& get_function_to_value() const;
-    template<FunctionTag F>
+    template<StaticOrFluentTag F>
     ContinuousCost get_function_value(GroundFunction<F> function) const;
 
     /* Goal */

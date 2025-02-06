@@ -33,7 +33,7 @@ namespace mimir
 extern SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                                         std::shared_ptr<StateRepository> state_repository,
                                         std::shared_ptr<IHeuristic> heuristic,
-                                        std::optional<std::pair<State, const FlatDoubleList*>> start_state = std::nullopt,
+                                        std::optional<State> start_state = std::nullopt,
                                         std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler = std::nullopt,
                                         std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,
                                         std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy = std::nullopt);

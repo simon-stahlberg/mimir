@@ -65,6 +65,14 @@ protected:
     /// @brief Collect information.
     ///        Default implementation recursively calls prepare.
     template<typename T>
+    void prepare_base(const std::optional<T>& element)
+    {
+        if (element.has_value())
+        {
+            self().prepare_impl(element.value());
+        }
+    }
+    template<typename T>
     void prepare_base(const T& element)
     {
         self().prepare_impl(element);
@@ -119,8 +127,8 @@ protected:
     {
         this->prepare(effect->get_parameters());
         this->prepare(effect->get_literals());
-        this->prepare(effect->get_numeric_effects<Fluent>());
-        this->prepare(effect->get_numeric_effects<Auxiliary>());
+        this->prepare(effect->get_fluent_numeric_effects());
+        this->prepare(effect->get_auxiliary_numeric_effect());
     }
     void prepare_impl(ConditionalEffect effect)
     {
@@ -216,7 +224,7 @@ protected:
         this->prepare(domain->get_predicates<Derived>());
         this->prepare(domain->get_functions<Static>());
         this->prepare(domain->get_functions<Fluent>());
-        this->prepare(domain->get_functions<Auxiliary>());
+        this->prepare(domain->get_auxiliary_function());
         this->prepare(domain->get_actions());
         this->prepare(domain->get_axioms());
     }
@@ -231,7 +239,7 @@ protected:
         this->prepare(problem->get_fluent_initial_literals());
         this->prepare(problem->get_function_values<Static>());
         this->prepare(problem->get_function_values<Fluent>());
-        this->prepare(problem->get_function_values<Auxiliary>());
+        this->prepare(problem->get_auxiliary_function_value());
         this->prepare(problem->get_goal_condition<Static>());
         this->prepare(problem->get_goal_condition<Fluent>());
         this->prepare(problem->get_goal_condition<Derived>());
@@ -264,6 +272,11 @@ protected:
 
     /// @brief Apply problem translation.
     ///        Default behavior reparses it into the pddl_repositories.
+    template<typename T>
+    auto transform_base(const std::optional<T>& element)
+    {
+        return element.has_value() ? this->transform(element.value()) : std::optional<T> { std::nullopt };
+    }
     template<typename T>
     auto transform_base(const T& element)
     {
@@ -339,8 +352,8 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_conjunctive_effect(this->transform(effect->get_parameters()),
                                                                           this->transform(effect->get_literals()),
-                                                                          this->transform(effect->get_numeric_effects<Fluent>()),
-                                                                          this->transform(effect->get_numeric_effects<Auxiliary>()));
+                                                                          this->transform(effect->get_fluent_numeric_effects()),
+                                                                          this->transform(effect->get_auxiliary_numeric_effect()));
     }
     ConditionalEffect transform_impl(ConditionalEffect effect)
     {
@@ -469,7 +482,7 @@ protected:
                                                               this->transform(domain->get_predicates<Derived>()),
                                                               this->transform(domain->get_functions<Static>()),
                                                               this->transform(domain->get_functions<Fluent>()),
-                                                              this->transform(domain->get_functions<Auxiliary>()),
+                                                              this->transform(domain->get_auxiliary_function()),
                                                               this->transform(domain->get_actions()),
                                                               this->transform(domain->get_axioms()));
     }
@@ -491,7 +504,7 @@ protected:
                                                                this->transform(problem->get_fluent_initial_literals()),
                                                                this->transform(problem->get_function_values<Static>()),
                                                                this->transform(problem->get_function_values<Fluent>()),
-                                                               this->transform(problem->get_function_values<Auxiliary>()),
+                                                               this->transform(problem->get_auxiliary_function_value()),
                                                                this->transform(problem->get_goal_condition<Static>()),
                                                                this->transform(problem->get_goal_condition<Fluent>()),
                                                                this->transform(problem->get_goal_condition<Derived>()),
