@@ -33,6 +33,10 @@ namespace mimir
  * Assignment
  */
 
+const Assignment Assignment::empty_assignment = Assignment();
+
+Assignment::Assignment() : first_index(MAX_VALUE), first_object(MAX_VALUE), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
+
 Assignment::Assignment(Index index, Index object) : first_index(index), first_object(object), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
 
 Assignment::Assignment(Index first_index, Index first_object, Index second_index, Index second_object) :
@@ -191,6 +195,13 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
         const auto& function_skeleton = function->get_function_skeleton();
         const auto& arguments = function->get_objects();
         auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
+
+        assert(get_assignment_rank(Assignment::empty_assignment, arity, m_num_objects) == 0);  // empty assignment is always 0
+        auto& empty_assignment_bound = assignment_set[0];
+        empty_assignment_bound.lower =
+            (empty_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.lower, value);
+        empty_assignment_bound.upper =
+            (empty_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.upper, value);
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {

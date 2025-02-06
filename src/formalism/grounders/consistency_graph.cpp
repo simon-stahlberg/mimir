@@ -322,15 +322,30 @@ static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(Func
     const auto function = fexpr->get_function();
     const auto function_skeleton = function->get_function_skeleton();
     const auto& function_remapping = remapping.at(function);
+
+    /* Remap the assignment to the function terms. */
     auto remapped_assignment = assignment;
     if (remapped_assignment.first_index != -1)
     {
         remapped_assignment.first_index = function_remapping.at(remapped_assignment.first_index);
+        if (remapped_assignment.first_index == -1)
+        {
+            remapped_assignment.first_object = -1;
+            remapped_assignment.second_index = -1;
+            remapped_assignment.second_object = -1;
+        }
     }
     if (remapped_assignment.second_index != -1)
     {
         remapped_assignment.second_index = function_remapping.at(remapped_assignment.second_index);
+        if (remapped_assignment.second_index == -1)
+        {
+            remapped_assignment.second_object = -1;
+        }
     }
+    // std::cout << "Remapped_assignment: " << remapped_assignment.first_index << " " << remapped_assignment.first_object << " "
+    //           << remapped_assignment.second_index << " " << remapped_assignment.second_object << std::endl;
+
     const auto rank = get_assignment_rank(remapped_assignment, function_skeleton->get_arity(), numeric_assignment_set.get_num_objects());
 
     assert(function_skeleton->get_index() < numeric_assignment_set.get_per_function_skeleton_bounds_set().size());
@@ -338,6 +353,7 @@ static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(Func
 
     assert(rank < function_assignment_set.size());
     const auto bounds = function_assignment_set[rank];
+    // std::cout << function << " " << bounds << std::endl;
 
     return bounds;
 }
@@ -430,6 +446,22 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
                                                         const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                         const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
+    /*
+    const auto value1 = evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
+                                                               numeric_constraint->get_remapping<Static>(),
+                                                               numeric_constraint->get_remapping<Fluent>(),
+                                                               assignment,
+                                                               static_numeric_assignment_set,
+                                                               fluent_numeric_assignment_set);
+    const auto value2 = evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
+                                                               numeric_constraint->get_remapping<Static>(),
+                                                               numeric_constraint->get_remapping<Fluent>(),
+                                                               assignment,
+                                                               static_numeric_assignment_set,
+                                                               fluent_numeric_assignment_set);
+    const auto result = evaluate(numeric_constraint->get_binary_comparator(), value1, value2);
+    std::cout << to_string(numeric_constraint->get_binary_comparator()) << " " << value1 << " " << value2 << " = " << result << std::endl;
+    */
     return evaluate(numeric_constraint->get_binary_comparator(),
                     evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
                                                            numeric_constraint->get_remapping<Static>(),
@@ -456,18 +488,17 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
     for (const auto& numeric_constraint : numeric_constraints)
     {
         const auto& terms = numeric_constraint->get_terms();
-        const auto arity = terms.size();
-
         auto assignment_iterator = IteratorType(terms, element);
 
         while (assignment_iterator.has_next())
         {
             const auto assignment = assignment_iterator.next();
-            assert(assignment.first_index < arity);
+            assert(assignment.first_index < terms.size());
             assert(assignment.first_index < assignment.second_index);
 
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
             {
+                // std::cout << "Constraint unsatisfied: " << numeric_constraint << std::endl;
                 return false;
             }
         }
@@ -494,7 +525,6 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
                                  const NumericAssignmentSet<Static>& static_assignment_set,
                                  const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    return true;
     return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
 
@@ -516,7 +546,6 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const NumericAssignmentSet<Static>& static_assignment_set,
                                const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    return true;
     return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
 

@@ -40,6 +40,10 @@ struct Assignment
     Index second_index;
     Index second_object;
 
+    static const Assignment empty_assignment;
+
+    Assignment();
+
     Assignment(Index index, Index object);
 
     Assignment(Index first_index, Index first_object, Index second_index, Index second_object);
