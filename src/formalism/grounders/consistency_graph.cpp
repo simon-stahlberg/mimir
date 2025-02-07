@@ -36,7 +36,7 @@ using mimir::operator<<;
  * VertexIndexIterator
  */
 
-class VertexAssignmentIterator2
+class VertexAssignmentIterator
 {
 private:
     // We use this as special value and when adding 1 we obtain 0.
@@ -71,28 +71,19 @@ private:
 
     void advance()
     {
-        auto found = false;
-
         for (size_t index = m_assignment.first_index + 1; index < get_terms().size(); ++index)
         {
-            assert(index < get_terms().size());
-
             auto object = get_object_if_overlap(get_terms()[index]);
 
             if (object != UNDEFINED)
             {
                 m_assignment.first_index = index;
                 m_assignment.first_object = object;
-                found = true;
-                break;
+                return;
             }
         }
 
-        if (!found)
-        {
-            m_assignment.first_index = UNDEFINED;
-            m_assignment.first_object = UNDEFINED;
-        }
+        m_pos = std::numeric_limits<size_t>::max();  // mark end of iteration
     }
 
     bool has_next() const { return m_assignment.first_index < get_terms().size(); }
@@ -104,124 +95,58 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    VertexAssignmentIterator2();
-    VertexAssignmentIterator2(const TermList& terms, const Vertex& vertex, bool begin) :
+    VertexAssignmentIterator() : m_terms(nullptr), m_vertex(nullptr), m_pos(std::numeric_limits<size_t>::max()) {}
+    VertexAssignmentIterator(const TermList& terms, const Vertex& vertex, bool begin) :
         m_terms(&terms),
         m_vertex(&vertex),
         m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
     {
-        advance();
+        advance();  // first advance might result in end immediately, e.g., if terms is empty.
     }
     reference operator*() const { return m_assignment; }
-    VertexAssignmentIterator2& operator++()
+    VertexAssignmentIterator& operator++()
     {
-        assert(has_next());
         advance();
+        return *this;
     }
-    VertexAssignmentIterator2 operator++(int)
+    VertexAssignmentIterator operator++(int)
     {
-        VertexAssignmentIterator2 tmp = *this;
+        VertexAssignmentIterator tmp = *this;
         ++(*this);
         return tmp;
     }
-    bool operator==(const VertexAssignmentIterator2& other) const { return m_pos == other.m_pos; }
-    bool operator!=(const VertexAssignmentIterator2& other) const { return !(*this == other); }
+    bool operator==(const VertexAssignmentIterator& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const VertexAssignmentIterator& other) const { return !(*this == other); }
 };
 
-class VertexAssignmentIterator
+class VertexAssignmentRange
 {
 private:
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index UNDEFINED = std::numeric_limits<Index>::max();
-
     const TermList& m_terms;
     const Vertex& m_vertex;
 
-    Index m_index;
-    Index m_object;
-
-    Index get_object_if_overlap(const Term& term)
-    {
-        if (const auto object = std::get_if<Object>(&term->get_variant()))
-        {
-            return (*object)->get_index();
-        }
-
-        if (const auto variable = std::get_if<Variable>(&term->get_variant()))
-        {
-            if (m_vertex.get_parameter_index() == (*variable)->get_parameter_index())
-            {
-                return m_vertex.get_object_index();
-            }
-        }
-
-        return UNDEFINED;
-    }
-
-    void find_next_binding()
-    {
-        auto found = false;
-
-        for (size_t index = m_index + 1; index < m_terms.size(); ++index)
-        {
-            assert(index < m_terms.size());
-
-            auto object = get_object_if_overlap(m_terms[index]);
-
-            if (object != UNDEFINED)
-            {
-                m_index = index;
-                m_object = object;
-                found = true;
-                break;
-            }
-        }
-
-        if (!found)
-        {
-            m_index = UNDEFINED;
-            m_object = UNDEFINED;
-        }
-    }
-
 public:
-    VertexAssignmentIterator(const TermList& terms, const Vertex& vertex) : m_terms(terms), m_vertex(vertex), m_index(UNDEFINED), m_object(UNDEFINED)
-    {
-        find_next_binding();
-    }
+    VertexAssignmentRange(const TermList& terms, const Vertex& vertex) : m_terms(terms), m_vertex(vertex) {}
 
-    bool has_next() const { return m_index < m_terms.size(); }
+    VertexAssignmentIterator begin() const { return VertexAssignmentIterator(m_terms, m_vertex, true); }
 
-    Assignment next()
-    {
-        if (!has_next())
-        {
-            throw std::out_of_range("No more bindings available");
-        }
-
-        auto binding = Assignment(m_index, m_object, UNDEFINED, UNDEFINED);
-        find_next_binding();
-        return binding;
-    }
+    VertexAssignmentIterator end() const { return VertexAssignmentIterator(m_terms, m_vertex, false); }
 };
 
-/**
- * EdgeAssignmentIterator
- */
-
-class EdgeAssignmentIterator
+class VertexAndEdgeAssignmentIterator
 {
 private:
     // We use this as special value and when adding 1 we obtain 0.
     static const Index UNDEFINED = std::numeric_limits<Index>::max();
 
-    const TermList& m_terms;
-    const Edge& m_edge;
+    const TermList* m_terms;
+    const Edge* m_edge;
+    size_t m_pos;
 
-    Index m_first_index;
-    Index m_second_index;
-    Index m_first_object;
-    Index m_second_object;
+    Assignment m_assignment;
+
+    const TermList& get_terms() const { return *m_terms; }
+    const Edge& get_edge() const { return *m_edge; }
 
     Index get_object_if_overlap(const Term& term)
     {
@@ -236,102 +161,110 @@ private:
         {
             const auto parameter_index = (*variable)->get_parameter_index();
 
-            if (m_edge.get_src().get_parameter_index() == parameter_index)
+            if (get_edge().get_src().get_parameter_index() == parameter_index)
             {
-                return m_edge.get_src().get_object_index();
+                return get_edge().get_src().get_object_index();
             }
-            else if (m_edge.get_dst().get_parameter_index() == parameter_index)
+            else if (get_edge().get_dst().get_parameter_index() == parameter_index)
             {
-                return m_edge.get_dst().get_object_index();
+                return get_edge().get_dst().get_object_index();
             }
         }
 
         return UNDEFINED;
     }
 
-    void find_next_binding()
+    void advance()
     {
-        if (m_second_index == UNDEFINED)
+        if (m_assignment.second_index == UNDEFINED)
         {
-            auto found_first = false;
+            size_t first_index = m_assignment.first_index + 1;
+            m_assignment.first_index = UNDEFINED;
 
-            for (size_t first_index = m_first_index + 1; first_index < m_terms.size(); ++first_index)
+            for (; first_index < get_terms().size(); ++first_index)
             {
-                assert(first_index < m_terms.size());
-
-                auto first_object = get_object_if_overlap(m_terms[first_index]);
+                auto first_object = get_object_if_overlap(get_terms()[first_index]);
 
                 if (first_object != UNDEFINED)
                 {
-                    m_first_index = first_index;
-                    m_first_object = first_object;
-                    m_second_index = first_index;
-                    found_first = true;
+                    m_assignment.first_index = first_index;
+                    m_assignment.first_object = first_object;
+                    m_assignment.second_index = first_index;
                     break;
                 }
             }
-
-            if (!found_first)
-            {
-                m_first_index = UNDEFINED;
-                m_first_object = UNDEFINED;
-                m_second_index = UNDEFINED;
-                m_second_object = UNDEFINED;
-            }
         }
 
-        if (m_first_index != UNDEFINED)
+        if (m_assignment.first_index != UNDEFINED)
         {
-            auto found_second = false;
+            size_t second_index = m_assignment.second_index + 1;
+            m_assignment.second_index = UNDEFINED;
+            m_assignment.second_object = UNDEFINED;
 
-            for (size_t second_index = m_second_index + 1; second_index < m_terms.size(); ++second_index)
+            for (; second_index < get_terms().size(); ++second_index)
             {
-                assert(second_index < m_terms.size());
-
-                auto second_object = get_object_if_overlap(m_terms[second_index]);
+                auto second_object = get_object_if_overlap(get_terms()[second_index]);
 
                 if (second_object != UNDEFINED)
                 {
-                    m_second_index = second_index;
-                    m_second_object = second_object;
-                    found_second = true;
-                    break;
+                    m_assignment.second_index = second_index;
+                    m_assignment.second_object = second_object;
+                    return;
                 }
             }
+        }
 
-            if (!found_second)
-            {
-                m_second_index = UNDEFINED;
-                m_second_object = UNDEFINED;
-            }
+        if (m_assignment.first_index == UNDEFINED)
+        {
+            m_pos = std::numeric_limits<size_t>::max();  // mark end of iteration
         }
     }
+
+    bool has_next() const { return m_assignment.first_index < get_terms().size(); }
 
 public:
-    EdgeAssignmentIterator(const TermList& terms, const Edge& edge) :
-        m_terms(terms),
-        m_edge(edge),
-        m_first_index(UNDEFINED),
-        m_second_index(UNDEFINED),
-        m_first_object(UNDEFINED),
-        m_second_object(UNDEFINED)
+    using difference_type = std::ptrdiff_t;
+    using value_type = Assignment;
+    using pointer = value_type*;
+    using reference = const value_type&;
+    using iterator_category = std::forward_iterator_tag;
+
+    VertexAndEdgeAssignmentIterator() : m_terms(nullptr), m_edge(nullptr), m_pos(std::numeric_limits<size_t>::max()) {}
+    VertexAndEdgeAssignmentIterator(const TermList& terms, const Edge& edge, bool begin) :
+        m_terms(&terms),
+        m_edge(&edge),
+        m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
     {
-        find_next_binding();
+        advance();  // first advance might result in end immediately, e.g., if terms is empty.
     }
-
-    bool has_next() const { return m_first_index < m_terms.size(); }
-
-    Assignment next()
+    reference operator*() const { return m_assignment; }
+    VertexAndEdgeAssignmentIterator& operator++()
     {
-        if (!has_next())
-        {
-            throw std::out_of_range("No more bindings available");
-        }
-
-        auto binding = Assignment(m_first_index, m_first_object, m_second_index, m_second_object);
-        find_next_binding();
-        return binding;
+        advance();
+        return *this;
     }
+    VertexAndEdgeAssignmentIterator operator++(int)
+    {
+        VertexAndEdgeAssignmentIterator tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+    bool operator==(const VertexAndEdgeAssignmentIterator& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const VertexAndEdgeAssignmentIterator& other) const { return !(*this == other); }
+};
+
+class VertexAndEdgeAssignmentRange
+{
+private:
+    const TermList& m_terms;
+    const Edge& m_edge;
+
+public:
+    VertexAndEdgeAssignmentRange(const TermList& terms, const Edge& edge) : m_terms(terms), m_edge(edge) {}
+
+    VertexAndEdgeAssignmentIterator begin() const { return VertexAndEdgeAssignmentIterator(m_terms, m_edge, true); }
+
+    VertexAndEdgeAssignmentIterator end() const { return VertexAndEdgeAssignmentIterator(m_terms, m_edge, false); }
 };
 
 /**
@@ -349,19 +282,19 @@ struct ElementTypeTraits
 template<>
 struct ElementTypeTraits<Vertex>
 {
-    using IteratorType = VertexAssignmentIterator;
+    using RangeType = VertexAssignmentRange;
 };
 
 template<>
 struct ElementTypeTraits<Edge>
 {
-    using IteratorType = EdgeAssignmentIterator;
+    using RangeType = VertexAndEdgeAssignmentRange;
 };
 
 template<PredicateTag P, IsVertexOrEdge ElementType>
 static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const ElementType& element)
 {
-    using IteratorType = typename ElementTypeTraits<ElementType>::IteratorType;
+    using RangeType = typename ElementTypeTraits<ElementType>::RangeType;
 
     const auto num_objects = assignment_set.get_num_objects();
     const auto& per_predicate_assignment_set = assignment_set.get_per_predicate_assignment_set();
@@ -379,11 +312,9 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
         assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
         const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
         const auto& terms = literal->get_atom()->get_terms();
-        auto assignment_iterator = IteratorType(terms, element);
 
-        while (assignment_iterator.has_next())
+        for (const auto& assignment : RangeType(terms, element))
         {
-            const auto assignment = assignment_iterator.next();
             assert(assignment.first_index < arity);
             assert(assignment.first_index < assignment.second_index);
 
@@ -590,18 +521,14 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
                                                   const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set,
                                                   const ElementType& element)
 {
-    using IteratorType = typename ElementTypeTraits<ElementType>::IteratorType;
+    using RangeType = typename ElementTypeTraits<ElementType>::RangeType;
 
     for (const auto& numeric_constraint : numeric_constraints)
     {
         const auto& terms = numeric_constraint->get_terms();
-        auto assignment_iterator = IteratorType(terms, element);
 
-        // for (const auto& assignment : )
-
-        while (assignment_iterator.has_next())
+        for (const auto& assignment : RangeType(terms, element))
         {
-            const auto assignment = assignment_iterator.next();
             assert(assignment.first_index < terms.size());
             assert(assignment.first_index < assignment.second_index);
 
