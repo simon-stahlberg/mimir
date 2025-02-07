@@ -231,9 +231,6 @@ public:
 
 /* Utils */
 
-extern ContinuousCost
-evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables);
-
 extern ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables);
 
 /* Printing */

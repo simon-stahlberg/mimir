@@ -36,6 +36,98 @@ using mimir::operator<<;
  * VertexIndexIterator
  */
 
+class VertexAssignmentIterator2
+{
+private:
+    // We use this as special value and when adding 1 we obtain 0.
+    static const Index UNDEFINED = std::numeric_limits<Index>::max();
+
+    const TermList* m_terms;
+    const Vertex* m_vertex;
+    size_t m_pos;
+
+    Assignment m_assignment;
+
+    const TermList& get_terms() const { return *m_terms; }
+    const Vertex& get_vertex() const { return *m_vertex; }
+
+    Index get_object_if_overlap(const Term& term)
+    {
+        if (const auto object = std::get_if<Object>(&term->get_variant()))
+        {
+            return (*object)->get_index();
+        }
+
+        if (const auto variable = std::get_if<Variable>(&term->get_variant()))
+        {
+            if (get_vertex().get_parameter_index() == (*variable)->get_parameter_index())
+            {
+                return get_vertex().get_object_index();
+            }
+        }
+
+        return UNDEFINED;
+    }
+
+    void advance()
+    {
+        auto found = false;
+
+        for (size_t index = m_assignment.first_index + 1; index < get_terms().size(); ++index)
+        {
+            assert(index < get_terms().size());
+
+            auto object = get_object_if_overlap(get_terms()[index]);
+
+            if (object != UNDEFINED)
+            {
+                m_assignment.first_index = index;
+                m_assignment.first_object = object;
+                found = true;
+                break;
+            }
+        }
+
+        if (!found)
+        {
+            m_assignment.first_index = UNDEFINED;
+            m_assignment.first_object = UNDEFINED;
+        }
+    }
+
+    bool has_next() const { return m_assignment.first_index < get_terms().size(); }
+
+public:
+    using difference_type = std::ptrdiff_t;
+    using value_type = Assignment;
+    using pointer = value_type*;
+    using reference = const value_type&;
+    using iterator_category = std::forward_iterator_tag;
+
+    VertexAssignmentIterator2();
+    VertexAssignmentIterator2(const TermList& terms, const Vertex& vertex, bool begin) :
+        m_terms(&terms),
+        m_vertex(&vertex),
+        m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
+    {
+        advance();
+    }
+    reference operator*() const { return m_assignment; }
+    VertexAssignmentIterator2& operator++()
+    {
+        assert(has_next());
+        advance();
+    }
+    VertexAssignmentIterator2 operator++(int)
+    {
+        VertexAssignmentIterator2 tmp = *this;
+        ++(*this);
+        return tmp;
+    }
+    bool operator==(const VertexAssignmentIterator2& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const VertexAssignmentIterator2& other) const { return !(*this == other); }
+};
+
 class VertexAssignmentIterator
 {
 private:
@@ -504,6 +596,8 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
     {
         const auto& terms = numeric_constraint->get_terms();
         auto assignment_iterator = IteratorType(terms, element);
+
+        // for (const auto& assignment : )
 
         while (assignment_iterator.has_next())
         {

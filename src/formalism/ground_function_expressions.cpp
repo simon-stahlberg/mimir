@@ -126,61 +126,6 @@ const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant
 
 /* Utils */
 
-ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables, const FlatDoubleList& auxiliary_numeric_variables)
-{
-    return std::visit(
-        [&](auto&& arg)
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, GroundFunctionExpressionNumber>)
-            {
-                return arg->get_number();
-            }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionBinaryOperator>)
-            {
-                return evaluate_binary(arg->get_binary_operator(),
-                                       evaluate(arg->get_left_function_expression(), fluent_numeric_variables, auxiliary_numeric_variables),
-                                       evaluate(arg->get_right_function_expression(), fluent_numeric_variables, auxiliary_numeric_variables));
-            }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionMultiOperator>)
-            {
-                return std::accumulate(
-                    std::next(arg->get_function_expressions().begin()),  // Start from the second expression
-                    arg->get_function_expressions().end(),
-                    evaluate(arg->get_function_expressions().front(), fluent_numeric_variables, auxiliary_numeric_variables),  // Initial bounds
-                    [&](const auto& value, const auto& child_expr)
-                    { return evaluate_multi(arg->get_multi_operator(), value, evaluate(child_expr, fluent_numeric_variables, auxiliary_numeric_variables)); });
-            }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionMinus>)
-            {
-                return -evaluate(arg->get_function_expression(), fluent_numeric_variables, auxiliary_numeric_variables);
-            }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Fluent>>)
-            {
-                if (arg->get_function()->get_index() >= fluent_numeric_variables.size())
-                {
-                    return UNDEFINED_CONTINUOUS_COST;
-                }
-
-                return fluent_numeric_variables[arg->get_function()->get_index()];
-            }
-            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Auxiliary>>)
-            {
-                if (arg->get_function()->get_index() >= auxiliary_numeric_variables.size())
-                {
-                    return UNDEFINED_CONTINUOUS_COST;
-                }
-
-                return auxiliary_numeric_variables[arg->get_function()->get_index()];
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value, "evaluate(...): Missing implementation for GroundFunctionExpressionFunction type.");
-            }
-        },
-        fexpr->get_variant());
-}
-
 ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables)
 {
     return std::visit(
