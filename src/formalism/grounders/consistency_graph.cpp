@@ -79,11 +79,11 @@ private:
             {
                 m_assignment.first_index = index;
                 m_assignment.first_object = object;
-                return;
+                return;  ///< successfully generated vertex
             }
         }
 
-        m_pos = std::numeric_limits<size_t>::max();  // mark end of iteration
+        m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
     }
 
     bool has_next() const { return m_assignment.first_index < get_terms().size(); }
@@ -133,6 +133,11 @@ public:
     VertexAssignmentIterator end() const { return VertexAssignmentIterator(m_terms, m_vertex, false); }
 };
 
+/// @brief `VertexAndEdgeAssignmentIterator` is used to generate vertices and edges in the consistency graph.
+/// It is used in literals
+///
+/// It simultaneously iterates over vertices [x/o] and edges [x/o],[y/o'] with o < o'
+/// to avoid having iterating over literals or numeric constraints twice.
 class VertexAndEdgeAssignmentIterator
 {
 private:
@@ -178,6 +183,8 @@ private:
     {
         if (m_assignment.second_index == UNDEFINED)
         {
+            // Reduced branching by setting iterator index and unsetting first index.
+            // Note: unsetting first object is unnecessary because it will either be set or the iterator reached its end.
             size_t first_index = m_assignment.first_index + 1;
             m_assignment.first_index = UNDEFINED;
 
@@ -190,13 +197,14 @@ private:
                     m_assignment.first_index = first_index;
                     m_assignment.first_object = first_object;
                     m_assignment.second_index = first_index;
-                    break;
+                    break;  ///< successfully generated left vertex
                 }
             }
         }
 
         if (m_assignment.first_index != UNDEFINED)
         {
+            // Reduced branching by setting iterator index and unsetting second index and object
             size_t second_index = m_assignment.second_index + 1;
             m_assignment.second_index = UNDEFINED;
             m_assignment.second_object = UNDEFINED;
@@ -209,14 +217,14 @@ private:
                 {
                     m_assignment.second_index = second_index;
                     m_assignment.second_object = second_object;
-                    return;
+                    return;  ///< successfully generated right vertex => successfully generated edge
                 }
             }
         }
 
         if (m_assignment.first_index == UNDEFINED)
         {
-            m_pos = std::numeric_limits<size_t>::max();  // mark end of iteration
+            m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
         }
     }
 
