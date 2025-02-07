@@ -135,58 +135,60 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
     objects.compress();
 
     /* Conjunctive precondition */
-    auto& conjunctive_condition = action_builder.get_conjunctive_condition();
-    auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<Fluent>();
-    auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<Fluent>();
-    auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<Static>();
-    auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<Static>();
-    auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<Derived>();
-    auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<Derived>();
-    auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
-    positive_fluent_precondition.clear();
-    negative_fluent_precondition.clear();
-    positive_static_precondition.clear();
-    negative_static_precondition.clear();
-    positive_derived_precondition.clear();
-    negative_derived_precondition.clear();
-    numeric_constraints.clear();
-    m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_condition()->get_literals<Fluent>(),
-                                               positive_fluent_precondition,
-                                               negative_fluent_precondition,
-                                               binding);
-    m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_condition()->get_literals<Static>(),
-                                               positive_static_precondition,
-                                               negative_static_precondition,
-                                               binding);
-    m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_condition()->get_literals<Derived>(),
-                                               positive_derived_precondition,
-                                               negative_derived_precondition,
-                                               binding);
-    positive_fluent_precondition.compress();
-    negative_fluent_precondition.compress();
-    positive_static_precondition.compress();
-    negative_static_precondition.compress();
-    positive_derived_precondition.compress();
-    negative_derived_precondition.compress();
-    ground_and_fill_vector(action->get_conjunctive_condition()->get_numeric_constraints(), numeric_constraints, binding);
+    {
+        auto& conjunctive_condition = action_builder.get_conjunctive_condition();
+        auto& positive_fluent_precondition = conjunctive_condition.get_positive_precondition<Fluent>();
+        auto& negative_fluent_precondition = conjunctive_condition.get_negative_precondition<Fluent>();
+        auto& positive_static_precondition = conjunctive_condition.get_positive_precondition<Static>();
+        auto& negative_static_precondition = conjunctive_condition.get_negative_precondition<Static>();
+        auto& positive_derived_precondition = conjunctive_condition.get_positive_precondition<Derived>();
+        auto& negative_derived_precondition = conjunctive_condition.get_negative_precondition<Derived>();
+        auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
+        positive_fluent_precondition.clear();
+        negative_fluent_precondition.clear();
+        positive_static_precondition.clear();
+        negative_static_precondition.clear();
+        positive_derived_precondition.clear();
+        negative_derived_precondition.clear();
+        numeric_constraints.clear();
+        m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_condition()->get_literals<Fluent>(),
+                                                   positive_fluent_precondition,
+                                                   negative_fluent_precondition,
+                                                   binding);
+        m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_condition()->get_literals<Static>(),
+                                                   positive_static_precondition,
+                                                   negative_static_precondition,
+                                                   binding);
+        m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_condition()->get_literals<Derived>(),
+                                                   positive_derived_precondition,
+                                                   negative_derived_precondition,
+                                                   binding);
+        positive_fluent_precondition.compress();
+        negative_fluent_precondition.compress();
+        positive_static_precondition.compress();
+        negative_static_precondition.compress();
+        positive_derived_precondition.compress();
+        negative_derived_precondition.compress();
+        ground_and_fill_vector(action->get_conjunctive_condition()->get_numeric_constraints(), numeric_constraints, binding);
 
-    /* Conjunctive propositional effects */
-    auto& conjunctive_effect = action_builder.get_conjunctive_effect();
-    auto& positive_effect = conjunctive_effect.get_positive_effects();
-    auto& negative_effect = conjunctive_effect.get_negative_effects();
-    positive_effect.clear();
-    negative_effect.clear();
-    m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_effect()->get_literals(), positive_effect, negative_effect, binding);
-    positive_effect.compress();
-    negative_effect.compress();
+        /* Conjunctive propositional effects */
+        auto& conjunctive_effect = action_builder.get_conjunctive_effect();
+        auto& positive_effect = conjunctive_effect.get_positive_effects();
+        auto& negative_effect = conjunctive_effect.get_negative_effects();
+        positive_effect.clear();
+        negative_effect.clear();
+        m_literal_grounder->ground_and_fill_vector(action->get_conjunctive_effect()->get_literals(), positive_effect, negative_effect, binding);
+        positive_effect.compress();
+        negative_effect.compress();
 
-    /* Conjunctive numerical effects */
-    auto& fluent_numerical_effects = conjunctive_effect.get_fluent_numeric_effects();
-    auto& auxiliary_numerical_effect = conjunctive_effect.get_auxiliary_numeric_effect();
-    fluent_numerical_effects.clear();
-    auxiliary_numerical_effect = std::nullopt;
-    ground_and_fill_vector(action->get_conjunctive_effect()->get_fluent_numeric_effects(), fluent_numerical_effects, binding);
-    ground_and_fill_optional(action->get_conjunctive_effect()->get_auxiliary_numeric_effect(), auxiliary_numerical_effect, binding);
+        /* Conjunctive numerical effects */
+        auto& fluent_numerical_effects = conjunctive_effect.get_fluent_numeric_effects();
+        auto& auxiliary_numerical_effect = conjunctive_effect.get_auxiliary_numeric_effect();
+        fluent_numerical_effects.clear();
+        auxiliary_numerical_effect = std::nullopt;
+        ground_and_fill_vector(action->get_conjunctive_effect()->get_fluent_numeric_effects(), fluent_numerical_effects, binding);
+        ground_and_fill_optional(action->get_conjunctive_effect()->get_auxiliary_numeric_effect(), auxiliary_numerical_effect, binding);
+    }
 
     /* Conditional effects */
     // Fetch data
@@ -273,8 +275,8 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
                                                                binding_cond_effect);
 
                     /* Numeric effect */
-                    auto& cond_fluent_numerical_effects_j = conjunctive_effect.get_fluent_numeric_effects();
-                    auto& cond_auxiliary_numerical_effect_j = conjunctive_effect.get_auxiliary_numeric_effect();
+                    auto& cond_fluent_numerical_effects_j = cond_conjunctive_effect_j.get_fluent_numeric_effects();
+                    auto& cond_auxiliary_numerical_effect_j = cond_conjunctive_effect_j.get_auxiliary_numeric_effect();
                     cond_fluent_numerical_effects_j.clear();
                     cond_auxiliary_numerical_effect_j = std::nullopt;
 
@@ -338,8 +340,8 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
                                                            binding);
 
                 /* Numeric effect*/
-                auto& cond_fluent_numerical_effects_j = conjunctive_effect.get_fluent_numeric_effects();
-                auto& cond_auxiliary_numerical_effects_j = conjunctive_effect.get_auxiliary_numeric_effect();
+                auto& cond_fluent_numerical_effects_j = cond_conjunctive_effect.get_fluent_numeric_effects();
+                auto& cond_auxiliary_numerical_effects_j = cond_conjunctive_effect.get_auxiliary_numeric_effect();
                 cond_fluent_numerical_effects_j.clear();
                 cond_auxiliary_numerical_effects_j = std::nullopt;
 

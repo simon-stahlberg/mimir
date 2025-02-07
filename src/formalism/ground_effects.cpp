@@ -150,11 +150,15 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEff
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects
-       << ", fluent numeric effects=" << fluent_numeric_effects;
+    os << "delete effects=" << negative_simple_effects << ", "
+       << "add effects=" << positive_simple_effects << ", fluent numeric effects=" << fluent_numeric_effects;
     if (auxiliary_numeric_effect.has_value())
     {
         os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();
+    }
+    else
+    {
+        os << ", no auxiliary numeric effects";
     }
 
     return os;

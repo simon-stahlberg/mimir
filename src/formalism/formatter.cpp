@@ -60,21 +60,22 @@ void PDDLFormatter::write(const ConjunctiveConditionImpl& element, std::ostream&
 {
     if (!element.get_parameters().empty())
     {
-        out << "(forall";
+        out << "(forall (";
         for (const auto& parameter : element.get_parameters())
         {
-            std::cout << " ";
+            out << " ";
             write(*parameter, out);
         }
+        out << ") ";
     }
     if (element.get_literals<Static>().empty() && element.get_literals<Fluent>().empty() && element.get_literals<Derived>().empty()
         && element.get_numeric_constraints().empty())
     {
-        out << "()";
+        out << "() ";
     }
     else
     {
-        out << " (and";
+        out << "(and";
         for (const auto& condition : element.get_literals<Static>())
         {
             out << " ";
@@ -372,9 +373,20 @@ void PDDLFormatter::write(const ConjunctiveEffectImpl& element, std::ostream& ou
 
 void PDDLFormatter::write(const ConditionalEffectImpl& element, std::ostream& out)
 {
+    out << "(forall (";
+    for (size_t i = 0; i < element.get_conjunctive_condition()->get_parameters().size(); ++i)
+    {
+        if (i != 0)
+            out << " ";
+        write(*element.get_conjunctive_condition()->get_parameters()[i], out);
+    }
+    out << ") ";
+
     write(*element.get_conjunctive_condition(), out);
     out << " ";
     write(*element.get_conjunctive_effect(), out);
+
+    out << ")";  // end forall
 }
 
 void PDDLFormatter::write(const FunctionExpressionNumberImpl& element, std::ostream& out) { out << element.get_number(); }
