@@ -29,10 +29,11 @@ private:
     Index m_index;
     FunctionSkeleton<F> m_function_skeleton;
     TermList m_terms;
+    IndexList m_parent_terms_to_terms_mapping;  ///< remaps parent terms, e.g., from NumericConstraint, to this terms. It may be empty if not needed in context.
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms);
+    FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping = IndexList {});
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -48,11 +49,15 @@ public:
     Index get_index() const;
     const FunctionSkeleton<F>& get_function_skeleton() const;
     const TermList& get_terms() const;
+    const IndexList& get_parent_terms_to_terms_mapping() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_terms)); }
+    auto identifying_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_terms), std::as_const(m_parent_terms_to_terms_mapping));
+    }
 };
 
 template<FunctionTag F>

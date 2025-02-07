@@ -533,7 +533,9 @@ protected:
     template<FunctionTag F>
     Function<F> transform_impl(Function<F> function)
     {
-        return this->m_pddl_repositories.get_or_create_function(this->transform(function->get_function_skeleton()), this->transform(function->get_terms()));
+        return this->m_pddl_repositories.get_or_create_function(this->transform(function->get_function_skeleton()),
+                                                                this->transform(function->get_terms()),
+                                                                function->get_parent_terms_to_terms_mapping());
     }
     template<FunctionTag F>
     GroundFunction<F> transform_impl(GroundFunction<F> function)

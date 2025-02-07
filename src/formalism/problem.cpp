@@ -418,7 +418,7 @@ template<StaticOrFluentTag F>
 ContinuousCost ProblemImpl::get_function_value(GroundFunction<F> function) const
 {
     const auto& function_to_value = get_function_to_value<F>();
-    if (function->get_index() > function_to_value.size())
+    if (function->get_index() >= function_to_value.size())
     {
         return UNDEFINED_CONTINUOUS_COST;
     }

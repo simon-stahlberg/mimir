@@ -26,7 +26,7 @@ namespace mimir
 {
 
 /**
- * Introduce an axiom for complicated goals, i.e., goals that are not conjunctions of literals.
+ * Encode parameter indices to variables needed in the lifted applicable action generator for checking vertex and edge consistency of literals.
  */
 class EncodeParameterIndexInVariables : public BaseRecurseTransformer<EncodeParameterIndexInVariables>
 {

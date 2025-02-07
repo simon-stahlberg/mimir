@@ -265,14 +265,18 @@ template GroundFunctionExpression PDDLRepositories::get_or_create_ground_functio
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Auxiliary> fexpr);
 
 template<FunctionTag F>
-Function<F> PDDLRepositories::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms)
+Function<F> PDDLRepositories::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping)
 {
-    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl<F>> {}).get_or_create(std::move(function_skeleton), std::move(terms));
+    return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl<F>> {})
+        .get_or_create(std::move(function_skeleton), std::move(terms), std::move(m_parent_terms_to_terms_mapping));
 }
 
-template Function<Static> PDDLRepositories::get_or_create_function(FunctionSkeleton<Static> function_skeleton, TermList terms);
-template Function<Fluent> PDDLRepositories::get_or_create_function(FunctionSkeleton<Fluent> function_skeleton, TermList terms);
-template Function<Auxiliary> PDDLRepositories::get_or_create_function(FunctionSkeleton<Auxiliary> function_skeleton, TermList terms);
+template Function<Static>
+PDDLRepositories::get_or_create_function(FunctionSkeleton<Static> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+template Function<Fluent>
+PDDLRepositories::get_or_create_function(FunctionSkeleton<Fluent> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
+template Function<Auxiliary>
+PDDLRepositories::get_or_create_function(FunctionSkeleton<Auxiliary> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
 
 template<FunctionTag F>
 GroundFunction<F> PDDLRepositories::get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList objects)

@@ -24,10 +24,11 @@
 namespace mimir
 {
 template<FunctionTag F>
-FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms) :
+FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
-    m_terms(std::move(terms))
+    m_terms(std::move(terms)),
+    m_parent_terms_to_terms_mapping(std::move(parent_terms_to_terms_mapping))
 {
 }
 
@@ -47,6 +48,12 @@ template<FunctionTag F>
 const TermList& FunctionImpl<F>::get_terms() const
 {
     return m_terms;
+}
+
+template<FunctionTag F>
+const IndexList& FunctionImpl<F>::get_parent_terms_to_terms_mapping() const
+{
+    return m_parent_terms_to_terms_mapping;
 }
 
 template class FunctionImpl<Static>;

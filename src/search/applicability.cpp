@@ -25,6 +25,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_conjunctive_condition.hpp"
 #include "mimir/formalism/ground_effects.hpp"
+#include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
@@ -110,8 +111,23 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
  */
 
 template<DynamicFunctionTag F>
-static bool is_applicable(const GroundNumericEffect<F>& effect, const FlatDoubleList& fluent_numeric_variables)
+bool is_applicable(const GroundNumericEffect<F>& effect, const FlatDoubleList& fluent_numeric_variables)
 {
+    return true;
+}
+
+template<>
+bool is_applicable(const GroundNumericEffect<Fluent>& effect, const FlatDoubleList& fluent_numeric_variables)
+{
+    return ((effect.get_function()->get_index() < fluent_numeric_variables.size())
+            && (fluent_numeric_variables[effect.get_function()->get_index()] != UNDEFINED_CONTINUOUS_COST))
+           && (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+}
+
+template<>
+bool is_applicable(const GroundNumericEffect<Auxiliary>& effect, const FlatDoubleList& fluent_numeric_variables)
+{
+    // TODO(numeric) must somewhere (or here) check that initial auxiliary value is defined.
     return (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
