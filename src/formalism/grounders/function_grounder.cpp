@@ -36,14 +36,14 @@ GroundFunction<F> FunctionGrounder::ground(Function<F> function, const ObjectLis
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundFunction<F>> {});
 
-    /* 2. Access the function specific grounding table */
-    const auto function_index = function->get_index();
-    if (function_index >= grounding_tables.size())
+    /* 2. Access the context-independent function grounding table */
+    const auto function_skeleton_index = function->get_function_skeleton()->get_index();
+    if (function_skeleton_index >= grounding_tables.size())
     {
-        grounding_tables.resize(function_index + 1);
+        grounding_tables.resize(function_skeleton_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(function_index);
+    auto& grounding_table = grounding_tables.at(function_skeleton_index);
 
     /* 3. Check if grounding is cached */
 

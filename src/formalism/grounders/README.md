@@ -1,0 +1,3 @@
+# Some notes
+
+- An issue is that literals and functions are context-dependent, which effectively introduces parallel cached elements. I fixed this with a hack by storing tables with key (is_negated, predicate_index) for each literal, and (function_skeleton_index,) for each function. In the latter it works well, in the former it is quite ugly. For example, we could introduce ContextIndependentLiteral, which essentially just contains a predicate and a polarity bool that gives us the index that we need. Same idea for all other PDDL elements. However, a lot of classes will appear as well as necessary code to construct them. I will leave this to rethink for some later time...

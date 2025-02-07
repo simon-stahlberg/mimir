@@ -36,19 +36,20 @@ GroundLiteral<P> LiteralGrounder::ground(Literal<P> literal, const ObjectList& b
     /* 1. Access the type specific grounding tables. */
     auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundLiteral<P>> {});
 
-    /* 2. Access the literal specific grounding table */
-    const auto literal_index = literal->get_index();
-    if (literal_index >= grounding_tables.size())
+    /* 2. Access the context-independent literal grounding table */
+    const auto is_negated = literal->is_negated();
+    const auto predicate_index = literal->get_atom()->get_predicate()->get_index();
+    auto& polarity_grounding_tables = grounding_tables[is_negated];
+    if (predicate_index >= polarity_grounding_tables.size())
     {
-        grounding_tables.resize(literal_index + 1);
+        polarity_grounding_tables.resize(predicate_index + 1);
     }
 
-    auto& grounding_table = grounding_tables.at(literal_index);
+    auto& grounding_table = polarity_grounding_tables.at(predicate_index);
 
     /* 3. Check if grounding is cached */
 
     // We have to fetch the literal-relevant part of the binding first.
-    // Note: this is important and saves a lot of memory.
     auto grounded_terms = ObjectList {};
     ground_variables(literal->get_atom()->get_terms(), binding, grounded_terms);
 

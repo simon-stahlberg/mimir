@@ -34,7 +34,8 @@ GroundFunctionExpression FunctionExpressionGrounder::ground(FunctionExpression f
     const auto problem = m_function_grounder->get_problem();
     auto& pddl_repositories = *m_function_grounder->get_pddl_repositories();
 
-    /* 2. Access the fexpr specific grounding table */
+    /* 2. Access the context-specific fexpr grounding table
+     */
     const auto fexpr_index = fexpr->get_index();
     if (fexpr_index >= m_grounding_tables.size())
     {

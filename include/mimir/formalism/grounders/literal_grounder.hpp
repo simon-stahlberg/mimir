@@ -30,10 +30,17 @@ private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
+    template<typename T>
+    using LiteralGroundingTable = absl::flat_hash_map<ObjectList, T, loki::Hash<ObjectList>>;
+
+    // We a table for each pair (is_negated,predicate_index) since those are context independent.
+    template<typename T>
+    using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
+
     using GroundedTypeToGroundingTableList =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, GroundingTableList<GroundLiteral<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, GroundingTableList<GroundLiteral<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, GroundingTableList<GroundLiteral<Derived>>>>;
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>>;
 
     GroundedTypeToGroundingTableList m_grounding_tables;
 

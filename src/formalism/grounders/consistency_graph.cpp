@@ -70,8 +70,6 @@ private:
         m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
     }
 
-    bool has_next() const { return m_assignment.first_index < get_terms().size(); }
-
 public:
     using difference_type = std::ptrdiff_t;
     using value_type = Assignment;
@@ -185,8 +183,6 @@ private:
             m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
         }
     }
-
-    bool has_next() const { return m_assignment.first_index < get_terms().size(); }
 
 public:
     using difference_type = std::ptrdiff_t;
@@ -313,6 +309,26 @@ static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(Func
     const auto function = fexpr->get_function();
     const auto function_skeleton = function->get_function_skeleton();
     const auto& function_remapping = remapping.at(function);
+
+    /* TODO: this would be a much cleaner approach if we store in each Function an additional IndexList
+    that maps indices of terms from a parent expression to terms in the function.
+    We must check whether it is okay to make two similar functions then look distinct.
+    Ok in the FunctionGrounder will be an issue.
+    The same is currently also true for the LiteralGrounder where the variable modification makes them look disjoint.
+    So there seems to be an overall issue that must be resolved.
+
+    const auto& term_remapping = function->get_term_remapping();
+    auto remapped_assignment2 = Assignment();
+    remapped_assignment2.first_index = term_remapping.at(assignment.first_index);
+    if (remapped_assignment2.first_index == -1)
+    {
+        remapped_assignment2.first_index = term_remapping.at(assignment.second_index);
+    }
+    else
+    {
+        remapped_assignment2.second_index = term_remapping.at(assignment.second_index);
+    }
+    */
 
     /* Remap the assignment to the function terms. */
     auto remapped_assignment = Assignment();
