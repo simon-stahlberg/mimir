@@ -70,6 +70,8 @@ public:
                              const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                              const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
 
+    Index get_object_if_overlap(const Term& term) const;
+
     VertexIndex get_index() const { return m_index; }
     ParameterIndex get_parameter_index() const { return m_parameter_index; }
     ObjectIndex get_object_index() const { return m_object_index; }
@@ -102,6 +104,8 @@ public:
     bool consistent_literals(const NumericConstraintList& numeric_constraints,
                              const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                              const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set) const;
+
+    Index get_object_if_overlap(const Term& term) const;
 
     const Vertex& get_src() const { return m_src; }
     const Vertex& get_dst() const { return m_dst; }

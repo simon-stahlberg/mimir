@@ -24,6 +24,8 @@
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/formalism/term.hpp"
+#include "mimir/formalism/variable.hpp"
 
 #include <cstdint>
 
@@ -51,29 +53,11 @@ private:
     const TermList& get_terms() const { return *m_terms; }
     const Vertex& get_vertex() const { return *m_vertex; }
 
-    Index get_object_if_overlap(const Term& term)
-    {
-        if (const auto object = std::get_if<Object>(&term->get_variant()))
-        {
-            return (*object)->get_index();
-        }
-
-        if (const auto variable = std::get_if<Variable>(&term->get_variant()))
-        {
-            if (get_vertex().get_parameter_index() == (*variable)->get_parameter_index())
-            {
-                return get_vertex().get_object_index();
-            }
-        }
-
-        return UNDEFINED;
-    }
-
     void advance()
     {
         for (size_t index = m_assignment.first_index + 1; index < get_terms().size(); ++index)
         {
-            auto object = get_object_if_overlap(get_terms()[index]);
+            auto object = get_vertex().get_object_if_overlap(get_terms()[index]);
 
             if (object != UNDEFINED)
             {
@@ -153,32 +137,6 @@ private:
     const TermList& get_terms() const { return *m_terms; }
     const Edge& get_edge() const { return *m_edge; }
 
-    Index get_object_if_overlap(const Term& term)
-    {
-        // This code is faster than std::visit.
-
-        if (const auto object = std::get_if<Object>(&term->get_variant()))
-        {
-            return (*object)->get_index();
-        }
-
-        if (const auto variable = std::get_if<Variable>(&term->get_variant()))
-        {
-            const auto parameter_index = (*variable)->get_parameter_index();
-
-            if (get_edge().get_src().get_parameter_index() == parameter_index)
-            {
-                return get_edge().get_src().get_object_index();
-            }
-            else if (get_edge().get_dst().get_parameter_index() == parameter_index)
-            {
-                return get_edge().get_dst().get_object_index();
-            }
-        }
-
-        return UNDEFINED;
-    }
-
     void advance()
     {
         if (m_assignment.second_index == UNDEFINED)
@@ -190,7 +148,7 @@ private:
 
             for (; first_index < get_terms().size(); ++first_index)
             {
-                auto first_object = get_object_if_overlap(get_terms()[first_index]);
+                auto first_object = get_edge().get_object_if_overlap(get_terms()[first_index]);
 
                 if (first_object != UNDEFINED)
                 {
@@ -211,7 +169,7 @@ private:
 
             for (; second_index < get_terms().size(); ++second_index)
             {
-                auto second_object = get_object_if_overlap(get_terms()[second_index]);
+                auto second_object = get_edge().get_object_if_overlap(get_terms()[second_index]);
 
                 if (second_object != UNDEFINED)
                 {
@@ -572,6 +530,24 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
     return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
 
+Index Vertex::get_object_if_overlap(const Term& term) const
+{
+    if (const auto object = std::get_if<Object>(&term->get_variant()))
+    {
+        return (*object)->get_index();
+    }
+
+    if (const auto variable = std::get_if<Variable>(&term->get_variant()))
+    {
+        if (m_parameter_index == (*variable)->get_parameter_index())
+        {
+            return m_object_index;
+        }
+    }
+
+    return -1;
+}
+
 /**
  * Edge
  */
@@ -591,6 +567,32 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
     return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
+}
+
+Index Edge::get_object_if_overlap(const Term& term) const
+{
+    // This code is faster than std::visit.
+
+    if (const auto object = std::get_if<Object>(&term->get_variant()))
+    {
+        return (*object)->get_index();
+    }
+
+    if (const auto variable = std::get_if<Variable>(&term->get_variant()))
+    {
+        const auto parameter_index = (*variable)->get_parameter_index();
+
+        if (m_src.get_parameter_index() == parameter_index)
+        {
+            return m_src.get_object_index();
+        }
+        else if (m_dst.get_parameter_index() == parameter_index)
+        {
+            return m_dst.get_object_index();
+        }
+    }
+
+    return -1;
 }
 
 /**
