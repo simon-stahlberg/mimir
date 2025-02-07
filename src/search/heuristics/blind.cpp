@@ -30,102 +30,14 @@
 namespace mimir
 {
 
-/*
-struct FunctionExpressionBoundsDeterminer
-{
-    std::unordered_map<FunctionSkeleton, std::pair<double, double>>& m_function_skeleton_bounds;
-
-    FunctionExpressionBoundsDeterminer(std::unordered_map<FunctionSkeleton, std::pair<double, double>>& function_skeleton_bounds) :
-        m_function_skeleton_bounds(function_skeleton_bounds)
-    {
-    }
-
-    std::pair<double, double> operator()(const FunctionExpressionImpl& fexpr)
-    {
-        return std::visit([this](auto&& arg) -> std::pair<double, double> { return (*this)(*arg); }, fexpr.get_variant());
-    }
-
-    std::pair<double, double> operator()(const FunctionExpressionNumberImpl& fexpr)
-    {
-        const auto number = fexpr.get_number();
-        return std::make_pair(number, number);
-    }
-
-    std::pair<double, double> operator()(const FunctionExpressionBinaryOperatorImpl& fexpr)
-    {
-        return evaluate_binary_bounds(fexpr.get_binary_operator(),
-                                      (*this)(*fexpr.get_left_function_expression()),
-                                      (*this)(*fexpr.get_right_function_expression()));
-    }
-
-    std::pair<double, double> operator()(const FunctionExpressionMultiOperatorImpl& fexpr)
-    {
-        const auto op = fexpr.get_multi_operator();
-        return std::accumulate(std::next(fexpr.get_function_expressions().begin()),  // Start from the second expression
-                               fexpr.get_function_expressions().end(),
-                               (*this)(*fexpr.get_function_expressions().front()),  // Initial bounds
-                               [this, op](const auto& bounds, const auto& child_expr) { return evaluate_multi_bounds(op, bounds, (*this)(*child_expr)); });
-    }
-
-    std::pair<double, double> operator()(const FunctionExpressionMinusImpl& fexpr)
-    {
-        const auto [lower, upper] = (*this)(*fexpr.get_function_expression());
-        return std::make_pair(upper, lower);
-    }
-
-    std::pair<double, double> operator()(const FunctionExpressionFunctionImpl& fexpr)
-    {
-        return m_function_skeleton_bounds.at(fexpr.get_function()->get_function_skeleton());
-    }
-};
-
-static std::unordered_map<FunctionSkeleton, std::pair<double, double>> compute_function_skeleton_bounds(const GroundFunctionValueList& ground_function_values)
-{
-    auto result = std::unordered_map<FunctionSkeleton, std::pair<double, double>> {};
-
-    for (const auto& numeric_fluent : ground_function_values)
-    {
-        const auto function_skeleton = numeric_fluent->get_function()->get_function_skeleton();
-        const auto value = numeric_fluent->get_number();
-
-        auto& bounds = result.try_emplace(function_skeleton, std::numeric_limits<double>::infinity(), -std::numeric_limits<double>::infinity()).first->second;
-
-        bounds.first = std::min(bounds.first, value);
-        bounds.second = std::max(bounds.second, value);
-    }
-
-    return result;
-}
-
-static double determine_action_cost_lower_bound(Problem problem)
-{
-    double lower_bound = 1.;  ///< 1.0 is sufficiently large to push goal states to the front.
-
-    auto function_skeleton_bounds = compute_function_skeleton_bounds(problem->get_function_values());
-
-    for (const auto& action : problem->get_domain()->get_actions())
-    {
-        {
-            const auto [lower, upper] =
-FunctionExpressionBoundsDeterminer(function_skeleton_bounds)(*action->get_conjunctive_effect()->get_function_expression()); lower_bound = std::min(lower_bound,
-lower);
-        }
-        for (const auto& conditional_effect : action->get_conditional_effects())
-        {
-            const auto [lower, upper] = FunctionExpressionBoundsDeterminer(function_skeleton_bounds)(*conditional_effect->get_function_expression());
-            lower_bound = std::min(lower_bound, lower);
-        }
-    }
-
-    return std::max(lower_bound, 0.);  ///< cap at zero.
-}
-*/
-
+/// @brief `BlindHeuristic` returns 0 iff a state is a goal and otherwise, a non-zero value that is as large as possible.
+/// If :numeric-fluents or :action-costs is enabled we cannot return a nonzero value without closer inspection of the problem.
+/// @param problem
 BlindHeuristic::BlindHeuristic(Problem problem) :
-    m_min_action_cost_value((problem->get_domain()->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS)) ?
-                                0. :  // determine_action_cost_lower_bound(problem) :  ///< If action costs is enabled we approximate a lower bound on the
-                                      // possible action cost in a state.
-                                      1.)  ///< if :action-costs is disabled, each action has cost 1.0
+    m_min_action_cost_value((problem->get_domain()->get_requirements()->test(loki::RequirementEnum::NUMERIC_FLUENTS)
+                             || problem->get_domain()->get_requirements()->test(loki::RequirementEnum::ACTION_COSTS)) ?
+                                0. :
+                                1.)
 {
 }
 }

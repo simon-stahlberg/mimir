@@ -28,11 +28,11 @@ class VariableImpl
 private:
     Index m_index;
     std::string m_name;
-    size_t m_parameter_index;
+    Index m_parameter_index;  ///< the index of the parameter in the parameter list.
 
     // Below: add additional members if needed and initialize them in the constructor
 
-    VariableImpl(Index index, std::string name, size_t parameter_index);
+    VariableImpl(Index index, std::string name, Index parameter_index);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -47,7 +47,7 @@ public:
 
     Index get_index() const;
     const std::string& get_name() const;
-    const size_t get_parameter_index() const;
+    const Index get_parameter_index() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
