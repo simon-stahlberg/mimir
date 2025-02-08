@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_ASSIGNMENT_SET_UTILS_HPP_
 
 #include "mimir/common/types.hpp"
+#include "mimir/formalism/declarations.hpp"
 
 #include <limits>
 
@@ -47,6 +48,9 @@ struct Assignment
     Assignment(Index index, Index object);
 
     Assignment(Index first_index, Index first_object, Index second_index, Index second_object);
+
+    /// @brief Return true iff the assignment is valid, i.e., the first index is within bounds and smaller than the second index.
+    bool is_valid(const TermList& terms) const { return (first_index < terms.size()) && (first_index < second_index); }
 
     size_t size() const { return (first_object != MAX_VALUE ? 1 : 0) + (second_object != MAX_VALUE ? 1 : 0); }
 };

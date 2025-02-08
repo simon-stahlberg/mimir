@@ -33,17 +33,15 @@ private:
     loki::BinaryComparatorEnum m_binary_comparator;
     FunctionExpression m_left_function_expression;
     FunctionExpression m_right_function_expression;
+    TermList m_terms;
 
     // Below: add additional members if needed and initialize them in the constructor
-
-    TermList m_terms;                                                     ///< The terms nested in the function expressions to generate assignments
-    absl::flat_hash_map<Function<Static>, IndexList> m_static_remapping;  ///< Remap terms to function terms.
-    absl::flat_hash_map<Function<Fluent>, IndexList> m_fluent_remapping;  ///< Remap terms to function terms.
 
     NumericConstraintImpl(Index index,
                           loki::BinaryComparatorEnum binary_comparator,
                           FunctionExpression left_function_expression,
-                          FunctionExpression right_function_expression);
+                          FunctionExpression right_function_expression,
+                          TermList terms);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -60,17 +58,17 @@ public:
     loki::BinaryComparatorEnum get_binary_comparator() const;
     const FunctionExpression& get_left_function_expression() const;
     const FunctionExpression& get_right_function_expression() const;
-
     const TermList& get_terms() const;
-    template<StaticOrFluentTag F>
-    const absl::flat_hash_map<Function<F>, IndexList>& get_remapping() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
     auto identifying_members() const
     {
-        return std::forward_as_tuple(std::as_const(m_binary_comparator), std::as_const(m_left_function_expression), std::as_const(m_right_function_expression));
+        return std::forward_as_tuple(std::as_const(m_binary_comparator),
+                                     std::as_const(m_left_function_expression),
+                                     std::as_const(m_right_function_expression),
+                                     std::as_const(m_terms));
     }
 };
 

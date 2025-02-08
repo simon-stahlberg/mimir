@@ -608,7 +608,8 @@ NumericConstraint ToMimirStructures::translate_lifted(loki::ConditionNumericCons
 {
     return m_pddl_repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
                                                                 translate_lifted(condition->get_function_expression_left()),
-                                                                translate_lifted(condition->get_function_expression_right()));
+                                                                translate_lifted(condition->get_function_expression_right()),
+                                                                TermList {});
 }
 
 StaticOrFluentOrAuxiliaryFunction ToMimirStructures::translate_lifted(loki::Function function)

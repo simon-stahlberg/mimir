@@ -69,13 +69,17 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_problem = to_mimir_structures_translator.run(problem);
     m_domain = m_problem->get_domain();
 
-    std::cout << *m_domain << std::endl;
-    std::cout << *m_problem << std::endl;
-
     // Encode parameter index in variables
-    auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(*m_factories);
+    auto encode_parameter_index_in_variables = EncodeParameterIndexInVariables(tmp_mimir_pddl_repositories);
     m_problem = encode_parameter_index_in_variables.run(m_problem);
     m_domain = m_problem->get_domain();
+
+    auto encode_numeric_constraint_terms_in_functions = EncodeNumericConstraintTermsInFunctions(*m_factories);
+    m_problem = encode_numeric_constraint_terms_in_functions.run(m_problem);
+    m_domain = m_problem->get_domain();
+
+    std::cout << *m_domain << std::endl;
+    std::cout << *m_problem << std::endl;
 }
 
 const std::shared_ptr<PDDLRepositories>& PDDLParser::get_pddl_repositories() const { return m_factories; }

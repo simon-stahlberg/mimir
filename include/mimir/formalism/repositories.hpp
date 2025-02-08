@@ -288,7 +288,8 @@ public:
     /// @brief Get or create a numeric constraint for the given parameters.
     NumericConstraint get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
                                                        FunctionExpression function_expression_left,
-                                                       FunctionExpression function_expression_right);
+                                                       FunctionExpression function_expression_right,
+                                                       TermList terms);
 
     /// @brief Get or create a numeric constraint for the given parameters.
     GroundNumericConstraint get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,

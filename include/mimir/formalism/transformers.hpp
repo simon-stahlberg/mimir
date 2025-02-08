@@ -19,6 +19,7 @@
 #define MIMIR_FORMALISM_TRANSFORMERS_HPP_
 
 #include "mimir/formalism/transformers/delete_relax.hpp"
+#include "mimir/formalism/transformers/encode_numeric_constraint_terms_in_functions.hpp"
 #include "mimir/formalism/transformers/encode_parameter_index_in_variables.hpp"
 
 #endif

@@ -139,6 +139,7 @@ protected:
     {
         this->prepare(condition->get_left_function_expression());
         this->prepare(condition->get_right_function_expression());
+        this->prepare(condition->get_terms());
     }
     void prepare_impl(GroundNumericConstraint condition)
     {
@@ -364,7 +365,8 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_numeric_constraint(condition->get_binary_comparator(),
                                                                           this->transform(condition->get_left_function_expression()),
-                                                                          this->transform(condition->get_right_function_expression()));
+                                                                          this->transform(condition->get_right_function_expression()),
+                                                                          this->transform(condition->get_terms()));
     }
     GroundNumericConstraint transform_impl(GroundNumericConstraint condition)
     {

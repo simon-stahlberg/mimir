@@ -41,9 +41,6 @@ using mimir::operator<<;
 class VertexAssignmentIterator
 {
 private:
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index UNDEFINED = std::numeric_limits<Index>::max();
-
     const TermList* m_terms;
     const Vertex* m_vertex;
     size_t m_pos;
@@ -59,7 +56,7 @@ private:
         {
             auto object = get_vertex().get_object_if_overlap(get_terms()[index]);
 
-            if (object != UNDEFINED)
+            if (object != Assignment::MAX_VALUE)
             {
                 m_assignment.first_index = index;
                 m_assignment.first_object = object;
@@ -123,9 +120,6 @@ public:
 class VertexAndEdgeAssignmentIterator
 {
 private:
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index UNDEFINED = std::numeric_limits<Index>::max();
-
     const TermList* m_terms;
     const Edge* m_edge;
     size_t m_pos;
@@ -137,18 +131,18 @@ private:
 
     void advance()
     {
-        if (m_assignment.second_index == UNDEFINED)
+        if (m_assignment.second_index == Assignment::MAX_VALUE)
         {
             // Reduced branching by setting iterator index and unsetting first index.
             // Note: unsetting first object is unnecessary because it will either be set or the iterator reached its end.
             size_t first_index = m_assignment.first_index + 1;
-            m_assignment.first_index = UNDEFINED;
+            m_assignment.first_index = Assignment::MAX_VALUE;
 
             for (; first_index < get_terms().size(); ++first_index)
             {
                 auto first_object = get_edge().get_object_if_overlap(get_terms()[first_index]);
 
-                if (first_object != UNDEFINED)
+                if (first_object != Assignment::MAX_VALUE)
                 {
                     m_assignment.first_index = first_index;
                     m_assignment.first_object = first_object;
@@ -158,18 +152,18 @@ private:
             }
         }
 
-        if (m_assignment.first_index != UNDEFINED)
+        if (m_assignment.first_index != Assignment::MAX_VALUE)
         {
             // Reduced branching by setting iterator index and unsetting second index and object
             size_t second_index = m_assignment.second_index + 1;
-            m_assignment.second_index = UNDEFINED;
-            m_assignment.second_object = UNDEFINED;
+            m_assignment.second_index = Assignment::MAX_VALUE;
+            m_assignment.second_object = Assignment::MAX_VALUE;
 
             for (; second_index < get_terms().size(); ++second_index)
             {
                 auto second_object = get_edge().get_object_if_overlap(get_terms()[second_index]);
 
-                if (second_object != UNDEFINED)
+                if (second_object != Assignment::MAX_VALUE)
                 {
                     m_assignment.second_index = second_index;
                     m_assignment.second_object = second_object;
@@ -178,7 +172,7 @@ private:
             }
         }
 
-        if (m_assignment.first_index == UNDEFINED)
+        if (m_assignment.first_index == Assignment::MAX_VALUE)
         {
             m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
         }
@@ -277,8 +271,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
 
         for (const auto& assignment : RangeType(terms, element))
         {
-            assert(assignment.first_index < arity);
-            assert(assignment.first_index < assignment.second_index);
+            assert(assignment.is_valid(terms));
 
             const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
 
@@ -301,67 +294,52 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
 }
 
 template<StaticOrFluentTag F>
-static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunction<F> fexpr,
-                                                                            const absl::flat_hash_map<Function<F>, IndexList>& remapping,
-                                                                            const Assignment& assignment,
-                                                                            const NumericAssignmentSet<F>& numeric_assignment_set)
+static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunction<F> fexpr,
+                                                                                       const Assignment& assignment,
+                                                                                       const NumericAssignmentSet<F>& numeric_assignment_set)
 {
     const auto function = fexpr->get_function();
     const auto function_skeleton = function->get_function_skeleton();
-    const auto& function_remapping = remapping.at(function);
 
-    /* TODO: this would be a much cleaner approach if we store in each Function an additional IndexList
-    that maps indices of terms from a parent expression to terms in the function.
-    We must check whether it is okay to make two similar functions then look distinct.
-    Ok in the FunctionGrounder will be an issue.
-    The same is currently also true for the LiteralGrounder where the variable modification makes them look disjoint.
-    So there seems to be an overall issue that must be resolved.
+    // std::cout << function << " " << bounds << std::endl;
 
-    const auto& term_remapping = function->get_term_remapping();
-    auto remapped_assignment2 = Assignment();
-    remapped_assignment2.first_index = term_remapping.at(assignment.first_index);
-    if (remapped_assignment2.first_index == -1)
+    /* Remap the Assignment to the terms of the function expression.
+       Note: here we use the applied transformation to remap the assignment of the constraint to the fexpr. */
+    const auto& term_remapping = function->get_parent_terms_to_terms_mapping();
+    auto remapped_assignment = Assignment();
+    remapped_assignment.first_index = term_remapping.at(assignment.first_index);  // assumes that the assignment is valid
+    if (remapped_assignment.first_index == Assignment::MAX_VALUE)
     {
-        remapped_assignment2.first_index = term_remapping.at(assignment.second_index);
+        /* Failed to assign first to first. */
+        if (assignment.second_index != Assignment::MAX_VALUE)
+        {
+            /* Assignment still has a second. */
+            remapped_assignment.first_index = term_remapping.at(assignment.second_index);
+
+            if (remapped_assignment.first_index != Assignment::MAX_VALUE)
+            {
+                /* Succeeded to assign second to first. */
+                remapped_assignment.first_object = assignment.second_object;
+            }
+        }
     }
     else
     {
-        remapped_assignment2.second_index = term_remapping.at(assignment.second_index);
-    }
-    */
+        /* Succeeded to assign first to first. */
+        remapped_assignment.first_object = assignment.first_object;
 
-    /* Remap the assignment to the function terms. */
-    auto remapped_assignment = Assignment();
-    if (function_skeleton->get_arity() > 0)
-    {
-        assert(assignment.first_index != -1);
-        remapped_assignment.first_index = function_remapping.at(assignment.first_index);
-        if (remapped_assignment.first_index != -1)
+        if (assignment.second_index != Assignment::MAX_VALUE)
         {
-            remapped_assignment.first_object = assignment.first_object;
+            /* Assignment still has a second. */
+            remapped_assignment.second_index = term_remapping.at(assignment.second_index);
 
-            if (assignment.second_index != -1)
+            if (remapped_assignment.second_index != Assignment::MAX_VALUE)
             {
-                remapped_assignment.second_index = function_remapping.at(assignment.second_index);
-                if (remapped_assignment.second_index != -1)
-                {
-                    remapped_assignment.second_object = assignment.second_object;
-                }
-            }
-        }
-        else
-        {
-            if (assignment.second_index != -1)
-            {
-                remapped_assignment.first_index = function_remapping.at(assignment.second_index);
-                if (remapped_assignment.first_index != -1)
-                {
-                    remapped_assignment.first_index = assignment.second_object;
-                }
+                /* Succeeded to assign second to second. */
+                remapped_assignment.second_object = assignment.second_object;
             }
         }
     }
-    assert((function_skeleton->get_arity() > 0) || (remapped_assignment.first_index == -1 && remapped_assignment.second_index == -1));
 
     // std::cout << "Remapped_assignment: " << remapped_assignment.first_index << " " << remapped_assignment.first_object << " "
     //           << remapped_assignment.second_index << " " << remapped_assignment.second_object << std::endl;
@@ -373,14 +351,11 @@ static Bounds<ContinuousCost> remap_and_retrieve_bounds_from_assignment_set(Func
 
     assert(rank < function_assignment_set.size());
     const auto bounds = function_assignment_set[rank];
-    // std::cout << function << " " << bounds << std::endl;
 
     return bounds;
 }
 
 static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExpression fexpr,
-                                                                     const absl::flat_hash_map<Function<Static>, IndexList>& static_remapping,
-                                                                     const absl::flat_hash_map<Function<Fluent>, IndexList>& fluent_remapping,
                                                                      const Assignment& assignment,
                                                                      const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                                      const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
@@ -397,45 +372,34 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
             {
                 return evaluate_binary_bounds(arg->get_binary_operator(),
                                               evaluate_function_expression_partially(arg->get_left_function_expression(),
-                                                                                     static_remapping,
-                                                                                     fluent_remapping,
                                                                                      assignment,
                                                                                      static_numeric_assignment_set,
                                                                                      fluent_numeric_assignment_set),
                                               evaluate_function_expression_partially(arg->get_right_function_expression(),
-                                                                                     static_remapping,
-                                                                                     fluent_remapping,
                                                                                      assignment,
                                                                                      static_numeric_assignment_set,
                                                                                      fluent_numeric_assignment_set));
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
             {
-                return std::accumulate(std::next(arg->get_function_expressions().begin()),  // Start from the second expression
-                                       arg->get_function_expressions().end(),
-                                       evaluate_function_expression_partially(arg->get_function_expressions().front(),
-                                                                              static_remapping,
-                                                                              fluent_remapping,
-                                                                              assignment,
-                                                                              static_numeric_assignment_set,
-                                                                              fluent_numeric_assignment_set),
-                                       [&](const auto& value, const auto& child_expr)
-                                       {
-                                           return evaluate_multi_bounds(arg->get_multi_operator(),
-                                                                        value,
-                                                                        evaluate_function_expression_partially(child_expr,
-                                                                                                               static_remapping,
-                                                                                                               fluent_remapping,
-                                                                                                               assignment,
-                                                                                                               static_numeric_assignment_set,
-                                                                                                               fluent_numeric_assignment_set));
-                                       });
+                return std::accumulate(
+                    std::next(arg->get_function_expressions().begin()),  // Start from the second expression
+                    arg->get_function_expressions().end(),
+                    evaluate_function_expression_partially(arg->get_function_expressions().front(),
+                                                           assignment,
+                                                           static_numeric_assignment_set,
+                                                           fluent_numeric_assignment_set),
+                    [&](const auto& value, const auto& child_expr)
+                    {
+                        return evaluate_multi_bounds(
+                            arg->get_multi_operator(),
+                            value,
+                            evaluate_function_expression_partially(child_expr, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set));
+                    });
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionMinus>)
             {
                 const auto bounds = evaluate_function_expression_partially(arg->get_function_expression(),
-                                                                           static_remapping,
-                                                                           fluent_remapping,
                                                                            assignment,
                                                                            static_numeric_assignment_set,
                                                                            fluent_numeric_assignment_set);
@@ -443,11 +407,11 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
             {
-                return remap_and_retrieve_bounds_from_assignment_set(arg, static_remapping, assignment, static_numeric_assignment_set);
+                return remap_assignment_and_retrieve_bounds_from_assignment_set(arg, assignment, static_numeric_assignment_set);
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
             {
-                return remap_and_retrieve_bounds_from_assignment_set(arg, fluent_remapping, assignment, fluent_numeric_assignment_set);
+                return remap_assignment_and_retrieve_bounds_from_assignment_set(arg, assignment, fluent_numeric_assignment_set);
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Auxiliary>>)
             {
@@ -468,30 +432,23 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
 {
     /*
     const auto value1 = evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
-                                                               numeric_constraint->get_remapping<Static>(),
-                                                               numeric_constraint->get_remapping<Fluent>(),
                                                                assignment,
                                                                static_numeric_assignment_set,
                                                                fluent_numeric_assignment_set);
     const auto value2 = evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
-                                                               numeric_constraint->get_remapping<Static>(),
-                                                               numeric_constraint->get_remapping<Fluent>(),
                                                                assignment,
                                                                static_numeric_assignment_set,
                                                                fluent_numeric_assignment_set);
     const auto result = evaluate(numeric_constraint->get_binary_comparator(), value1, value2);
     std::cout << to_string(numeric_constraint->get_binary_comparator()) << " " << value1 << " " << value2 << " = " << result << std::endl;
     */
+
     return evaluate(numeric_constraint->get_binary_comparator(),
                     evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
-                                                           numeric_constraint->get_remapping<Static>(),
-                                                           numeric_constraint->get_remapping<Fluent>(),
                                                            assignment,
                                                            static_numeric_assignment_set,
                                                            fluent_numeric_assignment_set),
                     evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
-                                                           numeric_constraint->get_remapping<Static>(),
-                                                           numeric_constraint->get_remapping<Fluent>(),
                                                            assignment,
                                                            static_numeric_assignment_set,
                                                            fluent_numeric_assignment_set));
@@ -511,8 +468,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 
         for (const auto& assignment : RangeType(terms, element))
         {
-            assert(assignment.first_index < terms.size());
-            assert(assignment.first_index < assignment.second_index);
+            assert(assignment.is_valid(terms));
 
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
             {
@@ -561,7 +517,7 @@ Index Vertex::get_object_if_overlap(const Term& term) const
         }
     }
 
-    return -1;
+    return Assignment::MAX_VALUE;
 }
 
 /**
@@ -608,7 +564,7 @@ Index Edge::get_object_if_overlap(const Term& term) const
         }
     }
 
-    return -1;
+    return Assignment::MAX_VALUE;
 }
 
 /**
@@ -625,7 +581,7 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
     /* 1. Compute vertices */
 
-    for (uint32_t parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
+    for (size_t parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
     {
         VertexIndexList vertex_partition;
         ObjectIndexList object_partition;

@@ -332,10 +332,11 @@ ConditionalEffect PDDLRepositories::get_or_create_conditional_effect(Conjunctive
 
 NumericConstraint PDDLRepositories::get_or_create_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
                                                                      FunctionExpression function_expression_left,
-                                                                     FunctionExpression function_expression_right)
+                                                                     FunctionExpression function_expression_right,
+                                                                     TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<NumericConstraintImpl> {})
-        .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right));
+        .get_or_create(std::move(binary_comparator), std::move(function_expression_left), std::move(function_expression_right), std::move(terms));
 }
 
 GroundNumericConstraint PDDLRepositories::get_or_create_ground_numeric_constraint(loki::BinaryComparatorEnum binary_comparator,
