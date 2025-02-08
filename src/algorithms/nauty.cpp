@@ -66,9 +66,8 @@ bool operator<(const Certificate& lhs, const Certificate& rhs)
 
 std::ostream& operator<<(std::ostream& os, const Certificate& element)
 {
-    os << "CertificateNauty("
-       << "canonical_graph=" << element.get_canonical_graph() << ", "
-       << "canonical_coloring=" << element.get_canonical_coloring() << ")";
+    os << "CertificateNauty(" << "canonical_graph=" << element.get_canonical_graph() << ", " << "canonical_coloring=" << element.get_canonical_coloring()
+       << ")";
     return os;
 }
 

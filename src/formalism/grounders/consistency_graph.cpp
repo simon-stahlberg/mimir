@@ -301,54 +301,16 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
     const auto function = fexpr->get_function();
     const auto function_skeleton = function->get_function_skeleton();
 
+    assert(function_skeleton->get_index() < numeric_assignment_set.get_per_function_skeleton_bounds_set().size());
+    const auto& function_assignment_set = numeric_assignment_set.get_per_function_skeleton_bounds_set()[function_skeleton->get_index()];
+
     /* Remap the Assignment to the terms of the function expression.
        Note: here we use the applied transformation to remap the assignment of the constraint to the fexpr. */
-    const auto& term_remapping = function->get_parent_terms_to_terms_mapping();
-    auto remapped_assignment = Assignment();
-    assert(assignment.is_valid(term_remapping.size()));
-    remapped_assignment.first_index = term_remapping.at(assignment.first_index);
-    // std::cout << "term remapping: " << term_remapping << std::endl;
-    if (remapped_assignment.first_index == Assignment::MAX_VALUE)
-    {
-        /* Failed to assign first to first. */
-        if (assignment.second_index != Assignment::MAX_VALUE)
-        {
-            /* Assignment still has a second. */
-            remapped_assignment.first_index = term_remapping.at(assignment.second_index);
-
-            if (remapped_assignment.first_index != Assignment::MAX_VALUE)
-            {
-                /* Succeeded to assign second to first. */
-                remapped_assignment.first_object = assignment.second_object;
-            }
-        }
-    }
-    else
-    {
-        /* Succeeded to assign first to first. */
-        remapped_assignment.first_object = assignment.first_object;
-
-        if (assignment.second_index != Assignment::MAX_VALUE)
-        {
-            /* Assignment still has a second. */
-            remapped_assignment.second_index = term_remapping.at(assignment.second_index);
-
-            if (remapped_assignment.second_index != Assignment::MAX_VALUE)
-            {
-                /* Succeeded to assign second to second. */
-                remapped_assignment.second_object = assignment.second_object;
-            }
-        }
-    }
-
+    auto remapped_assignment = Assignment(assignment, function->get_parent_terms_to_terms_mapping());
     // std::cout << "Remapped_assignment: " << remapped_assignment.first_index << " " << remapped_assignment.first_object << " "
     //           << remapped_assignment.second_index << " " << remapped_assignment.second_object << std::endl;
 
     const auto rank = get_assignment_rank(remapped_assignment, function_skeleton->get_arity(), numeric_assignment_set.get_num_objects());
-
-    assert(function_skeleton->get_index() < numeric_assignment_set.get_per_function_skeleton_bounds_set().size());
-    const auto& function_assignment_set = numeric_assignment_set.get_per_function_skeleton_bounds_set()[function_skeleton->get_index()];
-
     assert(rank < function_assignment_set.size());
     const auto bounds = function_assignment_set[rank];
 

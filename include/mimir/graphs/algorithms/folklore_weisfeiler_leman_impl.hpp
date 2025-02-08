@@ -71,8 +71,7 @@ bool operator==(const Certificate<K>& lhs, const Certificate<K>& rhs)
 template<size_t K>
 std::ostream& operator<<(std::ostream& out, const Certificate<K>& element)
 {
-    out << "Certificate" << K << "FWL("
-        << "canonical_coloring=" << element.get_canonical_coloring() << ", "
+    out << "Certificate" << K << "FWL(" << "canonical_coloring=" << element.get_canonical_coloring() << ", "
         << "canonical_configuration_compression_function=" << element.get_canonical_configuration_compression_function() << ")";
     return out;
 }

@@ -47,6 +47,45 @@ Assignment::Assignment(Index first_index, Index first_object, Index second_index
 {
 }
 
+Assignment::Assignment(const Assignment& assignment, const IndexList& remapping) : Assignment()
+{
+    assert(assignment.is_valid(remapping.size()));
+
+    first_index = remapping.at(assignment.first_index);
+    if (first_index == MAX_VALUE)
+    {
+        /* Failed to assign first to first. */
+        if (assignment.second_index != MAX_VALUE)
+        {
+            /* Assignment still has a second. */
+            first_index = remapping.at(assignment.second_index);
+
+            if (first_index != MAX_VALUE)
+            {
+                /* Succeeded to assign second to first. */
+                first_object = assignment.second_object;
+            }
+        }
+    }
+    else
+    {
+        /* Succeeded to assign first to first. */
+        first_object = assignment.first_object;
+
+        if (assignment.second_index != MAX_VALUE)
+        {
+            /* Assignment still has a second. */
+            second_index = remapping.at(assignment.second_index);
+
+            if (second_index != MAX_VALUE)
+            {
+                /* Succeeded to assign second to second. */
+                second_object = assignment.second_object;
+            }
+        }
+    }
+}
+
 /**
  * AssignmentSet
  */
