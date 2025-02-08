@@ -80,7 +80,10 @@ public:
         m_vertex(&vertex),
         m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
     {
-        advance();  // first advance might result in end immediately, e.g., if terms is empty.
+        if (begin)
+        {
+            advance();  // first advance might result in end immediately, e.g., if terms is empty.
+        }
     }
     reference operator*() const { return m_assignment; }
     VertexAssignmentIterator& operator++()
@@ -191,7 +194,10 @@ public:
         m_edge(&edge),
         m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
     {
-        advance();  // first advance might result in end immediately, e.g., if terms is empty.
+        if (begin)
+        {
+            advance();  // first advance might result in end immediately, e.g., if terms is empty.
+        }
     }
     reference operator*() const { return m_assignment; }
     VertexAndEdgeAssignmentIterator& operator++()
