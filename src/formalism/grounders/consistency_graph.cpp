@@ -137,7 +137,7 @@ private:
         if (m_assignment.second_index == Assignment::MAX_VALUE)
         {
             // Reduced branching by setting iterator index and unsetting first index.
-            // Note: unsetting first object is unnecessary because it will either be set or the iterator reached its end.
+            // Note: unsetting first object is unnecessary because it will either be set or the iterator reaches its end.
             size_t first_index = m_assignment.first_index + 1;
             m_assignment.first_index = Assignment::MAX_VALUE;
 
@@ -174,8 +174,7 @@ private:
                 }
             }
         }
-
-        if (m_assignment.first_index == Assignment::MAX_VALUE)
+        else
         {
             m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
         }

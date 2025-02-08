@@ -27,6 +27,7 @@
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <variant>
 #include <vector>
 
 namespace mimir
@@ -180,6 +181,28 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T, Allocator>& vec)
     os << "]";
     return os;
 }
+
+template<typename T1>
+std::ostream& operator<<(std::ostream& os, const std::variant<T1>& variant)
+{
+    std::visit([&](auto&& arg) { os << arg; }, variant);
+    return os;
+}
+
+template<typename T1, typename T2>
+std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2>& variant)
+{
+    std::visit([&](auto&& arg) { os << arg; }, variant);
+    return os;
+}
+
+template<typename T1, typename T2, typename T3>
+std::ostream& operator<<(std::ostream& os, const std::variant<T1, T2, T3>& variant)
+{
+    std::visit([&](auto&& arg) { os << arg; }, variant);
+    return os;
+}
+
 }
 
 #endif
