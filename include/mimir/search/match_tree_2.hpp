@@ -26,6 +26,7 @@
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
 
+#include <concepts>
 #include <cstdint>
 #include <queue>
 #include <vector>
@@ -37,8 +38,14 @@ namespace mimir::match_tree
  * Base classes
  */
 
+/// MatchTree can handle elements that have a conjunctive condition, e.g., GroundActionImpl and GroundAxiomImpl.
+template<typename T>
+concept HasConjunctiveCondition = requires(const T a) {
+    { a.get_conjunctive_condition() } -> std::same_as<const GroundConjunctiveCondition&>;
+};
+
 /// @brief `Node` implements the interface of nodes.
-template<typename Element>
+template<HasConjunctiveCondition Element>
 class INode
 {
 public:
@@ -46,29 +53,29 @@ public:
 
     virtual void generate_applicable_actions(const DenseState& state,
                                              std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                             std::vector<Element>& ref_applicable_elements) const = 0;
+                                             std::vector<const Element*>& ref_applicable_elements) const = 0;
 };
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 using Node = std::unique_ptr<INode<Element>>;
 
 /* Customization point 1: NodeScoringFunction*/
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 struct QueueEntry
 {
     double score;
-    const Node<Element>* node;
+    const Node<const Element*>* node;
 };
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 struct QueueEntryComparator
 {
-    bool operator()(const QueueEntry& lhs, const QueueEntry& rhs) const { return lhs.score > rhs.score; }
+    bool operator()(const QueueEntry<Element>& lhs, const QueueEntry<Element>& rhs) const { return lhs.score > rhs.score; }
 };
 
 /// @brief `INodeScoringFunction` allows computing a score for a node.
-template<typename Element>
+template<HasConjunctiveCondition Element>
 class IQueueEntryScoringFunction
 {
 public:
@@ -77,7 +84,7 @@ public:
     virtual double compute_score(const QueueEntry<Element>& entry, size_t distance_to_root) = 0;
 };
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 using QueueEntryScoringFunction = std::unique_ptr<IQueueEntryScoringFunction<Element>>;
 
 using Split = std::variant<Literal<Fluent>, Literal<Derived>, NumericConstraint>;
@@ -86,16 +93,16 @@ using Split = std::variant<Literal<Fluent>, Literal<Derived>, NumericConstraint>
 
 /// @brief `ISplitScoringFunction` computes the best split for a given set of elements.
 /// @tparam Element
-template<typename Element>
+template<HasConjunctiveCondition Element>
 class ISplitScoringFunction
 {
 public:
     virtual ~ISplitScoringFunction() = default;
 
-    virtual Split compute_best_split(std::span<Element> elements) = 0;
+    virtual Split compute_best_split(std::span<const Element*> elements) = 0;
 };
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 using SplitScoringFunction = std::unique_ptr<ISplitScoringFunction<Element>>;
 
 /**
@@ -103,7 +110,7 @@ using SplitScoringFunction = std::unique_ptr<ISplitScoringFunction<Element>>;
  */
 
 /* Nodes */
-template<typename Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class LiteralSelectorNode : public INode<Element>
 {
 private:
@@ -117,14 +124,15 @@ private:
 public:
     explicit LiteralSelectorNode(GroundLiteral<P> literal) : m_atom_index(literal->get_atom()->get_index()), m_is_negated(literal->is_negated()) {}
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<Element>&) const override
+    void
+    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
         (state.get_atoms<P>().get(m_atom_index) != m_is_negated) ? ref_applicable_nodes.push_back(m_true_succ) : ref_applicable_nodes.push_back(m_false_succ);
         ref_applicable_nodes.push_back(m_dontcare_succ);
     }
 };
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 class NumericConstraintSelectorNode : public INode<Element>
 {
 private:
@@ -135,33 +143,36 @@ private:
     Node<Element> m_dontcare_succ;
 
 public:
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<Element>&) const override
+    void
+    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
         evaluate(m_constraint, state.get_numeric_variables()) ? ref_applicable_nodes.push_back(m_true_succ) : ref_applicable_nodes.push_back(m_false_succ);
         ref_applicable_nodes.push_back(m_dontcare_succ);
     }
 };
 
-template<typename Element>
+template<HasConjunctiveCondition Element>
 class ElementGeneratorNode : public INode<Element>
 {
 private:
     std::span<Element> m_elements;
 
 public:
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>&, std::vector<Element>& ref_applicable_elements) const override
+    void generate_applicable_actions(const DenseState& state,
+                                     std::vector<const INode<Element>*>&,
+                                     std::vector<const Element*>& ref_applicable_elements) const override
     {
         ref_applicable_elements.insert(ref_applicable_elements.end(), m_elements.begin(), m_elements.end());
     }
 };
 
 /* MatchTree */
-template<typename Element>
+template<HasConjunctiveCondition Element>
 class MatchTree
 {
 private:
-    std::vector<Element> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
-    Node<Element> m_root;             ///< the root node.
+    std::vector<const Element*> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
+    Node<Element> m_root;                    ///< the root node.
 
     std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
 
@@ -171,15 +182,20 @@ private:
     }
 
 public:
-    MatchTree(std::vector<Element> elements,  //
+    MatchTree(std::vector<const Element*> elements,  //
               const QueueEntryScoringFunction& queue_scoring_function,
               const SplitScoringFunction& split_scoring_function) :
         m_elements(std::move(elements))
     {
         build_iteratively(queue_scoring_function, split_scoring_function);
     }
+    // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
+    MatchTree(const MatchTree& other) = delete;
+    MatchTree& operator=(const MatchTree& other) = delete;
+    MatchTree(MatchTree&& other) = delete;
+    MatchTree& operator=(MatchTree&& other) = delete;
 
-    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<Element>& out_applicable_elements)
+    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements)
     {
         m_evaluate_stack.clear();
         out_applicable_elements.clear();
