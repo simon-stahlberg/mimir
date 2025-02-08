@@ -50,7 +50,7 @@ struct Assignment
     Assignment(Index first_index, Index first_object, Index second_index, Index second_object);
 
     /// @brief Return true iff the assignment is valid, i.e., the first index is within bounds and smaller than the second index.
-    bool is_valid(const TermList& terms) const { return (first_index < terms.size()) && (first_index < second_index); }
+    bool is_valid(size_t num_terms) const { return (first_index < num_terms) && (first_index < second_index); }
 
     size_t size() const { return (first_object != MAX_VALUE ? 1 : 0) + (second_object != MAX_VALUE ? 1 : 0); }
 };

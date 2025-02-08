@@ -271,7 +271,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
 
         for (const auto& assignment : RangeType(terms, element))
         {
-            assert(assignment.is_valid(terms));
+            assert(assignment.is_valid(terms.size()));
 
             const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
 
@@ -307,7 +307,8 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
        Note: here we use the applied transformation to remap the assignment of the constraint to the fexpr. */
     const auto& term_remapping = function->get_parent_terms_to_terms_mapping();
     auto remapped_assignment = Assignment();
-    remapped_assignment.first_index = term_remapping.at(assignment.first_index);  // assumes that the assignment is valid
+    assert(assignment.is_valid(term_remapping.size()));
+    remapped_assignment.first_index = term_remapping.at(assignment.first_index);
     if (remapped_assignment.first_index == Assignment::MAX_VALUE)
     {
         /* Failed to assign first to first. */
@@ -468,7 +469,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
 
         for (const auto& assignment : RangeType(terms, element))
         {
-            assert(assignment.is_valid(terms));
+            assert(assignment.is_valid(terms.size()));
 
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
             {
