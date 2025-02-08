@@ -23,7 +23,7 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
-#include "mimir/search/match_tree/construction_helpers/queue_entry.hpp"
+#include "mimir/search/match_tree/construction_helpers/utils.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
@@ -46,113 +46,66 @@ private:
 
     std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
 
-    template<DynamicPredicateTag P>
-    bool contains_positive(GroundAtom<P> atom, const Element* element)
+    /// @brief Build the empty root node.
+    /// @return
+    Node<Element> build_empty_generator_root()
     {
-        const auto& conjunctive_condition = element->get_conjunctive_condition();
-        const auto& positive_precondition = conjunctive_condition.template get_positive_precondition<P>();
-        return (std::find(positive_precondition.begin(), positive_precondition.end(), atom->get_index()) != positive_precondition.end());
+        return std::make_unique<ElementGeneratorNode<Element>>(std::span<const Element*>(m_elements.begin(), m_elements.end()));
     }
-
-    template<DynamicPredicateTag P>
-    bool contains_negative(GroundAtom<P> atom, const Element* element)
-    {
-        const auto& conjunctive_condition = element->get_conjunctive_condition();
-        const auto& negative_precondition = conjunctive_condition.template get_negative_precondition<P>();
-        return (std::find(negative_precondition.begin(), negative_precondition.end(), atom->get_index()) != negative_precondition.end());
-    }
-
-    bool contains(GroundNumericConstraint constraint, const Element* element)
-    {
-        const auto& conjunctive_condition = element->get_conjunctive_condition();
-        const auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
-        return (std::find(numeric_constraints.begin(), numeric_constraints.end(), constraint) != numeric_constraints.end());
-    }
-
-    /*
-        template<DynamicPredicateTag P>
-        Node<Element> instantiate_node_and_update_queue(const SplitList& past_splits, GroundAtom<P> atom, std::span<const Element*> elements)
-        {
-            // swap true to front
-            auto num_true = size_t(0);
-            for (size_t i = 0; i < elements.size(); ++i)
-            {
-                const auto& element = elements[i];
-                if (contains_positive(atom, element))
-                {
-                    std::swap(elements[i], elements[num_true++]);
-                }
-            }
-            std::cout << "num_true: " << num_true;
-
-            auto num_false = size_t(0);
-            for (size_t i = num_true; i < elements.size(); ++i)
-            {
-                const auto& element = elements[i];
-                if (contains_negative(atom, element))
-                {
-                    std::swap(elements[i], elements[num_false++]);
-                }
-            }
-        }
-
-        template<DynamicPredicateTag P>
-        Node<Element>
-        instantiate_node_and_update_queue(const SplitList& past_splits, GroundNumericConstraint split, std::span<const Element*> elements, QueueType& queue)
-        {
-        }
-
-        Node<Element> instantiate_node_and_update_queue(const SplitList& past_splits, const Split& split, std::span<const Element*> elements, QueueType& queue)
-        {
-            return std::visit([&](auto&& arg) { return instantiate_node_and_update_queue(past_splits, arg, elements, queue); }, split);
-        }
-        */
 
     InverseNode<Element> build_root(const SplitScoringFunction<Element>& split_scoring_function)
     {
-        // Dummy node to represent empty split history.
-        auto dummy_parent = std::make_shared<InverseAtomSelectorNode<Element, Fluent>>(nullptr,
-                                                                                       0.,
-                                                                                       nullptr,
-                                                                                       std::span<const Element*>(),
-                                                                                       std::span<const Element*>(),
-                                                                                       std::span<const Element*>());
-
-        // Span over all elements
         auto root_span = std::span<const Element*>(m_elements.begin(), m_elements.end());
 
-        auto root_split = split_scoring_function->compute_best_split(dummy_parent, root_span);
+        auto root_split = split_scoring_function->compute_best_split(root_span);
         std::cout << "root_split: " << root_split << std::endl;
 
-        return nullptr;
+        return build_root_from_split(root_split, root_span);
+    }
+
+    std::vector<InverseNode<Element>> refine_leaf(const QueueEntryScoringFunction<Element>& queue_scoring_function,
+                                                  const SplitScoringFunction<Element>& split_scoring_function,
+                                                  const InverseNode<Element>& element)
+    {
     }
 
     void build_iteratively(const QueueEntryScoringFunction<Element>& queue_scoring_function, const SplitScoringFunction<Element>& split_scoring_function)
     {
-        if (m_elements.empty())
-        {
-            // TODO: create an empty generator node.
-            return;
-        }
-
         struct QueueEntryComparator
         {
             bool operator()(const InverseNode<Element>& lhs, const InverseNode<Element>& rhs) const { return lhs->get_queue_score() > rhs->get_queue_score(); }
         };
 
         auto queue = std::priority_queue<InverseNode<Element>, std::vector<InverseNode<Element>>, QueueEntryComparator> {};
-        queue.emplace(build_root(split_scoring_function));
+        auto root = build_root(split_scoring_function);
+        queue.emplace(root);
 
-        while (!queue.empty()) {}
+        std::cout << "Instantiated ROOT! " << queue.size() << std::endl;
+
+        while (!queue.empty())
+        {
+            const auto node = queue.top();
+            queue.pop();
+
+            auto children = refine_leaf(queue_scoring_function, split_scoring_function, node);
+
+            // queue.push_range(children.begin(), children.end()),
+        }
     }
 
 public:
+    MatchTree() : m_elements(), m_root(build_empty_generator_root()) {}
+
     MatchTree(std::vector<const Element*> elements,  //
               const QueueEntryScoringFunction<Element>& queue_scoring_function,
               const SplitScoringFunction<Element>& split_scoring_function) :
-        m_elements(std::move(elements))
+        m_elements(std::move(elements)),
+        m_root(build_empty_generator_root())
     {
-        build_iteratively(queue_scoring_function, split_scoring_function);
+        if (!m_elements.empty())
+        {
+            build_iteratively(queue_scoring_function, split_scoring_function);
+        }
     }
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
     MatchTree(const MatchTree& other) = delete;

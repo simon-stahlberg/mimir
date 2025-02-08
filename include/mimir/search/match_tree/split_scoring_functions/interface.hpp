@@ -32,7 +32,7 @@ class ISplitScoringFunction
 public:
     virtual ~ISplitScoringFunction() = default;
 
-    virtual Split compute_best_split(const InverseNode<Element>& parent, std::span<const Element*> elements) = 0;
+    virtual Split compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent = std::nullopt) = 0;
 };
 }
 

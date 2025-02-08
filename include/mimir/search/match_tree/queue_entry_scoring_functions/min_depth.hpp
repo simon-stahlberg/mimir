@@ -26,7 +26,7 @@ template<HasConjunctiveCondition Element>
 class MinDepthQueueEntryScoringFunction : public IQueueEntryScoringFunction<Element>
 {
 public:
-    double compute_score(const QueueEntry<Element>& entry, size_t distance_to_root) override { return static_cast<double>(distance_to_root); }
+    double compute_score(size_t distance_to_root) override { return static_cast<double>(distance_to_root); }
 };
 
 }

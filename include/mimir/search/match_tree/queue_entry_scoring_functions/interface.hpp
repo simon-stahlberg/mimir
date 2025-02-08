@@ -32,7 +32,7 @@ class IQueueEntryScoringFunction
 public:
     virtual ~IQueueEntryScoringFunction() = default;
 
-    virtual double compute_score(const QueueEntry<Element>& entry, size_t distance_to_root) = 0;
+    virtual double compute_score(size_t distance_to_root) = 0;
 };
 
 }

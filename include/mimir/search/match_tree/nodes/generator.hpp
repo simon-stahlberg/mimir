@@ -26,9 +26,11 @@ template<HasConjunctiveCondition Element>
 class ElementGeneratorNode : public INode<Element>
 {
 private:
-    std::span<Element> m_elements;
+    std::span<const Element*> m_elements;
 
 public:
+    explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements) {}
+
     void generate_applicable_actions(const DenseState& state,
                                      std::vector<const INode<Element>*>&,
                                      std::vector<const Element*>& ref_applicable_elements) const override

@@ -27,6 +27,7 @@ class InverseElementGeneratorNode : public IInverseNode<Element>
 {
 private:
     // Meta data
+    size_t m_root_distance;
     InverseNode<Element> m_parent;
     double m_queue_score;
 
@@ -34,7 +35,8 @@ private:
     std::span<const Element*> m_elements;
 
 public:
-    InverseElementGeneratorNode(InverseNode<Element> parent, double queue_score, std::span<const Element*> elements) :
+    InverseElementGeneratorNode(size_t root_distance, InverseNode<Element> parent, double queue_score, std::span<const Element*> elements) :
+        m_root_distance(root_distance),
         m_parent(parent),
         m_queue_score(queue_score),
         m_elements(elements)
@@ -43,6 +45,7 @@ public:
 
     void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
 
+    size_t get_root_distance() const override { return m_root_distance; }
     const InverseNode<Element>& get_parent() const override { return m_parent; }
     double get_queue_score() const override { return m_queue_score; }
 

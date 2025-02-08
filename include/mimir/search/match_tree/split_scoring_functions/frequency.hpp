@@ -35,7 +35,7 @@ private:
 public:
     explicit FrequencySplitScoringFunction(const PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
 
-    Split compute_best_split(const InverseNode<Element>& parent, std::span<const Element*> elements) override
+    Split compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent) override
     {
         std::cout << "compute_best_split" << std::endl;
 
@@ -122,8 +122,12 @@ public:
             void accept(const InverseElementGeneratorNode<Element>& generator) override { repeat_with_parent(generator.get_parent()); }
         };
 
-        auto erase_past_split_visitor = ErasePreviousSplitInverseNodeVisitor(fluent_atom_frequencies, derived_atom_frequencies, numeric_constraint_frequencies);
-        parent->visit(erase_past_split_visitor);
+        if (parent.has_value())
+        {
+            auto erase_past_split_visitor =
+                ErasePreviousSplitInverseNodeVisitor(fluent_atom_frequencies, derived_atom_frequencies, numeric_constraint_frequencies);
+            parent.value()->visit(erase_past_split_visitor);
+        }
 
         /* Compute highest frequency */
         auto highest_frequency = size_t(0);
@@ -143,6 +147,11 @@ public:
         std::cout << "Highest frequency: " << highest_frequency << std::endl;
 
         /* Collect splits with highest frequency */
+
+        // TODO: we must change this.
+        // Iterate descending in the frequency.
+        // Collect all splits that would result in a useless node until a useful one is found.
+        // Then in the instantiated node, we must store the useless splits.
         auto highest_frequency_splits = SplitList {};
         for (const auto& [atom, frequency] : fluent_atom_frequencies)
         {

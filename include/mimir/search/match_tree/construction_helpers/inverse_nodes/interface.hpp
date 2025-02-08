@@ -39,6 +39,7 @@ class IInverseNode
 public:
     virtual ~IInverseNode() = default;
 
+    virtual size_t get_root_distance() const = 0;
     virtual const InverseNode<Element>& get_parent() const = 0;
     virtual double get_queue_score() const = 0;
 
