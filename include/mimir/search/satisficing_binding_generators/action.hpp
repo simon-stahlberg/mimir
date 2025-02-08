@@ -30,17 +30,23 @@ private:
     /* Implement SatisficingBindingGenerator interface. */
     friend class SatisficingBindingGenerator<ActionSatisficingBindingGenerator>;
 
-    bool is_valid_dynamic_binding_impl(const DenseState& dense_state, const ObjectList& binding);
+    bool is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding);
+
+    using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding;
 
 private:
     /* Declare additional private members and functions. */
     Action m_action;
 
     template<DynamicFunctionTag F>
-    bool is_valid_dynamic_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+    bool is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
 
     template<DynamicFunctionTag F>
-    bool is_valid_dynamic_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+    bool is_valid_binding(const NumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+
+    bool is_valid_binding(ConjunctiveEffect effect, const DenseState& dense_state, const ObjectList& binding);
+
+    bool is_valid_binding_if_fires(ConditionalEffect effect, const DenseState& dense_state, const ObjectList& binding);
 
 public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::create_binding_generator;

@@ -76,9 +76,11 @@ protected:
     template<DynamicPredicateTag P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
 
-    bool is_valid_dynamic_binding(const NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
-
     bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
+
+    bool is_valid_binding(const NumericConstraintList& constraints, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+
+    bool is_valid_binding(ConjunctiveCondition condition, const DenseState& dense_state, const ObjectList& binding);
 
     bool is_valid_binding(const DenseState& dense_state, const ObjectList& binding);
 
@@ -169,9 +171,9 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const Liter
 }
 
 template<typename Derived_>
-bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const NumericConstraintList& constraints,
-                                                                     const FlatDoubleList& fluent_numeric_variables,
-                                                                     const ObjectList& binding)
+bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const NumericConstraintList& constraints,
+                                                             const FlatDoubleList& fluent_numeric_variables,
+                                                             const ObjectList& binding)
 {
     for (const auto& constraint : constraints)
     {
@@ -202,14 +204,19 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const Litera
 }
 
 template<typename Derived_>
+bool SatisficingBindingGenerator<Derived_>::is_valid_binding(ConjunctiveCondition condition, const DenseState& dense_state, const ObjectList& binding)
+{
+    return is_valid_static_binding(condition->get_literals<Static>(), binding)
+           && is_valid_dynamic_binding(condition->get_literals<Fluent>(), dense_state.get_atoms<Fluent>(), binding)
+           && is_valid_dynamic_binding(condition->get_literals<Derived>(), dense_state.get_atoms<Derived>(), binding)
+           && is_valid_binding(condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding);
+}
+
+template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const DenseState& dense_state, const ObjectList& binding)
 {
-    //  We need to test all types of conditions due to over-approx.
-    return is_valid_static_binding(m_conjunctive_condition->get_literals<Static>(), binding)
-           && is_valid_dynamic_binding(m_conjunctive_condition->get_literals<Fluent>(), dense_state.get_atoms<Fluent>(), binding)
-           && is_valid_dynamic_binding(m_conjunctive_condition->get_literals<Derived>(), dense_state.get_atoms<Derived>(), binding)
-           && is_valid_dynamic_binding(m_conjunctive_condition->get_numeric_constraints(), dense_state.get_numeric_variables(), binding)
-           && self().is_valid_dynamic_binding_impl(dense_state, binding);
+    return is_valid_binding(m_conjunctive_condition, dense_state, binding)  ///< Check applicability of our conjunctive condition.
+           && self().is_valid_binding_impl(dense_state, binding);           ///< Check applicability in Derived.
 }
 
 template<typename Derived_>

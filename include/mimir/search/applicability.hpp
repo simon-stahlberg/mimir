@@ -46,40 +46,41 @@ extern bool is_applicable(const GroundConjunctiveCondition& conjunctive_conditio
  * GroundConjunctiveEffect
  */
 
-/// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects in the conjunctive effect are well-defined.
-/// @param conjunctive_effect
-/// @param dense_state
-/// @return
+/// @brief Return true iff all functions in numeric effects are well-defined in the state.
 extern bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state);
 
 /**
  * GroundConditionalEffect
  */
 
-extern bool is_dynamically_applicable(const GroundConditionalEffect& conditional_effect, const DenseState& dense_state);
-
-extern bool is_statically_applicable(const GroundConditionalEffect& conditional_effect, Problem problem);
-
+/// @brief Return true iff the conditional effect is applicable in the problem and state,
+/// i.e., the conjunctive condition and the conjunctive effect are applicable.
+/// More formally, consider conditional effect c = <pre, eff>.
+/// app(c) <=> app(pre) && app(eff)
 extern bool is_applicable(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state);
+
+/// @brief Return true iff the conditional effect is applicable in the problem and state when it fires,
+/// i.e., when the conjunctive condition is applicable then the effect must also be applicable.
+/// More formally, consider conditional effect c = <pre, eff>.
+/// app(c) <=> app(pre) -> app(eff)
+///        <=> !app(pre) || app(eff)
+///        <=> !(app(pre) && !app(eff))
+///        <=> !(!app(eff) && app(pre))
+/// Now we have a more efficient form that tests app(eff) before app(pre).
+extern bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state);
 
 /**
  * GroundAction
  */
 
-extern bool is_dynamically_applicable(GroundAction action, const DenseState& dense_state);
-
-extern bool is_statically_applicable(GroundAction action, const FlatBitset& static_positive_atoms);
-
+/// @brief Return true iff the ground action is applicable in the problem and state.
 extern bool is_applicable(GroundAction action, Problem problem, const DenseState& dense_state);
 
 /**
  * GroundAxiom
  */
 
-extern bool is_dynamically_applicable(GroundAxiom axiom, const DenseState& dense_state);
-
-extern bool is_statically_applicable(GroundAxiom axiom, const FlatBitset& static_positive_atoms);
-
+/// @brief Return true iff the ground axiom is applicable in the problem and state.
 extern bool is_applicable(GroundAxiom axiom, Problem problem, const DenseState& dense_state);
 }
 

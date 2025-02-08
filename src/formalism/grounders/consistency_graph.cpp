@@ -301,14 +301,13 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
     const auto function = fexpr->get_function();
     const auto function_skeleton = function->get_function_skeleton();
 
-    // std::cout << function << " " << bounds << std::endl;
-
     /* Remap the Assignment to the terms of the function expression.
        Note: here we use the applied transformation to remap the assignment of the constraint to the fexpr. */
     const auto& term_remapping = function->get_parent_terms_to_terms_mapping();
     auto remapped_assignment = Assignment();
     assert(assignment.is_valid(term_remapping.size()));
     remapped_assignment.first_index = term_remapping.at(assignment.first_index);
+    // std::cout << "term remapping: " << term_remapping << std::endl;
     if (remapped_assignment.first_index == Assignment::MAX_VALUE)
     {
         /* Failed to assign first to first. */
@@ -352,6 +351,8 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
 
     assert(rank < function_assignment_set.size());
     const auto bounds = function_assignment_set[rank];
+
+    // std::cout << function << " " << bounds << std::endl;
 
     return bounds;
 }
@@ -470,10 +471,9 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
         for (const auto& assignment : RangeType(terms, element))
         {
             assert(assignment.is_valid(terms.size()));
-
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
             {
-                // std::cout << "Constraint unsatisfied: " << numeric_constraint << std::endl;
+                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
                 return false;
             }
         }

@@ -171,7 +171,8 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Auxiliary>>)
             {
-                throw std::logic_error("evaluate(fexpr, fluent_numeric_variables): Unexpected GroundFunctionExpressionFunction<Auxiliary>.");
+                throw std::logic_error("evaluate(fexpr, fluent_numeric_variables): Unexpected GroundFunctionExpressionFunction<Auxiliary>. Did you define a "
+                                       "(composite) metric consisting of a single nullary function without defining its value in the initial state?");
             }
             else
             {

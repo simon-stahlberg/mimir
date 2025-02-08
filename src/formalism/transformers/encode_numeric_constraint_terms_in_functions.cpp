@@ -97,8 +97,8 @@ NumericConstraint EncodeNumericConstraintTermsInFunctions::transform_impl(Numeri
     auto terms = TermList {};
     collect_terms(numeric_constraint->get_left_function_expression(), terms);
     collect_terms(numeric_constraint->get_right_function_expression(), terms);
+    terms = uniquify_elements(terms);
     terms = this->transform(terms);
-    uniquify_elements(terms);
     std::sort(terms.begin(), terms.end(), [](auto&& lhs, auto&& rhs) { return lhs->get_index() < rhs->get_index(); });
 
     // Set the member variable to be used in nested tranformations.

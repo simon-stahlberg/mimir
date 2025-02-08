@@ -35,51 +35,34 @@ ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(std::shared
 {
 }
 
-bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding_impl(const DenseState& dense_state, const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& dense_state, const ObjectList& binding)
 {
-    const auto& fluent_numeric_variables = dense_state.get_numeric_variables();
-    const auto& fluent_numeric_effects = m_action->get_conjunctive_effect()->get_fluent_numeric_effects();
-    const auto& auxiliary_numeric_effect = m_action->get_conjunctive_effect()->get_auxiliary_numeric_effect();
-
-    return is_valid_dynamic_binding(fluent_numeric_effects, fluent_numeric_variables, binding)
-           && (!auxiliary_numeric_effect.has_value() || is_valid_dynamic_binding(auxiliary_numeric_effect.value(), fluent_numeric_variables, binding))
+    return is_valid_binding(m_action->get_conjunctive_effect(), dense_state, binding)
            && std::all_of(m_action->get_conditional_effects().begin(),
                           m_action->get_conditional_effects().end(),
-                          [&](auto&& arg)
-                          {
-                              const auto& cond_fluent_numeric_effects = arg->get_conjunctive_effect()->get_fluent_numeric_effects();
-                              const auto& cond_auxiliary_numeric_effect = arg->get_conjunctive_effect()->get_auxiliary_numeric_effect();
-
-                              return is_valid_dynamic_binding(cond_fluent_numeric_effects, fluent_numeric_variables, binding)
-                                     && (!cond_auxiliary_numeric_effect.has_value()
-                                         || is_valid_dynamic_binding(cond_auxiliary_numeric_effect.value(), fluent_numeric_variables, binding));
-                          });
+                          [&](auto&& arg) { return is_valid_binding_if_fires(arg, dense_state, binding); });
 }
 
 template<DynamicFunctionTag F>
-bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(NumericEffect<F> effect,
-                                                                 const FlatDoubleList& fluent_numeric_variables,
-                                                                 const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
 {
     return (evaluate(this->m_numeric_constraint_grounder->get_fexpr_grounder()->ground(effect->get_function_expression(), binding), fluent_numeric_variables)
             != UNDEFINED_CONTINUOUS_COST);
 }
 
-template bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(NumericEffect<Fluent> effect,
-                                                                          const FlatDoubleList& fluent_numeric_variables,
-                                                                          const ObjectList& binding);
-template bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(NumericEffect<Auxiliary> effect,
-                                                                          const FlatDoubleList& fluent_numeric_variables,
-                                                                          const ObjectList& binding);
+template bool
+ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
+template bool
+ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
 
 template<DynamicFunctionTag F>
-bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEffectList<F>& effects,
-                                                                 const FlatDoubleList& fluent_numeric_variables,
-                                                                 const ObjectList& binding)
+bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<F>& effects,
+                                                         const FlatDoubleList& fluent_numeric_variables,
+                                                         const ObjectList& binding)
 {
     for (const auto& effect : effects)
     {
-        if (is_valid_dynamic_binding(effect, fluent_numeric_variables, binding) == UNDEFINED_CONTINUOUS_COST)
+        if (is_valid_binding(effect, fluent_numeric_variables, binding) == UNDEFINED_CONTINUOUS_COST)
         {
             return false;
         }
@@ -87,11 +70,25 @@ bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEf
     return true;
 }
 
-template bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEffectList<Fluent>& effects,
-                                                                          const FlatDoubleList& fluent_numeric_variables,
-                                                                          const ObjectList& binding);
-template bool ActionSatisficingBindingGenerator::is_valid_dynamic_binding(const NumericEffectList<Auxiliary>& effects,
-                                                                          const FlatDoubleList& fluent_numeric_variables,
-                                                                          const ObjectList& binding);
+template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<Fluent>& effects,
+                                                                  const FlatDoubleList& fluent_numeric_variables,
+                                                                  const ObjectList& binding);
+template bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<Auxiliary>& effects,
+                                                                  const FlatDoubleList& fluent_numeric_variables,
+                                                                  const ObjectList& binding);
+
+bool ActionSatisficingBindingGenerator::is_valid_binding(ConjunctiveEffect effect, const DenseState& dense_state, const ObjectList& binding)
+{
+    return is_valid_binding(effect->get_fluent_numeric_effects(), dense_state.get_numeric_variables(), binding)
+           && (!effect->get_auxiliary_numeric_effect().has_value()
+               || is_valid_binding(effect->get_auxiliary_numeric_effect().value(), dense_state.get_numeric_variables(), binding));
+}
+
+bool ActionSatisficingBindingGenerator::is_valid_binding_if_fires(ConditionalEffect effect, const DenseState& dense_state, const ObjectList& binding)
+{
+    // Same idea as in is_applicable_if_fires.
+    return !(!is_valid_binding(effect->get_conjunctive_effect(), dense_state, binding)  //
+             && SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding(effect->get_conjunctive_condition(), dense_state, binding));
+}
 
 }

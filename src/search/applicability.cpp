@@ -127,7 +127,6 @@ bool is_applicable(const GroundNumericEffect<Fluent>& effect, const FlatDoubleLi
 template<>
 bool is_applicable(const GroundNumericEffect<Auxiliary>& effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    // TODO(numeric) must somewhere (or here) check that initial auxiliary value is defined.
     return (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
@@ -149,70 +148,32 @@ static bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatD
     return true;
 }
 
-/// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects in the conjunctive effect are well-defined.
-/// @param conjunctive_effect
-/// @param fluent_numeric_variables
-/// @return
-static bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const FlatDoubleList& fluent_numeric_variables)
-{
-    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), fluent_numeric_variables)
-           && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
-               || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value(), fluent_numeric_variables));
-}
-
 bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const DenseState& dense_state)
 {
-    return is_applicable(conjunctive_effect, dense_state.get_numeric_variables());
+    return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), dense_state.get_numeric_variables())
+           && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
+               || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value(), dense_state.get_numeric_variables()));
 }
 
 /**
  * GroundConditionalEffect
  */
 
-template<PredicateTag P>
-bool is_applicable(const GroundConditionalEffect& conditional_effect, const FlatBitset& atoms)
-{
-    return is_applicable<P>(conditional_effect.get_conjunctive_condition(), atoms);
-}
-
-template bool is_applicable<Static>(const GroundConditionalEffect& conditional_effect, const FlatBitset& atoms);
-template bool is_applicable<Fluent>(const GroundConditionalEffect& conditional_effect, const FlatBitset& atoms);
-template bool is_applicable<Derived>(const GroundConditionalEffect& conditional_effect, const FlatBitset& atoms);
-
-bool is_applicable(const GroundConditionalEffect& conditional_effect, const FlatDoubleList& fluent_numeric_variables)
-{
-    return is_applicable(conditional_effect.get_conjunctive_condition(), fluent_numeric_variables)
-           && is_applicable(conditional_effect.get_conjunctive_effect(), fluent_numeric_variables);
-}
-
-bool is_dynamically_applicable(const GroundConditionalEffect& conditional_effect, const DenseState& dense_state)
-{
-    return is_dynamically_applicable(conditional_effect.get_conjunctive_condition(), dense_state);
-}
-
-bool is_statically_applicable(const GroundConditionalEffect& conditional_effect, Problem problem)
-{
-    return is_statically_applicable(conditional_effect.get_conjunctive_condition(), problem->get_static_initial_positive_atoms_bitset());
-}
-
 bool is_applicable(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state)
 {
-    return is_applicable(conditional_effect.get_conjunctive_condition(), problem, dense_state);
+    return is_applicable(conditional_effect.get_conjunctive_condition(), problem, dense_state)  //
+           && is_applicable(conditional_effect.get_conjunctive_effect(), dense_state);
+}
+
+bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state)
+{
+    return !(!is_applicable(conditional_effect.get_conjunctive_effect(), dense_state)  //
+             && is_applicable(conditional_effect.get_conjunctive_condition(), problem, dense_state));
 }
 
 /**
  * GroundAction
  */
-
-bool is_dynamically_applicable(GroundAction action, const DenseState& dense_state)
-{
-    return is_dynamically_applicable(action->get_conjunctive_condition(), dense_state);
-}
-
-bool is_statically_applicable(GroundAction action, const FlatBitset& static_positive_atoms)
-{
-    return is_statically_applicable(action->get_conjunctive_condition(), static_positive_atoms);
-}
 
 bool is_applicable(GroundAction action, Problem problem, const DenseState& dense_state)
 {
@@ -220,27 +181,12 @@ bool is_applicable(GroundAction action, Problem problem, const DenseState& dense
            && is_applicable(action->get_conjunctive_effect(), dense_state)
            && std::all_of(action->get_conditional_effects().begin(),
                           action->get_conditional_effects().end(),
-                          [&](auto&& arg)
-                          {
-                              // If the conditional effect is applicable, then the conjunctive effect must be applicable
-                              return !is_applicable(arg.get_conjunctive_condition(), problem, dense_state)
-                                     || is_applicable(arg.get_conjunctive_effect(), dense_state);
-                          });
+                          [&](auto&& arg) { return is_applicable_if_fires(arg, problem, dense_state); });
 }
 
 /**
  * GroundAxiom
  */
-
-bool is_dynamically_applicable(GroundAxiom axiom, const DenseState& dense_state)
-{
-    return is_dynamically_applicable(axiom->get_conjunctive_condition(), dense_state);
-}
-
-bool is_statically_applicable(GroundAxiom axiom, const FlatBitset& static_positive_atoms)
-{
-    return is_statically_applicable(axiom->get_conjunctive_condition(), static_positive_atoms);
-}
 
 bool is_applicable(GroundAxiom axiom, Problem problem, const DenseState& dense_state)
 {
