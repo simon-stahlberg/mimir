@@ -27,7 +27,7 @@
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree.hpp"
-#include "mimir/search/match_tree_2.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 
 namespace mimir
 {
