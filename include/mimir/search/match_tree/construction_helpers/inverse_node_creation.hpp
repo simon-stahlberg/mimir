@@ -110,12 +110,11 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
                                                               std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false),
                                                               std::span<const Element*>(elements.begin() + num_true + num_false, elements.end()));
 
-    auto children = PlaceholderNodeList<Element> {};
-    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements));
-    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, false_elements));
-    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements));
+    auto true_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements);
+    auto false_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, false_elements);
+    auto dontcare_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements);
 
-    return children;
+    return PlaceholderNodeList<Element> { true_child, false_child, dontcare_child };
 }
 
 template<HasConjunctiveCondition Element>
@@ -155,11 +154,10 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
                                                                                         true_elements,
                                                                                         dontcare_elements);
 
-    auto children = PlaceholderNodeList<Element> {};
-    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements));
-    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements));
+    auto true_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements);
+    auto dontcare_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements);
 
-    return children;
+    return PlaceholderNodeList<Element> { true_child, dontcare_child };
 }
 
 template<HasConjunctiveCondition Element>
