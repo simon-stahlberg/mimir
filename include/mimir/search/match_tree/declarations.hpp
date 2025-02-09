@@ -61,10 +61,10 @@ template<HasConjunctiveCondition Element>
 class ElementGeneratorNode;
 
 template<HasConjunctiveCondition Element>
-class IQueueEntryScoringFunction;
+class INodeScoreFunction;
 
 template<HasConjunctiveCondition Element>
-class ISplitScoringFunction;
+class INodeSplitter;
 
 /**
  * Aliases
@@ -77,10 +77,10 @@ template<HasConjunctiveCondition Element>
 using Node = std::unique_ptr<INode<Element>>;
 
 template<HasConjunctiveCondition Element>
-using QueueEntryScoringFunction = std::unique_ptr<IQueueEntryScoringFunction<Element>>;
+using NodeScoreFunction = std::unique_ptr<INodeScoreFunction<Element>>;
 
 template<HasConjunctiveCondition Element>
-using SplitScoringFunction = std::unique_ptr<ISplitScoringFunction<Element>>;
+using NodeSplitter = std::unique_ptr<INodeSplitter<Element>>;
 }
 
 #endif

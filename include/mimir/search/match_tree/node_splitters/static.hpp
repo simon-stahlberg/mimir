@@ -1,0 +1,156 @@
+/*
+ * Copyright (C) 2023 Dominik Drexler and Simon Stahlberg
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_STATIC_HPP_
+#define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_STATIC_HPP_
+
+#include "mimir/common/printers.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
+#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
+#include "mimir/search/match_tree/node_splitters/interface.hpp"
+
+#include <map>
+
+namespace mimir::match_tree
+{
+template<HasConjunctiveCondition Element>
+class StaticNodeSplitter : public INodeSplitter<Element>
+{
+private:
+    const PDDLRepositories& m_pddl_repositories;
+    SplitMetricEnum m_split_metric;
+    SplitList m_splits;
+
+    SplitList compute_statically_best_splits(const std::vector<const Element*>& elements)
+    {
+        /* Collect frequencies */
+        auto fluent_atom_distributions = std::unordered_map<GroundAtom<Fluent>, AtomSplitDistribution> {};
+        auto derived_atom_distributions = std::unordered_map<GroundAtom<Derived>, AtomSplitDistribution> {};
+        auto numeric_constraint_distributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution> {};
+
+        for (const auto& element : elements)
+        {
+            const auto& conjunctive_condition = element->get_conjunctive_condition();
+
+            /* Fluent */
+            for (const auto& index : conjunctive_condition.template get_positive_precondition<Fluent>())
+            {
+                ++fluent_atom_distributions[m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_true_elements;
+            }
+            for (const auto& index : conjunctive_condition.template get_negative_precondition<Fluent>())
+            {
+                ++fluent_atom_distributions[m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_false_elements;
+            }
+            /* Derived */
+            for (const auto& index : conjunctive_condition.template get_positive_precondition<Derived>())
+            {
+                ++derived_atom_distributions[m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_true_elements;
+            }
+            for (const auto& index : conjunctive_condition.template get_negative_precondition<Derived>())
+            {
+                ++derived_atom_distributions[m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_false_elements;
+            }
+            /* Numeric constraint */
+            for (const auto& numeric_constraint : conjunctive_condition.get_numeric_constraints())
+            {
+                ++numeric_constraint_distributions[numeric_constraint.get()].m_num_true_elements;
+            }
+        }
+        for (auto& [atom, distribution] : fluent_atom_distributions)
+        {
+            distribution.m_num_dont_care_elements = elements.size() - distribution.m_num_true_elements - distribution.m_num_false_elements;
+        }
+        for (auto& [atom, distribution] : derived_atom_distributions)
+        {
+            distribution.m_num_dont_care_elements = elements.size() - distribution.m_num_true_elements - distribution.m_num_false_elements;
+        }
+        for (auto& [constraint, distribution] : numeric_constraint_distributions)
+        {
+            distribution.m_num_dont_care_elements = elements.size() - distribution.m_num_true_elements;
+        }
+
+        /* Sort splits descending in score, break ties in lexicographically*/
+        std::map<std::pair<double, std::string>, Split, std::greater<std::pair<double, std::string>>> sorted_splits;
+        for (const auto& [atom, distribution] : fluent_atom_distributions)
+        {
+            const auto split = AtomSplit<Fluent> { atom, distribution };
+            const auto score = compute_score(distribution, m_split_metric);
+            sorted_splits.emplace(std::make_pair(score, to_string(atom)), split);
+        }
+        for (const auto& [atom, distribution] : derived_atom_distributions)
+        {
+            const auto split = AtomSplit<Derived> { atom, distribution };
+            const auto score = compute_score(distribution, m_split_metric);
+            sorted_splits.emplace(std::make_pair(score, to_string(atom)), split);
+        }
+        for (const auto& [constraint, distribution] : numeric_constraint_distributions)
+        {
+            const auto split = NumericConstraintSplit { constraint, distribution };
+            const auto score = compute_score(distribution, m_split_metric);
+            sorted_splits.emplace(std::make_pair(score, to_string(constraint)), split);
+        }
+        assert(sorted_splits.size() == fluent_atom_distributions.size() + derived_atom_distributions.size() + numeric_constraint_distributions.size());
+
+        auto splits = SplitList {};
+        splits.reserve(sorted_splits.size());
+        for (const auto& [key, split] : sorted_splits)
+        {
+            splits.push_back(split);
+        }
+
+        return splits;
+    }
+
+public:
+    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, SplitMetricEnum split_metric, const std::vector<const Element*>& elements) :
+        m_pddl_repositories(pddl_repositories),
+        m_split_metric(split_metric),
+        m_splits(compute_statically_best_splits(elements))
+    {
+        std::cout << "[MatchTree] Statically split ordering determined with " << to_string(m_split_metric) << " score: " << std::endl;
+        for (size_t i = 0; i < m_splits.size(); ++i)
+        {
+            std::cout << "    " << i << ". " << m_splits[i] << std::endl;
+        }
+    }
+
+    InverseNode<Element> compute_node(std::span<const Element*> elements, InverseNode<Element> parent) override
+    {
+        const auto root_distance = (parent) ? parent->get_root_distance() : -1;
+
+        size_t i = root_distance + 1;
+        for (; i < m_splits.size(); ++i)
+        {
+            const auto node = create_node_from_split(parent, SplitList {}, i, m_splits[i], elements);
+
+            if (node)
+            {
+                return node;
+            }
+        }
+
+        return create_generator_node(parent, i, elements);
+    }
+};
+
+}
+
+#endif

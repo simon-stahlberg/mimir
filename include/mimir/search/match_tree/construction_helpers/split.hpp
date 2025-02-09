@@ -40,66 +40,44 @@ using CandidateSplitList = std::vector<CandidateSplit>;
  * Element-separating splits with their separation and scoring functions
  */
 
-inline double compute_gini_score(const std::vector<size_t>& class_distribution)
+struct AtomSplitDistribution
 {
-    size_t total = 0;
-    for (size_t count : class_distribution)
-    {
-        total += count;
-    }
-
-    if (total == 0)
-    {
-        return 0.0;
-    }
-
-    double gini = 1.0;
-    for (size_t count : class_distribution)
-    {
-        double probability = static_cast<double>(count) / total;
-        gini -= probability * probability;
-    }
-
-    return gini;
-}
+    size_t m_num_true_elements = 0;
+    size_t m_num_false_elements = 0;
+    size_t m_num_dont_care_elements = 0;
+};
 
 template<DynamicPredicateTag P>
 struct AtomSplit
 {
     GroundAtom<P> feature;
 
+    AtomSplitDistribution m_distribution;
+};
+
+struct NumericConstraintSplitDistribution
+{
     size_t m_num_true_elements;
-    size_t m_num_false_elements;
     size_t m_num_dont_care_elements;
-
-    bool is_useless() const
-    {
-        return (m_num_true_elements == 0 && m_num_false_elements == 0)         //
-               || (m_num_true_elements == 0 && m_num_dont_care_elements == 0)  //
-               || (m_num_false_elements == 0 && m_num_dont_care_elements == 0);
-    }
-
-    double compute_gini() const { return compute_gini_score(std::vector<size_t> { m_num_true_elements, m_num_false_elements, m_num_dont_care_elements }); }
 };
 
 struct NumericConstraintSplit
 {
     GroundNumericConstraint feature;
-
-    size_t m_num_true_elements;
-    size_t m_num_dont_care_elements;
-
-    bool is_useless() const
-    {
-        return (m_num_true_elements == 0)  //
-               || (m_num_dont_care_elements == 0);
-    }
-
-    double compute_gini() const { return compute_gini_score(std::vector<size_t> { m_num_true_elements, m_num_dont_care_elements }); }
+    NumericConstraintSplitDistribution m_distribution;
 };
 
 using Split = std::variant<AtomSplit<Fluent>, AtomSplit<Derived>, NumericConstraintSplit>;
 using SplitList = std::vector<Split>;
+
+extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& distribution);
+
+extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution);
+
+template<DynamicPredicateTag P>
+std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split);
+
+extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split);
 
 }
 

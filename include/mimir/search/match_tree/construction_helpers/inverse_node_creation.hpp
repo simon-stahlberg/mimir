@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_UTILS_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_UTILS_HPP_
+#ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODE_CREATION_HPP_
+#define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODE_CREATION_HPP_
 
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
@@ -28,7 +28,6 @@
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
-#include "mimir/search/match_tree/split_scoring_functions/interface.hpp"
 
 #include <queue>
 #include <vector>
@@ -60,8 +59,11 @@ bool contains(GroundNumericConstraint constraint, const Element* element)
 }
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-InverseNode<Element>
-create_node_from_split(AtomSplit<P> split, std::span<const Element*> elements, InverseNode<Element> parent, const SplitList& useless_splits)
+InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
+                                            const SplitList& useless_splits,
+                                            size_t root_distance,
+                                            AtomSplit<P> split,
+                                            std::span<const Element*> elements)
 {
     const auto atom = split.feature;
 
@@ -75,7 +77,6 @@ create_node_from_split(AtomSplit<P> split, std::span<const Element*> elements, I
             std::swap(elements[i], elements[num_true++]);
         }
     }
-    std::cout << "num_true: " << num_true;
 
     auto num_false = size_t(0);
     for (size_t i = num_true; i < elements.size(); ++i)
@@ -86,13 +87,18 @@ create_node_from_split(AtomSplit<P> split, std::span<const Element*> elements, I
             std::swap(elements[i], elements[num_false++]);
         }
     }
-    std::cout << "num_false: " << num_false;
+
+    const auto num_dontcare = elements.size() - num_true - num_false;
+
+    if ((num_true == 0 && num_false == 0) || (num_true == 0 && num_dontcare == 0) || (num_false == 0 && num_dontcare == 0))
+    {
+        return nullptr;  ///< Avoid creating useless nodes
+    }
 
     return std::make_shared<InverseAtomSelectorNode<Element, P>>(
         parent,
         useless_splits,
-        0,
-        0.,
+        root_distance,
         atom,
         std::span<const Element*>(elements.begin(), elements.begin() + num_true),
         std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false),
@@ -100,8 +106,11 @@ create_node_from_split(AtomSplit<P> split, std::span<const Element*> elements, I
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element>
-create_node_from_split(NumericConstraintSplit split, std::span<const Element*> elements, InverseNode<Element> parent, const SplitList& useless_splits)
+InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
+                                            const SplitList& useless_splits,
+                                            size_t root_distance,
+                                            NumericConstraintSplit split,
+                                            std::span<const Element*> elements)
 {
     const auto constraint = split.feature;
 
@@ -115,22 +124,38 @@ create_node_from_split(NumericConstraintSplit split, std::span<const Element*> e
             std::swap(elements[i], elements[num_true++]);
         }
     }
-    std::cout << "num_true: " << num_true;
+
+    const auto num_dontcare = elements.size() - num_true;
+
+    if (num_true == 0 || num_dontcare == 0)
+    {
+        return nullptr;  ///< Avoid creating useless nodes
+    }
 
     return std::make_shared<InverseNumericConstraintSelectorNode<Element>>(parent,
                                                                            useless_splits,
-                                                                           size_t(0),
-                                                                           double(0.),
+                                                                           root_distance,
                                                                            constraint,
                                                                            std::span<const Element*>(elements.begin(), elements.begin() + num_true),
                                                                            std::span<const Element*>(elements.begin() + num_true, elements.end()));
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> create_node_from_split(const SplitScoringFunctionResult& split_result, std::span<const Element*> elements, InverseNode<Element> parent)
+InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
+                                            const SplitList& useless_splits,
+                                            size_t root_distance,
+                                            const Split& split,
+                                            std::span<const Element*> elements)
 {
-    return std::visit([&](auto&& arg) { return create_node_from_split(arg, elements, parent, split_result.useless_splits); }, split_result.split);
+    return std::visit([&](auto&& arg) { return create_node_from_split(parent, useless_splits, root_distance, arg, elements); }, split);
 }
+
+template<HasConjunctiveCondition Element>
+InverseNode<Element> create_generator_node(InverseNode<Element> parent, size_t root_distance, std::span<const Element*> elements)
+{
+    return std::make_shared<InverseElementGeneratorNode<Element>>(parent, root_distance, elements);
+}
+
 }
 
 #endif

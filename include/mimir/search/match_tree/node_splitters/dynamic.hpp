@@ -15,29 +15,29 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_SPLIT_SCORING_FUNCTIONS_FREQUENCY_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_SPLIT_SCORING_FUNCTIONS_FREQUENCY_HPP_
+#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_DYNAMIC_HPP_
+#define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_DYNAMIC_HPP_
 
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
-#include "mimir/search/match_tree/split_scoring_functions/interface.hpp"
+#include "mimir/search/match_tree/node_splitters/interface.hpp"
 
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-class FrequencySplitScoringFunction : public ISplitScoringFunction<Element>
+class DynamicNodeSplitter : public INodeSplitter<Element>
 {
 private:
     const PDDLRepositories& m_pddl_repositories;
 
 public:
-    explicit FrequencySplitScoringFunction(const PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
+    explicit DynamicNodeSplitter(const PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
 
-    std::optional<SplitScoringFunctionResult> compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent) override
+    InverseNode<Element> compute_node(std::span<const Element*> elements, InverseNode<Element> parent) override
     {
-        std::cout << "compute_best_split" << std::endl;
+        std::cout << "compute_node" << std::endl;
 
         /* Collect frequencies */
         auto fluent_atom_frequencies = std::unordered_map<GroundAtom<Fluent>, size_t> {};

@@ -20,17 +20,18 @@
 
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
-#include "mimir/search/match_tree/construction_helpers/utils.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
+#include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
-#include "mimir/search/match_tree/queue_entry_scoring_functions/min_depth.hpp"
-// #include "mimir/search/match_tree/split_scoring_functions/frequency.hpp"
-#include "mimir/search/match_tree/split_scoring_functions/static_frequency.hpp"
+// #include "mimir/search/match_tree/node_splitters/frequency.hpp"
+#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
+#include "mimir/search/match_tree/node_splitters/static.hpp"
 
 #include <queue>
 #include <vector>
@@ -54,45 +55,46 @@ private:
         return std::make_unique<ElementGeneratorNode<Element>>(std::span<const Element*>(m_elements.begin(), m_elements.end()));
     }
 
-    InverseNode<Element> build_root(const SplitScoringFunction<Element>& split_scoring_function)
+    InverseNode<Element> build_root(const NodeSplitter<Element>& node_splitter)
     {
         auto root_span = std::span<const Element*>(m_elements.begin(), m_elements.end());
-        auto root_split_result = split_scoring_function->compute_best_split(root_span);
-        auto parent = InverseNode<Element> { nullptr };
+        auto root_parent = InverseNode<Element> { nullptr };
+        auto root_node = node_splitter->compute_node(root_span, root_parent);
 
-        if (!root_split_result.has_value())
-        {
-            return std::make_shared<InverseElementGeneratorNode<Element>>(parent, 0, root_span);  // This branch is very unlikely.
-        }
-
-        return create_node_from_split(root_split_result.value(), root_span, parent);
+        return root_node;
     }
 
-    std::vector<InverseNode<Element>> refine_leaf(const QueueEntryScoringFunction<Element>& queue_scoring_function,
-                                                  const SplitScoringFunction<Element>& split_scoring_function,
-                                                  const InverseNode<Element>& element)
-    {
-    }
+    std::vector<InverseNode<Element>> refine_leaf(const NodeSplitter<Element>& node_splitter, const InverseNode<Element>& element) {}
 
-    void build_iteratively(const QueueEntryScoringFunction<Element>& queue_scoring_function, const SplitScoringFunction<Element>& split_scoring_function)
+    void build_iteratively(const NodeScoreFunction<Element>& node_score_function, const NodeSplitter<Element>& node_splitter)
     {
-        struct QueueEntryComparator
+        struct QueueEntry
         {
-            bool operator()(const InverseNode<Element>& lhs, const InverseNode<Element>& rhs) const { return lhs->get_queue_score() > rhs->get_queue_score(); }
+            double score;
+            InverseNode<Element> node;
         };
 
-        auto queue = std::priority_queue<InverseNode<Element>, std::vector<InverseNode<Element>>, QueueEntryComparator> {};
-        auto root = build_root(split_scoring_function);
-        queue.emplace(root);
+        struct QueueEntryComparator
+        {
+            bool operator()(const QueueEntry& lhs, const QueueEntry& rhs) const { return lhs.score > rhs.score; }
+        };
+
+        auto queue = std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueEntryComparator> {};
+        auto root = build_root(node_splitter);
+        auto score = node_score_function->compute_score(root);
+        queue.emplace(score, root);
 
         std::cout << "Instantiated ROOT! " << queue.size() << std::endl;
 
         while (!queue.empty())
         {
-            const auto node = queue.top();
+            const auto entry = queue.top();
             queue.pop();
 
-            auto children = refine_leaf(queue_scoring_function, split_scoring_function, node);
+            const auto score = entry.score;
+            const auto node = entry.node;
+
+            auto children = refine_leaf(node_splitter, node);
 
             // queue.push_range(children.begin(), children.end()),
         }
@@ -102,14 +104,14 @@ public:
     MatchTree() : m_elements(), m_root(build_empty_generator_root()) {}
 
     MatchTree(std::vector<const Element*> elements,  //
-              const QueueEntryScoringFunction<Element>& queue_scoring_function,
-              const SplitScoringFunction<Element>& split_scoring_function) :
+              const NodeScoreFunction<Element>& node_score_function,
+              const NodeSplitter<Element>& node_splitter) :
         m_elements(std::move(elements)),
         m_root(build_empty_generator_root())
     {
         if (!m_elements.empty())
         {
-            build_iteratively(queue_scoring_function, split_scoring_function);
+            build_iteratively(node_score_function, node_splitter);
         }
     }
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.

@@ -35,7 +35,7 @@ private:
 
 public:
     InverseElementGeneratorNode(InverseNode<Element> parent, size_t root_distance, std::span<const Element*> elements) :
-        IInverseNode<Element>(parent, SplitList {}, root_distance, std::numeric_limits<double>::infinity()),
+        IInverseNode<Element>(parent, SplitList {}, root_distance),
         m_elements(elements)
     {
     }

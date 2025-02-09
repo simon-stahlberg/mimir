@@ -15,18 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_QUEUE_ENTRY_SCORING_FUNCTION_MIN_DEPTH_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_QUEUE_ENTRY_SCORING_FUNCTION_MIN_DEPTH_HPP_
+#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_MIN_DEPTH_HPP_
+#define MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_MIN_DEPTH_HPP_
 
-#include "mimir/search/match_tree/queue_entry_scoring_functions/interface.hpp"
+#include "mimir/search/match_tree/node_score_functions/interface.hpp"
 
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-class MinDepthQueueEntryScoringFunction : public IQueueEntryScoringFunction<Element>
+class MinDepthNodeScoreFunction : public INodeScoreFunction<Element>
 {
 public:
-    double compute_score(size_t distance_to_root) override { return static_cast<double>(distance_to_root); }
+    double compute_score(const InverseNode<Element>& node) override { return node->get_root_distance(); }
 };
 
 }

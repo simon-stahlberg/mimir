@@ -39,11 +39,10 @@ public:
     InverseNumericConstraintSelectorNode(InverseNode<Element> parent,
                                          SplitList useless_splits,
                                          size_t root_distance,
-                                         double queue_score,
                                          GroundNumericConstraint constraint,
                                          std::span<const Element*> true_elements,
                                          std::span<const Element*> dontcare_elements) :
-        IInverseNode<Element>(parent, std::move(useless_splits), root_distance, queue_score),
+        IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
         m_constraint(constraint),
         m_true_elements(true_elements),
         m_dontcare_elements(dontcare_elements)

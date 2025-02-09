@@ -39,12 +39,11 @@ public:
     explicit InverseAtomSelectorNode(InverseNode<Element> parent,
                                      SplitList useless_splits,
                                      size_t root_distance,
-                                     double queue_score,
                                      GroundAtom<P> atom,
                                      std::span<const Element*> true_elements,
                                      std::span<const Element*> false_elements,
                                      std::span<const Element*> dontcare_elements) :
-        IInverseNode<Element>(parent, std::move(useless_splits), root_distance, queue_score),
+        IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
         m_atom(atom),
         m_true_elements(true_elements),
         m_false_elements(false_elements),

@@ -15,26 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_QUEUE_ENTRY_SCORING_FUNCTIONS_INTERFACE_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_QUEUE_ENTRY_SCORING_FUNCTIONS_INTERFACE_HPP_
-
-#include "mimir/search/match_tree/declarations.hpp"
+#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 
 namespace mimir::match_tree
 {
 
-/* Customization point 1: IQueueEntryScoringFunction*/
-
-/// @brief `INodeScoringFunction` allows computing a score for a node.
-template<HasConjunctiveCondition Element>
-class IQueueEntryScoringFunction
-{
-public:
-    virtual ~IQueueEntryScoringFunction() = default;
-
-    virtual double compute_score(size_t distance_to_root) = 0;
+std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string = {
+    { SplitMetricEnum::GINI, "Gini" },
 };
+extern const std::string& to_string(SplitMetricEnum split_metric) { return split_metric_enum_to_string.at(split_metric); }
 
 }
-
-#endif
