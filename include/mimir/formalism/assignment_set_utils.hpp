@@ -30,6 +30,38 @@ namespace mimir
  * We keep all the stuff in the header to allow inlining because this is used in tight loops!
  */
 
+/**
+ * VertexAssignment
+ */
+
+struct VertexAssignment
+{
+    Index index;
+    Index object;
+};
+
+inline size_t get_vertex_assignment_rank(const VertexAssignment& assignment, size_t arity, size_t num_objects)
+{
+    const auto first = 1;
+    const auto second = first * (arity + 1);
+    const auto rank = (first * (assignment.index + 1))  //
+                      + (second * (assignment.object + 1));
+    return rank;
+}
+
+inline size_t num_vertex_assignments(size_t arity, size_t num_objects)
+{
+    const auto first = 1;
+    const auto second = first * (arity + 1);
+    const auto max = (first * arity)  //
+                     + (second * num_objects);
+    return max + 1;
+}
+
+/**
+ * EdgeAssignment
+ */
+
 /// @brief Encapsulate assignment of objects to variables of atoms.
 struct Assignment
 {
@@ -65,11 +97,11 @@ inline size_t get_assignment_rank(const Assignment& assignment, size_t arity, si
 {
     const auto first = 1;
     const auto second = first * (arity + 1);
-    const auto third = second * (arity + 1);
-    const auto fourth = third * (num_objects + 1);
+    const auto third = second * (num_objects + 1);
+    const auto fourth = third * (arity + 1);
     const auto rank = (first * (assignment.first_index + 1))      //
-                      + (second * (assignment.second_index + 1))  //
-                      + (third * (assignment.first_object + 1))   //
+                      + (second * (assignment.first_object + 1))  //
+                      + (third * (assignment.second_index + 1))   //
                       + (fourth * (assignment.second_object + 1));
     return rank;
 }
@@ -78,11 +110,11 @@ inline size_t num_assignments(size_t arity, size_t num_objects)
 {
     const auto first = 1;
     const auto second = first * (arity + 1);
-    const auto third = second * (arity + 1);
-    const auto fourth = third * (num_objects + 1);
-    const auto max = (first * arity)          //
-                     + (second * arity)       //
-                     + (third * num_objects)  //
+    const auto third = second * (num_objects + 1);
+    const auto fourth = third * (arity + 1);
+    const auto max = (first * arity)           //
+                     + (second * num_objects)  //
+                     + (third * arity)         //
                      + (fourth * num_objects);
     return max + 1;
 }
