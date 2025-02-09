@@ -45,21 +45,21 @@ private:
     const Vertex* m_vertex;
     size_t m_pos;
 
-    Assignment m_assignment;
+    VertexAssignment m_assignment;
 
     const TermList& get_terms() const { return *m_terms; }
     const Vertex& get_vertex() const { return *m_vertex; }
 
     void advance()
     {
-        for (size_t index = m_assignment.first_index + 1; index < get_terms().size(); ++index)
+        for (size_t index = m_assignment.index + 1; index < get_terms().size(); ++index)
         {
             auto object = get_vertex().get_object_if_overlap(get_terms()[index]);
 
-            if (object != Assignment::MAX_VALUE)
+            if (object != VertexAssignment::MAX_VALUE)
             {
-                m_assignment.first_index = index;
-                m_assignment.first_object = object;
+                m_assignment.index = index;
+                m_assignment.object = object;
                 return;  ///< successfully generated vertex
             }
         }
@@ -69,7 +69,7 @@ private:
 
 public:
     using difference_type = std::ptrdiff_t;
-    using value_type = Assignment;
+    using value_type = VertexAssignment;
     using pointer = value_type*;
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
@@ -232,31 +232,48 @@ public:
  * consistent_literals_helper
  */
 
-template<typename T>
-concept IsVertexOrEdge = std::is_same_v<T, Vertex> || std::is_same_v<T, Edge>;
-
-template<IsVertexOrEdge T>
-struct ElementTypeTraits
+template<PredicateTag P>
+static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const Vertex& element)
 {
-};
+    const auto num_objects = assignment_set.get_num_objects();
+    const auto& per_predicate_assignment_set = assignment_set.get_per_predicate_assignment_set();
 
-template<>
-struct ElementTypeTraits<Vertex>
+    for (const auto& literal : literals)
+    {
+        const auto arity = literal->get_atom()->get_predicate()->get_arity();
+        const auto negated = literal->is_negated();
+
+        if (negated && arity != 1)
+        {
+            continue;
+        }
+
+        assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
+        const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
+        const auto& terms = literal->get_atom()->get_terms();
+
+        for (const auto& assignment : VertexAssignmentRange(terms, element))
+        {
+            assert(assignment.is_valid());
+
+            const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
+
+            assert(assignment_rank < predicate_assignment_set.size());
+            const auto true_assignment = predicate_assignment_set[assignment_rank];
+
+            if (negated == true_assignment)
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+template<PredicateTag P>
+static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const Edge& element)
 {
-    using RangeType = VertexAssignmentRange;
-};
-
-template<>
-struct ElementTypeTraits<Edge>
-{
-    using RangeType = VertexAndEdgeAssignmentRange;
-};
-
-template<PredicateTag P, IsVertexOrEdge ElementType>
-static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const ElementType& element)
-{
-    using RangeType = typename ElementTypeTraits<ElementType>::RangeType;
-
     const auto num_objects = assignment_set.get_num_objects();
     const auto& per_predicate_assignment_set = assignment_set.get_per_predicate_assignment_set();
 
@@ -274,23 +291,74 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
         const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
         const auto& terms = literal->get_atom()->get_terms();
 
-        for (const auto& assignment : RangeType(terms, element))
         {
-            assert(assignment.is_valid(terms.size()));
-
-            const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
-
-            assert(assignment_rank < predicate_assignment_set.size());
-            const auto true_assignment = predicate_assignment_set[assignment_rank];
-
-            if (!negated && !true_assignment)
+            /* Iterate vertices. */
+            for (const auto& assignment : VertexAssignmentRange(terms, element.get_src()))
             {
-                return false;
+                assert(assignment.is_valid());
+
+                const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
+
+                assert(assignment_rank < predicate_assignment_set.size());
+                const auto true_assignment = predicate_assignment_set[assignment_rank];
+
+                if (!negated && !true_assignment)
+                {
+                    return false;
+                }
+
+                if (negated && true_assignment && (1 == arity))
+                {
+                    return false;
+                }
             }
 
-            if (negated && true_assignment && (assignment.size() == arity))
+            for (const auto& assignment : VertexAssignmentRange(terms, element.get_dst()))
             {
-                return false;
+                assert(assignment.is_valid());
+
+                const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
+
+                assert(assignment_rank < predicate_assignment_set.size());
+                const auto true_assignment = predicate_assignment_set[assignment_rank];
+
+                if (!negated && !true_assignment)
+                {
+                    return false;
+                }
+
+                if (negated && true_assignment && (1 == arity))
+                {
+                    return false;
+                }
+            }
+        }
+
+        {
+            /* Iterate edges. */
+
+            assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
+            const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
+            const auto& terms = literal->get_atom()->get_terms();
+
+            for (const auto& assignment : VertexAndEdgeAssignmentRange(terms, element))
+            {
+                assert(assignment.is_valid(terms.size()));
+
+                const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
+
+                assert(assignment_rank < predicate_assignment_set.size());
+                const auto true_assignment = predicate_assignment_set[assignment_rank];
+
+                if (!negated && !true_assignment)
+                {
+                    return false;
+                }
+
+                if (negated && true_assignment && (assignment.size() == arity))
+                {
+                    return false;
+                }
             }
         }
     }
@@ -298,9 +366,9 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     return true;
 }
 
-template<StaticOrFluentTag F>
+template<StaticOrFluentTag F, typename AssignmentType>
 static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignment_set(FunctionExpressionFunction<F> fexpr,
-                                                                                       const Assignment& assignment,
+                                                                                       const AssignmentType& assignment,
                                                                                        const NumericAssignmentSet<F>& numeric_assignment_set)
 {
     const auto function = fexpr->get_function();
@@ -311,7 +379,7 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
 
     /* Remap the Assignment to the terms of the function expression.
        Note: here we use the applied transformation to remap the assignment of the constraint to the fexpr. */
-    auto remapped_assignment = Assignment(assignment, function->get_parent_terms_to_terms_mapping());
+    auto remapped_assignment = AssignmentType(assignment, function->get_parent_terms_to_terms_mapping());
     // std::cout << "Remapped_assignment: " << remapped_assignment.first_index << " " << remapped_assignment.first_object << " "
     //           << remapped_assignment.second_index << " " << remapped_assignment.second_object << std::endl;
 
@@ -324,8 +392,9 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
     return bounds;
 }
 
+template<typename AssignmentType>
 static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExpression fexpr,
-                                                                     const Assignment& assignment,
+                                                                     const AssignmentType& assignment,
                                                                      const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                                      const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
@@ -394,8 +463,9 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
         fexpr->get_variant());
 }
 
+template<typename AssignmentType>
 static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeric_constraint,
-                                                        const Assignment& assignment,
+                                                        const AssignmentType& assignment,
                                                         const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                         const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
@@ -423,19 +493,59 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
                                                            fluent_numeric_assignment_set));
 }
 
-template<IsVertexOrEdge ElementType>
 static bool consistent_numeric_constraints_helper(const NumericConstraintList& numeric_constraints,
                                                   const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                   const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set,
-                                                  const ElementType& element)
+                                                  const Vertex& element)
 {
-    using RangeType = typename ElementTypeTraits<ElementType>::RangeType;
-
     for (const auto& numeric_constraint : numeric_constraints)
     {
         const auto& terms = numeric_constraint->get_terms();
 
-        for (const auto& assignment : RangeType(terms, element))
+        for (const auto& assignment : VertexAssignmentRange(terms, element))
+        {
+            assert(assignment.is_valid());
+            if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
+            {
+                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+static bool consistent_numeric_constraints_helper(const NumericConstraintList& numeric_constraints,
+                                                  const NumericAssignmentSet<Static>& static_numeric_assignment_set,
+                                                  const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set,
+                                                  const Edge& element)
+{
+    for (const auto& numeric_constraint : numeric_constraints)
+    {
+        const auto& terms = numeric_constraint->get_terms();
+
+        for (const auto& assignment : VertexAssignmentRange(terms, element.get_src()))
+        {
+            assert(assignment.is_valid());
+            if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
+            {
+                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
+                return false;
+            }
+        }
+
+        for (const auto& assignment : VertexAssignmentRange(terms, element.get_dst()))
+        {
+            assert(assignment.is_valid());
+            if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
+            {
+                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
+                return false;
+            }
+        }
+
+        for (const auto& assignment : VertexAndEdgeAssignmentRange(terms, element))
         {
             assert(assignment.is_valid(terms.size()));
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))

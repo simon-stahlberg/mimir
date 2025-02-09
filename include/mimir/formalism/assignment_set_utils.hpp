@@ -36,27 +36,25 @@ namespace mimir
 
 struct VertexAssignment
 {
+    // We use this as special value and when adding 1 we obtain 0.
+    static const Index MAX_VALUE = std::numeric_limits<Index>::max();
+
     Index index;
     Index object;
+
+    VertexAssignment() : index(MAX_VALUE), object(MAX_VALUE) {}
+
+    VertexAssignment(const VertexAssignment& assignment, const IndexList& remapping)
+    {
+        index = remapping.at(assignment.index);
+        if (index == MAX_VALUE)
+        {
+            object = MAX_VALUE;
+        }
+    }
+
+    bool is_valid() const { return index != MAX_VALUE; }
 };
-
-inline size_t get_vertex_assignment_rank(const VertexAssignment& assignment, size_t arity, size_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto rank = (first * (assignment.index + 1))  //
-                      + (second * (assignment.object + 1));
-    return rank;
-}
-
-inline size_t num_vertex_assignments(size_t arity, size_t num_objects)
-{
-    const auto first = 1;
-    const auto second = first * (arity + 1);
-    const auto max = (first * arity)  //
-                     + (second * num_objects);
-    return max + 1;
-}
 
 /**
  * EdgeAssignment
@@ -92,6 +90,15 @@ struct Assignment
         return (first_object != MAX_VALUE ? 1 : 0) + (second_object != MAX_VALUE ? 1 : 0);
     }
 };
+
+inline size_t get_assignment_rank(const VertexAssignment& assignment, size_t arity, size_t num_objects)
+{
+    const auto first = 1;
+    const auto second = first * (arity + 1);
+    const auto rank = (first * (assignment.index + 1))  //
+                      + (second * (assignment.object + 1));
+    return rank;
+}
 
 inline size_t get_assignment_rank(const Assignment& assignment, size_t arity, size_t num_objects)
 {
