@@ -24,6 +24,7 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"

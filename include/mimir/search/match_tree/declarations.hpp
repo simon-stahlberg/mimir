@@ -50,6 +50,12 @@ template<HasConjunctiveCondition Element>
 class InverseNumericConstraintSelectorNode;
 template<HasConjunctiveCondition Element>
 class InverseElementGeneratorNode;
+template<HasConjunctiveCondition Element>
+class PlaceholderNodeImpl;
+template<HasConjunctiveCondition Element>
+using PlaceholderNode = std::shared_ptr<PlaceholderNodeImpl<Element>>;
+template<HasConjunctiveCondition Element>
+using PlaceholderNodeList = std::vector<PlaceholderNode<Element>>;
 
 template<HasConjunctiveCondition Element>
 class INode;
