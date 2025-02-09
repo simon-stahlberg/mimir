@@ -35,7 +35,7 @@ private:
 public:
     explicit FrequencySplitScoringFunction(const PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
 
-    Split compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent) override
+    std::optional<SplitScoringFunctionResult> compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent) override
     {
         std::cout << "compute_best_split" << std::endl;
 
@@ -152,7 +152,7 @@ public:
         // Iterate descending in the frequency.
         // Collect all splits that would result in a useless node until a useful one is found.
         // Then in the instantiated node, we must store the useless splits.
-        auto highest_frequency_splits = SplitList {};
+        auto highest_frequency_splits = CandidateSplitList {};
         for (const auto& [atom, frequency] : fluent_atom_frequencies)
         {
             if (frequency == highest_frequency)
@@ -186,7 +186,8 @@ public:
 
         std::cout << "Final split: " << highest_frequency_splits.front() << std::endl;
 
-        return highest_frequency_splits.front();
+        // TODO: must check whether the split is actually useful...
+        return { highest_frequency_splits.front(), SplitList {} };
     }
 };
 

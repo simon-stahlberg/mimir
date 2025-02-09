@@ -29,25 +29,18 @@ private:
     // Meta data
     size_t m_root_distance;
     InverseNode<Element> m_parent;
-    double m_queue_score;
 
     // Final elements
     std::span<const Element*> m_elements;
 
 public:
-    InverseElementGeneratorNode(size_t root_distance, InverseNode<Element> parent, double queue_score, std::span<const Element*> elements) :
-        m_root_distance(root_distance),
-        m_parent(parent),
-        m_queue_score(queue_score),
+    InverseElementGeneratorNode(InverseNode<Element> parent, size_t root_distance, std::span<const Element*> elements) :
+        IInverseNode<Element>(parent, SplitList {}, root_distance, std::numeric_limits<double>::infinity()),
         m_elements(elements)
     {
     }
 
     void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
-
-    size_t get_root_distance() const override { return m_root_distance; }
-    const InverseNode<Element>& get_parent() const override { return m_parent; }
-    double get_queue_score() const override { return m_queue_score; }
 
     std::span<const Element*> get_elements() const { return m_elements; }
 };

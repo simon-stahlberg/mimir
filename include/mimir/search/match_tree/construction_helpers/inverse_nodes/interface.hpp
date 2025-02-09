@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_INTERFACE_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_INTERFACE_HPP_
 
+#include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 
 namespace mimir::match_tree
@@ -36,12 +37,26 @@ public:
 template<HasConjunctiveCondition Element>
 class IInverseNode
 {
+protected:
+    InverseNode<Element> m_parent;  ///< Pointer to parent node.
+    SplitList m_useless_splits;     ///< Splits that were detected as useless.
+    size_t m_root_distance;         ///< The distance to the root node.
+    double m_queue_score;           ///< The estimated score of refining the node.
+
 public:
+    IInverseNode(InverseNode<Element> parent, SplitList useless_splits, size_t root_distance, double queue_score) :
+        m_parent(parent),
+        m_useless_splits(std::move(useless_splits)),
+        m_root_distance(root_distance),
+        m_queue_score(queue_score)
+    {
+    }
     virtual ~IInverseNode() = default;
 
-    virtual size_t get_root_distance() const = 0;
-    virtual const InverseNode<Element>& get_parent() const = 0;
-    virtual double get_queue_score() const = 0;
+    virtual const InverseNode<Element>& get_parent() const { return m_parent; }
+    virtual const SplitList& get_useless_splits() const { return m_useless_splits; }
+    virtual size_t get_root_distance() const { return m_root_distance; }
+    virtual double get_queue_score() const { return m_queue_score; }
 
     virtual void visit(IInverseNodeVisitor<Element>& visitor) const = 0;
 };

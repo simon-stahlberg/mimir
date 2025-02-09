@@ -27,12 +27,6 @@
 
 namespace mimir::match_tree
 {
-/**
- * Types
- */
-
-using Split = std::variant<GroundAtom<Fluent>, GroundAtom<Derived>, GroundNumericConstraint>;
-using SplitList = std::vector<Split>;
 
 /**
  * Concepts

@@ -23,12 +23,12 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
+#include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
-#include "mimir/search/match_tree/queue_entry_scoring_functions/min_depth.hpp"
-#include "mimir/search/match_tree/split_scoring_functions/frequency.hpp"
+#include "mimir/search/match_tree/split_scoring_functions/interface.hpp"
 
 #include <queue>
 #include <vector>
@@ -60,8 +60,11 @@ bool contains(GroundNumericConstraint constraint, const Element* element)
 }
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-InverseNode<Element> build_root_from_split(GroundAtom<P> atom, std::span<const Element*> elements)
+InverseNode<Element>
+create_node_from_split(AtomSplit<P> split, std::span<const Element*> elements, InverseNode<Element> parent, const SplitList& useless_splits)
 {
+    const auto atom = split.feature;
+
     // swap true to front
     auto num_true = size_t(0);
     for (size_t i = 0; i < elements.size(); ++i)
@@ -86,8 +89,9 @@ InverseNode<Element> build_root_from_split(GroundAtom<P> atom, std::span<const E
     std::cout << "num_false: " << num_false;
 
     return std::make_shared<InverseAtomSelectorNode<Element, P>>(
+        parent,
+        useless_splits,
         0,
-        nullptr,
         0.,
         atom,
         std::span<const Element*>(elements.begin(), elements.begin() + num_true),
@@ -95,9 +99,12 @@ InverseNode<Element> build_root_from_split(GroundAtom<P> atom, std::span<const E
         std::span<const Element*>(elements.begin() + num_true + num_false, elements.end()));
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-InverseNode<Element> build_root_from_split(GroundNumericConstraint constraint, std::span<const Element*> elements)
+template<HasConjunctiveCondition Element>
+InverseNode<Element>
+create_node_from_split(NumericConstraintSplit split, std::span<const Element*> elements, InverseNode<Element> parent, const SplitList& useless_splits)
 {
+    const auto constraint = split.feature;
+
     // swap true to front
     auto num_true = size_t(0);
     for (size_t i = 0; i < elements.size(); ++i)
@@ -110,18 +117,19 @@ InverseNode<Element> build_root_from_split(GroundNumericConstraint constraint, s
     }
     std::cout << "num_true: " << num_true;
 
-    return std::make_shared<InverseNumericConstraintSelectorNode>(0,
-                                                                  nullptr,
-                                                                  0.,
-                                                                  constraint,
-                                                                  std::span<const Element*>(elements.begin(), elements.begin() + num_true),
-                                                                  std::span<const Element*>(elements.begin() + num_true, elements.end()));
+    return std::make_shared<InverseNumericConstraintSelectorNode<Element>>(parent,
+                                                                           useless_splits,
+                                                                           size_t(0),
+                                                                           double(0.),
+                                                                           constraint,
+                                                                           std::span<const Element*>(elements.begin(), elements.begin() + num_true),
+                                                                           std::span<const Element*>(elements.begin() + num_true, elements.end()));
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> build_root_from_split(const Split& split, std::span<const Element*> elements)
+InverseNode<Element> create_node_from_split(const SplitScoringFunctionResult& split_result, std::span<const Element*> elements, InverseNode<Element> parent)
 {
-    return std::visit([&](auto&& arg) { return build_root_from_split(arg, elements); }, split);
+    return std::visit([&](auto&& arg) { return create_node_from_split(arg, elements, parent, split_result.useless_splits); }, split_result.split);
 }
 }
 

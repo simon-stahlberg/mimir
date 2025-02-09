@@ -51,6 +51,7 @@ private:
 
     void advance()
     {
+        /* Try to advance index. */
         for (Index index = m_assignment.index + 1; index < get_terms().size(); ++index)
         {
             auto object = get_vertex().get_object_if_overlap(get_terms()[index]);
@@ -63,6 +64,7 @@ private:
             }
         }
 
+        /* Failed to generate valid vertex assignment. */
         m_pos = MAX_INDEX;  ///< mark end of iteration
     }
 
@@ -132,6 +134,8 @@ private:
     {
         if (m_assignment.second_index == MAX_INDEX)
         {
+            /* Try to advance first_index. */
+
             // Reduced branching by setting iterator index and unsetting first index.
             // Note: unsetting first object is unnecessary because it will either be set or the iterator reaches its end.
             Index first_index = m_assignment.first_index + 1;
@@ -153,6 +157,8 @@ private:
 
         if (m_assignment.first_index != MAX_INDEX)
         {
+            /* Try to advance second_index. */
+
             // Reduced branching by setting iterator index and unsetting second index and object
             Index second_index = m_assignment.second_index + 1;
             m_assignment.second_index = MAX_INDEX;
@@ -173,6 +179,8 @@ private:
 
         if (m_assignment.second_object == MAX_INDEX)
         {
+            /* Failed to generate valid edge assignment */
+
             m_pos = MAX_INDEX;  ///< mark end of iteration
         }
     }
@@ -266,7 +274,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
                 return false;
             }
 
-            if (negated && true_assignment && (1 == arity))
+            if (negated && true_assignment && (1 == arity))  ///< Due to overapproximation can only test valid assigned unary literals.
             {
                 return false;
             }
@@ -318,7 +326,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
                 return false;
             }
 
-            if (negated && true_assignment && (2 == arity))
+            if (negated && true_assignment && (2 == arity))  ///< Due to overapproximation can only test valid assigned binary literals.
             {
                 return false;
             }

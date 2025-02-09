@@ -32,9 +32,9 @@ class StaticFrequencySplitScoringFunction : public ISplitScoringFunction<Element
 {
 private:
     const PDDLRepositories& m_pddl_repositories;
-    SplitList m_splits;
+    CandidateSplitList m_splits;
 
-    SplitList compute_static_frequency_splits(const std::vector<const Element*>& elements)
+    CandidateSplitList compute_static_frequency_splits(const std::vector<const Element*>& elements)
     {
         /* Collect frequencies */
         auto fluent_atom_frequencies = std::unordered_map<GroundAtom<Fluent>, size_t> {};
@@ -75,7 +75,7 @@ private:
         std::cout << "numeric_constraint_frequencies: " << numeric_constraint_frequencies << std::endl;
 
         /* Sort splits descending in frequency, break ties in lexicographically*/
-        std::vector<std::tuple<size_t, std::string, Split>> sorted_splits;
+        std::vector<std::tuple<size_t, std::string, CandidateSplit>> sorted_splits;
         for (const auto& [atom, frequency] : fluent_atom_frequencies)
         {
             sorted_splits.emplace_back(frequency, to_string(atom), atom);
@@ -92,7 +92,7 @@ private:
 
         std::cout << "Sorted frequency splits: " << sorted_splits << std::endl;
 
-        auto splits = SplitList {};
+        auto splits = CandidateSplitList {};
         for (const auto& [frequency, name, split] : sorted_splits)
         {
             splits.emplace_back(split);
@@ -110,7 +110,10 @@ public:
     {
     }
 
-    Split compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent) override {}
+    std::optional<SplitScoringFunctionResult> compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent) override
+    {
+        // TODO: determine next non trivial split
+    }
 };
 
 }

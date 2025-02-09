@@ -28,9 +28,6 @@ class InverseAtomSelectorNode : public IInverseNode<Element>
 {
 private:
     // Meta data
-    size_t m_root_distance;
-    InverseNode<Element> m_parent;
-    double m_queue_score;
     GroundAtom<P> m_atom;
 
     // Candidates for further refinement.
@@ -39,16 +36,15 @@ private:
     std::span<const Element*> m_dontcare_elements;
 
 public:
-    explicit InverseAtomSelectorNode(size_t root_distance,
-                                     InverseNode<Element> parent,
+    explicit InverseAtomSelectorNode(InverseNode<Element> parent,
+                                     SplitList useless_splits,
+                                     size_t root_distance,
                                      double queue_score,
                                      GroundAtom<P> atom,
                                      std::span<const Element*> true_elements,
                                      std::span<const Element*> false_elements,
                                      std::span<const Element*> dontcare_elements) :
-        m_root_distance(root_distance),
-        m_parent(parent),
-        m_queue_score(queue_score),
+        IInverseNode<Element>(parent, std::move(useless_splits), root_distance, queue_score),
         m_atom(atom),
         m_true_elements(true_elements),
         m_false_elements(false_elements),
@@ -57,10 +53,6 @@ public:
     }
 
     void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
-
-    size_t get_root_distance() const override { return m_root_distance; }
-    const InverseNode<Element>& get_parent() const override { return m_parent; }
-    double get_queue_score() const override { return m_queue_score; }
 
     GroundAtom<P> get_atom() const { return m_atom; };
     std::span<const Element*> get_true_elements() const { return m_true_elements; }

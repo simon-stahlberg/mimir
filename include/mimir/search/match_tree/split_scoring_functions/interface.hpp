@@ -18,11 +18,18 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_SPLIT_SCORING_FUNCTIONS_INTERFACE_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_SPLIT_SCORING_FUNCTIONS_INTERFACE_HPP_
 
+#include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 
 namespace mimir::match_tree
 {
 /* Customization point 2: SplitScoringFunction */
+
+struct SplitScoringFunctionResult
+{
+    Split split;
+    SplitList useless_splits;
+};
 
 /// @brief `ISplitScoringFunction` computes the best split for a given set of elements.
 /// @tparam Element
@@ -32,7 +39,8 @@ class ISplitScoringFunction
 public:
     virtual ~ISplitScoringFunction() = default;
 
-    virtual Split compute_best_split(std::span<const Element*> elements, const std::optional<InverseNode<Element>>& parent = std::nullopt) = 0;
+    virtual std::optional<SplitScoringFunctionResult> compute_best_split(std::span<const Element*> elements,
+                                                                         const std::optional<InverseNode<Element>>& parent = std::nullopt) = 0;
 };
 }
 

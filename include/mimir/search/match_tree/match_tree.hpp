@@ -29,7 +29,7 @@
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 #include "mimir/search/match_tree/queue_entry_scoring_functions/min_depth.hpp"
-#include "mimir/search/match_tree/split_scoring_functions/frequency.hpp"
+// #include "mimir/search/match_tree/split_scoring_functions/frequency.hpp"
 #include "mimir/search/match_tree/split_scoring_functions/static_frequency.hpp"
 
 #include <queue>
@@ -57,11 +57,15 @@ private:
     InverseNode<Element> build_root(const SplitScoringFunction<Element>& split_scoring_function)
     {
         auto root_span = std::span<const Element*>(m_elements.begin(), m_elements.end());
+        auto root_split_result = split_scoring_function->compute_best_split(root_span);
+        auto parent = InverseNode<Element> { nullptr };
 
-        auto root_split = split_scoring_function->compute_best_split(root_span);
-        std::cout << "root_split: " << root_split << std::endl;
+        if (!root_split_result.has_value())
+        {
+            return std::make_shared<InverseElementGeneratorNode<Element>>(parent, 0, root_span);  // This branch is very unlikely.
+        }
 
-        return build_root_from_split(root_split, root_span);
+        return create_node_from_split(root_split_result.value(), root_span, parent);
     }
 
     std::vector<InverseNode<Element>> refine_leaf(const QueueEntryScoringFunction<Element>& queue_scoring_function,
