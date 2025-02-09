@@ -200,12 +200,13 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
 
     event_handler->on_finish_build_action_match_tree(match_tree);
 
-    auto match_tree_2 = match_tree::MatchTree<GroundActionImpl>(
-        ground_actions,
-        std::unique_ptr<match_tree::IQueueEntryScoringFunction<GroundActionImpl>>(
-            std::make_unique<match_tree::MinDepthQueueEntryScoringFunction<GroundActionImpl>>().release()),
-        std::unique_ptr<match_tree::ISplitScoringFunction<GroundActionImpl>>(
-            std::make_unique<match_tree::FrequencySplitScoringFunction<GroundActionImpl>>(*m_grounder->get_pddl_repositories()).release()));
+    // auto match_tree_2 = match_tree::MatchTree<GroundActionImpl>(
+    //     ground_actions,
+    //     std::unique_ptr<match_tree::IQueueEntryScoringFunction<GroundActionImpl>>(
+    //         std::make_unique<match_tree::MinDepthQueueEntryScoringFunction<GroundActionImpl>>().release()),
+    //     std::unique_ptr<match_tree::ISplitScoringFunction<GroundActionImpl>>(
+    //         std::make_unique<match_tree::StaticFrequencySplitScoringFunction<GroundActionImpl>>(*m_grounder->get_pddl_repositories(), ground_actions)
+    //             .release()));
 
     return std::make_shared<GroundedApplicableActionGenerator>(m_grounder->get_action_grounder(), std::move(match_tree), std::move(event_handler));
 }

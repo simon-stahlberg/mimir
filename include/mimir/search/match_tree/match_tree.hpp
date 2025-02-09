@@ -30,6 +30,7 @@
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 #include "mimir/search/match_tree/queue_entry_scoring_functions/min_depth.hpp"
 #include "mimir/search/match_tree/split_scoring_functions/frequency.hpp"
+#include "mimir/search/match_tree/split_scoring_functions/static_frequency.hpp"
 
 #include <queue>
 #include <vector>
