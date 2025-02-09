@@ -67,6 +67,7 @@ protected:
     AssignmentSet<Fluent> m_fluent_assignment_set;
     AssignmentSet<Derived> m_derived_assignment_set;
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
+    boost::dynamic_bitset<> m_consistent_vertices;
     KPKCWorkspace m_kpkc_workspace;
 
     /// @brief Helper to cast to Derived_.
@@ -279,9 +280,25 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
     /* Build the full consistency graph.
        Restricts statically consistent assignments based on the assignments in the current state and builds the consistency graph as an adjacency matrix
     */
+
+    // Optimization: test vertices first, then exclude edges with inconsistent vertices immediately.
+    // This effectively avoids testing vertices multiple times, effectively speeding up some problem by more than factor of 3.
+    // In the best case, we get a quadratic speedup.
+    m_consistent_vertices.reset();
+    for (const auto& vertex : m_static_consistency_graph.get_vertices())
+    {
+        if (vertex.consistent_literals(m_conjunctive_condition->get_literals<Fluent>(), fluent_assignment_sets)
+            && vertex.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets)
+            && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
+        {
+            m_consistent_vertices.set(vertex.get_index());
+        }
+    }
+
     for (const auto& edge : m_static_consistency_graph.get_edges())
     {
-        if (edge.consistent_literals(m_conjunctive_condition->get_literals<Fluent>(), fluent_assignment_sets)
+        if (m_consistent_vertices.test(edge.get_src().get_index()) && m_consistent_vertices.test(edge.get_dst().get_index())
+            && edge.consistent_literals(m_conjunctive_condition->get_literals<Fluent>(), fluent_assignment_sets)
             && edge.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets)
             && edge.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
@@ -343,6 +360,7 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(std::shared_p
     m_derived_assignment_set(m_literal_grounder->get_problem()->get_objects().size(),
                              m_literal_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
+    m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
     m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
 {
 }

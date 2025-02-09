@@ -36,24 +36,28 @@ namespace mimir
 
 struct VertexAssignment
 {
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index MAX_VALUE = std::numeric_limits<Index>::max();
-
     Index index;
     Index object;
 
-    VertexAssignment() : index(MAX_VALUE), object(MAX_VALUE) {}
+    VertexAssignment() : index(MAX_INDEX), object(MAX_INDEX) {}
+
+    VertexAssignment(Index index, Index object) : index(index), object(object) {}
 
     VertexAssignment(const VertexAssignment& assignment, const IndexList& remapping)
     {
+        assert(assignment.is_valid());
+
         index = remapping.at(assignment.index);
-        if (index == MAX_VALUE)
+        object = assignment.object;
+
+        if (index == MAX_INDEX)
         {
-            object = MAX_VALUE;
+            object = MAX_INDEX;
         }
     }
 
-    bool is_valid() const { return index != MAX_VALUE; }
+    /// @brief Return true iff the index and object are set.
+    bool is_valid() const { return index != MAX_INDEX && object != MAX_INDEX; }
 };
 
 /**
@@ -61,35 +65,61 @@ struct VertexAssignment
  */
 
 /// @brief Encapsulate assignment of objects to variables of atoms.
-struct Assignment
+struct EdgeAssignment
 {
-    // We use this as special value and when adding 1 we obtain 0.
-    static const Index MAX_VALUE = std::numeric_limits<Index>::max();
-
     Index first_index;
     Index first_object;
     Index second_index;
     Index second_object;
 
-    static const Assignment empty_assignment;
+    EdgeAssignment() : first_index(MAX_INDEX), first_object(MAX_INDEX), second_index(MAX_INDEX), second_object(MAX_INDEX) {}
 
-    Assignment();
-
-    Assignment(Index index, Index object);
-
-    Assignment(Index first_index, Index first_object, Index second_index, Index second_object);
-
-    Assignment(const Assignment& assignment, const IndexList& remapping);
-
-    /// @brief Return true iff the assignment is valid, i.e., the first index is within bounds and smaller than the second index.
-    bool is_valid(size_t num_terms) const { return (first_index < num_terms) && (first_index < second_index); }
-
-    size_t size() const
+    EdgeAssignment(Index first_index, Index first_object, Index second_index, Index second_object) :
+        first_index(first_index),
+        first_object(first_object),
+        second_index(second_index),
+        second_object(second_object)
     {
-        assert(first_index < second_index);
-        return (first_object != MAX_VALUE ? 1 : 0) + (second_object != MAX_VALUE ? 1 : 0);
+    }
+
+    EdgeAssignment(const EdgeAssignment& assignment, const IndexList& remapping)
+    {
+        assert(assignment.is_valid());
+
+        first_index = remapping.at(assignment.first_index);
+        second_index = remapping.at(assignment.second_index);
+        first_object = assignment.first_object;
+        second_object = assignment.second_object;
+
+        if (first_index == MAX_INDEX)
+        {
+            first_object = MAX_INDEX;
+        }
+        if (second_index == MAX_INDEX)
+        {
+            second_object = MAX_INDEX;
+        }
+
+        if (first_index > second_index)
+        {
+            std::swap(first_index, second_index);
+            std::swap(first_object, second_object);
+        }
+    }
+
+    /// @brief Return true iff both indices and objects are set.
+    bool is_valid() const
+    {
+        return (first_index < second_index) && (first_index != MAX_INDEX) && (second_index != MAX_INDEX) && (first_object != MAX_INDEX)
+               && (second_object != MAX_INDEX);
     }
 };
+
+/**
+ * Joint ranking function between Vertex and Edge.
+ */
+
+inline size_t get_empty_assignment_rank() { return 0; }
 
 inline size_t get_assignment_rank(const VertexAssignment& assignment, size_t arity, size_t num_objects)
 {
@@ -100,7 +130,7 @@ inline size_t get_assignment_rank(const VertexAssignment& assignment, size_t ari
     return rank;
 }
 
-inline size_t get_assignment_rank(const Assignment& assignment, size_t arity, size_t num_objects)
+inline size_t get_assignment_rank(const EdgeAssignment& assignment, size_t arity, size_t num_objects)
 {
     const auto first = 1;
     const auto second = first * (arity + 1);

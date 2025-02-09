@@ -25,16 +25,16 @@
 namespace mimir
 {
 
-KPKCWorkspace::KPKCWorkspace(const std::vector<std::vector<size_t>>& partitions) :
+KPKCWorkspace::KPKCWorkspace(const std::vector<std::vector<uint32_t>>& partitions) :
     partition_bits(partitions.size()),
     partial_solution(),
     k_compatible_vertices(partitions.size(), std::vector<boost::dynamic_bitset<>>(partitions.size()))
 {
     const auto k = partitions.size();
 
-    for (size_t k1 = 0; k1 < k; ++k1)
+    for (uint32_t k1 = 0; k1 < k; ++k1)
     {
-        for (size_t k2 = 0; k2 < k; ++k2)
+        for (uint32_t k2 = 0; k2 < k; ++k2)
         {
             k_compatible_vertices[k1][k2].resize(partitions[k2].size());
         }
@@ -43,13 +43,13 @@ KPKCWorkspace::KPKCWorkspace(const std::vector<std::vector<size_t>>& partitions)
     initialize_memory(partitions);
 }
 
-void KPKCWorkspace::initialize_memory(const std::vector<std::vector<size_t>>& partitions)
+void KPKCWorkspace::initialize_memory(const std::vector<std::vector<uint32_t>>& partitions)
 {
     verify_memory_layout(partitions);
 
     const auto k = partitions.size();
 
-    for (std::size_t index = 0; index < k; ++index)
+    for (std::uint32_t index = 0; index < k; ++index)
     {
         k_compatible_vertices.front()[index].set();
     }
@@ -57,7 +57,7 @@ void KPKCWorkspace::initialize_memory(const std::vector<std::vector<size_t>>& pa
     partial_solution.clear();
 }
 
-void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<size_t>>& partitions)
+void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<uint32_t>>& partitions)
 {
     const auto k = partitions.size();
 
@@ -76,9 +76,9 @@ void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<size_t>>&
         throw std::runtime_error("KPKCWorkspace::verify_memory_layout: expected compatible_vertices to have second dimension of size " + std::to_string(k));
     }
 
-    for (size_t k1 = 0; k1 < k; ++k1)
+    for (uint32_t k1 = 0; k1 < k; ++k1)
     {
-        for (size_t k2 = 0; k2 < k; ++k2)
+        for (uint32_t k2 = 0; k2 < k; ++k2)
         {
             if (k_compatible_vertices[k1][k2].size() != partitions[k2].size())
             {
@@ -88,18 +88,18 @@ void KPKCWorkspace::verify_memory_layout(const std::vector<std::vector<size_t>>&
     }
 }
 
-mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                          const std::vector<std::vector<size_t>>& partitions,
-                                                                                          KPKCWorkspace& memory,
-                                                                                          size_t depth)
+mimir::generator<const std::vector<uint32_t>&> find_all_k_cliques_in_k_partite_graph_helper(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                            const std::vector<std::vector<uint32_t>>& partitions,
+                                                                                            KPKCWorkspace& memory,
+                                                                                            uint32_t depth)
 {
-    size_t k = partitions.size();
-    size_t best_set_bits = std::numeric_limits<size_t>::max();
-    size_t best_partition = std::numeric_limits<size_t>::max();
+    uint32_t k = partitions.size();
+    uint32_t best_set_bits = std::numeric_limits<uint32_t>::max();
+    uint32_t best_partition = std::numeric_limits<uint32_t>::max();
     auto& compatible_vertices = memory.k_compatible_vertices[depth];  // fetch current compatible vertices
 
     // Find the best partition to work with
-    for (size_t partition = 0; partition < k; ++partition)
+    for (uint32_t partition = 0; partition < k; ++partition)
     {
         auto num_set_bits = compatible_vertices[partition].count();
         if (!memory.partition_bits[partition] && (num_set_bits < best_set_bits))
@@ -110,10 +110,10 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
     }
 
     // Iterate through compatible vertices in the best partition
-    size_t adjacent_index = compatible_vertices[best_partition].find_first();
+    uint32_t adjacent_index = compatible_vertices[best_partition].find_first();
     while (adjacent_index < compatible_vertices[best_partition].size())
     {
-        size_t vertex = partitions[best_partition][adjacent_index];
+        uint32_t vertex = partitions[best_partition][adjacent_index];
         compatible_vertices[best_partition][adjacent_index] = 0;
         memory.partial_solution.push_back(vertex);
 
@@ -128,13 +128,13 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
             // Important to set next to cur, before the update.
             // The following line does not allocate/deallocate because the sizes are exactly the same.
             compatible_vertices_next = compatible_vertices;
-            size_t offset = 0;
-            for (size_t partition = 0; partition < k; ++partition)
+            uint32_t offset = 0;
+            for (uint32_t partition = 0; partition < k; ++partition)
             {
                 auto partition_size = compatible_vertices_next[partition].size();
                 if (!memory.partition_bits[partition])
                 {
-                    for (size_t index = 0; index < partition_size; ++index)
+                    for (uint32_t index = 0; index < partition_size; ++index)
                     {
                         compatible_vertices_next[partition][index] &= adjacency_matrix[vertex][index + offset];
                     }
@@ -144,8 +144,8 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
 
             memory.partition_bits[best_partition] = 1;
 
-            size_t possible_additions = 0;
-            for (size_t partition = 0; partition < k; ++partition)
+            uint32_t possible_additions = 0;
+            for (uint32_t partition = 0; partition < k; ++partition)
             {
                 if (!memory.partition_bits[partition] && compatible_vertices[partition].any())
                 {
@@ -169,9 +169,9 @@ mimir::generator<const std::vector<size_t>&> find_all_k_cliques_in_k_partite_gra
     }
 }
 
-mimir::generator<const std::vector<size_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
-                                                                                          const std::vector<std::vector<size_t>>& partitions,
-                                                                                          KPKCWorkspace* memory)
+mimir::generator<const std::vector<uint32_t>&> create_k_clique_in_k_partite_graph_generator(const std::vector<boost::dynamic_bitset<>>& adjacency_matrix,
+                                                                                            const std::vector<std::vector<uint32_t>>& partitions,
+                                                                                            KPKCWorkspace* memory)
 {
     /* Get and verify or create memory layout. */
     auto managed_memory = std::unique_ptr<KPKCWorkspace> {};

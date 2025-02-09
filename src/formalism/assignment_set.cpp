@@ -29,63 +29,6 @@
 namespace mimir
 {
 
-/*
- * Assignment
- */
-
-const Assignment Assignment::empty_assignment = Assignment();
-
-Assignment::Assignment() : first_index(MAX_VALUE), first_object(MAX_VALUE), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
-
-Assignment::Assignment(Index index, Index object) : first_index(index), first_object(object), second_index(MAX_VALUE), second_object(MAX_VALUE) {}
-
-Assignment::Assignment(Index first_index, Index first_object, Index second_index, Index second_object) :
-    first_index(first_index),
-    first_object(first_object),
-    second_index(second_index),
-    second_object(second_object)
-{
-}
-
-Assignment::Assignment(const Assignment& assignment, const IndexList& remapping) : Assignment()
-{
-    assert(assignment.is_valid(remapping.size()));
-
-    first_index = remapping.at(assignment.first_index);
-    if (first_index == MAX_VALUE)
-    {
-        /* Failed to assign first to first. */
-        if (assignment.second_index != MAX_VALUE)
-        {
-            /* Assignment still has a second. */
-            first_index = remapping.at(assignment.second_index);
-
-            if (first_index != MAX_VALUE)
-            {
-                /* Succeeded to assign second to first. */
-                first_object = assignment.second_object;
-            }
-        }
-    }
-    else
-    {
-        /* Succeeded to assign first to first. */
-        first_object = assignment.first_object;
-
-        if (assignment.second_index != MAX_VALUE)
-        {
-            /* Assignment still has a second. */
-            second_index = remapping.at(assignment.second_index);
-
-            if (second_index != MAX_VALUE)
-            {
-                /* Succeeded to assign second to second. */
-                second_object = assignment.second_object;
-            }
-        }
-    }
-}
-
 /**
  * AssignmentSet
  */
@@ -133,12 +76,12 @@ void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
+            assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
             for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
             {
                 const auto& second_object = arguments[second_index];
-                assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                    arity,
                                                    m_num_objects)] = true;
             }
@@ -157,12 +100,12 @@ void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
     for (size_t first_index = 0; first_index < arity; ++first_index)
     {
         const auto& first_object = arguments[first_index];
-        assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
+        assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)] = true;
 
         for (size_t second_index = first_index + 1; second_index < arity; ++second_index)
         {
             const auto& second_object = arguments[second_index];
-            assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+            assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                arity,
                                                m_num_objects)] = true;
         }
@@ -235,8 +178,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
         const auto& arguments = function->get_objects();
         auto& assignment_set = m_per_function_skeleton_bounds_set.at(function_skeleton->get_index());
 
-        assert(get_assignment_rank(Assignment::empty_assignment, arity, m_num_objects) == 0);  // empty assignment is always 0
-        auto& empty_assignment_bound = assignment_set[0];
+        auto& empty_assignment_bound = assignment_set[get_empty_assignment_rank()];
         empty_assignment_bound.lower =
             (empty_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.lower, value);
         empty_assignment_bound.upper =
@@ -245,7 +187,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {
             const auto& first_object = arguments[first_index];
-            auto& single_assignment_bound = assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index()), arity, m_num_objects)];
+            auto& single_assignment_bound = assignment_set[get_assignment_rank(VertexAssignment(first_index, first_object->get_index()), arity, m_num_objects)];
             single_assignment_bound.lower =
                 (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(single_assignment_bound.lower, value);
             single_assignment_bound.upper =
@@ -255,7 +197,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
             {
                 const auto& second_object = arguments[second_index];
                 auto& double_assignment_bound =
-                    assignment_set[get_assignment_rank(Assignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
+                    assignment_set[get_assignment_rank(EdgeAssignment(first_index, first_object->get_index(), second_index, second_object->get_index()),
                                                        arity,
                                                        m_num_objects)];
                 double_assignment_bound.lower = (single_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ?

@@ -39,6 +39,8 @@ template<typename T>
 using IndexMap = std::unordered_map<Index, T>;
 using IndexSet = std::unordered_set<Index>;
 
+static const Index MAX_INDEX = std::numeric_limits<Index>::max();
+
 using ContinuousCost = double;
 using ContinuousCostList = std::vector<ContinuousCost>;
 using ContinuousCostMatrix = std::vector<ContinuousCostList>;

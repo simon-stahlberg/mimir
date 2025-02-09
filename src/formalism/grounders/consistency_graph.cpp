@@ -17,7 +17,6 @@
 
 #include "mimir/formalism/grounders/consistency_graph.hpp"
 
-#include "mimir/common/printers.hpp"
 #include "mimir/formalism/action.hpp"
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/effects.hpp"
@@ -43,7 +42,7 @@ class VertexAssignmentIterator
 private:
     const TermList* m_terms;
     const Vertex* m_vertex;
-    size_t m_pos;
+    Index m_pos;
 
     VertexAssignment m_assignment;
 
@@ -52,11 +51,11 @@ private:
 
     void advance()
     {
-        for (size_t index = m_assignment.index + 1; index < get_terms().size(); ++index)
+        for (Index index = m_assignment.index + 1; index < get_terms().size(); ++index)
         {
             auto object = get_vertex().get_object_if_overlap(get_terms()[index]);
 
-            if (object != VertexAssignment::MAX_VALUE)
+            if (object != MAX_INDEX)
             {
                 m_assignment.index = index;
                 m_assignment.object = object;
@@ -64,7 +63,7 @@ private:
             }
         }
 
-        m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
+        m_pos = MAX_INDEX;  ///< mark end of iteration
     }
 
 public:
@@ -74,11 +73,8 @@ public:
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    VertexAssignmentIterator() : m_terms(nullptr), m_vertex(nullptr), m_pos(std::numeric_limits<size_t>::max()) {}
-    VertexAssignmentIterator(const TermList& terms, const Vertex& vertex, bool begin) :
-        m_terms(&terms),
-        m_vertex(&vertex),
-        m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
+    VertexAssignmentIterator() : m_terms(nullptr), m_vertex(nullptr), m_pos(MAX_INDEX) {}
+    VertexAssignmentIterator(const TermList& terms, const Vertex& vertex, bool begin) : m_terms(&terms), m_vertex(&vertex), m_pos(begin ? 0 : MAX_INDEX)
     {
         if (begin)
         {
@@ -115,37 +111,37 @@ public:
     VertexAssignmentIterator end() const { return VertexAssignmentIterator(m_terms, m_vertex, false); }
 };
 
-/// @brief `VertexAndEdgeAssignmentIterator` is used to generate vertices and edges in the consistency graph.
+/// @brief `EdgeAssignmentIterator` is used to generate vertices and edges in the consistency graph.
 /// It is used in literals
 ///
 /// It simultaneously iterates over vertices [x/o] and edges [x/o],[y/o'] with o < o'
 /// to avoid having iterating over literals or numeric constraints twice.
-class VertexAndEdgeAssignmentIterator
+class EdgeAssignmentIterator
 {
 private:
     const TermList* m_terms;
     const Edge* m_edge;
-    size_t m_pos;
+    Index m_pos;
 
-    Assignment m_assignment;
+    EdgeAssignment m_assignment;
 
     const TermList& get_terms() const { return *m_terms; }
     const Edge& get_edge() const { return *m_edge; }
 
     void advance()
     {
-        if (m_assignment.second_index == Assignment::MAX_VALUE)
+        if (m_assignment.second_index == MAX_INDEX)
         {
             // Reduced branching by setting iterator index and unsetting first index.
             // Note: unsetting first object is unnecessary because it will either be set or the iterator reaches its end.
-            size_t first_index = m_assignment.first_index + 1;
-            m_assignment.first_index = Assignment::MAX_VALUE;
+            Index first_index = m_assignment.first_index + 1;
+            m_assignment.first_index = MAX_INDEX;
 
             for (; first_index < get_terms().size(); ++first_index)
             {
                 auto first_object = get_edge().get_object_if_overlap(get_terms()[first_index]);
 
-                if (first_object != Assignment::MAX_VALUE)
+                if (first_object != MAX_INDEX)
                 {
                     m_assignment.first_index = first_index;
                     m_assignment.first_object = first_object;
@@ -155,18 +151,18 @@ private:
             }
         }
 
-        if (m_assignment.first_index != Assignment::MAX_VALUE)
+        if (m_assignment.first_index != MAX_INDEX)
         {
             // Reduced branching by setting iterator index and unsetting second index and object
-            size_t second_index = m_assignment.second_index + 1;
-            m_assignment.second_index = Assignment::MAX_VALUE;
-            m_assignment.second_object = Assignment::MAX_VALUE;
+            Index second_index = m_assignment.second_index + 1;
+            m_assignment.second_index = MAX_INDEX;
+            m_assignment.second_object = MAX_INDEX;
 
             for (; second_index < get_terms().size(); ++second_index)
             {
                 auto second_object = get_edge().get_object_if_overlap(get_terms()[second_index]);
 
-                if (second_object != Assignment::MAX_VALUE)
+                if (second_object != MAX_INDEX)
                 {
                     m_assignment.second_index = second_index;
                     m_assignment.second_object = second_object;
@@ -174,24 +170,22 @@ private:
                 }
             }
         }
-        else
+
+        if (m_assignment.second_object == MAX_INDEX)
         {
-            m_pos = std::numeric_limits<size_t>::max();  ///< mark end of iteration
+            m_pos = MAX_INDEX;  ///< mark end of iteration
         }
     }
 
 public:
     using difference_type = std::ptrdiff_t;
-    using value_type = Assignment;
+    using value_type = EdgeAssignment;
     using pointer = value_type*;
     using reference = const value_type&;
     using iterator_category = std::forward_iterator_tag;
 
-    VertexAndEdgeAssignmentIterator() : m_terms(nullptr), m_edge(nullptr), m_pos(std::numeric_limits<size_t>::max()) {}
-    VertexAndEdgeAssignmentIterator(const TermList& terms, const Edge& edge, bool begin) :
-        m_terms(&terms),
-        m_edge(&edge),
-        m_pos(begin ? 0 : std::numeric_limits<size_t>::max())
+    EdgeAssignmentIterator() : m_terms(nullptr), m_edge(nullptr), m_pos(MAX_INDEX), m_assignment() {}
+    EdgeAssignmentIterator(const TermList& terms, const Edge& edge, bool begin) : m_terms(&terms), m_edge(&edge), m_pos(begin ? 0 : MAX_INDEX), m_assignment()
     {
         if (begin)
         {
@@ -199,33 +193,33 @@ public:
         }
     }
     reference operator*() const { return m_assignment; }
-    VertexAndEdgeAssignmentIterator& operator++()
+    EdgeAssignmentIterator& operator++()
     {
         advance();
         return *this;
     }
-    VertexAndEdgeAssignmentIterator operator++(int)
+    EdgeAssignmentIterator operator++(int)
     {
-        VertexAndEdgeAssignmentIterator tmp = *this;
+        EdgeAssignmentIterator tmp = *this;
         ++(*this);
         return tmp;
     }
-    bool operator==(const VertexAndEdgeAssignmentIterator& other) const { return m_pos == other.m_pos; }
-    bool operator!=(const VertexAndEdgeAssignmentIterator& other) const { return !(*this == other); }
+    bool operator==(const EdgeAssignmentIterator& other) const { return m_pos == other.m_pos; }
+    bool operator!=(const EdgeAssignmentIterator& other) const { return !(*this == other); }
 };
 
-class VertexAndEdgeAssignmentRange
+class EdgeAssignmentRange
 {
 private:
     const TermList& m_terms;
     const Edge& m_edge;
 
 public:
-    VertexAndEdgeAssignmentRange(const TermList& terms, const Edge& edge) : m_terms(terms), m_edge(edge) {}
+    EdgeAssignmentRange(const TermList& terms, const Edge& edge) : m_terms(terms), m_edge(edge) {}
 
-    VertexAndEdgeAssignmentIterator begin() const { return VertexAndEdgeAssignmentIterator(m_terms, m_edge, true); }
+    EdgeAssignmentIterator begin() const { return EdgeAssignmentIterator(m_terms, m_edge, true); }
 
-    VertexAndEdgeAssignmentIterator end() const { return VertexAndEdgeAssignmentIterator(m_terms, m_edge, false); }
+    EdgeAssignmentIterator end() const { return EdgeAssignmentIterator(m_terms, m_edge, false); }
 };
 
 /**
@@ -241,11 +235,17 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     for (const auto& literal : literals)
     {
         const auto arity = literal->get_atom()->get_predicate()->get_arity();
+
+        if (arity < 1)
+        {
+            continue;  ///< We test nullary literals separately
+        }
+
         const auto negated = literal->is_negated();
 
         if (negated && arity != 1)
         {
-            continue;
+            continue;  ///< Can only handly unary negated literals due to overapproximation
         }
 
         assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
@@ -261,7 +261,12 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
             assert(assignment_rank < predicate_assignment_set.size());
             const auto true_assignment = predicate_assignment_set[assignment_rank];
 
-            if (negated == true_assignment)
+            if (!negated && !true_assignment)
+            {
+                return false;
+            }
+
+            if (negated && true_assignment && (1 == arity))
             {
                 return false;
             }
@@ -280,85 +285,42 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     for (const auto& literal : literals)
     {
         const auto arity = literal->get_atom()->get_predicate()->get_arity();
+
+        if (arity < 2)
+        {
+            continue;  ///< We test nullary and unary literals separately.
+        }
+
         const auto negated = literal->is_negated();
 
-        if (negated && arity != 1 && arity != 2)
+        if (negated && arity != 2)
         {
-            continue;
+            continue;  ///< Can only handly binary negated literals due to overapproximation
         }
 
         assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
         const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
         const auto& terms = literal->get_atom()->get_terms();
 
+        /* Iterate edges. */
+
+        for (const auto& assignment : EdgeAssignmentRange(terms, element))
         {
-            /* Iterate vertices. */
-            for (const auto& assignment : VertexAssignmentRange(terms, element.get_src()))
+            assert(assignment.is_valid());
+
+            const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
+
+            assert(assignment_rank < predicate_assignment_set.size());
+            const auto true_assignment = predicate_assignment_set[assignment_rank];
+
+            if (!negated && !true_assignment)
             {
-                assert(assignment.is_valid());
-
-                const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
-
-                assert(assignment_rank < predicate_assignment_set.size());
-                const auto true_assignment = predicate_assignment_set[assignment_rank];
-
-                if (!negated && !true_assignment)
-                {
-                    return false;
-                }
-
-                if (negated && true_assignment && (1 == arity))
-                {
-                    return false;
-                }
+                return false;
             }
 
-            for (const auto& assignment : VertexAssignmentRange(terms, element.get_dst()))
+            if (negated && true_assignment && (2 == arity))
             {
-                assert(assignment.is_valid());
-
-                const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
-
-                assert(assignment_rank < predicate_assignment_set.size());
-                const auto true_assignment = predicate_assignment_set[assignment_rank];
-
-                if (!negated && !true_assignment)
-                {
-                    return false;
-                }
-
-                if (negated && true_assignment && (1 == arity))
-                {
-                    return false;
-                }
-            }
-        }
-
-        {
-            /* Iterate edges. */
-
-            assert(literal->get_atom()->get_predicate()->get_index() < per_predicate_assignment_set.size());
-            const auto& predicate_assignment_set = per_predicate_assignment_set[literal->get_atom()->get_predicate()->get_index()];
-            const auto& terms = literal->get_atom()->get_terms();
-
-            for (const auto& assignment : VertexAndEdgeAssignmentRange(terms, element))
-            {
-                assert(assignment.is_valid(terms.size()));
-
-                const auto assignment_rank = get_assignment_rank(assignment, arity, num_objects);
-
-                assert(assignment_rank < predicate_assignment_set.size());
-                const auto true_assignment = predicate_assignment_set[assignment_rank];
-
-                if (!negated && !true_assignment)
-                {
-                    return false;
-                }
-
-                if (negated && true_assignment && (assignment.size() == arity))
-                {
-                    return false;
-                }
+                return false;
             }
         }
     }
@@ -373,21 +335,15 @@ static Bounds<ContinuousCost> remap_assignment_and_retrieve_bounds_from_assignme
 {
     const auto function = fexpr->get_function();
     const auto function_skeleton = function->get_function_skeleton();
-
     assert(function_skeleton->get_index() < numeric_assignment_set.get_per_function_skeleton_bounds_set().size());
     const auto& function_assignment_set = numeric_assignment_set.get_per_function_skeleton_bounds_set()[function_skeleton->get_index()];
 
-    /* Remap the Assignment to the terms of the function expression.
-       Note: here we use the applied transformation to remap the assignment of the constraint to the fexpr. */
-    auto remapped_assignment = AssignmentType(assignment, function->get_parent_terms_to_terms_mapping());
-    // std::cout << "Remapped_assignment: " << remapped_assignment.first_index << " " << remapped_assignment.first_object << " "
-    //           << remapped_assignment.second_index << " " << remapped_assignment.second_object << std::endl;
+    auto remapped_partial_assignment = AssignmentType(assignment, function->get_parent_terms_to_terms_mapping());
 
-    const auto rank = get_assignment_rank(remapped_assignment, function_skeleton->get_arity(), numeric_assignment_set.get_num_objects());
+    const auto rank = get_assignment_rank(remapped_partial_assignment, function_skeleton->get_arity(), numeric_assignment_set.get_num_objects());
+
     assert(rank < function_assignment_set.size());
     const auto bounds = function_assignment_set[rank];
-
-    // std::cout << function << " " << bounds << std::endl;
 
     return bounds;
 }
@@ -469,19 +425,6 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
                                                         const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                         const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
-    /*
-    const auto value1 = evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
-                                                               assignment,
-                                                               static_numeric_assignment_set,
-                                                               fluent_numeric_assignment_set);
-    const auto value2 = evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
-                                                               assignment,
-                                                               static_numeric_assignment_set,
-                                                               fluent_numeric_assignment_set);
-    const auto result = evaluate(numeric_constraint->get_binary_comparator(), value1, value2);
-    std::cout << to_string(numeric_constraint->get_binary_comparator()) << " " << value1 << " " << value2 << " = " << result << std::endl;
-    */
-
     return evaluate(numeric_constraint->get_binary_comparator(),
                     evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
                                                            assignment,
@@ -501,13 +444,19 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
     for (const auto& numeric_constraint : numeric_constraints)
     {
         const auto& terms = numeric_constraint->get_terms();
+        const auto& arity = terms.size();
+
+        if (arity < 1)
+        {
+            continue;  ///< We test nullary constraints separately.
+        }
 
         for (const auto& assignment : VertexAssignmentRange(terms, element))
         {
             assert(assignment.is_valid());
+
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
             {
-                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
                 return false;
             }
         }
@@ -524,33 +473,19 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
     for (const auto& numeric_constraint : numeric_constraints)
     {
         const auto& terms = numeric_constraint->get_terms();
+        const auto& arity = terms.size();
 
-        for (const auto& assignment : VertexAssignmentRange(terms, element.get_src()))
+        if (arity < 2)
         {
-            assert(assignment.is_valid());
-            if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
-            {
-                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
-                return false;
-            }
+            continue;  ///< We test nullary and unary constraints separately.
         }
 
-        for (const auto& assignment : VertexAssignmentRange(terms, element.get_dst()))
+        for (const auto& assignment : EdgeAssignmentRange(terms, element))
         {
             assert(assignment.is_valid());
-            if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
-            {
-                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
-                return false;
-            }
-        }
 
-        for (const auto& assignment : VertexAndEdgeAssignmentRange(terms, element))
-        {
-            assert(assignment.is_valid(terms.size()));
             if (!is_partially_evaluated_constraint_satisfied(numeric_constraint, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set))
             {
-                // std::cout << "UNSATISFIED: " << numeric_constraint << std::endl;
                 return false;
             }
         }
@@ -595,7 +530,7 @@ Index Vertex::get_object_if_overlap(const Term& term) const
         }
     }
 
-    return Assignment::MAX_VALUE;
+    return MAX_INDEX;
 }
 
 /**
@@ -642,7 +577,7 @@ Index Edge::get_object_if_overlap(const Term& term) const
         }
     }
 
-    return Assignment::MAX_VALUE;
+    return MAX_INDEX;
 }
 
 /**
@@ -650,8 +585,8 @@ Index Edge::get_object_if_overlap(const Term& term) const
  */
 
 StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
-                                               size_t begin_parameter_index,
-                                               size_t end_parameter_index,
+                                               Index begin_parameter_index,
+                                               Index end_parameter_index,
                                                const LiteralList<Static>& static_conditions) :
     m_problem(problem)
 {
@@ -659,15 +594,15 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
     /* 1. Compute vertices */
 
-    for (size_t parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
+    for (Index parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
     {
-        VertexIndexList vertex_partition;
-        ObjectIndexList object_partition;
+        IndexList vertex_partition;
+        IndexList object_partition;
 
         for (const auto& object : m_problem->get_objects())
         {
             const auto object_index = object->get_index();
-            const auto vertex_index = VertexIndex { m_vertices.size() };
+            const auto vertex_index = static_cast<Index>(m_vertices.size());
             auto vertex = Vertex(vertex_index, parameter_index, object_index);
 
             if (vertex.consistent_literals(static_conditions, static_assignment_set))
@@ -683,9 +618,9 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
     /* 2. Compute edges */
 
-    for (size_t first_vertex_index = 0; first_vertex_index < m_vertices.size(); ++first_vertex_index)
+    for (Index first_vertex_index = 0; first_vertex_index < m_vertices.size(); ++first_vertex_index)
     {
-        for (size_t second_vertex_index = (first_vertex_index + 1); second_vertex_index < m_vertices.size(); ++second_vertex_index)
+        for (Index second_vertex_index = (first_vertex_index + 1); second_vertex_index < m_vertices.size(); ++second_vertex_index)
         {
             const auto& first_vertex = m_vertices.at(first_vertex_index);
             const auto& second_vertex = m_vertices.at(second_vertex_index);

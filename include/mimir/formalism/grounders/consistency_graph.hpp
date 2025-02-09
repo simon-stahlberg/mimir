@@ -30,15 +30,6 @@
 
 namespace mimir::consistency_graph
 {
-/**
- * Type aliases
- */
-
-using ParameterIndex = size_t;
-using VertexIndex = size_t;
-using ObjectIndex = size_t;
-using VertexIndexList = std::vector<VertexIndex>;
-using ObjectIndexList = std::vector<ObjectIndex>;
 
 /**
  * Vertex
@@ -48,17 +39,12 @@ using ObjectIndexList = std::vector<ObjectIndex>;
 class Vertex
 {
 private:
-    VertexIndex m_index;
-    ParameterIndex m_parameter_index;
-    ObjectIndex m_object_index;
+    Index m_index;
+    Index m_parameter_index;
+    Index m_object_index;
 
 public:
-    Vertex(VertexIndex index, ParameterIndex parameter_index, ObjectIndex object_index) :
-        m_index(index),
-        m_parameter_index(parameter_index),
-        m_object_index(object_index)
-    {
-    }
+    Vertex(Index index, Index parameter_index, Index object_index) : m_index(index), m_parameter_index(parameter_index), m_object_index(object_index) {}
 
     /// @brief Return true iff the vertex is consistent with all literals in and the assignment set.
     ///
@@ -72,9 +58,9 @@ public:
 
     Index get_object_if_overlap(const Term& term) const;
 
-    VertexIndex get_index() const { return m_index; }
-    ParameterIndex get_parameter_index() const { return m_parameter_index; }
-    ObjectIndex get_object_index() const { return m_object_index; }
+    Index get_index() const { return m_index; }
+    Index get_parameter_index() const { return m_parameter_index; }
+    Index get_object_index() const { return m_object_index; }
 };
 
 /**
@@ -129,8 +115,8 @@ private:
     Vertices m_vertices;
     Edges m_edges;
 
-    std::vector<VertexIndexList> m_vertices_by_parameter_index;
-    std::vector<ObjectIndexList> m_objects_by_parameter_index;
+    std::vector<IndexList> m_vertices_by_parameter_index;
+    std::vector<IndexList> m_objects_by_parameter_index;
 
 public:
     /// @brief Construct a static consistency graph
@@ -145,7 +131,7 @@ public:
     /// More specifically:
     ///  1. for action parameters, we set first to 0 and last to 0 + arity(action)
     ///  2. for universal effects, we set first to arity(action) and last to arity(action) + arity(effect)
-    StaticConsistencyGraph(Problem problem, size_t begin_parameter_index, size_t end_parameter_index, const LiteralList<Static>& static_conditions);
+    StaticConsistencyGraph(Problem problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions);
 
     /// @brief Get the vertices.
     const Vertices& get_vertices() const { return m_vertices; }
@@ -154,10 +140,10 @@ public:
     const Edges& get_edges() const { return m_edges; }
 
     /// @brief Get the vertex indices partitioned by the parameter index.
-    const std::vector<VertexIndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
+    const std::vector<IndexList>& get_vertices_by_parameter_index() const { return m_vertices_by_parameter_index; }
 
     /// @brief Get the object_index indices partitioned by the parameter index.
-    const std::vector<ObjectIndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
+    const std::vector<IndexList>& get_objects_by_parameter_index() const { return m_objects_by_parameter_index; }
 };
 
 }
