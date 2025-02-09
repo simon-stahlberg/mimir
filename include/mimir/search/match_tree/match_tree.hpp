@@ -38,6 +38,41 @@
 
 namespace mimir::match_tree
 {
+template<HasConjunctiveCondition Element>
+struct RefineInverseNodeVisitor : public IInverseNodeVisitor<Element>
+{
+    const InverseNode<Element>& m_parent;
+    const NodeSplitter<Element>& m_node_splitter;
+    std::vector<InverseNode<Element>>& m_children;
+
+    RefineInverseNodeVisitor(const InverseNode<Element>& parent, const NodeSplitter<Element>& node_splitter, std::vector<InverseNode<Element>>& children) :
+        m_parent(parent),
+        m_node_splitter(node_splitter),
+        m_children(children)
+    {
+    }
+
+    template<DynamicPredicateTag P>
+    void refine_atom(const InverseAtomSelectorNode<Element, P>& atom)
+    {
+        m_children.push_back(m_node_splitter->compute_node(atom.get_true_elements(), m_parent));
+        m_children.push_back(m_node_splitter->compute_node(atom.get_false_elements(), m_parent));
+        m_children.push_back(m_node_splitter->compute_node(atom.get_dontcare_elements(), m_parent));
+    }
+
+    void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) { refine_atom(atom); }
+    void accept(const InverseAtomSelectorNode<Element, Derived>& atom) { refine_atom(atom); }
+    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint)
+    {
+        m_children.push_back(m_node_splitter->compute_node(constraint.get_true_elements(), m_parent));
+        m_children.push_back(m_node_splitter->compute_node(constraint.get_dontcare_elements(), m_parent));
+    }
+    void accept(const InverseElementGeneratorNode<Element>& generator)
+    {
+        // There is nothing to refine.
+    }
+};
+
 /* MatchTree */
 template<HasConjunctiveCondition Element>
 class MatchTree
@@ -64,7 +99,16 @@ private:
         return root_node;
     }
 
-    std::vector<InverseNode<Element>> refine_leaf(const NodeSplitter<Element>& node_splitter, const InverseNode<Element>& element) {}
+    std::vector<InverseNode<Element>> refine_leaf(const NodeSplitter<Element>& node_splitter, const InverseNode<Element>& element)
+    {
+        std::cout << "REFINE LEAF" << std::endl;
+
+        auto children = std::vector<InverseNode<Element>> {};
+        auto visitor = RefineInverseNodeVisitor(element, node_splitter, children);
+        element->visit(visitor);
+
+        return children;
+    }
 
     void build_iteratively(const NodeScoreFunction<Element>& node_score_function, const NodeSplitter<Element>& node_splitter)
     {
