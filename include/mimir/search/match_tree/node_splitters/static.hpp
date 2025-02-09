@@ -132,22 +132,23 @@ public:
         }
     }
 
-    InverseNode<Element> compute_node(std::span<const Element*> elements, InverseNode<Element> parent) override
+    std::variant<PlaceholderNodeList<Element>, InverseNode<Element>> compute_best_split(const PlaceholderNode<Element>& node) override
     {
-        const auto root_distance = (parent) ? parent->get_root_distance() : -1;
+        auto useless_splits = SplitList {};
 
-        size_t i = root_distance + 1;
-        for (; i < m_splits.size(); ++i)
+        for (size_t i = node->get_root_distance(); i < m_splits.size(); ++i)
         {
-            const auto node = create_node_from_split(parent, SplitList {}, i, m_splits[i], elements);
+            const auto children = create_node_and_placeholder_children(node, useless_splits, i, m_splits[i]);
 
-            if (node)
+            if (children.has_value())
             {
-                return node;
+                return children.value();
             }
+
+            useless_splits.push_back(m_splits[i]);
         }
 
-        return create_generator_node(parent, i, elements);
+        return create_generator_node(node, m_splits.size());
     }
 };
 

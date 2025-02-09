@@ -32,7 +32,7 @@ class INodeScoreFunction
 public:
     virtual ~INodeScoreFunction() = default;
 
-    virtual double compute_score(const InverseNode<Element>& node) = 0;
+    virtual double compute_score(const PlaceholderNode<Element>& node) = 0;
 };
 
 }

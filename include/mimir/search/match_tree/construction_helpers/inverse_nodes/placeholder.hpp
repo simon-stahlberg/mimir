@@ -23,19 +23,23 @@
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-class PlaceholderNodeImpl : public IInverseNode<Element>
+class PlaceholderNodeImpl
 {
 private:
     InverseNode<Element> m_parent;  ///< Pointer to parent node.
+    size_t m_root_distance;         ///< The distance to the root node.
     std::span<const Element*> m_elements;
 
 public:
     PlaceholderNodeImpl(InverseNode<Element> parent, size_t root_distance, std::span<const Element*> elements) :
-        IInverseNode<Element>(parent, SplitList {}, root_distance),  ///< It has no additional useless splits detected
+        m_parent(parent),
+        m_root_distance(root_distance),
         m_elements(elements)
     {
     }
 
+    const InverseNode<Element>& get_parent() const { return m_parent; }
+    size_t get_root_distance() const { return m_root_distance; }
     std::span<const Element*> get_elements() const { return m_elements; }
 };
 }

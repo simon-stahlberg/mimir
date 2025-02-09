@@ -23,12 +23,14 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/numeric_constraint.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/nodes/atom.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
+#include <optional>
 #include <queue>
 #include <vector>
 
@@ -59,12 +61,12 @@ bool contains(GroundNumericConstraint constraint, const Element* element)
 }
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
-                                            const SplitList& useless_splits,
-                                            size_t root_distance,
-                                            AtomSplit<P> split,
-                                            std::span<const Element*> elements)
+std::optional<PlaceholderNodeList<Element>>
+create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, size_t root_distance, AtomSplit<P> split)
 {
+    assert(node);
+
+    const auto elements = node->get_elements();
     const auto atom = split.feature;
 
     // swap true to front
@@ -92,26 +94,37 @@ InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
 
     if ((num_true == 0 && num_false == 0) || (num_true == 0 && num_dontcare == 0) || (num_false == 0 && num_dontcare == 0))
     {
-        return nullptr;  ///< Avoid creating useless nodes
+        return std::nullopt;  ///< Avoid creating useless nodes
     }
 
-    return std::make_shared<InverseAtomSelectorNode<Element, P>>(
-        parent,
-        useless_splits,
-        root_distance,
-        atom,
-        std::span<const Element*>(elements.begin(), elements.begin() + num_true),
-        std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false),
-        std::span<const Element*>(elements.begin() + num_true + num_false, elements.end()));
+    auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
+    auto false_elements = std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false);
+    auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true + num_false, elements.end());
+
+    auto created_node =
+        std::make_shared<InverseAtomSelectorNode<Element, P>>(node->get_parent(),
+                                                              useless_splits,
+                                                              node->get_root_distance(),
+                                                              atom,
+                                                              std::span<const Element*>(elements.begin(), elements.begin() + num_true),
+                                                              std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false),
+                                                              std::span<const Element*>(elements.begin() + num_true + num_false, elements.end()));
+
+    auto children = PlaceholderNodeList<Element> {};
+    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements));
+    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, false_elements));
+    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements));
+
+    return children;
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
-                                            const SplitList& useless_splits,
-                                            size_t root_distance,
-                                            NumericConstraintSplit split,
-                                            std::span<const Element*> elements)
+std::optional<PlaceholderNodeList<Element>>
+create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, size_t root_distance, NumericConstraintSplit split)
 {
+    assert(node);
+
+    const auto elements = node->get_elements();
     const auto constraint = split.feature;
 
     // swap true to front
@@ -129,31 +142,47 @@ InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
 
     if (num_true == 0 || num_dontcare == 0)
     {
-        return nullptr;  ///< Avoid creating useless nodes
+        return std::nullopt;  ///< Avoid creating useless nodes
     }
 
-    return std::make_shared<InverseNumericConstraintSelectorNode<Element>>(parent,
-                                                                           useless_splits,
-                                                                           root_distance,
-                                                                           constraint,
-                                                                           std::span<const Element*>(elements.begin(), elements.begin() + num_true),
-                                                                           std::span<const Element*>(elements.begin() + num_true, elements.end()));
+    auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
+    auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true, elements.end());
+
+    auto created_node = std::make_shared<InverseNumericConstraintSelectorNode<Element>>(node->get_parent(),
+                                                                                        useless_splits,
+                                                                                        node->get_root_distance(),
+                                                                                        constraint,
+                                                                                        true_elements,
+                                                                                        dontcare_elements);
+
+    auto children = PlaceholderNodeList<Element> {};
+    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements));
+    children.push_back(std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements));
+
+    return children;
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> create_node_from_split(InverseNode<Element> parent,
-                                            const SplitList& useless_splits,
-                                            size_t root_distance,
-                                            const Split& split,
-                                            std::span<const Element*> elements)
+std::optional<PlaceholderNodeList<Element>>
+create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, size_t root_distance, const Split& split)
 {
-    return std::visit([&](auto&& arg) { return create_node_from_split(parent, useless_splits, root_distance, arg, elements); }, split);
+    assert(node);
+
+    return std::visit([&](auto&& arg) { return create_node_and_placeholder_children(node, useless_splits, root_distance, arg); }, split);
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> create_generator_node(InverseNode<Element> parent, size_t root_distance, std::span<const Element*> elements)
+InverseNode<Element> create_generator_node(const PlaceholderNode<Element>& node, size_t root_distance)
 {
-    return std::make_shared<InverseElementGeneratorNode<Element>>(parent, root_distance, elements);
+    assert(node);
+
+    return std::make_shared<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+}
+
+template<HasConjunctiveCondition Element>
+PlaceholderNode<Element> create_root_placeholder_node(std::span<const Element*> elements)
+{
+    return std::make_shared<PlaceholderNodeImpl<Element>>(InverseNode<Element> { nullptr }, 0, elements);
 }
 
 }

@@ -26,7 +26,7 @@ template<HasConjunctiveCondition Element>
 class MinDepthNodeScoreFunction : public INodeScoreFunction<Element>
 {
 public:
-    double compute_score(const InverseNode<Element>& node) override { return node->get_root_distance(); }
+    double compute_score(const PlaceholderNode<Element>& node) override { return node->get_root_distance(); }
 };
 
 }

@@ -78,6 +78,8 @@ class INodeSplitter;
 
 template<HasConjunctiveCondition Element>
 using InverseNode = std::shared_ptr<IInverseNode<Element>>;
+template<HasConjunctiveCondition Element>
+using InverseNodeList = std::vector<InverseNode<Element>>;
 
 template<HasConjunctiveCondition Element>
 using Node = std::unique_ptr<INode<Element>>;
