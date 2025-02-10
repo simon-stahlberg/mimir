@@ -37,6 +37,9 @@ public:
         m_dontcare_succ(std::move(dontcare_succ)),
         m_constraint(constraint)
     {
+        assert(m_constraint);
+        assert(m_true_succ);
+        assert(m_dontcare_succ);
     }
 
     void

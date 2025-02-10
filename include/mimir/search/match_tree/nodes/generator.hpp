@@ -29,13 +29,12 @@ private:
     std::span<const Element*> m_elements;
 
 public:
-    explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements) {}
+    explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements) { assert(!m_elements.empty()); }
 
     void generate_applicable_actions(const DenseState& state,
                                      std::vector<const INode<Element>*>&,
                                      std::vector<const Element*>& ref_applicable_elements) const override
     {
-        assert(!m_elements.empty());  ///< The node should not have been created for empty elements.
         ref_applicable_elements.insert(ref_applicable_elements.end(), m_elements.begin(), m_elements.end());
     }
 };

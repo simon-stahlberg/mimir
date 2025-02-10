@@ -53,6 +53,9 @@ public:
         m_true_child(nullptr),
         m_dontcare_child(nullptr)
     {
+        assert(m_constraint);
+        assert(!m_true_elements.empty());
+        assert(!m_dontcare_elements.empty());
     }
     InverseNumericConstraintSelectorNode(const InverseNumericConstraintSelectorNode& other) = delete;
     InverseNumericConstraintSelectorNode& operator=(const InverseNumericConstraintSelectorNode& other) = delete;

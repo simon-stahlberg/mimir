@@ -34,6 +34,7 @@ public:
         IInverseNode<Element>(parent, SplitList {}, root_distance),
         m_elements(elements)
     {
+        assert(!m_elements.empty());
     }
     InverseElementGeneratorNode(const InverseElementGeneratorNode& other) = delete;
     InverseElementGeneratorNode& operator=(const InverseElementGeneratorNode& other) = delete;

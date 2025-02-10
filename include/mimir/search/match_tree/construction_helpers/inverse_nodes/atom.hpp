@@ -40,6 +40,7 @@ public:
         IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
         m_atom(atom)
     {
+        assert(m_atom);
     }
     InverseAtomSelectorNodeBase(const InverseAtomSelectorNodeBase& other) = delete;
     InverseAtomSelectorNodeBase& operator=(const InverseAtomSelectorNodeBase& other) = delete;
@@ -95,6 +96,9 @@ public:
         m_false_child(nullptr),
         m_dontcare_child(nullptr)
     {
+        assert(!m_true_elements.empty());
+        assert(!m_false_elements.empty());
+        assert(!m_dontcare_elements.empty());
     }
     InverseAtomSelectorNode_TFX(const InverseAtomSelectorNode_TFX& other) = delete;
     InverseAtomSelectorNode_TFX& operator=(const InverseAtomSelectorNode_TFX& other) = delete;
@@ -153,6 +157,8 @@ public:
         m_true_child(nullptr),
         m_false_child(nullptr)
     {
+        assert(!m_true_elements.empty());
+        assert(!m_false_elements.empty());
     }
     InverseAtomSelectorNode_TF(const InverseAtomSelectorNode_TF& other) = delete;
     InverseAtomSelectorNode_TF& operator=(const InverseAtomSelectorNode_TF& other) = delete;
@@ -208,6 +214,8 @@ public:
         m_true_child(nullptr),
         m_dontcare_child(nullptr)
     {
+        assert(!m_true_elements.empty());
+        assert(!m_dontcare_elements.empty());
     }
     InverseAtomSelectorNode_TX(const InverseAtomSelectorNode_TX& other) = delete;
     InverseAtomSelectorNode_TX& operator=(const InverseAtomSelectorNode_TX& other) = delete;
@@ -260,6 +268,8 @@ public:
         m_false_child(nullptr),
         m_dontcare_child(nullptr)
     {
+        assert(!m_false_elements.empty());
+        assert(!m_dontcare_elements.empty());
     }
     InverseAtomSelectorNode_FX(const InverseAtomSelectorNode_FX& other) = delete;
     InverseAtomSelectorNode_FX& operator=(const InverseAtomSelectorNode_FX& other) = delete;

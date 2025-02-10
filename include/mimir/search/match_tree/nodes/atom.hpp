@@ -34,7 +34,7 @@ protected:
     GroundAtom<P> m_atom;
 
 public:
-    explicit AtomSelectorNodeBase(GroundAtom<P> atom) : m_atom(atom) {}
+    explicit AtomSelectorNodeBase(GroundAtom<P> atom) : m_atom(atom) { assert(m_atom); }
 };
 
 /**
@@ -56,6 +56,9 @@ public:
         m_false_succ(std::move(false_succ)),
         m_dontcare_succ(std::move(dontcare_succ))
     {
+        assert(m_true_succ);
+        assert(m_false_succ);
+        assert(m_dontcare_succ);
     }
 
     void
@@ -90,6 +93,8 @@ public:
         m_true_succ(std::move(true_succ)),
         m_false_succ(std::move(false_succ))
     {
+        assert(m_true_succ);
+        assert(m_false_succ);
     }
 
     void
@@ -122,6 +127,8 @@ public:
         m_true_succ(std::move(true_succ)),
         m_dontcare_succ(std::move(dontcare_succ))
     {
+        assert(m_true_succ);
+        assert(m_dontcare_succ);
     }
 
     void
@@ -150,6 +157,8 @@ public:
         m_false_succ(std::move(false_succ)),
         m_dontcare_succ(std::move(dontcare_succ))
     {
+        assert(m_false_succ);
+        assert(m_dontcare_succ);
     }
 
     void
