@@ -65,8 +65,8 @@ public:
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
 
-    InverseNode<Element>* get_true_child() { return &m_true_child; };
-    InverseNode<Element>* get_dontcare_child() { return &m_dontcare_child; }
+    InverseNode<Element>& get_true_child() { return m_true_child; };
+    InverseNode<Element>& get_dontcare_child() { return m_dontcare_child; }
 
     const InverseNode<Element>& get_true_child() const { return m_true_child; };
     const InverseNode<Element>& get_dontcare_child() const { return m_dontcare_child; }

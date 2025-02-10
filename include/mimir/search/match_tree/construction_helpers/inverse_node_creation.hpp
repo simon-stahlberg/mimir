@@ -115,10 +115,10 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         assert(atom_node);
 
         auto children = PlaceholderNodeList<Element> {};
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), atom_node->get_true_child(), root_distance, true_elements));
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), atom_node->get_false_child(), root_distance, false_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), root_distance, true_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), root_distance, false_elements));
         children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), atom_node->get_dontcare_child(), root_distance, dontcare_elements));
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), root_distance, dontcare_elements));
 
         return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
     }
@@ -134,10 +134,10 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
                                                                                   dontcare_elements);
 
         auto children = PlaceholderNodeList<Element> {};
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_true_child(), root_distance, true_elements));
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_false_child(), root_distance, false_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), root_distance, true_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), root_distance, false_elements));
         children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_dontcare_child(), root_distance, dontcare_elements));
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), root_distance, dontcare_elements));
 
         return std::make_pair(std::move(created_node), std::move(children));
     }
@@ -187,9 +187,10 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         assert(constraint_node);
 
         auto children = PlaceholderNodeList<Element> {};
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), constraint_node->get_true_child(), root_distance, true_elements));
         children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), constraint_node->get_dontcare_child(), root_distance, dontcare_elements));
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_true_child(), root_distance, true_elements));
+        children.push_back(
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_dontcare_child(), root_distance, dontcare_elements));
 
         return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
     }
@@ -204,9 +205,9 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
                                                                                             dontcare_elements);
 
         auto children = PlaceholderNodeList<Element> {};
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_true_child(), root_distance, true_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), root_distance, true_elements));
         children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_dontcare_child(), root_distance, dontcare_elements));
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), root_distance, dontcare_elements));
 
         return std::make_pair(std::move(created_node), std::move(children));
     }
