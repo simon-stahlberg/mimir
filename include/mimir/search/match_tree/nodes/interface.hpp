@@ -18,6 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_NODES_INTERFACE_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_NODES_INTERFACE_HPP_
 
+#include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 
 namespace mimir::match_tree

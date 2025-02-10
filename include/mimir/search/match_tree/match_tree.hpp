@@ -131,6 +131,7 @@ public:
 
     void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements)
     {
+        std::cout << "generate_applicable_elements_iteratively" << std::endl;
         m_evaluate_stack.clear();
         out_applicable_elements.clear();
 
@@ -138,11 +139,16 @@ public:
 
         while (!m_evaluate_stack.empty())
         {
+            std::cout << "m_evaluate_stack.size(): " << m_evaluate_stack.size() << std::endl;
+
             const auto node = m_evaluate_stack.back();
+
             m_evaluate_stack.pop_back();
 
             node->generate_applicable_actions(state, m_evaluate_stack, out_applicable_elements);
         }
+
+        std::cout << "Num applicable actions: " << out_applicable_elements.size() << std::endl;
     }
 };
 

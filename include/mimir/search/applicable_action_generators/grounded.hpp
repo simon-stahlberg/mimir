@@ -22,7 +22,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/match_tree.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 
 #include <variant>
 
@@ -37,7 +37,7 @@ class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
     std::shared_ptr<ActionGrounder> m_grounder;
-    MatchTree<GroundAction> m_match_tree;
+    std::unique_ptr<match_tree::MatchTree<GroundActionImpl>> m_match_tree;
 
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
 
@@ -46,11 +46,11 @@ private:
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder, MatchTree<GroundAction> match_tree);
+    GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
     GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
-                                      MatchTree<GroundAction> match_tree,
+                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable

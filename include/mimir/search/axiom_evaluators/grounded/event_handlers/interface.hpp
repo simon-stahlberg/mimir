@@ -21,12 +21,10 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/match_tree.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 
 namespace mimir
 {
-template<typename T>
-class MatchTree;
 
 /**
  * Interface class
@@ -43,7 +41,7 @@ public:
 
     virtual void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) = 0;
 
-    virtual void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) = 0;
+    virtual void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree) = 0;
 
     virtual void on_finish_search_layer() = 0;
 
@@ -99,9 +97,9 @@ public:
         }
     }
 
-    void on_finish_build_axiom_match_tree(const MatchTree<GroundAxiom>& axiom_match_tree) override
+    void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree) override
     {  //
-        m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree.get_num_nodes());
+        // m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree->get_num_nodes());
 
         if (!m_quiet)
         {

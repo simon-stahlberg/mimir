@@ -29,12 +29,17 @@ private:
     std::span<const Element*> m_elements;
 
 public:
-    explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements) { assert(!m_elements.empty()); }
+    explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements)
+    {
+        std::cout << "m_elements.size(): " << m_elements.size() << std::endl;
+        // m_elements may be empty, e.g., if there are no ground axioms.
+    }
 
     void generate_applicable_actions(const DenseState& state,
                                      std::vector<const INode<Element>*>&,
                                      std::vector<const Element*>& ref_applicable_elements) const override
     {
+        std::cout << "REACHED GENERATOR" << std::endl;
         ref_applicable_elements.insert(ref_applicable_elements.end(), m_elements.begin(), m_elements.end());
     }
 };

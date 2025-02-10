@@ -29,13 +29,14 @@
 
 namespace mimir
 {
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder, MatchTree<GroundAxiom> match_tree) :
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder,
+                                               std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>&& match_tree) :
     GroundedAxiomEvaluator(std::move(axiom_grounder), std::move(match_tree), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
 {
 }
 
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder,
-                                               MatchTree<GroundAxiom> match_tree,
+                                               std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>&& match_tree,
                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
     m_grounder(std::move(axiom_grounder)),
     m_match_tree(std::move(match_tree)),
@@ -47,7 +48,6 @@ GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> ax
 
 void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 {
-    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
 
     auto applicable_axioms = GroundAxiomList {};
@@ -66,7 +66,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             // TODO: For axioms, the same fluent branch is taken all the time.
             // Exploit this!
-            m_match_tree.get_applicable_elements(dense_fluent_atoms, dense_derived_atoms, applicable_axioms);
+            m_match_tree->generate_applicable_elements_iteratively(dense_state, applicable_axioms);
 
             /* Apply applicable axioms */
 

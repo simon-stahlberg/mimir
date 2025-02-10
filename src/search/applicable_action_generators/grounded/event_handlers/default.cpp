@@ -18,7 +18,7 @@
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/default.hpp"
 
 #include "mimir/formalism/ground_action.hpp"
-#include "mimir/search/match_tree.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>
@@ -41,9 +41,10 @@ void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_grounding_u
     std::cout << "[GroundedApplicableActionGenerator] Number of grounded actions in problem: " << unrelaxed_actions.size() << std::endl;
 }
 
-void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_build_action_match_tree_impl(const MatchTree<GroundAction>& action_match_tree)
+void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_build_action_match_tree_impl(
+    const match_tree::MatchTree<GroundActionImpl>& action_match_tree)
 {
-    std::cout << "[GroundedApplicableActionGenerator] Number of nodes in action match tree: " << action_match_tree.get_num_nodes() << std::endl;
+    // std::cout << "[GroundedApplicableActionGenerator] Number of nodes in action match tree: " << action_match_tree.get_num_nodes() << std::endl;
 }
 
 void DefaultGroundedApplicableActionGeneratorEventHandler::on_finish_search_layer_impl() const

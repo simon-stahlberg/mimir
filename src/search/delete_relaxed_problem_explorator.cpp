@@ -26,57 +26,10 @@
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/dense_state.hpp"
-#include "mimir/search/match_tree.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
 
 namespace mimir
 {
-
-/// @brief Compute a ground atom order where ground atoms over same predicate are next to each other
-/// The basic idea is that those can be potential mutex variables and grouping them together
-/// can result in a smaller match tree. Such math tree structures have size linear in the number of mutex variables.
-/// We also consider larger groups first since such mutex variables would result in a very large linear split.
-template<PredicateTag P>
-static std::vector<size_t> compute_ground_atom_order(const PDDLRepositories& pddl_repositories)
-{
-    auto ground_atoms_order = std::vector<size_t> {};
-    auto m_ground_atoms_by_predicate = std::unordered_map<Predicate<P>, GroundAtomList<P>> {};
-    for (const auto& ground_atom : pddl_repositories.get_ground_atoms<P>())
-    {
-        m_ground_atoms_by_predicate[ground_atom->get_predicate()].push_back(ground_atom);
-    }
-    auto ground_atoms = GroundAtomList<P> {};
-    // Sort group decreasingly in their size, break ties lexicographically by predicate name
-    auto sorted_groups = std::vector<std::pair<Predicate<P>, GroundAtomList<P>>> {};
-    for (const auto& [predicate, group] : m_ground_atoms_by_predicate)
-    {
-        sorted_groups.emplace_back(predicate, group);
-    }
-    std::sort(sorted_groups.begin(),
-              sorted_groups.end(),
-              [](const std::pair<Predicate<P>, GroundAtomList<P>>& left, const std::pair<Predicate<P>, GroundAtomList<P>>& right)
-              {
-                  if (left.second.size() == right.second.size())
-                  {
-                      return left.first->get_name() < right.first->get_name();
-                  }
-                  return left.second.size() > right.second.size();
-              });
-    for (const auto& [_predicate, group] : sorted_groups)
-    {
-        // Sort grounded atoms in each group by names to get compiler independent results.
-        auto sorted_group = group;
-        std::sort(sorted_group.begin(),
-                  sorted_group.end(),
-                  [](const GroundAtom<P>& left, const GroundAtom<P>& right) { return to_string(*left) < to_string(*right); });
-        for (const auto& grounded_atom : sorted_group)
-
-        {
-            ground_atoms_order.push_back(grounded_atom->get_index());
-        }
-    }
-    return ground_atoms_order;
-}
 
 DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<Grounder> grounder) :
     m_grounder(std::move(grounder)),
@@ -155,12 +108,16 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
 
     event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
-    // Compute order here after grounding all axioms. Could also be moved into the match tree.
-    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*pddl_repositories);
-    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*pddl_repositories);
-    auto match_tree = MatchTree(ground_axioms, fluent_atoms_ordering, derived_atoms_ordering);
+    auto match_tree = std::make_unique<match_tree::MatchTree<GroundAxiomImpl>>(
+        ground_axioms,
+        std::unique_ptr<match_tree::INodeScoreFunction<GroundAxiomImpl>>(std::make_unique<match_tree::MinDepthNodeScoreFunction<GroundAxiomImpl>>().release()),
+        std::unique_ptr<match_tree::INodeSplitter<GroundAxiomImpl>>(
+            std::make_unique<match_tree::StaticNodeSplitter<GroundAxiomImpl>>(*m_grounder->get_pddl_repositories(),
+                                                                              match_tree::SplitMetricEnum::GINI,
+                                                                              ground_axioms)
+                .release()));
 
-    event_handler->on_finish_build_axiom_match_tree(match_tree);
+    event_handler->on_finish_build_axiom_match_tree(*match_tree);
 
     return std::make_shared<GroundedAxiomEvaluator>(m_grounder->get_axiom_grounder(), std::move(match_tree), std::move(event_handler));
 }
@@ -193,22 +150,17 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
 
     event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
-    // Compute order here after grounding all actions. Could also be moved into the match tree.
-    const auto fluent_atoms_ordering = compute_ground_atom_order<Fluent>(*pddl_repositories);
-    const auto derived_atoms_ordering = compute_ground_atom_order<Derived>(*pddl_repositories);
-    auto match_tree = MatchTree(ground_actions, fluent_atoms_ordering, derived_atoms_ordering);
+    auto match_tree = std::make_unique<match_tree::MatchTree<GroundActionImpl>>(
+        ground_actions,
+        std::unique_ptr<match_tree::INodeScoreFunction<GroundActionImpl>>(
+            std::make_unique<match_tree::MinDepthNodeScoreFunction<GroundActionImpl>>().release()),
+        std::unique_ptr<match_tree::INodeSplitter<GroundActionImpl>>(
+            std::make_unique<match_tree::StaticNodeSplitter<GroundActionImpl>>(*m_grounder->get_pddl_repositories(),
+                                                                               match_tree::SplitMetricEnum::GINI,
+                                                                               ground_actions)
+                .release()));
 
-    event_handler->on_finish_build_action_match_tree(match_tree);
-
-    auto match_tree_2 =
-        match_tree::MatchTree<GroundActionImpl>(ground_actions,
-                                                std::unique_ptr<match_tree::INodeScoreFunction<GroundActionImpl>>(
-                                                    std::make_unique<match_tree::MinDepthNodeScoreFunction<GroundActionImpl>>().release()),
-                                                std::unique_ptr<match_tree::INodeSplitter<GroundActionImpl>>(
-                                                    std::make_unique<match_tree::StaticNodeSplitter<GroundActionImpl>>(*m_grounder->get_pddl_repositories(),
-                                                                                                                       match_tree::SplitMetricEnum::GINI,
-                                                                                                                       ground_actions)
-                                                        .release()));
+    event_handler->on_finish_build_action_match_tree(*match_tree);
 
     return std::make_shared<GroundedApplicableActionGenerator>(m_grounder->get_action_grounder(), std::move(match_tree), std::move(event_handler));
 }

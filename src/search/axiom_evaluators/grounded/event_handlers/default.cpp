@@ -18,7 +18,7 @@
 #include "mimir/search/axiom_evaluators/grounded/event_handlers/default.hpp"
 
 #include "mimir/formalism/ground_axiom.hpp"
-#include "mimir/search/match_tree.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 #include "mimir/search/state.hpp"
 
 #include <iostream>
@@ -40,9 +40,9 @@ void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_grounding_unrelaxed_ax
     std::cout << "[GroundedAxiomEvaluator] Number of grounded axioms in problem: " << unrelaxed_axioms.size() << std::endl;
 }
 
-void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_build_axiom_match_tree_impl(const MatchTree<GroundAxiom>& axiom_match_tree)
+void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree)
 {
-    std::cout << "[GroundedAxiomEvaluator] Number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
+    // std::cout << "[GroundedAxiomEvaluator] Number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
 }
 
 void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_search_layer_impl() const

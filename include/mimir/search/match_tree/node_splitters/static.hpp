@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_STATIC_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/generator.hpp"

@@ -27,7 +27,8 @@
 namespace mimir
 {
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder, MatchTree<GroundAction> match_tree) :
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
+                                                                     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :
     GroundedApplicableActionGenerator(std::move(action_grounder),
                                       std::move(match_tree),
                                       std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
@@ -35,7 +36,7 @@ GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared
 }
 
 GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
-                                                                     MatchTree<GroundAction> match_tree,
+                                                                     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
     m_grounder(std::move(action_grounder)),
     m_match_tree(std::move(match_tree)),
@@ -53,11 +54,8 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
 
 mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applicable_action_generator(const DenseState& dense_state)
 {
-    const auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
-    const auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
-
     auto ground_actions = GroundActionList {};
-    m_match_tree.get_applicable_elements(dense_fluent_atoms, dense_derived_atoms, ground_actions);
+    m_match_tree->generate_applicable_elements_iteratively(dense_state, ground_actions);
 
     for (const auto& ground_action : ground_actions)
     {

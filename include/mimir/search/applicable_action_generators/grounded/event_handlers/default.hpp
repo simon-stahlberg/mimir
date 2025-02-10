@@ -36,7 +36,7 @@ private:
 
     void on_finish_grounding_unrelaxed_actions_impl(const GroundActionList& unrelaxed_actions);
 
-    void on_finish_build_action_match_tree_impl(const MatchTree<GroundAction>& action_match_tree);
+    void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& action_match_tree);
 
     void on_finish_search_layer_impl() const;
 

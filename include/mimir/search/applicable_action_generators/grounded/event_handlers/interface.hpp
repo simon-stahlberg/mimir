@@ -21,12 +21,10 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers/statistics.hpp"
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/match_tree.hpp"
+#include "mimir/search/match_tree/match_tree.hpp"
 
 namespace mimir
 {
-template<typename T>
-class MatchTree;
 
 /**
  * Interface class
@@ -43,7 +41,7 @@ public:
 
     virtual void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) = 0;
 
-    virtual void on_finish_build_action_match_tree(const MatchTree<GroundAction>& action_match_tree) = 0;
+    virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& action_match_tree) = 0;
 
     virtual void on_finish_search_layer() = 0;
 
@@ -99,9 +97,9 @@ public:
         }
     }
 
-    void on_finish_build_action_match_tree(const MatchTree<GroundAction>& action_match_tree) override
+    void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& action_match_tree) override
     {  //
-        m_statistics.set_num_nodes_in_action_match_tree(action_match_tree.get_num_nodes());
+        // m_statistics.set_num_nodes_in_action_match_tree(action_match_tree->get_num_nodes());
 
         if (!m_quiet)
         {
