@@ -133,8 +133,7 @@ public:
         }
     }
 
-    std::variant<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>, InverseNode<Element>>
-    compute_best_split(const PlaceholderNode<Element>& node) override
+    std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> compute_best_split(const PlaceholderNode<Element>& node) override
     {
         auto useless_splits = SplitList {};
 

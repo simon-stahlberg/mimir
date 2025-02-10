@@ -32,7 +32,6 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    // Meta data
     GroundAtom<P> m_atom;
 
 public:
@@ -59,15 +58,11 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_TFX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>
 {
 private:
-    // Meta data
-    GroundAtom<P> m_atom;
-
     // Candidates for further refinement.
     std::span<const Element*> m_true_elements;
     std::span<const Element*> m_false_elements;
     std::span<const Element*> m_dontcare_elements;
 
-    // Wrapped into unique_ptr to ensure no invalidaiton of the node after move.
     InverseNode<Element> m_true_child;
     InverseNode<Element> m_false_child;
     InverseNode<Element> m_dontcare_child;
@@ -125,14 +120,10 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_TF : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>
 {
 private:
-    // Meta data
-    GroundAtom<P> m_atom;
-
     // Candidates for further refinement.
     std::span<const Element*> m_true_elements;
     std::span<const Element*> m_false_elements;
 
-    // Wrapped into unique_ptr to ensure no invalidaiton of the node after move.
     InverseNode<Element> m_true_child;
     InverseNode<Element> m_false_child;
 
@@ -182,14 +173,10 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_TX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>
 {
 private:
-    // Meta data
-    GroundAtom<P> m_atom;
-
     // Candidates for further refinement.
     std::span<const Element*> m_true_elements;
     std::span<const Element*> m_dontcare_elements;
 
-    // Wrapped into unique_ptr to ensure no invalidaiton of the node after move.
     InverseNode<Element> m_true_child;
     InverseNode<Element> m_dontcare_child;
 
@@ -236,14 +223,10 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_FX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>
 {
 private:
-    // Meta data
-    GroundAtom<P> m_atom;
-
     // Candidates for further refinement.
     std::span<const Element*> m_false_elements;
     std::span<const Element*> m_dontcare_elements;
 
-    // Wrapped into unique_ptr to ensure no invalidaiton of the node after move.
     InverseNode<Element> m_false_child;
     InverseNode<Element> m_dontcare_child;
 
@@ -284,6 +267,88 @@ public:
 
     const InverseNode<Element>& get_false_child() const { return m_false_child; };
     const InverseNode<Element>& get_dontcare_child() const { return m_dontcare_child; }
+};
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_T : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>
+{
+private:
+    // Candidates for further refinement.
+    std::span<const Element*> m_true_elements;
+
+    InverseNode<Element> m_true_child;
+
+    /* Implement interface*/
+
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>;
+
+public:
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>::get_atom;
+
+    explicit InverseAtomSelectorNode_T(const IInverseNode<Element>* parent,
+                                       SplitList useless_splits,
+                                       size_t root_distance,
+                                       GroundAtom<P> atom,
+                                       std::span<const Element*> true_elements) :
+        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+        m_true_elements(true_elements),
+        m_true_child(nullptr)
+    {
+        assert(!m_true_elements.empty());
+    }
+    InverseAtomSelectorNode_T(const InverseAtomSelectorNode_T& other) = delete;
+    InverseAtomSelectorNode_T& operator=(const InverseAtomSelectorNode_T& other) = delete;
+    InverseAtomSelectorNode_T(InverseAtomSelectorNode_T&& other) = delete;
+    InverseAtomSelectorNode_T& operator=(InverseAtomSelectorNode_T&& other) = delete;
+
+    std::span<const Element*> get_true_elements() const { return m_true_elements; }
+
+    InverseNode<Element>& get_true_child() { return m_true_child; };
+
+    const InverseNode<Element>& get_true_child() const { return m_true_child; };
+};
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_F : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>
+{
+private:
+    // Candidates for further refinement.
+    std::span<const Element*> m_false_elements;
+
+    InverseNode<Element> m_false_child;
+
+    /* Implement interface*/
+
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>;
+
+public:
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>::get_atom;
+
+    explicit InverseAtomSelectorNode_F(const IInverseNode<Element>* parent,
+                                       SplitList useless_splits,
+                                       size_t root_distance,
+                                       GroundAtom<P> atom,
+                                       std::span<const Element*> false_elements) :
+        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+        m_false_elements(false_elements),
+        m_false_child(nullptr)
+    {
+        assert(!m_false_elements.empty());
+    }
+    InverseAtomSelectorNode_F(const InverseAtomSelectorNode_F& other) = delete;
+    InverseAtomSelectorNode_F& operator=(const InverseAtomSelectorNode_F& other) = delete;
+    InverseAtomSelectorNode_F(InverseAtomSelectorNode_F&& other) = delete;
+    InverseAtomSelectorNode_F& operator=(InverseAtomSelectorNode_F&& other) = delete;
+
+    std::span<const Element*> get_false_elements() const { return m_false_elements; }
+
+    InverseNode<Element>& get_false_child() { return m_false_child; };
+
+    const InverseNode<Element>& get_false_child() const { return m_false_child; };
 };
 }
 

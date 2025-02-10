@@ -18,11 +18,32 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_NODES_INTERFACE_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_NODES_INTERFACE_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 
 namespace mimir::match_tree
 {
+template<HasConjunctiveCondition Element>
+class INodeVisitor
+{
+public:
+    virtual void accept(const AtomSelectorNode_TFX<Element, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<Element, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<Element, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<Element, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<Element, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<Element, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<Element, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<Element, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<Element, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<Element, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<Element, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<Element, Derived>& atom) = 0;
+    virtual void accept(const NumericConstraintSelectorNode<Element>& constraint) = 0;
+    virtual void accept(const ElementGeneratorNode<Element>& generator) = 0;
+};
+
 /// @brief `Node` implements the interface of nodes.
 template<HasConjunctiveCondition Element>
 class INode
@@ -33,7 +54,12 @@ public:
     virtual void generate_applicable_actions(const DenseState& state,
                                              std::vector<const INode<Element>*>& ref_applicable_nodes,
                                              std::vector<const Element*>& ref_applicable_elements) const = 0;
+
+    virtual void visit(INodeVisitor<Element>& visitor) const = 0;
 };
+
+template<HasConjunctiveCondition Element>
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<Element>&, DotPrinterTag>& tree);
 }
 
 #endif

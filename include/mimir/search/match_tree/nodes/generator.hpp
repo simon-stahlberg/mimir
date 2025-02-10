@@ -31,7 +31,6 @@ private:
 public:
     explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements)
     {
-        std::cout << "m_elements.size(): " << m_elements.size() << std::endl;
         // m_elements may be empty, e.g., if there are no ground axioms.
     }
 
@@ -39,9 +38,12 @@ public:
                                      std::vector<const INode<Element>*>&,
                                      std::vector<const Element*>& ref_applicable_elements) const override
     {
-        std::cout << "REACHED GENERATOR" << std::endl;
         ref_applicable_elements.insert(ref_applicable_elements.end(), m_elements.begin(), m_elements.end());
     }
+
+    std::span<const Element*> get_elements() const { return m_elements; }
+
+    void visit(INodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
 };
 }
 

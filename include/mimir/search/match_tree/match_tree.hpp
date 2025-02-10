@@ -61,7 +61,6 @@ private:
         auto queue = std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueEntryComparator> {};
         auto root_placeholder = create_root_placeholder_node(std::span<const Element*>(m_elements.begin(), m_elements.end()));
         auto score = node_score_function->compute_score(root_placeholder);
-        std::cout << "Queue push root: " << root_placeholder << std::endl;
         queue.emplace(score, std::move(root_placeholder));
 
         auto inverse_generator_leafs = InverseNodeList<Element> {};
@@ -70,41 +69,23 @@ private:
         while (!queue.empty())
         {
             auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
-            std::cout << "Queue pop: " << node << std::endl;
             queue.pop();
 
-            std::visit(
-                [&](auto&& arg) -> void
-                {
-                    using T = std::decay_t<decltype(arg)>;
-                    if constexpr (std::is_same_v<T, std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>>)
-                    {
-                        auto& [root, children] = arg;
-                        for (auto& child : children)
-                        {
-                            std::cout << "Queue push: " << child << std::endl;
-                            queue.emplace(node_score_function->compute_score(child), std::move(child));
-                        }
-                        if (root)
-                        {
-                            inverse_root = std::move(root);
-                        }
-                    }
-                    else if constexpr (std::is_same_v<T, InverseNode<Element>>)
-                    {
-                        inverse_generator_leafs.push_back(std::move(arg));
-                    }
-                    else
-                    {
-                        static_assert(dependent_false<T>::value, "MatchTree<E>::build_iteratively: Missing implementation for variant type.");
-                    }
-                },
-                node_splitter->compute_best_split(node));
+            auto [root, children] = node_splitter->compute_best_split(node);
+
+            for (auto& child : children)
+            {
+                queue.emplace(node_score_function->compute_score(child), std::move(child));
+            }
+            if (root)
+            {
+                inverse_root = std::move(root);
+            }
         }
 
         std::cout << "Num leafs: " << inverse_generator_leafs.size() << std::endl;
 
-        std::cout << std::make_tuple(std::cref(*inverse_root.get()), DotPrinterTag {}) << std::endl;
+        std::cout << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
 
         m_root = parse_inverse_tree_iteratively(inverse_root);
     }
@@ -131,7 +112,6 @@ public:
 
     void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements)
     {
-        std::cout << "generate_applicable_elements_iteratively" << std::endl;
         m_evaluate_stack.clear();
         out_applicable_elements.clear();
 
@@ -139,16 +119,12 @@ public:
 
         while (!m_evaluate_stack.empty())
         {
-            std::cout << "m_evaluate_stack.size(): " << m_evaluate_stack.size() << std::endl;
-
             const auto node = m_evaluate_stack.back();
 
             m_evaluate_stack.pop_back();
 
             node->generate_applicable_actions(state, m_evaluate_stack, out_applicable_elements);
         }
-
-        std::cout << "Num applicable actions: " << out_applicable_elements.size() << std::endl;
     }
 };
 

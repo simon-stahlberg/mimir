@@ -35,8 +35,8 @@ private:
 public:
     explicit DynamicNodeSplitter(const PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories) {}
 
-    std::variant<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>, InverseNode<Element>>
-    compute_best_split(std::span<const Element*> elements, const PlaceholderNode<Element>& node) override
+    std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> compute_best_split(std::span<const Element*> elements,
+                                                                                     const PlaceholderNode<Element>& node) override
     {
         std::cout << "compute_node" << std::endl;
 

@@ -35,6 +35,10 @@ protected:
 
 public:
     explicit AtomSelectorNodeBase(GroundAtom<P> atom) : m_atom(atom) { assert(m_atom); }
+
+    GroundAtom<P> get_atom() const { return m_atom; }
+
+    void visit(INodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
 };
 
 /**
@@ -45,36 +49,48 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class AtomSelectorNode_TFX : public AtomSelectorNodeBase<AtomSelectorNode_TFX<Element, P>, Element, P>
 {
 private:
-    Node<Element> m_true_succ;
-    Node<Element> m_false_succ;
-    Node<Element> m_dontcare_succ;
+    Node<Element> m_true_child;
+    Node<Element> m_false_child;
+    Node<Element> m_dontcare_child;
+
+    /* Implement interface*/
+
+    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class AtomSelectorNodeBase<AtomSelectorNode_TFX<Element, P>, Element, P>;
 
 public:
-    explicit AtomSelectorNode_TFX(Node<Element>&& true_succ, Node<Element>&& false_succ, Node<Element>&& dontcare_succ, GroundAtom<P> atom) :
+    using AtomSelectorNodeBase<AtomSelectorNode_TFX<Element, P>, Element, P>::get_atom;
+
+    explicit AtomSelectorNode_TFX(Node<Element>&& true_child, Node<Element>&& false_child, Node<Element>&& dontcare_child, GroundAtom<P> atom) :
         AtomSelectorNodeBase<AtomSelectorNode_TFX<Element, P>, Element, P>(atom),
-        m_true_succ(std::move(true_succ)),
-        m_false_succ(std::move(false_succ)),
-        m_dontcare_succ(std::move(dontcare_succ))
+        m_true_child(std::move(true_child)),
+        m_false_child(std::move(false_child)),
+        m_dontcare_child(std::move(dontcare_child))
     {
-        assert(m_true_succ);
-        assert(m_false_succ);
-        assert(m_dontcare_succ);
+        assert(m_true_child);
+        assert(m_false_child);
+        assert(m_dontcare_child);
     }
 
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
-        ref_applicable_nodes.push_back(m_dontcare_succ.get());
+        ref_applicable_nodes.push_back(m_dontcare_child.get());
 
         if (state.get_atoms<P>().get(this->m_atom->get_index()))
         {
-            ref_applicable_nodes.push_back(m_true_succ.get());
+            ref_applicable_nodes.push_back(m_true_child.get());
         }
         else
         {
-            ref_applicable_nodes.push_back(m_false_succ.get());
+            ref_applicable_nodes.push_back(m_false_child.get());
         }
     }
+
+    const Node<Element>& get_true_child() const { return m_true_child; };
+    const Node<Element>& get_false_child() const { return m_false_child; }
+    const Node<Element>& get_dontcare_child() const { return m_dontcare_child; }
 };
 
 /**
@@ -84,17 +100,25 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class AtomSelectorNode_TF : public AtomSelectorNodeBase<AtomSelectorNode_TF<Element, P>, Element, P>
 {
 private:
-    Node<Element> m_true_succ;
-    Node<Element> m_false_succ;
+    Node<Element> m_true_child;
+    Node<Element> m_false_child;
+
+    /* Implement interface*/
+
+    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class AtomSelectorNodeBase<AtomSelectorNode_TF<Element, P>, Element, P>;
 
 public:
-    explicit AtomSelectorNode_TF(Node<Element>&& true_succ, Node<Element>&& false_succ, GroundAtom<P> atom) :
+    using AtomSelectorNodeBase<AtomSelectorNode_TF<Element, P>, Element, P>::get_atom;
+
+    explicit AtomSelectorNode_TF(Node<Element>&& true_child, Node<Element>&& false_child, GroundAtom<P> atom) :
         AtomSelectorNodeBase<AtomSelectorNode_TF<Element, P>, Element, P>(atom),
-        m_true_succ(std::move(true_succ)),
-        m_false_succ(std::move(false_succ))
+        m_true_child(std::move(true_child)),
+        m_false_child(std::move(false_child))
     {
-        assert(m_true_succ);
-        assert(m_false_succ);
+        assert(m_true_child);
+        assert(m_false_child);
     }
 
     void
@@ -102,13 +126,16 @@ public:
     {
         if (state.get_atoms<P>().get(this->m_atom->get_index()))
         {
-            ref_applicable_nodes.push_back(m_true_succ.get());
+            ref_applicable_nodes.push_back(m_true_child.get());
         }
         else
         {
-            ref_applicable_nodes.push_back(m_false_succ.get());
+            ref_applicable_nodes.push_back(m_false_child.get());
         }
     }
+
+    const Node<Element>& get_true_child() const { return m_true_child; };
+    const Node<Element>& get_false_child() const { return m_false_child; }
 };
 
 /**
@@ -118,27 +145,40 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class AtomSelectorNode_TX : public AtomSelectorNodeBase<AtomSelectorNode_TX<Element, P>, Element, P>
 {
 private:
-    Node<Element> m_true_succ;
-    Node<Element> m_dontcare_succ;
+    Node<Element> m_true_child;
+    Node<Element> m_dontcare_child;
+
+    /* Implement interface*/
+
+    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class AtomSelectorNodeBase<AtomSelectorNode_TX<Element, P>, Element, P>;
 
 public:
-    explicit AtomSelectorNode_TX(Node<Element>&& true_succ, Node<Element>&& dontcare_succ, GroundAtom<P> atom) :
+    using AtomSelectorNodeBase<AtomSelectorNode_TX<Element, P>, Element, P>::get_atom;
+
+    explicit AtomSelectorNode_TX(Node<Element>&& true_child, Node<Element>&& dontcare_child, GroundAtom<P> atom) :
         AtomSelectorNodeBase<AtomSelectorNode_TX<Element, P>, Element, P>(atom),
-        m_true_succ(std::move(true_succ)),
-        m_dontcare_succ(std::move(dontcare_succ))
+        m_true_child(std::move(true_child)),
+        m_dontcare_child(std::move(dontcare_child))
     {
-        assert(m_true_succ);
-        assert(m_dontcare_succ);
+        assert(m_true_child);
+        assert(m_dontcare_child);
     }
 
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
-        ref_applicable_nodes.push_back(m_dontcare_succ.get());
+        ref_applicable_nodes.push_back(m_dontcare_child.get());
 
         if (state.get_atoms<P>().get(this->m_atom->get_index()))
-            ref_applicable_nodes.push_back(m_true_succ.get());
+        {
+            ref_applicable_nodes.push_back(m_true_child.get());
+        }
     }
+
+    const Node<Element>& get_true_child() const { return m_true_child; };
+    const Node<Element>& get_dontcare_child() const { return m_dontcare_child; }
 };
 
 /**
@@ -148,27 +188,108 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class AtomSelectorNode_FX : public AtomSelectorNodeBase<AtomSelectorNode_FX<Element, P>, Element, P>
 {
 private:
-    Node<Element> m_false_succ;
-    Node<Element> m_dontcare_succ;
+    Node<Element> m_false_child;
+    Node<Element> m_dontcare_child;
+
+    /* Implement interface*/
+
+    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class AtomSelectorNodeBase<AtomSelectorNode_FX<Element, P>, Element, P>;
 
 public:
-    explicit AtomSelectorNode_FX(Node<Element>&& false_succ, Node<Element>&& dontcare_succ, GroundAtom<P> atom) :
+    using AtomSelectorNodeBase<AtomSelectorNode_FX<Element, P>, Element, P>::get_atom;
+
+    explicit AtomSelectorNode_FX(Node<Element>&& false_child, Node<Element>&& dontcare_child, GroundAtom<P> atom) :
         AtomSelectorNodeBase<AtomSelectorNode_FX<Element, P>, Element, P>(atom),
-        m_false_succ(std::move(false_succ)),
-        m_dontcare_succ(std::move(dontcare_succ))
+        m_false_child(std::move(false_child)),
+        m_dontcare_child(std::move(dontcare_child))
     {
-        assert(m_false_succ);
-        assert(m_dontcare_succ);
+        assert(m_false_child);
+        assert(m_dontcare_child);
     }
 
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
-        ref_applicable_nodes.push_back(m_dontcare_succ.get());
+        ref_applicable_nodes.push_back(m_dontcare_child.get());
 
         if (!state.get_atoms<P>().get(this->m_atom->get_index()))
-            ref_applicable_nodes.push_back(m_false_succ.get());
+        {
+            ref_applicable_nodes.push_back(m_false_child.get());
+        }
     }
+
+    const Node<Element>& get_false_child() const { return m_false_child; }
+    const Node<Element>& get_dontcare_child() const { return m_dontcare_child; }
+};
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_T : public AtomSelectorNodeBase<AtomSelectorNode_T<Element, P>, Element, P>
+{
+private:
+    Node<Element> m_true_child;
+
+    /* Implement interface*/
+
+    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class AtomSelectorNodeBase<AtomSelectorNode_T<Element, P>, Element, P>;
+
+public:
+    using AtomSelectorNodeBase<AtomSelectorNode_T<Element, P>, Element, P>::get_atom;
+
+    explicit AtomSelectorNode_T(Node<Element>&& true_child, GroundAtom<P> atom) :
+        AtomSelectorNodeBase<AtomSelectorNode_T<Element, P>, Element, P>(atom),
+        m_true_child(std::move(true_child))
+    {
+        assert(m_true_child);
+    }
+
+    void
+    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
+    {
+        if (state.get_atoms<P>().get(this->m_atom->get_index()))
+        {
+            ref_applicable_nodes.push_back(m_true_child.get());
+        }
+    }
+
+    const Node<Element>& get_true_child() const { return m_true_child; };
+};
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_F : public AtomSelectorNodeBase<AtomSelectorNode_F<Element, P>, Element, P>
+{
+private:
+    Node<Element> m_false_child;
+
+    /* Implement interface*/
+
+    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+
+    friend class AtomSelectorNodeBase<AtomSelectorNode_F<Element, P>, Element, P>;
+
+public:
+    using AtomSelectorNodeBase<AtomSelectorNode_F<Element, P>, Element, P>::get_atom;
+
+    explicit AtomSelectorNode_F(Node<Element>&& false_child, GroundAtom<P> atom) :
+        AtomSelectorNodeBase<AtomSelectorNode_F<Element, P>, Element, P>(atom),
+        m_false_child(std::move(false_child))
+    {
+        assert(m_false_child);
+    }
+
+    void
+    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
+    {
+        if (!state.get_atoms<P>().get(this->m_atom->get_index()))
+        {
+            ref_applicable_nodes.push_back(m_false_child.get());
+        }
+    }
+
+    const Node<Element>& get_false_child() const { return m_false_child; }
 };
 }
 

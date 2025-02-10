@@ -35,10 +35,14 @@ public:
     virtual void accept(const InverseAtomSelectorNode_TF<Element, Fluent>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_TX<Element, Fluent>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_FX<Element, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_T<Element, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_F<Element, Fluent>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_TFX<Element, Derived>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_TF<Element, Derived>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_TX<Element, Derived>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) = 0;
     virtual void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) = 0;
     virtual void accept(const InverseElementGeneratorNode<Element>& generator) = 0;
 };
@@ -69,7 +73,7 @@ public:
 };
 
 template<HasConjunctiveCondition Element>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<const IInverseNode<Element>&, DotPrinterTag>& tree);
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<Element>&, DotPrinterTag>& tree);
 }
 
 #endif

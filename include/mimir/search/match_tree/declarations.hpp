@@ -52,10 +52,15 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_TX;
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_FX;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_T;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_F;
 template<HasConjunctiveCondition Element>
 class InverseNumericConstraintSelectorNode;
 template<HasConjunctiveCondition Element>
 class InverseElementGeneratorNode;
+
 template<HasConjunctiveCondition Element>
 class PlaceholderNodeImpl;
 template<HasConjunctiveCondition Element>
@@ -66,7 +71,17 @@ using PlaceholderNodeList = std::vector<PlaceholderNode<Element>>;
 template<HasConjunctiveCondition Element>
 class INode;
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class AtomSelectorNode;
+class AtomSelectorNode_TFX;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_TF;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_TX;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_FX;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_T;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class AtomSelectorNode_F;
 template<HasConjunctiveCondition Element>
 class NumericConstraintSelectorNode;
 template<HasConjunctiveCondition Element>
