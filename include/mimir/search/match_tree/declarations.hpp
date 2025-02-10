@@ -45,7 +45,13 @@ concept HasConjunctiveCondition = requires(const T a) {
 template<HasConjunctiveCondition Element>
 class IInverseNode;
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode;
+class InverseAtomSelectorNode_TFX;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_TF;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_TX;
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+class InverseAtomSelectorNode_FX;
 template<HasConjunctiveCondition Element>
 class InverseNumericConstraintSelectorNode;
 template<HasConjunctiveCondition Element>

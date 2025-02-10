@@ -104,42 +104,156 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
     if (node->get_parent())
     {
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
-        auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode<Element, P>>(node->get_parent(),
-                                                                                                               useless_splits,
-                                                                                                               root_distance,
-                                                                                                               atom,
-                                                                                                               true_elements,
-                                                                                                               false_elements,
-                                                                                                               dontcare_elements);
-        auto atom_node = dynamic_cast<InverseAtomSelectorNode<Element, P>*>(created_node.get());
-        assert(atom_node);
 
-        auto children = PlaceholderNodeList<Element> {};
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), root_distance, true_elements));
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), root_distance, false_elements));
-        children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), root_distance, dontcare_elements));
+        if (!true_elements.empty() && !false_elements.empty() && !dontcare_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode_TFX<Element, P>>(node->get_parent(),
+                                                                                                                       useless_splits,
+                                                                                                                       root_distance,
+                                                                                                                       atom,
+                                                                                                                       true_elements,
+                                                                                                                       false_elements,
+                                                                                                                       dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TFX<Element, P>*>(created_node.get());
+            assert(atom_node);
 
-        return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), root_distance, true_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), root_distance, false_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else if (!true_elements.empty() && !false_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode_TF<Element, P>>(node->get_parent(),
+                                                                                                                      useless_splits,
+                                                                                                                      root_distance,
+                                                                                                                      atom,
+                                                                                                                      false_elements,
+                                                                                                                      dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TF<Element, P>*>(created_node.get());
+            assert(atom_node);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), root_distance, true_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), root_distance, false_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else if (!true_elements.empty() && !dontcare_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode_TX<Element, P>>(node->get_parent(),
+                                                                                                                      useless_splits,
+                                                                                                                      root_distance,
+                                                                                                                      atom,
+                                                                                                                      true_elements,
+                                                                                                                      dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TX<Element, P>*>(created_node.get());
+            assert(atom_node);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), root_distance, true_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else if (!false_elements.empty() && !dontcare_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode_FX<Element, P>>(node->get_parent(),
+                                                                                                                      useless_splits,
+                                                                                                                      root_distance,
+                                                                                                                      atom,
+                                                                                                                      false_elements,
+                                                                                                                      dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_FX<Element, P>*>(created_node.get());
+            assert(atom_node);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), root_distance, false_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else
+        {
+            throw std::logic_error(
+                "create_node_and_placeholder_children(node, useless_splits, root_distance, split): Tried to create useless inverse atom node.");
+        }
     }
     else
     {
         /* Construct the node and return it, i.e., the root node. */
-        auto created_node = std::make_unique<InverseAtomSelectorNode<Element, P>>(nullptr,
-                                                                                  useless_splits,
-                                                                                  root_distance,
-                                                                                  atom,
-                                                                                  true_elements,
-                                                                                  false_elements,
-                                                                                  dontcare_elements);
+        if (!true_elements.empty() && !false_elements.empty() && !dontcare_elements.empty())
+        {
+            auto created_node = std::make_unique<InverseAtomSelectorNode_TFX<Element, P>>(nullptr,
+                                                                                          useless_splits,
+                                                                                          root_distance,
+                                                                                          atom,
+                                                                                          true_elements,
+                                                                                          false_elements,
+                                                                                          dontcare_elements);
 
-        auto children = PlaceholderNodeList<Element> {};
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), root_distance, true_elements));
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), root_distance, false_elements));
-        children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), root_distance, dontcare_elements));
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), root_distance, true_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), root_distance, false_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), root_distance, dontcare_elements));
 
-        return std::make_pair(std::move(created_node), std::move(children));
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else if (!true_elements.empty() && !false_elements.empty())
+        {
+            auto created_node =
+                std::make_unique<InverseAtomSelectorNode_TF<Element, P>>(nullptr, useless_splits, root_distance, atom, true_elements, false_elements);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), root_distance, true_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), root_distance, false_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else if (!true_elements.empty() && !dontcare_elements.empty())
+        {
+            auto created_node =
+                std::make_unique<InverseAtomSelectorNode_TX<Element, P>>(nullptr, useless_splits, root_distance, atom, true_elements, dontcare_elements);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), root_distance, true_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else if (!false_elements.empty() && !dontcare_elements.empty())
+        {
+            auto created_node =
+                std::make_unique<InverseAtomSelectorNode_FX<Element, P>>(nullptr, useless_splits, root_distance, atom, false_elements, dontcare_elements);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), root_distance, false_elements));
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else
+        {
+            throw std::logic_error(
+                "create_node_and_placeholder_children(node, useless_splits, root_distance, split): Tried to create useless inverse atom node.");
+        }
     }
 }
 
@@ -172,6 +286,12 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
     auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
     auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true, elements.end());
+
+    if (true_elements.empty() || dontcare_elements.empty())
+    {
+        throw std::logic_error(
+            "create_node_and_placeholder_children(node, useless_splits, root_distance, split): Tried to create useless inverse constraint node.");
+    }
 
     if (node->get_parent())
     {

@@ -29,7 +29,7 @@ private:
     Node<Element> m_true_succ;
     Node<Element> m_dontcare_succ;
 
-    GroundNumericConstraint m_constraint;  ///< we could get rid of it but it can be nice visualization :)
+    GroundNumericConstraint m_constraint;
 
 public:
     NumericConstraintSelectorNode(Node<Element>&& true_succ, Node<Element>&& dontcare_succ, GroundNumericConstraint constraint) :
