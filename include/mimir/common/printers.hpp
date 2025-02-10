@@ -33,6 +33,13 @@
 namespace mimir
 {
 
+struct DotPrinterTag
+{
+};
+struct ConsolePrinterTag
+{
+};
+
 /**
  * Utility to write elements to a string using operator<< overload.
  */

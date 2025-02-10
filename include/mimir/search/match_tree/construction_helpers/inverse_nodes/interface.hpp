@@ -18,8 +18,12 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_INTERFACE_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_INTERFACE_HPP_
 
+#include "mimir/common/printers.hpp"
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
+
+#include <map>
+#include <unordered_map>
 
 namespace mimir::match_tree
 {
@@ -57,6 +61,187 @@ public:
 
     virtual void visit(IInverseNodeVisitor<Element>& visitor) const = 0;
 };
+
+template<HasConjunctiveCondition Element>
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const IInverseNode<Element>&, DotPrinterTag>& tree)
+{
+    using Nodes = std::unordered_map<const IInverseNode<Element>*, std::pair<size_t, std::string>>;
+    using Partition = std::map<size_t, std::vector<size_t>>;
+    using Edges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
+
+    struct InitializeNodes : public IInverseNodeVisitor<Element>
+    {
+        Nodes& m_nodes;
+
+        InitializeNodes(Nodes& nodes) : m_nodes(nodes) {}
+
+        void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
+        {
+            m_nodes.emplace(&atom, std::make_pair(m_nodes.size(), to_string(atom.get_atom())));
+            atom.get_true_child()->visit(*this);
+            atom.get_false_child()->visit(*this);
+            atom.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
+        {
+            m_nodes.emplace(&atom, std::make_pair(m_nodes.size(), to_string(atom.get_atom())));
+            atom.get_true_child()->visit(*this);
+            atom.get_false_child()->visit(*this);
+            atom.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
+        {
+            m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
+            constraint.get_true_child()->visit(*this);
+            constraint.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseElementGeneratorNode<Element>& generator) override
+        {
+            m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
+        }
+    };
+
+    struct InitializePartitionVisitor : public IInverseNodeVisitor<Element>
+    {
+        Nodes& m_nodes;
+        Partition& m_partition;
+
+        InitializePartitionVisitor(Nodes& nodes, Partition& partition) : m_nodes(nodes), m_partition(partition) {}
+
+        void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
+        {
+            m_partition[atom.get_root_distance()].push_back(m_nodes.at(&atom).first);
+            atom.get_true_child()->visit(*this);
+            atom.get_false_child()->visit(*this);
+            atom.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
+        {
+            m_partition[atom.get_root_distance()].push_back(m_nodes.at(&atom).first);
+            atom.get_true_child()->visit(*this);
+            atom.get_false_child()->visit(*this);
+            atom.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
+        {
+            m_partition[constraint.get_root_distance()].push_back(m_nodes.at(&constraint).first);
+            constraint.get_true_child()->visit(*this);
+            constraint.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseElementGeneratorNode<Element>& generator) override
+        {
+            m_partition[generator.get_root_distance()].push_back(m_nodes.at(&generator).first);
+        }
+    };
+
+    struct InitializeEdgesVisitor : public IInverseNodeVisitor<Element>
+    {
+        Nodes& m_nodes;
+        Edges& m_edges;
+
+        InitializeEdgesVisitor(Nodes& nodes, Edges& edges) : m_nodes(nodes), m_edges(edges) {}
+
+        void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
+        {
+            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_true_child().get()).first, "T");
+            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_false_child().get()).first, "F");
+            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+            atom.get_true_child()->visit(*this);
+            atom.get_false_child()->visit(*this);
+            atom.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
+        {
+            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_true_child().get()).first, "T");
+            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_false_child().get()).first, "F");
+            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+            atom.get_true_child()->visit(*this);
+            atom.get_false_child()->visit(*this);
+            atom.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
+        {
+            m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
+            m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_dontcare_child().get()).first, "X");
+            constraint.get_true_child()->visit(*this);
+            constraint.get_dontcare_child()->visit(*this);
+        }
+        void accept(const InverseElementGeneratorNode<Element>& generator) override {}
+    };
+
+    auto nodes = Nodes {};
+    auto partition = Partition {};
+    auto edges = Edges {};
+
+    auto& [root, tag] = tree;
+
+    auto visitor1 = InitializeNodes(nodes);
+    root.visit(visitor1);
+
+    auto visitor2 = InitializePartitionVisitor(nodes, partition);
+    root.visit(visitor2);
+
+    auto visitor3 = InitializeEdgesVisitor(nodes, edges);
+    root.visit(visitor3);
+
+    out << "digraph Tree {\n"
+           "rankdir=TB;\n\n";
+
+    /* Rank definitions */
+    for (const auto& [distance, nodes] : partition)
+    {
+        out << "{ rank=same; ";
+        for (const auto& node : nodes)
+        {
+            out << "n" << node << "; ";
+        }
+        out << "}\n";
+    }
+    out << "\n";
+
+    /* Node definitions */
+    for (const auto& [node_ptr, node_data] : nodes)
+    {
+        auto& [index, label] = node_data;
+
+        out << "n" << index << " [label=\"" << label << "\"];\n";
+    }
+    out << "\n";
+
+    /* Edge definitions */
+    for (const auto& [src, edges] : edges)
+    {
+        for (const auto& [dst, label] : edges)
+        {
+            out << "n" << src << " -> " << "n" << dst << " [label=\"" << label << "\"];\n";
+        }
+    }
+    out << "\n";
+
+    /* Invisible edge definitions to control layering */
+    for (auto it = partition.begin(); it != partition.end(); ++it)
+    {
+        const auto next = std::next(it);
+        if (next == partition.end())
+        {
+            break;  // skip last element
+        }
+
+        // draw invisible edges to nodes in next partition
+        for (const auto& node : it->second)
+        {
+            for (const auto& node2 : next->second)
+            {
+                // A -> X [style=invis];
+                out << "n" << node << " -> " << "n" << node2 << " [style=invis];\n";
+            }
+        }
+    }
+
+    out << "}\n";  // end graph
+
+    return out;
+}
 }
 
 #endif

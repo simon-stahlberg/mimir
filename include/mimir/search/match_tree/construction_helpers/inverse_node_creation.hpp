@@ -106,7 +106,7 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
         auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode<Element, P>>(node->get_parent(),
                                                                                                                useless_splits,
-                                                                                                               node->get_root_distance(),
+                                                                                                               root_distance,
                                                                                                                atom,
                                                                                                                true_elements,
                                                                                                                false_elements,
@@ -127,7 +127,7 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         /* Construct the node and return it, i.e., the root node. */
         auto created_node = std::make_unique<InverseAtomSelectorNode<Element, P>>(nullptr,
                                                                                   useless_splits,
-                                                                                  node->get_root_distance(),
+                                                                                  root_distance,
                                                                                   atom,
                                                                                   true_elements,
                                                                                   false_elements,
@@ -178,7 +178,7 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
         auto& created_node = node->get_parents_child() = std::make_unique<InverseNumericConstraintSelectorNode<Element>>(node->get_parent(),
                                                                                                                          useless_splits,
-                                                                                                                         node->get_root_distance(),
+                                                                                                                         root_distance,
                                                                                                                          constraint,
                                                                                                                          true_elements,
                                                                                                                          dontcare_elements);
@@ -198,7 +198,7 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         /* Construct the node and return it, i.e., the root node. */
         auto created_node = std::make_unique<InverseNumericConstraintSelectorNode<Element>>(nullptr,
                                                                                             useless_splits,
-                                                                                            node->get_root_distance(),
+                                                                                            root_distance,
                                                                                             constraint,
                                                                                             true_elements,
                                                                                             dontcare_elements);

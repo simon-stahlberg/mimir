@@ -104,6 +104,8 @@ private:
 
         std::cout << "Num leafs: " << inverse_generator_leafs.size() << std::endl;
 
+        std::cout << std::make_tuple(std::cref(*inverse_root.get()), DotPrinterTag {}) << std::endl;
+
         m_root = parse_inverse_tree_iteratively(inverse_root);
     }
 
