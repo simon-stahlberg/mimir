@@ -44,7 +44,7 @@ void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_grounding_unr
 void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_build_action_match_tree_impl(
     const match_tree::MatchTree<GroundActionImpl>& action_match_tree)
 {
-    // std::cout << "[GroundedApplicableActionGenerator] Number of nodes in action match tree: " << action_match_tree.get_num_nodes() << std::endl;
+    std::cout << "[GroundedApplicableActionGenerator] Number of nodes in action match tree: " << action_match_tree.get_num_nodes() << std::endl;
 }
 
 void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_search_layer_impl() const

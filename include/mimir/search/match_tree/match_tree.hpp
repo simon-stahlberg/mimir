@@ -42,6 +42,8 @@ class MatchTree
 private:
     std::vector<const Element*> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
     Node<Element> m_root;                    ///< the root node.
+    size_t m_num_nodes;
+    bool m_is_exact;
 
     std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
 
@@ -73,6 +75,8 @@ private:
 
             auto [root, children] = node_splitter->compute_best_split(node);
 
+            ++m_num_nodes;
+
             for (auto& child : children)
             {
                 queue.emplace(node_score_function->compute_score(child), std::move(child));
@@ -83,9 +87,11 @@ private:
             }
         }
 
-        std::cout << "Num leafs: " << inverse_generator_leafs.size() << std::endl;
+        m_is_exact = true;  ///< If we exhaust, the match tree perfectly captures the conjunctive conditions.
 
-        std::cout << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
+        // std::cout << "Num nodes: " << m_num_nodes << std::endl;
+
+        // std::cout << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
 
         m_root = parse_inverse_tree_iteratively(inverse_root);
     }
@@ -97,10 +103,14 @@ public:
               const NodeScoreFunction<Element>& node_score_function,
               const NodeSplitter<Element>& node_splitter) :
         m_elements(std::move(elements)),
-        m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end())))
+        m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
+        m_num_nodes(1),
+        m_is_exact(true)
     {
         if (!m_elements.empty())
         {
+            m_num_nodes = 0;
+            m_is_exact = false;
             build_iteratively(node_score_function, node_splitter);
         }
     }
@@ -126,6 +136,10 @@ public:
             node->generate_applicable_actions(state, m_evaluate_stack, out_applicable_elements);
         }
     }
+
+    size_t get_num_nodes() const { return m_num_nodes; }
+
+    bool is_exact() const { return m_is_exact; }
 };
 
 }

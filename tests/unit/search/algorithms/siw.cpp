@@ -164,7 +164,7 @@ TEST(MimirTests, SearchAlgorithmsSIWGroundedGripperTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 20);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 48);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 40);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);

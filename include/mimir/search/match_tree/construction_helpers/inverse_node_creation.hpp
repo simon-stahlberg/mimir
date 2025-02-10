@@ -71,27 +71,23 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
     // swap true to front
     auto num_true = size_t(0);
-    for (size_t i = 1; i < elements.size(); ++i)
+    for (size_t i = 0; i < elements.size(); ++i)
     {
         if (contains_positive(atom, elements[i]))
         {
-            assert(num_true < i);
             std::swap(elements[num_true++], elements[i]);
         }
     }
     auto num_false = size_t(0);
-    for (size_t i = num_true + 1; i < elements.size() - 1; ++i)
+    for (size_t i = num_true; i < elements.size(); ++i)
     {
         if (contains_negative(atom, elements[i]))
         {
-            assert(num_true + num_false < i);
             std::swap(elements[num_true + num_false++], elements[i]);
         }
     }
 
-    const auto num_dontcare = elements.size() - num_true - num_false;
-
-    if ((num_true == 0 && num_false == 0) || (num_true == 0 && num_dontcare == 0) || (num_false == 0 && num_dontcare == 0))
+    if (num_true == 0 && num_false == 0)
     {
         return std::nullopt;  ///< Avoid creating useless nodes
     }
@@ -185,6 +181,32 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
             return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
         }
+        else if (!true_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() =
+                std::make_unique<InverseAtomSelectorNode_T<Element, P>>(node->get_parent(), useless_splits, root_distance, atom, true_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_T<Element, P>*>(created_node.get());
+            assert(atom_node);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), placeholder_distance, true_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else if (!false_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() =
+                std::make_unique<InverseAtomSelectorNode_F<Element, P>>(node->get_parent(), useless_splits, root_distance, atom, false_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_F<Element, P>*>(created_node.get());
+            assert(atom_node);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), placeholder_distance, false_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
         else
         {
             throw std::logic_error(
@@ -259,6 +281,26 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
+        else if (!true_elements.empty())
+        {
+            auto created_node = std::make_unique<InverseAtomSelectorNode_T<Element, P>>(nullptr, useless_splits, root_distance, atom, true_elements);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), placeholder_distance, true_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else if (!false_elements.empty())
+        {
+            auto created_node = std::make_unique<InverseAtomSelectorNode_F<Element, P>>(nullptr, useless_splits, root_distance, atom, false_elements);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), placeholder_distance, false_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
         else
         {
             throw std::logic_error(
@@ -278,11 +320,10 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
     // swap true to front
     auto num_true = size_t(0);
-    for (size_t i = 1; i < elements.size(); ++i)
+    for (size_t i = 0; i < elements.size(); ++i)
     {
         if (contains(constraint, elements[i]))
         {
-            assert(num_true < i);
             std::swap(elements[num_true++], elements[i]);
         }
     }

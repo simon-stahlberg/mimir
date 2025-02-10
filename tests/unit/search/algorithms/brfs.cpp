@@ -139,7 +139,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAssemblyTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 3);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 6);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 14);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 13);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 2);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 2);
@@ -192,7 +192,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 464);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 43);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 138);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 131);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 420);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 26);
@@ -245,7 +245,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 84);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 237);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 208);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -298,7 +298,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks3opsTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 45);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 96);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 78);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -351,7 +351,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks4opsTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 24);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 72);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 55);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -458,7 +458,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDeliveryTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 16);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 32);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 30);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -511,7 +511,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDriverlogTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 14);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 28);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 26);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -564,7 +564,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 30);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 26);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -617,7 +617,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 35);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 88);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 84);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -670,7 +670,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 20);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 48);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 40);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -723,7 +723,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedHikingTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 41);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 60);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 68);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -776,7 +776,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 14);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 26);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 25);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -829,7 +829,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 6);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 14);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 12);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -883,7 +883,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 20);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 45);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 34);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 16);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
@@ -994,10 +994,10 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 38);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 34);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 132);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 105);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 34);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 94);
+    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 80);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1101,7 +1101,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 7);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 17);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 14);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -1154,7 +1154,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 18);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 21);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 19);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -1207,7 +1207,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedScheduleTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 49);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 144);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 82);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
@@ -1420,7 +1420,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
     EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
 
     EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 57);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 112);
+    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 103);
 
     EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
     EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);

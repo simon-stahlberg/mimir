@@ -99,7 +99,7 @@ public:
 
     void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree) override
     {  //
-        // m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree->get_num_nodes());
+        m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree.get_num_nodes());
 
         if (!m_quiet)
         {

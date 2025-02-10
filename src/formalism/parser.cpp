@@ -78,8 +78,8 @@ PDDLParser::PDDLParser(const fs::path& domain_filepath, const fs::path& problem_
     m_problem = encode_numeric_constraint_terms_in_functions.run(m_problem);
     m_domain = m_problem->get_domain();
 
-    std::cout << *m_domain << std::endl;
-    std::cout << *m_problem << std::endl;
+    // std::cout << *m_domain << std::endl;
+    // std::cout << *m_problem << std::endl;
 }
 
 const std::shared_ptr<PDDLRepositories>& PDDLParser::get_pddl_repositories() const { return m_factories; }

@@ -42,7 +42,7 @@ void DebugGroundedAxiomEvaluatorEventHandler::on_finish_grounding_unrelaxed_axio
 
 void DebugGroundedAxiomEvaluatorEventHandler::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree)
 {
-    // std::cout << "[GroundedAxiomEvaluator] Number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
 }
 
 void DebugGroundedAxiomEvaluatorEventHandler::on_finish_search_layer_impl() const
