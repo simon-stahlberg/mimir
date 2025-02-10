@@ -26,19 +26,19 @@ template<HasConjunctiveCondition Element>
 class InverseElementGeneratorNode : public IInverseNode<Element>
 {
 private:
-    // Meta data
-    size_t m_root_distance;
-    InverseNode<Element> m_parent;
-
     // Final elements
     std::span<const Element*> m_elements;
 
 public:
-    InverseElementGeneratorNode(InverseNode<Element> parent, size_t root_distance, std::span<const Element*> elements) :
+    InverseElementGeneratorNode(const IInverseNode<Element>* parent, size_t root_distance, std::span<const Element*> elements) :
         IInverseNode<Element>(parent, SplitList {}, root_distance),
         m_elements(elements)
     {
     }
+    InverseElementGeneratorNode(const InverseElementGeneratorNode& other) = delete;
+    InverseElementGeneratorNode& operator=(const InverseElementGeneratorNode& other) = delete;
+    InverseElementGeneratorNode(InverseElementGeneratorNode&& other) = delete;
+    InverseElementGeneratorNode& operator=(InverseElementGeneratorNode&& other) = delete;
 
     void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
 

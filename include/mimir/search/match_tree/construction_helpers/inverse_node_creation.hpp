@@ -61,7 +61,7 @@ bool contains(GroundNumericConstraint constraint, const Element* element)
 }
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-std::optional<PlaceholderNodeList<Element>>
+std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>>
 create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, size_t root_distance, AtomSplit<P> split)
 {
     assert(node);
@@ -101,24 +101,50 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
     auto false_elements = std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false);
     auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true + num_false, elements.end());
 
-    auto created_node =
-        std::make_shared<InverseAtomSelectorNode<Element, P>>(node->get_parent(),
-                                                              useless_splits,
-                                                              node->get_root_distance(),
-                                                              atom,
-                                                              std::span<const Element*>(elements.begin(), elements.begin() + num_true),
-                                                              std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false),
-                                                              std::span<const Element*>(elements.begin() + num_true + num_false, elements.end()));
+    if (node->get_parent())
+    {
+        /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
+        auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode<Element, P>>(node->get_parent(),
+                                                                                                               useless_splits,
+                                                                                                               node->get_root_distance(),
+                                                                                                               atom,
+                                                                                                               true_elements,
+                                                                                                               false_elements,
+                                                                                                               dontcare_elements);
+        auto atom_node = dynamic_cast<InverseAtomSelectorNode<Element, P>*>(created_node.get());
+        assert(atom_node);
 
-    auto true_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements);
-    auto false_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, false_elements);
-    auto dontcare_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements);
+        auto children = PlaceholderNodeList<Element> {};
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), atom_node->get_true_child(), root_distance, true_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), atom_node->get_false_child(), root_distance, false_elements));
+        children.push_back(
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), atom_node->get_dontcare_child(), root_distance, dontcare_elements));
 
-    return PlaceholderNodeList<Element> { true_child, false_child, dontcare_child };
+        return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+    }
+    else
+    {
+        /* Construct the node and return it, i.e., the root node. */
+        auto created_node = std::make_unique<InverseAtomSelectorNode<Element, P>>(nullptr,
+                                                                                  useless_splits,
+                                                                                  node->get_root_distance(),
+                                                                                  atom,
+                                                                                  true_elements,
+                                                                                  false_elements,
+                                                                                  dontcare_elements);
+
+        auto children = PlaceholderNodeList<Element> {};
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_true_child(), root_distance, true_elements));
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_false_child(), root_distance, false_elements));
+        children.push_back(
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+        return std::make_pair(std::move(created_node), std::move(children));
+    }
 }
 
 template<HasConjunctiveCondition Element>
-std::optional<PlaceholderNodeList<Element>>
+std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>>
 create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, size_t root_distance, NumericConstraintSplit split)
 {
     assert(node);
@@ -147,21 +173,47 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
     auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
     auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true, elements.end());
 
-    auto created_node = std::make_shared<InverseNumericConstraintSelectorNode<Element>>(node->get_parent(),
-                                                                                        useless_splits,
-                                                                                        node->get_root_distance(),
-                                                                                        constraint,
-                                                                                        true_elements,
-                                                                                        dontcare_elements);
+    if (node->get_parent())
+    {
+        /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
+        auto& created_node = node->get_parents_child() = std::make_unique<InverseNumericConstraintSelectorNode<Element>>(node->get_parent(),
+                                                                                                                         useless_splits,
+                                                                                                                         node->get_root_distance(),
+                                                                                                                         constraint,
+                                                                                                                         true_elements,
+                                                                                                                         dontcare_elements);
 
-    auto true_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, true_elements);
-    auto dontcare_child = std::make_shared<PlaceholderNodeImpl<Element>>(created_node, root_distance, dontcare_elements);
+        auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode<Element>*>(created_node.get());
+        assert(constraint_node);
 
-    return PlaceholderNodeList<Element> { true_child, dontcare_child };
+        auto children = PlaceholderNodeList<Element> {};
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), constraint_node->get_true_child(), root_distance, true_elements));
+        children.push_back(
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), constraint_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+        return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+    }
+    else
+    {
+        /* Construct the node and return it, i.e., the root node. */
+        auto created_node = std::make_unique<InverseNumericConstraintSelectorNode<Element>>(nullptr,
+                                                                                            useless_splits,
+                                                                                            node->get_root_distance(),
+                                                                                            constraint,
+                                                                                            true_elements,
+                                                                                            dontcare_elements);
+
+        auto children = PlaceholderNodeList<Element> {};
+        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_true_child(), root_distance, true_elements));
+        children.push_back(
+            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), created_node->get_dontcare_child(), root_distance, dontcare_elements));
+
+        return std::make_pair(std::move(created_node), std::move(children));
+    }
 }
 
 template<HasConjunctiveCondition Element>
-std::optional<PlaceholderNodeList<Element>>
+std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>>
 create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, size_t root_distance, const Split& split)
 {
     assert(node);
@@ -174,13 +226,13 @@ InverseNode<Element> create_generator_node(const PlaceholderNode<Element>& node,
 {
     assert(node);
 
-    return std::make_shared<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+    return std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
 }
 
 template<HasConjunctiveCondition Element>
 PlaceholderNode<Element> create_root_placeholder_node(std::span<const Element*> elements)
 {
-    return std::make_shared<PlaceholderNodeImpl<Element>>(InverseNode<Element> { nullptr }, 0, elements);
+    return std::make_unique<PlaceholderNodeImpl<Element>>(nullptr, nullptr, 0, elements);
 }
 
 }

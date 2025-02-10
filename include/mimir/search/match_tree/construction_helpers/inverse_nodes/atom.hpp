@@ -35,8 +35,13 @@ private:
     std::span<const Element*> m_false_elements;
     std::span<const Element*> m_dontcare_elements;
 
+    // Wrapped into unique_ptr to ensure no invalidaiton of the node after move.
+    InverseNode<Element> m_true_child;
+    InverseNode<Element> m_false_child;
+    InverseNode<Element> m_dontcare_child;
+
 public:
-    explicit InverseAtomSelectorNode(InverseNode<Element> parent,
+    explicit InverseAtomSelectorNode(const IInverseNode<Element>* parent,
                                      SplitList useless_splits,
                                      size_t root_distance,
                                      GroundAtom<P> atom,
@@ -47,9 +52,16 @@ public:
         m_atom(atom),
         m_true_elements(true_elements),
         m_false_elements(false_elements),
-        m_dontcare_elements(dontcare_elements)
+        m_dontcare_elements(dontcare_elements),
+        m_true_child(nullptr),
+        m_false_child(nullptr),
+        m_dontcare_child(nullptr)
     {
     }
+    InverseAtomSelectorNode(const InverseAtomSelectorNode& other) = delete;
+    InverseAtomSelectorNode& operator=(const InverseAtomSelectorNode& other) = delete;
+    InverseAtomSelectorNode(InverseAtomSelectorNode&& other) = delete;
+    InverseAtomSelectorNode& operator=(InverseAtomSelectorNode&& other) = delete;
 
     void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
 
@@ -57,6 +69,10 @@ public:
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_false_elements() const { return m_false_elements; }
     std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
+
+    InverseNode<Element>* get_true_child() { return &m_true_child; };
+    InverseNode<Element>* get_false_child() { return &m_false_child; }
+    InverseNode<Element>* get_dontcare_child() { return &m_dontcare_child; }
 };
 }
 

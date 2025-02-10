@@ -38,12 +38,12 @@ template<HasConjunctiveCondition Element>
 class IInverseNode
 {
 protected:
-    InverseNode<Element> m_parent;  ///< Pointer to parent node.
-    SplitList m_useless_splits;     ///< Splits that were detected as useless.
-    size_t m_root_distance;         ///< The distance to the root node.
+    const IInverseNode<Element>* m_parent;  ///< Raw pointer to parent node, we must ensure that root is kept alive!
+    SplitList m_useless_splits;             ///< Splits that were detected as useless.
+    size_t m_root_distance;                 ///< The distance to the root node.
 
 public:
-    IInverseNode(InverseNode<Element> parent, SplitList useless_splits, size_t root_distance) :
+    IInverseNode(const IInverseNode<Element>* parent, SplitList useless_splits, size_t root_distance) :
         m_parent(parent),
         m_useless_splits(std::move(useless_splits)),
         m_root_distance(root_distance)
@@ -51,7 +51,7 @@ public:
     }
     virtual ~IInverseNode() = default;
 
-    virtual const InverseNode<Element>& get_parent() const { return m_parent; }
+    virtual const IInverseNode<Element>* get_parent() const { return m_parent; }
     virtual const SplitList& get_useless_splits() const { return m_useless_splits; }
     virtual size_t get_root_distance() const { return m_root_distance; }
 

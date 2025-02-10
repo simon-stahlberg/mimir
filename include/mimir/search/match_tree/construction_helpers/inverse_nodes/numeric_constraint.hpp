@@ -35,8 +35,12 @@ private:
     std::span<const Element*> m_true_elements;
     std::span<const Element*> m_dontcare_elements;
 
+    // Wrapped into unique_ptr to ensure no invalidation of the node after move.
+    InverseNode<Element> m_true_child;
+    InverseNode<Element> m_dontcare_child;
+
 public:
-    InverseNumericConstraintSelectorNode(InverseNode<Element> parent,
+    InverseNumericConstraintSelectorNode(const IInverseNode<Element>* parent,
                                          SplitList useless_splits,
                                          size_t root_distance,
                                          GroundNumericConstraint constraint,
@@ -45,15 +49,24 @@ public:
         IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
         m_constraint(constraint),
         m_true_elements(true_elements),
-        m_dontcare_elements(dontcare_elements)
+        m_dontcare_elements(dontcare_elements),
+        m_true_child(nullptr),
+        m_dontcare_child(nullptr)
     {
     }
+    InverseNumericConstraintSelectorNode(const InverseNumericConstraintSelectorNode& other) = delete;
+    InverseNumericConstraintSelectorNode& operator=(const InverseNumericConstraintSelectorNode& other) = delete;
+    InverseNumericConstraintSelectorNode(InverseNumericConstraintSelectorNode&& other) = delete;
+    InverseNumericConstraintSelectorNode& operator=(InverseNumericConstraintSelectorNode&& other) = delete;
 
     void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
 
     GroundNumericConstraint get_constraint() const { return m_constraint; }
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
+
+    InverseNode<Element>* get_true_child() { return &m_true_child; };
+    InverseNode<Element>* get_dontcare_child() { return &m_dontcare_child; }
 };
 }
 

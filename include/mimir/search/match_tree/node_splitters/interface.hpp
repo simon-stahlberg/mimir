@@ -33,7 +33,8 @@ class INodeSplitter
 public:
     virtual ~INodeSplitter() = default;
 
-    virtual std::variant<PlaceholderNodeList<Element>, InverseNode<Element>> compute_best_split(const PlaceholderNode<Element>& node) = 0;
+    virtual std::variant<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>, InverseNode<Element>>
+    compute_best_split(const PlaceholderNode<Element>& node) = 0;
 };
 }
 

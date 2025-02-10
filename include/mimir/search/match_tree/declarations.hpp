@@ -53,7 +53,7 @@ class InverseElementGeneratorNode;
 template<HasConjunctiveCondition Element>
 class PlaceholderNodeImpl;
 template<HasConjunctiveCondition Element>
-using PlaceholderNode = std::shared_ptr<PlaceholderNodeImpl<Element>>;
+using PlaceholderNode = std::unique_ptr<PlaceholderNodeImpl<Element>>;
 template<HasConjunctiveCondition Element>
 using PlaceholderNodeList = std::vector<PlaceholderNode<Element>>;
 
@@ -77,7 +77,7 @@ class INodeSplitter;
  */
 
 template<HasConjunctiveCondition Element>
-using InverseNode = std::shared_ptr<IInverseNode<Element>>;
+using InverseNode = std::unique_ptr<IInverseNode<Element>>;
 template<HasConjunctiveCondition Element>
 using InverseNodeList = std::vector<InverseNode<Element>>;
 

@@ -132,17 +132,18 @@ public:
         }
     }
 
-    std::variant<PlaceholderNodeList<Element>, InverseNode<Element>> compute_best_split(const PlaceholderNode<Element>& node) override
+    std::variant<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>, InverseNode<Element>>
+    compute_best_split(const PlaceholderNode<Element>& node) override
     {
         auto useless_splits = SplitList {};
 
         for (size_t i = node->get_root_distance(); i < m_splits.size(); ++i)
         {
-            const auto children = create_node_and_placeholder_children(node, useless_splits, i, m_splits[i]);
+            auto result = create_node_and_placeholder_children(node, useless_splits, i, m_splits[i]);
 
-            if (children.has_value())
+            if (result.has_value())
             {
-                return children.value();
+                return std::move(result.value());
             }
 
             useless_splits.push_back(m_splits[i]);

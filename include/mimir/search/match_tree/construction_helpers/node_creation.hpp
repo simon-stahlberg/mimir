@@ -23,8 +23,18 @@
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
+#include <deque>
+
 namespace mimir::match_tree
 {
+template<HasConjunctiveCondition Element>
+Node<Element> parse_inverse_tree(const InverseNode<Element>& root)
+{
+    auto queue = std::deque<const IInverseNode<Element>*> { root.get() };
+
+    while (!queue.empty()) {}
+}
+
 template<HasConjunctiveCondition Element>
 Node<Element> create_root_generator_node(std::span<const Element*> elements)
 {

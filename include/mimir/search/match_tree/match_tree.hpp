@@ -59,45 +59,52 @@ private:
         };
 
         auto queue = std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueEntryComparator> {};
-        auto root = create_root_placeholder_node(std::span<const Element*>(m_elements.begin(), m_elements.end()));
-        auto score = node_score_function->compute_score(root);
-        queue.emplace(score, root);
+        auto root_placeholder = create_root_placeholder_node(std::span<const Element*>(m_elements.begin(), m_elements.end()));
+        auto score = node_score_function->compute_score(root_placeholder);
+        std::cout << "Queue push root: " << root_placeholder << std::endl;
+        queue.emplace(score, std::move(root_placeholder));
 
-        auto generator_leafs = InverseNodeList<Element> {};
+        auto inverse_generator_leafs = InverseNodeList<Element> {};
+        auto inverse_root = InverseNode<Element> { nullptr };
 
         while (!queue.empty())
         {
-            const auto entry = queue.top();
+            auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
+            std::cout << "Queue pop: " << node << std::endl;
             queue.pop();
-
-            const auto node = entry.node;
-
-            auto splitter_result = node_splitter->compute_best_split(node);
 
             std::visit(
                 [&](auto&& arg) -> void
                 {
                     using T = std::decay_t<decltype(arg)>;
-                    if constexpr (std::is_same_v<T, PlaceholderNodeList<Element>>)
+                    if constexpr (std::is_same_v<T, std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>>)
                     {
-                        for (const auto& child : arg)
+                        auto& [root, children] = arg;
+                        for (auto& child : children)
                         {
-                            queue.emplace(node_score_function->compute_score(child), child);
+                            std::cout << "Queue push: " << child << std::endl;
+                            queue.emplace(node_score_function->compute_score(child), std::move(child));
+                        }
+                        if (root)
+                        {
+                            inverse_root = std::move(root);
                         }
                     }
                     else if constexpr (std::is_same_v<T, InverseNode<Element>>)
                     {
-                        generator_leafs.push_back(arg);
+                        inverse_generator_leafs.push_back(std::move(arg));
                     }
                     else
                     {
                         static_assert(dependent_false<T>::value, "MatchTree<E>::build_iteratively: Missing implementation for variant type.");
                     }
                 },
-                splitter_result);
+                node_splitter->compute_best_split(node));
         }
 
-        std::cout << "Num leafs: " << generator_leafs.size() << std::endl;
+        std::cout << "Num leafs: " << inverse_generator_leafs.size() << std::endl;
+
+        // m_root = parse_inverse_tree(inverse_root);
     }
 
 public:
