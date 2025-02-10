@@ -24,15 +24,132 @@
 #include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
 #include <deque>
+#include <vector>
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-Node<Element> parse_inverse_tree(const InverseNode<Element>& root)
-{
-    auto queue = std::deque<const IInverseNode<Element>*> { root.get() };
 
-    while (!queue.empty()) {}
+template<HasConjunctiveCondition Element>
+struct StackEntry
+{
+    bool expanded;
+    const IInverseNode<Element>* node;
+};
+
+template<HasConjunctiveCondition Element>
+struct ResultTreeVisitor : public IInverseNodeVisitor<Element>
+{
+private:
+    std::vector<StackEntry<Element>>& m_stack;
+    std::vector<Node<Element>>& m_result_stack;
+
+public:
+    ResultTreeVisitor(std::vector<StackEntry<Element>>& stack, std::vector<Node<Element>>& result_stack) : m_stack(stack), m_result_stack(result_stack) {}
+
+    void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
+    {  // Pop back in inverse order of insertion.
+        auto dont_care_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        auto false_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        auto true_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        // Construct new result
+        m_result_stack.push_back(
+            std::make_unique<AtomSelectorNode<Element, Fluent>>(std::move(true_child), std::move(false_child), std::move(dont_care_child), atom.get_atom()));
+    }
+    void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
+    {  // Pop back in inverse order of insertion.
+        auto dont_care_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        auto false_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        auto true_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        // Construct new result
+        m_result_stack.push_back(
+            std::make_unique<AtomSelectorNode<Element, Derived>>(std::move(true_child), std::move(false_child), std::move(dont_care_child), atom.get_atom()));
+    }
+    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
+    {
+        // Pop back in inverse order of insertion.
+        auto dont_care_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        auto true_child = std::move(m_result_stack.back());
+        m_result_stack.pop_back();
+        // Construct new result
+        m_result_stack.push_back(
+            std::make_unique<NumericConstraintSelectorNode<Element>>(std::move(true_child), std::move(dont_care_child), constraint.get_constraint()));
+    }
+    void accept(const InverseElementGeneratorNode<Element>& generator) override
+    {
+        m_result_stack.push_back(std::make_unique<ElementGeneratorNode<Element>>(generator.get_elements()));
+    }
+};
+
+template<HasConjunctiveCondition Element>
+struct ExpandTreeVisitor : public IInverseNodeVisitor<Element>
+{
+    std::vector<StackEntry<Element>>& m_stack;
+
+    ExpandTreeVisitor(std::vector<StackEntry<Element>>& stack) : m_stack(stack) {}
+
+    void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
+    {
+        m_stack.push_back(StackEntry<Element> { false, atom.get_true_child().get() });
+        m_stack.push_back(StackEntry<Element> { false, atom.get_false_child().get() });
+        m_stack.push_back(StackEntry<Element> { false, atom.get_dontcare_child().get() });
+    }
+    void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
+    {
+        m_stack.push_back(StackEntry<Element> { false, atom.get_true_child().get() });
+        m_stack.push_back(StackEntry<Element> { false, atom.get_false_child().get() });
+        m_stack.push_back(StackEntry<Element> { false, atom.get_dontcare_child().get() });
+    }
+    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
+    {
+        m_stack.push_back(StackEntry<Element> { false, constraint.get_true_child().get() });
+        m_stack.push_back(StackEntry<Element> { false, constraint.get_dontcare_child().get() });
+    }
+    void accept(const InverseElementGeneratorNode<Element>& generator) override {}
+};
+
+template<HasConjunctiveCondition Element>
+Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
+{
+    auto stack = std::vector<StackEntry<Element>> { StackEntry<Element> { false, root.get() } };
+    auto result_stack = std::vector<Node<Element>> {};
+
+    while (!stack.empty())
+    {
+        auto& entry = stack.back();
+        const auto cur_node = entry.node;  // must copy because entry might be invalidated during visitation.
+
+        std::cout << cur_node << std::endl;
+
+        if (!entry.expanded)
+        {
+            // Expand the node
+            entry.expanded = true;  // must set this first because entry might be invalidated during visitation.
+            auto visitor = ExpandTreeVisitor<Element>(stack);
+            cur_node->visit(visitor);
+        }
+        else
+        {
+            // compute the result into the result_stack.
+
+            stack.pop_back();  ///< We can already pop here to avoid duplication in the visitor.
+
+            auto visitor = ResultTreeVisitor<Element>(stack, result_stack);
+            cur_node->visit(visitor);
+        }
+
+        std::cout << "stack.size(): " << stack.size() << std::endl;
+    }
+    // Only the root node should be in the result stack.
+    assert(result_stack.size() == 1);
+
+    return std::move(result_stack.back());
 }
 
 template<HasConjunctiveCondition Element>

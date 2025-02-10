@@ -26,20 +26,27 @@ template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class AtomSelectorNode : public INode<Element>
 {
 private:
-    GroundAtom<P> m_atom;
-
     Node<Element> m_true_succ;
     Node<Element> m_false_succ;
     Node<Element> m_dontcare_succ;
 
+    GroundAtom<P> m_atom;  ///< we could get rid of it but it can be nice visualization :)
+
 public:
-    explicit AtomSelectorNode(GroundAtom<P> atom) : m_atom(atom) {}
+    explicit AtomSelectorNode(Node<Element>&& true_succ, Node<Element>&& false_succ, Node<Element>&& dontcare_succ, GroundAtom<P> atom) :
+        m_true_succ(std::move(true_succ)),
+        m_false_succ(std::move(false_succ)),
+        m_dontcare_succ(std::move(dontcare_succ)),
+        m_atom(atom)
+    {
+    }
 
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
-        (state.get_atoms<P>().get(m_atom->get_index())) ? ref_applicable_nodes.push_back(m_true_succ) : ref_applicable_nodes.push_back(m_false_succ);
-        ref_applicable_nodes.push_back(m_dontcare_succ);
+        (state.get_atoms<P>().get(m_atom->get_index())) ? ref_applicable_nodes.push_back(m_true_succ.get()) :
+                                                          ref_applicable_nodes.push_back(m_false_succ.get());
+        ref_applicable_nodes.push_back(m_dontcare_succ.get());
     }
 };
 }

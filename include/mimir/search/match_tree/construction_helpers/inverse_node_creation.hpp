@@ -226,7 +226,18 @@ InverseNode<Element> create_generator_node(const PlaceholderNode<Element>& node,
 {
     assert(node);
 
-    return std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+    if (node->get_parent())
+    {
+        /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
+        node->get_parents_child() = std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+
+        return nullptr;
+    }
+    else
+    {
+        /* Construct the node and return it, i.e., the root node. */
+        return std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+    }
 }
 
 template<HasConjunctiveCondition Element>

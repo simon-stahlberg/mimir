@@ -26,18 +26,28 @@ template<HasConjunctiveCondition Element>
 class NumericConstraintSelectorNode : public INode<Element>
 {
 private:
-    GroundNumericConstraint m_constraint;
-
     Node<Element> m_true_succ;
-    Node<Element> m_false_succ;
     Node<Element> m_dontcare_succ;
 
+    GroundNumericConstraint m_constraint;  ///< we could get rid of it but it can be nice visualization :)
+
 public:
+    NumericConstraintSelectorNode(Node<Element>&& true_succ, Node<Element>&& dontcare_succ, GroundNumericConstraint constraint) :
+        m_true_succ(std::move(true_succ)),
+        m_dontcare_succ(std::move(dontcare_succ)),
+        m_constraint(constraint)
+    {
+    }
+
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
-        evaluate(m_constraint, state.get_numeric_variables()) ? ref_applicable_nodes.push_back(m_true_succ) : ref_applicable_nodes.push_back(m_false_succ);
-        ref_applicable_nodes.push_back(m_dontcare_succ);
+        if (evaluate(m_constraint, state.get_numeric_variables()))
+        {
+            ref_applicable_nodes.push_back(m_true_succ.get());
+        }
+
+        ref_applicable_nodes.push_back(m_dontcare_succ.get());
     }
 };
 }

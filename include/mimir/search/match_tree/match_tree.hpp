@@ -104,7 +104,7 @@ private:
 
         std::cout << "Num leafs: " << inverse_generator_leafs.size() << std::endl;
 
-        // m_root = parse_inverse_tree(inverse_root);
+        m_root = parse_inverse_tree_iteratively(inverse_root);
     }
 
 public:
