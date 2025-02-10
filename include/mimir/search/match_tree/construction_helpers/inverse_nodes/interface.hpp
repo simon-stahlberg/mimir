@@ -78,22 +78,30 @@ extern std::ostream& operator<<(std::ostream& out, const std::tuple<const IInver
         void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
         {
             m_nodes.emplace(&atom, std::make_pair(m_nodes.size(), to_string(atom.get_atom())));
-            atom.get_true_child()->visit(*this);
-            atom.get_false_child()->visit(*this);
-            atom.get_dontcare_child()->visit(*this);
+            if (atom.get_true_child())
+                atom.get_true_child()->visit(*this);
+            if (atom.get_false_child())
+                atom.get_false_child()->visit(*this);
+            if (atom.get_dontcare_child())
+                atom.get_dontcare_child()->visit(*this);
         }
         void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
         {
             m_nodes.emplace(&atom, std::make_pair(m_nodes.size(), to_string(atom.get_atom())));
-            atom.get_true_child()->visit(*this);
-            atom.get_false_child()->visit(*this);
-            atom.get_dontcare_child()->visit(*this);
+            if (atom.get_true_child())
+                atom.get_true_child()->visit(*this);
+            if (atom.get_false_child())
+                atom.get_false_child()->visit(*this);
+            if (atom.get_dontcare_child())
+                atom.get_dontcare_child()->visit(*this);
         }
         void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
         {
             m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
-            constraint.get_true_child()->visit(*this);
-            constraint.get_dontcare_child()->visit(*this);
+            if (constraint.get_true_child())
+                constraint.get_true_child()->visit(*this);
+            if (constraint.get_dontcare_child())
+                constraint.get_dontcare_child()->visit(*this);
         }
         void accept(const InverseElementGeneratorNode<Element>& generator) override
         {
@@ -111,22 +119,30 @@ extern std::ostream& operator<<(std::ostream& out, const std::tuple<const IInver
         void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
         {
             m_partition[atom.get_root_distance()].push_back(m_nodes.at(&atom).first);
-            atom.get_true_child()->visit(*this);
-            atom.get_false_child()->visit(*this);
-            atom.get_dontcare_child()->visit(*this);
+            if (atom.get_true_child())
+                atom.get_true_child()->visit(*this);
+            if (atom.get_false_child())
+                atom.get_false_child()->visit(*this);
+            if (atom.get_dontcare_child())
+                atom.get_dontcare_child()->visit(*this);
         }
         void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
         {
             m_partition[atom.get_root_distance()].push_back(m_nodes.at(&atom).first);
-            atom.get_true_child()->visit(*this);
-            atom.get_false_child()->visit(*this);
-            atom.get_dontcare_child()->visit(*this);
+            if (atom.get_true_child())
+                atom.get_true_child()->visit(*this);
+            if (atom.get_false_child())
+                atom.get_false_child()->visit(*this);
+            if (atom.get_dontcare_child())
+                atom.get_dontcare_child()->visit(*this);
         }
         void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
         {
             m_partition[constraint.get_root_distance()].push_back(m_nodes.at(&constraint).first);
-            constraint.get_true_child()->visit(*this);
-            constraint.get_dontcare_child()->visit(*this);
+            if (constraint.get_true_child())
+                constraint.get_true_child()->visit(*this);
+            if (constraint.get_dontcare_child())
+                constraint.get_dontcare_child()->visit(*this);
         }
         void accept(const InverseElementGeneratorNode<Element>& generator) override
         {
@@ -143,28 +159,52 @@ extern std::ostream& operator<<(std::ostream& out, const std::tuple<const IInver
 
         void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
         {
-            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_true_child().get()).first, "T");
-            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_false_child().get()).first, "F");
-            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_dontcare_child().get()).first, "X");
-            atom.get_true_child()->visit(*this);
-            atom.get_false_child()->visit(*this);
-            atom.get_dontcare_child()->visit(*this);
+            if (atom.get_true_child())
+            {
+                m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_true_child().get()).first, "T");
+                atom.get_true_child()->visit(*this);
+            }
+            if (atom.get_false_child())
+            {
+                m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_false_child().get()).first, "F");
+                atom.get_false_child()->visit(*this);
+            }
+            if (atom.get_dontcare_child())
+            {
+                m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+                atom.get_dontcare_child()->visit(*this);
+            }
         }
         void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
         {
-            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_true_child().get()).first, "T");
-            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_false_child().get()).first, "F");
-            m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_dontcare_child().get()).first, "X");
-            atom.get_true_child()->visit(*this);
-            atom.get_false_child()->visit(*this);
-            atom.get_dontcare_child()->visit(*this);
+            if (atom.get_true_child())
+            {
+                m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_true_child().get()).first, "T");
+                atom.get_true_child()->visit(*this);
+            }
+            if (atom.get_false_child())
+            {
+                m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_false_child().get()).first, "F");
+                atom.get_false_child()->visit(*this);
+            }
+            if (atom.get_dontcare_child())
+            {
+                m_edges[m_nodes.at(&atom).first].emplace_back(m_nodes.at(atom.get_dontcare_child().get()).first, "X");
+                atom.get_dontcare_child()->visit(*this);
+            }
         }
         void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
         {
-            m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
-            m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_dontcare_child().get()).first, "X");
-            constraint.get_true_child()->visit(*this);
-            constraint.get_dontcare_child()->visit(*this);
+            if (constraint.get_true_child())
+            {
+                m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
+                constraint.get_true_child()->visit(*this);
+            }
+            if (constraint.get_dontcare_child())
+            {
+                m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_dontcare_child().get()).first, "X");
+                constraint.get_dontcare_child()->visit(*this);
+            }
         }
         void accept(const InverseElementGeneratorNode<Element>& generator) override {}
     };

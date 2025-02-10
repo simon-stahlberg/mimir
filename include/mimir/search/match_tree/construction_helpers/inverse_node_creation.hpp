@@ -229,8 +229,10 @@ InverseNode<Element> create_generator_node(const PlaceholderNode<Element>& node,
     if (node->get_parent())
     {
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
-        node->get_parents_child() = std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
-
+        if (!node->get_elements().empty())  ///< Skip creating an empty generator node
+        {
+            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+        }
         return nullptr;
     }
     else

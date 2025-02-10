@@ -35,6 +35,7 @@ public:
                                      std::vector<const INode<Element>*>&,
                                      std::vector<const Element*>& ref_applicable_elements) const override
     {
+        assert(!m_elements.empty());  ///< The node should not have been created for empty elements.
         ref_applicable_elements.insert(ref_applicable_elements.end(), m_elements.begin(), m_elements.end());
     }
 };

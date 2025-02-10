@@ -42,12 +42,14 @@ public:
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
+        assert(m_true_succ.get());  // The node should not have been created if there were no true successors.
         if (evaluate(m_constraint, state.get_numeric_variables()))
         {
             ref_applicable_nodes.push_back(m_true_succ.get());
         }
 
-        ref_applicable_nodes.push_back(m_dontcare_succ.get());
+        if (m_dontcare_succ.get())
+            ref_applicable_nodes.push_back(m_dontcare_succ.get());
     }
 };
 }

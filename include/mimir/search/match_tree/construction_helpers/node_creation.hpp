@@ -83,7 +83,14 @@ public:
     }
     void accept(const InverseElementGeneratorNode<Element>& generator) override
     {
-        m_result_stack.push_back(std::make_unique<ElementGeneratorNode<Element>>(generator.get_elements()));
+        if (generator.get_elements().empty())
+        {
+            m_result_stack.push_back(nullptr);  ///< skip creating an empty generator node.
+        }
+        else
+        {
+            m_result_stack.push_back(std::make_unique<ElementGeneratorNode<Element>>(generator.get_elements()));
+        }
     }
 };
 
@@ -125,14 +132,21 @@ Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
         auto& entry = stack.back();
         const auto cur_node = entry.node;  // must copy because entry might be invalidated during visitation.
 
-        std::cout << cur_node << std::endl;
-
         if (!entry.expanded)
         {
             // Expand the node
             entry.expanded = true;  // must set this first because entry might be invalidated during visitation.
-            auto visitor = ExpandTreeVisitor<Element>(stack);
-            cur_node->visit(visitor);
+
+            if (cur_node)  ///< only expand existing nodes, i.e., not nullptr
+            {
+                auto visitor = ExpandTreeVisitor<Element>(stack);
+                cur_node->visit(visitor);
+            }
+            else
+            {
+                stack.pop_back();
+                result_stack.push_back(nullptr);
+            }
         }
         else
         {
@@ -143,8 +157,6 @@ Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
             auto visitor = ResultTreeVisitor<Element>(stack, result_stack);
             cur_node->visit(visitor);
         }
-
-        std::cout << "stack.size(): " << stack.size() << std::endl;
     }
     // Only the root node should be in the result stack.
     assert(result_stack.size() == 1);

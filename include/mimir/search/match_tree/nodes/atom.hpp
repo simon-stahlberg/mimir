@@ -44,9 +44,18 @@ public:
     void
     generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
     {
-        (state.get_atoms<P>().get(m_atom->get_index())) ? ref_applicable_nodes.push_back(m_true_succ.get()) :
-                                                          ref_applicable_nodes.push_back(m_false_succ.get());
-        ref_applicable_nodes.push_back(m_dontcare_succ.get());
+        if (state.get_atoms<P>().get(m_atom->get_index()))
+        {
+            if (m_true_succ.get())
+                ref_applicable_nodes.push_back(m_true_succ.get());
+        }
+        else
+        {
+            if (m_false_succ.get())
+                ref_applicable_nodes.push_back(m_false_succ.get());
+        }
+        if (m_dontcare_succ.get())
+            ref_applicable_nodes.push_back(m_dontcare_succ.get());
     }
 };
 }
