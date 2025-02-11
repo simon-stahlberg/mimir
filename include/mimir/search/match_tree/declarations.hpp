@@ -35,9 +35,7 @@ namespace mimir::match_tree
 /// MatchTree can handle elements that have a conjunctive condition, e.g., GroundActionImpl and GroundAxiomImpl.
 template<typename T>
 concept HasConjunctiveCondition = requires(const T a) {
-    {
-        a.get_conjunctive_condition()
-    } -> std::same_as<const GroundConjunctiveCondition&>;
+    { a.get_conjunctive_condition() } -> std::same_as<const GroundConjunctiveCondition&>;
 };
 
 /**
@@ -94,6 +92,8 @@ class INodeScoreFunction;
 
 template<HasConjunctiveCondition Element>
 class INodeSplitter;
+
+struct Options;
 
 /**
  * Aliases

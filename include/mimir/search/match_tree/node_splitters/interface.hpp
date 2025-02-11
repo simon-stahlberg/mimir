@@ -46,6 +46,8 @@ public:
     virtual ~INodeSplitter() = default;
 
     virtual std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> compute_best_split(const PlaceholderNode<Element>& node) = 0;
+
+    virtual InverseNode<Element> translate_to_generator_node(const PlaceholderNode<Element>& node) const = 0;
 };
 }
 

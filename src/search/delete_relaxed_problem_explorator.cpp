@@ -22,8 +22,10 @@
 #include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"
+#include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
+#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/axiom_evaluators/lifted.hpp"
 #include "mimir/search/dense_state.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
@@ -81,8 +83,14 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
 }
 
 std::shared_ptr<GroundedAxiomEvaluator>
-DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) const
+DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
+                                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) const
 {
+    if (!event_handler)
+    {
+        event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
+    }
+
     const auto problem = m_grounder->get_problem();
     const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
@@ -108,14 +116,7 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
 
     event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
-    auto match_tree = std::make_unique<match_tree::MatchTree<GroundAxiomImpl>>(
-        ground_axioms,
-        std::unique_ptr<match_tree::INodeScoreFunction<GroundAxiomImpl>>(std::make_unique<match_tree::MinDepthNodeScoreFunction<GroundAxiomImpl>>().release()),
-        std::unique_ptr<match_tree::INodeSplitter<GroundAxiomImpl>>(
-            std::make_unique<match_tree::StaticNodeSplitter<GroundAxiomImpl>>(*m_grounder->get_pddl_repositories(),
-                                                                              match_tree::SplitMetricEnum::GINI,
-                                                                              ground_axioms)
-                .release()));
+    auto match_tree = match_tree::MatchTree<GroundAxiomImpl>::create(*m_grounder->get_pddl_repositories(), ground_axioms, options);
 
     event_handler->on_finish_build_axiom_match_tree(*match_tree);
 
@@ -123,8 +124,14 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(std::shared_ptr<
 }
 
 std::shared_ptr<GroundedApplicableActionGenerator>
-DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) const
+DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(const match_tree::Options& options,
+                                                                            std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) const
 {
+    if (!event_handler)
+    {
+        event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
+    }
+
     const auto problem = m_grounder->get_problem();
     const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
@@ -150,15 +157,7 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(std:
 
     event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
 
-    auto match_tree = std::make_unique<match_tree::MatchTree<GroundActionImpl>>(
-        ground_actions,
-        std::unique_ptr<match_tree::INodeScoreFunction<GroundActionImpl>>(
-            std::make_unique<match_tree::MinDepthNodeScoreFunction<GroundActionImpl>>().release()),
-        std::unique_ptr<match_tree::INodeSplitter<GroundActionImpl>>(
-            std::make_unique<match_tree::StaticNodeSplitter<GroundActionImpl>>(*m_grounder->get_pddl_repositories(),
-                                                                               match_tree::SplitMetricEnum::GINI,
-                                                                               ground_actions)
-                .release()));
+    auto match_tree = match_tree::MatchTree<GroundActionImpl>::create(*m_grounder->get_pddl_repositories(), ground_actions, options);
 
     event_handler->on_finish_build_action_match_tree(*match_tree);
 

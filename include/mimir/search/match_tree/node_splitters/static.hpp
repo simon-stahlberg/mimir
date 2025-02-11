@@ -151,6 +151,14 @@ public:
 
         return create_generator_node(node, m_splits.size());
     }
+
+    InverseNode<Element> translate_to_generator_node(const PlaceholderNode<Element>& node) const override
+    {
+        auto [generator_node, children] = create_generator_node(node, m_splits.size());
+        assert(children.empty());
+
+        return std::move(generator_node);
+    }
 };
 
 }

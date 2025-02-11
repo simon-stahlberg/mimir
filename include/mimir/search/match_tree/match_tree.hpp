@@ -20,15 +20,11 @@
 
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
-#include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
-#include "mimir/search/match_tree/construction_helpers/node_creation.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
-#include "mimir/search/match_tree/nodes/generator.hpp"
-// #include "mimir/search/match_tree/node_splitters/frequency.hpp"
-#include "mimir/common/filesystem.hpp"
-#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
-#include "mimir/search/match_tree/node_splitters/static.hpp"
+#include "mimir/search/match_tree/node_score_functions/interface.hpp"
+#include "mimir/search/match_tree/node_splitters/interface.hpp"
+#include "mimir/search/match_tree/nodes/interface.hpp"
+#include "mimir/search/match_tree/options.hpp"
 
 #include <optional>
 #include <queue>
@@ -36,7 +32,6 @@
 
 namespace mimir::match_tree
 {
-
 /* MatchTree */
 template<HasConjunctiveCondition Element>
 class MatchTree
@@ -55,95 +50,20 @@ private:
 
     std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
 
-    void build_iteratively(const NodeScoreFunction<Element>& node_score_function, const NodeSplitter<Element>& node_splitter)
-    {
-        struct QueueEntry
-        {
-            double score;
-            PlaceholderNode<Element> node;
-        };
+    void build_iteratively(const NodeScoreFunction<Element>& node_score_function, const NodeSplitter<Element>& node_splitter);
 
-        struct QueueEntryComparator
-        {
-            bool operator()(const QueueEntry& lhs, const QueueEntry& rhs) const { return lhs.score > rhs.score; }
-        };
-
-        auto queue = std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueEntryComparator> {};
-        auto root_placeholder = create_root_placeholder_node(std::span<const Element*>(m_elements.begin(), m_elements.end()));
-        auto score = node_score_function->compute_score(root_placeholder);
-        queue.emplace(score, std::move(root_placeholder));
-
-        auto inverse_generator_leafs = InverseNodeList<Element> {};
-        auto inverse_root = InverseNode<Element> { nullptr };
-
-        while (!queue.empty())
-        {
-            auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
-            queue.pop();
-
-            auto [root, children] = node_splitter->compute_best_split(node);
-
-            ++m_num_nodes;
-
-            if (m_num_nodes >= m_max_num_nodes)
-            {
-                m_is_imperfect = true;  ///< If we terminate early, we assume imperfection.
-                break;
-            }
-
-            for (auto& child : children)
-            {
-                queue.emplace(node_score_function->compute_score(child), std::move(child));
-            }
-            if (root)
-            {
-                inverse_root = std::move(root);
-            }
-        }
-
-        if (m_enable_dump_dot_file)
-        {
-            auto ss = std::stringstream {};
-            ss << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
-            write_to_file(m_output_dot_file, ss.str());
-        }
-
-        m_root = parse_inverse_tree_iteratively(inverse_root);
-    }
-
-public:
-    // TODO: do we need this default constructor?
-    MatchTree() :
-        m_elements(),
-        m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
-        m_max_num_nodes(std::numeric_limits<size_t>::max()),
-        m_enable_dump_dot_file(false),
-        m_output_dot_file("match_tree.dot"),
-        m_num_nodes(1),
-        m_is_imperfect(false)
-    {
-    }
+    MatchTree();
 
     MatchTree(std::vector<const Element*> elements,  //
               const NodeScoreFunction<Element>& node_score_function,
               const NodeSplitter<Element>& node_splitter,
               size_t max_num_nodes = std::numeric_limits<size_t>::max(),
               bool enable_dump_dot_file = false,
-              fs::path output_dot_file = fs::path("match_tree.dot")) :
-        m_elements(std::move(elements)),
-        m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
-        m_max_num_nodes(max_num_nodes),
-        m_enable_dump_dot_file(enable_dump_dot_file),
-        m_output_dot_file(output_dot_file),
-        m_num_nodes(1),
-        m_is_imperfect(false)
-    {
-        if (!m_elements.empty())
-        {
-            m_num_nodes = 0;
-            build_iteratively(node_score_function, node_splitter);
-        }
-    }
+              fs::path output_dot_file = fs::path("match_tree.dot"));
+
+public:
+    static std::unique_ptr<MatchTree<Element>>
+    create(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options = Options());
 
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
     MatchTree(const MatchTree& other) = delete;
@@ -151,26 +71,11 @@ public:
     MatchTree(MatchTree&& other) = delete;
     MatchTree& operator=(MatchTree&& other) = delete;
 
-    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements)
-    {
-        m_evaluate_stack.clear();
-        out_applicable_elements.clear();
+    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements);
 
-        m_evaluate_stack.push_back(m_root.get());
+    size_t get_num_nodes() const;
 
-        while (!m_evaluate_stack.empty())
-        {
-            const auto node = m_evaluate_stack.back();
-
-            m_evaluate_stack.pop_back();
-
-            node->generate_applicable_actions(state, m_evaluate_stack, out_applicable_elements);
-        }
-    }
-
-    size_t get_num_nodes() const { return m_num_nodes; }
-
-    bool is_imperfect() const { return m_is_imperfect; }
+    bool is_imperfect() const;
 };
 
 }

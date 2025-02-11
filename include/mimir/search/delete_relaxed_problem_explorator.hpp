@@ -20,12 +20,12 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/transformers/delete_relax.hpp"
-#include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
-#include "mimir/search/axiom_evaluators/grounded/event_handlers.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/match_tree/declarations.hpp"
+#include "mimir/search/match_tree/options.hpp"
 #include "mimir/search/state_repository.hpp"
 
-#include <vector>
+#include <memory>
 
 namespace mimir
 {
@@ -52,12 +52,12 @@ public:
     DeleteRelaxedProblemExplorator(DeleteRelaxedProblemExplorator&& other) = delete;
     DeleteRelaxedProblemExplorator& operator=(DeleteRelaxedProblemExplorator&& other) = delete;
 
-    std::shared_ptr<GroundedAxiomEvaluator> create_grounded_axiom_evaluator(
-        std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>()) const;
+    std::shared_ptr<GroundedAxiomEvaluator> create_grounded_axiom_evaluator(const match_tree::Options& options = match_tree::Options(),
+                                                                            std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler = nullptr) const;
 
     std::shared_ptr<GroundedApplicableActionGenerator>
-    create_grounded_applicable_action_generator(std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler =
-                                                    std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()) const;
+    create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
+                                                std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler = nullptr) const;
 
     const std::shared_ptr<Grounder>& get_grounder() const;
 };

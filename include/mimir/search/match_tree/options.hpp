@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_INSTANTIATION_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_INSTANTIATION_HPP_
+#ifndef MIMIR_SEARCH_MATCH_TREE_OPTIONS_HPP_
+#define MIMIR_SEARCH_MATCH_TREE_OPTIONS_HPP_
 
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_score_functions/interface.hpp"

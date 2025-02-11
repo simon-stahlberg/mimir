@@ -38,10 +38,10 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     auto delete_free_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
     const auto applicable_action_generator_event_handler = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>();
     const auto applicable_action_generator =
-        delete_free_problem_explorator.create_grounded_applicable_action_generator(applicable_action_generator_event_handler);
+        delete_free_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(), applicable_action_generator_event_handler);
     const auto axiom_evaluator_event_handler = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>();
-    const auto axiom_evaluator =
-        std::dynamic_pointer_cast<IAxiomEvaluator>(delete_free_problem_explorator.create_grounded_axiom_evaluator(axiom_evaluator_event_handler));
+    const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
+        delete_free_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), axiom_evaluator_event_handler));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     const auto brfs_event_handler = std::make_shared<DefaultBrFSAlgorithmEventHandler>();
     const auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, brfs_event_handler);
