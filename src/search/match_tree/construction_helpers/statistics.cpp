@@ -15,25 +15,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_INSTANTIATION_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_INSTANTIATION_HPP_
+#include "mimir/search/match_tree/construction_helpers/statistics.hpp"
 
-#include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_score_functions/interface.hpp"
-#include "mimir/search/match_tree/node_splitters/interface.hpp"
+#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 
 namespace mimir::match_tree
 {
-struct Options
+std::ostream& operator<<(std::ostream& os, const MatchTreeStatistics& statistics)
 {
-    bool enable_dump_dot_file = false;
-    fs::path output_dot_file = "match_tree.dot";
-    size_t max_num_nodes = std::numeric_limits<size_t>::max();
-    SplitMetricEnum split_metric = SplitMetricEnum::GINI;
-    SplitStrategyEnum split_strategy = SplitStrategyEnum::STATIC;
-    NodeScoreStrategyEnum node_score_strategy = NodeScoreStrategyEnum::MIN_DEPTH;
-};
+    os << "[MatchTreeStatistics] Number of nodes: " << statistics.get_num_nodes() << "\n"
+       << "[MatchTreeStatistics] Is imperfect?: " << statistics.is_imperfect() << "\n"
+       << "[MatchTreeStatistics] Generators Gini score: " << compute_gini_score(statistics.get_generator_distribution()) << std::endl;
 
+    return os;
 }
-
-#endif
+}

@@ -29,21 +29,20 @@ private:
     std::span<const Element*> m_elements;
 
 public:
-    explicit ElementGeneratorNode(std::span<const Element*> elements) : m_elements(elements)
-    {
-        // m_elements may be empty, e.g., if there are no ground axioms.
-    }
+    explicit ElementGeneratorNode(std::span<const Element*> elements);
+
+    ElementGeneratorNode(const ElementGeneratorNode& other) = delete;
+    ElementGeneratorNode& operator=(const ElementGeneratorNode& other) = delete;
+    ElementGeneratorNode(ElementGeneratorNode&& other) = delete;
+    ElementGeneratorNode& operator=(ElementGeneratorNode&& other) = delete;
 
     void generate_applicable_actions(const DenseState& state,
                                      std::vector<const INode<Element>*>&,
-                                     std::vector<const Element*>& ref_applicable_elements) const override
-    {
-        ref_applicable_elements.insert(ref_applicable_elements.end(), m_elements.begin(), m_elements.end());
-    }
+                                     std::vector<const Element*>& ref_applicable_elements) const override;
 
-    std::span<const Element*> get_elements() const { return m_elements; }
+    std::span<const Element*> get_elements() const;
 
-    void visit(INodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
+    void visit(INodeVisitor<Element>& visitor) const override;
 };
 }
 

@@ -18,13 +18,18 @@
 #include "mimir/search/match_tree/match_tree.hpp"
 
 #include "mimir/common/filesystem.hpp"
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 #include "mimir/search/match_tree/construction_helpers/node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
 #include "mimir/search/match_tree/node_splitters/static.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
+#include "mimir/search/match_tree/nodes/interface.hpp"
 
 #include <optional>
 #include <queue>
@@ -64,8 +69,6 @@ void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& nod
 
         auto [root, children] = node_splitter->compute_best_split(node);
 
-        ++m_num_nodes;
-
         for (auto& child : children)
         {
             queue.emplace(node_score_function->compute_score(child), std::move(child));
@@ -77,7 +80,7 @@ void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& nod
         }
         if (m_num_nodes >= m_max_num_nodes)
         {
-            /* Mark the tree as imperfect and finish translation of placeholders to generator nodes. */
+            /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
             m_is_imperfect = true;
             while (!queue.empty())
             {

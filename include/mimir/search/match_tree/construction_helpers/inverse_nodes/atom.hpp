@@ -95,10 +95,6 @@ public:
         assert(!m_false_elements.empty());
         assert(!m_dontcare_elements.empty());
     }
-    InverseAtomSelectorNode_TFX(const InverseAtomSelectorNode_TFX& other) = delete;
-    InverseAtomSelectorNode_TFX& operator=(const InverseAtomSelectorNode_TFX& other) = delete;
-    InverseAtomSelectorNode_TFX(InverseAtomSelectorNode_TFX&& other) = delete;
-    InverseAtomSelectorNode_TFX& operator=(InverseAtomSelectorNode_TFX&& other) = delete;
 
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_false_elements() const { return m_false_elements; }
@@ -151,10 +147,6 @@ public:
         assert(!m_true_elements.empty());
         assert(!m_false_elements.empty());
     }
-    InverseAtomSelectorNode_TF(const InverseAtomSelectorNode_TF& other) = delete;
-    InverseAtomSelectorNode_TF& operator=(const InverseAtomSelectorNode_TF& other) = delete;
-    InverseAtomSelectorNode_TF(InverseAtomSelectorNode_TF&& other) = delete;
-    InverseAtomSelectorNode_TF& operator=(InverseAtomSelectorNode_TF&& other) = delete;
 
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_false_elements() const { return m_false_elements; }
@@ -204,10 +196,6 @@ public:
         assert(!m_true_elements.empty());
         assert(!m_dontcare_elements.empty());
     }
-    InverseAtomSelectorNode_TX(const InverseAtomSelectorNode_TX& other) = delete;
-    InverseAtomSelectorNode_TX& operator=(const InverseAtomSelectorNode_TX& other) = delete;
-    InverseAtomSelectorNode_TX(InverseAtomSelectorNode_TX&& other) = delete;
-    InverseAtomSelectorNode_TX& operator=(InverseAtomSelectorNode_TX&& other) = delete;
 
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
@@ -254,10 +242,6 @@ public:
         assert(!m_false_elements.empty());
         assert(!m_dontcare_elements.empty());
     }
-    InverseAtomSelectorNode_FX(const InverseAtomSelectorNode_FX& other) = delete;
-    InverseAtomSelectorNode_FX& operator=(const InverseAtomSelectorNode_FX& other) = delete;
-    InverseAtomSelectorNode_FX(InverseAtomSelectorNode_FX&& other) = delete;
-    InverseAtomSelectorNode_FX& operator=(InverseAtomSelectorNode_FX&& other) = delete;
 
     std::span<const Element*> get_false_elements() const { return m_false_elements; }
     std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
@@ -298,10 +282,6 @@ public:
     {
         assert(!m_true_elements.empty());
     }
-    InverseAtomSelectorNode_T(const InverseAtomSelectorNode_T& other) = delete;
-    InverseAtomSelectorNode_T& operator=(const InverseAtomSelectorNode_T& other) = delete;
-    InverseAtomSelectorNode_T(InverseAtomSelectorNode_T&& other) = delete;
-    InverseAtomSelectorNode_T& operator=(InverseAtomSelectorNode_T&& other) = delete;
 
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
 
@@ -339,10 +319,6 @@ public:
     {
         assert(!m_false_elements.empty());
     }
-    InverseAtomSelectorNode_F(const InverseAtomSelectorNode_F& other) = delete;
-    InverseAtomSelectorNode_F& operator=(const InverseAtomSelectorNode_F& other) = delete;
-    InverseAtomSelectorNode_F(InverseAtomSelectorNode_F&& other) = delete;
-    InverseAtomSelectorNode_F& operator=(InverseAtomSelectorNode_F&& other) = delete;
 
     std::span<const Element*> get_false_elements() const { return m_false_elements; }
 

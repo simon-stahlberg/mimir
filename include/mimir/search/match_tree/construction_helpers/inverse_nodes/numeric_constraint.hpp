@@ -87,10 +87,6 @@ public:
     {
         assert(!m_true_elements.empty());
     }
-    InverseNumericConstraintSelectorNode_T(const InverseNumericConstraintSelectorNode_T& other) = delete;
-    InverseNumericConstraintSelectorNode_T& operator=(const InverseNumericConstraintSelectorNode_T& other) = delete;
-    InverseNumericConstraintSelectorNode_T(InverseNumericConstraintSelectorNode_T&& other) = delete;
-    InverseNumericConstraintSelectorNode_T& operator=(InverseNumericConstraintSelectorNode_T&& other) = delete;
 
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
 
@@ -137,10 +133,6 @@ public:
         assert(!m_true_elements.empty());
         assert(!m_dontcare_elements.empty());
     }
-    InverseNumericConstraintSelectorNode_TX(const InverseNumericConstraintSelectorNode_TX& other) = delete;
-    InverseNumericConstraintSelectorNode_TX& operator=(const InverseNumericConstraintSelectorNode_TX& other) = delete;
-    InverseNumericConstraintSelectorNode_TX(InverseNumericConstraintSelectorNode_TX&& other) = delete;
-    InverseNumericConstraintSelectorNode_TX& operator=(InverseNumericConstraintSelectorNode_TX&& other) = delete;
 
     std::span<const Element*> get_true_elements() const { return m_true_elements; }
     std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }

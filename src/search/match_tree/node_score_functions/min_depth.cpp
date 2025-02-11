@@ -15,20 +15,21 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_MIN_DEPTH_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_MIN_DEPTH_HPP_
+#include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
 
-#include "mimir/search/match_tree/node_score_functions/interface.hpp"
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-class MinDepthNodeScoreFunction : public INodeScoreFunction<Element>
+double MinDepthNodeScoreFunction<Element>::compute_score(const PlaceholderNode<Element>& node)
 {
-public:
-    double compute_score(const PlaceholderNode<Element>& node) override;
-};
-
+    return node->get_root_distance();
 }
 
-#endif
+template class MinDepthNodeScoreFunction<GroundActionImpl>;
+template class MinDepthNodeScoreFunction<GroundAxiomImpl>;
+
+}

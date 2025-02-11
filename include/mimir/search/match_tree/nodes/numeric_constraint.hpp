@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_NODES_NUMERIC_CONSTRAINT_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_NODES_NUMERIC_CONSTRAINT_HPP_
 
-#include "mimir/formalism/ground_numeric_constraint.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
 namespace mimir::match_tree
@@ -37,6 +37,11 @@ protected:
 public:
     explicit NumericConstraintSelectorNodeBase(GroundNumericConstraint constraint) : m_constraint(constraint) { assert(m_constraint); }
 
+    NumericConstraintSelectorNodeBase(const NumericConstraintSelectorNodeBase& other) = delete;
+    NumericConstraintSelectorNodeBase& operator=(const NumericConstraintSelectorNodeBase& other) = delete;
+    NumericConstraintSelectorNodeBase(NumericConstraintSelectorNodeBase&& other) = delete;
+    NumericConstraintSelectorNodeBase& operator=(NumericConstraintSelectorNodeBase&& other) = delete;
+
     GroundNumericConstraint get_constraint() const { return m_constraint; }
 
     void visit(INodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
@@ -51,30 +56,19 @@ private:
 private:
     /* Implement interface*/
 
-    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(INodeVisitor<Element>& visitor) const;
 
     friend class NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<Element>, Element>;
 
 public:
     using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<Element>, Element>::get_constraint;
 
-    NumericConstraintSelectorNode_T(Node<Element>&& true_child, GroundNumericConstraint constraint) :
-        NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<Element>, Element>(constraint),
-        m_true_child(std::move(true_child))
-    {
-        assert(m_true_child);
-    }
+    NumericConstraintSelectorNode_T(Node<Element>&& true_child, GroundNumericConstraint constraint);
 
     void
-    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
-    {
-        if (evaluate(this->m_constraint, state.get_numeric_variables()))
-        {
-            ref_applicable_nodes.push_back(m_true_child.get());
-        }
-    }
+    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override;
 
-    const Node<Element>& get_true_child() const { return m_true_child; };
+    const Node<Element>& get_true_child() const;
 };
 
 template<HasConjunctiveCondition Element>
@@ -87,35 +81,20 @@ private:
 private:
     /* Implement interface*/
 
-    void visit_impl(INodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(INodeVisitor<Element>& visitor) const;
 
     friend class NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<Element>, Element>;
 
 public:
     using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<Element>, Element>::get_constraint;
 
-    NumericConstraintSelectorNode_TX(Node<Element>&& true_child, Node<Element>&& dontcare_child, GroundNumericConstraint constraint) :
-        NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<Element>, Element>(constraint),
-        m_true_child(std::move(true_child)),
-        m_dontcare_child(std::move(dontcare_child))
-    {
-        assert(m_true_child);
-        assert(m_dontcare_child);
-    }
+    NumericConstraintSelectorNode_TX(Node<Element>&& true_child, Node<Element>&& dontcare_child, GroundNumericConstraint constraint);
 
     void
-    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override
-    {
-        ref_applicable_nodes.push_back(m_dontcare_child.get());
+    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override;
 
-        if (evaluate(this->m_constraint, state.get_numeric_variables()))
-        {
-            ref_applicable_nodes.push_back(m_true_child.get());
-        }
-    }
-
-    const Node<Element>& get_true_child() const { return m_true_child; };
-    const Node<Element>& get_dontcare_child() const { return m_dontcare_child; }
+    const Node<Element>& get_true_child() const;
+    const Node<Element>& get_dontcare_child() const;
 };
 }
 
