@@ -18,6 +18,8 @@
 #ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_STATISTICS_HPP_
 #define MIMIR_SEARCH_AXIOM_EVALUATORS_GROUNDED_EVENT_HANDLERS_STATISTICS_HPP_
 
+#include "mimir/search/match_tree/statistics.hpp"
+
 #include <cstdint>
 #include <ostream>
 #include <vector>
@@ -25,39 +27,9 @@
 namespace mimir
 {
 
-class GroundedAxiomEvaluatorStatistics
+struct GroundedAxiomEvaluatorStatistics
 {
-private:
-    uint64_t m_num_delete_free_reachable_fluent_ground_atoms;
-    uint64_t m_num_delete_free_reachable_derived_ground_atoms;
-    uint64_t m_num_delete_free_axioms;
-
-    uint64_t m_num_ground_axioms;
-    uint64_t m_num_nodes_in_axiom_match_tree;
-
-public:
-    GroundedAxiomEvaluatorStatistics() :
-        m_num_delete_free_reachable_fluent_ground_atoms(0),
-        m_num_delete_free_reachable_derived_ground_atoms(0),
-        m_num_delete_free_axioms(0),
-        m_num_ground_axioms(0),
-        m_num_nodes_in_axiom_match_tree(0)
-    {
-    }
-
-    void set_num_delete_free_reachable_fluent_ground_atoms(uint64_t value) { m_num_delete_free_reachable_fluent_ground_atoms = value; }
-    void set_num_delete_free_reachable_derived_ground_atoms(uint64_t value) { m_num_delete_free_reachable_derived_ground_atoms = value; }
-    void set_num_delete_free_axioms(uint64_t value) { m_num_delete_free_axioms = value; }
-
-    void set_num_ground_axioms(uint64_t value) { m_num_ground_axioms = value; }
-    void set_num_nodes_in_axiom_match_tree(uint64_t value) { m_num_nodes_in_axiom_match_tree = value; }
-
-    uint64_t get_num_delete_free_reachable_fluent_ground_atoms() const { return m_num_delete_free_reachable_fluent_ground_atoms; }
-    uint64_t get_num_delete_free_reachable_derived_ground_atoms() const { return m_num_delete_free_reachable_derived_ground_atoms; }
-    uint64_t get_num_delete_free_axioms() const { return m_num_delete_free_axioms; }
-
-    uint64_t get_num_ground_axioms() const { return m_num_ground_axioms; }
-    uint64_t get_num_nodes_in_axiom_match_tree() const { return m_num_nodes_in_axiom_match_tree; }
+    std::vector<match_tree::Statistics> m_match_tree_partition_statistics = std::vector<match_tree::Statistics>();
 };
 
 }

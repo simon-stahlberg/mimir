@@ -27,10 +27,6 @@
 #include "mimir/search/match_tree/options.hpp"
 #include "mimir/search/match_tree/statistics.hpp"
 
-#include <optional>
-#include <queue>
-#include <vector>
-
 namespace mimir::match_tree
 {
 /* MatchTree */
@@ -46,8 +42,7 @@ private:
     fs::path m_output_dot_file;
 
     /* Statistics */
-    size_t m_num_nodes;
-    bool m_is_imperfect;
+    Statistics m_statistics;
 
     std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
 
@@ -74,9 +69,7 @@ public:
 
     void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements);
 
-    size_t get_num_nodes() const;
-
-    bool is_imperfect() const;
+    const Statistics& get_statistics() const;
 };
 
 }

@@ -45,6 +45,10 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
     m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_grounder->get_axiom_grounder())),
     m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
+    std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
+
+    const auto start_time = std::chrono::high_resolution_clock::now();
+
     auto initial_state = m_delete_free_state_repository.get_or_create_initial_state();
 
     auto dense_state = DenseState(initial_state);
@@ -80,6 +84,15 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(std::shared_ptr<G
         }
 
     } while (!reached_delete_free_explore_fixpoint);
+
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+
+    std::cout << "[DeleteRelaxedProblemExplorator] Total time for delete relaxed exploration: " << total_time << "\n"
+              << "[DeleteRelaxedProblemExplorator] Number of fluent grounded atoms reachable in delete-free problem: "
+              << m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset().count() << "\n"
+              << "[DeleteRelaxedProblemExplorator] Number of derived grounded atoms reachable in delete-free problem: "
+              << m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
 }
 
 std::shared_ptr<GroundedAxiomEvaluator>
@@ -94,10 +107,8 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
     const auto problem = m_grounder->get_problem();
     const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
-    event_handler->on_finish_delete_free_exploration(
-        pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
-        pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
-        m_delete_free_grounder->get_axiom_grounder()->get_ground_axioms());
+    event_handler->on_start_ground_axiom_instantiation();
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     /* Initialize bookkeeping to map ground axioms into corresponding partition. */
     const auto num_partitions = problem->get_problem_and_domain_axiom_partitioning().size();
@@ -128,13 +139,20 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
         }
     }
 
+    auto end_time = std::chrono::high_resolution_clock::now();
+    auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    event_handler->on_finish_ground_axiom_instantiation(total_time);
+
+    event_handler->on_start_build_axiom_match_trees();
+    start_time = std::chrono::high_resolution_clock::now();
+
     /* Create a MatchTree for each partition. */
     auto match_tree_partitioning = std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> {};
     for (size_t i = 0; i < num_partitions; ++i)
     {
-        const auto& ground_axioms = ground_axiom_partitioning.at(i);
+        event_handler->on_start_build_axiom_match_tree(i);
 
-        event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
+        const auto& ground_axioms = ground_axiom_partitioning.at(i);
 
         auto match_tree = match_tree::MatchTree<GroundAxiomImpl>::create(*m_grounder->get_pddl_repositories(), ground_axioms, options);
 
@@ -142,6 +160,10 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
 
         match_tree_partitioning.push_back(std::move(match_tree));
     }
+
+    end_time = std::chrono::high_resolution_clock::now();
+    total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    event_handler->on_finish_build_axiom_match_trees(total_time);
 
     return std::make_shared<GroundedAxiomEvaluator>(m_grounder->get_axiom_grounder(), std::move(match_tree_partitioning), std::move(event_handler));
 }
@@ -158,10 +180,8 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     const auto problem = m_grounder->get_problem();
     const auto pddl_repositories = m_grounder->get_pddl_repositories();
 
-    event_handler->on_finish_delete_free_exploration(
-        pddl_repositories->get_ground_atoms_from_indices<Fluent>(m_delete_free_state_repository.get_reached_fluent_ground_atoms_bitset()),
-        pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
-        m_delete_free_grounder->get_action_grounder()->get_ground_actions());
+    event_handler->on_start_ground_action_instantiation();
+    const auto start_time = std::chrono::high_resolution_clock::now();
 
     auto ground_actions = GroundActionList {};
     for (const auto& action : m_delete_free_grounder->get_action_grounder()->get_ground_actions())
@@ -178,7 +198,11 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
         }
     }
 
-    event_handler->on_finish_grounding_unrelaxed_actions(ground_actions);
+    const auto end_time = std::chrono::high_resolution_clock::now();
+    const auto total_time = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time);
+    event_handler->on_finish_ground_action_instantiation(total_time);
+
+    event_handler->on_start_build_action_match_tree();
 
     auto match_tree = match_tree::MatchTree<GroundActionImpl>::create(*m_grounder->get_pddl_repositories(), ground_actions, options);
 

@@ -26,23 +26,34 @@
 namespace mimir
 {
 
-void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                                                                       const GroundAtomList<Derived>& reached_derived_atoms,
-                                                                                       const GroundAxiomList& instantiated_axioms)
+void DefaultGroundedAxiomEvaluatorEventHandler::on_start_ground_axiom_instantiation_impl() const
 {
-    std::cout << "[GroundedAxiomEvaluator] Number of fluent grounded atoms reachable in delete-free problem: " << reached_fluent_atoms.size() << "\n"
-              << "[GroundedAxiomEvaluator] Number of derived grounded atoms reachable in delete-free problem: " << reached_derived_atoms.size() << "\n"
-              << "[GroundedAxiomEvaluator] Number of delete-free grounded axioms: " << instantiated_axioms.size() << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Started instantiating ground axioms." << std::endl;
 }
 
-void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_grounding_unrelaxed_axioms_impl(const GroundAxiomList& unrelaxed_axioms)
+void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_ground_axiom_instantiation_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedAxiomEvaluator] Number of grounded axioms in problem: " << unrelaxed_axioms.size() << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Total time for ground axiom instantiation: " << total_time << std::endl;
 }
 
-void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree)
+void DefaultGroundedAxiomEvaluatorEventHandler::on_start_build_axiom_match_trees_impl() const
 {
-    std::cout << "[GroundedAxiomEvaluator] Number of nodes in axiom match tree: " << axiom_match_tree.get_num_nodes() << std::endl;
+    std::cout << "[GroundedAxiomEvaluator] Started building axiom match trees." << std::endl;
+}
+
+void DefaultGroundedAxiomEvaluatorEventHandler::on_start_build_axiom_match_tree_impl(size_t partition_index) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Axiom partition: " << partition_index << std::endl;
+}
+
+void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_build_axiom_match_tree_impl(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) const
+{
+    std::cout << match_tree.get_statistics() << std::endl;
+}
+
+void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_build_axiom_match_trees_impl(std::chrono::milliseconds total_time) const
+{
+    std::cout << "[GroundedAxiomEvaluator] Total time for building axiom match trees: " << total_time << std::endl;
 }
 
 void DefaultGroundedAxiomEvaluatorEventHandler::on_finish_search_layer_impl() const

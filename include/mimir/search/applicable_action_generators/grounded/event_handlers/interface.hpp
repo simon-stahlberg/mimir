@@ -34,14 +34,13 @@ class IGroundedApplicableActionGeneratorEventHandler
 public:
     virtual ~IGroundedApplicableActionGeneratorEventHandler() = default;
 
-    /// @brief React on finishing delete-free exploration
-    virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                                   const GroundAtomList<Derived>& reached_derived_atoms,
-                                                   const GroundActionList& instantiated_actions) = 0;
+    virtual void on_start_ground_action_instantiation() = 0;
 
-    virtual void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) = 0;
+    virtual void on_finish_ground_action_instantiation(std::chrono::milliseconds total_time) = 0;
 
-    virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& action_match_tree) = 0;
+    virtual void on_start_build_action_match_tree() = 0;
+
+    virtual void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& match_tree) = 0;
 
     virtual void on_finish_search_layer() = 0;
 
@@ -73,37 +72,35 @@ private:
 public:
     explicit GroundedApplicableActionGeneratorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                           const GroundAtomList<Derived>& reached_derived_atoms,
-                                           const GroundActionList& instantiated_actions) override
-    {  //
-        m_statistics.set_num_delete_free_reachable_fluent_ground_atoms(reached_fluent_atoms.size());
-        m_statistics.set_num_delete_free_reachable_derived_ground_atoms(reached_derived_atoms.size());
-        m_statistics.set_num_delete_free_actions(instantiated_actions.size());
-
+    void on_start_ground_action_instantiation() override
+    {
         if (!m_quiet)
         {
-            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_actions);
+            self().on_start_ground_action_instantiation_impl();
         }
     }
 
-    void on_finish_grounding_unrelaxed_actions(const GroundActionList& unrelaxed_actions) override
-    {  //
-        m_statistics.set_num_ground_actions(unrelaxed_actions.size());
-
+    void on_finish_ground_action_instantiation(std::chrono::milliseconds total_time) override
+    {
         if (!m_quiet)
         {
-            self().on_finish_grounding_unrelaxed_actions_impl(unrelaxed_actions);
+            self().on_finish_ground_action_instantiation_impl(total_time);
         }
     }
 
-    void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& action_match_tree) override
-    {  //
-        m_statistics.set_num_nodes_in_action_match_tree(action_match_tree.get_num_nodes());
-
+    void on_start_build_action_match_tree() override
+    {
         if (!m_quiet)
         {
-            self().on_finish_build_action_match_tree_impl(action_match_tree);
+            self().on_start_build_action_match_tree_impl();
+        }
+    }
+
+    void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& match_tree) override
+    {  //
+        if (!m_quiet)
+        {
+            self().on_finish_build_action_match_tree_impl(match_tree);
         }
     }
 

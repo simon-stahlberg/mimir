@@ -25,26 +25,25 @@
 
 namespace mimir
 {
-
-void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                                                                                const GroundAtomList<Derived>& reached_derived_atoms,
-                                                                                                const GroundActionList& instantiated_actions)
+void DebugGroundedApplicableActionGeneratorEventHandler::on_start_ground_action_instantiation_impl() const
 {
-    std::cout << "[GroundedApplicableActionGenerator] Number of fluent grounded atoms reachable in delete-free problem: " << reached_fluent_atoms.size() << "\n"
-              << "[GroundedApplicableActionGenerator] Number of derived grounded atoms reachable in delete-free problem: " << reached_derived_atoms.size()
-              << "\n"
-              << "[GroundedApplicableActionGenerator] Number of delete-free grounded actions: " << instantiated_actions.size() << std::endl;
+    std::cout << "[GroundedApplicableActionGenerator] Started instantiating ground actions." << std::endl;
 }
 
-void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_grounding_unrelaxed_actions_impl(const GroundActionList& unrelaxed_actions)
+void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const
 {
-    std::cout << "[GroundedApplicableActionGenerator] Number of grounded actions in problem: " << unrelaxed_actions.size() << std::endl;
+    std::cout << "[GroundedApplicableActionGenerator] Total time for ground action instantiation: " << total_time << std::endl;
 }
 
-void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_build_action_match_tree_impl(
-    const match_tree::MatchTree<GroundActionImpl>& action_match_tree)
+void DebugGroundedApplicableActionGeneratorEventHandler::on_start_build_action_match_tree_impl() const
 {
-    std::cout << "[GroundedApplicableActionGenerator] Number of nodes in action match tree: " << action_match_tree.get_num_nodes() << std::endl;
+    std::cout << "[GroundedApplicableActionGenerator] Started building action match tree." << std::endl;
+}
+
+void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& match_tree)
+{
+    std::cout << match_tree.get_statistics() << "\n"
+              << "[GroundedApplicableActionGenerator] Finished building action match tree" << std::endl;
 }
 
 void DebugGroundedApplicableActionGeneratorEventHandler::on_finish_search_layer_impl() const

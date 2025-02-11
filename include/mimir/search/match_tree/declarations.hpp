@@ -94,6 +94,7 @@ template<HasConjunctiveCondition Element>
 class INodeSplitter;
 
 struct Options;
+struct Statistics;
 
 /**
  * Aliases

@@ -31,9 +31,7 @@
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
-#include <optional>
 #include <queue>
-#include <vector>
 
 namespace mimir::match_tree
 {
@@ -42,6 +40,9 @@ namespace mimir::match_tree
 template<HasConjunctiveCondition Element>
 void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& node_score_function, const NodeSplitter<Element>& node_splitter)
 {
+    m_statistics.construction_start_time_point = std::chrono::high_resolution_clock::now();
+    m_statistics.num_elements = m_elements.size();
+
     struct QueueEntry
     {
         double score;
@@ -57,7 +58,6 @@ void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& nod
     auto root_placeholder = create_root_placeholder_node(std::span<const Element*>(m_elements.begin(), m_elements.end()));
     auto score = node_score_function->compute_score(root_placeholder);
     queue.emplace(score, std::move(root_placeholder));
-    ++m_num_nodes;
 
     auto inverse_generator_leafs = InverseNodeList<Element> {};
     auto inverse_root = InverseNode<Element> { nullptr };
@@ -72,16 +72,16 @@ void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& nod
         for (auto& child : children)
         {
             queue.emplace(node_score_function->compute_score(child), std::move(child));
-            ++m_num_nodes;
+            ++m_statistics.num_nodes;
         }
         if (root)
         {
             inverse_root = std::move(root);
         }
-        if (m_num_nodes >= m_max_num_nodes)
+        if (m_statistics.num_nodes >= m_max_num_nodes)
         {
             /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
-            m_is_imperfect = true;
+            m_statistics.is_perfect = false;
             while (!queue.empty())
             {
                 auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
@@ -100,6 +100,10 @@ void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& nod
     }
 
     m_root = parse_inverse_tree_iteratively(inverse_root);
+
+    parse_generator_distribution_iteratively(m_root, m_statistics);
+
+    m_statistics.construction_end_time_point = std::chrono::high_resolution_clock::now();
 }
 
 template<HasConjunctiveCondition Element>
@@ -108,10 +112,9 @@ MatchTree<Element>::MatchTree() :
     m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
     m_max_num_nodes(std::numeric_limits<size_t>::max()),
     m_enable_dump_dot_file(false),
-    m_output_dot_file("match_tree.dot"),
-    m_num_nodes(1),
-    m_is_imperfect(false)
+    m_output_dot_file("match_tree.dot")
 {
+    m_statistics.generator_distribution.push_back(0);
 }
 
 template<HasConjunctiveCondition Element>
@@ -125,13 +128,10 @@ MatchTree<Element>::MatchTree(std::vector<const Element*> elements,  //
     m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
     m_max_num_nodes(max_num_nodes),
     m_enable_dump_dot_file(enable_dump_dot_file),
-    m_output_dot_file(output_dot_file),
-    m_num_nodes(1),
-    m_is_imperfect(false)
+    m_output_dot_file(output_dot_file)
 {
     if (!m_elements.empty())
     {
-        m_num_nodes = 0;
         build_iteratively(node_score_function, node_splitter);
     }
 }
@@ -155,15 +155,9 @@ void MatchTree<Element>::generate_applicable_elements_iteratively(const DenseSta
 }
 
 template<HasConjunctiveCondition Element>
-size_t MatchTree<Element>::get_num_nodes() const
+const Statistics& MatchTree<Element>::get_statistics() const
 {
-    return m_num_nodes;
-}
-
-template<HasConjunctiveCondition Element>
-bool MatchTree<Element>::is_imperfect() const
-{
-    return m_is_imperfect;
+    return m_statistics;
 }
 
 template<HasConjunctiveCondition Element>

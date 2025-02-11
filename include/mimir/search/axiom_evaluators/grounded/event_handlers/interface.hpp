@@ -34,14 +34,17 @@ class IGroundedAxiomEvaluatorEventHandler
 public:
     virtual ~IGroundedAxiomEvaluatorEventHandler() = default;
 
-    /// @brief React on finishing delete-free exploration
-    virtual void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                                   const GroundAtomList<Derived>& reached_derived_atoms,
-                                                   const GroundAxiomList& instantiated_axioms) = 0;
+    virtual void on_start_ground_axiom_instantiation() = 0;
 
-    virtual void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) = 0;
+    virtual void on_finish_ground_axiom_instantiation(std::chrono::milliseconds total_time) = 0;
 
-    virtual void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree) = 0;
+    virtual void on_start_build_axiom_match_trees() = 0;
+
+    virtual void on_start_build_axiom_match_tree(size_t partition_index) = 0;
+
+    virtual void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) = 0;
+
+    virtual void on_finish_build_axiom_match_trees(std::chrono::milliseconds total_time) = 0;
 
     virtual void on_finish_search_layer() = 0;
 
@@ -73,37 +76,53 @@ private:
 public:
     explicit GroundedAxiomEvaluatorEventHandlerBase(bool quiet = true) : m_statistics(), m_quiet(quiet) {}
 
-    void on_finish_delete_free_exploration(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                           const GroundAtomList<Derived>& reached_derived_atoms,
-                                           const GroundAxiomList& instantiated_axioms) override
-    {  //
-        m_statistics.set_num_delete_free_reachable_fluent_ground_atoms(reached_fluent_atoms.size());
-        m_statistics.set_num_delete_free_reachable_derived_ground_atoms(reached_derived_atoms.size());
-        m_statistics.set_num_delete_free_axioms(instantiated_axioms.size());
-
+    void on_start_ground_axiom_instantiation() override
+    {
         if (!m_quiet)
         {
-            self().on_finish_delete_free_exploration_impl(reached_fluent_atoms, reached_derived_atoms, instantiated_axioms);
+            self().on_start_ground_axiom_instantiation_impl();
         }
     }
 
-    void on_finish_grounding_unrelaxed_axioms(const GroundAxiomList& unrelaxed_axioms) override
-    {  //
-        m_statistics.set_num_ground_axioms(unrelaxed_axioms.size());
-
+    void on_finish_ground_axiom_instantiation(std::chrono::milliseconds total_time) override
+    {
         if (!m_quiet)
         {
-            self().on_finish_grounding_unrelaxed_axioms_impl(unrelaxed_axioms);
+            self().on_finish_ground_axiom_instantiation_impl(total_time);
         }
     }
 
-    void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& axiom_match_tree) override
+    void on_start_build_axiom_match_trees() override
+    {
+        if (!m_quiet)
+        {
+            self().on_start_build_axiom_match_trees_impl();
+        }
+    }
+
+    void on_start_build_axiom_match_tree(size_t partition_index) override
+    {
+        if (!m_quiet)
+        {
+            self().on_start_build_axiom_match_tree_impl(partition_index);
+        }
+    }
+
+    void on_finish_build_axiom_match_tree(const match_tree::MatchTree<GroundAxiomImpl>& match_tree) override
     {  //
-        m_statistics.set_num_nodes_in_axiom_match_tree(axiom_match_tree.get_num_nodes());
+        m_statistics.m_match_tree_partition_statistics.push_back(match_tree.get_statistics());
 
         if (!m_quiet)
         {
-            self().on_finish_build_axiom_match_tree_impl(axiom_match_tree);
+            self().on_finish_build_axiom_match_tree_impl(match_tree);
+        }
+    }
+
+    void on_finish_build_axiom_match_trees(std::chrono::milliseconds total_time) override
+    {
+        if (!m_quiet)
+        {
+            self().on_finish_build_axiom_match_trees_impl(total_time);
         }
     }
 

@@ -30,11 +30,11 @@ private:
     /* Implement GroundedApplicableActionGeneratorEventHandlerBase interface */
     friend class GroundedApplicableActionGeneratorEventHandlerBase<DefaultGroundedApplicableActionGeneratorEventHandler>;
 
-    void on_finish_delete_free_exploration_impl(const GroundAtomList<Fluent>& reached_fluent_atoms,
-                                                const GroundAtomList<Derived>& reached_derived_atoms,
-                                                const GroundActionList& instantiated_actions);
+    void on_start_ground_action_instantiation_impl() const;
 
-    void on_finish_grounding_unrelaxed_actions_impl(const GroundActionList& unrelaxed_actions);
+    void on_finish_ground_action_instantiation_impl(std::chrono::milliseconds total_time) const;
+
+    void on_start_build_action_match_tree_impl() const;
 
     void on_finish_build_action_match_tree_impl(const match_tree::MatchTree<GroundActionImpl>& action_match_tree);
 

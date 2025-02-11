@@ -18,6 +18,8 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_STATISTICS_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_STATISTICS_HPP_
 
+#include "mimir/search/match_tree/declarations.hpp"
+
 #include <chrono>
 #include <map>
 #include <ostream>
@@ -25,40 +27,20 @@
 
 namespace mimir::match_tree
 {
-class MatchTreeStatistics
+struct Statistics
 {
-private:
-    size_t m_num_nodes;
-    bool m_is_imperfect;
-    std::vector<size_t> m_generator_distribution;
-
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_construction_start_time_point;
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_construction_end_time_point;
-
-public:
-    MatchTreeStatistics();
-
-    /**
-     * Setters
-     */
-
-    void increment_num_nodes();
-    void insert_into_generator_distribution(size_t num_elements);
-    void set_is_imperfect(bool is_imperfect);
-    void set_construction_start_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point);
-    void set_construction_end_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point);
-
-    /**
-     * Getters
-     */
-
-    size_t get_num_nodes() const;
-    std::vector<size_t> get_generator_distribution() const;
-    bool is_imperfect() const;
-    std::chrono::milliseconds get_total_construction_time_ms() const;
+    size_t num_elements = 0;
+    size_t num_nodes = 1;    ///< Tree always has 1 root node
+    bool is_perfect = true;  ///< Tree is always perfect initially
+    std::vector<size_t> generator_distribution = std::vector<size_t>();
+    std::chrono::time_point<std::chrono::high_resolution_clock> construction_start_time_point = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> construction_end_time_point = std::chrono::high_resolution_clock::now();
 };
 
-extern std::ostream& operator<<(std::ostream& os, const MatchTreeStatistics& statistics);
+template<HasConjunctiveCondition Element>
+extern void parse_generator_distribution_iteratively(const Node<Element>& root, Statistics& ref_statistics);
+
+extern std::ostream& operator<<(std::ostream& os, const Statistics& statistics);
 }
 
 #endif

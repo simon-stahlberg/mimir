@@ -69,8 +69,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
             for (const auto& grounded_axiom : applicable_axioms)
             {
                 /* Handle imperfect match tree */
-                const auto requires_match_tree_imperfection_check = match_tree->is_imperfect();
-                if (requires_match_tree_imperfection_check && !is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state))
+                if (!match_tree->get_statistics().is_perfect && !is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state))
                 {
                     continue;
                 }

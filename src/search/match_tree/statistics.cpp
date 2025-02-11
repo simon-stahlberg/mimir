@@ -17,40 +17,205 @@
 
 #include "mimir/search/match_tree/statistics.hpp"
 
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
+#include "mimir/search/match_tree/nodes/atom.hpp"
+#include "mimir/search/match_tree/nodes/generator.hpp"
+#include "mimir/search/match_tree/nodes/interface.hpp"
+#include "mimir/search/match_tree/nodes/numeric_constraint.hpp"
 
 namespace mimir::match_tree
 {
 
-MatchTreeStatistics::MatchTreeStatistics() : m_num_nodes(0), m_generator_distribution() {}
+/**
+ * Parsing
+ */
 
-void MatchTreeStatistics::increment_num_nodes() { ++m_num_nodes; }
-void MatchTreeStatistics::insert_into_generator_distribution(size_t num_elements) { m_generator_distribution.push_back(num_elements); }
-void MatchTreeStatistics::set_is_imperfect(bool is_imperfect) { m_is_imperfect = is_imperfect; }
-
-void MatchTreeStatistics::set_construction_start_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point)
+template<HasConjunctiveCondition Element>
+struct ParseStatisticsNodeVisitor : public INodeVisitor<Element>
 {
-    m_construction_start_time_point = time_point;
+    Statistics& statistics;
+
+    explicit ParseStatisticsNodeVisitor(Statistics& statistics) : statistics(statistics) {}
+
+    void accept(const AtomSelectorNode_TFX<Element, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TF<Element, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TX<Element, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_FX<Element, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_T<Element, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_F<Element, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TFX<Element, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TF<Element, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TX<Element, Derived>& atom) override;
+    void accept(const AtomSelectorNode_FX<Element, Derived>& atom) override;
+    void accept(const AtomSelectorNode_T<Element, Derived>& atom) override;
+    void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
+    void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
+    void accept(const ElementGeneratorNode<Element>& generator) override;
+};
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+static void accept_impl(ParseStatisticsNodeVisitor<Element>& visitor, const AtomSelectorNode_TFX<Element, P>& atom)
+{
+    atom.get_true_child()->visit(visitor);
+    atom.get_false_child()->visit(visitor);
+    atom.get_dontcare_child()->visit(visitor);
 }
-void MatchTreeStatistics::set_construction_end_time_point(std::chrono::time_point<std::chrono::high_resolution_clock> time_point)
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+static void accept_impl(ParseStatisticsNodeVisitor<Element>& visitor, const AtomSelectorNode_TF<Element, P>& atom)
 {
-    m_construction_end_time_point = time_point;
+    atom.get_true_child()->visit(visitor);
+    atom.get_false_child()->visit(visitor);
 }
 
-size_t MatchTreeStatistics::get_num_nodes() const { return m_num_nodes; }
-std::vector<size_t> MatchTreeStatistics::get_generator_distribution() const { return m_generator_distribution; }
-bool MatchTreeStatistics::is_imperfect() const { return m_is_imperfect; }
-
-std::chrono::milliseconds MatchTreeStatistics::get_total_construction_time_ms() const
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+static void accept_impl(ParseStatisticsNodeVisitor<Element>& visitor, const AtomSelectorNode_TX<Element, P>& atom)
 {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(m_construction_end_time_point - m_construction_start_time_point);
+    atom.get_true_child()->visit(visitor);
+    atom.get_dontcare_child()->visit(visitor);
 }
 
-std::ostream& operator<<(std::ostream& os, const MatchTreeStatistics& statistics)
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+static void accept_impl(ParseStatisticsNodeVisitor<Element>& visitor, const AtomSelectorNode_FX<Element, P>& atom)
 {
-    os << "[MatchTreeStatistics] Number of nodes: " << statistics.get_num_nodes() << "\n"
-       << "[MatchTreeStatistics] Is imperfect?: " << statistics.is_imperfect() << "\n"
-       << "[MatchTreeStatistics] Generators Gini score: " << compute_gini_score(statistics.get_generator_distribution()) << std::endl;
+    atom.get_false_child()->visit(visitor);
+    atom.get_dontcare_child()->visit(visitor);
+}
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+static void accept_impl(ParseStatisticsNodeVisitor<Element>& visitor, const AtomSelectorNode_T<Element, P>& atom)
+{
+    atom.get_true_child()->visit(visitor);
+}
+
+template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+static void accept_impl(ParseStatisticsNodeVisitor<Element>& visitor, const AtomSelectorNode_F<Element, P>& atom)
+{
+    atom.get_false_child()->visit(visitor);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_TFX<Element, Fluent>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_TF<Element, Fluent>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_TX<Element, Fluent>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_FX<Element, Fluent>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_T<Element, Fluent>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_F<Element, Fluent>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_TFX<Element, Derived>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_TF<Element, Derived>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_TX<Element, Derived>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_FX<Element, Derived>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_T<Element, Derived>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const AtomSelectorNode_F<Element, Derived>& atom)
+{
+    accept_impl(*this, atom);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const NumericConstraintSelectorNode_T<Element>& constraint)
+{
+    constraint.get_true_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const NumericConstraintSelectorNode_TX<Element>& constraint)
+{
+    constraint.get_true_child()->visit(*this);
+    constraint.get_dontcare_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const ElementGeneratorNode<Element>& generator)
+{
+    statistics.generator_distribution.push_back(generator.get_elements().size());
+}
+
+template<HasConjunctiveCondition Element>
+void parse_generator_distribution_iteratively(const Node<Element>& root, Statistics& ref_statistics)
+{
+    auto visitor = ParseStatisticsNodeVisitor<Element>(ref_statistics);
+    root->visit(visitor);
+}
+
+template void parse_generator_distribution_iteratively(const Node<GroundActionImpl>& root, Statistics& ref_statistics);
+template void parse_generator_distribution_iteratively(const Node<GroundAxiomImpl>& root, Statistics& ref_statistics);
+
+/**
+ * Printing
+ */
+
+std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
+{
+    const auto num_elements = std::accumulate(statistics.generator_distribution.begin(), statistics.generator_distribution.end(), 0);
+    const auto num_generators = statistics.generator_distribution.size();
+    assert(num_generators > 0);
+
+    os << "[MatchTreeStatistics] Total time for construction: "
+       << std::chrono::duration_cast<std::chrono::milliseconds>(statistics.construction_end_time_point - statistics.construction_start_time_point) << "\n"
+       << "[MatchTreeStatistics] Number of nodes: " << statistics.num_nodes << "\n"
+       << "[MatchTreeStatistics] Perfect: " << ((statistics.is_perfect) ? "Yes" : "No") << "\n"
+       << "[MatchTreeStatistics] Total number of elements: " << num_elements << "\n"
+       << "[MatchTreeStatistics] Total number of generators: " << num_generators << "\n"
+       << "[MatchTreeStatistics] Average number of elements per generator: " << static_cast<double>(num_elements) / num_generators << "\n"
+       << "[MatchTreeStatistics] Gini score of generator distribution: " << compute_gini_score(statistics.generator_distribution);
 
     return os;
 }
