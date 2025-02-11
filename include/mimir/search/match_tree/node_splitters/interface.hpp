@@ -25,6 +25,13 @@ namespace mimir::match_tree
 {
 /* Customization point 2: NodeSplitter */
 
+enum class SplitStrategyEnum
+{
+    STATIC = 0,
+    HYBRID = 1,
+    DYNAMIC = 2
+};
+
 /// @brief `INodeSplitter` computes the best split for a given set of elements.
 /// @tparam Element
 template<HasConjunctiveCondition Element>

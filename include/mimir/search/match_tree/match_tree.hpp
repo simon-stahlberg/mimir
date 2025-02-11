@@ -35,6 +35,15 @@
 namespace mimir::match_tree
 {
 
+struct Options
+{
+    std::optional<fs::path> output_dot_file = std::nullopt;
+    size_t max_num_nodes = std::numeric_limits<size_t>::max();
+    SplitMetricEnum split_metric = SplitMetricEnum::GINI;
+    SplitStrategyEnum split_strategy = SplitStrategyEnum::STATIC;
+    NodeScoreStrategyEnum node_score_strategy = NodeScoreStrategyEnum::MIN_DEPTH;
+};
+
 /* MatchTree */
 template<HasConjunctiveCondition Element>
 class MatchTree

@@ -50,7 +50,8 @@ struct InitializeNodesVisitor : public INodeVisitor<Element>
     void accept(const AtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const AtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const NumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const ElementGeneratorNode<Element>& generator) override;
 };
 
@@ -74,7 +75,8 @@ struct InitializeEdgesVisitor : public INodeVisitor<Element>
     void accept(const AtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const AtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const NumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const ElementGeneratorNode<Element>& generator) override;
 };
 
@@ -202,13 +204,18 @@ void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_F<Element, D
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const NumericConstraintSelectorNode<Element>& constraint)
+void InitializeNodesVisitor<Element>::accept(const NumericConstraintSelectorNode_TX<Element>& constraint)
 {
     m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
-    if (constraint.get_true_child())
-        constraint.get_true_child()->visit(*this);
-    if (constraint.get_dontcare_child())
-        constraint.get_dontcare_child()->visit(*this);
+    constraint.get_true_child()->visit(*this);
+    constraint.get_dontcare_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeNodesVisitor<Element>::accept(const NumericConstraintSelectorNode_T<Element>& constraint)
+{
+    m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
+    constraint.get_true_child()->visit(*this);
 }
 
 template<HasConjunctiveCondition Element>
@@ -346,12 +353,19 @@ void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_F<Element, D
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode<Element>& constraint)
+void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode_TX<Element>& constraint)
 {
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
     constraint.get_true_child()->visit(*this);
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_dontcare_child().get()).first, "X");
     constraint.get_dontcare_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode_T<Element>& constraint)
+{
+    m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
+    constraint.get_true_child()->visit(*this);
 }
 
 template<HasConjunctiveCondition Element>
@@ -395,7 +409,8 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<Element>
     {
         for (const auto& [dst, label] : edges)
         {
-            out << "n" << src << " -> " << "n" << dst << " [label=\"" << label << "\"];\n";
+            out << "n" << src << " -> "
+                << "n" << dst << " [label=\"" << label << "\"];\n";
         }
     }
     out << "\n";

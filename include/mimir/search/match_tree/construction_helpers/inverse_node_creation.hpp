@@ -328,9 +328,7 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         }
     }
 
-    const auto num_dontcare = elements.size() - num_true;
-
-    if (num_true == 0 || num_dontcare == 0)
+    if (num_true == 0)
     {
         return std::nullopt;  ///< Avoid creating useless nodes
     }
@@ -338,54 +336,93 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
     auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
     auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true, elements.end());
 
-    if (true_elements.empty() || dontcare_elements.empty())
-    {
-        throw std::logic_error(
-            "create_node_and_placeholder_children(node, useless_splits, root_distance, split): Tried to create useless inverse constraint node.");
-    }
-
     const auto placeholder_distance = root_distance + 1;
 
     if (node->get_parent())
     {
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
-        auto& created_node = node->get_parents_child() = std::make_unique<InverseNumericConstraintSelectorNode<Element>>(node->get_parent(),
-                                                                                                                         useless_splits,
-                                                                                                                         root_distance,
-                                                                                                                         constraint,
-                                                                                                                         true_elements,
-                                                                                                                         dontcare_elements);
 
-        auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode<Element>*>(created_node.get());
-        assert(constraint_node);
+        if (!true_elements.empty() && !dontcare_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() = std::make_unique<InverseNumericConstraintSelectorNode_TX<Element>>(node->get_parent(),
+                                                                                                                                useless_splits,
+                                                                                                                                root_distance,
+                                                                                                                                constraint,
+                                                                                                                                true_elements,
+                                                                                                                                dontcare_elements);
 
-        auto children = PlaceholderNodeList<Element> {};
-        children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_true_child(), placeholder_distance, true_elements));
-        children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(),
-                                                                          &constraint_node->get_dontcare_child(),
-                                                                          placeholder_distance,
-                                                                          dontcare_elements));
+            auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode_TX<Element>*>(created_node.get());
+            assert(constraint_node);
 
-        return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_true_child(), placeholder_distance, true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(),
+                                                                              &constraint_node->get_dontcare_child(),
+                                                                              placeholder_distance,
+                                                                              dontcare_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else if (!true_elements.empty())
+        {
+            auto& created_node = node->get_parents_child() =
+                std::make_unique<InverseNumericConstraintSelectorNode_T<Element>>(node->get_parent(), useless_splits, root_distance, constraint, true_elements);
+
+            auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode_T<Element>*>(created_node.get());
+            assert(constraint_node);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_true_child(), placeholder_distance, true_elements));
+
+            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+        }
+        else
+        {
+            throw std::logic_error(
+                "create_node_and_placeholder_children(node, useless_splits, root_distance, split): Tried to create useless inverse constraint node.");
+        }
     }
     else
     {
         /* Construct the node and return it, i.e., the root node. */
-        auto created_node = std::make_unique<InverseNumericConstraintSelectorNode<Element>>(nullptr,
-                                                                                            useless_splits,
-                                                                                            root_distance,
-                                                                                            constraint,
-                                                                                            true_elements,
-                                                                                            dontcare_elements);
 
-        auto children = PlaceholderNodeList<Element> {};
-        children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), placeholder_distance, true_elements));
-        children.push_back(
-            std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), placeholder_distance, dontcare_elements));
+        if (!true_elements.empty() && !dontcare_elements.empty())
+        {
+            auto created_node = std::make_unique<InverseNumericConstraintSelectorNode_TX<Element>>(nullptr,
+                                                                                                   useless_splits,
+                                                                                                   root_distance,
+                                                                                                   constraint,
+                                                                                                   true_elements,
+                                                                                                   dontcare_elements);
 
-        return std::make_pair(std::move(created_node), std::move(children));
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), placeholder_distance, true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(),
+                                                                              &created_node->get_dontcare_child(),
+                                                                              placeholder_distance,
+                                                                              dontcare_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else if (!true_elements.empty())
+        {
+            auto created_node =
+                std::make_unique<InverseNumericConstraintSelectorNode_T<Element>>(nullptr, useless_splits, root_distance, constraint, true_elements);
+
+            auto children = PlaceholderNodeList<Element> {};
+            children.push_back(
+                std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), placeholder_distance, true_elements));
+
+            return std::make_pair(std::move(created_node), std::move(children));
+        }
+        else
+        {
+            throw std::logic_error(
+                "create_node_and_placeholder_children(node, useless_splits, root_distance, split): Tried to create useless inverse constraint node.");
+        }
     }
 }
 

@@ -43,7 +43,8 @@ public:
     virtual void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) = 0;
     virtual void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) = 0;
+    virtual void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) = 0;
+    virtual void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) = 0;
     virtual void accept(const InverseElementGeneratorNode<Element>& generator) = 0;
 };
 

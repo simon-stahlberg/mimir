@@ -52,7 +52,8 @@ struct InitializeInverseNodesVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const InverseElementGeneratorNode<Element>& generator) override;
 };
 
@@ -76,7 +77,8 @@ struct InitializeInversePartitionVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const InverseElementGeneratorNode<Element>& generator) override;
 };
 
@@ -100,7 +102,8 @@ struct InitializeInverseEdgesVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const InverseElementGeneratorNode<Element>& generator) override;
 };
 
@@ -228,13 +231,18 @@ void InitializeInverseNodesVisitor<Element>::accept(const InverseAtomSelectorNod
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeInverseNodesVisitor<Element>::accept(const InverseNumericConstraintSelectorNode<Element>& constraint)
+void InitializeInverseNodesVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
 {
     m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
-    if (constraint.get_true_child())
-        constraint.get_true_child()->visit(*this);
-    if (constraint.get_dontcare_child())
-        constraint.get_dontcare_child()->visit(*this);
+    constraint.get_true_child()->visit(*this);
+    constraint.get_dontcare_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeInverseNodesVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+{
+    m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
+    constraint.get_true_child()->visit(*this);
 }
 
 template<HasConjunctiveCondition Element>
@@ -367,11 +375,18 @@ void InitializeInversePartitionVisitor<Element>::accept(const InverseAtomSelecto
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeInversePartitionVisitor<Element>::accept(const InverseNumericConstraintSelectorNode<Element>& constraint)
+void InitializeInversePartitionVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
 {
     m_partition[constraint.get_root_distance()].push_back(m_nodes.at(&constraint).first);
     constraint.get_true_child()->visit(*this);
     constraint.get_dontcare_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeInversePartitionVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+{
+    m_partition[constraint.get_root_distance()].push_back(m_nodes.at(&constraint).first);
+    constraint.get_true_child()->visit(*this);
 }
 
 template<HasConjunctiveCondition Element>
@@ -509,12 +524,19 @@ void InitializeInverseEdgesVisitor<Element>::accept(const InverseAtomSelectorNod
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeInverseEdgesVisitor<Element>::accept(const InverseNumericConstraintSelectorNode<Element>& constraint)
+void InitializeInverseEdgesVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
 {
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
     constraint.get_true_child()->visit(*this);
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_dontcare_child().get()).first, "X");
     constraint.get_dontcare_child()->visit(*this);
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeInverseEdgesVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+{
+    m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
+    constraint.get_true_child()->visit(*this);
 }
 
 template<HasConjunctiveCondition Element>
@@ -574,7 +596,8 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E
     {
         for (const auto& [dst, label] : edges)
         {
-            out << "n" << src << " -> " << "n" << dst << " [label=\"" << label << "\"];\n";
+            out << "n" << src << " -> "
+                << "n" << dst << " [label=\"" << label << "\"];\n";
         }
     }
     out << "\n";
@@ -594,7 +617,8 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E
             for (const auto& node2 : next->second)
             {
                 // A -> X [style=invis];
-                out << "n" << node << " -> " << "n" << node2 << " [style=invis];\n";
+                out << "n" << node << " -> "
+                    << "n" << node2 << " [style=invis];\n";
             }
         }
     }

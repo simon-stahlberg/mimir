@@ -56,7 +56,8 @@ struct ResultTreeVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const InverseElementGeneratorNode<Element>& generator) override;
 };
 
@@ -199,7 +200,7 @@ void ResultTreeVisitor<Element>::accept(const InverseAtomSelectorNode_F<Element,
 }
 
 template<HasConjunctiveCondition Element>
-void ResultTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode<Element>& constraint)
+void ResultTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
 {
     auto true_child = std::move(m_result_stack.back());
     m_result_stack.pop_back();
@@ -207,7 +208,16 @@ void ResultTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNo
     m_result_stack.pop_back();
     // Construct new result
     m_result_stack.push_back(
-        std::make_unique<NumericConstraintSelectorNode<Element>>(std::move(true_child), std::move(dont_care_child), constraint.get_constraint()));
+        std::make_unique<NumericConstraintSelectorNode_TX<Element>>(std::move(true_child), std::move(dont_care_child), constraint.get_constraint()));
+}
+
+template<HasConjunctiveCondition Element>
+void ResultTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+{
+    auto true_child = std::move(m_result_stack.back());
+    m_result_stack.pop_back();
+    // Construct new result
+    m_result_stack.push_back(std::make_unique<NumericConstraintSelectorNode_T<Element>>(std::move(true_child), constraint.get_constraint()));
 }
 
 template<HasConjunctiveCondition Element>
@@ -236,7 +246,8 @@ struct ExpandTreeVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const InverseElementGeneratorNode<Element>& generator) override;
 };
 
@@ -354,10 +365,16 @@ void ExpandTreeVisitor<Element>::accept(const InverseAtomSelectorNode_F<Element,
 }
 
 template<HasConjunctiveCondition Element>
-void ExpandTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode<Element>& constraint)
+void ExpandTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
 {
     m_stack.push_back(StackEntry<Element> { false, constraint.get_true_child().get() });
     m_stack.push_back(StackEntry<Element> { false, constraint.get_dontcare_child().get() });
+}
+
+template<HasConjunctiveCondition Element>
+void ExpandTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+{
+    m_stack.push_back(StackEntry<Element> { false, constraint.get_true_child().get() });
 }
 
 template<HasConjunctiveCondition Element>

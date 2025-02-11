@@ -40,7 +40,8 @@ public:
     virtual void accept(const AtomSelectorNode_FX<Element, Derived>& atom) = 0;
     virtual void accept(const AtomSelectorNode_T<Element, Derived>& atom) = 0;
     virtual void accept(const AtomSelectorNode_F<Element, Derived>& atom) = 0;
-    virtual void accept(const NumericConstraintSelectorNode<Element>& constraint) = 0;
+    virtual void accept(const NumericConstraintSelectorNode_T<Element>& constraint) = 0;
+    virtual void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) = 0;
     virtual void accept(const ElementGeneratorNode<Element>& generator) = 0;
 };
 

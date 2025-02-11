@@ -25,6 +25,14 @@ namespace mimir::match_tree
 
 /* Customization point 1: INodeScoreFunction*/
 
+enum class NodeScoreStrategyEnum
+{
+    MIN_DEPTH = 0,
+    MAX_DEPTH = 1,
+    MIN_BREADTH = 2,
+    MAX_BREADTH = 3,
+};
+
 /// @brief `INodeScoringFunction` allows computing a score for a node.
 template<HasConjunctiveCondition Element>
 class INodeScoreFunction

@@ -35,12 +35,17 @@ namespace mimir::match_tree
 /// MatchTree can handle elements that have a conjunctive condition, e.g., GroundActionImpl and GroundAxiomImpl.
 template<typename T>
 concept HasConjunctiveCondition = requires(const T a) {
-    { a.get_conjunctive_condition() } -> std::same_as<const GroundConjunctiveCondition&>;
+    {
+        a.get_conjunctive_condition()
+    } -> std::same_as<const GroundConjunctiveCondition&>;
 };
 
 /**
  * Forward declarations
  */
+
+template<HasConjunctiveCondition Element>
+class PlaceholderNodeImpl;
 
 template<HasConjunctiveCondition Element>
 class IInverseNode;
@@ -57,16 +62,11 @@ class InverseAtomSelectorNode_T;
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class InverseAtomSelectorNode_F;
 template<HasConjunctiveCondition Element>
-class InverseNumericConstraintSelectorNode;
+class InverseNumericConstraintSelectorNode_TX;
+template<HasConjunctiveCondition Element>
+class InverseNumericConstraintSelectorNode_T;
 template<HasConjunctiveCondition Element>
 class InverseElementGeneratorNode;
-
-template<HasConjunctiveCondition Element>
-class PlaceholderNodeImpl;
-template<HasConjunctiveCondition Element>
-using PlaceholderNode = std::unique_ptr<PlaceholderNodeImpl<Element>>;
-template<HasConjunctiveCondition Element>
-using PlaceholderNodeList = std::vector<PlaceholderNode<Element>>;
 
 template<HasConjunctiveCondition Element>
 class INode;
@@ -83,7 +83,9 @@ class AtomSelectorNode_T;
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 class AtomSelectorNode_F;
 template<HasConjunctiveCondition Element>
-class NumericConstraintSelectorNode;
+class NumericConstraintSelectorNode_TX;
+template<HasConjunctiveCondition Element>
+class NumericConstraintSelectorNode_T;
 template<HasConjunctiveCondition Element>
 class ElementGeneratorNode;
 
@@ -96,6 +98,11 @@ class INodeSplitter;
 /**
  * Aliases
  */
+
+template<HasConjunctiveCondition Element>
+using PlaceholderNode = std::unique_ptr<PlaceholderNodeImpl<Element>>;
+template<HasConjunctiveCondition Element>
+using PlaceholderNodeList = std::vector<PlaceholderNode<Element>>;
 
 template<HasConjunctiveCondition Element>
 using InverseNode = std::unique_ptr<IInverseNode<Element>>;
