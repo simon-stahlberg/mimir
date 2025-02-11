@@ -12,9 +12,10 @@ def test_condition_grounder():
     problem_filepath = str(ROOT_DIR / "data" / "gripper" / "test_problem.pddl")
     parser = mm.PDDLParser(domain_filepath, problem_filepath)
 
+    domain = parser.get_domain()
     problem = parser.get_problem()
     pddl_repositories = parser.get_pddl_repositories()
-    goal_variables, goal_lifted = problem.get_fluent_goal_condition().lift(pddl_repositories)
+    goal_variables, goal_lifted, goal_static_lifted = problem.get_fluent_goal_condition().lift(domain, pddl_repositories)
     grounder = mm.Grounder(parser.get_problem(), parser.get_pddl_repositories())
     existentially_quantified_conjunctive_condition = pddl_repositories.get_or_create_existentially_quantified_conjunctive_condition(goal_variables, mm.StaticLiteralList(), goal_lifted, mm.DerivedLiteralList())
     condition_grounder = mm.SatisficingBindingGenerator(grounder.get_literal_grounder(), existentially_quantified_conjunctive_condition)

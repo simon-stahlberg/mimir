@@ -528,7 +528,8 @@ void init_pymimir(py::module_& m)
             py::bind_vector<GroundLiteralList<Tag>>(m, class_name + "List")
                 .def(
                     "lift",
-                    [](const GroundLiteralList<Tag>& ground_literals, PDDLRepositories& pddl_repositories) { return lift(ground_literals, pddl_repositories); },
+                    [](const GroundLiteralList<Tag>& ground_literals, const Domain& domain, PDDLRepositories& pddl_repositories) { return lift(ground_literals, domain, pddl_repositories); },
+                    py::arg("domain"),
                     py::arg("pddl_repositories"));
     };
     bind_ground_literal("StaticGroundLiteral", Static {});

@@ -60,7 +60,7 @@ public:
 };
 
 template<PredicateTag P>
-extern std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_repositories);
+extern std::tuple<VariableList, LiteralList<P>, LiteralList<Static>> lift(const GroundLiteralList<P>& ground_literals, const Domain& domain, PDDLRepositories& pddl_repositories);
 
 template<PredicateTag P>
 extern std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element);

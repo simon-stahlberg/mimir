@@ -19,7 +19,6 @@
 
 #include "formatter.hpp"
 #include "mimir/formalism/ground_atom.hpp"
-#include "mimir/formalism/predicate.hpp"
 #include "mimir/formalism/repositories.hpp"
 
 namespace mimir
@@ -58,11 +57,13 @@ template class GroundLiteralImpl<Fluent>;
 template class GroundLiteralImpl<Derived>;
 
 template<PredicateTag P>
-std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_literals, PDDLRepositories& pddl_repositories)
+std::tuple<VariableList, LiteralList<P>, LiteralList<Static>> lift(const GroundLiteralList<P>& ground_literals, const Domain& domain, PDDLRepositories& pddl_repositories)
 {
     VariableList variables;
     LiteralList<P> literals;
+    LiteralList<Static> static_literals;
     std::map<Object, Variable> to_variable;
+
     for (const auto& ground_literal : ground_literals)
     {
         TermList terms;
@@ -82,12 +83,30 @@ std::pair<VariableList, LiteralList<P>> lift(const GroundLiteralList<P>& ground_
         }
         literals.emplace_back(ground_literal->lift(terms, pddl_repositories));
     }
-    return std::make_pair(variables, literals);
+
+    const auto& static_predicates = domain->get_name_to_predicate<Static>();
+    if (static_predicates.contains("="))
+    {
+        const auto& equality_predicate = static_predicates.at("=");
+        for (size_t first_index = 0; first_index < variables.size(); ++first_index)
+        {
+            for (size_t second_index = first_index + 1; second_index < variables.size(); ++second_index)
+            {
+                const auto equality_first_term = pddl_repositories.get_or_create_term(variables[first_index]);
+                const auto equality_second_term = pddl_repositories.get_or_create_term(variables[second_index]);
+                const auto equality_atom = pddl_repositories.get_or_create_atom(equality_predicate, { equality_first_term, equality_second_term });
+                const auto equality_literal = pddl_repositories.get_or_create_literal(true, equality_atom);
+                static_literals.emplace_back(equality_literal);
+            }
+        }
+    }
+
+    return std::make_tuple(variables, literals, static_literals);
 }
 
-template std::pair<VariableList, LiteralList<Static>> lift(const GroundLiteralList<Static>&, PDDLRepositories&);
-template std::pair<VariableList, LiteralList<Fluent>> lift(const GroundLiteralList<Fluent>&, PDDLRepositories&);
-template std::pair<VariableList, LiteralList<Derived>> lift(const GroundLiteralList<Derived>&, PDDLRepositories&);
+template std::tuple<VariableList, LiteralList<Static>, LiteralList<Static>> lift(const GroundLiteralList<Static>&, const Domain&, PDDLRepositories&);
+template std::tuple<VariableList, LiteralList<Fluent>, LiteralList<Static>> lift(const GroundLiteralList<Fluent>&, const Domain&, PDDLRepositories&);
+template std::tuple<VariableList, LiteralList<Derived>, LiteralList<Static>> lift(const GroundLiteralList<Derived>&, const Domain&, PDDLRepositories&);
 
 template<PredicateTag P>
 std::ostream& operator<<(std::ostream& out, const GroundLiteralImpl<P>& element)
