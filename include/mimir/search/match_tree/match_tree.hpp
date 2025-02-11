@@ -118,7 +118,7 @@ public:
         m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
         m_max_num_nodes(std::numeric_limits<size_t>::max()),
         m_enable_dump_dot_file(false),
-        m_output_dot_file(std::nullopt),
+        m_output_dot_file("match_tree.dot"),
         m_num_nodes(1),
         m_is_imperfect(false)
     {

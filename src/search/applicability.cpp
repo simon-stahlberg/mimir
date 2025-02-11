@@ -78,6 +78,17 @@ template bool is_applicable<Static>(const GroundConjunctiveCondition& conjunctiv
 template bool is_applicable<Fluent>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
 template bool is_applicable<Derived>(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms);
 
+/// @brief Tests whether the fluents are statically applicable, i.e., contain no conflicting literals.
+/// Without this test we can observe conflicting preconditions in the test_problem of the Ferry domain.
+template<DynamicPredicateTag P>
+bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition)
+{
+    return are_disjoint(conjunctive_condition.template get_positive_precondition<P>(), conjunctive_condition.template get_negative_precondition<P>());
+}
+
+template bool is_statically_applicable<Fluent>(const GroundConjunctiveCondition& conjunctive_condition);
+template bool is_statically_applicable<Derived>(const GroundConjunctiveCondition& conjunctive_condition);
+
 bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatDoubleList& fluent_numeric_variables)
 {
     for (const auto& constraint : conjunctive_condition.get_numeric_constraints())
@@ -97,7 +108,9 @@ bool is_dynamically_applicable(const GroundConjunctiveCondition& conjunctive_con
 
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& static_positive_atoms)
 {
-    return is_applicable<Static>(conjunctive_condition, static_positive_atoms);
+    return is_applicable<Static>(conjunctive_condition, static_positive_atoms)  //
+           && is_statically_applicable<Fluent>(conjunctive_condition)           //
+           && is_statically_applicable<Derived>(conjunctive_condition);
 }
 
 bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Problem problem, const DenseState& dense_state)
