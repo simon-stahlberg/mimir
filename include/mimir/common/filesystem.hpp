@@ -10,43 +10,24 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
+ *<
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_INTERFACE_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_INTERFACE_HPP_
+#ifndef MIMIR_COMMON_FILESYSTEM_HPP_
+#define MIMIR_COMMON_FILESYSTEM_HPP_
 
-#include "mimir/search/match_tree/declarations.hpp"
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <string>
 
-namespace mimir::match_tree
+namespace fs = std::filesystem;
+
+namespace mimir
 {
-
-/* Customization point 1: INodeScoreFunction*/
-
-enum class NodeScoreStrategyEnum
-{
-    MIN_DEPTH = 0,
-    MAX_DEPTH = 1,
-    MIN_BREADTH = 2,
-    MAX_BREADTH = 3,
-};
-
-struct NodeScoreFunctionOptions
-{
-};
-
-/// @brief `INodeScoringFunction` allows computing a score for a node.
-template<HasConjunctiveCondition Element>
-class INodeScoreFunction
-{
-public:
-    virtual ~INodeScoreFunction() = default;
-
-    virtual double compute_score(const PlaceholderNode<Element>& node) = 0;
-};
-
+extern void write_to_file(const fs::path& filePath, const std::string& content);
 }
 
 #endif

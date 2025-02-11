@@ -79,6 +79,13 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                     continue;
                 }
 
+                /* Handle imperfect match tree */
+                const auto requires_match_tree_imperfection_check = m_match_tree->is_imperfect();
+                if (requires_match_tree_imperfection_check && !is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state))
+                {
+                    continue;
+                }
+
                 assert(is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);

@@ -32,6 +32,11 @@ enum class SplitStrategyEnum
     DYNAMIC = 2
 };
 
+enum class SplitMetricEnum
+{
+    GINI = 0
+};
+
 /// @brief `INodeSplitter` computes the best split for a given set of elements.
 /// @tparam Element
 template<HasConjunctiveCondition Element>

@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_SPLIT_METRICS_HPP_
 
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
+#include "mimir/search/match_tree/node_splitters/interface.hpp"
 
 #include <concepts>
 #include <variant>
@@ -26,10 +27,6 @@
 
 namespace mimir::match_tree
 {
-enum class SplitMetricEnum
-{
-    GINI = 0
-};
 
 extern std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string;
 extern const std::string& to_string(SplitMetricEnum split_metric);

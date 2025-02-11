@@ -26,23 +26,16 @@
 #include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 // #include "mimir/search/match_tree/node_splitters/frequency.hpp"
+#include "mimir/common/filesystem.hpp"
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 #include "mimir/search/match_tree/node_splitters/static.hpp"
 
+#include <optional>
 #include <queue>
 #include <vector>
 
 namespace mimir::match_tree
 {
-
-struct Options
-{
-    std::optional<fs::path> output_dot_file = std::nullopt;
-    size_t max_num_nodes = std::numeric_limits<size_t>::max();
-    SplitMetricEnum split_metric = SplitMetricEnum::GINI;
-    SplitStrategyEnum split_strategy = SplitStrategyEnum::STATIC;
-    NodeScoreStrategyEnum node_score_strategy = NodeScoreStrategyEnum::MIN_DEPTH;
-};
 
 /* MatchTree */
 template<HasConjunctiveCondition Element>
@@ -50,9 +43,15 @@ class MatchTree
 {
 private:
     std::vector<const Element*> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
-    Node<Element> m_root;                    ///< the root node.
+    Node<Element> m_root;                    ///< The root node.
+    size_t m_max_num_nodes;                  ///< The maximum number of nodes allowed in the tree. Might result in imperfect match trees.
+
+    bool m_enable_dump_dot_file;
+    fs::path m_output_dot_file;
+
+    /* Statistics */
     size_t m_num_nodes;
-    bool m_is_exact;
+    bool m_is_imperfect;
 
     std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
 
@@ -86,6 +85,12 @@ private:
 
             ++m_num_nodes;
 
+            if (m_num_nodes >= m_max_num_nodes)
+            {
+                m_is_imperfect = true;  ///< If we terminate early, we assume imperfection.
+                break;
+            }
+
             for (auto& child : children)
             {
                 queue.emplace(node_score_function->compute_score(child), std::move(child));
@@ -96,33 +101,50 @@ private:
             }
         }
 
-        m_is_exact = true;  ///< If we exhaust, the match tree perfectly captures the conjunctive conditions.
-
-        // std::cout << "Num nodes: " << m_num_nodes << std::endl;
-
-        // std::cout << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
+        if (m_enable_dump_dot_file)
+        {
+            auto ss = std::stringstream {};
+            ss << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
+            write_to_file(m_output_dot_file, ss.str());
+        }
 
         m_root = parse_inverse_tree_iteratively(inverse_root);
     }
 
 public:
-    MatchTree() : m_elements(), m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))) {}
+    // TODO: do we need this default constructor?
+    MatchTree() :
+        m_elements(),
+        m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
+        m_max_num_nodes(std::numeric_limits<size_t>::max()),
+        m_enable_dump_dot_file(false),
+        m_output_dot_file(std::nullopt),
+        m_num_nodes(1),
+        m_is_imperfect(false)
+    {
+    }
 
     MatchTree(std::vector<const Element*> elements,  //
               const NodeScoreFunction<Element>& node_score_function,
-              const NodeSplitter<Element>& node_splitter) :
+              const NodeSplitter<Element>& node_splitter,
+              size_t max_num_nodes = std::numeric_limits<size_t>::max(),
+              bool enable_dump_dot_file = false,
+              fs::path output_dot_file = fs::path("match_tree.dot")) :
         m_elements(std::move(elements)),
         m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
+        m_max_num_nodes(max_num_nodes),
+        m_enable_dump_dot_file(enable_dump_dot_file),
+        m_output_dot_file(output_dot_file),
         m_num_nodes(1),
-        m_is_exact(true)
+        m_is_imperfect(false)
     {
         if (!m_elements.empty())
         {
             m_num_nodes = 0;
-            m_is_exact = false;
             build_iteratively(node_score_function, node_splitter);
         }
     }
+
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
     MatchTree(const MatchTree& other) = delete;
     MatchTree& operator=(const MatchTree& other) = delete;
@@ -148,7 +170,7 @@ public:
 
     size_t get_num_nodes() const { return m_num_nodes; }
 
-    bool is_exact() const { return m_is_exact; }
+    bool is_imperfect() const { return m_is_imperfect; }
 };
 
 }
