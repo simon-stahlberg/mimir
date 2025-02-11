@@ -25,6 +25,7 @@
 #include "mimir/search/match_tree/node_splitters/interface.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
 #include "mimir/search/match_tree/options.hpp"
+#include "mimir/search/match_tree/statistics.hpp"
 
 #include <optional>
 #include <queue>

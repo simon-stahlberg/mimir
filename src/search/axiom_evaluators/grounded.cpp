@@ -30,19 +30,17 @@
 namespace mimir
 {
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder,
-                                               std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>&& match_tree) :
-    GroundedAxiomEvaluator(std::move(axiom_grounder), std::move(match_tree), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+                                               std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :
+    GroundedAxiomEvaluator(std::move(axiom_grounder), std::move(match_tree_partitioning), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
 {
 }
 
 GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder,
-                                               std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>&& match_tree,
+                                               std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
     m_grounder(std::move(axiom_grounder)),
-    m_match_tree(std::move(match_tree)),
-    m_event_handler(std::move(event_handler)),
-    m_partitioning(compute_axiom_partitioning(m_grounder->get_problem()->get_problem_and_domain_axioms(),
-                                              m_grounder->get_problem()->get_problem_and_domain_derived_predicates()))
+    m_match_tree_partitioning(std::move(match_tree_partitioning)),
+    m_event_handler(std::move(event_handler))
 {
 }
 
@@ -52,7 +50,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
     auto applicable_axioms = GroundAxiomList {};
 
-    for (const auto& lifted_partition : m_partitioning)
+    for (const auto& match_tree : m_match_tree_partitioning)
     {
         bool reached_partition_fixed_point;
 
@@ -64,23 +62,14 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             applicable_axioms.clear();
 
-            // TODO: For axioms, the same fluent branch is taken all the time.
-            // Exploit this!
-            m_match_tree->generate_applicable_elements_iteratively(dense_state, applicable_axioms);
+            match_tree->generate_applicable_elements_iteratively(dense_state, applicable_axioms);
 
             /* Apply applicable axioms */
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                /* Important: we must check this immediately because the match tree does not respect the stratification. */
-                if (!lifted_partition.get_axioms().count(m_grounder->get_pddl_repositories()->get_axiom(grounded_axiom->get_axiom_index())))
-                {
-                    // axiom not part of same partition
-                    continue;
-                }
-
                 /* Handle imperfect match tree */
-                const auto requires_match_tree_imperfection_check = m_match_tree->is_imperfect();
+                const auto requires_match_tree_imperfection_check = match_tree->is_imperfect();
                 if (requires_match_tree_imperfection_check && !is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state))
                 {
                     continue;
@@ -116,6 +105,4 @@ const std::shared_ptr<PDDLRepositories>& GroundedAxiomEvaluator::get_pddl_reposi
 const std::shared_ptr<AxiomGrounder>& GroundedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
 
 const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
-
-const std::vector<AxiomPartition>& GroundedAxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
 }

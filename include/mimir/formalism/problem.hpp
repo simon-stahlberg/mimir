@@ -20,6 +20,7 @@
 
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/assignment_set.hpp"
+#include "mimir/formalism/axiom_stratification.hpp"
 #include "mimir/formalism/declarations.hpp"
 
 namespace mimir
@@ -88,6 +89,7 @@ private:
 
     /* Axioms */
     AxiomList m_problem_and_domain_axioms;
+    std::vector<AxiomPartition> m_problem_and_domain_axiom_partitioning;  ///< Obtained from stratification
 
     ProblemImpl(Index index,
                 std::optional<fs::path> filepath,
@@ -201,6 +203,7 @@ public:
 
     /* Axioms */
     const AxiomList& get_problem_and_domain_axioms() const;
+    const std::vector<AxiomPartition>& get_problem_and_domain_axiom_partitioning() const;
 };
 
 extern std::ostream& operator<<(std::ostream& out, const ProblemImpl& element);

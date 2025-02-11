@@ -35,8 +35,6 @@ LiftedAxiomEvaluator::LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_
     m_grounder(axiom_grounder),
     m_event_handler(event_handler),
     m_condition_grounders(),
-    m_partitioning(compute_axiom_partitioning(m_grounder->get_problem()->get_problem_and_domain_axioms(),
-                                              m_grounder->get_problem()->get_problem_and_domain_derived_predicates())),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
@@ -81,7 +79,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
     auto applicable_axioms = GroundAxiomList {};
 
-    for (const auto& partition : m_partitioning)
+    for (const auto& partition : m_grounder->get_problem()->get_problem_and_domain_axiom_partitioning())
     {
         bool reached_partition_fixed_point;
 
@@ -170,6 +168,4 @@ const std::shared_ptr<PDDLRepositories>& LiftedAxiomEvaluator::get_pddl_reposito
 const std::shared_ptr<AxiomGrounder>& LiftedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
 
 const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
-
-const std::vector<AxiomPartition>& LiftedAxiomEvaluator::get_axiom_partitioning() const { return m_partitioning; }
 }

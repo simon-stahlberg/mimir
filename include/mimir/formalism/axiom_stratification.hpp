@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_AXIOM_STRATIFICATION_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_AXIOM_STRATIFICATION_HPP_
+#ifndef MIMIR_FORMALISM_AXIOM_STRATIFICATION_HPP_
+#define MIMIR_FORMALISM_AXIOM_STRATIFICATION_HPP_
 
 #include "mimir/formalism/declarations.hpp"
 

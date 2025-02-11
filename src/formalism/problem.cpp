@@ -107,7 +107,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_negative_static_goal_atoms_indices(),
     m_negative_fluent_goal_atoms_indices(),
     m_negative_derived_goal_atoms_indices(),
-    m_problem_and_domain_axioms()
+    m_problem_and_domain_axioms(),
+    m_problem_and_domain_axiom_partitioning()
 {
     assert(is_all_unique(m_objects));
     assert(is_all_unique(m_derived_predicates));
@@ -268,6 +269,8 @@ ProblemImpl::ProblemImpl(Index index,
     m_problem_and_domain_axioms = m_domain->get_axioms();
     m_problem_and_domain_axioms.insert(m_problem_and_domain_axioms.end(), m_axioms.begin(), m_axioms.end());
     assert(is_all_unique(m_problem_and_domain_axioms));
+
+    m_problem_and_domain_axiom_partitioning = compute_axiom_partitioning(m_problem_and_domain_axioms, m_problem_and_domain_derived_predicates);
 
     /**
      * Error checking
@@ -588,6 +591,8 @@ template const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices<Deriv
 
 /* Axioms */
 const AxiomList& ProblemImpl::get_problem_and_domain_axioms() const { return m_problem_and_domain_axioms; }
+
+const std::vector<AxiomPartition>& ProblemImpl::get_problem_and_domain_axiom_partitioning() const { return m_problem_and_domain_axiom_partitioning; }
 
 /* Printing */
 std::ostream& operator<<(std::ostream& out, const ProblemImpl& element)

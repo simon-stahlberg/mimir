@@ -20,7 +20,6 @@
 
 #include "mimir/formalism/assignment_set.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/satisficing_binding_generators/axiom.hpp"
@@ -35,8 +34,6 @@ private:
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
-
-    std::vector<AxiomPartition> m_partitioning;
 
     /* Memory for reuse */
     GroundAtomList<Fluent> m_fluent_atoms;
@@ -71,7 +68,6 @@ public:
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
     const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
     const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
-    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 };
 
 }  // namespace mimir

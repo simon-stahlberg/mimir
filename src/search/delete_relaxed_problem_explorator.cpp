@@ -99,28 +99,51 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
         pddl_repositories->get_ground_atoms_from_indices<Derived>(m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset()),
         m_delete_free_grounder->get_axiom_grounder()->get_ground_axioms());
 
-    auto ground_axioms = GroundAxiomList {};
-    for (const auto& axiom : m_delete_free_grounder->get_axiom_grounder()->get_ground_axioms())
+    /* Initialize bookkeeping to map ground axioms into corresponding partition. */
+    const auto num_partitions = problem->get_problem_and_domain_axiom_partitioning().size();
+    auto axiom_to_partition = std::unordered_map<Axiom, size_t> {};
+    for (size_t i = 0; i < num_partitions; ++i)
+    {
+        const auto& partition = problem->get_problem_and_domain_axiom_partitioning()[i];
+        for (const auto& axiom : partition.get_axioms())
+        {
+            axiom_to_partition.emplace(axiom, i);
+        }
+    }
+
+    /* Store ground axioms in corresponding partition. */
+    auto ground_axiom_partitioning = std::vector<GroundAxiomList>(num_partitions);
+    for (const auto& ground_axiom : m_delete_free_grounder->get_axiom_grounder()->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(pddl_repositories->get_axiom(axiom->get_axiom_index())))
+        const auto& axiom = pddl_repositories->get_axiom(ground_axiom->get_axiom_index());
+        for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(axiom))
         {
-            auto axiom_arguments = pddl_repositories->get_objects_from_indices(axiom->get_object_indices());
+            auto axiom_arguments = pddl_repositories->get_objects_from_indices(ground_axiom->get_object_indices());
             auto grounded_axiom = m_grounder->get_axiom_grounder()->ground(unrelaxed_axiom, std::move(axiom_arguments));
             if (is_statically_applicable(grounded_axiom->get_conjunctive_condition(), problem->get_static_initial_positive_atoms_bitset()))
             {
-                ground_axioms.push_back(grounded_axiom);
+                ground_axiom_partitioning.at(axiom_to_partition.at(unrelaxed_axiom)).push_back(grounded_axiom);
             }
         }
     }
 
-    event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
+    /* Create a MatchTree for each partition. */
+    auto match_tree_partitioning = std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> {};
+    for (size_t i = 0; i < num_partitions; ++i)
+    {
+        const auto& ground_axioms = ground_axiom_partitioning.at(i);
 
-    auto match_tree = match_tree::MatchTree<GroundAxiomImpl>::create(*m_grounder->get_pddl_repositories(), ground_axioms, options);
+        event_handler->on_finish_grounding_unrelaxed_axioms(ground_axioms);
 
-    event_handler->on_finish_build_axiom_match_tree(*match_tree);
+        auto match_tree = match_tree::MatchTree<GroundAxiomImpl>::create(*m_grounder->get_pddl_repositories(), ground_axioms, options);
 
-    return std::make_shared<GroundedAxiomEvaluator>(m_grounder->get_axiom_grounder(), std::move(match_tree), std::move(event_handler));
+        event_handler->on_finish_build_axiom_match_tree(*match_tree);
+
+        match_tree_partitioning.push_back(std::move(match_tree));
+    }
+
+    return std::make_shared<GroundedAxiomEvaluator>(m_grounder->get_axiom_grounder(), std::move(match_tree_partitioning), std::move(event_handler));
 }
 
 std::shared_ptr<GroundedApplicableActionGenerator>

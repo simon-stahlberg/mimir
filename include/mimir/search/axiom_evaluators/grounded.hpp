@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_AXIOM_EVALUATOR_GROUNDED_HPP_
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/search/axiom_evaluators/axiom_stratification.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/declarations.hpp"
 #include "mimir/search/match_tree/match_tree.hpp"
@@ -31,16 +30,15 @@ class GroundedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
     std::shared_ptr<AxiomGrounder> m_grounder;
-    std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>> m_match_tree;
+    std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> m_match_tree_partitioning;
     std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
 
-    std::vector<AxiomPartition> m_partitioning;
-
 public:
-    GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder, std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>&& match_tree);
+    GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder,
+                           std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
 
     GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> grounder,
-                           std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>&& match_tree,
+                           std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                            std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
@@ -63,7 +61,6 @@ public:
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
     const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
     const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& get_event_handler() const;
-    const std::vector<AxiomPartition>& get_axiom_partitioning() const;
 };
 
 }
