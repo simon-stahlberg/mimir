@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_ATOM_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_ATOM_HPP_
 
-#include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 
 namespace mimir::match_tree
@@ -69,7 +69,7 @@ private:
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>;
 
@@ -82,31 +82,19 @@ public:
                                          GroundAtom<P> atom,
                                          std::span<const Element*> true_elements,
                                          std::span<const Element*> false_elements,
-                                         std::span<const Element*> dontcare_elements) :
-        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
-        m_true_elements(true_elements),
-        m_false_elements(false_elements),
-        m_dontcare_elements(dontcare_elements),
-        m_true_child(nullptr),
-        m_false_child(nullptr),
-        m_dontcare_child(nullptr)
-    {
-        assert(!m_true_elements.empty());
-        assert(!m_false_elements.empty());
-        assert(!m_dontcare_elements.empty());
-    }
+                                         std::span<const Element*> dontcare_elements);
 
-    std::span<const Element*> get_true_elements() const { return m_true_elements; }
-    std::span<const Element*> get_false_elements() const { return m_false_elements; }
-    std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
+    std::span<const Element*> get_true_elements() const;
+    std::span<const Element*> get_false_elements() const;
+    std::span<const Element*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_true_child() { return m_true_child; };
-    InverseNode<Element>& get_false_child() { return m_false_child; }
-    InverseNode<Element>& get_dontcare_child() { return m_dontcare_child; }
+    InverseNode<Element>& get_true_child();
+    InverseNode<Element>& get_false_child();
+    InverseNode<Element>& get_dontcare_child();
 
-    const InverseNode<Element>& get_true_child() const { return m_true_child; };
-    const InverseNode<Element>& get_false_child() const { return m_false_child; }
-    const InverseNode<Element>& get_dontcare_child() const { return m_dontcare_child; }
+    const InverseNode<Element>& get_true_child() const;
+    const InverseNode<Element>& get_false_child() const;
+    const InverseNode<Element>& get_dontcare_child() const;
 };
 
 /**
@@ -125,7 +113,7 @@ private:
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>;
 
@@ -137,25 +125,16 @@ public:
                                         size_t root_distance,
                                         GroundAtom<P> atom,
                                         std::span<const Element*> true_elements,
-                                        std::span<const Element*> false_elements) :
-        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
-        m_true_elements(true_elements),
-        m_false_elements(false_elements),
-        m_true_child(nullptr),
-        m_false_child(nullptr)
-    {
-        assert(!m_true_elements.empty());
-        assert(!m_false_elements.empty());
-    }
+                                        std::span<const Element*> false_elements);
 
-    std::span<const Element*> get_true_elements() const { return m_true_elements; }
-    std::span<const Element*> get_false_elements() const { return m_false_elements; }
+    std::span<const Element*> get_true_elements() const;
+    std::span<const Element*> get_false_elements() const;
 
-    InverseNode<Element>& get_true_child() { return m_true_child; };
-    InverseNode<Element>& get_false_child() { return m_false_child; }
+    InverseNode<Element>& get_true_child();
+    InverseNode<Element>& get_false_child();
 
-    const InverseNode<Element>& get_true_child() const { return m_true_child; };
-    const InverseNode<Element>& get_false_child() const { return m_false_child; }
+    const InverseNode<Element>& get_true_child() const;
+    const InverseNode<Element>& get_false_child() const;
 };
 
 /**
@@ -174,7 +153,7 @@ private:
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>;
 
@@ -186,25 +165,16 @@ public:
                                         size_t root_distance,
                                         GroundAtom<P> atom,
                                         std::span<const Element*> true_elements,
-                                        std::span<const Element*> dontcare_elements) :
-        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
-        m_true_elements(true_elements),
-        m_dontcare_elements(dontcare_elements),
-        m_true_child(nullptr),
-        m_dontcare_child(nullptr)
-    {
-        assert(!m_true_elements.empty());
-        assert(!m_dontcare_elements.empty());
-    }
+                                        std::span<const Element*> dontcare_elements);
 
-    std::span<const Element*> get_true_elements() const { return m_true_elements; }
-    std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
+    std::span<const Element*> get_true_elements() const;
+    std::span<const Element*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_true_child() { return m_true_child; };
-    InverseNode<Element>& get_dontcare_child() { return m_dontcare_child; }
+    InverseNode<Element>& get_true_child();
+    InverseNode<Element>& get_dontcare_child();
 
-    const InverseNode<Element>& get_true_child() const { return m_true_child; };
-    const InverseNode<Element>& get_dontcare_child() const { return m_dontcare_child; }
+    const InverseNode<Element>& get_true_child() const;
+    const InverseNode<Element>& get_dontcare_child() const;
 };
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
@@ -220,7 +190,7 @@ private:
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>;
 
@@ -232,25 +202,16 @@ public:
                                         size_t root_distance,
                                         GroundAtom<P> atom,
                                         std::span<const Element*> false_elements,
-                                        std::span<const Element*> dontcare_elements) :
-        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
-        m_false_elements(false_elements),
-        m_dontcare_elements(dontcare_elements),
-        m_false_child(nullptr),
-        m_dontcare_child(nullptr)
-    {
-        assert(!m_false_elements.empty());
-        assert(!m_dontcare_elements.empty());
-    }
+                                        std::span<const Element*> dontcare_elements);
 
-    std::span<const Element*> get_false_elements() const { return m_false_elements; }
-    std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
+    std::span<const Element*> get_false_elements() const;
+    std::span<const Element*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_false_child() { return m_false_child; };
-    InverseNode<Element>& get_dontcare_child() { return m_dontcare_child; }
+    InverseNode<Element>& get_false_child();
+    InverseNode<Element>& get_dontcare_child();
 
-    const InverseNode<Element>& get_false_child() const { return m_false_child; };
-    const InverseNode<Element>& get_dontcare_child() const { return m_dontcare_child; }
+    const InverseNode<Element>& get_false_child() const;
+    const InverseNode<Element>& get_dontcare_child() const;
 };
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
@@ -264,7 +225,7 @@ private:
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>;
 
@@ -275,19 +236,13 @@ public:
                                        SplitList useless_splits,
                                        size_t root_distance,
                                        GroundAtom<P> atom,
-                                       std::span<const Element*> true_elements) :
-        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
-        m_true_elements(true_elements),
-        m_true_child(nullptr)
-    {
-        assert(!m_true_elements.empty());
-    }
+                                       std::span<const Element*> true_elements);
 
-    std::span<const Element*> get_true_elements() const { return m_true_elements; }
+    std::span<const Element*> get_true_elements() const;
 
-    InverseNode<Element>& get_true_child() { return m_true_child; };
+    InverseNode<Element>& get_true_child();
 
-    const InverseNode<Element>& get_true_child() const { return m_true_child; };
+    const InverseNode<Element>& get_true_child() const;
 };
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
@@ -301,7 +256,7 @@ private:
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>;
 
@@ -312,19 +267,13 @@ public:
                                        SplitList useless_splits,
                                        size_t root_distance,
                                        GroundAtom<P> atom,
-                                       std::span<const Element*> false_elements) :
-        InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
-        m_false_elements(false_elements),
-        m_false_child(nullptr)
-    {
-        assert(!m_false_elements.empty());
-    }
+                                       std::span<const Element*> false_elements);
 
-    std::span<const Element*> get_false_elements() const { return m_false_elements; }
+    std::span<const Element*> get_false_elements() const;
 
-    InverseNode<Element>& get_false_child() { return m_false_child; };
+    InverseNode<Element>& get_false_child();
 
-    const InverseNode<Element>& get_false_child() const { return m_false_child; };
+    const InverseNode<Element>& get_false_child() const;
 };
 }
 

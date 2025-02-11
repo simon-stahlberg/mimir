@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_NUMERIC_CONSTRAINT_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_NUMERIC_CONSTRAINT_HPP_
 
-#include "mimir/formalism/ground_numeric_constraint.hpp"
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 
 namespace mimir::match_tree
@@ -66,7 +66,7 @@ private:
 
 private:
     /* Implement interface*/
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>;
 
@@ -77,22 +77,13 @@ public:
                                            SplitList useless_splits,
                                            size_t root_distance,
                                            GroundNumericConstraint constraint,
-                                           std::span<const Element*> true_elements) :
-        InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>(parent,
-                                                                                                           std::move(useless_splits),
-                                                                                                           root_distance,
-                                                                                                           constraint),
-        m_true_elements(true_elements),
-        m_true_child(nullptr)
-    {
-        assert(!m_true_elements.empty());
-    }
+                                           std::span<const Element*> true_elements);
 
-    std::span<const Element*> get_true_elements() const { return m_true_elements; }
+    std::span<const Element*> get_true_elements() const;
 
-    InverseNode<Element>& get_true_child() { return m_true_child; };
+    InverseNode<Element>& get_true_child();
 
-    const InverseNode<Element>& get_true_child() const { return m_true_child; };
+    const InverseNode<Element>& get_true_child() const;
 };
 
 template<HasConjunctiveCondition Element>
@@ -108,7 +99,7 @@ private:
 
 private:
     /* Implement interface*/
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const { visitor.accept(*this); }
+    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
 
     friend class InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>;
 
@@ -120,28 +111,16 @@ public:
                                             size_t root_distance,
                                             GroundNumericConstraint constraint,
                                             std::span<const Element*> true_elements,
-                                            std::span<const Element*> dontcare_elements) :
-        InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>(parent,
-                                                                                                            std::move(useless_splits),
-                                                                                                            root_distance,
-                                                                                                            constraint),
-        m_true_elements(true_elements),
-        m_dontcare_elements(dontcare_elements),
-        m_true_child(nullptr),
-        m_dontcare_child(nullptr)
-    {
-        assert(!m_true_elements.empty());
-        assert(!m_dontcare_elements.empty());
-    }
+                                            std::span<const Element*> dontcare_elements);
 
-    std::span<const Element*> get_true_elements() const { return m_true_elements; }
-    std::span<const Element*> get_dontcare_elements() const { return m_dontcare_elements; }
+    std::span<const Element*> get_true_elements() const;
+    std::span<const Element*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_true_child() { return m_true_child; };
-    InverseNode<Element>& get_dontcare_child() { return m_dontcare_child; }
+    InverseNode<Element>& get_true_child();
+    InverseNode<Element>& get_dontcare_child();
 
-    const InverseNode<Element>& get_true_child() const { return m_true_child; };
-    const InverseNode<Element>& get_dontcare_child() const { return m_dontcare_child; }
+    const InverseNode<Element>& get_true_child() const;
+    const InverseNode<Element>& get_dontcare_child() const;
 };
 }
 

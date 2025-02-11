@@ -18,6 +18,8 @@
 #include "mimir/search/match_tree/node_splitters/dynamic.hpp"
 
 #include "mimir/common/printers.hpp"
+#include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"

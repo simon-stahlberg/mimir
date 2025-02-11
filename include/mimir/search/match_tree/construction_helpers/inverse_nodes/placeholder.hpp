@@ -18,7 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_PLACEHOLDER_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODES_PLACEHOLDER_HPP_
 
-#include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
+#include "mimir/search/match_tree/declarations.hpp"
 
 namespace mimir::match_tree
 {
@@ -32,26 +32,16 @@ private:
     std::span<const Element*> m_elements;
 
 public:
-    PlaceholderNodeImpl(const IInverseNode<Element>* parent, InverseNode<Element>* parents_child, size_t root_distance, std::span<const Element*> elements) :
-        m_parent(parent),
-        m_parents_child(parents_child),
-        m_root_distance(root_distance),
-        m_elements(elements)
-    {
-    }
+    PlaceholderNodeImpl(const IInverseNode<Element>* parent, InverseNode<Element>* parents_child, size_t root_distance, std::span<const Element*> elements);
     PlaceholderNodeImpl(const PlaceholderNodeImpl& other) = delete;
     PlaceholderNodeImpl& operator=(const PlaceholderNodeImpl& other) = delete;
     PlaceholderNodeImpl(PlaceholderNodeImpl&& other) = delete;
     PlaceholderNodeImpl& operator=(PlaceholderNodeImpl&& other) = delete;
 
-    const IInverseNode<Element>* get_parent() const { return m_parent; }
-    InverseNode<Element>& get_parents_child() const
-    {
-        assert(m_parents_child);
-        return *m_parents_child;
-    }
-    size_t get_root_distance() const { return m_root_distance; }
-    std::span<const Element*> get_elements() const { return m_elements; }
+    const IInverseNode<Element>* get_parent() const;
+    InverseNode<Element>& get_parents_child() const;
+    size_t get_root_distance() const;
+    std::span<const Element*> get_elements() const;
 };
 }
 

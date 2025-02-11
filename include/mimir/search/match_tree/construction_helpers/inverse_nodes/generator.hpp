@@ -30,20 +30,16 @@ private:
     std::span<const Element*> m_elements;
 
 public:
-    InverseElementGeneratorNode(const IInverseNode<Element>* parent, size_t root_distance, std::span<const Element*> elements) :
-        IInverseNode<Element>(parent, SplitList {}, root_distance),
-        m_elements(elements)
-    {
-        assert(!m_elements.empty());
-    }
+    InverseElementGeneratorNode(const IInverseNode<Element>* parent, size_t root_distance, std::span<const Element*> elements);
+
     InverseElementGeneratorNode(const InverseElementGeneratorNode& other) = delete;
     InverseElementGeneratorNode& operator=(const InverseElementGeneratorNode& other) = delete;
     InverseElementGeneratorNode(InverseElementGeneratorNode&& other) = delete;
     InverseElementGeneratorNode& operator=(InverseElementGeneratorNode&& other) = delete;
 
-    void visit(IInverseNodeVisitor<Element>& visitor) const override { visitor.accept(*this); }
+    void visit(IInverseNodeVisitor<Element>& visitor) const override;
 
-    std::span<const Element*> get_elements() const { return m_elements; }
+    std::span<const Element*> get_elements() const;
 };
 }
 

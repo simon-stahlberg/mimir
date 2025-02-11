@@ -23,6 +23,58 @@ namespace mimir::match_tree
 std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string = {
     { SplitMetricEnum::GINI, "Gini" },
 };
-extern const std::string& to_string(SplitMetricEnum split_metric) { return split_metric_enum_to_string.at(split_metric); }
+const std::string& to_string(SplitMetricEnum split_metric) { return split_metric_enum_to_string.at(split_metric); }
+
+double compute_gini_score(const std::vector<size_t>& distribution)
+{
+    size_t total = 0;
+    for (size_t count : distribution)
+    {
+        total += count;
+    }
+
+    if (total == 0)
+    {
+        return 0.0;
+    }
+
+    double gini = 1.0;
+    for (size_t count : distribution)
+    {
+        double probability = static_cast<double>(count) / total;
+        gini -= probability * probability;
+    }
+
+    return gini;
+}
+
+double compute_score(const AtomSplitDistribution& distribution, SplitMetricEnum type)
+{
+    auto packed_distribution =
+        std::vector<size_t> { distribution.m_num_true_elements, distribution.m_num_false_elements, distribution.m_num_dont_care_elements };
+
+    switch (type)
+    {
+        case SplitMetricEnum::GINI:
+        {
+            return compute_gini_score(packed_distribution);
+        }
+    }
+    return 0.0;
+}
+
+double compute_score(const NumericConstraintSplitDistribution& distribution, SplitMetricEnum type)
+{
+    auto packed_distribution = std::vector<size_t> { distribution.m_num_true_elements, distribution.m_num_dont_care_elements };
+
+    switch (type)
+    {
+        case SplitMetricEnum::GINI:
+        {
+            return compute_gini_score(packed_distribution);
+        }
+    }
+    return 0.0;
+}
 
 }

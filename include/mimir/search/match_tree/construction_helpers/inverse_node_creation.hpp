@@ -18,8 +18,7 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODE_CREATION_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_CONSTRUCTION_HELPERS_INVERSE_NODE_CREATION_HPP_
 
-#include "mimir/formalism/ground_action.hpp"
-#include "mimir/formalism/ground_axiom.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 
