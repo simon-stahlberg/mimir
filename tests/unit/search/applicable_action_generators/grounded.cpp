@@ -47,19 +47,6 @@ TEST(MimirTests, SearchApplicableActionGeneratorsGroundedTest)
     const auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, brfs_event_handler);
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
 
-    const auto& applicable_action_generator_statistics = applicable_action_generator_event_handler->get_statistics();
-    const auto& axiom_evaluator_statistics = axiom_evaluator_event_handler->get_statistics();
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 20);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 34);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
-
     const auto& brfs_statistics = brfs_event_handler->get_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 105);

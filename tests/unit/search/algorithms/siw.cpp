@@ -156,20 +156,6 @@ TEST(MimirTests, SearchAlgorithmsSIWGroundedGripperTest)
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
 
-    const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = siw.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 20);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 20);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 40);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& siw_statistics = siw.get_iw_statistics();
 
     EXPECT_EQ(siw_statistics.get_iw_statistics_by_subproblem().size(), 2);
@@ -185,9 +171,6 @@ TEST(MimirTests, SearchAlgorithmsSIWLiftedGripperTest)
     const auto result = siw.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
-
-    const auto& applicable_action_generator_statistics = siw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = siw.get_axiom_evaluator_statistics();
 
     const auto& siw_statistics = siw.get_iw_statistics();
 

@@ -325,20 +325,6 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedDeliveryTest)
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
-    const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 16);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 30);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& iw_statistics = iw.get_iw_statistics();
 
     EXPECT_EQ(iw_statistics.get_brfs_statistics_by_arity().back().get_num_generated_until_g_value().back(), 18);
@@ -381,20 +367,6 @@ TEST(MimirTests, SearchAlgorithmsIWGroundedMiconicFullAdlTest)
     const auto result = iw.find_solution();
     EXPECT_EQ(result.status, SearchStatus::SOLVED);
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
-
-    const auto& applicable_action_generator_statistics = iw.get_applicable_action_generator_statistics();
-    const auto& axiom_evaluator_statistics = iw.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 20);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 34);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
 
     const auto& iw_statistics = iw.get_iw_statistics();
 

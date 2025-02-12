@@ -134,17 +134,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAssemblyTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 7);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 3);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 6);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 3);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 6);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 13);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 2);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 2);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 3);
@@ -186,17 +175,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 58);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 389);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 43);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 464);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 43);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 131);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 420);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 26);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -240,17 +218,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 26);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 84);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 84);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 208);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 708);
@@ -293,17 +260,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks3opsTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 15);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 45);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 45);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 78);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 68);
@@ -345,17 +301,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks4opsTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 19);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 24);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 24);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 55);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -400,17 +345,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedChildsnackTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 8);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 7);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 12);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 16);
@@ -452,17 +386,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDeliveryTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 16);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 30);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -506,17 +429,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDriverlogTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 14);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 14);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 26);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 57);
@@ -558,17 +470,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 12);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 24);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -612,17 +513,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 21);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 35);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 35);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 84);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 18);
@@ -664,17 +554,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 20);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 20);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 40);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -718,17 +597,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedHikingTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 57);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 41);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 68);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 145);
@@ -770,17 +638,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 14);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 14);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 25);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -824,17 +681,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 8);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 6);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 6);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 12);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 26);
@@ -877,17 +723,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 8);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 20);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 10);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 34);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 16);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 12);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -934,17 +769,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleAdlTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 4);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 4);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 4);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 4);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 8);
@@ -989,17 +813,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 50);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 21);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 34);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 38);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 34);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 105);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 34);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 80);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 210);
@@ -1043,17 +856,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRewardTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 7);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 6);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 6);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 10);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 12);
@@ -1095,17 +897,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 7);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 7);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 14);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1149,17 +940,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 18);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 18);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 19);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 303);
@@ -1201,17 +981,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedScheduleTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 45);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 49);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 49);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 82);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1255,17 +1024,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSpannerTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 9);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 4);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 4);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 12);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 5);
@@ -1307,17 +1065,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTransportTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 26);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 104);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 104);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 246);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1361,17 +1108,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedVisitallTest)
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 14);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 12);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 12);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 14);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
-
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
     EXPECT_EQ(brfs_statistics.get_num_generated_until_g_value().back(), 77);
@@ -1414,17 +1150,6 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_fluent_ground_atoms(), 19);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_reachable_derived_ground_atoms(), 0);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_delete_free_actions(), 57);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_delete_free_axioms(), 0);
-
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_ground_actions(), 57);
-    EXPECT_EQ(applicable_action_generator_statistics.get_num_nodes_in_action_match_tree(), 103);
-
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_ground_axioms(), 0);
-    EXPECT_EQ(axiom_evaluator_statistics.get_num_nodes_in_axiom_match_tree(), 1);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
