@@ -35,7 +35,7 @@ protected:
     GroundAtom<P> m_atom;
 
 public:
-    explicit InverseAtomSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, size_t root_distance, GroundAtom<P> atom) :
+    InverseAtomSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, size_t root_distance, GroundAtom<P> atom) :
         IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
         m_atom(atom)
     {

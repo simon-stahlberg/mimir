@@ -54,7 +54,8 @@ struct InitializeInverseNodesVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 template<HasConjunctiveCondition Element>
@@ -79,7 +80,8 @@ struct InitializeInversePartitionVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 template<HasConjunctiveCondition Element>
@@ -104,7 +106,8 @@ struct InitializeInverseEdgesVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 /**
@@ -246,7 +249,13 @@ void InitializeInverseNodesVisitor<Element>::accept(const InverseNumericConstrai
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeInverseNodesVisitor<Element>::accept(const InverseElementGeneratorNode<Element>& generator)
+void InitializeInverseNodesVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
+{
+    m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeInverseNodesVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
@@ -390,7 +399,13 @@ void InitializeInversePartitionVisitor<Element>::accept(const InverseNumericCons
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeInversePartitionVisitor<Element>::accept(const InverseElementGeneratorNode<Element>& generator)
+void InitializeInversePartitionVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
+{
+    m_partition[generator.get_root_distance()].push_back(m_nodes.at(&generator).first);
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeInversePartitionVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
 {
     m_partition[generator.get_root_distance()].push_back(m_nodes.at(&generator).first);
 }
@@ -540,7 +555,13 @@ void InitializeInverseEdgesVisitor<Element>::accept(const InverseNumericConstrai
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeInverseEdgesVisitor<Element>::accept(const InverseElementGeneratorNode<Element>& generator)
+void InitializeInverseEdgesVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
+{
+    // Nothing to be done.
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeInverseEdgesVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
 {
     // Nothing to be done.
 }
@@ -596,8 +617,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E
     {
         for (const auto& [dst, label] : edges)
         {
-            out << "n" << src << " -> "
-                << "n" << dst << " [label=\"" << label << "\"];\n";
+            out << "n" << src << " -> " << "n" << dst << " [label=\"" << label << "\"];\n";
         }
     }
     out << "\n";
@@ -617,8 +637,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E
             for (const auto& node2 : next->second)
             {
                 // A -> X [style=invis];
-                out << "n" << node << " -> "
-                    << "n" << node2 << " [style=invis];\n";
+                out << "n" << node << " -> " << "n" << node2 << " [style=invis];\n";
             }
         }
     }

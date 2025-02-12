@@ -53,7 +53,8 @@ struct ParseStatisticsNodeVisitor : public INodeVisitor<Element>
     void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const ElementGeneratorNode<Element>& generator) override;
+    void accept(const ElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
@@ -183,9 +184,17 @@ void ParseStatisticsNodeVisitor<Element>::accept(const NumericConstraintSelector
 }
 
 template<HasConjunctiveCondition Element>
-void ParseStatisticsNodeVisitor<Element>::accept(const ElementGeneratorNode<Element>& generator)
+void ParseStatisticsNodeVisitor<Element>::accept(const ElementGeneratorNode_Perfect<Element>& generator)
 {
     statistics.generator_distribution.push_back(generator.get_elements().size());
+    statistics.perfect_generator_distribution.push_back(generator.get_elements().size());
+}
+
+template<HasConjunctiveCondition Element>
+void ParseStatisticsNodeVisitor<Element>::accept(const ElementGeneratorNode_Imperfect<Element>& generator)
+{
+    statistics.generator_distribution.push_back(generator.get_elements().size());
+    statistics.imperfect_generator_distribution.push_back(generator.get_elements().size());
 }
 
 template<HasConjunctiveCondition Element>
@@ -207,15 +216,33 @@ std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
     const auto num_elements = std::accumulate(statistics.generator_distribution.begin(), statistics.generator_distribution.end(), 0);
     const auto num_generators = statistics.generator_distribution.size();
     assert(num_generators > 0);
+    const auto num_elements_per_generator = static_cast<double>(num_elements) / num_generators;
+
+    const auto num_perfect_elements = std::accumulate(statistics.perfect_generator_distribution.begin(), statistics.perfect_generator_distribution.end(), 0);
+    const auto num_perfect_generators = statistics.perfect_generator_distribution.size();
+    const auto num_elements_per_perfect_generator =
+        (num_perfect_generators > 0) ? static_cast<double>(num_perfect_elements) / num_perfect_generators : std::numeric_limits<double>::quiet_NaN();
+
+    const auto num_imperfect_elements =
+        std::accumulate(statistics.imperfect_generator_distribution.begin(), statistics.imperfect_generator_distribution.end(), 0);
+    const auto num_imperfect_generators = statistics.imperfect_generator_distribution.size();
+    const auto num_elements_per_imperfect_generator =
+        (num_imperfect_generators > 0) ? static_cast<double>(num_imperfect_elements) / num_imperfect_generators : std::numeric_limits<double>::quiet_NaN();
 
     os << "[MatchTreeStatistics] Total time for construction: "
        << std::chrono::duration_cast<std::chrono::milliseconds>(statistics.construction_end_time_point - statistics.construction_start_time_point) << "\n"
-       << "[MatchTreeStatistics] Number of nodes: " << statistics.num_nodes << "\n"
-       << "[MatchTreeStatistics] Perfect: " << ((statistics.is_perfect) ? "Yes" : "No") << "\n"
+       << "[MatchTreeStatistics] Total number of nodes: " << statistics.num_nodes << "\n"
        << "[MatchTreeStatistics] Total number of elements: " << num_elements << "\n"
-       << "[MatchTreeStatistics] Total number of generators: " << num_generators << "\n"
-       << "[MatchTreeStatistics] Average number of elements per generator: " << static_cast<double>(num_elements) / num_generators << "\n"
-       << "[MatchTreeStatistics] Gini score of generator distribution: " << compute_gini_score(statistics.generator_distribution);
+       << "[MatchTreeStatistics] Perfect: " << ((statistics.is_perfect) ? "Yes" : "No") << "\n"
+       << "[MatchTreeStatistics] Generators - total number: " << num_generators << "\n"
+       << "[MatchTreeStatistics] Generators - average number of elements: " << num_elements_per_generator << "\n"
+       << "[MatchTreeStatistics] Generators - distribution gini score: " << compute_gini_score(statistics.generator_distribution) << "\n"
+       << "[MatchTreeStatistics] Perfect generators - total number: " << num_perfect_generators << "\n"
+       << "[MatchTreeStatistics] Perfect generators - average number of elements: " << num_elements_per_perfect_generator << "\n"
+       << "[MatchTreeStatistics] Perfect generators - distribution gini score: " << compute_gini_score(statistics.perfect_generator_distribution) << "\n"
+       << "[MatchTreeStatistics] Imperfect generators - total number: " << num_imperfect_generators << "\n"
+       << "[MatchTreeStatistics] Imperfect generators - average number of elements: " << num_elements_per_imperfect_generator << "\n"
+       << "[MatchTreeStatistics] Imperfect generators - distribution gini score: " << compute_gini_score(statistics.imperfect_generator_distribution);
 
     return os;
 }

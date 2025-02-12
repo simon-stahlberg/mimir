@@ -57,25 +57,10 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
     auto ground_actions = GroundActionList {};
     m_match_tree->generate_applicable_elements_iteratively(dense_state, ground_actions);
 
-    if (!m_match_tree->get_statistics().is_perfect || (m_dense_state.get_numeric_variables().size() > 0))
+    for (const auto& ground_action : ground_actions)
     {
-        /* For imperfect match tree or numeric effects, we have to check applicability*/
-        for (const auto& ground_action : ground_actions)
-        {
-            if (is_applicable(ground_action, m_grounder->get_problem(), dense_state))
-            {
-                co_yield ground_action;
-            }
-        }
-    }
-    else
-    {
-        for (const auto& ground_action : ground_actions)
-        {
-            assert(is_applicable(ground_action, m_grounder->get_problem(), dense_state));
-
-            co_yield ground_action;
-        }
+        assert(is_applicable(ground_action, m_grounder->get_problem(), dense_state));
+        co_yield ground_action;
     }
 }
 

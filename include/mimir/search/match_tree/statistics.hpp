@@ -33,6 +33,8 @@ struct Statistics
     size_t num_nodes = 1;    ///< Tree always has 1 root node
     bool is_perfect = true;  ///< Tree is always perfect initially
     std::vector<size_t> generator_distribution = std::vector<size_t>();
+    std::vector<size_t> perfect_generator_distribution = std::vector<size_t>();
+    std::vector<size_t> imperfect_generator_distribution = std::vector<size_t>();
     std::chrono::time_point<std::chrono::high_resolution_clock> construction_start_time_point = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> construction_end_time_point = std::chrono::high_resolution_clock::now();
 };

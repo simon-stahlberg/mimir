@@ -121,7 +121,7 @@ StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_rep
     m_split_metric(split_metric),
     m_splits(compute_statically_best_splits(elements))
 {
-    std::cout << "[MatchTree] Statically split ordering determined with " << to_string(m_split_metric) << " score: " << std::endl;
+    std::cout << "[MatchTree] Static split ordering determined with " << to_string(m_split_metric) << " score: " << std::endl;
     for (size_t i = 0; i < m_splits.size(); ++i)
     {
         std::cout << "    " << i << ". " << m_splits[i] << std::endl;
@@ -145,16 +145,13 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter
         useless_splits.push_back(m_splits[i]);
     }
 
-    return create_generator_node(node, m_splits.size());
+    return create_perfect_generator_node(node, m_splits.size());
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> StaticNodeSplitter<Element>::translate_to_generator_node(const PlaceholderNode<Element>& node) const
+InverseNode<Element> StaticNodeSplitter<Element>::translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const
 {
-    auto [generator_node, children] = create_generator_node(node, m_splits.size());
-    assert(children.empty());
-
-    return std::move(generator_node);
+    return create_imperfect_generator_node(node, m_splits.size());
 }
 
 template class StaticNodeSplitter<GroundActionImpl>;

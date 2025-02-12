@@ -69,9 +69,17 @@ extern bool is_applicable(const GroundConditionalEffect& conditional_effect, Pro
 /// Now we have a more efficient form that tests app(eff) before app(pre).
 extern bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, Problem problem, const DenseState& dense_state);
 
+/// @brief Return true iff the conditional effect is applicable in the state when it fires.
+/// If we use this, we should always assert via is_applicable.
+extern bool is_dynamically_applicable_if_fires(const GroundConditionalEffect& conditional_effect, const DenseState& dense_state);
+
 /**
  * GroundAction
  */
+
+/// @brief Return true iff the ground action is applicable in the state.
+/// If we use this, we should always assert via is_applicable.
+extern bool is_dynamically_applicable(GroundAction action, const DenseState& dense_state);
 
 /// @brief Return true iff the ground action is applicable in the problem and state.
 extern bool is_applicable(GroundAction action, Problem problem, const DenseState& dense_state);
@@ -79,6 +87,10 @@ extern bool is_applicable(GroundAction action, Problem problem, const DenseState
 /**
  * GroundAxiom
  */
+
+/// @brief Return true iff the ground axiom is applicable in the state.
+/// If we use this, we should always assert via is_applicable.
+extern bool is_dynamically_applicable(GroundAxiom axiom, const DenseState& dense_state);
 
 /// @brief Return true iff the ground axiom is applicable in the problem and state.
 extern bool is_applicable(GroundAxiom axiom, Problem problem, const DenseState& dense_state);

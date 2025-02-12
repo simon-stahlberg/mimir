@@ -66,7 +66,8 @@ struct ResultInverseTreeVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
@@ -229,10 +230,17 @@ void ResultInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSel
 }
 
 template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode<Element>& generator)
+void ResultInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
 {
     assert(!generator.get_elements().empty());
-    m_result_stack.push_back(std::make_unique<ElementGeneratorNode<Element>>(generator.get_elements()));
+    m_result_stack.push_back(std::make_unique<ElementGeneratorNode_Perfect<Element>>(generator.get_elements()));
+}
+
+template<HasConjunctiveCondition Element>
+void ResultInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
+{
+    assert(!generator.get_elements().empty());
+    m_result_stack.push_back(std::make_unique<ElementGeneratorNode_Imperfect<Element>>(generator.get_elements()));
 }
 
 template<HasConjunctiveCondition Element>
@@ -256,7 +264,8 @@ struct ExpandInverseTreeVisitor : public IInverseNodeVisitor<Element>
     void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
     void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
@@ -386,7 +395,13 @@ void ExpandInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSel
 }
 
 template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode<Element>& generator)
+void ExpandInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
+{
+    // Nothing to be done
+}
+
+template<HasConjunctiveCondition Element>
+void ExpandInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
 {
     // Nothing to be done
 }
@@ -434,7 +449,7 @@ template Node<GroundAxiomImpl> parse_inverse_tree_iteratively(const InverseNode<
 template<HasConjunctiveCondition Element>
 Node<Element> create_root_generator_node(std::span<const Element*> elements)
 {
-    return std::make_unique<ElementGeneratorNode<Element>>(elements);
+    return std::make_unique<ElementGeneratorNode_Perfect<Element>>(elements);
 }
 
 template Node<GroundActionImpl> create_root_generator_node(std::span<const GroundActionImpl*> elements);

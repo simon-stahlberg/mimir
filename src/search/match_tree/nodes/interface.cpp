@@ -52,7 +52,8 @@ struct InitializeNodesVisitor : public INodeVisitor<Element>
     void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const ElementGeneratorNode<Element>& generator) override;
+    void accept(const ElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 template<HasConjunctiveCondition Element>
@@ -77,7 +78,8 @@ struct InitializeEdgesVisitor : public INodeVisitor<Element>
     void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
     void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
     void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const ElementGeneratorNode<Element>& generator) override;
+    void accept(const ElementGeneratorNode_Perfect<Element>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<Element>& generator) override;
 };
 
 /**
@@ -219,7 +221,13 @@ void InitializeNodesVisitor<Element>::accept(const NumericConstraintSelectorNode
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const ElementGeneratorNode<Element>& generator)
+void InitializeNodesVisitor<Element>::accept(const ElementGeneratorNode_Perfect<Element>& generator)
+{
+    m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeNodesVisitor<Element>::accept(const ElementGeneratorNode_Imperfect<Element>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
@@ -369,7 +377,13 @@ void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode
 }
 
 template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const ElementGeneratorNode<Element>& generator)
+void InitializeEdgesVisitor<Element>::accept(const ElementGeneratorNode_Perfect<Element>& generator)
+{
+    // Nothing to be done.
+}
+
+template<HasConjunctiveCondition Element>
+void InitializeEdgesVisitor<Element>::accept(const ElementGeneratorNode_Imperfect<Element>& generator)
 {
     // Nothing to be done.
 }
@@ -409,8 +423,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<Element>
     {
         for (const auto& [dst, label] : edges)
         {
-            out << "n" << src << " -> "
-                << "n" << dst << " [label=\"" << label << "\"];\n";
+            out << "n" << src << " -> " << "n" << dst << " [label=\"" << label << "\"];\n";
         }
     }
     out << "\n";

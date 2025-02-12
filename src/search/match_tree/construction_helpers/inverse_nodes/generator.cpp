@@ -23,28 +23,37 @@
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-InverseElementGeneratorNode<Element>::InverseElementGeneratorNode(const IInverseNode<Element>* parent,
-                                                                  size_t root_distance,
-                                                                  std::span<const Element*> elements) :
-    IInverseNode<Element>(parent, SplitList {}, root_distance),
-    m_elements(elements)
+InverseElementGeneratorNode_Perfect<Element>::InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent,
+                                                                                  size_t root_distance,
+                                                                                  std::span<const Element*> elements) :
+    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>(parent, root_distance, elements)
 {
-    assert(!m_elements.empty());
 }
 
 template<HasConjunctiveCondition Element>
-void InverseElementGeneratorNode<Element>::visit(IInverseNodeVisitor<Element>& visitor) const
+void InverseElementGeneratorNode_Perfect<Element>::visit_impl(IInverseNodeVisitor<Element>& visitor) const
 {
     visitor.accept(*this);
 }
 
+template class InverseElementGeneratorNode_Perfect<GroundActionImpl>;
+template class InverseElementGeneratorNode_Perfect<GroundAxiomImpl>;
+
 template<HasConjunctiveCondition Element>
-std::span<const Element*> InverseElementGeneratorNode<Element>::get_elements() const
+InverseElementGeneratorNode_Imperfect<Element>::InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent,
+                                                                                      size_t root_distance,
+                                                                                      std::span<const Element*> elements) :
+    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>(parent, root_distance, elements)
 {
-    return m_elements;
 }
 
-template class InverseElementGeneratorNode<GroundActionImpl>;
-template class InverseElementGeneratorNode<GroundAxiomImpl>;
+template<HasConjunctiveCondition Element>
+void InverseElementGeneratorNode_Imperfect<Element>::visit_impl(IInverseNodeVisitor<Element>& visitor) const
+{
+    visitor.accept(*this);
+}
+
+template class InverseElementGeneratorNode_Imperfect<GroundActionImpl>;
+template class InverseElementGeneratorNode_Imperfect<GroundAxiomImpl>;
 
 }

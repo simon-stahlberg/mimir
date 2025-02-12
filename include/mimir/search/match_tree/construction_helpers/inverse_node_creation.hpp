@@ -71,7 +71,10 @@ std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>> ext
                                                                                                                          const Split& split);
 
 template<HasConjunctiveCondition Element>
-extern std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_generator_node(const PlaceholderNode<Element>& node, size_t root_distance);
+extern std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_perfect_generator_node(const PlaceholderNode<Element>& node, size_t root_distance);
+
+template<HasConjunctiveCondition Element>
+extern InverseNode<Element> create_imperfect_generator_node(const PlaceholderNode<Element>& node, size_t root_distance);
 
 template<HasConjunctiveCondition Element>
 extern PlaceholderNode<Element> create_root_placeholder_node(std::span<const Element*> elements);

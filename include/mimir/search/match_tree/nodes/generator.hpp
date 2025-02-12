@@ -22,27 +22,67 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-class ElementGeneratorNode : public INode<Element>
+template<typename Derived_, HasConjunctiveCondition Element>
+class ElementGeneratorNodeBase : public INode<Element>
 {
 private:
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
+
+protected:
     std::span<const Element*> m_elements;
 
 public:
-    explicit ElementGeneratorNode(std::span<const Element*> elements);
+    explicit ElementGeneratorNodeBase(std::span<const Element*> elements) : m_elements(elements) {}
 
-    ElementGeneratorNode(const ElementGeneratorNode& other) = delete;
-    ElementGeneratorNode& operator=(const ElementGeneratorNode& other) = delete;
-    ElementGeneratorNode(ElementGeneratorNode&& other) = delete;
-    ElementGeneratorNode& operator=(ElementGeneratorNode&& other) = delete;
+    ElementGeneratorNodeBase(const ElementGeneratorNodeBase& other) = delete;
+    ElementGeneratorNodeBase& operator=(const ElementGeneratorNodeBase& other) = delete;
+    ElementGeneratorNodeBase(ElementGeneratorNodeBase&& other) = delete;
+    ElementGeneratorNodeBase& operator=(ElementGeneratorNodeBase&& other) = delete;
 
     void generate_applicable_actions(const DenseState& state,
                                      std::vector<const INode<Element>*>&,
-                                     std::vector<const Element*>& ref_applicable_elements) const override;
+                                     std::vector<const Element*>& ref_applicable_elements) const override
+    {
+        self().generate_applicable_actions_impl(state, ref_applicable_elements);
+    }
 
-    std::span<const Element*> get_elements() const;
+    std::span<const Element*> get_elements() const { return m_elements; }
 
-    void visit(INodeVisitor<Element>& visitor) const override;
+    void visit(INodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
+};
+
+template<HasConjunctiveCondition Element>
+class ElementGeneratorNode_Perfect : public ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<Element>, Element>
+{
+private:
+    void generate_applicable_actions_impl(const DenseState& state, std::vector<const Element*>& ref_applicable_elements) const;
+
+    void visit_impl(INodeVisitor<Element>& visitor) const;
+
+    friend class ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<Element>, Element>;
+
+public:
+    using ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<Element>, Element>::get_elements;
+
+    explicit ElementGeneratorNode_Perfect(std::span<const Element*> elements);
+};
+
+template<HasConjunctiveCondition Element>
+class ElementGeneratorNode_Imperfect : public ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<Element>, Element>
+{
+private:
+    void generate_applicable_actions_impl(const DenseState& state, std::vector<const Element*>& ref_applicable_elements) const;
+
+    void visit_impl(INodeVisitor<Element>& visitor) const;
+
+    friend class ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<Element>, Element>;
+
+public:
+    using ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<Element>, Element>::get_elements;
+
+    explicit ElementGeneratorNode_Imperfect(std::span<const Element*> elements);
 };
 }
 

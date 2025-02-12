@@ -186,7 +186,7 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> DynamicNodeSplitte
 }
 
 template<HasConjunctiveCondition Element>
-InverseNode<Element> DynamicNodeSplitter<Element>::translate_to_generator_node(const PlaceholderNode<Element>& node) const
+InverseNode<Element> DynamicNodeSplitter<Element>::translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const
 {
 }
 

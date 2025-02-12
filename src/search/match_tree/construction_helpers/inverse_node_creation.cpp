@@ -445,7 +445,7 @@ template std::optional<std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeLi
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, size_t root_distance, const Split& split);
 
 template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_generator_node(const PlaceholderNode<Element>& node, size_t root_distance)
+std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_perfect_generator_node(const PlaceholderNode<Element>& node, size_t root_distance)
 {
     assert(node);
 
@@ -454,22 +454,47 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_generator_n
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
         if (!node->get_elements().empty())  ///< Skip creating an empty generator node
         {
-            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements());
+            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode_Perfect<Element>>(node->get_parent(), root_distance, node->get_elements());
         }
         return { nullptr, PlaceholderNodeList<Element> {} };
     }
     else
     {
         /* Construct the node and return it, i.e., the root node. */
-        return { std::make_unique<InverseElementGeneratorNode<Element>>(node->get_parent(), root_distance, node->get_elements()),
+        return { std::make_unique<InverseElementGeneratorNode_Perfect<Element>>(node->get_parent(), root_distance, node->get_elements()),
                  PlaceholderNodeList<Element> {} };
     }
 }
 
-template std::pair<InverseNode<GroundActionImpl>, PlaceholderNodeList<GroundActionImpl>> create_generator_node(const PlaceholderNode<GroundActionImpl>& node,
-                                                                                                               size_t root_distance);
-template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>> create_generator_node(const PlaceholderNode<GroundAxiomImpl>& node,
-                                                                                                             size_t root_distance);
+template std::pair<InverseNode<GroundActionImpl>, PlaceholderNodeList<GroundActionImpl>>
+create_perfect_generator_node(const PlaceholderNode<GroundActionImpl>& node, size_t root_distance);
+template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
+create_perfect_generator_node(const PlaceholderNode<GroundAxiomImpl>& node, size_t root_distance);
+
+template<HasConjunctiveCondition Element>
+InverseNode<Element> create_imperfect_generator_node(const PlaceholderNode<Element>& node, size_t root_distance)
+{
+    assert(node);
+
+    if (node->get_parent())
+    {
+        /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
+        if (!node->get_elements().empty())  ///< Skip creating an empty generator node
+        {
+            node->get_parents_child() =
+                std::make_unique<InverseElementGeneratorNode_Imperfect<Element>>(node->get_parent(), root_distance, node->get_elements());
+        }
+        return nullptr;
+    }
+    else
+    {
+        /* Construct the node and return it, i.e., the root node. */
+        return std::make_unique<InverseElementGeneratorNode_Imperfect<Element>>(node->get_parent(), root_distance, node->get_elements());
+    }
+}
+
+template InverseNode<GroundActionImpl> create_imperfect_generator_node(const PlaceholderNode<GroundActionImpl>& node, size_t root_distance);
+template InverseNode<GroundAxiomImpl> create_imperfect_generator_node(const PlaceholderNode<GroundAxiomImpl>& node, size_t root_distance);
 
 template<HasConjunctiveCondition Element>
 PlaceholderNode<Element> create_root_placeholder_node(std::span<const Element*> elements)

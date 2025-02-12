@@ -126,7 +126,7 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
 template<DynamicFunctionTag F>
 bool is_applicable(const GroundNumericEffect<F>& effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    return true;
+    throw std::logic_error("Should not be called.");
 }
 
 template<>
@@ -184,9 +184,24 @@ bool is_applicable_if_fires(const GroundConditionalEffect& conditional_effect, P
              && is_applicable(conditional_effect.get_conjunctive_condition(), problem, dense_state));
 }
 
+bool is_dynamically_applicable_if_fires(const GroundConditionalEffect& conditional_effect, const DenseState& dense_state)
+{
+    return !(!is_applicable(conditional_effect.get_conjunctive_effect(), dense_state)  //
+             && is_dynamically_applicable(conditional_effect.get_conjunctive_condition(), dense_state));
+}
+
 /**
  * GroundAction
  */
+
+bool is_dynamically_applicable(GroundAction action, const DenseState& dense_state)
+{
+    return is_dynamically_applicable(action->get_conjunctive_condition(), dense_state)  //
+           && is_applicable(action->get_conjunctive_effect(), dense_state)
+           && std::all_of(action->get_conditional_effects().begin(),
+                          action->get_conditional_effects().end(),
+                          [&](auto&& arg) { return is_dynamically_applicable_if_fires(arg, dense_state); });
+}
 
 bool is_applicable(GroundAction action, Problem problem, const DenseState& dense_state)
 {
@@ -200,6 +215,11 @@ bool is_applicable(GroundAction action, Problem problem, const DenseState& dense
 /**
  * GroundAxiom
  */
+
+bool is_dynamically_applicable(GroundAxiom axiom, const DenseState& dense_state)
+{
+    return is_dynamically_applicable(axiom->get_conjunctive_condition(), dense_state);
+}
 
 bool is_applicable(GroundAxiom axiom, Problem problem, const DenseState& dense_state)
 {

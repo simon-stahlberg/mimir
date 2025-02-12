@@ -64,7 +64,9 @@ class InverseNumericConstraintSelectorNode_TX;
 template<HasConjunctiveCondition Element>
 class InverseNumericConstraintSelectorNode_T;
 template<HasConjunctiveCondition Element>
-class InverseElementGeneratorNode;
+class InverseElementGeneratorNode_Perfect;
+template<HasConjunctiveCondition Element>
+class InverseElementGeneratorNode_Imperfect;
 
 template<HasConjunctiveCondition Element>
 class INode;
@@ -85,7 +87,9 @@ class NumericConstraintSelectorNode_TX;
 template<HasConjunctiveCondition Element>
 class NumericConstraintSelectorNode_T;
 template<HasConjunctiveCondition Element>
-class ElementGeneratorNode;
+class ElementGeneratorNode_Perfect;
+template<HasConjunctiveCondition Element>
+class ElementGeneratorNode_Imperfect;
 
 template<HasConjunctiveCondition Element>
 class INodeScoreFunction;

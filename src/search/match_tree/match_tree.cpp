@@ -86,7 +86,7 @@ void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& nod
             {
                 auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
                 queue.pop();
-                node_splitter->translate_to_generator_node(node);
+                node_splitter->translate_to_imperfect_generator_node(node);
             }
             break;
         }
