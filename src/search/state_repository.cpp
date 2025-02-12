@@ -247,8 +247,10 @@ static void apply_action_effects(GroundAction action,
                                  ContinuousCost& ref_successor_state_metric_score)
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
+
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
+
     collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(), state_fluent_numeric_variables, ref_fluent_numeric_variables);
     if (conjunctive_effect.get_auxiliary_numeric_effect().has_value())
     {

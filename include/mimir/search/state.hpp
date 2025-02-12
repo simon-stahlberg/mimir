@@ -73,7 +73,15 @@ struct StateImpl
     ///
     /// Only return the non-extended portion of a state because it implies the extended portion.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_fluent_atoms), std::as_const(m_numeric_variables)); }
+    auto identifying_members() const
+    {
+        // The pointers uniquely identify the object already.
+        // return std::make_tuple(m_fluent_atoms.get(), m_numeric_variables.get());  // This works
+        // return std::forward_as_tuple(m_fluent_atoms.get(), m_numeric_variables.get());  // Why does this fail with my concept (see below)?
+
+        // Note: hashing the fluents and numeric variables gives stronger hash values, e.g., in the Expedition domain!
+        return std::forward_as_tuple(*m_fluent_atoms.get(), *m_numeric_variables.get());
+    }
 
 private:
     /* Mutable Getters */
@@ -86,6 +94,8 @@ private:
     FlatExternalPtr<const FlatIndexList>& get_derived_atoms();
     FlatExternalPtr<const FlatDoubleList>& get_numeric_variables();
 };
+
+static_assert(loki::HasIdentifyingMembers<StateImpl>);  // This is my concept...
 
 /// @brief STL does not define operator== for std::span.
 inline bool operator==(const std::span<const State>& lhs, const std::span<const State>& rhs)

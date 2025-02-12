@@ -56,6 +56,67 @@ TEST(CistaTests, CistaFlexibleIndexVectorEmptyTest)
     const auto& deserialized = *cista::deserialize<Vector>(buf.begin().base(), buf.end().base());
 
     EXPECT_EQ(buf.size(), 32);
+    EXPECT_EQ(deserialized.size(), 0);
+}
+
+TEST(CistaTests, CistaFlexibleIndexVectorSize1Test)
+{
+    namespace data = cista::offset;
+
+    using Vector = data::flexible_index_vector<uint16_t>;
+
+    auto vec = Vector();
+    vec.push_back(5);
+    vec.compress();
+
+    std::vector<uint8_t> buf;
+    {  // Serialize.
+        buf = cista::serialize(vec);
+    }
+
+    // Deserialize.
+    const auto& deserialized = *cista::deserialize<Vector>(buf.begin().base(), buf.end().base());
+
+    EXPECT_EQ(buf.size(), 34);
+    EXPECT_EQ(deserialized.size(), 1);
+    EXPECT_EQ(deserialized[0], 5);
+}
+
+TEST(CistaTests, CistaFlexibleIndexVectorIterateUncompressedTest)
+{
+    namespace data = cista::offset;
+
+    using Vector = data::flexible_index_vector<uint16_t>;
+
+    auto vec = Vector({ 1, 16, 2, 4, 9 });
+
+    // test default vector iterator ;-)
+    auto it = vec.begin();
+    EXPECT_EQ(*it, 1);
+    ++it;
+    EXPECT_EQ(*it, 16);
+    ++it;
+    EXPECT_EQ(*it, 2);
+    ++it;
+    EXPECT_EQ(*it, 4);
+    ++it;
+    EXPECT_EQ(*it, 9);
+    ++it;
+    EXPECT_EQ(it, vec.end());
+
+    // test our custom const_iterator
+    auto cit = vec.cbegin();
+    EXPECT_EQ(*cit, 1);
+    ++cit;
+    EXPECT_EQ(*cit, 16);
+    ++cit;
+    EXPECT_EQ(*cit, 2);
+    ++cit;
+    EXPECT_EQ(*cit, 4);
+    ++cit;
+    EXPECT_EQ(*cit, 9);
+    ++cit;
+    EXPECT_EQ(cit, vec.cend());
 }
 
 TEST(CistaTests, CistaFlexibleIndexVectorTest)

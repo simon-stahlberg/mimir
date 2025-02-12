@@ -269,7 +269,7 @@ struct basic_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeroes);
+            blocks_.resize((index + 1) * 2, default_bit_value_ ? block_ones : block_zeroes);
         }
 
         blocks_[index] |= (static_cast<Block>(1) << offset);  // Set the bit at the offset

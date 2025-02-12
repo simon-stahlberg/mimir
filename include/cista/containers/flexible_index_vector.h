@@ -33,37 +33,26 @@ private:
 
     bool is_uncompressed() const { return bit_width_ == get_bit_width<IndexType>(); }
 
+    size_t get_elements_per_block() const { return static_cast<size_t>(get_bit_width<IndexType>() / bit_width_); }
+
+    size_t get_block_index(size_t pos, size_t elements_per_block) const { return pos / elements_per_block; }
+
+    size_t get_element_index(size_t pos, size_t elements_per_block) const { return pos % elements_per_block; }
+
     IndexType extract_value_at_position(size_t pos) const
     {
-        // Calculate number of bits needed for each element
-        const size_t type_bit_width = static_cast<size_t>(bit_width_);
-        const size_t block_bit_width = get_bit_width<IndexType>();  // Number of bits in each block (e.g., 64 bits for uint64_t)
-
-        // Calculate the bit position of the element within the compressed data
-        const size_t bit_position = pos * type_bit_width;
-        const size_t block_index = bit_position / block_bit_width;  // Index of the block containing the element
-        const size_t bit_offset = bit_position % block_bit_width;   // Offset within the block
-
-        // Calculate mask
-        const IndexType mask = (1ULL << bit_width_) - 1;
-
-        // Extract the element from the block
-        const IndexType block = blocks_[block_index];
-        IndexType value = (block >> bit_offset) & mask;
-
-        // Handle elements spanning multiple blocks
-        size_t remaining_bits = std::max(bit_offset + type_bit_width, block_bit_width) - block_bit_width;
-        if (remaining_bits > 0)
+        if (bit_width_ == get_bit_width<IndexType>())  // Fast evaluate
         {
-            // Calculate mask for bits in the next block.
-            const IndexType remaining_mask = (1ULL << remaining_bits) - 1;
-
-            // Extract remaining bits from the next block and shift accordingly.
-            const IndexType next_block = blocks_[block_index + 1];
-            value |= ((next_block & remaining_mask) << (type_bit_width - remaining_bits));
+            return blocks_[pos];
         }
 
-        return value;
+        const size_t elements_per_block = get_elements_per_block();
+        const size_t block_index = get_block_index(pos, elements_per_block);
+        const size_t element_index = get_element_index(pos, elements_per_block);
+        const size_t shift = (element_index * bit_width_);
+        const IndexType mask = ((static_cast<IndexType>(1) << bit_width_) - 1);
+
+        return (blocks_[block_index] >> shift) & mask;
     }
 
 public:
@@ -94,37 +83,26 @@ public:
 
         size_t pos_;
 
+        size_t get_elements_per_block() const { return static_cast<size_t>(get_bit_width<IndexType>() / bit_width_); }
+
+        size_t get_block_index(size_t pos, size_t elements_per_block) const { return pos / elements_per_block; }
+
+        size_t get_element_index(size_t pos, size_t elements_per_block) const { return pos % elements_per_block; }
+
         IndexType extract_value_at_position(size_t pos) const
         {
-            // Calculate number of bits needed for each element
-            const size_t type_bit_width = static_cast<size_t>(bit_width_);
-            const size_t block_bit_width = get_bit_width<IndexType>();  // Number of bits in each block (e.g., 64 bits for uint64_t)
-
-            // Calculate the bit position of the element within the compressed data
-            const size_t bit_position = pos * type_bit_width;
-            const size_t block_index = bit_position / block_bit_width;  // Index of the block containing the element
-            const size_t bit_offset = bit_position % block_bit_width;   // Offset within the block
-
-            // Calculate mask
-            const IndexType mask = (1ULL << bit_width_) - 1;
-
-            // Extract the element from the block
-            const IndexType block = (*blocks_)[block_index];
-            IndexType value = (block >> bit_offset) & mask;
-
-            // Handle elements spanning multiple blocks
-            size_t remaining_bits = std::max(bit_offset + type_bit_width, block_bit_width) - block_bit_width;
-            if (remaining_bits > 0)
+            if (bit_width_ == get_bit_width<IndexType>())  // Fast evaluate
             {
-                // Calculate mask for bits in the next block.
-                const IndexType remaining_mask = (1ULL << remaining_bits) - 1;
-
-                // Extract remaining bits from the next block and shift accordingly.
-                const IndexType next_block = (*blocks_)[block_index + 1];
-                value |= ((next_block & remaining_mask) << (type_bit_width - remaining_bits));
+                return (*blocks_)[pos];
             }
 
-            return value;
+            const size_t elements_per_block = get_elements_per_block();
+            const size_t block_index = get_block_index(pos, elements_per_block);
+            const size_t element_index = get_element_index(pos, elements_per_block);
+            const size_t shift = (element_index * bit_width_);
+            const IndexType mask = ((static_cast<IndexType>(1) << bit_width_) - 1);
+
+            return ((*blocks_)[block_index] >> shift) & mask;
         }
 
     public:
@@ -258,7 +236,7 @@ public:
         for (const auto& block : blocks_)
         {
             // Calculate the bit width of the current block
-            uint8_t bit_width = block == 0 ? 1 : static_cast<uint8_t>(std::bit_width(block));
+            uint8_t bit_width = (block == 0) ? 1 : static_cast<uint8_t>(std::bit_width(block));
             max_bit_width = std::max(max_bit_width, bit_width);
         }
 
@@ -280,39 +258,46 @@ public:
         }
 
         // Now compress blocks_
-        const IndexType mask = (1ULL << bit_width_) - 1;  // Mask for extracting the required number of bits
-        size_t shift_bits = 0;                            // Tracks the bit position for packing smaller values
-        size_t packed_index = 0;                          // New position in blocks_ for writing packed data
-        IndexType packed_buffer = 0;                      // Buffer for packing smaller values
+        const size_t elements_per_block = get_elements_per_block();
+        const IndexType mask = (1ULL << bit_width_) - 1;  ///< Mask for extracting the required number of bits
+        size_t shift_bits = 0;                            ///< Tracks the bit position for packing smaller values
+        size_t packed_index = 0;                          ///< New position in blocks_ for writing packed data
+        IndexType packed_buffer = 0;                      ///< Buffer for packing smaller values
+        size_t element_index = 0;                         ///< the index of an element in the packed_buffer
+        [[maybe_unused]] size_t element_count = 0;        ///< just for assertion.
 
         for (IndexType block : blocks_)
         {
+            ++element_count;
+
             // Mask the current block to ensure it's within the bit width
             IndexType value = block & mask;
 
             // Add the value into the current packed buffer
+            assert(shift_bits < sizeof(IndexType) * 8);
             packed_buffer |= value << shift_bits;
             shift_bits += bit_width_;
 
-            // If the packed buffer is full, flush it to the blocks_
-            if (shift_bits >= get_bit_width<IndexType>())
+            // Write the buffer if its full
+            if (++element_index == elements_per_block)
             {
+                assert(packed_index < element_count);
+                assert(packed_index < blocks_.size());
+
                 blocks_[packed_index++] = packed_buffer;
 
-                // Calculate the remaining bits beyond the block's capacity
-                const size_t overflow_bits = shift_bits - get_bit_width<IndexType>();
-
-                // Start the next packed_buffer with the overflow bits
-                packed_buffer = (value >> (bit_width_ - overflow_bits));
-
-                // Reset shift_bits for the next block
-                shift_bits = overflow_bits;
+                packed_buffer = 0;
+                shift_bits = 0;
+                element_index = 0;
             }
         }
 
         // Write any remaining data that was not flushed
         if (shift_bits > 0)
         {
+            assert(packed_index < element_count);
+            assert(packed_index < blocks_.size());
+
             blocks_[packed_index++] = packed_buffer;
         }
 
