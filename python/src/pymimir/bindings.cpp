@@ -997,33 +997,21 @@ void init_pymimir(py::module_& m)
     py::class_<LiteralGrounder, std::shared_ptr<LiteralGrounder>>(m, "LiteralGrounder")  //
         .def("get_problem", &LiteralGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &LiteralGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_static_literal",
-             &LiteralGrounder::ground_literal<Static>,
-             py::return_value_policy::reference_internal,
-             py::arg("literal"),
-             py::arg("binding"))
-        .def("ground_fluent_literal",
-             &LiteralGrounder::ground_literal<Fluent>,
-             py::return_value_policy::reference_internal,
-             py::arg("literal"),
-             py::arg("binding"))
-        .def("ground_derived_literal",
-             &LiteralGrounder::ground_literal<Derived>,
-             py::return_value_policy::reference_internal,
-             py::arg("literal"),
-             py::arg("binding"));
+        .def("ground_static_literal", &LiteralGrounder::ground<Static>, py::return_value_policy::reference_internal, py::arg("literal"), py::arg("binding"))
+        .def("ground_fluent_literal", &LiteralGrounder::ground<Fluent>, py::return_value_policy::reference_internal, py::arg("literal"), py::arg("binding"))
+        .def("ground_derived_literal", &LiteralGrounder::ground<Derived>, py::return_value_policy::reference_internal, py::arg("literal"), py::arg("binding"));
 
     /* FunctionGrounder */
     py::class_<FunctionGrounder, std::shared_ptr<FunctionGrounder>>(m, "FunctionGrounder")  //
         .def("get_problem", &FunctionGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &FunctionGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_function", &FunctionGrounder::ground_function, py::return_value_policy::reference_internal, py::arg("function"), py::arg("binding"));
+        .def("ground_function", &FunctionGrounder::ground, py::return_value_policy::reference_internal, py::arg("function"), py::arg("binding"));
 
     /* ActionGrounder */
     py::class_<ActionGrounder, std::shared_ptr<ActionGrounder>>(m, "ActionGrounder")  //
         .def("get_problem", &ActionGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &ActionGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_action", &ActionGrounder::ground_action, py::return_value_policy::reference_internal, py::arg("action"), py::arg("binding"))
+        .def("ground_action", &ActionGrounder::ground, py::return_value_policy::reference_internal, py::arg("action"), py::arg("binding"))
         .def("get_ground_actions", &ActionGrounder::get_ground_actions, py::return_value_policy::copy)
         .def("get_ground_action", &ActionGrounder::get_ground_action, py::return_value_policy::reference_internal, py::arg("action_index"))
         .def("get_num_ground_actions", &ActionGrounder::get_num_ground_actions, py::return_value_policy::copy);
@@ -1032,7 +1020,7 @@ void init_pymimir(py::module_& m)
     py::class_<AxiomGrounder, std::shared_ptr<AxiomGrounder>>(m, "AxiomGrounder")  //
         .def("get_problem", &AxiomGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &AxiomGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_axiom", &AxiomGrounder::ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
+        .def("ground_axiom", &AxiomGrounder::ground, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
         .def("get_ground_axioms", &AxiomGrounder::get_ground_axioms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_ground_axiom", &AxiomGrounder::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
         .def("get_num_ground_axioms", &AxiomGrounder::get_num_ground_axioms, py::return_value_policy::copy);
@@ -1159,10 +1147,11 @@ void init_pymimir(py::module_& m)
         .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
         .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
         .def("get_or_create_successor_state",
-             py::overload_cast<State, GroundAction>(&StateRepository::get_or_create_successor_state),
+             py::overload_cast<State, GroundAction, ContinuousCost>(&StateRepository::get_or_create_successor_state),
              py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
              py::arg("state"),
-             py::arg("action"))
+             py::arg("action"),
+             py::arg("state_metric_value"))
         .def("get_state_count", &StateRepository::get_state_count)
         .def("get_reached_fluent_ground_atoms_bitset", &StateRepository::get_reached_fluent_ground_atoms_bitset, py::return_value_policy::copy)
         .def("get_reached_derived_ground_atoms_bitset", &StateRepository::get_reached_derived_ground_atoms_bitset, py::return_value_policy::copy);

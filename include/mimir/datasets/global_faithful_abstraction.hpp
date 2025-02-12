@@ -146,6 +146,7 @@ public:
     /* Meta data */
     Problem get_problem() const;
     bool get_mark_true_goal_literals() const;
+    bool get_use_unit_cost_one() const;
     Index get_index() const;
 
     /* Memory */
@@ -184,6 +185,7 @@ public:
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(Index vertex) const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(Index vertex) const;
+    ContinuousCost get_edge_cost(Index edge) const;
     size_t get_num_edges() const;
 
     /* Distances */

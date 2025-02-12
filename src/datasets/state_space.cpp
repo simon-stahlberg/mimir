@@ -24,6 +24,7 @@
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
+#include "mimir/search/metric.hpp"
 
 #include <algorithm>
 #include <cstdlib>
@@ -34,7 +35,8 @@ namespace mimir
 /**
  * StateSpace
  */
-StateSpace::StateSpace(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
+StateSpace::StateSpace(bool use_unit_cost_one,
+                       std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                        std::shared_ptr<StateRepository> state_repository,
                        typename StateSpace::GraphType graph,
                        StateMap<Index> state_to_vertex_index,
@@ -42,6 +44,7 @@ StateSpace::StateSpace(std::shared_ptr<IApplicableActionGenerator> applicable_ac
                        IndexSet goal_vertex_indices,
                        IndexSet deadend_vertex_indices,
                        ContinuousCostList goal_distances) :
+    m_use_unit_cost_one(use_unit_cost_one),
     m_applicable_action_generator(std::move(applicable_action_generator)),
     m_state_repository(std::move(state_repository)),
     m_graph(std::move(graph)),
@@ -91,15 +94,15 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
     auto state_to_vertex_index = StateMap<Index> {};
     state_to_vertex_index.emplace(initial_state, initial_vertex_index);
 
-    auto lifo_queue = std::deque<StateVertex>();
-    lifo_queue.emplace_back(graph.get_vertices().at(initial_vertex_index));
+    auto lifo_queue = std::deque<std::pair<StateVertex, ContinuousCost>>();
+    lifo_queue.emplace_back(graph.get_vertices().at(initial_vertex_index), compute_initial_state_metric_value(problem));
 
     auto goal_test = ProblemGoal(problem);
 
     stop_watch.start();
     while (!lifo_queue.empty() && !stop_watch.has_finished())
     {
-        const auto vertex = lifo_queue.back();
+        const auto [vertex, vertex_metric_value] = lifo_queue.back();
         const auto vertex_index = vertex.get_index();
         lifo_queue.pop_back();
         if (goal_test.test_dynamic_goal(mimir::get_state(vertex)))
@@ -110,12 +113,13 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(mimir::get_state(vertex)))
         {
             const auto [successor_state, successor_state_metric_value] = state_repository->get_or_create_successor_state(mimir::get_state(vertex), action, 0);
+            const auto action_cost = successor_state_metric_value - vertex_metric_value;
             const auto it = state_to_vertex_index.find(successor_state);
             const bool exists = (it != state_to_vertex_index.end());
             if (exists)
             {
                 const auto successor_vertex_index = it->second;
-                graph.add_directed_edge(vertex_index, successor_vertex_index, action);
+                graph.add_directed_edge(vertex_index, successor_vertex_index, action, action_cost);
                 continue;
             }
 
@@ -126,9 +130,9 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
                 return std::nullopt;
             }
 
-            graph.add_directed_edge(vertex_index, successor_vertex_index, action);
+            graph.add_directed_edge(vertex_index, successor_vertex_index, action, action_cost);
             state_to_vertex_index.emplace(successor_state, successor_vertex_index);
-            lifo_queue.emplace_back(graph.get_vertices().at(successor_vertex_index));
+            lifo_queue.emplace_back(graph.get_vertices().at(successor_vertex_index), successor_state_metric_value);
         }
     }
 
@@ -147,9 +151,30 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
     auto bidirectional_graph = typename StateSpace::GraphType(std::move(graph));
 
     auto goal_distances = ContinuousCostList {};
-    auto [predecessors_, goal_distances_] =
-        breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()), goal_vertex_indices.begin(), goal_vertex_indices.end());
-    goal_distances = std::move(goal_distances_);
+    if (options.use_unit_cost_one
+        || std::all_of(bidirectional_graph.get_edges().begin(),
+                       bidirectional_graph.get_edges().end(),
+                       [](const auto& transition) { return get_cost(transition) == 1; }))
+    {
+        auto [predecessors_, goal_distances_] = breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
+                                                                     goal_vertex_indices.begin(),
+                                                                     goal_vertex_indices.end());
+        goal_distances = std::move(goal_distances_);
+    }
+    else
+    {
+        auto transition_costs = ContinuousCostList {};
+        transition_costs.reserve(bidirectional_graph.get_num_edges());
+        for (const auto& transition : bidirectional_graph.get_edges())
+        {
+            transition_costs.push_back(get_cost(transition));
+        }
+        auto [predecessors_, goal_distances_] = dijkstra_shortest_paths(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
+                                                                        transition_costs,
+                                                                        goal_vertex_indices.begin(),
+                                                                        goal_vertex_indices.end());
+        goal_distances = std::move(goal_distances_);
+    }
 
     auto deadend_vertex_indices = IndexSet {};
     for (Index vertex = 0; vertex < bidirectional_graph.get_num_vertices(); ++vertex)
@@ -160,7 +185,8 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
         }
     }
 
-    return StateSpace(std::move(applicable_action_generator),
+    return StateSpace(options.use_unit_cost_one,
+                      std::move(applicable_action_generator),
                       std::move(state_repository),
                       std::move(bidirectional_graph),
                       std::move(state_to_vertex_index),
@@ -226,8 +252,24 @@ template<IsTraversalDirection Direction>
 ContinuousCostList StateSpace::compute_shortest_distances_from_vertices(const IndexList& states) const
 {
     auto distances = ContinuousCostList {};
-    auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
-    distances = std::move(distances_);
+    if (m_use_unit_cost_one
+        || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
+    {
+        auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
+        distances = std::move(distances_);
+    }
+    else
+    {
+        auto transition_costs = ContinuousCostList {};
+        transition_costs.reserve(m_graph.get_num_edges());
+        for (const auto& transition : m_graph.get_edges())
+        {
+            transition_costs.push_back(get_cost(transition));
+        }
+        auto [predecessors_, distances_] =
+            dijkstra_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs, states.begin(), states.end());
+        distances = std::move(distances_);
+    }
 
     return distances;
 }
@@ -239,7 +281,18 @@ template<IsTraversalDirection Direction>
 ContinuousCostMatrix StateSpace::compute_pairwise_shortest_vertex_distances() const
 {
     auto transition_costs = ContinuousCostList {};
-    transition_costs = ContinuousCostList(m_graph.get_num_edges(), 1);
+    if (m_use_unit_cost_one)
+    {
+        transition_costs = ContinuousCostList(m_graph.get_num_edges(), 1);
+    }
+    else
+    {
+        transition_costs.reserve(m_graph.get_num_edges());
+        for (const auto& transition : m_graph.get_edges())
+        {
+            transition_costs.push_back(get_cost(transition));
+        }
+    }
 
     return floyd_warshall_all_pairs_shortest_paths(TraversalDirectionTaggedType(m_graph, Direction()), transition_costs).get_matrix();
 }
@@ -253,6 +306,7 @@ template ContinuousCostMatrix StateSpace::compute_pairwise_shortest_vertex_dista
 
 /* Meta data */
 Problem StateSpace::get_problem() const { return m_applicable_action_generator->get_problem(); }
+bool StateSpace::get_use_unit_cost_one() const { return m_use_unit_cost_one; }
 
 /* Memory */
 const std::shared_ptr<PDDLRepositories>& StateSpace::get_pddl_repositories() const { return m_applicable_action_generator->get_pddl_repositories(); }
@@ -337,6 +391,8 @@ template std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<Fo
 StateSpace::get_adjacent_edge_indices<ForwardTraversal>(Index vertex) const;
 template std::ranges::subrange<StateSpace::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
 StateSpace::get_adjacent_edge_indices<BackwardTraversal>(Index vertex) const;
+
+ContinuousCost StateSpace::get_edge_cost(Index edge) const { return (m_use_unit_cost_one) ? 1 : get_cost(m_graph.get_edges().at(edge)); }
 
 size_t StateSpace::get_num_edges() const { return m_graph.get_num_edges(); }
 

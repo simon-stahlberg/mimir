@@ -46,6 +46,7 @@ namespace mimir
 struct FaithfulAbstractionOptions
 {
     bool mark_true_goal_literals = false;
+    bool use_unit_cost_one = true;
     bool remove_if_unsolvable = true;
     bool compute_complete_abstraction_mapping = false;
     uint32_t max_num_concrete_states = std::numeric_limits<uint32_t>::max();
@@ -108,6 +109,7 @@ private:
     /// the `FaithfulAbstraction` is in a legal state allowing other parts of
     /// the code base to operate on the invariants in the implementation.
     FaithfulAbstraction(bool mark_true_goal_literals,
+                        bool use_unit_cost_one,
                         std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
                         std::shared_ptr<StateRepository> state_repository,
                         typename FaithfulAbstraction::GraphType graph,
@@ -177,6 +179,7 @@ public:
     /* Meta data */
     Problem get_problem() const;
     bool get_mark_true_goal_literals() const;
+    bool get_use_unit_cost_one() const;
 
     /* Memory */
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
@@ -210,6 +213,7 @@ public:
     std::ranges::subrange<AdjacentEdgeConstIteratorType<Direction>> get_adjacent_edges(Index vertex) const;
     template<IsTraversalDirection Direction>
     std::ranges::subrange<AdjacentEdgeIndexConstIteratorType<Direction>> get_adjacent_edge_indices(Index vertex) const;
+    ContinuousCost get_edge_cost(Index edge) const;
     size_t get_num_edges() const;
 
     /* Distances */
@@ -222,6 +226,7 @@ public:
 private:
     /* Meta data */
     bool m_mark_true_goal_literals;
+    bool m_use_unit_cost_one;
 
     /* Memory */
     std::shared_ptr<IApplicableActionGenerator> m_applicable_action_generator;
