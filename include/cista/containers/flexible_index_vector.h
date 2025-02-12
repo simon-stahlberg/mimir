@@ -31,13 +31,7 @@ private:
         return std::numeric_limits<T>::digits;
     }
 
-    void ensure_uncompressed() const
-    {
-        if (bit_width_ != get_bit_width<IndexType>())
-        {
-            throw std::runtime_error("Operation not supported after compression");
-        }
-    }
+    bool is_uncompressed() const { return bit_width_ == get_bit_width<IndexType>(); }
 
     IndexType extract_value_at_position(size_t pos) const
     {
@@ -174,12 +168,12 @@ public:
     const_iterator end() const { return const_iterator(bit_width_, size_, blocks_, false); }
     auto begin()
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
         return blocks_.begin();
     }
     auto end()
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
         return blocks_.end();
     }
 
@@ -193,21 +187,21 @@ public:
 
     void push_back(IndexType value)
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
         ++size_;
         blocks_.push_back(value);
     }
 
     void resize(size_t size)
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
         size_ = size;
         blocks_.resize(size);
     }
 
     void resize(size_t size, IndexType init)
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
         size_ = size;
         blocks_.resize(size, init);
     }
@@ -225,7 +219,7 @@ public:
 
     IndexType& operator[](size_t pos)
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
         return blocks_[pos];
     }
 
@@ -257,7 +251,7 @@ public:
 
     uint8_t determine_bit_width() const
     {
-        ensure_uncompressed();
+        assert(is_uncompressed());
 
         uint8_t max_bit_width = 0;
 
