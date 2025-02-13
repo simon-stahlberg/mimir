@@ -26,6 +26,7 @@
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
+#include "mimir/search/match_tree/node_splitters/base_impl.hpp"
 #include "mimir/search/match_tree/node_splitters/interface.hpp"
 
 #include <map>
@@ -47,20 +48,20 @@ SplitList StaticNodeSplitter<Element>::compute_statically_best_splits(const std:
         /* Fluent */
         for (const auto& index : conjunctive_condition.template get_positive_precondition<Fluent>())
         {
-            ++fluent_atom_distributions[m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_true_elements;
+            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_true_elements;
         }
         for (const auto& index : conjunctive_condition.template get_negative_precondition<Fluent>())
         {
-            ++fluent_atom_distributions[m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_false_elements;
+            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_false_elements;
         }
         /* Derived */
         for (const auto& index : conjunctive_condition.template get_positive_precondition<Derived>())
         {
-            ++derived_atom_distributions[m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_true_elements;
+            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_true_elements;
         }
         for (const auto& index : conjunctive_condition.template get_negative_precondition<Derived>())
         {
-            ++derived_atom_distributions[m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_false_elements;
+            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_false_elements;
         }
         /* Numeric constraint */
         for (const auto& numeric_constraint : conjunctive_condition.get_numeric_constraints())
@@ -86,19 +87,19 @@ SplitList StaticNodeSplitter<Element>::compute_statically_best_splits(const std:
     for (const auto& [atom, distribution] : fluent_atom_distributions)
     {
         const auto split = AtomSplit<Fluent> { atom, distribution };
-        const auto score = compute_score(distribution, m_split_metric);
+        const auto score = compute_score(distribution, this->m_options.split_metric);
         sorted_splits.emplace(std::make_pair(score, to_string(atom)), split);
     }
     for (const auto& [atom, distribution] : derived_atom_distributions)
     {
         const auto split = AtomSplit<Derived> { atom, distribution };
-        const auto score = compute_score(distribution, m_split_metric);
+        const auto score = compute_score(distribution, this->m_options.split_metric);
         sorted_splits.emplace(std::make_pair(score, to_string(atom)), split);
     }
     for (const auto& [constraint, distribution] : numeric_constraint_distributions)
     {
         const auto split = NumericConstraintSplit { constraint, distribution };
-        const auto score = compute_score(distribution, m_split_metric);
+        const auto score = compute_score(distribution, this->m_options.split_metric);
         sorted_splits.emplace(std::make_pair(score, to_string(constraint)), split);
     }
     assert(sorted_splits.size() == fluent_atom_distributions.size() + derived_atom_distributions.size() + numeric_constraint_distributions.size());
@@ -115,13 +116,12 @@ SplitList StaticNodeSplitter<Element>::compute_statically_best_splits(const std:
 
 template<HasConjunctiveCondition Element>
 StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories,
-                                                SplitMetricEnum split_metric,
+                                                const Options& options,
                                                 const std::vector<const Element*>& elements) :
-    m_pddl_repositories(pddl_repositories),
-    m_split_metric(split_metric),
+    NodeSplitterBase<StaticNodeSplitter<Element>, Element>(pddl_repositories, options),
     m_splits(compute_statically_best_splits(elements))
 {
-    std::cout << "[MatchTree] Static split ordering determined with " << to_string(m_split_metric) << " score: " << std::endl;
+    std::cout << "[MatchTree] Static split ordering determined with " << to_string(this->m_options.split_metric) << " score: " << std::endl;
     for (size_t i = 0; i < m_splits.size(); ++i)
     {
         std::cout << "    " << i << ". " << m_splits[i] << std::endl;
@@ -129,13 +129,29 @@ StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_rep
 }
 
 template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter<Element>::compute_best_split(const PlaceholderNode<Element>& node)
+std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter<Element>::split_node_impl(PlaceholderNodeList<Element>& ref_leafs)
 {
+    assert(!ref_leafs.empty());
+
+    auto min_root_distance = std::numeric_limits<size_t>::max();
+    auto selected_leaf_it = ref_leafs.begin();
+    for (auto it = ref_leafs.begin(); it != ref_leafs.end(); ++it)
+    {
+        if ((*it)->get_root_distance() < min_root_distance)
+        {
+            selected_leaf_it = it;
+            min_root_distance = (*it)->get_root_distance();
+        }
+    }
+
+    auto selected_leaf = std::move(*selected_leaf_it);
+    ref_leafs.erase(selected_leaf_it);
+
     auto useless_splits = SplitList {};
 
-    for (size_t i = node->get_root_distance(); i < m_splits.size(); ++i)
+    for (size_t i = selected_leaf->get_root_distance(); i < m_splits.size(); ++i)
     {
-        auto result = create_node_and_placeholder_children(node, useless_splits, i, m_splits[i]);
+        auto result = create_node_and_placeholder_children(selected_leaf, useless_splits, i, m_splits[i]);
 
         if (result.has_value())
         {
@@ -145,13 +161,7 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter
         useless_splits.push_back(m_splits[i]);
     }
 
-    return create_perfect_generator_node(node, m_splits.size());
-}
-
-template<HasConjunctiveCondition Element>
-InverseNode<Element> StaticNodeSplitter<Element>::translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const
-{
-    return create_imperfect_generator_node(node, m_splits.size());
+    return create_perfect_generator_node(selected_leaf);
 }
 
 template class StaticNodeSplitter<GroundActionImpl>;

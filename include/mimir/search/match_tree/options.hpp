@@ -19,7 +19,6 @@
 #define MIMIR_SEARCH_MATCH_TREE_OPTIONS_HPP_
 
 #include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_score_functions/interface.hpp"
 #include "mimir/search/match_tree/node_splitters/interface.hpp"
 
 namespace mimir::match_tree
@@ -31,7 +30,6 @@ struct Options
     size_t max_num_nodes = std::numeric_limits<size_t>::max();
     SplitMetricEnum split_metric = SplitMetricEnum::GINI;
     SplitStrategyEnum split_strategy = SplitStrategyEnum::STATIC;
-    NodeScoreStrategyEnum node_score_strategy = NodeScoreStrategyEnum::MIN_DEPTH;
 };
 
 }

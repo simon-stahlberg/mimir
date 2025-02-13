@@ -724,9 +724,6 @@ void init_pymimir(py::module_& m)
             .def("__repr__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &FunctionExpressionFunctionImpl<Tag>::get_index)
             .def("get_function", &FunctionExpressionFunctionImpl<Tag>::get_function, py::return_value_policy::reference_internal);
-
-        static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList<Tag>>::value);
-        auto list = py::bind_vector<GroundFunctionValueList<Tag>>(m, class_name + "List");
     };
     bind_function_expression_function("StaticFunctionExpressionFunction", Static {});
     bind_function_expression_function("FluentFunctionExpressionFunction", Fluent {});
@@ -781,9 +778,6 @@ void init_pymimir(py::module_& m)
             .def("__repr__", [](const GroundFunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
             .def("get_index", &GroundFunctionExpressionFunctionImpl<Tag>::get_index)
             .def("get_function", &GroundFunctionExpressionFunctionImpl<Tag>::get_function, py::return_value_policy::reference_internal);
-
-        static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList<Tag>>::value);
-        auto list = py::bind_vector<GroundFunctionValueList<Tag>>(m, class_name + "List");
     };
     bind_ground_function_expression_function("StaticGroundFunctionExpressionFunction", Static {});
     bind_ground_function_expression_function("FluentGroundFunctionExpressionFunction", Fluent {});
@@ -1221,6 +1215,9 @@ void init_pymimir(py::module_& m)
         ;
 
     /* DeleteRelaxedProblemExplorator */
+
+    // TODO have to declare match tree options when finished.
+
     py::class_<DeleteRelaxedProblemExplorator>(m, "DeleteRelaxedProblemExplorator")
         .def(py::init<std::shared_ptr<Grounder>>(), py::arg("grounder"))
         .def("create_grounded_axiom_evaluator",

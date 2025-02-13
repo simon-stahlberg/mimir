@@ -15,38 +15,32 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_INTERFACE_HPP_
-#define MIMIR_SEARCH_MATCH_TREE_NODE_SCORE_FUNCTIONS_INTERFACE_HPP_
+#ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_BASE_HPP_
+#define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_BASE_HPP_
 
+#include "mimir/formalism/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
+#include "mimir/search/match_tree/node_splitters/interface.hpp"
 
 namespace mimir::match_tree
 {
 
-/* Customization point 1: INodeScoreFunction*/
-
-enum class NodeScoreStrategyEnum
+template<typename Derived_, HasConjunctiveCondition Element>
+class NodeSplitterBase : public INodeSplitter<Element>
 {
-    MIN_DEPTH = 0,
-    MAX_DEPTH = 1,
-    MIN_BREADTH = 2,
-    MAX_BREADTH = 3,
-};
+private:
+    /// @brief Helper to cast to Derived_.
+    constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
+    constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
-struct NodeScoreFunctionOptions
-{
-};
+protected:
+    const PDDLRepositories& m_pddl_repositories;
+    const Options& m_options;
 
-/// @brief `INodeScoringFunction` allows computing a score for a node.
-template<HasConjunctiveCondition Element>
-class INodeScoreFunction
-{
 public:
-    virtual ~INodeScoreFunction() = default;
-
-    virtual double compute_score(const PlaceholderNode<Element>& node) = 0;
+    NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options);
+    std::pair<Node<Element>, Statistics> fit(std::span<const Element*> elements) override;
 };
-
 }
 
 #endif

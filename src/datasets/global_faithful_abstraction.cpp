@@ -334,6 +334,8 @@ GlobalFaithfulAbstraction::get_adjacent_edge_indices<ForwardTraversal>(Index ver
 template std::ranges::subrange<typename GlobalFaithfulAbstraction::AdjacentEdgeIndexConstIteratorType<BackwardTraversal>>
 GlobalFaithfulAbstraction::get_adjacent_edge_indices<BackwardTraversal>(Index vertex) const;
 
+ContinuousCost GlobalFaithfulAbstraction::get_edge_cost(Index edge) const { return m_abstractions->at(m_index).get_edge_cost(edge); }
+
 size_t GlobalFaithfulAbstraction::get_num_edges() const { return m_abstractions->at(m_index).get_num_edges(); }
 
 /* Distances */

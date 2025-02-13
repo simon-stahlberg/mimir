@@ -25,10 +25,10 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 11)
+    if (argc != 10)
     {
         std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>"
-                     " <mt-enable_dump_dot_file:bool> <mt-max_num_nodes:int> <mt-split_metric:int> <mt-split_strategy:int> <mt-node_score_strategy:int>"
+                     " <mt-enable_dump_dot_file:bool> <mt-max_num_nodes:int> <mt-split_metric:int> <mt-split_strategy:int>"
                   << std::endl;
         return 1;
     }
@@ -45,7 +45,6 @@ int main(int argc, char** argv)
     match_tree_options.max_num_nodes = static_cast<bool>(std::atoi(argv[8]));
     match_tree_options.split_metric = static_cast<match_tree::SplitMetricEnum>(std::atoi(argv[9]));
     match_tree_options.split_strategy = static_cast<match_tree::SplitStrategyEnum>(std::atoi(argv[10]));
-    match_tree_options.node_score_strategy = static_cast<match_tree::NodeScoreStrategyEnum>(std::atoi(argv[11]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 

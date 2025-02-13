@@ -19,10 +19,11 @@
 #define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_DYNAMIC_HPP_
 
 #include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_splitters/interface.hpp"
+#include "mimir/search/match_tree/node_splitters/base.hpp"
 
 namespace mimir::match_tree
 {
+/*
 template<HasConjunctiveCondition Element>
 class DynamicNodeSplitter : public INodeSplitter<Element>
 {
@@ -36,6 +37,7 @@ public:
 
     InverseNode<Element> translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const override;
 };
+*/
 
 }
 

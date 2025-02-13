@@ -20,28 +20,28 @@
 
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_splitters/interface.hpp"
+#include "mimir/search/match_tree/node_splitters/base.hpp"
 
 #include <map>
 
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-class StaticNodeSplitter : public INodeSplitter<Element>
+class StaticNodeSplitter : public NodeSplitterBase<StaticNodeSplitter<Element>, Element>
 {
 private:
-    const PDDLRepositories& m_pddl_repositories;
-    SplitMetricEnum m_split_metric;
     SplitList m_splits;
 
     SplitList compute_statically_best_splits(const std::vector<const Element*>& elements);
 
+    /* Implement NodeSplitterBase interface */
+
+    std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> split_node_impl(PlaceholderNodeList<Element>& ref_leafs);
+
+    friend class NodeSplitterBase<StaticNodeSplitter<Element>, Element>;
+
 public:
-    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, SplitMetricEnum split_metric, const std::vector<const Element*>& elements);
-
-    std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> compute_best_split(const PlaceholderNode<Element>& node) override;
-
-    InverseNode<Element> translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const override;
+    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, const std::vector<const Element*>& elements);
 };
 
 }

@@ -30,8 +30,7 @@ namespace mimir::match_tree
 struct Statistics
 {
     size_t num_elements = 0;
-    size_t num_nodes = 1;    ///< Tree always has 1 root node
-    bool is_perfect = true;  ///< Tree is always perfect initially
+    size_t num_nodes = 1;  ///< Tree always has 1 root node
     std::vector<size_t> generator_distribution = std::vector<size_t>();
     std::vector<size_t> perfect_generator_distribution = std::vector<size_t>();
     std::vector<size_t> imperfect_generator_distribution = std::vector<size_t>();

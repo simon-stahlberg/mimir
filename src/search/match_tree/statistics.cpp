@@ -233,7 +233,6 @@ std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
        << std::chrono::duration_cast<std::chrono::milliseconds>(statistics.construction_end_time_point - statistics.construction_start_time_point) << "\n"
        << "[MatchTreeStatistics] Total number of nodes: " << statistics.num_nodes << "\n"
        << "[MatchTreeStatistics] Total number of elements: " << num_elements << "\n"
-       << "[MatchTreeStatistics] Perfect: " << ((statistics.is_perfect) ? "Yes" : "No") << "\n"
        << "[MatchTreeStatistics] Generators - total number: " << num_generators << "\n"
        << "[MatchTreeStatistics] Generators - average number of elements: " << num_elements_per_generator << "\n"
        << "[MatchTreeStatistics] Generators - distribution gini score: " << compute_gini_score(statistics.generator_distribution) << "\n"

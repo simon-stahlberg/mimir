@@ -21,6 +21,8 @@
 #include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 
+#include <queue>
+
 namespace mimir::match_tree
 {
 /* Customization point 2: NodeSplitter */
@@ -45,10 +47,9 @@ class INodeSplitter
 public:
     virtual ~INodeSplitter() = default;
 
-    virtual std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> compute_best_split(const PlaceholderNode<Element>& node) = 0;
-
-    virtual InverseNode<Element> translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const = 0;
+    virtual std::pair<Node<Element>, Statistics> fit(std::span<const Element*> elements) = 0;
 };
+
 }
 
 #endif

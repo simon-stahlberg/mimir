@@ -20,13 +20,8 @@
 #include "mimir/common/filesystem.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
-#include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
-#include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
-#include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 #include "mimir/search/match_tree/construction_helpers/node_creation.hpp"
-#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_score_functions/min_depth.hpp"
 #include "mimir/search/match_tree/node_splitters/static.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
@@ -37,102 +32,46 @@ namespace mimir::match_tree
 {
 
 /* MatchTree */
-template<HasConjunctiveCondition Element>
-void MatchTree<Element>::build_iteratively(const NodeScoreFunction<Element>& node_score_function, const NodeSplitter<Element>& node_splitter)
-{
-    m_statistics.construction_start_time_point = std::chrono::high_resolution_clock::now();
-    m_statistics.num_elements = m_elements.size();
-
-    struct QueueEntry
-    {
-        double score;
-        PlaceholderNode<Element> node;
-    };
-
-    struct QueueEntryComparator
-    {
-        bool operator()(const QueueEntry& lhs, const QueueEntry& rhs) const { return lhs.score > rhs.score; }
-    };
-
-    auto queue = std::priority_queue<QueueEntry, std::vector<QueueEntry>, QueueEntryComparator> {};
-    auto root_placeholder = create_root_placeholder_node(std::span<const Element*>(m_elements.begin(), m_elements.end()));
-    auto score = node_score_function->compute_score(root_placeholder);
-    queue.emplace(score, std::move(root_placeholder));
-
-    auto inverse_generator_leafs = InverseNodeList<Element> {};
-    auto inverse_root = InverseNode<Element> { nullptr };
-
-    while (!queue.empty())
-    {
-        auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
-        queue.pop();
-
-        auto [root, children] = node_splitter->compute_best_split(node);
-
-        for (auto& child : children)
-        {
-            queue.emplace(node_score_function->compute_score(child), std::move(child));
-            ++m_statistics.num_nodes;
-        }
-        if (root)
-        {
-            inverse_root = std::move(root);
-        }
-        if (m_statistics.num_nodes >= m_max_num_nodes)
-        {
-            /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
-            m_statistics.is_perfect = false;
-            while (!queue.empty())
-            {
-                auto node = std::move(const_cast<QueueEntry&>(queue.top()).node);
-                queue.pop();
-                node_splitter->translate_to_imperfect_generator_node(node);
-            }
-            break;
-        }
-    }
-
-    if (m_enable_dump_dot_file)
-    {
-        auto ss = std::stringstream {};
-        ss << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
-        write_to_file(m_output_dot_file, ss.str());
-    }
-
-    m_root = parse_inverse_tree_iteratively(inverse_root);
-
-    parse_generator_distribution_iteratively(m_root, m_statistics);
-
-    m_statistics.construction_end_time_point = std::chrono::high_resolution_clock::now();
-}
 
 template<HasConjunctiveCondition Element>
-MatchTree<Element>::MatchTree() :
-    m_elements(),
-    m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
-    m_max_num_nodes(std::numeric_limits<size_t>::max()),
-    m_enable_dump_dot_file(false),
-    m_output_dot_file("match_tree.dot")
+MatchTree<Element>::MatchTree() : m_elements(), m_options(), m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end())))
 {
     m_statistics.generator_distribution.push_back(0);
 }
 
 template<HasConjunctiveCondition Element>
-MatchTree<Element>::MatchTree(std::vector<const Element*> elements,  //
-                              const NodeScoreFunction<Element>& node_score_function,
-                              const NodeSplitter<Element>& node_splitter,
-                              size_t max_num_nodes,
-                              bool enable_dump_dot_file,
-                              fs::path output_dot_file) :
+MatchTree<Element>::MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options) :
     m_elements(std::move(elements)),
-    m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end()))),
-    m_max_num_nodes(max_num_nodes),
-    m_enable_dump_dot_file(enable_dump_dot_file),
-    m_output_dot_file(output_dot_file)
+    m_options(options),
+    m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end())))
 {
     if (!m_elements.empty())
     {
-        build_iteratively(node_score_function, node_splitter);
+        auto node_splitter = NodeSplitter<Element> { nullptr };
+        switch (m_options.split_strategy)
+        {
+            case SplitStrategyEnum::STATIC:
+            {
+                node_splitter = std::make_unique<StaticNodeSplitter<Element>>(pddl_repositories, m_options, m_elements);
+                break;
+            }
+            case SplitStrategyEnum::HYBRID:
+            {
+                throw std::runtime_error("Not implemented.");
+            }
+            case SplitStrategyEnum::DYNAMIC:
+            {
+                throw std::runtime_error("Not implemented.");
+            }
+            default:
+            {
+                throw std::logic_error("MatchTree::create: Undefined SplitStrategyEnum type.");
+            }
+        }
+
+        auto [root_, statistics_] = node_splitter->fit(m_elements);
+        m_root = std::move(root_);
+        m_statistics = std::move(statistics_);
     }
 }
 
@@ -164,65 +103,7 @@ template<HasConjunctiveCondition Element>
 std::unique_ptr<MatchTree<Element>>
 MatchTree<Element>::create(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options)
 {
-    if (elements.empty())
-    {
-        return std::unique_ptr<MatchTree<Element>>(new MatchTree<Element>());
-    }
-
-    auto node_splitter = NodeSplitter<Element> { nullptr };
-    switch (options.split_strategy)
-    {
-        case SplitStrategyEnum::STATIC:
-        {
-            node_splitter = std::make_unique<StaticNodeSplitter<Element>>(pddl_repositories, options.split_metric, elements);
-            break;
-        }
-        case SplitStrategyEnum::HYBRID:
-        {
-            throw std::runtime_error("Not implemented.");
-        }
-        case SplitStrategyEnum::DYNAMIC:
-        {
-            throw std::runtime_error("Not implemented.");
-        }
-        default:
-        {
-            throw std::logic_error("MatchTree::create: Undefined SplitStrategyEnum type.");
-        }
-    }
-
-    auto node_score_function = NodeScoreFunction<Element> { nullptr };
-    switch (options.node_score_strategy)
-    {
-        case NodeScoreStrategyEnum::MIN_DEPTH:
-        {
-            node_score_function = std::make_unique<MinDepthNodeScoreFunction<Element>>();
-            break;
-        }
-        case NodeScoreStrategyEnum::MAX_DEPTH:
-        {
-            break;
-        }
-        case NodeScoreStrategyEnum::MIN_BREADTH:
-        {
-            break;
-        }
-        case NodeScoreStrategyEnum::MAX_BREADTH:
-        {
-            break;
-        }
-        default:
-        {
-            throw std::logic_error("MatchTree::create: Undefined NodeScoreStrategyEnum type.");
-        }
-    }
-
-    return std::unique_ptr<MatchTree<Element>>(new MatchTree<Element>(std::move(elements),
-                                                                      node_score_function,
-                                                                      node_splitter,
-                                                                      options.max_num_nodes,
-                                                                      options.enable_dump_dot_file,
-                                                                      options.output_dot_file));
+    return std::unique_ptr<MatchTree<Element>>(new MatchTree<Element>(pddl_repositories, std::move(elements), options));
 }
 
 template class MatchTree<GroundActionImpl>;
