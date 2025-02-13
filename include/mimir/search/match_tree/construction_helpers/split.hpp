@@ -70,6 +70,34 @@ struct NumericConstraintSplit
 using Split = std::variant<AtomSplit<Fluent>, AtomSplit<Derived>, NumericConstraintSplit>;
 using SplitList = std::vector<Split>;
 
+/**
+ * Utils
+ */
+
+inline bool is_useless_split(const AtomSplitDistribution& distribution)
+{
+    return distribution.m_num_true_elements == 0 && distribution.m_num_false_elements == 0;
+}
+
+inline bool is_useless_split(const NumericConstraintSplitDistribution& distribution) { return distribution.m_num_true_elements == 0; }
+
+template<DynamicPredicateTag P>
+bool is_useless_split(const AtomSplit<P>& split)
+{
+    return is_useless_split(split.m_distribution);
+}
+
+inline bool is_useless_split(const NumericConstraintSplit& split) { return is_useless_split(split.m_distribution); }
+
+inline bool is_useless_split(const Split& split)
+{
+    return std::visit([](auto&& arg) { return is_useless_split(arg); }, split);
+}
+
+/**
+ * Printing
+ */
+
 extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& distribution);
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution);

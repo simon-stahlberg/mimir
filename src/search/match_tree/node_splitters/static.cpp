@@ -33,98 +33,19 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-SplitList StaticNodeSplitter<Element>::compute_statically_best_splits(const std::vector<const Element*>& elements)
-{
-    /* Collect frequencies */
-    auto fluent_atom_distributions = std::unordered_map<GroundAtom<Fluent>, AtomSplitDistribution> {};
-    auto derived_atom_distributions = std::unordered_map<GroundAtom<Derived>, AtomSplitDistribution> {};
-    auto numeric_constraint_distributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution> {};
-
-    for (const auto& element : elements)
-    {
-        const auto& conjunctive_condition = element->get_conjunctive_condition();
-
-        /* Fluent */
-        for (const auto& index : conjunctive_condition.template get_positive_precondition<Fluent>())
-        {
-            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_true_elements;
-        }
-        for (const auto& index : conjunctive_condition.template get_negative_precondition<Fluent>())
-        {
-            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].m_num_false_elements;
-        }
-        /* Derived */
-        for (const auto& index : conjunctive_condition.template get_positive_precondition<Derived>())
-        {
-            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_true_elements;
-        }
-        for (const auto& index : conjunctive_condition.template get_negative_precondition<Derived>())
-        {
-            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].m_num_false_elements;
-        }
-        /* Numeric constraint */
-        for (const auto& numeric_constraint : conjunctive_condition.get_numeric_constraints())
-        {
-            ++numeric_constraint_distributions[numeric_constraint.get()].m_num_true_elements;
-        }
-    }
-    for (auto& [atom, distribution] : fluent_atom_distributions)
-    {
-        distribution.m_num_dont_care_elements = elements.size() - distribution.m_num_true_elements - distribution.m_num_false_elements;
-    }
-    for (auto& [atom, distribution] : derived_atom_distributions)
-    {
-        distribution.m_num_dont_care_elements = elements.size() - distribution.m_num_true_elements - distribution.m_num_false_elements;
-    }
-    for (auto& [constraint, distribution] : numeric_constraint_distributions)
-    {
-        distribution.m_num_dont_care_elements = elements.size() - distribution.m_num_true_elements;
-    }
-
-    /* Sort splits descending in score, break ties in lexicographically*/
-    std::map<std::pair<double, std::string>, Split, std::greater<std::pair<double, std::string>>> sorted_splits;
-    for (const auto& [atom, distribution] : fluent_atom_distributions)
-    {
-        const auto split = AtomSplit<Fluent> { atom, distribution };
-        const auto score = compute_score(distribution, this->m_options.split_metric);
-        sorted_splits.emplace(std::make_pair(score, to_string(atom)), split);
-    }
-    for (const auto& [atom, distribution] : derived_atom_distributions)
-    {
-        const auto split = AtomSplit<Derived> { atom, distribution };
-        const auto score = compute_score(distribution, this->m_options.split_metric);
-        sorted_splits.emplace(std::make_pair(score, to_string(atom)), split);
-    }
-    for (const auto& [constraint, distribution] : numeric_constraint_distributions)
-    {
-        const auto split = NumericConstraintSplit { constraint, distribution };
-        const auto score = compute_score(distribution, this->m_options.split_metric);
-        sorted_splits.emplace(std::make_pair(score, to_string(constraint)), split);
-    }
-    assert(sorted_splits.size() == fluent_atom_distributions.size() + derived_atom_distributions.size() + numeric_constraint_distributions.size());
-
-    auto splits = SplitList {};
-    splits.reserve(sorted_splits.size());
-    for (const auto& [key, split] : sorted_splits)
-    {
-        splits.push_back(split);
-    }
-
-    return splits;
-}
 
 template<HasConjunctiveCondition Element>
 StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories,
                                                 const Options& options,
                                                 const std::vector<const Element*>& elements) :
     NodeSplitterBase<StaticNodeSplitter<Element>, Element>(pddl_repositories, options),
-    m_splits(compute_statically_best_splits(elements))
+    m_cur_split_index(0),
+    m_static_splits(this->compute_splits(elements))
 {
     std::cout << "[MatchTree] Static split ordering determined with " << to_string(this->m_options.split_metric) << " score: " << std::endl;
-    for (size_t i = 0; i < m_splits.size(); ++i)
+    for (size_t i = 0; i < m_static_splits.size(); ++i)
     {
-        std::cout << "    " << i << ". " << m_splits[i] << std::endl;
+        std::cout << "    " << i << ". " << m_static_splits[i] << std::endl;
     }
 }
 
@@ -132,6 +53,25 @@ template<HasConjunctiveCondition Element>
 std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter<Element>::split_node_impl(PlaceholderNodeList<Element>& ref_leafs)
 {
     assert(!ref_leafs.empty());
+
+    /*
+        for (; m_cur_split_index < m_static_splits.size(); ++m_cur_split_index)
+        {
+            const auto& cur_split = m_static_splits.at(m_cur_split_index);
+
+            for (auto it = ref_leafs.begin(); it != ref_leafs.end(); ++it)
+            {
+                auto& leaf = *it;
+                if (!m_cached_leaf_precondition_distributions.contains(leaf.get()))
+                {
+                    m_cached_leaf_precondition_distributions[leaf.get()] = this->compute_splits(leaf->get_elements());
+                }
+                const auto& leaf_precondition_distribution = m_cached_leaf_precondition_distributions.at(leaf.get());
+
+                if (is_useless_split(leaf_precondition_distribution.))
+            }
+        }
+        */
 
     auto min_root_distance = std::numeric_limits<size_t>::max();
     auto selected_leaf_it = ref_leafs.begin();
@@ -149,16 +89,16 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter
 
     auto useless_splits = SplitList {};
 
-    for (size_t i = selected_leaf->get_root_distance(); i < m_splits.size(); ++i)
+    for (size_t i = selected_leaf->get_root_distance(); i < m_static_splits.size(); ++i)
     {
-        auto result = create_node_and_placeholder_children(selected_leaf, useless_splits, i, m_splits[i]);
+        auto result = create_node_and_placeholder_children(selected_leaf, useless_splits, i, m_static_splits[i]);
 
         if (result.has_value())
         {
             return std::move(result.value());
         }
 
-        useless_splits.push_back(m_splits[i]);
+        useless_splits.push_back(m_static_splits[i]);
     }
 
     return create_perfect_generator_node(selected_leaf);

@@ -23,6 +23,7 @@
 #include "mimir/search/match_tree/node_splitters/base.hpp"
 
 #include <map>
+#include <unordered_map>
 
 namespace mimir::match_tree
 {
@@ -30,9 +31,11 @@ template<HasConjunctiveCondition Element>
 class StaticNodeSplitter : public NodeSplitterBase<StaticNodeSplitter<Element>, Element>
 {
 private:
-    SplitList m_splits;
+    size_t m_cur_split_index;  ///< Track the index of the current static split being processed, initially 0.
 
-    SplitList compute_statically_best_splits(const std::vector<const Element*>& elements);
+    SplitList m_static_splits;
+
+    std::unordered_map<const PlaceholderNode<Element>*, SplitList> m_cached_leaf_splits;
 
     /* Implement NodeSplitterBase interface */
 
