@@ -52,7 +52,9 @@ MatchTree<Element>::MatchTree(const PDDLRepositories& pddl_repositories, std::ve
         {
             case SplitStrategyEnum::STATIC:
             {
-                node_splitter = std::make_unique<StaticNodeSplitter<Element>>(pddl_repositories, m_options, m_elements);
+                node_splitter = std::make_unique<StaticNodeSplitter<Element>>(pddl_repositories,
+                                                                              m_options,
+                                                                              std::span<const Element*>(m_elements.begin(), m_elements.end()));
                 break;
             }
             case SplitStrategyEnum::HYBRID:

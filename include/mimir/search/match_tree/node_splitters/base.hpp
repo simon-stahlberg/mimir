@@ -46,7 +46,7 @@ protected:
     /// @brief Compute the precondition distributions over all elements.
     /// @param elements the elements in a placeholder node.
     /// @return a distribution for each precondition, i.e., fluent atom, derived atom, and numeric constraint.
-    SplitList compute_splits(const std::vector<const Element*>& elements)
+    SplitList compute_splits(const std::span<const Element*>& elements)
     {
         auto fluent_atom_distributions = AtomDistributions<Fluent> {};
         auto derived_atom_distributions = AtomDistributions<Derived> {};

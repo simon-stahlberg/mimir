@@ -35,9 +35,7 @@ namespace mimir::match_tree
 {
 
 template<HasConjunctiveCondition Element>
-StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories,
-                                                const Options& options,
-                                                const std::vector<const Element*>& elements) :
+StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements) :
     NodeSplitterBase<StaticNodeSplitter<Element>, Element>(pddl_repositories, options),
     m_cur_split_index(0),
     m_static_splits(this->compute_splits(elements))
@@ -54,24 +52,29 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter
 {
     assert(!ref_leafs.empty());
 
-    /*
-        for (; m_cur_split_index < m_static_splits.size(); ++m_cur_split_index)
+    for (; m_cur_split_index < m_static_splits.size(); ++m_cur_split_index)
+    {
+        const auto& cur_split = m_static_splits.at(m_cur_split_index);
+
+        for (auto it = ref_leafs.begin(); it != ref_leafs.end(); ++it)
         {
-            const auto& cur_split = m_static_splits.at(m_cur_split_index);
-
-            for (auto it = ref_leafs.begin(); it != ref_leafs.end(); ++it)
+            auto& leaf = *it;
+            if (!m_cached_leaf_splits.contains(leaf.get()))
             {
-                auto& leaf = *it;
-                if (!m_cached_leaf_precondition_distributions.contains(leaf.get()))
-                {
-                    m_cached_leaf_precondition_distributions[leaf.get()] = this->compute_splits(leaf->get_elements());
-                }
-                const auto& leaf_precondition_distribution = m_cached_leaf_precondition_distributions.at(leaf.get());
+                m_cached_leaf_splits[leaf.get()] = this->compute_splits(leaf->get_elements());
+            }
+            const auto& leaf_splits = m_cached_leaf_splits.at(leaf.get());
 
-                if (is_useless_split(leaf_precondition_distribution.))
+            bool is_useless = true;
+            for (const auto& leaf_split : leaf_splits)
+            {
+                // if (cur_split == leaf_split && !is_useless_split(leaf_split))
+                //{
+                //     is_useless = false;
+                // }
             }
         }
-        */
+    }
 
     auto min_root_distance = std::numeric_limits<size_t>::max();
     auto selected_leaf_it = ref_leafs.begin();

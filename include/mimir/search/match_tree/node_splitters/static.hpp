@@ -35,7 +35,7 @@ private:
 
     SplitList m_static_splits;
 
-    std::unordered_map<const PlaceholderNode<Element>*, SplitList> m_cached_leaf_splits;
+    std::unordered_map<const PlaceholderNodeImpl<Element>*, SplitList> m_cached_leaf_splits;
 
     /* Implement NodeSplitterBase interface */
 
@@ -44,7 +44,7 @@ private:
     friend class NodeSplitterBase<StaticNodeSplitter<Element>, Element>;
 
 public:
-    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, const std::vector<const Element*>& elements);
+    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements);
 };
 
 }
