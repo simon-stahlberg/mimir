@@ -64,8 +64,10 @@ protected:
     DenseState m_dense_state;
     GroundAtomList<Fluent> m_fluent_atoms;
     GroundAtomList<Derived> m_derived_atoms;
+    GroundFunctionList<Fluent> m_fluent_functions;
     AssignmentSet<Fluent> m_fluent_assignment_set;
     AssignmentSet<Derived> m_derived_assignment_set;
+    NumericAssignmentSet<Fluent> m_numeric_assignment_set;
     std::vector<boost::dynamic_bitset<>> m_full_consistency_graph;
     boost::dynamic_bitset<> m_consistent_vertices;
     KPKCWorkspace m_kpkc_workspace;
@@ -356,9 +358,11 @@ SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(std::shared_p
     m_dense_state(),
     m_fluent_atoms(),
     m_derived_atoms(),
+    m_fluent_functions(),
     m_fluent_assignment_set(m_literal_grounder->get_problem()->get_objects().size(), m_literal_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
     m_derived_assignment_set(m_literal_grounder->get_problem()->get_objects().size(),
                              m_literal_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_literal_grounder->get_problem()->get_objects().size(), m_literal_grounder->get_problem()->get_domain()->get_functions<Fluent>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
     m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
     m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
@@ -418,6 +422,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
 {
     auto& dense_fluent_atoms = dense_state.get_atoms<Fluent>();
     auto& dense_derived_atoms = dense_state.get_atoms<Derived>();
+    auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     // We have to check here to avoid unnecessary creations of mimir::generator.
     if (!nullary_conditions_hold(m_conjunctive_condition, dense_state))
@@ -433,7 +438,14 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
-    for (const auto& binding : create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set))
+    m_numeric_assignment_set.reset();
+    m_literal_grounder->get_pddl_repositories()->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
+
+    const auto& static_numeric_assignment_set = m_literal_grounder->get_problem()->get_static_initial_numeric_assignment_set();
+
+    for (const auto& binding :
+         create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set, static_numeric_assignment_set, m_numeric_assignment_set))
     {
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : m_conjunctive_condition->get_literals<Static>())

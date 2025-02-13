@@ -9,12 +9,6 @@ from _pymimir import (
 
 # Formalism
 from _pymimir import (
-    Action,
-    ActionList,
-    AssignOperatorEnum,
-    Axiom,
-    AxiomList,
-    BinaryOperatorEnum,
     DerivedAtom,
     DerivedAtomList,
     DerivedGroundAtom,
@@ -25,12 +19,7 @@ from _pymimir import (
     DerivedLiteralList,
     DerivedPredicate,
     DerivedPredicateList,
-    Domain,
-    DomainList,
-    EffectStrips,
-    EffectConditional,
-    EffectConditionalList,
-    ConjunctiveCondition,
+
     FluentAtom,
     FluentAtomList,
     FluentGroundAtom,
@@ -41,29 +30,114 @@ from _pymimir import (
     FluentLiteralList,
     FluentPredicate,
     FluentPredicateList,
-    Function,
-    FunctionList,
+
+    StaticAtom,
+    StaticAtomList,
+    StaticGroundAtom,
+    StaticGroundAtomList,
+    StaticGroundLiteral,
+    StaticGroundLiteralList,
+    StaticLiteral,
+    StaticLiteralList,
+    StaticPredicate,
+    StaticPredicateList
+)
+
+from _pymimir import (
+    AuxiliaryFunction,
+    AuxiliaryGroundFunction,
+    AuxiliaryGroundFunctionValue,
+    AuxiliaryFunctionSkeleton,
+    AuxiliaryFunctionList,
+    AuxiliaryGroundFunctionList,
+    AuxiliaryGroundFunctionValueList,
+    AuxiliaryFunctionSkeletonList,
+    AuxiliaryNumericEffect,
+    AuxiliaryNumericEffectList,
+
+    FluentFunction,
+    FluentGroundFunction,
+    FluentGroundFunctionValue,
+    FluentFunctionSkeleton,
+    FluentFunctionList,
+    FluentGroundFunctionList,
+    FluentGroundFunctionValueList,
+    FluentFunctionSkeletonList,
+    FluentNumericEffect,
+    FluentNumericEffectList,
+
+    StaticFunction,
+    StaticGroundFunction,
+    StaticGroundFunctionValue,
+    StaticFunctionSkeleton,
+    StaticFunctionList,
+    StaticGroundFunctionList,
+    StaticGroundFunctionValueList,
+    StaticFunctionSkeletonList    
+)
+
+from _pymimir import (
+    StaticAssignmentSet,
+    FluentAssignmentSet,
+    DerivedAssignmentSet,
+
+    FluentNumericAssignmentSet,
+    AuxiliaryNumericAssignmentSet
+)
+
+from _pymimir import (
+    ActionGrounder,
+    AxiomGrounder,
+    FunctionExpressionGrounder,
+    FunctionGrounder,
+    Grounder,
+    LiteralGrounder,
+    NumericConstraintGrounder,
+    NumericEffectGrounder
+)
+
+from _pymimir import (
+    Action,
+    ActionList,
+    AssignOperatorEnum,
+    Axiom,
+    AxiomList,
+    BinaryOperatorEnum,
+    ConjunctiveCondition,
+    ConjunctiveEffect,
+    ConditionalEffect,
+    ConditionalEffectList,
+    Domain,
+    DomainList,
     FunctionExpression,
     FunctionExpressionList,
     FunctionExpressionBinaryOperator,
-    FunctionExpressionFunction,
+    StaticFunctionExpressionFunction,
+    FluentFunctionExpressionFunction,
+    AuxiliaryFunctionExpressionFunction,
     FunctionExpressionMinus,
     FunctionExpressionMultiOperator,
     FunctionExpressionNumber,
-    FunctionSkeleton,
-    FunctionSkeletonList,
-    GroundFunction,
-    GroundFunctionList,
+    GroundAction,
+    GroundActionList,
+    GroundActionSpan,
+    GroundAxiom,
+    GroundAxiomList,
+    GroundConjunctiveCondition,
+    GroundConjunctiveEffect,
+    GroundConditionalEffect,
+    GroundConditionalEffectList,
+    GroundEffectDerivedLiteral,
     GroundFunctionExpression,
     GroundFunctionExpressionList,
     GroundFunctionExpressionBinaryOperator,
-    GroundFunctionExpressionFunction,
+    StaticGroundFunctionExpressionFunction,
+    FluentGroundFunctionExpressionFunction,
+    AuxiliaryGroundFunctionExpressionFunction,
     GroundFunctionExpressionMinus,
     GroundFunctionExpressionMultiOperator,
     GroundFunctionExpressionNumber,
     MultiOperatorEnum,
-    GroundFunctionValue,
-    GroundFunctionValueList,
     Object,
     ObjectList,
     OptimizationMetric,
@@ -74,22 +148,17 @@ from _pymimir import (
     ProblemList,
     Requirements,
     RequirementEnum,
-    StaticAtom,
-    StaticAtomList,
-    StaticGroundAtom,
-    StaticGroundAtomList,
-    StaticGroundLiteral,
-    StaticGroundLiteralList,
-    StaticLiteral,
-    StaticLiteralList,
-    StaticPredicate,
-    StaticPredicateList,
     Term,
     Variable,
     VariableList
 )
 
 # Search
+from _pymimir import (
+    ActionSatisficingBindingGenerator,
+    AxiomSatisficingBindingGenerator,
+    ConjunctiveConditionSatisficingBindingGenerator
+)
 from _pymimir import (
     AStarAlgorithmEventHandlerBase,
     AStarAlgorithmStatistics,
@@ -106,17 +175,6 @@ from _pymimir import (
     DefaultLiftedApplicableActionGeneratorEventHandler,
     DefaultSIWAlgorithmEventHandler,
     DeleteRelaxedProblemExplorator,
-    GroundConjunctiveCondition,
-    GroundEffectStrips,
-    GroundEffectFluentLiteral,
-    GroundEffectDerivedLiteral,
-    GroundEffectConditional,
-    GroundEffectConditionalList,
-    GroundAction,
-    GroundActionList,
-    GroundActionSpan,
-    GroundAxiom,
-    GroundAxiomList,
     GroundedApplicableActionGenerator,
     GroundedAxiomEvaluator,
     IApplicableActionGenerator,
@@ -144,18 +202,6 @@ from _pymimir import (
     StateRepository,
     StateIndexGroupedVector,
     TupleIndexMapper,
-
-    LiteralGrounder,
-    FunctionGrounder,
-    ActionGrounder,
-    AxiomGrounder,
-    Grounder,
-
-    SatisficingBindingGenerator,
-
-    StaticAssignmentSet,
-    FluentAssignmentSet,
-    DerivedAssignmentSet
 )
 
 # Search (free functions)

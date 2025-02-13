@@ -1,5 +1,6 @@
 #include "init_declarations.hpp"
 
+#include <iostream>
 #include <iterator>
 #include <pybind11/attr.h>
 #include <pybind11/detail/common.h>
@@ -62,10 +63,14 @@ PYBIND11_MAKE_OPAQUE(AtomList<Fluent>);
 PYBIND11_MAKE_OPAQUE(AtomList<Derived>);
 PYBIND11_MAKE_OPAQUE(AxiomList);
 PYBIND11_MAKE_OPAQUE(DomainList);
-PYBIND11_MAKE_OPAQUE(EffectConditionalList);
+PYBIND11_MAKE_OPAQUE(ConditionalEffectList);
 PYBIND11_MAKE_OPAQUE(FunctionExpressionList);
-PYBIND11_MAKE_OPAQUE(FunctionSkeletonList);
-PYBIND11_MAKE_OPAQUE(FunctionList);
+PYBIND11_MAKE_OPAQUE(FunctionSkeletonList<Static>);
+PYBIND11_MAKE_OPAQUE(FunctionSkeletonList<Fluent>);
+PYBIND11_MAKE_OPAQUE(FunctionSkeletonList<Auxiliary>);
+PYBIND11_MAKE_OPAQUE(FunctionList<Static>);
+PYBIND11_MAKE_OPAQUE(FunctionList<Fluent>);
+PYBIND11_MAKE_OPAQUE(FunctionList<Auxiliary>);
 PYBIND11_MAKE_OPAQUE(GroundAtomList<Static>);
 PYBIND11_MAKE_OPAQUE(GroundAtomList<Fluent>);
 PYBIND11_MAKE_OPAQUE(GroundAtomList<Derived>);
@@ -73,10 +78,15 @@ PYBIND11_MAKE_OPAQUE(GroundFunctionExpressionList);
 PYBIND11_MAKE_OPAQUE(GroundLiteralList<Static>);
 PYBIND11_MAKE_OPAQUE(GroundLiteralList<Fluent>);
 PYBIND11_MAKE_OPAQUE(GroundLiteralList<Derived>);
+PYBIND11_MAKE_OPAQUE(std::vector<GroundConditionalEffect>);  // cannot bind cista vector
+PYBIND11_MAKE_OPAQUE(GroundActionList);
+PYBIND11_MAKE_OPAQUE(GroundAxiomList);
 PYBIND11_MAKE_OPAQUE(LiteralList<Static>);
 PYBIND11_MAKE_OPAQUE(LiteralList<Fluent>);
 PYBIND11_MAKE_OPAQUE(LiteralList<Derived>);
-PYBIND11_MAKE_OPAQUE(GroundFunctionValueList);
+PYBIND11_MAKE_OPAQUE(GroundFunctionValueList<Static>);
+PYBIND11_MAKE_OPAQUE(GroundFunctionValueList<Fluent>);
+PYBIND11_MAKE_OPAQUE(GroundFunctionValueList<Auxiliary>);
 PYBIND11_MAKE_OPAQUE(ObjectList);
 PYBIND11_MAKE_OPAQUE(PredicateList<Static>);
 PYBIND11_MAKE_OPAQUE(PredicateList<Fluent>);
@@ -90,9 +100,6 @@ PYBIND11_MAKE_OPAQUE(TermList);
 
 /* Search */
 PYBIND11_MAKE_OPAQUE(StateList);
-PYBIND11_MAKE_OPAQUE(std::vector<GroundEffectConditional>);  // cannot bind cista vector
-PYBIND11_MAKE_OPAQUE(GroundActionList);
-PYBIND11_MAKE_OPAQUE(GroundAxiomList);
 
 /**
  * Common
@@ -458,32 +465,53 @@ void init_pymimir(py::module_& m)
     bind_atom("FluentAtom", Fluent {});
     bind_atom("DerivedAtom", Derived {});
 
-    py::class_<FunctionSkeletonImpl>(m, "FunctionSkeleton")  //
-        .def("__str__", [](const FunctionSkeletonImpl& self) { return to_string(self); })
-        .def("__repr__", [](const FunctionSkeletonImpl& self) { return to_string(self); })
-        .def("get_index", &FunctionSkeletonImpl::get_index)
-        .def("get_name", &FunctionSkeletonImpl::get_name, py::return_value_policy::reference_internal)
-        .def("get_parameters", &FunctionSkeletonImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy);
-    static_assert(!py::detail::vector_needs_copy<FunctionSkeletonList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<FunctionSkeletonList>(m, "FunctionSkeletonList");
+    auto bind_function_skeleton = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<FunctionSkeletonImpl<Tag>>(m, class_name.c_str())
+            .def("__str__", [](const FunctionSkeletonImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const FunctionSkeletonImpl<Tag>& self) { return to_string(self); })
+            .def("get_index", &FunctionSkeletonImpl<Tag>::get_index)
+            .def("get_name", &FunctionSkeletonImpl<Tag>::get_name, py::return_value_policy::reference_internal)
+            .def("get_parameters", &FunctionSkeletonImpl<Tag>::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy);
 
-    py::class_<FunctionImpl>(m, "Function")  //
-        .def("__str__", [](const FunctionImpl& self) { return to_string(self); })
-        .def("__repr__", [](const FunctionImpl& self) { return to_string(self); })
-        .def("get_index", &FunctionImpl::get_index)
-        .def("get_function_skeleton", &FunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def("get_terms", &FunctionImpl::get_terms, py::keep_alive<0, 1>(), py::return_value_policy::copy);
-    static_assert(!py::detail::vector_needs_copy<FunctionList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<FunctionList>(m, "FunctionList");
+        static_assert(!py::detail::vector_needs_copy<FunctionSkeletonList<Tag>>::value);
+        auto list_cls = py::bind_vector<FunctionSkeletonList<Tag>>(m, class_name + "List");
+    };
+    bind_function_skeleton("StaticFunctionSkeleton", Static {});
+    bind_function_skeleton("FluentFunctionSkeleton", Fluent {});
+    bind_function_skeleton("AuxiliaryFunctionSkeleton", Auxiliary {});
 
-    py::class_<GroundFunctionImpl>(m, "GroundFunction")  //
-        .def("__str__", [](const GroundFunctionImpl& self) { return to_string(self); })
-        .def("__repr__", [](const GroundFunctionImpl& self) { return to_string(self); })
-        .def("get_index", &GroundFunctionImpl::get_index)
-        .def("get_function_skeleton", &GroundFunctionImpl::get_function_skeleton, py::return_value_policy::reference_internal)
-        .def("get_objects", &GroundFunctionImpl::get_objects, py::keep_alive<0, 1>(), py::return_value_policy::copy);
-    static_assert(!py::detail::vector_needs_copy<GroundFunctionList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<GroundFunctionList>(m, "GroundFunctionList");
+    auto bind_function = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<FunctionImpl<Tag>>(m, class_name.c_str())
+            .def("__str__", [](const FunctionImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const FunctionImpl<Tag>& self) { return to_string(self); })
+            .def("get_index", &FunctionImpl<Tag>::get_index)
+            .def("get_function_skeleton", &FunctionImpl<Tag>::get_function_skeleton, py::return_value_policy::reference_internal)
+            .def("get_terms", &FunctionImpl<Tag>::get_terms, py::keep_alive<0, 1>(), py::return_value_policy::copy);
+
+        static_assert(!py::detail::vector_needs_copy<FunctionList<Tag>>::value);
+        auto list_cls = py::bind_vector<FunctionList<Tag>>(m, class_name + "List");
+    };
+    bind_function("StaticFunction", Static {});
+    bind_function("FluentFunction", Fluent {});
+    bind_function("AuxiliaryFunction", Auxiliary {});
+
+    auto bind_ground_function = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<GroundFunctionImpl<Tag>>(m, class_name.c_str())
+            .def("__str__", [](const GroundFunctionImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const GroundFunctionImpl<Tag>& self) { return to_string(self); })
+            .def("get_index", &GroundFunctionImpl<Tag>::get_index)
+            .def("get_function_skeleton", &GroundFunctionImpl<Tag>::get_function_skeleton, py::return_value_policy::reference_internal)
+            .def("get_objects", &GroundFunctionImpl<Tag>::get_objects, py::keep_alive<0, 1>(), py::return_value_policy::copy);
+
+        static_assert(!py::detail::vector_needs_copy<GroundFunctionList<Tag>>::value);
+        auto list_cls = py::bind_vector<GroundFunctionList<Tag>>(m, class_name + "List");
+    };
+    bind_ground_function("StaticGroundFunction", Static {});
+    bind_ground_function("FluentGroundFunction", Fluent {});
+    bind_ground_function("AuxiliaryGroundFunction", Auxiliary {});
 
     auto bind_ground_atom = [&]<typename Tag>(const std::string& class_name, Tag)
     {
@@ -543,21 +571,114 @@ void init_pymimir(py::module_& m)
     bind_literal("FluentLiteral", Fluent {});
     bind_literal("DerivedLiteral", Derived {});
 
-    py::class_<GroundFunctionValueImpl>(m, "GroundFunctionValue")  //
-        .def("__str__", [](const GroundFunctionValueImpl& self) { return to_string(self); })
-        .def("__repr__", [](const GroundFunctionValueImpl& self) { return to_string(self); })
-        .def("get_index", &GroundFunctionValueImpl::get_index)
-        .def("get_function", &GroundFunctionValueImpl::get_function, py::return_value_policy::reference_internal)
-        .def("get_number", &GroundFunctionValueImpl::get_number);
-    static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<GroundFunctionValueList>(m, "GroundFunctionValueList");
+    auto bind_ground_function_value = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<GroundFunctionValueImpl<Tag>>(m, class_name.c_str())
+            .def("__str__", [](const GroundFunctionValueImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const GroundFunctionValueImpl<Tag>& self) { return to_string(self); })
+            .def("get_index", &GroundFunctionValueImpl<Tag>::get_index)
+            .def("get_function", &GroundFunctionValueImpl<Tag>::get_function, py::return_value_policy::reference_internal)
+            .def("get_number", &GroundFunctionValueImpl<Tag>::get_number);
 
-    py::class_<EffectStripsImpl>(m, "EffectStrips")  //
-        .def("__str__", [](const EffectStripsImpl& self) { return to_string(self); })
-        .def("__repr__", [](const EffectStripsImpl& self) { return to_string(self); })
-        .def("get_index", &EffectStripsImpl::get_index)
-        .def("get_effects", &EffectStripsImpl::get_effects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_function_expression", &EffectStripsImpl::get_function_expression, py::return_value_policy::reference_internal);
+        static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList<Tag>>::value);
+        auto list = py::bind_vector<GroundFunctionValueList<Tag>>(m, class_name + "List");
+    };
+    bind_ground_function_value("StaticGroundFunctionValue", Static {});
+    bind_ground_function_value("FluentGroundFunctionValue", Fluent {});
+    bind_ground_function_value("AuxiliaryGroundFunctionValue", Auxiliary {});
+
+    py::class_<NumericConstraintImpl>(m, "NumericConstraint")  //
+        .def("__str__", [](const NumericConstraintImpl& self) { return to_string(self); })
+        .def("__repr__", [](const NumericConstraintImpl& self) { return to_string(self); })
+        .def("get_index", &NumericConstraintImpl::get_index)
+        .def("get_binary_comparator", &NumericConstraintImpl::get_binary_comparator, py::return_value_policy::copy)
+        .def("get_left_function_expression", &NumericConstraintImpl::get_left_function_expression, py::return_value_policy::reference_internal)
+        .def("get_right_function_expression", &NumericConstraintImpl::get_right_function_expression, py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<NumericConstraintList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<NumericConstraintList>(m, "NumericConstraintList");
+
+    py::class_<ConjunctiveConditionImpl>(m, "ConjunctiveCondition")  //
+        .def("get_parameters", &ConjunctiveConditionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_static_literals", &ConjunctiveConditionImpl::get_literals<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_fluent_literals", &ConjunctiveConditionImpl::get_literals<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_derived_literals", &ConjunctiveConditionImpl::get_literals<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_nullary_ground_static_literals",
+             &ConjunctiveConditionImpl::get_nullary_ground_literals<Static>,
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_nullary_ground_fluent_literals",
+             &ConjunctiveConditionImpl::get_nullary_ground_literals<Fluent>,
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_nullary_ground_derived_literals",
+             &ConjunctiveConditionImpl::get_nullary_ground_literals<Derived>,
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_numeric_constraints", &ConjunctiveConditionImpl::get_numeric_constraints, py::keep_alive<0, 1>(), py::return_value_policy::copy);
+
+    py::class_<GroundConjunctiveCondition>(m, "GroundConjunctiveCondition")
+        .def("get_fluent_positive_condition",
+             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Fluent>, py::const_),
+             py::return_value_policy::copy)
+        .def("get_static_positive_condition",
+             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Static>, py::const_),
+             py::return_value_policy::copy)
+        .def("get_derived_positive_condition",
+             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Derived>, py::const_),
+             py::return_value_policy::copy)
+        .def("get_fluent_negative_condition",
+             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Fluent>, py::const_),
+             py::return_value_policy::copy)
+        .def("get_static_negative_condition",
+             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Static>, py::const_),
+             py::return_value_policy::copy)
+        .def("get_derived_negative_condition",
+             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Derived>, py::const_),
+             py::return_value_policy::copy);
+
+    py::class_<ConjunctiveEffectImpl>(m, "ConjunctiveEffect")  //
+        .def("__str__", [](const ConjunctiveEffectImpl& self) { return to_string(self); })
+        .def("__repr__", [](const ConjunctiveEffectImpl& self) { return to_string(self); })
+        .def("get_index", &ConjunctiveEffectImpl::get_index)
+        .def("get_parameters", &ConjunctiveEffectImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_literals", &ConjunctiveEffectImpl::get_literals, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_fluent_numeric_effects", &ConjunctiveEffectImpl::get_fluent_numeric_effects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_auxiliary_numeric_effect", &ConjunctiveEffectImpl::get_auxiliary_numeric_effect, py::keep_alive<0, 1>(), py::return_value_policy::copy);
+
+    py::class_<GroundConjunctiveEffect>(m, "GroundConjunctiveEffect")
+        .def("get_positive_effects",
+             py::overload_cast<>(&GroundConjunctiveEffect::get_positive_effects, py::const_),
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_negative_effects",
+             py::overload_cast<>(&GroundConjunctiveEffect::get_negative_effects, py::const_),
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_fluent_numeric_effects",
+             py::overload_cast<>(&GroundConjunctiveEffect::get_fluent_numeric_effects, py::const_),
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy)
+        .def("get_auxiliary_numeric_effect",
+             py::overload_cast<>(&GroundConjunctiveEffect::get_auxiliary_numeric_effect, py::const_),
+             py::return_value_policy::copy);
+
+    py::class_<ConditionalEffectImpl>(m, "ConditionalEffect")  //
+        .def("__str__", [](const ConditionalEffectImpl& self) { return to_string(self); })
+        .def("__repr__", [](const ConditionalEffectImpl& self) { return to_string(self); })
+        .def("get_index", &ConditionalEffectImpl::get_index)
+        .def("get_parameters", &ConditionalEffectImpl::get_conjunctive_condition, py::return_value_policy::reference_internal)
+        .def("get_static_conditions", &ConditionalEffectImpl::get_conjunctive_effect, py::return_value_policy::reference_internal);
+    py::bind_vector<ConditionalEffectList>(m, "ConditionalEffectList");
+
+    py::class_<GroundConditionalEffect>(m, "GroundConditionalEffect")
+        .def("get_conjunctive_condition",
+             py::overload_cast<>(&GroundConditionalEffect::get_conjunctive_condition, py::const_),
+             py::return_value_policy::reference_internal)
+        .def("get_conjunctive_effect",
+             py::overload_cast<>(&GroundConditionalEffect::get_conjunctive_effect, py::const_),
+             py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<std::vector<GroundConditionalEffect>>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<std::vector<GroundConditionalEffect>>(m, "GroundConditionalEffectList");
 
     py::class_<FunctionExpressionImpl>(m, "FunctionExpression")  //
         .def(
@@ -566,18 +687,6 @@ void init_pymimir(py::module_& m)
             py::keep_alive<0, 1>());
     static_assert(!py::detail::vector_needs_copy<FunctionExpressionList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<FunctionExpressionList>(m, "FunctionExpressionList");
-
-    py::class_<EffectConditionalImpl>(m, "EffectConditional")  //
-        .def("__str__", [](const EffectConditionalImpl& self) { return to_string(self); })
-        .def("__repr__", [](const EffectConditionalImpl& self) { return to_string(self); })
-        .def("get_index", &EffectConditionalImpl::get_index)
-        .def("get_parameters", &EffectConditionalImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_static_conditions", &EffectConditionalImpl::get_conditions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_fluent_conditions", &EffectConditionalImpl::get_conditions<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_derived_conditions", &EffectConditionalImpl::get_conditions<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_effects", &EffectConditionalImpl::get_effects, py::return_value_policy::reference_internal);
-    static_assert(!py::detail::vector_needs_copy<EffectConditionalList>::value);  // Ensure return by reference + keep alive
-    py::bind_vector<EffectConditionalList>(m, "EffectConditionalList");
 
     py::class_<FunctionExpressionNumberImpl>(m, "FunctionExpressionNumber")  //
         .def("__str__", [](const FunctionExpressionNumberImpl& self) { return to_string(self); })
@@ -608,11 +717,20 @@ void init_pymimir(py::module_& m)
         .def("get_index", &FunctionExpressionMinusImpl::get_index)
         .def("get_function_expression", &FunctionExpressionMinusImpl::get_function_expression, py::return_value_policy::reference_internal);
 
-    py::class_<FunctionExpressionFunctionImpl>(m, "FunctionExpressionFunction")  //
-        .def("__str__", [](const FunctionExpressionFunctionImpl& self) { return to_string(self); })
-        .def("__repr__", [](const FunctionExpressionFunctionImpl& self) { return to_string(self); })
-        .def("get_index", &FunctionExpressionFunctionImpl::get_index)
-        .def("get_function", &FunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
+    auto bind_function_expression_function = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<FunctionExpressionFunctionImpl<Tag>>(m, class_name.c_str())
+            .def("__str__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const FunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
+            .def("get_index", &FunctionExpressionFunctionImpl<Tag>::get_index)
+            .def("get_function", &FunctionExpressionFunctionImpl<Tag>::get_function, py::return_value_policy::reference_internal);
+
+        static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList<Tag>>::value);
+        auto list = py::bind_vector<GroundFunctionValueList<Tag>>(m, class_name + "List");
+    };
+    bind_function_expression_function("StaticFunctionExpressionFunction", Static {});
+    bind_function_expression_function("FluentFunctionExpressionFunction", Fluent {});
+    bind_function_expression_function("AuxiliaryFunctionExpressionFunction", Auxiliary {});
 
     py::class_<GroundFunctionExpressionImpl>(m, "GroundFunctionExpression")  //
         .def(
@@ -656,11 +774,20 @@ void init_pymimir(py::module_& m)
         .def("get_index", &GroundFunctionExpressionMinusImpl::get_index)
         .def("get_function_expression", &GroundFunctionExpressionMinusImpl::get_function_expression, py::return_value_policy::reference_internal);
 
-    py::class_<GroundFunctionExpressionFunctionImpl>(m, "GroundFunctionExpressionFunction")  //
-        .def("__str__", [](const GroundFunctionExpressionFunctionImpl& self) { return to_string(self); })
-        .def("__repr__", [](const GroundFunctionExpressionFunctionImpl& self) { return to_string(self); })
-        .def("get_index", &GroundFunctionExpressionFunctionImpl::get_index)
-        .def("get_function", &GroundFunctionExpressionFunctionImpl::get_function, py::return_value_policy::reference_internal);
+    auto bind_ground_function_expression_function = [&]<typename Tag>(const std::string& class_name, Tag)
+    {
+        py::class_<GroundFunctionExpressionFunctionImpl<Tag>>(m, class_name.c_str())
+            .def("__str__", [](const GroundFunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
+            .def("__repr__", [](const GroundFunctionExpressionFunctionImpl<Tag>& self) { return to_string(self); })
+            .def("get_index", &GroundFunctionExpressionFunctionImpl<Tag>::get_index)
+            .def("get_function", &GroundFunctionExpressionFunctionImpl<Tag>::get_function, py::return_value_policy::reference_internal);
+
+        static_assert(!py::detail::vector_needs_copy<GroundFunctionValueList<Tag>>::value);
+        auto list = py::bind_vector<GroundFunctionValueList<Tag>>(m, class_name + "List");
+    };
+    bind_ground_function_expression_function("StaticGroundFunctionExpressionFunction", Static {});
+    bind_ground_function_expression_function("FluentGroundFunctionExpressionFunction", Fluent {});
+    bind_ground_function_expression_function("AuxiliaryGroundFunctionExpressionFunction", Auxiliary {});
 
     py::class_<OptimizationMetricImpl>(m, "OptimizationMetric")  //
         .def("__str__", [](const OptimizationMetricImpl& self) { return to_string(self); })
@@ -669,20 +796,14 @@ void init_pymimir(py::module_& m)
         .def("get_function_expression", &OptimizationMetricImpl::get_function_expression, py::return_value_policy::reference_internal)
         .def("get_optimization_metric", &OptimizationMetricImpl::get_optimization_metric, py::return_value_policy::reference_internal);
 
-    py::class_<ConjunctiveConditionImpl>(m, "ConjunctiveCondition")  //
-        .def("get_parameters", &ConjunctiveConditionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_precondition", &ConjunctiveConditionImpl::get_literals<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_fluent_conditions", &ConjunctiveConditionImpl::get_literals<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_derived_conditions", &ConjunctiveConditionImpl::get_literals<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy);
-
     py::class_<ActionImpl>(m, "Action")  //
         .def("__str__", [](const ActionImpl& self) { return to_string(self); })
         .def("__repr__", [](const ActionImpl& self) { return to_string(self); })
         .def("get_index", &ActionImpl::get_index)
         .def("get_name", &ActionImpl::get_name, py::return_value_policy::copy)
         .def("get_parameters", &ActionImpl::get_parameters, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_precondition", &ActionImpl::get_precondition, py::return_value_policy::reference_internal)
-        .def("get_strips_effect", &ActionImpl::get_strips_effect, py::return_value_policy::reference_internal)
+        .def("get_conjunctive_condition", &ActionImpl::get_conjunctive_condition, py::return_value_policy::reference_internal)
+        .def("get_conjunctive_effect", &ActionImpl::get_conjunctive_effect, py::return_value_policy::reference_internal)
         .def("get_conditional_effects", &ActionImpl::get_conditional_effects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_arity", &ActionImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<ActionList>::value);  // Ensure return by reference + keep alive
@@ -692,11 +813,70 @@ void init_pymimir(py::module_& m)
         .def("__str__", [](const AxiomImpl& self) { return to_string(self); })
         .def("__repr__", [](const AxiomImpl& self) { return to_string(self); })
         .def("get_index", &AxiomImpl::get_index)
-        .def("get_precondition", &AxiomImpl::get_precondition, py::return_value_policy::reference_internal)
+        .def("get_conjunctive_condition", &AxiomImpl::get_conjunctive_condition, py::return_value_policy::reference_internal)
         .def("get_literal", &AxiomImpl::get_literal, py::return_value_policy::reference_internal)
         .def("get_arity", &AxiomImpl::get_arity);
     static_assert(!py::detail::vector_needs_copy<AxiomList>::value);  // Ensure return by reference + keep alive
     list_class = py::bind_vector<AxiomList>(m, "AxiomList");
+
+    /* GroundAction */
+    py::class_<GroundActionImpl>(m, "GroundAction")  //
+        .def("__hash__", [](const GroundActionImpl& self) { return self.get_index(); })
+        .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
+        .def("to_string",
+             [](const GroundActionImpl& self, const PDDLRepositories& pddl_repositories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories), FullActionFormatterTag {});
+                 return ss.str();
+             })
+        .def("to_string_for_plan",
+             [](const GroundActionImpl& self, const PDDLRepositories& pddl_repositories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories), PlanActionFormatterTag {});
+                 return ss.str();
+             })
+        .def("get_index", py::overload_cast<>(&GroundActionImpl::get_index, py::const_), py::return_value_policy::copy)
+        .def("get_action_index", py::overload_cast<>(&GroundActionImpl::get_action_index, py::const_), py::return_value_policy::copy)
+        .def("get_object_indices", py::overload_cast<>(&GroundActionImpl::get_object_indices, py::const_), py::return_value_policy::copy)
+        .def("get_conjunctive_condition",
+             py::overload_cast<>(&GroundActionImpl::get_conjunctive_condition, py::const_),
+             py::return_value_policy::reference_internal)
+        .def("get_conjunctive_effect", py::overload_cast<>(&GroundActionImpl::get_conjunctive_effect, py::const_), py::return_value_policy::reference_internal)
+        .def("get_conditional_effects",
+             py::overload_cast<>(&GroundActionImpl::get_conditional_effects, py::const_),
+             py::keep_alive<0, 1>(),
+             py::return_value_policy::copy);
+    static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
+    bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
+
+    /* GroundEffectDerivedLiteral */
+    py::class_<GroundEffectDerivedLiteral>(m, "GroundEffectDerivedLiteral")
+        .def_readonly("is_negated", &GroundEffectDerivedLiteral::is_negated)
+        .def_readonly("atom_index", &GroundEffectDerivedLiteral::atom_index);
+
+    /* GroundAxiom */
+    py::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
+        .def("__hash__", [](const GroundAxiomImpl& self) { return self.get_index(); })
+        .def("__eq__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
+        .def("to_string",
+             [](const GroundAxiomImpl& self, const PDDLRepositories& pddl_repositories)
+             {
+                 std::stringstream ss;
+                 ss << std::make_tuple(GroundAxiom(&self), std::cref(pddl_repositories));
+                 return ss.str();
+             })
+        .def("get_index", py::overload_cast<>(&GroundAxiomImpl::get_index, py::const_), py::return_value_policy::copy)
+        .def("get_axiom_index", py::overload_cast<>(&GroundAxiomImpl::get_axiom_index, py::const_), py::return_value_policy::copy)
+        .def("get_object_indices", py::overload_cast<>(&GroundAxiomImpl::get_object_indices, py::const_), py::return_value_policy::copy)
+        .def("get_conjunctive_condition",
+             py::overload_cast<>(&GroundAxiomImpl::get_conjunctive_condition, py::const_),
+             py::return_value_policy::reference_internal)
+        .def("get_derived_effect", py::overload_cast<>(&GroundAxiomImpl::get_derived_effect, py::const_), py::return_value_policy::reference_internal);
+    static_assert(!py::detail::vector_needs_copy<GroundAxiomList>::value);  // Ensure return by reference + keep alive
+    list_class = py::bind_vector<GroundAxiomList>(m, "GroundAxiomList");
 
     py::class_<DomainImpl>(m, "Domain")  //
         .def("__str__", [](const DomainImpl& self) { return to_string(self); })
@@ -711,7 +891,9 @@ void init_pymimir(py::module_& m)
         .def("get_static_predicates", &DomainImpl::get_predicates<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_fluent_predicates", &DomainImpl::get_predicates<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_derived_predicates", &DomainImpl::get_predicates<Derived>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_functions", &DomainImpl::get_functions, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_static_functions", &DomainImpl::get_functions<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_fluent_functions", &DomainImpl::get_functions<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_auxiliary_function", &DomainImpl::get_auxiliary_function, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_actions", &DomainImpl::get_actions, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_requirements", &DomainImpl::get_requirements, py::return_value_policy::reference_internal)
         .def("get_name_to_static_predicate", &DomainImpl::get_name_to_predicate<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -725,7 +907,7 @@ void init_pymimir(py::module_& m)
     {
         py::class_<AssignmentSet<Tag>>(m, class_name.c_str())
             .def(py::init<size_t, PredicateList<Tag>>(), py::arg("num_objects"), py::arg("predicates"))
-            .def("clear", &AssignmentSet<Tag>::clear)
+            .def("reset", &AssignmentSet<Tag>::reset)
             .def("insert_ground_atoms", &AssignmentSet<Tag>::insert_ground_atoms, py::arg("ground_atoms"))
             .def("insert_ground_atom", &AssignmentSet<Tag>::insert_ground_atoms, py::arg("ground_atom"));
     };
@@ -748,7 +930,9 @@ void init_pymimir(py::module_& m)
         .def("get_objects", &ProblemImpl::get_objects, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_static_initial_literals", &ProblemImpl::get_static_initial_literals, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_fluent_initial_literals", &ProblemImpl::get_fluent_initial_literals, py::keep_alive<0, 1>(), py::return_value_policy::copy)
-        .def("get_function_values", &ProblemImpl::get_function_values, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_static_function_values", &ProblemImpl::get_function_values<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_fluent_function_values", &ProblemImpl::get_function_values<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
+        .def("get_auxiliary_function_value", &ProblemImpl::get_auxiliary_function_value, py::return_value_policy::reference_internal)
         .def("get_optimization_metric", &ProblemImpl::get_optimization_metric, py::return_value_policy::reference_internal)
         .def("get_static_goal_condition", &ProblemImpl::get_goal_condition<Static>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_fluent_goal_condition", &ProblemImpl::get_goal_condition<Fluent>, py::keep_alive<0, 1>(), py::return_value_policy::copy)
@@ -760,14 +944,15 @@ void init_pymimir(py::module_& m)
     list_class = py::bind_vector<ProblemList>(m, "ProblemList");
 
     py::class_<PDDLRepositories, std::shared_ptr<PDDLRepositories>>(m, "PDDLRepositories")  //
-        .def("get_or_create_existentially_quantified_conjunctive_condition",
-             py::overload_cast<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>>(
-                 &PDDLRepositories::get_or_create_existentially_quantified_conjunctive_condition),
+        .def("get_or_create_conjunctive_condition",
+             py::overload_cast<VariableList, LiteralList<Static>, LiteralList<Fluent>, LiteralList<Derived>, NumericConstraintList>(
+                 &PDDLRepositories::get_or_create_conjunctive_condition),
              py::return_value_policy::reference_internal,
              py::arg("parameters"),
              py::arg("static_literals"),
              py::arg("fluent_literals"),
-             py::arg("deried_literals"))
+             py::arg("derived_literals"),
+             py::arg("numeric_constraints"))
         .def(
             "get_static_ground_atoms",
             [](const PDDLRepositories& self) { return GroundAtomList<Static>(self.get_ground_atoms<Static>().begin(), self.get_ground_atoms<Static>().end()); },
@@ -848,118 +1033,6 @@ void init_pymimir(py::module_& m)
     bind_const_span<std::span<const State>>(m, "StateSpan");
     bind_const_index_grouped_vector<IndexGroupedVector<const State>>(m, "StateIndexGroupedVector");
 
-    /* Action */
-    py::class_<GroundEffectStrips>(m, "GroundEffectStrips")
-        .def("get_positive_effects", py::overload_cast<>(&GroundEffectStrips::get_positive_effects, py::const_), py::return_value_policy::copy)
-        .def("get_negative_effects", py::overload_cast<>(&GroundEffectStrips::get_negative_effects, py::const_), py::return_value_policy::copy)
-        .def("get_cost", py::overload_cast<>(&GroundEffectStrips::get_cost, py::const_), py::return_value_policy::copy);
-
-    py::class_<GroundEffectFluentLiteral>(m, "GroundEffectFluentLiteral")
-        .def_readonly("is_negated", &GroundEffectFluentLiteral::is_negated)
-        .def_readonly("atom_index", &GroundEffectFluentLiteral::atom_index);
-
-    py::class_<GroundConjunctiveCondition>(m, "GroundConjunctiveCondition")
-        .def("get_fluent_positive_condition",
-             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Fluent>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_static_positive_condition",
-             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Static>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_derived_positive_condition",
-             py::overload_cast<>(&GroundConjunctiveCondition::get_positive_precondition<Derived>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_fluent_negative_condition",
-             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Fluent>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_static_negative_condition",
-             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Static>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_derived_negative_condition",
-             py::overload_cast<>(&GroundConjunctiveCondition::get_negative_precondition<Derived>, py::const_),
-             py::return_value_policy::copy);
-    py::class_<GroundEffectConditional>(m, "GroundEffectConditional")
-        .def("get_fluent_positive_condition",
-             py::overload_cast<>(&GroundEffectConditional::get_positive_precondition<Fluent>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_static_positive_condition",
-             py::overload_cast<>(&GroundEffectConditional::get_positive_precondition<Static>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_derived_positive_condition",
-             py::overload_cast<>(&GroundEffectConditional::get_positive_precondition<Derived>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_fluent_negative_condition",
-             py::overload_cast<>(&GroundEffectConditional::get_negative_precondition<Fluent>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_static_negative_condition",
-             py::overload_cast<>(&GroundEffectConditional::get_negative_precondition<Static>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_derived_negative_condition",
-             py::overload_cast<>(&GroundEffectConditional::get_negative_precondition<Derived>, py::const_),
-             py::return_value_policy::copy)
-        .def("get_fluent_effect_literals",
-             py::overload_cast<>(&GroundEffectConditional::get_fluent_effect_literals, py::const_),
-             py::return_value_policy::copy);
-    static_assert(!py::detail::vector_needs_copy<std::vector<GroundEffectConditional>>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<std::vector<GroundEffectConditional>>(m, "GroundEffectConditionalList");
-
-    /* GroundAction */
-    py::class_<GroundActionImpl>(m, "GroundAction")  //
-        .def("__hash__", [](const GroundActionImpl& self) { return self.get_index(); })
-        .def("__eq__", [](const GroundActionImpl& lhs, const GroundActionImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
-        .def("to_string",
-             [](const GroundActionImpl& self, const PDDLRepositories& pddl_repositories)
-             {
-                 std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories), FullActionFormatterTag {});
-                 return ss.str();
-             })
-        .def("to_string_for_plan",
-             [](const GroundActionImpl& self, const PDDLRepositories& pddl_repositories)
-             {
-                 std::stringstream ss;
-                 ss << std::make_tuple(GroundAction(&self), std::cref(pddl_repositories), PlanActionFormatterTag {});
-                 return ss.str();
-             })
-        .def("get_index", py::overload_cast<>(&GroundActionImpl::get_index, py::const_), py::return_value_policy::copy)
-        .def("get_action_index", py::overload_cast<>(&GroundActionImpl::get_action_index, py::const_), py::return_value_policy::copy)
-        .def("get_object_indices", py::overload_cast<>(&GroundActionImpl::get_object_indices, py::const_), py::return_value_policy::copy)
-        .def("get_strips_precondition",
-             py::overload_cast<>(&GroundActionImpl::get_strips_precondition, py::const_),
-             py::return_value_policy::reference_internal)
-        .def("get_strips_effect", py::overload_cast<>(&GroundActionImpl::get_strips_effect, py::const_), py::return_value_policy::reference_internal)
-        .def(
-            "get_conditional_effects",
-            [](const GroundActionImpl& self)
-            { return std::vector<GroundEffectConditional>(self.get_conditional_effects().begin(), self.get_conditional_effects().end()); },
-            py::keep_alive<0, 1>());
-    static_assert(!py::detail::vector_needs_copy<GroundActionList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<GroundActionList>(m, "GroundActionList");
-    bind_const_span<std::span<const GroundAction>>(m, "GroundActionSpan");
-
-    /* GroundEffectDerivedLiteral */
-    py::class_<GroundEffectDerivedLiteral>(m, "GroundEffectDerivedLiteral")
-        .def_readonly("is_negated", &GroundEffectDerivedLiteral::is_negated)
-        .def_readonly("atom_index", &GroundEffectDerivedLiteral::atom_index);
-
-    /* GroundAxiom */
-    py::class_<GroundAxiomImpl>(m, "GroundAxiom")  //
-        .def("__hash__", [](const GroundAxiomImpl& self) { return self.get_index(); })
-        .def("__eq__", [](const GroundAxiomImpl& lhs, const GroundAxiomImpl& rhs) { return lhs.get_index() == rhs.get_index(); })
-        .def("to_string",
-             [](const GroundAxiomImpl& self, const PDDLRepositories& pddl_repositories)
-             {
-                 std::stringstream ss;
-                 ss << std::make_tuple(GroundAxiom(&self), std::cref(pddl_repositories));
-                 return ss.str();
-             })
-        .def("get_index", py::overload_cast<>(&GroundAxiomImpl::get_index, py::const_), py::return_value_policy::copy)
-        .def("get_axiom_index", py::overload_cast<>(&GroundAxiomImpl::get_axiom_index, py::const_), py::return_value_policy::copy)
-        .def("get_object_indices", py::overload_cast<>(&GroundAxiomImpl::get_object_indices, py::const_), py::return_value_policy::copy)
-        .def("get_strips_precondition", py::overload_cast<>(&GroundAxiomImpl::get_strips_precondition, py::const_), py::return_value_policy::reference_internal)
-        .def("get_derived_effect", py::overload_cast<>(&GroundAxiomImpl::get_derived_effect, py::const_), py::return_value_policy::reference_internal);
-    static_assert(!py::detail::vector_needs_copy<GroundAxiomList>::value);  // Ensure return by reference + keep alive
-    list_class = py::bind_vector<GroundAxiomList>(m, "GroundAxiomList");
-
     /* Plan */
     py::class_<Plan>(m, "Plan")  //
         .def("__len__", [](const Plan& arg) { return arg.get_actions().size(); })
@@ -967,13 +1040,14 @@ void init_pymimir(py::module_& m)
         .def("get_cost", &Plan::get_cost);
 
     /* SatisficingBindingGenerator */
-    py::class_<SatisficingBindingGenerator>(m, "SatisficingBindingGenerator")  //
-        .def(py::init<std::shared_ptr<LiteralGrounder>, ConjunctiveCondition>(),
+    py::class_<ConjunctiveConditionSatisficingBindingGenerator>(m, "ConjunctiveConditionSatisficingBindingGenerator")  //
+        .def(py::init<std::shared_ptr<LiteralGrounder>, std::shared_ptr<NumericConstraintGrounder>, ConjunctiveCondition>(),
              py::arg("literal_grounder"),
-             py::arg("existentially_quantified_conjunctive_condition"))
+             py::arg("numeric_constraint_grounder"),
+             py::arg("conjunctive_condition"))
         .def(
             "generate_ground_conjunctions",
-            [](SatisficingBindingGenerator& self, State state, size_t max_num_groundings)
+            [](ConjunctiveConditionSatisficingBindingGenerator& self, State state, size_t max_num_groundings)
             {
                 auto result =
                     std::vector<std::pair<ObjectList, std::tuple<GroundLiteralList<Static>, GroundLiteralList<Fluent>, GroundLiteralList<Derived>>>> {};
@@ -1005,13 +1079,29 @@ void init_pymimir(py::module_& m)
     py::class_<FunctionGrounder, std::shared_ptr<FunctionGrounder>>(m, "FunctionGrounder")  //
         .def("get_problem", &FunctionGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &FunctionGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_function", &FunctionGrounder::ground, py::return_value_policy::reference_internal, py::arg("function"), py::arg("binding"));
+        .def("ground_static_function", &FunctionGrounder::ground<Static>, py::return_value_policy::reference_internal, py::arg("function"), py::arg("binding"))
+        .def("ground_fluent_function", &FunctionGrounder::ground<Fluent>, py::return_value_policy::reference_internal, py::arg("function"), py::arg("binding"))
+        .def("ground_auxiliary_function",
+             &FunctionGrounder::ground<Auxiliary>,
+             py::return_value_policy::reference_internal,
+             py::arg("function"),
+             py::arg("binding"));
+
+    /* FunctionExpressionGrounder */
+    py::class_<FunctionExpressionGrounder, std::shared_ptr<FunctionExpressionGrounder>>(m, "FunctionExpressionGrounder")  //
+        .def("get_function_grounder", &FunctionExpressionGrounder::get_function_grounder, py::return_value_policy::copy)
+        .def("ground", &FunctionExpressionGrounder::ground, py::return_value_policy::reference_internal, py::arg("function_expression"), py::arg("binding"));
+
+    /* NumericConstraintGrounder */
+    py::class_<NumericConstraintGrounder, std::shared_ptr<NumericConstraintGrounder>>(m, "NumericConstraintGrounder")  //
+        .def("get_function_expression_grounder", &NumericConstraintGrounder::get_fexpr_grounder, py::return_value_policy::copy)
+        .def("ground", &NumericConstraintGrounder::ground, py::return_value_policy::reference_internal, py::arg("numeric_constraint"), py::arg("binding"));
 
     /* ActionGrounder */
     py::class_<ActionGrounder, std::shared_ptr<ActionGrounder>>(m, "ActionGrounder")  //
         .def("get_problem", &ActionGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &ActionGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_action", &ActionGrounder::ground, py::return_value_policy::reference_internal, py::arg("action"), py::arg("binding"))
+        .def("ground", &ActionGrounder::ground, py::return_value_policy::reference_internal, py::arg("action"), py::arg("binding"))
         .def("get_ground_actions", &ActionGrounder::get_ground_actions, py::return_value_policy::copy)
         .def("get_ground_action", &ActionGrounder::get_ground_action, py::return_value_policy::reference_internal, py::arg("action_index"))
         .def("get_num_ground_actions", &ActionGrounder::get_num_ground_actions, py::return_value_policy::copy);
@@ -1020,7 +1110,7 @@ void init_pymimir(py::module_& m)
     py::class_<AxiomGrounder, std::shared_ptr<AxiomGrounder>>(m, "AxiomGrounder")  //
         .def("get_problem", &AxiomGrounder::get_problem, py::return_value_policy::reference_internal)
         .def("get_pddl_repositories", &AxiomGrounder::get_pddl_repositories, py::return_value_policy::copy)
-        .def("ground_axiom", &AxiomGrounder::ground, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
+        .def("ground", &AxiomGrounder::ground, py::return_value_policy::reference_internal, py::arg("axiom"), py::arg("binding"))
         .def("get_ground_axioms", &AxiomGrounder::get_ground_axioms, py::keep_alive<0, 1>(), py::return_value_policy::copy)
         .def("get_ground_axiom", &AxiomGrounder::get_ground_axiom, py::return_value_policy::reference_internal, py::arg("axiom_index"))
         .def("get_num_ground_axioms", &AxiomGrounder::get_num_ground_axioms, py::return_value_policy::copy);
@@ -1135,9 +1225,11 @@ void init_pymimir(py::module_& m)
         .def(py::init<std::shared_ptr<Grounder>>(), py::arg("grounder"))
         .def("create_grounded_axiom_evaluator",
              &DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator,
+             py::arg("match_tree_optioms") = match_tree::Options(),
              py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
         .def("create_grounded_applicable_action_generator",
              &DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator,
+             py::arg("match_tree_optioms") = match_tree::Options(),
              py::arg("axiom_evaluator_event_handler") = std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
         .def("get_grounder", &DeleteRelaxedProblemExplorator::get_grounder, py::return_value_policy::copy);
 
@@ -1145,7 +1237,11 @@ void init_pymimir(py::module_& m)
     py::class_<StateRepository, std::shared_ptr<StateRepository>>(m, "StateRepository")  //
         .def(py::init<std::shared_ptr<IAxiomEvaluator>>(), py::arg("axiom_evaluator"))
         .def("get_or_create_initial_state", &StateRepository::get_or_create_initial_state, py::return_value_policy::reference_internal)
-        .def("get_or_create_state", &StateRepository::get_or_create_state, py::return_value_policy::reference_internal, py::arg("atoms"))
+        .def("get_or_create_state",
+             &StateRepository::get_or_create_state,
+             py::return_value_policy::reference_internal,
+             py::arg("atoms"),
+             py::arg("numeric_variables"))
         .def("get_or_create_successor_state",
              py::overload_cast<State, GroundAction, ContinuousCost>(&StateRepository::get_or_create_successor_state),
              py::return_value_policy::copy,  // returns pair (State, ContinuousCost): TODO: we must ensure that State keeps StateRepository alive!
