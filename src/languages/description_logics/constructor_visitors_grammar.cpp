@@ -43,13 +43,13 @@ void ConceptTopGrammarVisitor::visit(ConceptTop constructor) { m_result = true; 
  * ConceptAtomicStateGrammarVisitor
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 ConceptAtomicStateGrammarVisitor<P>::ConceptAtomicStateGrammarVisitor(grammar::ConceptAtomicState<P> grammar_constructor) :
     m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void ConceptAtomicStateGrammarVisitor<P>::visit(ConceptAtomicState<P> constructor)
 {
     m_result = constructor->get_predicate() == m_grammar_constructor->get_predicate();
@@ -63,13 +63,13 @@ template class ConceptAtomicStateGrammarVisitor<Derived>;
  * ConceptAtomicGoalGrammarVisitor
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 ConceptAtomicGoalGrammarVisitor<P>::ConceptAtomicGoalGrammarVisitor(grammar::ConceptAtomicGoal<P> grammar_constructor) :
     m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void ConceptAtomicGoalGrammarVisitor<P>::visit(ConceptAtomicGoal<P> constructor)
 {
     m_result = constructor->get_predicate() == m_grammar_constructor->get_predicate();
@@ -197,12 +197,12 @@ void RoleUniversalGrammarVisitor::visit(RoleUniversal constructor) { m_result = 
  * RoleAtomicStateGrammarVisitor
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 RoleAtomicStateGrammarVisitor<P>::RoleAtomicStateGrammarVisitor(grammar::RoleAtomicState<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void RoleAtomicStateGrammarVisitor<P>::visit(RoleAtomicState<P> constructor)
 {
     m_result = constructor->get_predicate() == m_grammar_constructor->get_predicate();
@@ -216,12 +216,12 @@ template class RoleAtomicStateGrammarVisitor<Derived>;
  * RoleAtomicGoalGrammarVisitor
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 RoleAtomicGoalGrammarVisitor<P>::RoleAtomicGoalGrammarVisitor(grammar::RoleAtomicGoal<P> grammar_constructor) : m_grammar_constructor(grammar_constructor)
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void RoleAtomicGoalGrammarVisitor<P>::visit(RoleAtomicGoal<P> constructor)
 {
     m_result = (constructor->get_predicate() == m_grammar_constructor->get_predicate());

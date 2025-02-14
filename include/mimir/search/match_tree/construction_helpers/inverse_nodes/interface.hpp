@@ -27,49 +27,49 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class IInverseNodeVisitor
 {
 public:
-    virtual void accept(const InverseAtomSelectorNode_TFX<Element, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TF<Element, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TX<Element, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_FX<Element, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_T<Element, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_F<Element, Fluent>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TFX<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TF<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_TX<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) = 0;
-    virtual void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) = 0;
-    virtual void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) = 0;
-    virtual void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) = 0;
-    virtual void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_T<E, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_F<E, Fluent>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TF<E, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_TX<E, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_FX<E, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_T<E, Derived>& atom) = 0;
+    virtual void accept(const InverseAtomSelectorNode_F<E, Derived>& atom) = 0;
+    virtual void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) = 0;
+    virtual void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) = 0;
+    virtual void accept(const InverseElementGeneratorNode_Perfect<E>& generator) = 0;
+    virtual void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) = 0;
 };
 
 /// @brief `Node` implements the interface of nodes.
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class IInverseNode
 {
 protected:
-    const IInverseNode<Element>* m_parent;  ///< Raw pointer to parent node, we must ensure that root is kept alive!
-    SplitList m_useless_splits;             ///< Splits that were detected as useless.
-    size_t m_root_distance;                 ///< The distance to the root node.
+    const IInverseNode<E>* m_parent;  ///< Raw pointer to parent node, we must ensure that root is kept alive!
+    SplitList m_useless_splits;       ///< Splits that were detected as useless.
+    size_t m_root_distance;           ///< The distance to the root node.
 
 public:
-    IInverseNode(const IInverseNode<Element>* parent, SplitList useless_splits) : m_parent(parent), m_useless_splits(std::move(useless_splits)) {}
+    IInverseNode(const IInverseNode<E>* parent, SplitList useless_splits) : m_parent(parent), m_useless_splits(std::move(useless_splits)) {}
     virtual ~IInverseNode() = default;
 
-    virtual const IInverseNode<Element>* get_parent() const { return m_parent; }
+    virtual const IInverseNode<E>* get_parent() const { return m_parent; }
     virtual const SplitList& get_useless_splits() const { return m_useless_splits; }
 
-    virtual void visit(IInverseNodeVisitor<Element>& visitor) const = 0;
+    virtual void visit(IInverseNodeVisitor<E>& visitor) const = 0;
 };
 
-template<HasConjunctiveCondition Element>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<Element>&, DotPrinterTag>& tree);
+template<HasConjunctiveCondition E>
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const InverseNode<E>&, DotPrinterTag>& tree);
 }
 
 #endif

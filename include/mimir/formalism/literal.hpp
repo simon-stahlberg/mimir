@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class LiteralImpl
 {
 private:
@@ -58,10 +58,10 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_is_negated), std::as_const(m_atom)); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 extern std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 extern std::ostream& operator<<(std::ostream& out, Literal<P> element);
 
 }

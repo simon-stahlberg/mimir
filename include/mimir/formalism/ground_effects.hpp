@@ -31,7 +31,7 @@
 namespace mimir
 {
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 class GroundNumericEffect
 {
 private:
@@ -55,7 +55,7 @@ public:
     auto cista_members() noexcept { return std::tie(m_assign_operator, m_function, m_function_expression); }
 };
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 using GroundNumericEffectList = cista::offset::vector<GroundNumericEffect<F>>;
 
 class GroundConjunctiveEffect
@@ -109,7 +109,7 @@ using GroundEffectConditionalList = cista::offset::vector<GroundConditionalEffec
  * Utils
  */
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 extern std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables);
 
 /**

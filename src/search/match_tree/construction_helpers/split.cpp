@@ -39,7 +39,7 @@ extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitD
     return out;
 }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split)
 {
     out << "[" << split.feature << " -> " << split.distribution << "]";

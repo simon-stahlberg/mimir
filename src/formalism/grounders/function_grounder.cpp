@@ -30,7 +30,7 @@ FunctionGrounder::FunctionGrounder(Problem problem, std::shared_ptr<PDDLReposito
 {
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunction<F> FunctionGrounder::ground(Function<F> function, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */

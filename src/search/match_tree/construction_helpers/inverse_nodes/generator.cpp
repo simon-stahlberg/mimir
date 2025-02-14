@@ -22,14 +22,14 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-InverseElementGeneratorNode_Perfect<Element>::InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent, std::span<const Element*> elements) :
-    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>(parent, elements)
+template<HasConjunctiveCondition E>
+InverseElementGeneratorNode_Perfect<E>::InverseElementGeneratorNode_Perfect(const IInverseNode<E>* parent, std::span<const E*> elements) :
+    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<E>, E>(parent, elements)
 {
 }
 
-template<HasConjunctiveCondition Element>
-void InverseElementGeneratorNode_Perfect<Element>::visit_impl(IInverseNodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E>
+void InverseElementGeneratorNode_Perfect<E>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
@@ -37,14 +37,14 @@ void InverseElementGeneratorNode_Perfect<Element>::visit_impl(IInverseNodeVisito
 template class InverseElementGeneratorNode_Perfect<GroundActionImpl>;
 template class InverseElementGeneratorNode_Perfect<GroundAxiomImpl>;
 
-template<HasConjunctiveCondition Element>
-InverseElementGeneratorNode_Imperfect<Element>::InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent, std::span<const Element*> elements) :
-    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>(parent, elements)
+template<HasConjunctiveCondition E>
+InverseElementGeneratorNode_Imperfect<E>::InverseElementGeneratorNode_Imperfect(const IInverseNode<E>* parent, std::span<const E*> elements) :
+    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<E>, E>(parent, elements)
 {
 }
 
-template<HasConjunctiveCondition Element>
-void InverseElementGeneratorNode_Imperfect<Element>::visit_impl(IInverseNodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E>
+void InverseElementGeneratorNode_Imperfect<E>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }

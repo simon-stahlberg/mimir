@@ -33,7 +33,7 @@ namespace mimir
  * AssignmentSet
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& predicates) : m_num_objects(num_objects), m_per_predicate_assignment_set()
 {
     /* Allocate */
@@ -54,7 +54,7 @@ AssignmentSet<P>::AssignmentSet(size_t num_objects, const PredicateList<P>& pred
     reset();
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void AssignmentSet<P>::reset()
 {
     for (auto& assignment_set : m_per_predicate_assignment_set)
@@ -63,7 +63,7 @@ void AssignmentSet<P>::reset()
     }
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms)
 {
     for (const auto& ground_atom : ground_atoms)
@@ -89,7 +89,7 @@ void AssignmentSet<P>::insert_ground_atoms(const GroundAtomList<P>& ground_atoms
     }
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void AssignmentSet<P>::insert_ground_atom(GroundAtom<P> ground_atom)
 {
     const auto& arity = ground_atom->get_arity();

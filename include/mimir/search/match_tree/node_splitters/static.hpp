@@ -26,20 +26,20 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-class StaticNodeSplitter : public NodeSplitterBase<StaticNodeSplitter<Element>, Element>
+template<HasConjunctiveCondition E>
+class StaticNodeSplitter : public NodeSplitterBase<StaticNodeSplitter<E>, E>
 {
 private:
     std::unordered_map<Split, size_t, loki::Hash<Split>, loki::EqualTo<Split>> m_split_to_root_distance;
 
     /* Implement NodeSplitterBase interface */
 
-    InverseNode<Element> fit_impl(std::span<const Element*> elements, Statistics& ref_statistics);
+    InverseNode<E> fit_impl(std::span<const E*> elements, Statistics& ref_statistics);
 
-    friend class NodeSplitterBase<StaticNodeSplitter<Element>, Element>;
+    friend class NodeSplitterBase<StaticNodeSplitter<E>, E>;
 
 public:
-    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements);
+    StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements);
 };
 
 }

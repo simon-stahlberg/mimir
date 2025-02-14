@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 class NumericEffectImpl
 {
 private:
@@ -144,12 +144,12 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_conjunctive_condition), std::as_const(m_conjunctive_effect)); }
 };
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const ConjunctiveEffectImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element);
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, NumericEffect<F> element);
 extern std::ostream& operator<<(std::ostream& out, ConjunctiveEffect element);
 extern std::ostream& operator<<(std::ostream& out, ConditionalEffect element);

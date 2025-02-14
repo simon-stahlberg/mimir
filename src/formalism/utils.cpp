@@ -22,7 +22,7 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void to_ground_atoms(const GroundLiteralList<P>& literals, GroundAtomList<P>& out_ground_atoms)
 {
     out_ground_atoms.clear();
@@ -37,7 +37,7 @@ template void to_ground_atoms(const GroundLiteralList<Static>& literals, GroundA
 template void to_ground_atoms(const GroundLiteralList<Fluent>& literals, GroundAtomList<Fluent>& out_ground_atoms);
 template void to_ground_atoms(const GroundLiteralList<Derived>& literals, GroundAtomList<Derived>& out_ground_atoms);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundAtomList<P> to_ground_atoms(const GroundLiteralList<P>& literals)
 {
     GroundAtomList<P> ground_atoms;
@@ -49,7 +49,7 @@ template GroundAtomList<Static> to_ground_atoms(const GroundLiteralList<Static>&
 template GroundAtomList<Fluent> to_ground_atoms(const GroundLiteralList<Fluent>& literals);
 template GroundAtomList<Derived> to_ground_atoms(const GroundLiteralList<Derived>& literals);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity, GroundAtomList<P>& out_ground_atoms)
 {
     out_ground_atoms.clear();
@@ -67,7 +67,7 @@ template void filter_ground_atoms(const GroundLiteralList<Static>& literals, boo
 template void filter_ground_atoms(const GroundLiteralList<Fluent>& literals, bool polarity, GroundAtomList<Fluent>& out_ground_atoms);
 template void filter_ground_atoms(const GroundLiteralList<Derived>& literals, bool polarity, GroundAtomList<Derived>& out_ground_atoms);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundAtomList<P> filter_ground_atoms(const GroundLiteralList<P>& literals, bool polarity)
 {
     GroundAtomList<P> ground_atoms;

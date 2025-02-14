@@ -34,7 +34,7 @@ Variable EncodeParameterIndexInVariables::transform_impl(Variable variable)
     return m_pddl_repositories.get_or_create_variable(variable->get_name(), 0);
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Predicate<P> EncodeParameterIndexInVariables::transform_impl(Predicate<P> predicate)
 {
     m_enable_encoding = false;
@@ -51,7 +51,7 @@ template Predicate<Static> EncodeParameterIndexInVariables::transform_impl(Predi
 template Predicate<Fluent> EncodeParameterIndexInVariables::transform_impl(Predicate<Fluent> predicate);
 template Predicate<Derived> EncodeParameterIndexInVariables::transform_impl(Predicate<Derived> predicate);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 FunctionSkeleton<F> EncodeParameterIndexInVariables::transform_impl(FunctionSkeleton<F> function_skeleton)
 {
     m_enable_encoding = false;

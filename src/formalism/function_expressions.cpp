@@ -88,18 +88,18 @@ Index FunctionExpressionMinusImpl::get_index() const { return m_index; }
 const FunctionExpression& FunctionExpressionMinusImpl::get_function_expression() const { return m_function_expression; }
 
 /* FunctionExpressionFunction */
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 FunctionExpressionFunctionImpl<F>::FunctionExpressionFunctionImpl(Index index, Function<F> function) : m_index(index), m_function(std::move(function))
 {
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Index FunctionExpressionFunctionImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const Function<F>& FunctionExpressionFunctionImpl<F>::get_function() const
 {
     return m_function;
@@ -156,7 +156,7 @@ std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& e
     return out;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
@@ -199,7 +199,7 @@ std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element)
     return out;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element)
 {
     out << *element;

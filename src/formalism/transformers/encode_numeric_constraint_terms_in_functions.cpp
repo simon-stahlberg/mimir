@@ -59,7 +59,7 @@ static void collect_terms(FunctionExpression fexpr, TermList& ref_terms)
         fexpr->get_variant());
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Function<F> EncodeNumericConstraintTermsInFunctions::transform_impl(Function<F> function)
 {
     auto transformed_function_skeleton = this->transform(function->get_function_skeleton());

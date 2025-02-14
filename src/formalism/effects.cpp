@@ -38,7 +38,7 @@ namespace mimir
  * EffectNumeric
  */
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 NumericEffectImpl<F>::NumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression) :
     m_index(index),
     m_assign_operator(assign_operator),
@@ -47,25 +47,25 @@ NumericEffectImpl<F>::NumericEffectImpl(Index index, loki::AssignOperatorEnum as
 {
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 Index NumericEffectImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 loki::AssignOperatorEnum NumericEffectImpl<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 const Function<F>& NumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 const FunctionExpression& NumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
@@ -127,7 +127,7 @@ const ConjunctiveEffect& ConditionalEffectImpl::get_conjunctive_effect() const {
 
 size_t ConditionalEffectImpl::get_arity() const { return m_conjunctive_condition->get_arity(); }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const NumericEffectImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
@@ -152,7 +152,7 @@ std::ostream& operator<<(std::ostream& out, const ConditionalEffectImpl& element
     return out;
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, NumericEffect<F> element)
 {
     out << *element;

@@ -33,28 +33,27 @@ namespace mimir::match_tree
 
 /* MatchTree */
 
-template<HasConjunctiveCondition Element>
-MatchTree<Element>::MatchTree() : m_elements(), m_options(), m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end())))
+template<HasConjunctiveCondition E>
+MatchTree<E>::MatchTree() : m_elements(), m_options(), m_root(create_root_generator_node(std::span<const E*>(m_elements.begin(), m_elements.end())))
 {
     m_statistics.generator_distribution.push_back(0);
 }
 
-template<HasConjunctiveCondition Element>
-MatchTree<Element>::MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options) :
+template<HasConjunctiveCondition E>
+MatchTree<E>::MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options) :
     m_elements(std::move(elements)),
     m_options(options),
-    m_root(create_root_generator_node(std::span<const Element*>(m_elements.begin(), m_elements.end())))
+    m_root(create_root_generator_node(std::span<const E*>(m_elements.begin(), m_elements.end())))
 {
     if (!m_elements.empty())
     {
-        auto node_splitter = NodeSplitter<Element> { nullptr };
+        auto node_splitter = NodeSplitter<E> { nullptr };
         switch (m_options.split_strategy)
         {
             case SplitStrategyEnum::DYNAMIC:
             {
-                node_splitter = std::make_unique<DynamicNodeSplitter<Element>>(pddl_repositories,
-                                                                               m_options,
-                                                                               std::span<const Element*>(m_elements.begin(), m_elements.end()));
+                node_splitter =
+                    std::make_unique<DynamicNodeSplitter<E>>(pddl_repositories, m_options, std::span<const E*>(m_elements.begin(), m_elements.end()));
                 break;
             }
             case SplitStrategyEnum::HYBRID:
@@ -77,8 +76,8 @@ MatchTree<Element>::MatchTree(const PDDLRepositories& pddl_repositories, std::ve
     }
 }
 
-template<HasConjunctiveCondition Element>
-void MatchTree<Element>::generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements)
+template<HasConjunctiveCondition E>
+void MatchTree<E>::generate_applicable_elements_iteratively(const DenseState& state, std::vector<const E*>& out_applicable_elements)
 {
     m_evaluate_stack.clear();
     out_applicable_elements.clear();
@@ -95,17 +94,16 @@ void MatchTree<Element>::generate_applicable_elements_iteratively(const DenseSta
     }
 }
 
-template<HasConjunctiveCondition Element>
-const Statistics& MatchTree<Element>::get_statistics() const
+template<HasConjunctiveCondition E>
+const Statistics& MatchTree<E>::get_statistics() const
 {
     return m_statistics;
 }
 
-template<HasConjunctiveCondition Element>
-std::unique_ptr<MatchTree<Element>>
-MatchTree<Element>::create(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options)
+template<HasConjunctiveCondition E>
+std::unique_ptr<MatchTree<E>> MatchTree<E>::create(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options)
 {
-    return std::unique_ptr<MatchTree<Element>>(new MatchTree<Element>(pddl_repositories, std::move(elements), options));
+    return std::unique_ptr<MatchTree<E>>(new MatchTree<E>(pddl_repositories, std::move(elements), options));
 }
 
 template class MatchTree<GroundActionImpl>;

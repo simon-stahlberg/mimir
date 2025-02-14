@@ -35,17 +35,17 @@ namespace mimir::dl::refinement_brfs
 
 struct SearchSpace
 {
-    using ConstructorTagToConstructorsByComplexity = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::vector<ConstructorList<Concept>>>,
-                                                                      boost::hana::pair<boost::hana::type<Role>, std::vector<ConstructorList<Role>>>>;
+    using ConceptOrRoleToConstructorsByComplexity = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::vector<ConstructorList<Concept>>>,
+                                                                     boost::hana::pair<boost::hana::type<Role>, std::vector<ConstructorList<Role>>>>;
 
-    ConstructorTagToConstructorsByComplexity constructors_by_complexity = ConstructorTagToConstructorsByComplexity();
+    ConceptOrRoleToConstructorsByComplexity constructors_by_complexity = ConceptOrRoleToConstructorsByComplexity();
 };
 
 /**
  * Post construction refinement
  */
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 static bool try_insert_into_search_space(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
@@ -200,7 +200,7 @@ public:
     bool operator!=(const SumPartitionConstIterator& other) const { return !(*this == other); }
 };
 
-template<ConstructorTag... Ds>
+template<ConceptOrRole... Ds>
 class ConstructorArgumentConstIterator
 {
 private:
@@ -232,8 +232,7 @@ private:
                      }
                  }()),
              ...);
-        }
-        (std::make_index_sequence<num_elements> {});
+        }(std::make_index_sequence<num_elements> {});
 
         return success;
     }
@@ -345,8 +344,7 @@ public:
             ((std::get<Indices>(m_values) =
                   std::get<Indices>(m_constructors_by_complexity)->at((*m_complexity_distribution_iter)[Indices]).at(m_indices[Indices])),
              ...);
-        }
-        (std::make_index_sequence<num_elements> {});
+        }(std::make_index_sequence<num_elements> {});
 
         return m_values;
     }
@@ -375,7 +373,7 @@ template<typename ConstructorImplType>
 static bool refine_composite_constructor(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         ConstructorTagToRepository& ref_constructor_repositories,
+                                         ConceptOrRoleToRepository& ref_constructor_repositories,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics,
@@ -416,7 +414,7 @@ static bool refine_composite_constructor(Problem problem,
 static bool refine_primitive_concept_bot(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         ConstructorTagToRepository& ref_constructor_repositories,
+                                         ConceptOrRoleToRepository& ref_constructor_repositories,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics)
@@ -433,7 +431,7 @@ static bool refine_primitive_concept_bot(Problem problem,
 static bool refine_primitive_concept_top(Problem problem,
                                          const grammar::Grammar& grammar,
                                          const Options& options,
-                                         ConstructorTagToRepository& ref_constructor_repositories,
+                                         ConceptOrRoleToRepository& ref_constructor_repositories,
                                          RefinementPruningFunction& ref_pruning_function,
                                          SearchSpace& ref_search_space,
                                          Statistics& ref_statistics)
@@ -450,7 +448,7 @@ static bool refine_primitive_concept_top(Problem problem,
 static bool refine_primitive_role_universal(Problem problem,
                                             const grammar::Grammar& grammar,
                                             const Options& options,
-                                            ConstructorTagToRepository& ref_constructor_repositories,
+                                            ConceptOrRoleToRepository& ref_constructor_repositories,
                                             RefinementPruningFunction& ref_pruning_function,
                                             SearchSpace& ref_search_space,
                                             Statistics& ref_statistics)
@@ -467,7 +465,7 @@ static bool refine_primitive_role_universal(Problem problem,
 static bool refine_primitive_concept_nominal(Problem problem,
                                              const grammar::Grammar& grammar,
                                              const Options& options,
-                                             ConstructorTagToRepository& ref_constructor_repositories,
+                                             ConceptOrRoleToRepository& ref_constructor_repositories,
                                              RefinementPruningFunction& ref_pruning_function,
                                              SearchSpace& ref_search_space,
                                              Statistics& ref_statistics)
@@ -486,11 +484,11 @@ static bool refine_primitive_concept_nominal(Problem problem,
  * Refinement of atomic constructors that accept predicates.
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 static bool refine_primitive_constructor_atomic(Problem problem,
                                                 const grammar::Grammar& grammar,
                                                 const Options& options,
-                                                ConstructorTagToRepository& ref_constructor_repositories,
+                                                ConceptOrRoleToRepository& ref_constructor_repositories,
                                                 RefinementPruningFunction& ref_pruning_function,
                                                 SearchSpace& ref_search_space,
                                                 Statistics& ref_statistics)
@@ -544,7 +542,7 @@ static bool refine_primitive_constructor_atomic(Problem problem,
 static bool refine_primitives(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorTagToRepository& ref_constructor_repositories,
+                              ConceptOrRoleToRepository& ref_constructor_repositories,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -582,7 +580,7 @@ static bool refine_primitives(Problem problem,
 static bool refine_composites(Problem problem,
                               const grammar::Grammar& grammar,
                               const Options& options,
-                              ConstructorTagToRepository& ref_constructor_repositories,
+                              ConceptOrRoleToRepository& ref_constructor_repositories,
                               RefinementPruningFunction& ref_pruning_function,
                               SearchSpace& ref_search_space,
                               Statistics& ref_statistics)
@@ -780,7 +778,7 @@ static void fetch_results(const SearchSpace& search_space, Result& result)
 void refine_helper(Problem problem,
                    const grammar::Grammar& grammar,
                    const Options& options,
-                   ConstructorTagToRepository& ref_constructor_repositories,
+                   ConceptOrRoleToRepository& ref_constructor_repositories,
                    RefinementPruningFunction& ref_pruning_function,
                    SearchSpace& ref_search_space,
                    Statistics& ref_statistics)
@@ -798,7 +796,7 @@ void refine_helper(Problem problem,
 Result refine(Problem problem,
               const grammar::Grammar& grammar,
               const Options& options,
-              ConstructorTagToRepository& ref_constructor_repositories,
+              ConceptOrRoleToRepository& ref_constructor_repositories,
               RefinementPruningFunction& ref_pruning_function)
 {
     auto result = Result();

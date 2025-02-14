@@ -79,7 +79,7 @@ public:
     }
 
     /// @brief Collect information and apply problem translation.
-    ConstructorTagToDerivationRuleList run(const ConstructorTagToDerivationRuleList& derivation_rules) { return self().run_base(derivation_rules); }
+    ConceptOrRoleToDerivationRuleList run(const ConceptOrRoleToDerivationRuleList& derivation_rules) { return self().run_base(derivation_rules); }
 };
 
 }

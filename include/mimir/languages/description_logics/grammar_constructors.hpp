@@ -36,7 +36,7 @@ namespace mimir::dl::grammar
  * NonTerminal
  */
 
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class NonTerminalImpl
 {
 private:
@@ -80,7 +80,7 @@ public:
  * ConstructorOrNonTerminal
  */
 
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class ConstructorOrNonTerminalImpl
 {
 private:
@@ -117,7 +117,7 @@ public:
  * DerivationRule
  */
 
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class DerivationRuleImpl
 {
 protected:
@@ -216,7 +216,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl : public ConstructorImpl<Concept>
 {
 private:
@@ -249,7 +249,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl : public ConstructorImpl<Concept>
 {
 private:
@@ -602,7 +602,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl : public ConstructorImpl<Role>
 {
 private:
@@ -635,7 +635,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl : public ConstructorImpl<Role>
 {
 private:

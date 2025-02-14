@@ -57,39 +57,39 @@ using RequirementsRepository = SegmentedPDDLRepository<RequirementsImpl>;
 using VariableRepository = SegmentedPDDLRepository<VariableImpl>;
 using TermRepository = SegmentedPDDLRepository<TermImpl>;
 using ObjectRepository = SegmentedPDDLRepository<ObjectImpl>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using AtomRepository = SegmentedPDDLRepository<AtomImpl<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundAtomRepository = SegmentedPDDLRepository<GroundAtomImpl<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using LiteralRepository = SegmentedPDDLRepository<LiteralImpl<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundLiteralRepository = SegmentedPDDLRepository<GroundLiteralImpl<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using PredicateRepository = SegmentedPDDLRepository<PredicateImpl<P>>;
 using FunctionExpressionNumberRepository = SegmentedPDDLRepository<FunctionExpressionNumberImpl>;
 using FunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<FunctionExpressionBinaryOperatorImpl>;
 using FunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<FunctionExpressionMultiOperatorImpl>;
 using FunctionExpressionMinusRepository = SegmentedPDDLRepository<FunctionExpressionMinusImpl>;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionExpressionFunctionRepository = SegmentedPDDLRepository<FunctionExpressionFunctionImpl<F>>;
 using FunctionExpressionRepository = SegmentedPDDLRepository<FunctionExpressionImpl>;
 using GroundFunctionExpressionNumberRepository = SegmentedPDDLRepository<GroundFunctionExpressionNumberImpl>;
 using GroundFunctionExpressionBinaryOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionBinaryOperatorImpl>;
 using GroundFunctionExpressionMultiOperatorRepository = SegmentedPDDLRepository<GroundFunctionExpressionMultiOperatorImpl>;
 using GroundFunctionExpressionMinusRepository = SegmentedPDDLRepository<GroundFunctionExpressionMinusImpl>;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionExpressionFunctionRepository = SegmentedPDDLRepository<GroundFunctionExpressionFunctionImpl<F>>;
 using GroundFunctionExpressionRepository = SegmentedPDDLRepository<GroundFunctionExpressionImpl>;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionRepository = SegmentedPDDLRepository<FunctionImpl<F>>;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionRepository = SegmentedPDDLRepository<GroundFunctionImpl<F>>;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionValueRepository = SegmentedPDDLRepository<GroundFunctionValueImpl<F>>;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 using NumericEffectRepository = SegmentedPDDLRepository<NumericEffectImpl<F>>;
 using ConjunctiveEffectRepository = SegmentedPDDLRepository<ConjunctiveEffectImpl>;
 using ConditionalEffectRepository = SegmentedPDDLRepository<ConditionalEffectImpl>;
@@ -191,19 +191,19 @@ public:
     /// @brief Get or create an object for the given parameters.
     Object get_or_create_object(std::string name);
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Atom<P> get_or_create_atom(Predicate<P> predicate, TermList terms);
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     GroundAtom<P> get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects);
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Literal<P> get_or_create_literal(bool is_negated, Atom<P> atom);
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     GroundLiteral<P> get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom);
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Predicate<P> get_or_create_predicate(std::string name, VariableList parameters);
 
     /// @brief Get or create a number function expression for the given parameters.
@@ -249,7 +249,7 @@ public:
     GroundFunctionExpressionMinus get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     GroundFunctionExpressionFunction<F> get_or_create_ground_function_expression_function(GroundFunction<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -257,23 +257,23 @@ public:
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr);
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a function for the given parameters.
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     Function<F> get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
 
     /// @brief Get or create a function for the given parameters.
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunction<F> get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList objects);
 
     /// @brief Get or create a function skeleton for the given parameters.
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     FunctionSkeleton<F> get_or_create_function_skeleton(std::string name, VariableList parameters);
 
     /// @brief Get or create a numeric effect for the given parameters.
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     NumericEffect<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
     /// @brief Get or create a simple effect for the given parameters.
@@ -317,7 +317,7 @@ public:
     OptimizationMetric get_or_create_optimization_metric(loki::OptimizationMetricEnum metric, GroundFunctionExpression function_expression);
 
     /// @brief Get or create an optimization metric for the given parameters.
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunctionValue<F> get_or_create_ground_function_value(GroundFunction<F> function, double number);
 
     /// @brief Get or create a domain for the given parameters.
@@ -359,29 +359,29 @@ public:
     const PDDLTypeToRepository& get_pddl_type_to_factory() const;
 
     // GroundAtom
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     GroundAtom<P> get_ground_atom(size_t atom_index) const;
 
-    template<PredicateTag P, std::ranges::forward_range Iterable>
+    template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
     void get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const;
 
-    template<PredicateTag P, std::ranges::forward_range Iterable>
+    template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
     GroundAtomList<P> get_ground_atoms_from_indices(const Iterable& atom_indices) const;
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const;
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     auto get_ground_atoms() const;
 
     // GroundFunction
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions);
 
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void get_ground_function_values(const FlatDoubleList& values, std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const;
 
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     std::vector<std::pair<GroundFunction<F>, ContinuousCost>> get_ground_function_values(const FlatDoubleList& values) const;
 
     // Object
@@ -404,7 +404,7 @@ public:
  * Implementations
  */
 
-template<PredicateTag P, std::ranges::forward_range Iterable>
+template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
 void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -415,7 +415,7 @@ void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indice
     }
 }
 
-template<PredicateTag P, std::ranges::forward_range Iterable>
+template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
 GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices) const
 {
     auto result = GroundAtomList<P> {};
@@ -423,7 +423,7 @@ GroundAtomList<P> PDDLRepositories::get_ground_atoms_from_indices(const Iterable
     return result;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void PDDLRepositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
@@ -433,7 +433,7 @@ void PDDLRepositories::get_ground_atoms(GroundAtomList<P>& out_ground_atoms) con
     }
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 auto PDDLRepositories::get_ground_atoms() const
 {
     const auto& factory = boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {});

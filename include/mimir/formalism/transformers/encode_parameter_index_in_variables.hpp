@@ -44,9 +44,9 @@ private:
     Variable transform_impl(Variable variable);
 
     // Do not rename within predicates or function skeleton
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Predicate<P> transform_impl(Predicate<P> predicate);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     FunctionSkeleton<F> transform_impl(FunctionSkeleton<F> function_skeleton);
 
     ConditionalEffect transform_impl(ConditionalEffect effect);

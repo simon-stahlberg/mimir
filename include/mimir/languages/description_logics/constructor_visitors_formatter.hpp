@@ -81,7 +81,7 @@ struct BNFFormatterVisitorTag
 /// @param out
 /// @param data
 /// @return
-template<ConstructorTag D>
+template<ConceptOrRole D>
 extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<D>, BNFFormatterVisitorTag>& data);
 
 /// @brief Print BNF derivation rule to ostream.
@@ -89,7 +89,7 @@ extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<
 /// @param out
 /// @param data
 /// @return
-template<ConstructorTag D>
+template<ConceptOrRole D>
 extern std::ostream& operator<<(std::ostream& out, const std::tuple<std::string, Constructor<D>, BNFFormatterVisitorTag>& data);
 
 }

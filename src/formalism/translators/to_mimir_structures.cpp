@@ -695,7 +695,7 @@ ConjunctiveCondition ToMimirStructures::translate_lifted(loki::Condition conditi
     throw std::logic_error("Expected conjunctive condition.");
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 static NumericEffect<F> get_or_create_total_cost_numeric_effect(FunctionSkeleton<F> total_cost_function,
                                                                 bool action_costs_enabled,
                                                                 NumericEffectList<F>& numeric_effects,
@@ -1246,7 +1246,7 @@ OptimizationMetric ToMimirStructures::translate_grounded(loki::OptimizationMetri
                                                                  translate_grounded(optimization_metric->get_function_expression()));
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 static GroundFunctionValue<F> get_or_create_total_cost_function_value(FunctionSkeleton<F> total_cost_function,
                                                                       GroundFunctionValueList<F>& function_values,
                                                                       PDDLRepositories& pddl_repositories)

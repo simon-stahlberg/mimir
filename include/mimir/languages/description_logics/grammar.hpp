@@ -30,12 +30,12 @@ class Grammar
 {
 private:
     /* Memory */
-    ConstructorTagToRepository m_grammar_constructor_repos;
+    ConceptOrRoleToRepository m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
-    ConstructorTagToDerivationRuleList m_primitive_production_rules;
-    ConstructorTagToDerivationRuleList m_composite_production_rules;
-    ConstructorTagToDerivationRuleList m_alternative_rules;
+    ConceptOrRoleToDerivationRuleList m_primitive_production_rules;
+    ConceptOrRoleToDerivationRuleList m_composite_production_rules;
+    ConceptOrRoleToDerivationRuleList m_alternative_rules;
 
 public:
     /// @brief Create a grammar from a BNF description.
@@ -44,20 +44,20 @@ public:
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.
     /// @return true iff the dl constructor satisfies the grammar specification, and false otherwise.
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     bool test_match(dl::Constructor<D> constructor) const;
 
     /**
      * Getters
      */
 
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     const DerivationRuleList<D>& get_primitive_production_rules() const;
 
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     const DerivationRuleList<D>& get_composite_production_rules() const;
 
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     const DerivationRuleList<D>& get_alternative_rules() const;
 };
 }

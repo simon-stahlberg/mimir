@@ -22,8 +22,8 @@ namespace mimir::dl
 EvaluationContext::EvaluationContext(const PDDLRepositories& pddl_repositories,
                                      Problem problem,
                                      State state,
-                                     ConstructorTagToDenotationType& ref_denotation_builder,
-                                     ConstructorTagToDenotationRepository& ref_denotation_repository) :
+                                     ConceptOrRoleToDenotationType& ref_denotation_builder,
+                                     ConceptOrRoleToDenotationRepository& ref_denotation_repository) :
     m_pddl_repositories(pddl_repositories),
     m_problem(problem),
     m_state(state),
@@ -38,7 +38,7 @@ Problem EvaluationContext::get_problem() const { return m_problem; }
 
 State EvaluationContext::get_state() const { return m_state; }
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 DenotationImpl<D>& EvaluationContext::get_denotation_builder()
 {
     return boost::hana::at_key(m_denotation_builder, boost::hana::type<D> {});
@@ -47,7 +47,7 @@ DenotationImpl<D>& EvaluationContext::get_denotation_builder()
 template DenotationImpl<Concept>& EvaluationContext::get_denotation_builder<Concept>();
 template DenotationImpl<Role>& EvaluationContext::get_denotation_builder<Role>();
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 DenotationRepository<D>& EvaluationContext::get_denotation_repository()
 {
     return boost::hana::at_key(m_denotation_repository, boost::hana::type<D> {});

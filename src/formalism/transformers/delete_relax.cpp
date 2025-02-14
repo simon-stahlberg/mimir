@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
 {
     auto positive_literals = LiteralList<P> {};
@@ -37,7 +37,7 @@ static LiteralList<P> filter_positive_literals(const LiteralList<P>& literals)
     return positive_literals;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 LiteralList<P> DeleteRelaxTransformer::transform_impl(const LiteralList<P>& literals)
 {
     auto positive_literals = LiteralList<P> {};
@@ -86,7 +86,7 @@ AxiomList DeleteRelaxTransformer::transform_impl(const AxiomList& axioms)
     return uniquify_elements(relaxed_axioms);
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Literal<P> DeleteRelaxTransformer::transform_impl(Literal<P> literal)
 {
     if (literal->is_negated())

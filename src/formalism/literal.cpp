@@ -23,24 +23,24 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 LiteralImpl<P>::LiteralImpl(Index index, bool is_negated, Atom<P> atom) : m_index(index), m_is_negated(is_negated), m_atom(std::move(atom))
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Index LiteralImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 bool LiteralImpl<P>::is_negated() const
 {
     return m_is_negated;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const Atom<P>& LiteralImpl<P>::get_atom() const
 {
     return m_atom;
@@ -50,7 +50,7 @@ template class LiteralImpl<Static>;
 template class LiteralImpl<Fluent>;
 template class LiteralImpl<Derived>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const LiteralImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -62,7 +62,7 @@ template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Static>& 
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const LiteralImpl<Derived>& element);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, Literal<P> element)
 {
     out << *element;

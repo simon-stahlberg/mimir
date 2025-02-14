@@ -22,8 +22,8 @@
 
 namespace mimir::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition Element>
-class InverseElementGeneratorNodeBase : public IInverseNode<Element>
+template<typename Derived_, HasConjunctiveCondition E>
+class InverseElementGeneratorNodeBase : public IInverseNode<E>
 {
 private:
     /// @brief Helper to cast to Derived_.
@@ -32,12 +32,10 @@ private:
 
 protected:
     // Final elements
-    std::span<const Element*> m_elements;
+    std::span<const E*> m_elements;
 
 public:
-    InverseElementGeneratorNodeBase(const IInverseNode<Element>* parent, std::span<const Element*> elements) :
-        IInverseNode<Element>(parent, SplitList {}),
-        m_elements(elements)
+    InverseElementGeneratorNodeBase(const IInverseNode<E>* parent, std::span<const E*> elements) : IInverseNode<E>(parent, SplitList {}), m_elements(elements)
     {
     }
 
@@ -46,41 +44,41 @@ public:
     InverseElementGeneratorNodeBase(InverseElementGeneratorNodeBase&& other) = delete;
     InverseElementGeneratorNodeBase& operator=(InverseElementGeneratorNodeBase&& other) = delete;
 
-    void visit(IInverseNodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
+    void visit(IInverseNodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 
-    std::span<const Element*> get_elements() const { return m_elements; }
+    std::span<const E*> get_elements() const { return m_elements; }
 };
 
-template<HasConjunctiveCondition Element>
-class InverseElementGeneratorNode_Perfect : public InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>
+template<HasConjunctiveCondition E>
+class InverseElementGeneratorNode_Perfect : public InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<E>, E>
 {
 private:
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>;
+    friend class InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<E>, E>;
 
 public:
-    using InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>::get_elements;
+    using InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<E>, E>::get_elements;
 
-    InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent, std::span<const Element*> elements);
+    InverseElementGeneratorNode_Perfect(const IInverseNode<E>* parent, std::span<const E*> elements);
 };
 
-template<HasConjunctiveCondition Element>
-class InverseElementGeneratorNode_Imperfect : public InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>
+template<HasConjunctiveCondition E>
+class InverseElementGeneratorNode_Imperfect : public InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<E>, E>
 {
 private:
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>;
+    friend class InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<E>, E>;
 
 public:
-    using InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>::get_elements;
+    using InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<E>, E>::get_elements;
 
-    InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent, std::span<const Element*> elements);
+    InverseElementGeneratorNode_Imperfect(const IInverseNode<E>* parent, std::span<const E*> elements);
 };
 }
 

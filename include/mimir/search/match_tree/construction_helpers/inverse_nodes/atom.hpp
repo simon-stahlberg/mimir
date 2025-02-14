@@ -23,8 +23,8 @@
 
 namespace mimir::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNodeBase : public IInverseNode<Element>
+template<typename Derived_, HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNodeBase : public IInverseNode<E>
 {
 private:
     /// @brief Helper to cast to Derived_.
@@ -35,8 +35,8 @@ protected:
     GroundAtom<P> m_atom;
 
 public:
-    InverseAtomSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, GroundAtom<P> atom) :
-        IInverseNode<Element>(parent, std::move(useless_splits)),
+    InverseAtomSelectorNodeBase(const IInverseNode<E>* parent, SplitList useless_splits, GroundAtom<P> atom) :
+        IInverseNode<E>(parent, std::move(useless_splits)),
         m_atom(atom)
     {
         assert(m_atom);
@@ -46,7 +46,7 @@ public:
     InverseAtomSelectorNodeBase(InverseAtomSelectorNodeBase&& other) = delete;
     InverseAtomSelectorNodeBase& operator=(InverseAtomSelectorNodeBase&& other) = delete;
 
-    void visit(IInverseNodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
+    void visit(IInverseNodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 
     GroundAtom<P> get_atom() const { return m_atom; };
 };
@@ -54,220 +54,214 @@ public:
 /**
  * True False Dontcare combination
  */
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode_TFX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNode_TFX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<E, P>, E, P>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_true_elements;
-    std::span<const Element*> m_false_elements;
-    std::span<const Element*> m_dontcare_elements;
+    std::span<const E*> m_true_elements;
+    std::span<const E*> m_false_elements;
+    std::span<const E*> m_dontcare_elements;
 
-    InverseNode<Element> m_true_child;
-    InverseNode<Element> m_false_child;
-    InverseNode<Element> m_dontcare_child;
+    InverseNode<E> m_true_child;
+    InverseNode<E> m_false_child;
+    InverseNode<E> m_dontcare_child;
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>;
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<E, P>, E, P>;
 
 public:
-    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>::get_atom;
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_TFX(const IInverseNode<Element>* parent,
+    explicit InverseAtomSelectorNode_TFX(const IInverseNode<E>* parent,
                                          SplitList useless_splits,
                                          GroundAtom<P> atom,
-                                         std::span<const Element*> true_elements,
-                                         std::span<const Element*> false_elements,
-                                         std::span<const Element*> dontcare_elements);
+                                         std::span<const E*> true_elements,
+                                         std::span<const E*> false_elements,
+                                         std::span<const E*> dontcare_elements);
 
-    std::span<const Element*> get_true_elements() const;
-    std::span<const Element*> get_false_elements() const;
-    std::span<const Element*> get_dontcare_elements() const;
+    std::span<const E*> get_true_elements() const;
+    std::span<const E*> get_false_elements() const;
+    std::span<const E*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_true_child();
-    InverseNode<Element>& get_false_child();
-    InverseNode<Element>& get_dontcare_child();
+    InverseNode<E>& get_true_child();
+    InverseNode<E>& get_false_child();
+    InverseNode<E>& get_dontcare_child();
 
-    const InverseNode<Element>& get_true_child() const;
-    const InverseNode<Element>& get_false_child() const;
-    const InverseNode<Element>& get_dontcare_child() const;
+    const InverseNode<E>& get_true_child() const;
+    const InverseNode<E>& get_false_child() const;
+    const InverseNode<E>& get_dontcare_child() const;
 };
 
 /**
  * True False combination
  */
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode_TF : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNode_TF : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<E, P>, E, P>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_true_elements;
-    std::span<const Element*> m_false_elements;
+    std::span<const E*> m_true_elements;
+    std::span<const E*> m_false_elements;
 
-    InverseNode<Element> m_true_child;
-    InverseNode<Element> m_false_child;
+    InverseNode<E> m_true_child;
+    InverseNode<E> m_false_child;
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>;
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<E, P>, E, P>;
 
 public:
-    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>::get_atom;
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_TF(const IInverseNode<Element>* parent,
+    explicit InverseAtomSelectorNode_TF(const IInverseNode<E>* parent,
                                         SplitList useless_splits,
                                         GroundAtom<P> atom,
-                                        std::span<const Element*> true_elements,
-                                        std::span<const Element*> false_elements);
+                                        std::span<const E*> true_elements,
+                                        std::span<const E*> false_elements);
 
-    std::span<const Element*> get_true_elements() const;
-    std::span<const Element*> get_false_elements() const;
+    std::span<const E*> get_true_elements() const;
+    std::span<const E*> get_false_elements() const;
 
-    InverseNode<Element>& get_true_child();
-    InverseNode<Element>& get_false_child();
+    InverseNode<E>& get_true_child();
+    InverseNode<E>& get_false_child();
 
-    const InverseNode<Element>& get_true_child() const;
-    const InverseNode<Element>& get_false_child() const;
+    const InverseNode<E>& get_true_child() const;
+    const InverseNode<E>& get_false_child() const;
 };
 
 /**
  * True Dontcare combination
  */
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode_TX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNode_TX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<E, P>, E, P>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_true_elements;
-    std::span<const Element*> m_dontcare_elements;
+    std::span<const E*> m_true_elements;
+    std::span<const E*> m_dontcare_elements;
 
-    InverseNode<Element> m_true_child;
-    InverseNode<Element> m_dontcare_child;
+    InverseNode<E> m_true_child;
+    InverseNode<E> m_dontcare_child;
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>;
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<E, P>, E, P>;
 
 public:
-    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>::get_atom;
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_TX(const IInverseNode<Element>* parent,
+    explicit InverseAtomSelectorNode_TX(const IInverseNode<E>* parent,
                                         SplitList useless_splits,
                                         GroundAtom<P> atom,
-                                        std::span<const Element*> true_elements,
-                                        std::span<const Element*> dontcare_elements);
+                                        std::span<const E*> true_elements,
+                                        std::span<const E*> dontcare_elements);
 
-    std::span<const Element*> get_true_elements() const;
-    std::span<const Element*> get_dontcare_elements() const;
+    std::span<const E*> get_true_elements() const;
+    std::span<const E*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_true_child();
-    InverseNode<Element>& get_dontcare_child();
+    InverseNode<E>& get_true_child();
+    InverseNode<E>& get_dontcare_child();
 
-    const InverseNode<Element>& get_true_child() const;
-    const InverseNode<Element>& get_dontcare_child() const;
+    const InverseNode<E>& get_true_child() const;
+    const InverseNode<E>& get_dontcare_child() const;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode_FX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNode_FX : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<E, P>, E, P>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_false_elements;
-    std::span<const Element*> m_dontcare_elements;
+    std::span<const E*> m_false_elements;
+    std::span<const E*> m_dontcare_elements;
 
-    InverseNode<Element> m_false_child;
-    InverseNode<Element> m_dontcare_child;
+    InverseNode<E> m_false_child;
+    InverseNode<E> m_dontcare_child;
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>;
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<E, P>, E, P>;
 
 public:
-    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>::get_atom;
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_FX(const IInverseNode<Element>* parent,
+    explicit InverseAtomSelectorNode_FX(const IInverseNode<E>* parent,
                                         SplitList useless_splits,
                                         GroundAtom<P> atom,
-                                        std::span<const Element*> false_elements,
-                                        std::span<const Element*> dontcare_elements);
+                                        std::span<const E*> false_elements,
+                                        std::span<const E*> dontcare_elements);
 
-    std::span<const Element*> get_false_elements() const;
-    std::span<const Element*> get_dontcare_elements() const;
+    std::span<const E*> get_false_elements() const;
+    std::span<const E*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_false_child();
-    InverseNode<Element>& get_dontcare_child();
+    InverseNode<E>& get_false_child();
+    InverseNode<E>& get_dontcare_child();
 
-    const InverseNode<Element>& get_false_child() const;
-    const InverseNode<Element>& get_dontcare_child() const;
+    const InverseNode<E>& get_false_child() const;
+    const InverseNode<E>& get_dontcare_child() const;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode_T : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNode_T : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<E, P>, E, P>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_true_elements;
+    std::span<const E*> m_true_elements;
 
-    InverseNode<Element> m_true_child;
+    InverseNode<E> m_true_child;
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>;
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<E, P>, E, P>;
 
 public:
-    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>::get_atom;
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_T(const IInverseNode<Element>* parent,
-                                       SplitList useless_splits,
-                                       GroundAtom<P> atom,
-                                       std::span<const Element*> true_elements);
+    explicit InverseAtomSelectorNode_T(const IInverseNode<E>* parent, SplitList useless_splits, GroundAtom<P> atom, std::span<const E*> true_elements);
 
-    std::span<const Element*> get_true_elements() const;
+    std::span<const E*> get_true_elements() const;
 
-    InverseNode<Element>& get_true_child();
+    InverseNode<E>& get_true_child();
 
-    const InverseNode<Element>& get_true_child() const;
+    const InverseNode<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-class InverseAtomSelectorNode_F : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
+class InverseAtomSelectorNode_F : public InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<E, P>, E, P>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_false_elements;
+    std::span<const E*> m_false_elements;
 
-    InverseNode<Element> m_false_child;
+    InverseNode<E> m_false_child;
 
     /* Implement interface*/
 
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>;
+    friend class InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<E, P>, E, P>;
 
 public:
-    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>::get_atom;
+    using InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<E, P>, E, P>::get_atom;
 
-    explicit InverseAtomSelectorNode_F(const IInverseNode<Element>* parent,
-                                       SplitList useless_splits,
-                                       GroundAtom<P> atom,
-                                       std::span<const Element*> false_elements);
+    explicit InverseAtomSelectorNode_F(const IInverseNode<E>* parent, SplitList useless_splits, GroundAtom<P> atom, std::span<const E*> false_elements);
 
-    std::span<const Element*> get_false_elements() const;
+    std::span<const E*> get_false_elements() const;
 
-    InverseNode<Element>& get_false_child();
+    InverseNode<E>& get_false_child();
 
-    const InverseNode<Element>& get_false_child() const;
+    const InverseNode<E>& get_false_child() const;
 };
 }
 

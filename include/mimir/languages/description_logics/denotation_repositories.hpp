@@ -30,7 +30,7 @@ namespace mimir::dl
 {
 
 /// @brief DenotationRepository encapsulate logic for obtaining unique denotation views and caching.
-template<ConstructorTag D>
+template<ConceptOrRole D>
 class DenotationRepository
 {
 private:
@@ -63,8 +63,8 @@ public:
 
 /// @brief Repository for managing denotations.
 /// This stores the computed denotation of each state.
-using ConstructorTagToDenotationRepository = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationRepository<Concept>>,
-                                                              boost::hana::pair<boost::hana::type<Role>, DenotationRepository<Role>>>;
+using ConceptOrRoleToDenotationRepository = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationRepository<Concept>>,
+                                                             boost::hana::pair<boost::hana::type<Role>, DenotationRepository<Role>>>;
 
 }
 

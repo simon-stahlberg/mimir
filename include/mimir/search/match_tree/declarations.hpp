@@ -42,59 +42,59 @@ concept HasConjunctiveCondition = requires(const T a) {
  * Forward declarations
  */
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class PlaceholderNodeImpl;
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class IInverseNode;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class InverseAtomSelectorNode_TFX;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class InverseAtomSelectorNode_TF;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class InverseAtomSelectorNode_TX;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class InverseAtomSelectorNode_FX;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class InverseAtomSelectorNode_T;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class InverseAtomSelectorNode_F;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class InverseNumericConstraintSelectorNode_TX;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class InverseNumericConstraintSelectorNode_T;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class InverseElementGeneratorNode_Perfect;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class InverseElementGeneratorNode_Imperfect;
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class INode;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class AtomSelectorNode_TFX;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class AtomSelectorNode_TF;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class AtomSelectorNode_TX;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class AtomSelectorNode_FX;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class AtomSelectorNode_T;
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
+template<HasConjunctiveCondition E, FluentOrDerived P>
 class AtomSelectorNode_F;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_TX;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class NumericConstraintSelectorNode_T;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class ElementGeneratorNode_Perfect;
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class ElementGeneratorNode_Imperfect;
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class INodeScoreFunction;
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class INodeSplitter;
 
 struct Options;
@@ -104,24 +104,24 @@ struct Statistics;
  * Aliases
  */
 
-template<HasConjunctiveCondition Element>
-using PlaceholderNode = std::unique_ptr<PlaceholderNodeImpl<Element>>;
-template<HasConjunctiveCondition Element>
-using PlaceholderNodeList = std::vector<PlaceholderNode<Element>>;
+template<HasConjunctiveCondition E>
+using PlaceholderNode = std::unique_ptr<PlaceholderNodeImpl<E>>;
+template<HasConjunctiveCondition E>
+using PlaceholderNodeList = std::vector<PlaceholderNode<E>>;
 
-template<HasConjunctiveCondition Element>
-using InverseNode = std::unique_ptr<IInverseNode<Element>>;
-template<HasConjunctiveCondition Element>
-using InverseNodeList = std::vector<InverseNode<Element>>;
+template<HasConjunctiveCondition E>
+using InverseNode = std::unique_ptr<IInverseNode<E>>;
+template<HasConjunctiveCondition E>
+using InverseNodeList = std::vector<InverseNode<E>>;
 
-template<HasConjunctiveCondition Element>
-using Node = std::unique_ptr<INode<Element>>;
+template<HasConjunctiveCondition E>
+using Node = std::unique_ptr<INode<E>>;
 
-template<HasConjunctiveCondition Element>
-using NodeScoreFunction = std::unique_ptr<INodeScoreFunction<Element>>;
+template<HasConjunctiveCondition E>
+using NodeScoreFunction = std::unique_ptr<INodeScoreFunction<E>>;
 
-template<HasConjunctiveCondition Element>
-using NodeSplitter = std::unique_ptr<INodeSplitter<Element>>;
+template<HasConjunctiveCondition E>
+using NodeSplitter = std::unique_ptr<INodeSplitter<E>>;
 }
 
 #endif

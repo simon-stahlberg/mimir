@@ -65,16 +65,16 @@ public:
     bool should_prune(Constructor<Role> role_) override;
 
 private:
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     bool should_prune_impl(Constructor<D> constructor);
 
     const PDDLRepositories& m_pddl_repositories;  ///< The pddl factories.
     Problem m_problem;                            ///< The problem definition used for evaluating features.
     StateList m_states;                           ///< The list of states used for evaluating features and pruning.
 
-    ConstructorTagToDenotationType m_denotation_builder;
+    ConceptOrRoleToDenotationType m_denotation_builder;
 
-    ConstructorTagToDenotationRepository m_denotation_repository;
+    ConceptOrRoleToDenotationRepository m_denotation_repository;
 
     /// @brief Uniquely store feature denotations among all states.
     /// Each state feature denotation is uniquely identified by its memory address.
@@ -101,10 +101,10 @@ struct Options
     size_t max_memory_usage_in_kb = 0;
     size_t max_execution_time_in_ms = 0;
 
-    using ConstructorTagToSizeT =
+    using ConceptOrRoleToSizeT =
         boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
 
-    ConstructorTagToSizeT max_constructors = ConstructorTagToSizeT();
+    ConceptOrRoleToSizeT max_constructors = ConceptOrRoleToSizeT();
 };
 
 struct Statistics
@@ -112,20 +112,20 @@ struct Statistics
     size_t memory_usage_in_kb = 0;
     size_t execution_time_ms = 0;
 
-    using ConstructorTagToSizeT =
+    using ConceptOrRoleToSizeT =
         boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
 
-    ConstructorTagToSizeT num_generated = ConstructorTagToSizeT();
-    ConstructorTagToSizeT num_pruned = ConstructorTagToSizeT();
-    ConstructorTagToSizeT num_rejected_by_grammar = ConstructorTagToSizeT();
+    ConceptOrRoleToSizeT num_generated = ConceptOrRoleToSizeT();
+    ConceptOrRoleToSizeT num_pruned = ConceptOrRoleToSizeT();
+    ConceptOrRoleToSizeT num_rejected_by_grammar = ConceptOrRoleToSizeT();
 };
 
 struct Result
 {
-    using ConstructorTagToConstructorList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ConstructorList<Concept>>,
-                                                             boost::hana::pair<boost::hana::type<Role>, ConstructorList<Role>>>;
+    using ConceptOrRoleToConstructorList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, ConstructorList<Concept>>,
+                                                            boost::hana::pair<boost::hana::type<Role>, ConstructorList<Role>>>;
 
-    ConstructorTagToConstructorList constructors = ConstructorTagToConstructorList();
+    ConceptOrRoleToConstructorList constructors = ConceptOrRoleToConstructorList();
 
     Statistics statistics = Statistics();
 };
@@ -133,7 +133,7 @@ struct Result
 extern Result refine(Problem problem,
                      const grammar::Grammar& grammar,
                      const Options& options,
-                     ConstructorTagToRepository& ref_constructor_repositories,
+                     ConceptOrRoleToRepository& ref_constructor_repositories,
                      RefinementPruningFunction& ref_pruning_function);
 
 }

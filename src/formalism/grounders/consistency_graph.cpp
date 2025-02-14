@@ -234,7 +234,7 @@ public:
  * consistent_literals_helper
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const Vertex& element)
 {
     const auto num_objects = assignment_set.get_num_objects();
@@ -284,7 +284,7 @@ static bool consistent_literals_helper(const LiteralList<P>& literals, const Ass
     return true;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 static bool consistent_literals_helper(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set, const Edge& element)
 {
     const auto num_objects = assignment_set.get_num_objects();
@@ -506,7 +506,7 @@ static bool consistent_numeric_constraints_helper(const NumericConstraintList& n
  * Vertex
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 bool Vertex::consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const
 {
     return consistent_literals_helper<P>(literals, assignment_set, *this);
@@ -545,7 +545,7 @@ Index Vertex::get_object_if_overlap(const Term& term) const
  * Edge
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 bool Edge::consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const
 {
     return consistent_literals_helper<P>(literals, assignment_set, *this);

@@ -23,7 +23,7 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class GroundAtomImpl
 {
 private:
@@ -60,13 +60,13 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_predicate), std::as_const(m_objects)); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 extern std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 extern std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 extern std::ostream& operator<<(std::ostream& out, GroundAtom<P> element);
 
 }

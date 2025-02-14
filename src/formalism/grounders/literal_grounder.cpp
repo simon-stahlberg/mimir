@@ -30,7 +30,7 @@ LiteralGrounder::LiteralGrounder(Problem problem, std::shared_ptr<PDDLRepositori
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundLiteral<P> LiteralGrounder::ground(Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
@@ -77,7 +77,7 @@ template GroundLiteral<Static> LiteralGrounder::ground(Literal<Static> literal, 
 template GroundLiteral<Fluent> LiteralGrounder::ground(Literal<Fluent> literal, const ObjectList& binding);
 template GroundLiteral<Derived> LiteralGrounder::ground(Literal<Derived> literal, const ObjectList& binding);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void LiteralGrounder::ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
                                              FlatBitset& ref_positive_bitset,
                                              FlatBitset& ref_negative_bitset,
@@ -111,7 +111,7 @@ template void LiteralGrounder::ground_and_fill_bitset(const std::vector<Literal<
                                                       FlatBitset& ref_negative_bitset,
                                                       const ObjectList& binding);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void LiteralGrounder::ground_and_fill_vector(const std::vector<Literal<P>>& literals,
                                              FlatIndexList& ref_positive_indices,
                                              FlatIndexList& ref_negative_indices,

@@ -23,8 +23,8 @@
 
 namespace mimir::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition Element>
-class NumericConstraintSelectorNodeBase : public INode<Element>
+template<typename Derived_, HasConjunctiveCondition E>
+class NumericConstraintSelectorNodeBase : public INode<E>
 {
 private:
     /// @brief Helper to cast to Derived_.
@@ -44,57 +44,55 @@ public:
 
     GroundNumericConstraint get_constraint() const { return m_constraint; }
 
-    void visit(INodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
+    void visit(INodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 };
 
-template<HasConjunctiveCondition Element>
-class NumericConstraintSelectorNode_T : public NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<Element>, Element>
+template<HasConjunctiveCondition E>
+class NumericConstraintSelectorNode_T : public NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<E>, E>
 {
 private:
-    Node<Element> m_true_child;
+    Node<E> m_true_child;
 
 private:
     /* Implement interface*/
 
-    void visit_impl(INodeVisitor<Element>& visitor) const;
+    void visit_impl(INodeVisitor<E>& visitor) const;
 
-    friend class NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<Element>, Element>;
+    friend class NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<E>, E>;
 
 public:
-    using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<Element>, Element>::get_constraint;
+    using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_T<E>, E>::get_constraint;
 
-    NumericConstraintSelectorNode_T(Node<Element>&& true_child, GroundNumericConstraint constraint);
+    NumericConstraintSelectorNode_T(Node<E>&& true_child, GroundNumericConstraint constraint);
 
-    void
-    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override;
+    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
 
-    const Node<Element>& get_true_child() const;
+    const Node<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition Element>
-class NumericConstraintSelectorNode_TX : public NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<Element>, Element>
+template<HasConjunctiveCondition E>
+class NumericConstraintSelectorNode_TX : public NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<E>, E>
 {
 private:
-    Node<Element> m_true_child;
-    Node<Element> m_dontcare_child;
+    Node<E> m_true_child;
+    Node<E> m_dontcare_child;
 
 private:
     /* Implement interface*/
 
-    void visit_impl(INodeVisitor<Element>& visitor) const;
+    void visit_impl(INodeVisitor<E>& visitor) const;
 
-    friend class NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<Element>, Element>;
+    friend class NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<E>, E>;
 
 public:
-    using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<Element>, Element>::get_constraint;
+    using NumericConstraintSelectorNodeBase<NumericConstraintSelectorNode_TX<E>, E>::get_constraint;
 
-    NumericConstraintSelectorNode_TX(Node<Element>&& true_child, Node<Element>&& dontcare_child, GroundNumericConstraint constraint);
+    NumericConstraintSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundNumericConstraint constraint);
 
-    void
-    generate_applicable_actions(const DenseState& state, std::vector<const INode<Element>*>& ref_applicable_nodes, std::vector<const Element*>&) const override;
+    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
 
-    const Node<Element>& get_true_child() const;
-    const Node<Element>& get_dontcare_child() const;
+    const Node<E>& get_true_child() const;
+    const Node<E>& get_dontcare_child() const;
 };
 }
 

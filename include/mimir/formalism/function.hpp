@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class FunctionImpl
 {
 private:
@@ -60,10 +60,10 @@ public:
     }
 };
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, Function<F> element);
 
 }

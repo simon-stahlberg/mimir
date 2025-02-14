@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
@@ -30,25 +30,25 @@ FunctionSkeletonImpl<F>::FunctionSkeletonImpl(Index index, std::string name, Var
 {
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Index FunctionSkeletonImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const std::string& FunctionSkeletonImpl<F>::get_name() const
 {
     return m_name;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const VariableList& FunctionSkeletonImpl<F>::get_parameters() const
 {
     return m_parameters;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 size_t FunctionSkeletonImpl<F>::get_arity() const
 {
     return m_parameters.size();
@@ -58,7 +58,7 @@ template class FunctionSkeletonImpl<Static>;
 template class FunctionSkeletonImpl<Fluent>;
 template class FunctionSkeletonImpl<Auxiliary>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
@@ -70,7 +70,7 @@ template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<
 template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<Auxiliary>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, FunctionSkeleton<F> element)
 {
     out << *element;

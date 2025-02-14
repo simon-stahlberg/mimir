@@ -133,7 +133,7 @@ public:
     template<StaticOrFluentTag F>
     const GroundFunctionValueList<F>& get_function_values() const;
     const std::optional<GroundFunctionValue<Auxiliary>>& get_auxiliary_function_value() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_goal_condition() const;
     const GroundNumericConstraintList& get_numeric_goal_condition() const;
     const OptimizationMetric& get_optimization_metric() const;
@@ -187,18 +187,18 @@ public:
 
     bool static_goal_holds() const;
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const GroundAtomList<P>& get_positive_goal_atoms() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const FlatBitset& get_positive_goal_atoms_bitset() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const FlatIndexList& get_positive_goal_atoms_indices() const;
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const GroundAtomList<P>& get_negative_goal_atoms() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const FlatBitset& get_negative_goal_atoms_bitset() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const FlatIndexList& get_negative_goal_atoms_indices() const;
 
     /* Axioms */

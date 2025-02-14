@@ -177,7 +177,7 @@ void PDDLFormatter::write(const ActionImpl& element, std::ostream& out)
     m_indent -= m_add_indent;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void PDDLFormatter::write(const AtomImpl<P>& element, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
@@ -342,7 +342,7 @@ void PDDLFormatter::write(const DomainImpl& element, std::ostream& out)
     out << std::string(m_indent, ' ') << ")";
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 void PDDLFormatter::write(const NumericEffectImpl<F>& element, std::ostream& out)
 {
     out << "(" << to_string(element.get_assign_operator()) << " ";
@@ -419,7 +419,7 @@ void PDDLFormatter::write(const FunctionExpressionMinusImpl& element, std::ostre
     out << ")";
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLFormatter::write(const FunctionExpressionFunctionImpl<F>& element, std::ostream& out)
 {
     write(*element.get_function(), out);
@@ -434,7 +434,7 @@ void PDDLFormatter::write(const FunctionExpressionImpl& element, std::ostream& o
     std::visit([this, &out](const auto& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLFormatter::write(const FunctionSkeletonImpl<F>& element, std::ostream& out)
 {
     out << "(" << element.get_name();
@@ -450,7 +450,7 @@ template void PDDLFormatter::write(const FunctionSkeletonImpl<Static>& element, 
 template void PDDLFormatter::write(const FunctionSkeletonImpl<Fluent>& element, std::ostream& out);
 template void PDDLFormatter::write(const FunctionSkeletonImpl<Auxiliary>& element, std::ostream& out);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLFormatter::write(const FunctionImpl<F>& element, std::ostream& out)
 {
     if (element.get_terms().empty())
@@ -474,7 +474,7 @@ template void PDDLFormatter::write(const FunctionImpl<Static>& element, std::ost
 template void PDDLFormatter::write(const FunctionImpl<Fluent>& element, std::ostream& out);
 template void PDDLFormatter::write(const FunctionImpl<Auxiliary>& element, std::ostream& out);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void PDDLFormatter::write(const GroundAtomImpl<P>& element, std::ostream& out)
 {
     out << "(" << element.get_predicate()->get_name();
@@ -519,7 +519,7 @@ void PDDLFormatter::write(const GroundFunctionExpressionMinusImpl& element, std:
     out << ")";
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLFormatter::write(const GroundFunctionExpressionFunctionImpl<F>& element, std::ostream& out)
 {
     write(*element.get_function(), out);
@@ -534,7 +534,7 @@ void PDDLFormatter::write(const GroundFunctionExpressionImpl& element, std::ostr
     std::visit([this, &out](auto&& arg) { this->write(*arg, out); }, element.get_variant());
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLFormatter::write(const GroundFunctionImpl<F>& element, std::ostream& out)
 {
     if (element.get_objects().empty())
@@ -558,7 +558,7 @@ template void PDDLFormatter::write(const GroundFunctionImpl<Static>& element, st
 template void PDDLFormatter::write(const GroundFunctionImpl<Fluent>& element, std::ostream& out);
 template void PDDLFormatter::write(const GroundFunctionImpl<Auxiliary>& element, std::ostream& out);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void PDDLFormatter::write(const GroundLiteralImpl<P>& element, std::ostream& out)
 {
     if (element.is_negated())
@@ -577,7 +577,7 @@ template void PDDLFormatter::write(const GroundLiteralImpl<Static>& element, std
 template void PDDLFormatter::write(const GroundLiteralImpl<Fluent>& element, std::ostream& out);
 template void PDDLFormatter::write(const GroundLiteralImpl<Derived>& element, std::ostream& out);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void PDDLFormatter::write(const LiteralImpl<P>& element, std::ostream& out)
 {
     if (element.is_negated())
@@ -621,7 +621,7 @@ void PDDLFormatter::write(const GroundNumericConstraintImpl& element, std::ostre
     out << ")";
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLFormatter::write(const GroundFunctionValueImpl<F>& element, std::ostream& out)
 {
     out << "(= ";
@@ -635,7 +635,7 @@ template void PDDLFormatter::write(const GroundFunctionValueImpl<Auxiliary>& ele
 
 void PDDLFormatter::write(const ObjectImpl& element, std::ostream& out) { out << element.get_name(); }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 void PDDLFormatter::write(const PredicateImpl<P>& element, std::ostream& out)
 {
     out << "(" << element.get_name();

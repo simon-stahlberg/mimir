@@ -75,7 +75,7 @@ public:
     const std::string& get_name() const;
     const Requirements& get_requirements() const;
     const ObjectList& get_constants() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const PredicateList<P>& get_predicates() const;
     template<StaticOrFluentTag F>
     const FunctionSkeletonList<F>& get_functions() const;
@@ -84,7 +84,7 @@ public:
     const AxiomList& get_axioms() const;
 
     const ToObjectMap<std::string> get_name_to_constants() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const ToPredicateMap<std::string, P>& get_name_to_predicate() const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.

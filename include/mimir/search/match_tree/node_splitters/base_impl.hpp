@@ -39,15 +39,15 @@
 namespace mimir::match_tree
 {
 
-template<typename Derived_, HasConjunctiveCondition Element>
-NodeSplitterBase<Derived_, Element>::NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options) :
+template<typename Derived_, HasConjunctiveCondition E>
+NodeSplitterBase<Derived_, E>::NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options) :
     m_pddl_repositories(pddl_repositories),
     m_options(options)
 {
 }
 
-template<typename Derived_, HasConjunctiveCondition Element>
-SplitSet NodeSplitterBase<Derived_, Element>::compute_splits(const std::span<const Element*>& elements)
+template<typename Derived_, HasConjunctiveCondition E>
+SplitSet NodeSplitterBase<Derived_, E>::compute_splits(const std::span<const E*>& elements)
 {
     auto fluent_atom_distributions = AtomDistributions<Fluent> {};
     auto derived_atom_distributions = AtomDistributions<Derived> {};
@@ -111,8 +111,8 @@ SplitSet NodeSplitterBase<Derived_, Element>::compute_splits(const std::span<con
     return splits;
 }
 
-template<typename Derived_, HasConjunctiveCondition Element>
-std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, Element>::compute_refinement_data(const PlaceholderNode<Element>& node)
+template<typename Derived_, HasConjunctiveCondition E>
+std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, E>::compute_refinement_data(const PlaceholderNode<E>& node)
 {
     auto splits = compute_splits(node->get_elements());
 
@@ -159,8 +159,8 @@ std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, Element>::c
     return SplitScoreAndUselessSplits { best_split_and_score->split, best_split_and_score->score, std::move(useless_splits) };
 }
 
-template<typename Derived_, HasConjunctiveCondition Element>
-std::pair<Node<Element>, Statistics> NodeSplitterBase<Derived_, Element>::fit(std::span<const Element*> elements)
+template<typename Derived_, HasConjunctiveCondition E>
+std::pair<Node<E>, Statistics> NodeSplitterBase<Derived_, E>::fit(std::span<const E*> elements)
 {
     auto statistics = Statistics();
     statistics.construction_start_time_point = std::chrono::high_resolution_clock::now();

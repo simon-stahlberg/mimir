@@ -162,7 +162,7 @@ public:
 };
 
 /* FunctionExpressionFunction */
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class FunctionExpressionFunctionImpl
 {
 private:
@@ -325,7 +325,7 @@ extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionNumbe
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionMinusImpl& element);
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const FunctionExpressionImpl& element);
 
@@ -333,7 +333,7 @@ extern std::ostream& operator<<(std::ostream& out, FunctionExpressionNumber elem
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionBinaryOperator element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMultiOperator element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionMinus element);
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, FunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, FunctionExpression element);
 }

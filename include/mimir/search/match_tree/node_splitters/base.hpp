@@ -26,28 +26,28 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 struct SplitterQueueEntry
 {
-    PlaceholderNode<Element> node;
+    PlaceholderNode<E> node;
 
     SplitScoreAndUselessSplits refinement_data;  ///< entries in the queue must have a well-defined next split
 };
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 struct SplitterQueueEntryComparator
 {
-    bool operator()(const SplitterQueueEntry<Element>& lhs, const SplitterQueueEntry<Element>& rhs) const
+    bool operator()(const SplitterQueueEntry<E>& lhs, const SplitterQueueEntry<E>& rhs) const
     {
         return lhs.refinement_data.score < rhs.refinement_data.score;  // highest score first.
     }
 };
 
-template<HasConjunctiveCondition Element>
-using SplitterQueue = std::priority_queue<SplitterQueueEntry<Element>, std::vector<SplitterQueueEntry<Element>>, SplitterQueueEntryComparator<Element>>;
+template<HasConjunctiveCondition E>
+using SplitterQueue = std::priority_queue<SplitterQueueEntry<E>, std::vector<SplitterQueueEntry<E>>, SplitterQueueEntryComparator<E>>;
 
-template<typename Derived_, HasConjunctiveCondition Element>
-class NodeSplitterBase : public INodeSplitter<Element>
+template<typename Derived_, HasConjunctiveCondition E>
+class NodeSplitterBase : public INodeSplitter<E>
 {
 private:
     /// @brief Helper to cast to Derived_.
@@ -58,23 +58,23 @@ protected:
     const PDDLRepositories& m_pddl_repositories;
     const Options& m_options;
 
-    template<DynamicPredicateTag P>
+    template<FluentOrDerived P>
     using AtomDistributions = std::unordered_map<GroundAtom<P>, AtomSplitDistribution>;
     using NumericConstraintDistributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution>;
 
     /// @brief Compute all possible ways to split the data.
     /// This operation runs in time O(|E|*|A|) where |E| is the number of elements
     /// and |A| is the maxmum number of preconditions in an element in E.
-    SplitSet compute_splits(const std::span<const Element*>& elements);
+    SplitSet compute_splits(const std::span<const E*>& elements);
 
     /// @brief Compute the best split if there exists any that is not useless.
     /// This operation runs in time O(|E|*|A|) where |E| is the number of elements in the node
     /// and |A| is the maxmum number of preconditions in an element in E.
-    std::optional<SplitScoreAndUselessSplits> compute_refinement_data(const PlaceholderNode<Element>& node);
+    std::optional<SplitScoreAndUselessSplits> compute_refinement_data(const PlaceholderNode<E>& node);
 
 public:
     NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options);
-    std::pair<Node<Element>, Statistics> fit(std::span<const Element*> elements) override;
+    std::pair<Node<E>, Statistics> fit(std::span<const E*> elements) override;
 };
 }
 

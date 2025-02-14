@@ -49,21 +49,21 @@ struct StateImpl
     bool numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints) const;
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
-    template<DynamicPredicateTag P>
+    template<FluentOrDerived P>
     bool literal_holds(GroundLiteral<P> literal) const;
 
     /// @brief N*log(N) operation, ideally (currently unused), perhaps useful to expose to python users
-    template<DynamicPredicateTag P>
+    template<FluentOrDerived P>
     bool literals_hold(const GroundLiteralList<P>& literals) const;
 
-    template<DynamicPredicateTag P>
+    template<FluentOrDerived P>
     bool literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const;
 
     /* Immutable Getters */
 
     Index get_index() const;
 
-    template<DynamicPredicateTag P>
+    template<FluentOrDerived P>
     const FlatIndexList& get_atoms() const;
 
     const FlatDoubleList& get_numeric_variables() const;

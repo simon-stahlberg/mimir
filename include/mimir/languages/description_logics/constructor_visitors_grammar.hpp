@@ -106,7 +106,7 @@ public:
     void visit(ConceptTop constructor) override;
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicStateGrammarVisitor : public GrammarVisitor
 {
 private:
@@ -118,7 +118,7 @@ public:
     void visit(ConceptAtomicState<P> constructor) override;
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicGoalGrammarVisitor : public GrammarVisitor
 {
 private:
@@ -233,7 +233,7 @@ public:
     void visit(RoleUniversal constructor) override;
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicStateGrammarVisitor : public GrammarVisitor
 {
 private:
@@ -245,7 +245,7 @@ public:
     void visit(RoleAtomicState<P> constructor) override;
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicGoalGrammarVisitor : public GrammarVisitor
 {
 private:

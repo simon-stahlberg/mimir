@@ -44,9 +44,9 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    ConstructorTagToRepository m_constructor_repositories;
+    ConceptOrRoleToRepository m_constructor_repositories;
 
-    explicit BaseRecurseTranslator(ConstructorTagToRepository& constructor_repositories) : m_constructor_repositories(constructor_repositories) {}
+    explicit BaseRecurseTranslator(ConceptOrRoleToRepository& constructor_repositories) : m_constructor_repositories(constructor_repositories) {}
 
 protected:
     /* Implement ITranslator interface */
@@ -60,23 +60,23 @@ protected:
         return self().translate_impl(element);
     }
 
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     DerivationRule<D> translate_impl(const DerivationRuleImpl<D>& constructor)
     {
         constructor.
     }
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     NonTerminal<D> translate_impl(const NonTerminalImpl<D>& constructor)
     {
     }
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     Choice<D> translate_impl(const ChoiceImpl<D>& constructor) = 0;
 
     ConceptBot translate_impl(ConceptBot constructor) = 0;
     ConceptTop translate_impl(ConceptTop constructor) = 0;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     ConceptAtomicState<P> tanslate_impl(const ConceptAtomicStateImpl<P>& constructor);
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     ConceptAtomicState<P> translate_impl(const ConceptAtomicGoalImpl<P>& constructor);
     ConceptIntersection translate_impl(const ConceptIntersectionImpl& constructor) = 0;
     ConceptUnion translate_impl(const ConceptUnionImpl& constructor) = 0;
@@ -89,9 +89,9 @@ protected:
 
     /* Roles */
     RoleUniversal translate_impl(const RoleUniversalImpl& constructor) = 0;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     RoleAtomicState<P> translate_impl(const RoleAtomicStateImpl<P>& constructor) = 0;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     RoleAtomicGoal<P> translate_impl(const RoleAtomicGoalImpl<P>& constructor) = 0;
     RoleIntersection translate_impl(const RoleIntersectionImpl& constructor) = 0;
     RoleUnion translate_impl(const RoleUnionImpl& constructor) = 0;

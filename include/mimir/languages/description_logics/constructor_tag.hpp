@@ -42,7 +42,7 @@ struct Role
  */
 
 template<typename T>
-concept ConstructorTag = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
+concept ConceptOrRole = std::is_same<T, Concept>::value || std::is_same<T, Role>::value;
 
 }
 

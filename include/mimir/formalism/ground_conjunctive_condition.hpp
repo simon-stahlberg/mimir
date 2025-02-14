@@ -39,14 +39,14 @@ private:
     FlatExternalPtrList<const GroundNumericConstraintImpl> m_numeric_constraints = FlatExternalPtrList<const GroundNumericConstraintImpl>();
 
 public:
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     FlatIndexList& get_positive_precondition();
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const FlatIndexList& get_positive_precondition() const;
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     FlatIndexList& get_negative_precondition();
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const FlatIndexList& get_negative_precondition() const;
 
     FlatExternalPtrList<const GroundNumericConstraintImpl>& get_numeric_constraints();

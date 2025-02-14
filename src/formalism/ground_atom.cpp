@@ -26,7 +26,7 @@
 
 namespace mimir
 {
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectList objects) :
     m_index(index),
     m_predicate(std::move(predicate)),
@@ -34,31 +34,31 @@ GroundAtomImpl<P>::GroundAtomImpl(Index index, Predicate<P> predicate, ObjectLis
 {
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Index GroundAtomImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Predicate<P> GroundAtomImpl<P>::get_predicate() const
 {
     return m_predicate;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const ObjectList& GroundAtomImpl<P>::get_objects() const
 {
     return m_objects;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 size_t GroundAtomImpl<P>::get_arity() const
 {
     return m_objects.size();
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Atom<P> GroundAtomImpl<P>::lift(const TermList& terms, PDDLRepositories& pddl_repositories) const
 {
     return pddl_repositories.get_or_create_atom(m_predicate, terms);
@@ -68,7 +68,7 @@ template class GroundAtomImpl<Static>;
 template class GroundAtomImpl<Fluent>;
 template class GroundAtomImpl<Derived>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::pair<VariableList, AtomList<P>> lift(const GroundAtomList<P>& ground_atoms, PDDLRepositories& pddl_repositories)
 {
     VariableList variables;
@@ -100,7 +100,7 @@ template std::pair<VariableList, AtomList<Static>> lift(const GroundAtomList<Sta
 template std::pair<VariableList, AtomList<Fluent>> lift(const GroundAtomList<Fluent>&, PDDLRepositories&);
 template std::pair<VariableList, AtomList<Derived>> lift(const GroundAtomList<Derived>&, PDDLRepositories&);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -112,7 +112,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Static
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundAtomImpl<Derived>& element);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, GroundAtom<P> element)
 {
     out << *element;

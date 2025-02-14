@@ -22,31 +22,29 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-PlaceholderNodeImpl<Element>::PlaceholderNodeImpl(const IInverseNode<Element>* parent,
-                                                  InverseNode<Element>* parents_child,
-                                                  std::span<const Element*> elements) :
+template<HasConjunctiveCondition E>
+PlaceholderNodeImpl<E>::PlaceholderNodeImpl(const IInverseNode<E>* parent, InverseNode<E>* parents_child, std::span<const E*> elements) :
     m_parent(parent),
     m_parents_child(parents_child),
     m_elements(elements)
 {
 }
 
-template<HasConjunctiveCondition Element>
-const IInverseNode<Element>* PlaceholderNodeImpl<Element>::get_parent() const
+template<HasConjunctiveCondition E>
+const IInverseNode<E>* PlaceholderNodeImpl<E>::get_parent() const
 {
     return m_parent;
 }
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element>& PlaceholderNodeImpl<Element>::get_parents_child() const
+template<HasConjunctiveCondition E>
+InverseNode<E>& PlaceholderNodeImpl<E>::get_parents_child() const
 {
     assert(m_parents_child);
     return *m_parents_child;
 }
 
-template<HasConjunctiveCondition Element>
-std::span<const Element*> PlaceholderNodeImpl<Element>::get_elements() const
+template<HasConjunctiveCondition E>
+std::span<const E*> PlaceholderNodeImpl<E>::get_elements() const
 {
     return m_elements;
 }

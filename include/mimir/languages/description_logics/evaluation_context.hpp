@@ -38,15 +38,15 @@ private:
     const PDDLRepositories& m_pddl_repositories;
     Problem m_problem;
     State m_state;
-    ConstructorTagToDenotationType& m_denotation_builder;
-    ConstructorTagToDenotationRepository& m_denotation_repository;
+    ConceptOrRoleToDenotationType& m_denotation_builder;
+    ConceptOrRoleToDenotationRepository& m_denotation_repository;
 
 public:
     EvaluationContext(const PDDLRepositories& pddl_repositories,
                       Problem problem,
                       State state,
-                      ConstructorTagToDenotationType& ref_denotation_builder,
-                      ConstructorTagToDenotationRepository& ref_denotation_repository);
+                      ConceptOrRoleToDenotationType& ref_denotation_builder,
+                      ConceptOrRoleToDenotationRepository& ref_denotation_repository);
 
     /**
      * Getters
@@ -58,10 +58,10 @@ public:
 
     State get_state() const;
 
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     DenotationImpl<D>& get_denotation_builder();
 
-    template<ConstructorTag D>
+    template<ConceptOrRole D>
     DenotationRepository<D>& get_denotation_repository();
 };
 }

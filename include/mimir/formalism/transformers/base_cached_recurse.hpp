@@ -150,39 +150,39 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare(arg); }, term->get_variant());
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void prepare_impl(Predicate<P> predicate)
     {
         this->prepare(predicate->get_parameters());
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void prepare_impl(Atom<P> atom)
     {
         this->prepare(atom->get_predicate());
         this->prepare(atom->get_terms());
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void prepare_impl(GroundAtom<P> atom)
     {
         this->prepare(atom->get_predicate());
         this->prepare(atom->get_objects());
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void prepare_impl(Literal<P> literal)
     {
         this->prepare(literal->get_atom());
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void prepare_impl(GroundLiteral<P> literal)
     {
         this->prepare(literal->get_atom());
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void prepare_impl(GroundFunctionValue<F> function_value)
     {
         this->prepare(function_value->get_function());
     }
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     void prepare_impl(NumericEffect<F> effect)
     {
         this->prepare(effect->get_function());
@@ -227,7 +227,7 @@ protected:
     }
     void prepare_impl(FunctionExpressionMultiOperator function_expression) { this->prepare(function_expression->get_function_expressions()); }
     void prepare_impl(FunctionExpressionMinus function_expression) { this->prepare(function_expression->get_function_expression()); }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void prepare_impl(FunctionExpressionFunction<F> function_expression)
     {
         this->prepare(function_expression->get_function());
@@ -244,7 +244,7 @@ protected:
     }
     void prepare_impl(GroundFunctionExpressionMultiOperator function_expression) { this->prepare(function_expression->get_function_expressions()); }
     void prepare_impl(GroundFunctionExpressionMinus function_expression) { this->prepare(function_expression->get_function_expression()); }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void prepare_impl(GroundFunctionExpressionFunction<F> function_expression)
     {
         this->prepare(function_expression->get_function());
@@ -253,18 +253,18 @@ protected:
     {
         std::visit([this](auto&& arg) { return this->prepare(arg); }, function_expression->get_variant());
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void prepare_impl(FunctionSkeleton<F> function_skeleton)
     {
         this->prepare(function_skeleton->get_parameters());
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void prepare_impl(Function<F> function)
     {
         this->prepare(function->get_function_skeleton());
         this->prepare(function->get_terms());
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void prepare_impl(GroundFunction<F> function)
     {
         this->prepare(function->get_function_skeleton());
@@ -395,37 +395,37 @@ protected:
             },
             term->get_variant());
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Predicate<P> transform_impl(Predicate<P> predicate)
     {
         return this->m_pddl_repositories.template get_or_create_predicate<P>(predicate->get_name(), this->transform(predicate->get_parameters()));
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Atom<P> transform_impl(Atom<P> atom)
     {
         return this->m_pddl_repositories.get_or_create_atom(this->transform(atom->get_predicate()), this->transform(atom->get_terms()));
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     GroundAtom<P> transform_impl(GroundAtom<P> atom)
     {
         return this->m_pddl_repositories.get_or_create_ground_atom(this->transform(atom->get_predicate()), this->transform(atom->get_objects()));
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Literal<P> transform_impl(Literal<P> literal)
     {
         return this->m_pddl_repositories.get_or_create_literal(literal->is_negated(), this->transform(literal->get_atom()));
     }
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     GroundLiteral<P> transform_impl(GroundLiteral<P> literal)
     {
         return this->m_pddl_repositories.get_or_create_ground_literal(literal->is_negated(), this->transform(literal->get_atom()));
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunctionValue<F> transform_impl(GroundFunctionValue<F> function_value)
     {
         return this->m_pddl_repositories.get_or_create_ground_function_value(this->transform(function_value->get_function()), function_value->get_number());
     }
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     NumericEffect<F> transform_impl(NumericEffect<F> effect)
     {
         return this->m_pddl_repositories.get_or_create_numeric_effect(effect->get_assign_operator(),
@@ -485,7 +485,7 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_function_expression_minus(this->transform(function_expression->get_function_expression()));
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     FunctionExpressionFunction<F> transform_impl(FunctionExpressionFunction<F> function_expression)
     {
         return this->m_pddl_repositories.get_or_create_function_expression_function(this->transform(function_expression->get_function()));
@@ -516,7 +516,7 @@ protected:
     {
         return this->m_pddl_repositories.get_or_create_ground_function_expression_minus(this->transform(function_expression->get_function_expression()));
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunctionExpressionFunction<F> transform_impl(GroundFunctionExpressionFunction<F> function_expression)
     {
         return this->m_pddl_repositories.get_or_create_ground_function_expression_function(this->transform(function_expression->get_function()));
@@ -526,20 +526,20 @@ protected:
         return std::visit([this](auto&& arg) { return this->m_pddl_repositories.get_or_create_ground_function_expression(this->transform(arg)); },
                           function_expression->get_variant());
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     FunctionSkeleton<F> transform_impl(FunctionSkeleton<F> function_skeleton)
     {
         return this->m_pddl_repositories.template get_or_create_function_skeleton<F>(function_skeleton->get_name(),
                                                                                      this->transform(function_skeleton->get_parameters()));
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     Function<F> transform_impl(Function<F> function)
     {
         return this->m_pddl_repositories.get_or_create_function(this->transform(function->get_function_skeleton()),
                                                                 this->transform(function->get_terms()),
                                                                 function->get_parent_terms_to_terms_mapping());
     }
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunction<F> transform_impl(GroundFunction<F> function)
     {
         return this->m_pddl_repositories.get_or_create_ground_function(this->transform(function->get_function_skeleton()),

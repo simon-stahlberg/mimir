@@ -40,7 +40,7 @@ namespace mimir
  * Forward declarations
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class AssignmentSet;
 template<StaticOrFluentTag F>
 class NumericAssignmentSet;
@@ -54,11 +54,11 @@ using GroundAction = const GroundActionImpl*;
 using GroundActionList = std::vector<GroundAction>;
 using GroundActionSet = std::unordered_set<GroundAction>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class AtomImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using Atom = const AtomImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using AtomList = std::vector<Atom<P>>;
 
 class AxiomImpl;
@@ -75,11 +75,11 @@ class DomainImpl;
 using Domain = const DomainImpl*;
 using DomainList = std::vector<Domain>;
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 class NumericEffectImpl;
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 using NumericEffect = const NumericEffectImpl<F>*;
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 using NumericEffectList = std::vector<NumericEffect<F>>;
 
 class ConjunctiveEffectImpl;
@@ -101,35 +101,35 @@ class FunctionExpressionMultiOperatorImpl;
 using FunctionExpressionMultiOperator = const FunctionExpressionMultiOperatorImpl*;
 class FunctionExpressionMinusImpl;
 using FunctionExpressionMinus = const FunctionExpressionMinusImpl*;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class FunctionExpressionFunctionImpl;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionExpressionFunction = const FunctionExpressionFunctionImpl<F>*;
 class FunctionExpressionImpl;
 using FunctionExpression = const FunctionExpressionImpl*;
 using FunctionExpressionList = std::vector<FunctionExpression>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class FunctionSkeletonImpl;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionSkeleton = const FunctionSkeletonImpl<F>*;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionSkeletonList = std::vector<FunctionSkeleton<F>>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class FunctionImpl;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using Function = const FunctionImpl<F>*;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using FunctionList = std::vector<Function<F>>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class GroundAtomImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundAtom = const GroundAtomImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundAtomList = std::vector<GroundAtom<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundAtomSet = std::unordered_set<GroundAtom<P>>;
 
 class GroundFunctionExpressionNumberImpl;
@@ -140,49 +140,49 @@ class GroundFunctionExpressionMultiOperatorImpl;
 using GroundFunctionExpressionMultiOperator = const GroundFunctionExpressionMultiOperatorImpl*;
 class GroundFunctionExpressionMinusImpl;
 using GroundFunctionExpressionMinus = const GroundFunctionExpressionMinusImpl*;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class GroundFunctionExpressionFunctionImpl;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionExpressionFunction = const GroundFunctionExpressionFunctionImpl<F>*;
 class GroundFunctionExpressionImpl;
 using GroundFunctionExpression = const GroundFunctionExpressionImpl*;
 using GroundFunctionExpressionList = std::vector<GroundFunctionExpression>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class GroundFunctionImpl;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunction = const GroundFunctionImpl<F>*;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionList = std::vector<GroundFunction<F>>;
-template<FunctionTag F, typename T>
+template<StaticOrFluentOrAuxiliary F, typename T>
 using GroundFunctionMap = std::unordered_map<GroundFunction<F>, T>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class GroundLiteralImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundLiteral = const GroundLiteralImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundLiteralList = std::vector<GroundLiteral<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using GroundLiteralSet = std::unordered_set<GroundLiteral<P>>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class LiteralImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using Literal = const LiteralImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using LiteralList = std::vector<Literal<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using LiteralSet = std::unordered_set<Literal<P>>;
 
 class OptimizationMetricImpl;
 using OptimizationMetric = const OptimizationMetricImpl*;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class GroundFunctionValueImpl;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionValue = const GroundFunctionValueImpl<F>*;
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 using GroundFunctionValueList = std::vector<GroundFunctionValue<F>>;
 
 class NumericConstraintImpl;
@@ -201,15 +201,15 @@ using ToObjectMap = std::unordered_map<Key, Object, Hash, KeyEqual>;
 
 class PDDLRepositories;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class PredicateImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using Predicate = const PredicateImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using PredicateList = std::vector<Predicate<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using PredicateSet = std::unordered_set<Predicate<P>>;
-template<typename Key, PredicateTag P, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
+template<typename Key, StaticOrFluentOrDerived P, typename Hash = loki::Hash<Key>, typename KeyEqual = loki::EqualTo<Key>>
 using ToPredicateMap = std::unordered_map<Key, Predicate<P>, Hash, KeyEqual>;
 
 class ProblemImpl;

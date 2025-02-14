@@ -29,25 +29,24 @@
 namespace mimir::match_tree
 {
 /* MatchTree */
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class MatchTree
 {
 private:
-    std::vector<const Element*> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
+    std::vector<const E*> m_elements;  ///< ATTENTION: must remain persistent. Swapping elements is allowed.
     Options m_options;
 
-    Node<Element> m_root;
+    Node<E> m_root;
     Statistics m_statistics;
 
-    std::vector<const INode<Element>*> m_evaluate_stack;  ///< temporary during evaluation.
+    std::vector<const INode<E>*> m_evaluate_stack;  ///< temporary during evaluation.
 
     MatchTree();
 
-    MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options = Options());
+    MatchTree(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
 public:
-    static std::unique_ptr<MatchTree<Element>>
-    create(const PDDLRepositories& pddl_repositories, std::vector<const Element*> elements, const Options& options = Options());
+    static std::unique_ptr<MatchTree<E>> create(const PDDLRepositories& pddl_repositories, std::vector<const E*> elements, const Options& options = Options());
 
     // Uncopieable and unmoveable to prohibit invalidating spans on m_elements.
     MatchTree(const MatchTree& other) = delete;
@@ -55,7 +54,7 @@ public:
     MatchTree(MatchTree&& other) = delete;
     MatchTree& operator=(MatchTree&& other) = delete;
 
-    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const Element*>& out_applicable_elements);
+    void generate_applicable_elements_iteratively(const DenseState& state, std::vector<const E*>& out_applicable_elements);
 
     const Statistics& get_statistics() const;
 };

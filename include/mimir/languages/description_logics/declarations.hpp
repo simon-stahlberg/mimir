@@ -36,16 +36,16 @@ class EvaluationContext;
  * Common
  */
 
-using ConstructorTagToSizeT =
+using ConceptOrRoleToSizeT =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::size_t>, boost::hana::pair<boost::hana::type<Role>, std::size_t>>;
 
 /**
  * Denotations
  */
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct DenotationImpl;
-template<ConstructorTag D>
+template<ConceptOrRole D>
 using Denotation = const DenotationImpl<D>*;
 
 /**
@@ -53,11 +53,11 @@ using Denotation = const DenotationImpl<D>*;
  */
 
 /* Constructor */
-template<ConstructorTag D>
+template<ConceptOrRole D>
 class ConstructorImpl;
-template<ConstructorTag D>
+template<ConceptOrRole D>
 using Constructor = const ConstructorImpl<D>*;
-template<ConstructorTag D>
+template<ConceptOrRole D>
 using ConstructorList = std::vector<Constructor<D>>;
 
 /* Concrete concepts */
@@ -65,13 +65,13 @@ class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -93,13 +93,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;
@@ -133,47 +133,47 @@ namespace grammar
  */
 
 /* Constructor */
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class ConstructorImpl;
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 using Constructor = const ConstructorImpl<D>*;
 
 /* NonTerminal */
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class NonTerminalImpl;
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 using NonTerminal = const NonTerminalImpl<D>*;
 
 /* ConstructorOrNonTerminal */
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class ConstructorOrNonTerminalImpl;
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 using ConstructorOrNonTerminal = const ConstructorOrNonTerminalImpl<D>*;
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 using ConstructorOrNonTerminalList = std::vector<ConstructorOrNonTerminal<D>>;
 
 /* DerivationRule */
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 class DerivationRuleImpl;
-template<dl::ConstructorTag D>
+template<dl::ConceptOrRole D>
 using DerivationRule = const DerivationRuleImpl<D>*;
-template<ConstructorTag D>
+template<ConceptOrRole D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
-using ConstructorTagToDerivationRuleList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DerivationRuleList<Concept>>,
-                                                            boost::hana::pair<boost::hana::type<Role>, DerivationRuleList<Role>>>;
+using ConceptOrRoleToDerivationRuleList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DerivationRuleList<Concept>>,
+                                                           boost::hana::pair<boost::hana::type<Role>, DerivationRuleList<Role>>>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
 using ConceptTop = const ConceptTopImpl*;
 class ConceptBotImpl;
 using ConceptBot = const ConceptBotImpl*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using ConceptAtomicState = const ConceptAtomicStateImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using ConceptAtomicGoal = const ConceptAtomicGoalImpl<P>*;
 class ConceptIntersectionImpl;
 using ConceptIntersection = const ConceptIntersectionImpl*;
@@ -195,13 +195,13 @@ using ConceptNominal = const ConceptNominalImpl*;
 /* Concrete roles */
 class RoleUniversalImpl;
 using RoleUniversal = const RoleUniversalImpl*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using RoleAtomicState = const RoleAtomicStateImpl<P>*;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using RoleAtomicGoal = const RoleAtomicGoalImpl<P>*;
 class RoleIntersectionImpl;
 using RoleIntersection = const RoleIntersectionImpl*;

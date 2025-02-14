@@ -32,9 +32,9 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>
-create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, AtomSplit<P> split)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>>
+create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, AtomSplit<P> split)
 {
     assert(node);
 
@@ -61,9 +61,9 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
     assert(num_true != 0 || num_false != 0);
 
-    auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
-    auto false_elements = std::span<const Element*>(elements.begin() + num_true, elements.begin() + num_true + num_false);
-    auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true + num_false, elements.end());
+    auto true_elements = std::span<const E*>(elements.begin(), elements.begin() + num_true);
+    auto false_elements = std::span<const E*>(elements.begin() + num_true, elements.begin() + num_true + num_false);
+    auto dontcare_elements = std::span<const E*>(elements.begin() + num_true + num_false, elements.end());
 
     if (node->get_parent())
     {
@@ -71,84 +71,80 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
         if (!true_elements.empty() && !false_elements.empty() && !dontcare_elements.empty())
         {
-            auto& created_node = node->get_parents_child() = std::make_unique<InverseAtomSelectorNode_TFX<Element, P>>(node->get_parent(),
-                                                                                                                       useless_splits,
-                                                                                                                       atom,
-                                                                                                                       true_elements,
-                                                                                                                       false_elements,
-                                                                                                                       dontcare_elements);
-            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TFX<Element, P>*>(created_node.get());
+            auto& created_node = node->get_parents_child() =
+                std::make_unique<InverseAtomSelectorNode_TFX<E, P>>(node->get_parent(), useless_splits, atom, true_elements, false_elements, dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TFX<E, P>*>(created_node.get());
             assert(atom_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), false_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_false_child(), false_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_dontcare_child(), dontcare_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else if (!true_elements.empty() && !false_elements.empty())
         {
             auto& created_node = node->get_parents_child() =
-                std::make_unique<InverseAtomSelectorNode_TF<Element, P>>(node->get_parent(), useless_splits, atom, true_elements, false_elements);
-            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TF<Element, P>*>(created_node.get());
+                std::make_unique<InverseAtomSelectorNode_TF<E, P>>(node->get_parent(), useless_splits, atom, true_elements, false_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TF<E, P>*>(created_node.get());
             assert(atom_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), false_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_false_child(), false_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else if (!true_elements.empty() && !dontcare_elements.empty())
         {
             auto& created_node = node->get_parents_child() =
-                std::make_unique<InverseAtomSelectorNode_TX<Element, P>>(node->get_parent(), useless_splits, atom, true_elements, dontcare_elements);
-            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TX<Element, P>*>(created_node.get());
+                std::make_unique<InverseAtomSelectorNode_TX<E, P>>(node->get_parent(), useless_splits, atom, true_elements, dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_TX<E, P>*>(created_node.get());
             assert(atom_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_dontcare_child(), dontcare_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else if (!false_elements.empty() && !dontcare_elements.empty())
         {
             auto& created_node = node->get_parents_child() =
-                std::make_unique<InverseAtomSelectorNode_FX<Element, P>>(node->get_parent(), useless_splits, atom, false_elements, dontcare_elements);
-            auto atom_node = dynamic_cast<InverseAtomSelectorNode_FX<Element, P>*>(created_node.get());
+                std::make_unique<InverseAtomSelectorNode_FX<E, P>>(node->get_parent(), useless_splits, atom, false_elements, dontcare_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_FX<E, P>*>(created_node.get());
             assert(atom_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), false_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_false_child(), false_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_dontcare_child(), dontcare_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else if (!true_elements.empty())
         {
             auto& created_node = node->get_parents_child() =
-                std::make_unique<InverseAtomSelectorNode_T<Element, P>>(node->get_parent(), useless_splits, atom, true_elements);
-            auto atom_node = dynamic_cast<InverseAtomSelectorNode_T<Element, P>*>(created_node.get());
+                std::make_unique<InverseAtomSelectorNode_T<E, P>>(node->get_parent(), useless_splits, atom, true_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_T<E, P>*>(created_node.get());
             assert(atom_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_true_child(), true_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_true_child(), true_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else if (!false_elements.empty())
         {
             auto& created_node = node->get_parents_child() =
-                std::make_unique<InverseAtomSelectorNode_F<Element, P>>(node->get_parent(), useless_splits, atom, false_elements);
-            auto atom_node = dynamic_cast<InverseAtomSelectorNode_F<Element, P>*>(created_node.get());
+                std::make_unique<InverseAtomSelectorNode_F<E, P>>(node->get_parent(), useless_splits, atom, false_elements);
+            auto atom_node = dynamic_cast<InverseAtomSelectorNode_F<E, P>*>(created_node.get());
             assert(atom_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &atom_node->get_false_child(), false_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &atom_node->get_false_child(), false_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else
         {
@@ -162,60 +158,60 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         if (!true_elements.empty() && !false_elements.empty() && !dontcare_elements.empty())
         {
             auto created_node =
-                std::make_unique<InverseAtomSelectorNode_TFX<Element, P>>(nullptr, useless_splits, atom, true_elements, false_elements, dontcare_elements);
+                std::make_unique<InverseAtomSelectorNode_TFX<E, P>>(nullptr, useless_splits, atom, true_elements, false_elements, dontcare_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), false_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_false_child(), false_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
         else if (!true_elements.empty() && !false_elements.empty())
         {
-            auto created_node = std::make_unique<InverseAtomSelectorNode_TF<Element, P>>(nullptr, useless_splits, atom, true_elements, false_elements);
+            auto created_node = std::make_unique<InverseAtomSelectorNode_TF<E, P>>(nullptr, useless_splits, atom, true_elements, false_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), false_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_false_child(), false_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
         else if (!true_elements.empty() && !dontcare_elements.empty())
         {
-            auto created_node = std::make_unique<InverseAtomSelectorNode_TX<Element, P>>(nullptr, useless_splits, atom, true_elements, dontcare_elements);
+            auto created_node = std::make_unique<InverseAtomSelectorNode_TX<E, P>>(nullptr, useless_splits, atom, true_elements, dontcare_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
         else if (!false_elements.empty() && !dontcare_elements.empty())
         {
-            auto created_node = std::make_unique<InverseAtomSelectorNode_FX<Element, P>>(nullptr, useless_splits, atom, false_elements, dontcare_elements);
+            auto created_node = std::make_unique<InverseAtomSelectorNode_FX<E, P>>(nullptr, useless_splits, atom, false_elements, dontcare_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), false_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_false_child(), false_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
         else if (!true_elements.empty())
         {
-            auto created_node = std::make_unique<InverseAtomSelectorNode_T<Element, P>>(nullptr, useless_splits, atom, true_elements);
+            auto created_node = std::make_unique<InverseAtomSelectorNode_T<E, P>>(nullptr, useless_splits, atom, true_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), true_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_true_child(), true_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
         else if (!false_elements.empty())
         {
-            auto created_node = std::make_unique<InverseAtomSelectorNode_F<Element, P>>(nullptr, useless_splits, atom, false_elements);
+            auto created_node = std::make_unique<InverseAtomSelectorNode_F<E, P>>(nullptr, useless_splits, atom, false_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_false_child(), false_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_false_child(), false_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
@@ -236,9 +232,9 @@ create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& nod
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, AtomSplit<Derived> split);
 
-template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>
-create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, NumericConstraintSplit split)
+template<HasConjunctiveCondition E>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>>
+create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, NumericConstraintSplit split)
 {
     assert(node);
 
@@ -257,8 +253,8 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
     assert(num_true != 0);
 
-    auto true_elements = std::span<const Element*>(elements.begin(), elements.begin() + num_true);
-    auto dontcare_elements = std::span<const Element*>(elements.begin() + num_true, elements.end());
+    auto true_elements = std::span<const E*>(elements.begin(), elements.begin() + num_true);
+    auto dontcare_elements = std::span<const E*>(elements.begin() + num_true, elements.end());
 
     if (node->get_parent())
     {
@@ -266,33 +262,30 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
 
         if (!true_elements.empty() && !dontcare_elements.empty())
         {
-            auto& created_node = node->get_parents_child() = std::make_unique<InverseNumericConstraintSelectorNode_TX<Element>>(node->get_parent(),
-                                                                                                                                useless_splits,
-                                                                                                                                constraint,
-                                                                                                                                true_elements,
-                                                                                                                                dontcare_elements);
+            auto& created_node = node->get_parents_child() =
+                std::make_unique<InverseNumericConstraintSelectorNode_TX<E>>(node->get_parent(), useless_splits, constraint, true_elements, dontcare_elements);
 
-            auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode_TX<Element>*>(created_node.get());
+            auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode_TX<E>*>(created_node.get());
             assert(constraint_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &constraint_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &constraint_node->get_dontcare_child(), dontcare_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else if (!true_elements.empty())
         {
             auto& created_node = node->get_parents_child() =
-                std::make_unique<InverseNumericConstraintSelectorNode_T<Element>>(node->get_parent(), useless_splits, constraint, true_elements);
+                std::make_unique<InverseNumericConstraintSelectorNode_T<E>>(node->get_parent(), useless_splits, constraint, true_elements);
 
-            auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode_T<Element>*>(created_node.get());
+            auto constraint_node = dynamic_cast<InverseNumericConstraintSelectorNode_T<E>*>(created_node.get());
             assert(constraint_node);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &constraint_node->get_true_child(), true_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &constraint_node->get_true_child(), true_elements));
 
-            return std::make_pair(InverseNode<Element> { nullptr }, std::move(children));
+            return std::make_pair(InverseNode<E> { nullptr }, std::move(children));
         }
         else
         {
@@ -307,20 +300,20 @@ create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const
         if (!true_elements.empty() && !dontcare_elements.empty())
         {
             auto created_node =
-                std::make_unique<InverseNumericConstraintSelectorNode_TX<Element>>(nullptr, useless_splits, constraint, true_elements, dontcare_elements);
+                std::make_unique<InverseNumericConstraintSelectorNode_TX<E>>(nullptr, useless_splits, constraint, true_elements, dontcare_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), true_elements));
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_true_child(), true_elements));
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_dontcare_child(), dontcare_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
         else if (!true_elements.empty())
         {
-            auto created_node = std::make_unique<InverseNumericConstraintSelectorNode_T<Element>>(nullptr, useless_splits, constraint, true_elements);
+            auto created_node = std::make_unique<InverseNumericConstraintSelectorNode_T<E>>(nullptr, useless_splits, constraint, true_elements);
 
-            auto children = PlaceholderNodeList<Element> {};
-            children.push_back(std::make_unique<PlaceholderNodeImpl<Element>>(created_node.get(), &created_node->get_true_child(), true_elements));
+            auto children = PlaceholderNodeList<E> {};
+            children.push_back(std::make_unique<PlaceholderNodeImpl<E>>(created_node.get(), &created_node->get_true_child(), true_elements));
 
             return std::make_pair(std::move(created_node), std::move(children));
         }
@@ -337,9 +330,9 @@ create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& no
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, NumericConstraintSplit split);
 
-template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>
-create_node_and_placeholder_children(const PlaceholderNode<Element>& node, const SplitList& useless_splits, const Split& split)
+template<HasConjunctiveCondition E>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>>
+create_node_and_placeholder_children(const PlaceholderNode<E>& node, const SplitList& useless_splits, const Split& split)
 {
     assert(node);
 
@@ -351,8 +344,8 @@ create_node_and_placeholder_children(const PlaceholderNode<GroundActionImpl>& no
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_node_and_placeholder_children(const PlaceholderNode<GroundAxiomImpl>& node, const SplitList& useless_splits, const Split& split);
 
-template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_perfect_generator_node(const PlaceholderNode<Element>& node)
+template<HasConjunctiveCondition E>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>> create_perfect_generator_node(const PlaceholderNode<E>& node)
 {
     assert(node);
 
@@ -361,14 +354,14 @@ std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_perfect_gen
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
         if (!node->get_elements().empty())  ///< Skip creating an empty generator node
         {
-            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode_Perfect<Element>>(node->get_parent(), node->get_elements());
+            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode_Perfect<E>>(node->get_parent(), node->get_elements());
         }
-        return { nullptr, PlaceholderNodeList<Element> {} };
+        return { nullptr, PlaceholderNodeList<E> {} };
     }
     else
     {
         /* Construct the node and return it, i.e., the root node. */
-        return { std::make_unique<InverseElementGeneratorNode_Perfect<Element>>(node->get_parent(), node->get_elements()), PlaceholderNodeList<Element> {} };
+        return { std::make_unique<InverseElementGeneratorNode_Perfect<E>>(node->get_parent(), node->get_elements()), PlaceholderNodeList<E> {} };
     }
 }
 
@@ -377,8 +370,8 @@ create_perfect_generator_node(const PlaceholderNode<GroundActionImpl>& node);
 template std::pair<InverseNode<GroundAxiomImpl>, PlaceholderNodeList<GroundAxiomImpl>>
 create_perfect_generator_node(const PlaceholderNode<GroundAxiomImpl>& node);
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element> create_imperfect_generator_node(const PlaceholderNode<Element>& node)
+template<HasConjunctiveCondition E>
+InverseNode<E> create_imperfect_generator_node(const PlaceholderNode<E>& node)
 {
     assert(node);
 
@@ -387,24 +380,24 @@ InverseNode<Element> create_imperfect_generator_node(const PlaceholderNode<Eleme
         /* Construct the node directly into the parents child and return nullptr, i.e., it is an inner node. */
         if (!node->get_elements().empty())  ///< Skip creating an empty generator node
         {
-            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode_Imperfect<Element>>(node->get_parent(), node->get_elements());
+            node->get_parents_child() = std::make_unique<InverseElementGeneratorNode_Imperfect<E>>(node->get_parent(), node->get_elements());
         }
         return nullptr;
     }
     else
     {
         /* Construct the node and return it, i.e., the root node. */
-        return std::make_unique<InverseElementGeneratorNode_Imperfect<Element>>(node->get_parent(), node->get_elements());
+        return std::make_unique<InverseElementGeneratorNode_Imperfect<E>>(node->get_parent(), node->get_elements());
     }
 }
 
 template InverseNode<GroundActionImpl> create_imperfect_generator_node(const PlaceholderNode<GroundActionImpl>& node);
 template InverseNode<GroundAxiomImpl> create_imperfect_generator_node(const PlaceholderNode<GroundAxiomImpl>& node);
 
-template<HasConjunctiveCondition Element>
-PlaceholderNode<Element> create_root_placeholder_node(std::span<const Element*> elements)
+template<HasConjunctiveCondition E>
+PlaceholderNode<E> create_root_placeholder_node(std::span<const E*> elements)
 {
-    return std::make_unique<PlaceholderNodeImpl<Element>>(nullptr, nullptr, elements);
+    return std::make_unique<PlaceholderNodeImpl<E>>(nullptr, nullptr, elements);
 }
 
 template PlaceholderNode<GroundActionImpl> create_root_placeholder_node(std::span<const GroundActionImpl*> elements);

@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, ObjectList objects) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
@@ -31,25 +31,25 @@ GroundFunctionImpl<F>::GroundFunctionImpl(Index index, FunctionSkeleton<F> funct
 {
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Index GroundFunctionImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const FunctionSkeleton<F>& GroundFunctionImpl<F>::get_function_skeleton() const
 {
     return m_function_skeleton;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const ObjectList& GroundFunctionImpl<F>::get_objects() const
 {
     return m_objects;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 size_t GroundFunctionImpl<F>::get_arity() const
 {
     return m_objects.size();
@@ -59,7 +59,7 @@ template class GroundFunctionImpl<Static>;
 template class GroundFunctionImpl<Fluent>;
 template class GroundFunctionImpl<Auxiliary>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
@@ -71,7 +71,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<St
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<Auxiliary>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundFunction<F> element)
 {
     out << *element;

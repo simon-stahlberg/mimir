@@ -22,24 +22,24 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class PlaceholderNodeImpl
 {
 private:
-    const IInverseNode<Element>* m_parent;
-    InverseNode<Element>* m_parents_child;
-    std::span<const Element*> m_elements;
+    const IInverseNode<E>* m_parent;
+    InverseNode<E>* m_parents_child;
+    std::span<const E*> m_elements;
 
 public:
-    PlaceholderNodeImpl(const IInverseNode<Element>* parent, InverseNode<Element>* parents_child, std::span<const Element*> elements);
+    PlaceholderNodeImpl(const IInverseNode<E>* parent, InverseNode<E>* parents_child, std::span<const E*> elements);
     PlaceholderNodeImpl(const PlaceholderNodeImpl& other) = delete;
     PlaceholderNodeImpl& operator=(const PlaceholderNodeImpl& other) = delete;
     PlaceholderNodeImpl(PlaceholderNodeImpl&& other) = delete;
     PlaceholderNodeImpl& operator=(PlaceholderNodeImpl&& other) = delete;
 
-    const IInverseNode<Element>* get_parent() const;
-    InverseNode<Element>& get_parents_child() const;
-    std::span<const Element*> get_elements() const;
+    const IInverseNode<E>* get_parent() const;
+    InverseNode<E>& get_parents_child() const;
+    std::span<const E*> get_elements() const;
 };
 }
 

@@ -25,18 +25,17 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
-ElementGeneratorNode_Perfect<Element>::ElementGeneratorNode_Perfect(std::span<const Element*> elements) :
-    ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<Element>, Element>(elements)
+template<HasConjunctiveCondition E>
+ElementGeneratorNode_Perfect<E>::ElementGeneratorNode_Perfect(std::span<const E*> elements) :
+    ElementGeneratorNodeBase<ElementGeneratorNode_Perfect<E>, E>(elements)
 {
     // m_elements may be empty, e.g., if there are no ground axioms.
 }
 
-template<HasConjunctiveCondition Element>
-void ElementGeneratorNode_Perfect<Element>::generate_applicable_actions_impl(const DenseState& state,
-                                                                             std::vector<const Element*>& ref_applicable_elements) const
+template<HasConjunctiveCondition E>
+void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const DenseState& state, std::vector<const E*>& ref_applicable_elements) const
 {
-    if constexpr (std::is_same_v<Element, GroundActionImpl>)
+    if constexpr (std::is_same_v<E, GroundActionImpl>)
     {
         if (!state.get_numeric_variables().empty())
         {
@@ -53,20 +52,20 @@ void ElementGeneratorNode_Perfect<Element>::generate_applicable_actions_impl(con
             ref_applicable_elements.insert(ref_applicable_elements.end(), this->m_elements.begin(), this->m_elements.end());
         }
     }
-    else if constexpr (std::is_same_v<Element, GroundAxiomImpl>)
+    else if constexpr (std::is_same_v<E, GroundAxiomImpl>)
     {
         ref_applicable_elements.insert(ref_applicable_elements.end(), this->m_elements.begin(), this->m_elements.end());
     }
     else
     {
-        static_assert(dependent_false<Element>::value,
-                      "ElementGeneratorNode_Perfect<Element>::generate_applicable_actions_impl(state, ref_applicable_elements): Missing implementation for "
+        static_assert(dependent_false<E>::value,
+                      "ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(state, ref_applicable_elements): Missing implementation for "
                       "Element type.");
     }
 }
 
-template<HasConjunctiveCondition Element>
-void ElementGeneratorNode_Perfect<Element>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E>
+void ElementGeneratorNode_Perfect<E>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
@@ -74,16 +73,15 @@ void ElementGeneratorNode_Perfect<Element>::visit_impl(INodeVisitor<Element>& vi
 template class ElementGeneratorNode_Perfect<GroundActionImpl>;
 template class ElementGeneratorNode_Perfect<GroundAxiomImpl>;
 
-template<HasConjunctiveCondition Element>
-ElementGeneratorNode_Imperfect<Element>::ElementGeneratorNode_Imperfect(std::span<const Element*> elements) :
-    ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<Element>, Element>(elements)
+template<HasConjunctiveCondition E>
+ElementGeneratorNode_Imperfect<E>::ElementGeneratorNode_Imperfect(std::span<const E*> elements) :
+    ElementGeneratorNodeBase<ElementGeneratorNode_Imperfect<E>, E>(elements)
 {
     // m_elements may be empty, e.g., if there are no ground axioms.
 }
 
-template<HasConjunctiveCondition Element>
-void ElementGeneratorNode_Imperfect<Element>::generate_applicable_actions_impl(const DenseState& state,
-                                                                               std::vector<const Element*>& ref_applicable_elements) const
+template<HasConjunctiveCondition E>
+void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const DenseState& state, std::vector<const E*>& ref_applicable_elements) const
 {
     for (const auto& element : this->m_elements)
     {
@@ -94,8 +92,8 @@ void ElementGeneratorNode_Imperfect<Element>::generate_applicable_actions_impl(c
     }
 }
 
-template<HasConjunctiveCondition Element>
-void ElementGeneratorNode_Imperfect<Element>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E>
+void ElementGeneratorNode_Imperfect<E>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }

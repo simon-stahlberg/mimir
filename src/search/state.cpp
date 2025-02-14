@@ -48,7 +48,7 @@ bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& nume
     return true;
 }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 {
     return literal->is_negated() != contains(get_atoms<P>(), literal->get_atom()->get_index());
@@ -57,7 +57,7 @@ bool StateImpl::literal_holds(GroundLiteral<P> literal) const
 template bool StateImpl::literal_holds(GroundLiteral<Fluent> literal) const;
 template bool StateImpl::literal_holds(GroundLiteral<Derived> literal) const;
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 {
     for (const auto& literal : literals)
@@ -74,7 +74,7 @@ bool StateImpl::literals_hold(const GroundLiteralList<P>& literals) const
 template bool StateImpl::literals_hold(const GroundLiteralList<Fluent>& literals) const;
 template bool StateImpl::literals_hold(const GroundLiteralList<Derived>& literals) const;
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool StateImpl::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
 {
     return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
@@ -85,7 +85,7 @@ template bool StateImpl::literals_hold<Derived>(const FlatIndexList& positive_at
 
 Index StateImpl::get_index() const { return m_index; }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 const FlatIndexList& StateImpl::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
@@ -109,7 +109,7 @@ const FlatIndexList& StateImpl::get_atoms() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 

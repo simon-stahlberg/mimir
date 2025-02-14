@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class GroundFunctionImpl
 {
 private:
@@ -54,10 +54,10 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_function_skeleton), std::as_const(m_objects)); }
 };
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionImpl<F>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, GroundFunction<F> element);
 
 }

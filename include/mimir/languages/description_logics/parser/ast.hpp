@@ -60,7 +60,7 @@ struct RoleReflexiveTransitiveClosure;
 struct RoleRestriction;
 struct RoleIdentity;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct Constructor
 {
 };
@@ -105,13 +105,13 @@ struct Constructor<Role> :
     using base_type::operator=;
 };
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct NonTerminal : x3::position_tagged
 {
     std::string name;
 };
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D>, Constructor<D>>
 {
     using typename x3::variant<NonTerminal<D>, Constructor<D>>::base_type;
@@ -119,7 +119,7 @@ struct ConstructorOrNonTerminal : x3::position_tagged, x3::variant<NonTerminal<D
     using base_type::operator=;
 };
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct DerivationRule : x3::position_tagged
 {
     NonTerminal<D> non_terminal;

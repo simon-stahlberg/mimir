@@ -23,8 +23,8 @@
 
 namespace mimir::match_tree
 {
-template<typename Derived_, HasConjunctiveCondition Element>
-class InverseNumericConstraintSelectorNodeBase : public IInverseNode<Element>
+template<typename Derived_, HasConjunctiveCondition E>
+class InverseNumericConstraintSelectorNodeBase : public IInverseNode<E>
 {
 private:
     /// @brief Helper to cast to Derived_.
@@ -36,8 +36,8 @@ protected:
     GroundNumericConstraint m_constraint;
 
 public:
-    InverseNumericConstraintSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, GroundNumericConstraint constraint) :
-        IInverseNode<Element>(parent, std::move(useless_splits)),
+    InverseNumericConstraintSelectorNodeBase(const IInverseNode<E>* parent, SplitList useless_splits, GroundNumericConstraint constraint) :
+        IInverseNode<E>(parent, std::move(useless_splits)),
         m_constraint(constraint)
     {
         assert(m_constraint);
@@ -47,75 +47,75 @@ public:
     InverseNumericConstraintSelectorNodeBase(InverseNumericConstraintSelectorNodeBase&& other) = delete;
     InverseNumericConstraintSelectorNodeBase& operator=(InverseNumericConstraintSelectorNodeBase&& other) = delete;
 
-    void visit(IInverseNodeVisitor<Element>& visitor) const override { self().visit_impl(visitor); }
+    void visit(IInverseNodeVisitor<E>& visitor) const override { self().visit_impl(visitor); }
 
     GroundNumericConstraint get_constraint() const { return m_constraint; }
 };
 
-template<HasConjunctiveCondition Element>
-class InverseNumericConstraintSelectorNode_T : public InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>
+template<HasConjunctiveCondition E>
+class InverseNumericConstraintSelectorNode_T : public InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<E>, E>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_true_elements;
+    std::span<const E*> m_true_elements;
 
-    InverseNode<Element> m_true_child;
+    InverseNode<E> m_true_child;
 
 private:
     /* Implement interface*/
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>;
+    friend class InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<E>, E>;
 
 public:
-    using InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>::get_constraint;
+    using InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<E>, E>::get_constraint;
 
-    InverseNumericConstraintSelectorNode_T(const IInverseNode<Element>* parent,
+    InverseNumericConstraintSelectorNode_T(const IInverseNode<E>* parent,
                                            SplitList useless_splits,
                                            GroundNumericConstraint constraint,
-                                           std::span<const Element*> true_elements);
+                                           std::span<const E*> true_elements);
 
-    std::span<const Element*> get_true_elements() const;
+    std::span<const E*> get_true_elements() const;
 
-    InverseNode<Element>& get_true_child();
+    InverseNode<E>& get_true_child();
 
-    const InverseNode<Element>& get_true_child() const;
+    const InverseNode<E>& get_true_child() const;
 };
 
-template<HasConjunctiveCondition Element>
-class InverseNumericConstraintSelectorNode_TX : public InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>
+template<HasConjunctiveCondition E>
+class InverseNumericConstraintSelectorNode_TX : public InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<E>, E>
 {
 private:
     // Candidates for further refinement.
-    std::span<const Element*> m_true_elements;
-    std::span<const Element*> m_dontcare_elements;
+    std::span<const E*> m_true_elements;
+    std::span<const E*> m_dontcare_elements;
 
-    InverseNode<Element> m_true_child;
-    InverseNode<Element> m_dontcare_child;
+    InverseNode<E> m_true_child;
+    InverseNode<E> m_dontcare_child;
 
 private:
     /* Implement interface*/
-    void visit_impl(IInverseNodeVisitor<Element>& visitor) const;
+    void visit_impl(IInverseNodeVisitor<E>& visitor) const;
 
-    friend class InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>;
+    friend class InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<E>, E>;
 
 public:
-    using InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>::get_constraint;
+    using InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<E>, E>::get_constraint;
 
-    InverseNumericConstraintSelectorNode_TX(const IInverseNode<Element>* parent,
+    InverseNumericConstraintSelectorNode_TX(const IInverseNode<E>* parent,
                                             SplitList useless_splits,
                                             GroundNumericConstraint constraint,
-                                            std::span<const Element*> true_elements,
-                                            std::span<const Element*> dontcare_elements);
+                                            std::span<const E*> true_elements,
+                                            std::span<const E*> dontcare_elements);
 
-    std::span<const Element*> get_true_elements() const;
-    std::span<const Element*> get_dontcare_elements() const;
+    std::span<const E*> get_true_elements() const;
+    std::span<const E*> get_dontcare_elements() const;
 
-    InverseNode<Element>& get_true_child();
-    InverseNode<Element>& get_dontcare_child();
+    InverseNode<E>& get_true_child();
+    InverseNode<E>& get_dontcare_child();
 
-    const InverseNode<Element>& get_true_child() const;
-    const InverseNode<Element>& get_dontcare_child() const;
+    const InverseNode<E>& get_true_child() const;
+    const InverseNode<E>& get_dontcare_child() const;
 };
 }
 

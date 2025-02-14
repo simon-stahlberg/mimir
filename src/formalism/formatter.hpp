@@ -43,11 +43,11 @@ public:
 
     void write(const ConjunctiveConditionImpl& element, std::ostream& out);
     void write(const ActionImpl& element, std::ostream& out);
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void write(const AtomImpl<P>& element, std::ostream& out);
     void write(const AxiomImpl& element, std::ostream& out);
     void write(const DomainImpl& element, std::ostream& out);
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     void write(const NumericEffectImpl<F>& element, std::ostream& out);
     void write(const ConjunctiveEffectImpl& element, std::ostream& out);
     void write(const ConditionalEffectImpl& element, std::ostream& out);
@@ -55,35 +55,35 @@ public:
     void write(const FunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
     void write(const FunctionExpressionMultiOperatorImpl& element, std::ostream& out);
     void write(const FunctionExpressionMinusImpl& element, std::ostream& out);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void write(const FunctionExpressionFunctionImpl<F>& element, std::ostream& out);
     void write(const FunctionExpressionImpl& element, std::ostream& out);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void write(const FunctionSkeletonImpl<F>& element, std::ostream& out);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void write(const FunctionImpl<F>& element, std::ostream& out);
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void write(const GroundAtomImpl<P>& element, std::ostream& out);
     void write(const GroundFunctionExpressionNumberImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionBinaryOperatorImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionMultiOperatorImpl& element, std::ostream& out);
     void write(const GroundFunctionExpressionMinusImpl& element, std::ostream& out);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void write(const GroundFunctionExpressionFunctionImpl<F>& element, std::ostream& out);
     void write(const GroundFunctionExpressionImpl& element, std::ostream& out);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void write(const GroundFunctionImpl<F>& element, std::ostream& out);
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void write(const GroundLiteralImpl<P>& element, std::ostream& out);
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void write(const LiteralImpl<P>& element, std::ostream& out);
     void write(const OptimizationMetricImpl& element, std::ostream& out);
     void write(const NumericConstraintImpl& element, std::ostream& out);
     void write(const GroundNumericConstraintImpl& element, std::ostream& out);
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     void write(const GroundFunctionValueImpl<F>& element, std::ostream& out);
     void write(const ObjectImpl& element, std::ostream& out);
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     void write(const PredicateImpl<P>& element, std::ostream& out);
     void write(const ProblemImpl& element, std::ostream& out);
     void write(const RequirementsImpl& element, std::ostream& out);

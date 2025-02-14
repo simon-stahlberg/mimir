@@ -34,9 +34,9 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
-StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements) :
-    NodeSplitterBase<StaticNodeSplitter<Element>, Element>(pddl_repositories, options),
+template<HasConjunctiveCondition E>
+StaticNodeSplitter<E>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
+    NodeSplitterBase<StaticNodeSplitter<E>, E>(pddl_repositories, options),
     m_split_to_root_distance()
 {
     auto splits = this->compute_splits(elements);
@@ -64,8 +64,8 @@ StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_rep
     }
 }
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element> StaticNodeSplitter<Element>::fit_impl(std::span<const Element*> elements, Statistics& ref_statistics)
+template<HasConjunctiveCondition E>
+InverseNode<E> StaticNodeSplitter<E>::fit_impl(std::span<const E*> elements, Statistics& ref_statistics)
 {
     throw std::runtime_error("Not implemented.");
 }

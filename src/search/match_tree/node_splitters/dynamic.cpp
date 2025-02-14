@@ -34,16 +34,16 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
-DynamicNodeSplitter<Element>::DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements) :
-    NodeSplitterBase<DynamicNodeSplitter<Element>, Element>(pddl_repositories, options)
+template<HasConjunctiveCondition E>
+DynamicNodeSplitter<E>::DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
+    NodeSplitterBase<DynamicNodeSplitter<E>, E>(pddl_repositories, options)
 {
 }
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element> DynamicNodeSplitter<Element>::fit_impl(std::span<const Element*> elements, Statistics& ref_statistics)
+template<HasConjunctiveCondition E>
+InverseNode<E> DynamicNodeSplitter<E>::fit_impl(std::span<const E*> elements, Statistics& ref_statistics)
 {
-    auto queue = SplitterQueue<Element>();
+    auto queue = SplitterQueue<E>();
 
     auto root_placeholder = create_root_placeholder_node(elements);
     auto root_refinement_data = this->compute_refinement_data(root_placeholder);
@@ -56,11 +56,11 @@ InverseNode<Element> DynamicNodeSplitter<Element>::fit_impl(std::span<const Elem
 
     queue.emplace(std::move(root_placeholder), root_refinement_data.value());
 
-    auto inverse_root = InverseNode<Element> { nullptr };
+    auto inverse_root = InverseNode<E> { nullptr };
 
     while (!queue.empty())
     {
-        auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
+        auto entry = std::move(const_cast<SplitterQueueEntry<E>&>(queue.top()));
         queue.pop();
 
         /* Customization point in derived classes: how to select the node and the split? */
@@ -92,7 +92,7 @@ InverseNode<Element> DynamicNodeSplitter<Element>::fit_impl(std::span<const Elem
             /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
             while (!queue.empty())
             {
-                auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
+                auto entry = std::move(const_cast<SplitterQueueEntry<E>&>(queue.top()));
                 queue.pop();
 
                 create_imperfect_generator_node(entry.node);

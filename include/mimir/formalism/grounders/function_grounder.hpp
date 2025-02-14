@@ -50,7 +50,7 @@ public:
     FunctionGrounder(FunctionGrounder&& other) = default;
     FunctionGrounder& operator=(FunctionGrounder&& other) = default;
 
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
 
     /**

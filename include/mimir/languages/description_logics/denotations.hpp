@@ -31,7 +31,7 @@
 
 namespace mimir::dl
 {
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct DenotationImpl
 {
 };
@@ -70,10 +70,10 @@ struct DenotationImpl<Role>
 
 /// @brief Denotation for temporary construction.
 /// This stores a computed denotation for a single state.
-using ConstructorTagToDenotationType =
+using ConceptOrRoleToDenotationType =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DenotationImpl<Concept>>, boost::hana::pair<boost::hana::type<Role>, DenotationImpl<Role>>>;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 using DenotationImplSet = mimir::buffering::UnorderedSet<DenotationImpl<D>>;
 
 }

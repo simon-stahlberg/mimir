@@ -33,7 +33,7 @@ Grammar::Grammar(std::string bnf_description, Domain domain) :
     // m_role_rules = std::move(role_rules);
 }
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
     return std::any_of(get_primitive_production_rules<D>().begin(),
@@ -50,7 +50,7 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
 template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 const DerivationRuleList<D>& Grammar::get_primitive_production_rules() const
 {
     return boost::hana::at_key(m_primitive_production_rules, boost::hana::type<D> {});
@@ -59,7 +59,7 @@ const DerivationRuleList<D>& Grammar::get_primitive_production_rules() const
 template const DerivationRuleList<Concept>& Grammar::get_primitive_production_rules() const;
 template const DerivationRuleList<Role>& Grammar::get_primitive_production_rules() const;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 const DerivationRuleList<D>& Grammar::get_composite_production_rules() const
 {
     return boost::hana::at_key(m_composite_production_rules, boost::hana::type<D> {});
@@ -68,7 +68,7 @@ const DerivationRuleList<D>& Grammar::get_composite_production_rules() const
 template const DerivationRuleList<Concept>& Grammar::get_composite_production_rules() const;
 template const DerivationRuleList<Role>& Grammar::get_composite_production_rules() const;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 const DerivationRuleList<D>& Grammar::get_alternative_rules() const
 {
     return boost::hana::at_key(m_alternative_rules, boost::hana::type<D> {});

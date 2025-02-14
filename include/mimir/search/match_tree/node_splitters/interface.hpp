@@ -41,13 +41,13 @@ enum class SplitMetricEnum
 
 /// @brief `INodeSplitter` computes the best split for a given set of elements.
 /// @tparam Element
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class INodeSplitter
 {
 public:
     virtual ~INodeSplitter() = default;
 
-    virtual std::pair<Node<Element>, Statistics> fit(std::span<const Element*> elements) = 0;
+    virtual std::pair<Node<E>, Statistics> fit(std::span<const E*> elements) = 0;
 };
 
 }

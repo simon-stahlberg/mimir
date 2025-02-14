@@ -27,8 +27,8 @@
 namespace mimir::dl::grammar
 {
 
-extern ConstructorTagToDerivationRuleList
-parse(const std::string& bnf_grammar_description, Domain domain, ConstructorTagToRepository& ref_grammar_constructor_repos);
+extern ConceptOrRoleToDerivationRuleList
+parse(const std::string& bnf_grammar_description, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos);
 
 }
 

@@ -24,7 +24,7 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList parameters) :
     m_index(index),
     m_name(std::move(name)),
@@ -33,25 +33,25 @@ PredicateImpl<P>::PredicateImpl(Index index, std::string name, VariableList para
     assert(is_all_unique(m_parameters));
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Index PredicateImpl<P>::get_index() const
 {
     return m_index;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const std::string& PredicateImpl<P>::get_name() const
 {
     return m_name;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const VariableList& PredicateImpl<P>::get_parameters() const
 {
     return m_parameters;
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 size_t PredicateImpl<P>::get_arity() const
 {
     return m_parameters.size();
@@ -61,7 +61,7 @@ template class PredicateImpl<Static>;
 template class PredicateImpl<Fluent>;
 template class PredicateImpl<Derived>;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const PredicateImpl<P>& element)
 {
     auto formatter = PDDLFormatter();
@@ -73,7 +73,7 @@ template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Static>
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const PredicateImpl<Derived>& element);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, Predicate<P> element)
 {
     out << *element;

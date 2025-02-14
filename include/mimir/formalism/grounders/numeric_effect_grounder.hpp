@@ -48,7 +48,7 @@ public:
     NumericEffectGrounder(NumericEffectGrounder&& other) = default;
     NumericEffectGrounder& operator=(NumericEffectGrounder&& other) = default;
 
-    template<DynamicFunctionTag F>
+    template<FluentOrAuxiliary F>
     GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
 
     /**

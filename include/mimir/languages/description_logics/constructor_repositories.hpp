@@ -31,9 +31,9 @@ using SegmentedDLRepository = loki::SegmentedRepository<T>;
 
 using ConceptBotRepository = SegmentedDLRepository<ConceptBotImpl>;
 using ConceptTopRepository = SegmentedDLRepository<ConceptTopImpl>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using ConceptAtomicStateRepository = SegmentedDLRepository<ConceptAtomicStateImpl<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using ConceptAtomicGoalRepository = SegmentedDLRepository<ConceptAtomicGoalImpl<P>>;
 using ConceptIntersectionRepository = SegmentedDLRepository<ConceptIntersectionImpl>;
 using ConceptUnionRepository = SegmentedDLRepository<ConceptUnionImpl>;
@@ -45,9 +45,9 @@ using ConceptRoleValueMapEqualityRepository = SegmentedDLRepository<ConceptRoleV
 using ConceptNominalRepository = SegmentedDLRepository<ConceptNominalImpl>;
 
 using RoleUniversalRepository = SegmentedDLRepository<RoleUniversalImpl>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using RoleAtomicStateRepository = SegmentedDLRepository<RoleAtomicStateImpl<P>>;
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 using RoleAtomicGoalRepository = SegmentedDLRepository<RoleAtomicGoalImpl<P>>;
 using RoleIntersectionRepository = SegmentedDLRepository<RoleIntersectionImpl>;
 using RoleUnionRepository = SegmentedDLRepository<RoleUnionImpl>;
@@ -59,7 +59,7 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
-using ConstructorTagToRepository =
+using ConceptOrRoleToRepository =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepository<Static>>,
@@ -93,7 +93,7 @@ using ConstructorTagToRepository =
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
 
-extern ConstructorTagToRepository create_default_constructor_type_to_repository();
+extern ConceptOrRoleToRepository create_default_constructor_type_to_repository();
 
 }
 

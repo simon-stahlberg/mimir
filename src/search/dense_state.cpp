@@ -44,7 +44,7 @@ void DenseState::translate(State state, DenseState& out_state)
     numeric_variables = state->get_numeric_variables();
 }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool DenseState::contains(GroundAtom<P> atom) const
 {
     return get_atoms<P>().get(atom->get_index());
@@ -53,7 +53,7 @@ bool DenseState::contains(GroundAtom<P> atom) const
 template bool DenseState::contains(GroundAtom<Fluent> atom) const;
 template bool DenseState::contains(GroundAtom<Derived> atom) const;
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool DenseState::literal_holds(GroundLiteral<P> literal) const
 {
     return literal->is_negated() != contains(literal->get_atom());
@@ -62,7 +62,7 @@ bool DenseState::literal_holds(GroundLiteral<P> literal) const
 template bool DenseState::literal_holds(GroundLiteral<Fluent> literal) const;
 template bool DenseState::literal_holds(GroundLiteral<Derived> literal) const;
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool DenseState::literals_hold(const GroundLiteralList<P>& literals) const
 {
     for (const auto& literal : literals)
@@ -76,7 +76,7 @@ bool DenseState::literals_hold(const GroundLiteralList<P>& literals) const
     return true;
 }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool DenseState::literals_hold(const FlatIndexList& positive_atoms, const FlatIndexList& negative_atoms) const
 {
     return is_supseteq(get_atoms<P>(), positive_atoms) && are_disjoint(get_atoms<P>(), negative_atoms);
@@ -87,7 +87,7 @@ template bool DenseState::literals_hold<Derived>(const FlatIndexList& positive_a
 
 Index DenseState::get_index() const { return m_index; }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 const FlatBitset& DenseState::get_atoms() const
 {
     if constexpr (std::is_same_v<P, Fluent>)
@@ -100,7 +100,7 @@ const FlatBitset& DenseState::get_atoms() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -111,7 +111,7 @@ const FlatDoubleList& DenseState::get_numeric_variables() const { return m_numer
 
 Index& DenseState::get_index() { return m_index; }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 FlatBitset& DenseState::get_atoms()
 {
     if constexpr (std::is_same_v<P, Fluent>)
@@ -124,7 +124,7 @@ FlatBitset& DenseState::get_atoms()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 

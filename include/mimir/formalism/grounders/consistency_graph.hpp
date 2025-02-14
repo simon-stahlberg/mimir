@@ -49,7 +49,7 @@ public:
     /// @brief Return true iff the vertex is consistent with all literals in and the assignment set.
     ///
     /// The meaning of the result being true is that the edge remains consistent.
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
     bool consistent_literals(const NumericConstraintList& numeric_constraints,
@@ -84,7 +84,7 @@ public:
     /// @param literals
     /// @param consistent_vertex
     /// @return
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     bool consistent_literals(const LiteralList<P>& literals, const AssignmentSet<P>& assignment_set) const;
 
     bool consistent_literals(const NumericConstraintList& numeric_constraints,

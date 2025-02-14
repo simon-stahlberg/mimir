@@ -20,7 +20,7 @@
 namespace mimir::dl::grammar
 {
 
-ConstructorTagToRepository create_default_constructor_type_to_repository()
+ConceptOrRoleToRepository create_default_constructor_type_to_repository()
 {
     return boost::hana::make_map(
         boost::hana::make_pair(boost::hana::type_c<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept> {}),

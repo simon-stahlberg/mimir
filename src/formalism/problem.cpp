@@ -332,7 +332,7 @@ const GroundFunctionValueList<F>& ProblemImpl::get_function_values() const
     }
     else
     {
-        static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
+        static_assert(dependent_false<F>::value, "Missing implementation for StaticOrFluentOrAuxiliary.");
     }
 }
 
@@ -341,7 +341,7 @@ template const GroundFunctionValueList<Fluent>& ProblemImpl::get_function_values
 
 const std::optional<GroundFunctionValue<Auxiliary>>& ProblemImpl::get_auxiliary_function_value() const { return m_auxiliary_function_value; }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -358,7 +358,7 @@ const GroundLiteralList<P>& ProblemImpl::get_goal_condition() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -410,7 +410,7 @@ const FlatDoubleList& ProblemImpl::get_function_to_value() const
     }
     else
     {
-        static_assert(dependent_false<F>::value, "Missing implementation for FunctionTag.");
+        static_assert(dependent_false<F>::value, "Missing implementation for StaticOrFluentOrAuxiliary.");
     }
 }
 
@@ -439,7 +439,7 @@ bool ProblemImpl::static_literal_holds(const GroundLiteral<Static> literal) cons
     return (literal->is_negated() != get_static_initial_positive_atoms_bitset().get(literal->get_atom()->get_index()));
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const GroundAtomList<P>& ProblemImpl::get_positive_goal_atoms() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -456,7 +456,7 @@ const GroundAtomList<P>& ProblemImpl::get_positive_goal_atoms() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -464,7 +464,7 @@ template const GroundAtomList<Static>& ProblemImpl::get_positive_goal_atoms<Stat
 template const GroundAtomList<Fluent>& ProblemImpl::get_positive_goal_atoms<Fluent>() const;
 template const GroundAtomList<Derived>& ProblemImpl::get_positive_goal_atoms<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -481,7 +481,7 @@ const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -489,7 +489,7 @@ template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Static>()
 template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Fluent>() const;
 template const FlatBitset& ProblemImpl::get_positive_goal_atoms_bitset<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -506,7 +506,7 @@ const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -514,7 +514,7 @@ template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Stati
 template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Fluent>() const;
 template const FlatIndexList& ProblemImpl::get_positive_goal_atoms_indices<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -531,7 +531,7 @@ const GroundAtomList<P>& ProblemImpl::get_negative_goal_atoms() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -539,7 +539,7 @@ template const GroundAtomList<Static>& ProblemImpl::get_negative_goal_atoms<Stat
 template const GroundAtomList<Fluent>& ProblemImpl::get_negative_goal_atoms<Fluent>() const;
 template const GroundAtomList<Derived>& ProblemImpl::get_negative_goal_atoms<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -556,7 +556,7 @@ const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -564,7 +564,7 @@ template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Static>()
 template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Fluent>() const;
 template const FlatBitset& ProblemImpl::get_negative_goal_atoms_bitset<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -581,7 +581,7 @@ const FlatIndexList& ProblemImpl::get_negative_goal_atoms_indices() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 

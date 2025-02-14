@@ -26,68 +26,68 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
-using Nodes = std::unordered_map<const INode<Element>*, std::pair<size_t, std::string>>;
+template<HasConjunctiveCondition E>
+using Nodes = std::unordered_map<const INode<E>*, std::pair<size_t, std::string>>;
 
 using Edges = std::unordered_map<size_t, std::vector<std::pair<size_t, std::string>>>;
 
-template<HasConjunctiveCondition Element>
-struct InitializeNodesVisitor : public INodeVisitor<Element>
+template<HasConjunctiveCondition E>
+struct InitializeNodesVisitor : public INodeVisitor<E>
 {
-    Nodes<Element>& m_nodes;
+    Nodes<E>& m_nodes;
 
-    InitializeNodesVisitor(Nodes<Element>& nodes) : m_nodes(nodes) {}
+    InitializeNodesVisitor(Nodes<E>& nodes) : m_nodes(nodes) {}
 
-    void accept(const AtomSelectorNode_TFX<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TF<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TX<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_FX<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_T<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_F<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TFX<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_TF<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_TX<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_FX<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_T<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const ElementGeneratorNode_Perfect<Element>& generator) override;
-    void accept(const ElementGeneratorNode_Imperfect<Element>& generator) override;
+    void accept(const AtomSelectorNode_TFX<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_T<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_F<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TFX<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_T<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition Element>
-struct InitializeEdgesVisitor : public INodeVisitor<Element>
+template<HasConjunctiveCondition E>
+struct InitializeEdgesVisitor : public INodeVisitor<E>
 {
-    Nodes<Element>& m_nodes;
+    Nodes<E>& m_nodes;
     Edges& m_edges;
 
-    InitializeEdgesVisitor(Nodes<Element>& nodes, Edges& edges) : m_nodes(nodes), m_edges(edges) {}
+    InitializeEdgesVisitor(Nodes<E>& nodes, Edges& edges) : m_nodes(nodes), m_edges(edges) {}
 
-    void accept(const AtomSelectorNode_TFX<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TF<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TX<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_FX<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_T<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_F<Element, Fluent>& atom) override;
-    void accept(const AtomSelectorNode_TFX<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_TF<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_TX<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_FX<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_T<Element, Derived>& atom) override;
-    void accept(const AtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const NumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const ElementGeneratorNode_Perfect<Element>& generator) override;
-    void accept(const ElementGeneratorNode_Imperfect<Element>& generator) override;
+    void accept(const AtomSelectorNode_TFX<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_T<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_F<E, Fluent>& atom) override;
+    void accept(const AtomSelectorNode_TFX<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TF<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_TX<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_FX<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_T<E, Derived>& atom) override;
+    void accept(const AtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const NumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const NumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const ElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const ElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
 /**
  * InitializeNodes
  */
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSelectorNode_TFX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeNodesVisitor<E>& visitor, const AtomSelectorNode_TFX<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_true_child()->visit(visitor);
@@ -95,139 +95,139 @@ static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSele
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSelectorNode_TF<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeNodesVisitor<E>& visitor, const AtomSelectorNode_TF<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_true_child()->visit(visitor);
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSelectorNode_TX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeNodesVisitor<E>& visitor, const AtomSelectorNode_TX<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_true_child()->visit(visitor);
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSelectorNode_FX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeNodesVisitor<E>& visitor, const AtomSelectorNode_FX<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_false_child()->visit(visitor);
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSelectorNode_T<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeNodesVisitor<E>& visitor, const AtomSelectorNode_T<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_true_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeNodesVisitor<Element>& visitor, const AtomSelectorNode_F<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeNodesVisitor<E>& visitor, const AtomSelectorNode_F<E, P>& atom)
 {
     visitor.m_nodes.emplace(&atom, std::make_pair(visitor.m_nodes.size(), to_string(atom.get_atom())));
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_TFX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TFX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_TF<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TF<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_TX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_FX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_FX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_T<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_T<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_F<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_F<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_TFX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TFX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_TF<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TF<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_TX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_TX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_FX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_FX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_T<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_T<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const AtomSelectorNode_F<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const AtomSelectorNode_F<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const NumericConstraintSelectorNode_TX<Element>& constraint)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>& constraint)
 {
     m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
     constraint.get_true_child()->visit(*this);
     constraint.get_dontcare_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const NumericConstraintSelectorNode_T<Element>& constraint)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>& constraint)
 {
     m_nodes.emplace(&constraint, std::make_pair(m_nodes.size(), to_string(constraint.get_constraint())));
     constraint.get_true_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const ElementGeneratorNode_Perfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const ElementGeneratorNode_Perfect<E>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeNodesVisitor<Element>::accept(const ElementGeneratorNode_Imperfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void InitializeNodesVisitor<E>::accept(const ElementGeneratorNode_Imperfect<E>& generator)
 {
     m_nodes.emplace(&generator, std::make_pair(m_nodes.size(), std::to_string(generator.get_elements().size())));
 }
@@ -236,8 +236,8 @@ void InitializeNodesVisitor<Element>::accept(const ElementGeneratorNode_Imperfec
  * InitializeEdges
  */
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSelectorNode_TFX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeEdgesVisitor<E>& visitor, const AtomSelectorNode_TFX<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
     atom.get_true_child()->visit(visitor);
@@ -247,8 +247,8 @@ static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSele
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSelectorNode_TF<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeEdgesVisitor<E>& visitor, const AtomSelectorNode_TF<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
     atom.get_true_child()->visit(visitor);
@@ -256,8 +256,8 @@ static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSele
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSelectorNode_TX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeEdgesVisitor<E>& visitor, const AtomSelectorNode_TX<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
     atom.get_true_child()->visit(visitor);
@@ -265,8 +265,8 @@ static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSele
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSelectorNode_FX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeEdgesVisitor<E>& visitor, const AtomSelectorNode_FX<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
     atom.get_false_child()->visit(visitor);
@@ -274,94 +274,94 @@ static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSele
     atom.get_dontcare_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSelectorNode_T<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeEdgesVisitor<E>& visitor, const AtomSelectorNode_T<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_true_child().get()).first, "T");
     atom.get_true_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-static void accept_impl(InitializeEdgesVisitor<Element>& visitor, const AtomSelectorNode_F<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+static void accept_impl(InitializeEdgesVisitor<E>& visitor, const AtomSelectorNode_F<E, P>& atom)
 {
     visitor.m_edges[visitor.m_nodes.at(&atom).first].emplace_back(visitor.m_nodes.at(atom.get_false_child().get()).first, "F");
     atom.get_false_child()->visit(visitor);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_TFX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TFX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_TF<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TF<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_TX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_FX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_FX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_T<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_T<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_F<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_F<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_TFX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TFX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_TF<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TF<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_TX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_TX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_FX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_FX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_T<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_T<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const AtomSelectorNode_F<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const AtomSelectorNode_F<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode_TX<Element>& constraint)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const NumericConstraintSelectorNode_TX<E>& constraint)
 {
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
     constraint.get_true_child()->visit(*this);
@@ -369,21 +369,21 @@ void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode
     constraint.get_dontcare_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const NumericConstraintSelectorNode_T<Element>& constraint)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const NumericConstraintSelectorNode_T<E>& constraint)
 {
     m_edges[m_nodes.at(&constraint).first].emplace_back(m_nodes.at(constraint.get_true_child().get()).first, "T");
     constraint.get_true_child()->visit(*this);
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const ElementGeneratorNode_Perfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const ElementGeneratorNode_Perfect<E>& generator)
 {
     // Nothing to be done.
 }
 
-template<HasConjunctiveCondition Element>
-void InitializeEdgesVisitor<Element>::accept(const ElementGeneratorNode_Imperfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void InitializeEdgesVisitor<E>::accept(const ElementGeneratorNode_Imperfect<E>& generator)
 {
     // Nothing to be done.
 }
@@ -392,10 +392,10 @@ void InitializeEdgesVisitor<Element>::accept(const ElementGeneratorNode_Imperfec
  * Printer
  */
 
-template<HasConjunctiveCondition Element>
-std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<Element>&, DotPrinterTag>& tree)
+template<HasConjunctiveCondition E>
+std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<E>&, DotPrinterTag>& tree)
 {
-    auto nodes = Nodes<Element> {};
+    auto nodes = Nodes<E> {};
     auto edges = Edges {};
 
     auto& [root, tag] = tree;

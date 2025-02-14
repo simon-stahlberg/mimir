@@ -78,7 +78,7 @@ Index ConjunctiveConditionImpl::get_index() const { return m_index; }
 
 const VariableList& ConjunctiveConditionImpl::get_parameters() const { return m_parameters; }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const LiteralList<P>& ConjunctiveConditionImpl::get_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -95,7 +95,7 @@ const LiteralList<P>& ConjunctiveConditionImpl::get_literals() const
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -103,7 +103,7 @@ template const LiteralList<Static>& ConjunctiveConditionImpl::get_literals<Stati
 template const LiteralList<Fluent>& ConjunctiveConditionImpl::get_literals<Fluent>() const;
 template const LiteralList<Derived>& ConjunctiveConditionImpl::get_literals<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const GroundLiteralList<P>& ConjunctiveConditionImpl::get_nullary_ground_literals() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -120,7 +120,7 @@ const GroundLiteralList<P>& ConjunctiveConditionImpl::get_nullary_ground_literal
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 

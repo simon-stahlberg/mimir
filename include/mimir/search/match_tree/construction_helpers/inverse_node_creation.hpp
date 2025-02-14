@@ -28,53 +28,53 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-bool contains_positive(GroundAtom<P> atom, const Element* element)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+bool contains_positive(GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
     const auto& positive_precondition = conjunctive_condition.template get_positive_precondition<P>();
     return (std::find(positive_precondition.begin(), positive_precondition.end(), atom->get_index()) != positive_precondition.end());
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-bool contains_negative(GroundAtom<P> atom, const Element* element)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+bool contains_negative(GroundAtom<P> atom, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
     const auto& negative_precondition = conjunctive_condition.template get_negative_precondition<P>();
     return (std::find(negative_precondition.begin(), negative_precondition.end(), atom->get_index()) != negative_precondition.end());
 }
 
-template<HasConjunctiveCondition Element>
-bool contains(GroundNumericConstraint constraint, const Element* element)
+template<HasConjunctiveCondition E>
+bool contains(GroundNumericConstraint constraint, const E* element)
 {
     const auto& conjunctive_condition = element->get_conjunctive_condition();
     const auto& numeric_constraints = conjunctive_condition.get_numeric_constraints();
     return (std::find(numeric_constraints.begin(), numeric_constraints.end(), constraint) != numeric_constraints.end());
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
-                                                                                                          const SplitList& useless_splits,
-                                                                                                          AtomSplit<P> split);
+template<HasConjunctiveCondition E, FluentOrDerived P>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
+                                                                                              const SplitList& useless_splits,
+                                                                                              AtomSplit<P> split);
 
-template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
-                                                                                                          const SplitList& useless_splits,
-                                                                                                          NumericConstraintSplit split);
+template<HasConjunctiveCondition E>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
+                                                                                              const SplitList& useless_splits,
+                                                                                              NumericConstraintSplit split);
 
-template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
-                                                                                                          const SplitList& useless_splits,
-                                                                                                          const Split& split);
+template<HasConjunctiveCondition E>
+std::pair<InverseNode<E>, PlaceholderNodeList<E>> extern create_node_and_placeholder_children(const PlaceholderNode<E>& node,
+                                                                                              const SplitList& useless_splits,
+                                                                                              const Split& split);
 
-template<HasConjunctiveCondition Element>
-extern std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_perfect_generator_node(const PlaceholderNode<Element>& node);
+template<HasConjunctiveCondition E>
+extern std::pair<InverseNode<E>, PlaceholderNodeList<E>> create_perfect_generator_node(const PlaceholderNode<E>& node);
 
-template<HasConjunctiveCondition Element>
-extern InverseNode<Element> create_imperfect_generator_node(const PlaceholderNode<Element>& node);
+template<HasConjunctiveCondition E>
+extern InverseNode<E> create_imperfect_generator_node(const PlaceholderNode<E>& node);
 
-template<HasConjunctiveCondition Element>
-extern PlaceholderNode<Element> create_root_placeholder_node(std::span<const Element*> elements);
+template<HasConjunctiveCondition E>
+extern PlaceholderNode<E> create_root_placeholder_node(std::span<const E*> elements);
 
 }
 

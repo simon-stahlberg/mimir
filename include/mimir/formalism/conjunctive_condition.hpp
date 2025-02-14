@@ -60,9 +60,9 @@ public:
 
     Index get_index() const;
     const VariableList& get_parameters() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const LiteralList<P>& get_literals() const;
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
     const NumericConstraintList& get_numeric_constraints() const;
 

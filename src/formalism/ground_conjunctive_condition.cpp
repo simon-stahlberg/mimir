@@ -31,7 +31,7 @@ namespace mimir
 
 /* GroundConjunctiveCondition */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 FlatIndexList& GroundConjunctiveCondition::get_positive_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -51,7 +51,7 @@ FlatIndexList& GroundConjunctiveCondition::get_positive_precondition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -59,7 +59,7 @@ template FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<St
 template FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Fluent>();
 template FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Derived>();
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -79,7 +79,7 @@ const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition() con
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -87,7 +87,7 @@ template const FlatIndexList& GroundConjunctiveCondition::get_positive_precondit
 template const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Fluent>() const;
 template const FlatIndexList& GroundConjunctiveCondition::get_positive_precondition<Derived>() const;
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 FlatIndexList& GroundConjunctiveCondition::get_negative_precondition()
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -107,7 +107,7 @@ FlatIndexList& GroundConjunctiveCondition::get_negative_precondition()
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 
@@ -115,7 +115,7 @@ template FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<St
 template FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Fluent>();
 template FlatIndexList& GroundConjunctiveCondition::get_negative_precondition<Derived>();
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition() const
 {
     if constexpr (std::is_same_v<P, Static>)
@@ -135,7 +135,7 @@ const FlatIndexList& GroundConjunctiveCondition::get_negative_precondition() con
     }
     else
     {
-        static_assert(dependent_false<P>::value, "Missing implementation for PredicateTag.");
+        static_assert(dependent_false<P>::value, "Missing implementation for StaticOrFluentOrDerived.");
     }
 }
 

@@ -20,7 +20,7 @@
 namespace mimir
 {
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& literals, PDDLRepositories& pddl_repositories)
 {
     auto ground_literals = GroundLiteralList<P> {};
@@ -68,7 +68,7 @@ Object PDDLRepositories::get_or_create_object(std::string name)
     return boost::hana::at_key(m_repositories, boost::hana::type<ObjectImpl> {}).get_or_create(std::move(name));
 }
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Atom<P> PDDLRepositories::get_or_create_atom(Predicate<P> predicate, TermList terms)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<AtomImpl<P>> {}).get_or_create(std::move(predicate), std::move(terms));
@@ -78,7 +78,7 @@ template Atom<Static> PDDLRepositories::get_or_create_atom(Predicate<Static> pre
 template Atom<Fluent> PDDLRepositories::get_or_create_atom(Predicate<Fluent> predicate, TermList terms);
 template Atom<Derived> PDDLRepositories::get_or_create_atom(Predicate<Derived> predicate, TermList terms);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundAtom<P> PDDLRepositories::get_or_create_ground_atom(Predicate<P> predicate, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).get_or_create(std::move(predicate), std::move(objects));
@@ -88,7 +88,7 @@ template GroundAtom<Static> PDDLRepositories::get_or_create_ground_atom(Predicat
 template GroundAtom<Fluent> PDDLRepositories::get_or_create_ground_atom(Predicate<Fluent> predicate, ObjectList ObjectList);
 template GroundAtom<Derived> PDDLRepositories::get_or_create_ground_atom(Predicate<Derived> predicate, ObjectList ObjectList);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Literal<P> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<LiteralImpl<P>> {}).get_or_create(is_negated, std::move(atom));
@@ -98,7 +98,7 @@ template Literal<Static> PDDLRepositories::get_or_create_literal(bool is_negated
 template Literal<Fluent> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<Fluent> atom);
 template Literal<Derived> PDDLRepositories::get_or_create_literal(bool is_negated, Atom<Derived> atom);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundLiteral<P> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<P> atom)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundLiteralImpl<P>> {}).get_or_create(is_negated, std::move(atom));
@@ -108,7 +108,7 @@ template GroundLiteral<Static> PDDLRepositories::get_or_create_ground_literal(bo
 template GroundLiteral<Fluent> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Fluent> atom);
 template GroundLiteral<Derived> PDDLRepositories::get_or_create_ground_literal(bool is_negated, GroundAtom<Derived> atom);
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 Predicate<P> PDDLRepositories::get_or_create_predicate(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<PredicateImpl<P>> {}).get_or_create(name, std::move(parameters));
@@ -227,7 +227,7 @@ GroundFunctionExpressionMinus PDDLRepositories::get_or_create_ground_function_ex
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 GroundFunctionExpressionFunction<F> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
@@ -256,7 +256,7 @@ GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_express
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
@@ -264,7 +264,7 @@ GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_express
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Fluent> fexpr);
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Auxiliary> fexpr);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Function<F> PDDLRepositories::get_or_create_function(FunctionSkeleton<F> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionImpl<F>> {})
@@ -278,7 +278,7 @@ PDDLRepositories::get_or_create_function(FunctionSkeleton<Fluent> function_skele
 template Function<Auxiliary>
 PDDLRepositories::get_or_create_function(FunctionSkeleton<Auxiliary> function_skeleton, TermList terms, IndexList m_parent_terms_to_terms_mapping);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunction<F> PDDLRepositories::get_or_create_ground_function(FunctionSkeleton<F> function_skeleton, ObjectList objects)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionImpl<F>> {}).get_or_create(std::move(function_skeleton), std::move(objects));
@@ -288,7 +288,7 @@ template GroundFunction<Static> PDDLRepositories::get_or_create_ground_function(
 template GroundFunction<Fluent> PDDLRepositories::get_or_create_ground_function(FunctionSkeleton<Fluent> function_skeleton, ObjectList objects);
 template GroundFunction<Auxiliary> PDDLRepositories::get_or_create_ground_function(FunctionSkeleton<Auxiliary> function_skeleton, ObjectList objects);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 FunctionSkeleton<F> PDDLRepositories::get_or_create_function_skeleton(std::string name, VariableList parameters)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<FunctionSkeletonImpl<F>> {}).get_or_create(std::move(name), std::move(parameters));
@@ -298,7 +298,7 @@ template FunctionSkeleton<Static> PDDLRepositories::get_or_create_function_skele
 template FunctionSkeleton<Fluent> PDDLRepositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
 template FunctionSkeleton<Auxiliary> PDDLRepositories::get_or_create_function_skeleton(std::string name, VariableList parameters);
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 NumericEffect<F>
 PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression)
 {
@@ -403,7 +403,7 @@ OptimizationMetric PDDLRepositories::get_or_create_optimization_metric(loki::Opt
     return boost::hana::at_key(m_repositories, boost::hana::type<OptimizationMetricImpl> {}).get_or_create(std::move(metric), std::move(function_expression));
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunctionValue<F> PDDLRepositories::get_or_create_ground_function_value(GroundFunction<F> function, double number)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionValueImpl<F>> {}).get_or_create(std::move(function), std::move(number));
@@ -506,7 +506,7 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
 const PDDLTypeToRepository& PDDLRepositories::get_pddl_type_to_factory() const { return m_repositories; }
 
 // GroundAtom
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 GroundAtom<P> PDDLRepositories::get_ground_atom(size_t atom_index) const
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundAtomImpl<P>> {}).at(atom_index);
@@ -518,7 +518,7 @@ template GroundAtom<Derived> PDDLRepositories::get_ground_atom<Derived>(size_t a
 
 // GroundFunction
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<F>& out_ground_functions)
 {
     out_ground_functions.clear();
@@ -532,7 +532,7 @@ template void PDDLRepositories::get_ground_functions(size_t num_ground_functions
 template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Fluent>& out_ground_functions);
 template void PDDLRepositories::get_ground_functions(size_t num_ground_functions, GroundFunctionList<Auxiliary>& out_ground_functions);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
                                                   std::vector<std::pair<GroundFunction<F>, ContinuousCost>>& out_ground_function_values) const
 {
@@ -553,7 +553,7 @@ template void PDDLRepositories::get_ground_function_values(const FlatDoubleList&
 template void PDDLRepositories::get_ground_function_values(const FlatDoubleList& values,
                                                            std::vector<std::pair<GroundFunction<Auxiliary>, ContinuousCost>>& out_ground_function_values) const;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::vector<std::pair<GroundFunction<F>, ContinuousCost>> PDDLRepositories::get_ground_function_values(const FlatDoubleList& values) const
 {
     auto ground_function_values = std::vector<std::pair<GroundFunction<F>, ContinuousCost>> {};

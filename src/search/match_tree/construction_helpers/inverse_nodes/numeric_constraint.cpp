@@ -24,38 +24,38 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
-void InverseNumericConstraintSelectorNode_T<Element>::visit_impl(IInverseNodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E>
+void InverseNumericConstraintSelectorNode_T<E>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element>
-InverseNumericConstraintSelectorNode_T<Element>::InverseNumericConstraintSelectorNode_T(const IInverseNode<Element>* parent,
-                                                                                        SplitList useless_splits,
-                                                                                        GroundNumericConstraint constraint,
-                                                                                        std::span<const Element*> true_elements) :
-    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>(parent, std::move(useless_splits), constraint),
+template<HasConjunctiveCondition E>
+InverseNumericConstraintSelectorNode_T<E>::InverseNumericConstraintSelectorNode_T(const IInverseNode<E>* parent,
+                                                                                  SplitList useless_splits,
+                                                                                  GroundNumericConstraint constraint,
+                                                                                  std::span<const E*> true_elements) :
+    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<E>, E>(parent, std::move(useless_splits), constraint),
     m_true_elements(true_elements),
     m_true_child(nullptr)
 {
     assert(!m_true_elements.empty());
 }
 
-template<HasConjunctiveCondition Element>
-std::span<const Element*> InverseNumericConstraintSelectorNode_T<Element>::get_true_elements() const
+template<HasConjunctiveCondition E>
+std::span<const E*> InverseNumericConstraintSelectorNode_T<E>::get_true_elements() const
 {
     return m_true_elements;
 }
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element>& InverseNumericConstraintSelectorNode_T<Element>::get_true_child()
+template<HasConjunctiveCondition E>
+InverseNode<E>& InverseNumericConstraintSelectorNode_T<E>::get_true_child()
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition Element>
-const InverseNode<Element>& InverseNumericConstraintSelectorNode_T<Element>::get_true_child() const
+template<HasConjunctiveCondition E>
+const InverseNode<E>& InverseNumericConstraintSelectorNode_T<E>::get_true_child() const
 {
     return m_true_child;
 };
@@ -63,19 +63,19 @@ const InverseNode<Element>& InverseNumericConstraintSelectorNode_T<Element>::get
 template class InverseNumericConstraintSelectorNode_T<GroundActionImpl>;
 template class InverseNumericConstraintSelectorNode_T<GroundAxiomImpl>;
 
-template<HasConjunctiveCondition Element>
-void InverseNumericConstraintSelectorNode_TX<Element>::visit_impl(IInverseNodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E>
+void InverseNumericConstraintSelectorNode_TX<E>::visit_impl(IInverseNodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element>
-InverseNumericConstraintSelectorNode_TX<Element>::InverseNumericConstraintSelectorNode_TX(const IInverseNode<Element>* parent,
-                                                                                          SplitList useless_splits,
-                                                                                          GroundNumericConstraint constraint,
-                                                                                          std::span<const Element*> true_elements,
-                                                                                          std::span<const Element*> dontcare_elements) :
-    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>(parent, std::move(useless_splits), constraint),
+template<HasConjunctiveCondition E>
+InverseNumericConstraintSelectorNode_TX<E>::InverseNumericConstraintSelectorNode_TX(const IInverseNode<E>* parent,
+                                                                                    SplitList useless_splits,
+                                                                                    GroundNumericConstraint constraint,
+                                                                                    std::span<const E*> true_elements,
+                                                                                    std::span<const E*> dontcare_elements) :
+    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<E>, E>(parent, std::move(useless_splits), constraint),
     m_true_elements(true_elements),
     m_dontcare_elements(dontcare_elements),
     m_true_child(nullptr),
@@ -85,38 +85,38 @@ InverseNumericConstraintSelectorNode_TX<Element>::InverseNumericConstraintSelect
     assert(!m_dontcare_elements.empty());
 }
 
-template<HasConjunctiveCondition Element>
-std::span<const Element*> InverseNumericConstraintSelectorNode_TX<Element>::get_true_elements() const
+template<HasConjunctiveCondition E>
+std::span<const E*> InverseNumericConstraintSelectorNode_TX<E>::get_true_elements() const
 {
     return m_true_elements;
 }
 
-template<HasConjunctiveCondition Element>
-std::span<const Element*> InverseNumericConstraintSelectorNode_TX<Element>::get_dontcare_elements() const
+template<HasConjunctiveCondition E>
+std::span<const E*> InverseNumericConstraintSelectorNode_TX<E>::get_dontcare_elements() const
 {
     return m_dontcare_elements;
 }
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element>& InverseNumericConstraintSelectorNode_TX<Element>::get_true_child()
+template<HasConjunctiveCondition E>
+InverseNode<E>& InverseNumericConstraintSelectorNode_TX<E>::get_true_child()
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition Element>
-InverseNode<Element>& InverseNumericConstraintSelectorNode_TX<Element>::get_dontcare_child()
+template<HasConjunctiveCondition E>
+InverseNode<E>& InverseNumericConstraintSelectorNode_TX<E>::get_dontcare_child()
 {
     return m_dontcare_child;
 }
 
-template<HasConjunctiveCondition Element>
-const InverseNode<Element>& InverseNumericConstraintSelectorNode_TX<Element>::get_true_child() const
+template<HasConjunctiveCondition E>
+const InverseNode<E>& InverseNumericConstraintSelectorNode_TX<E>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition Element>
-const InverseNode<Element>& InverseNumericConstraintSelectorNode_TX<Element>::get_dontcare_child() const
+template<HasConjunctiveCondition E>
+const InverseNode<E>& InverseNumericConstraintSelectorNode_TX<E>::get_dontcare_child() const
 {
     return m_dontcare_child;
 }

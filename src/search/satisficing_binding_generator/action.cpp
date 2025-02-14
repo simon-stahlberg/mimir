@@ -43,7 +43,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& 
                           [&](auto&& arg) { return is_valid_binding_if_fires(arg, dense_state, binding); });
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
 {
     return (evaluate(this->m_numeric_constraint_grounder->get_fexpr_grounder()->ground(effect->get_function_expression(), binding), fluent_numeric_variables)
@@ -55,7 +55,7 @@ ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Fluent> effect
 template bool
 ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding);
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(const NumericEffectList<F>& effects,
                                                          const FlatDoubleList& fluent_numeric_variables,
                                                          const ObjectList& binding)

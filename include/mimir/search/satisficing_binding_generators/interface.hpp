@@ -76,7 +76,7 @@ protected:
     constexpr const auto& self() const { return static_cast<const Derived_&>(*this); }
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
-    template<DynamicPredicateTag P>
+    template<FluentOrDerived P>
     bool is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding);
 
     bool is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding);
@@ -157,7 +157,7 @@ inline void clear_full_consistency_graph(std::vector<boost::dynamic_bitset<>>& f
  */
 
 template<typename Derived_>
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const LiteralList<P>& literals, const FlatBitset& atom_indices, const ObjectList& binding)
 {
     for (const auto& literal : literals)

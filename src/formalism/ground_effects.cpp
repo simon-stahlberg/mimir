@@ -30,7 +30,7 @@ namespace mimir
 {
 
 /* GroundNumericEffect */
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 GroundNumericEffect<F>::GroundNumericEffect(loki::AssignOperatorEnum assign_operator,
                                             GroundFunction<F> function,
                                             GroundFunctionExpression function_expression) :
@@ -40,34 +40,34 @@ GroundNumericEffect<F>::GroundNumericEffect(loki::AssignOperatorEnum assign_oper
 {
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 loki::AssignOperatorEnum& GroundNumericEffect<F>::get_assign_operator()
 {
     return m_assign_operator;
 }
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 loki::AssignOperatorEnum GroundNumericEffect<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 FlatExternalPtr<const GroundFunctionImpl<F>>& GroundNumericEffect<F>::get_function()
 {
     return m_function;
 }
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 FlatExternalPtr<const GroundFunctionImpl<F>> GroundNumericEffect<F>::get_function() const
 {
     return m_function;
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundNumericEffect<F>::get_function_expression()
 {
     return m_function_expression;
 }
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 FlatExternalPtr<const GroundFunctionExpressionImpl> GroundNumericEffect<F>::get_function_expression() const
 {
     return m_function_expression;
@@ -110,7 +110,7 @@ const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect()
  * Utils
  */
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables)
 {
     return { effect.get_assign_operator(), evaluate(effect.get_function_expression().get(), fluent_numeric_variables) };
@@ -123,7 +123,7 @@ template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNume
  * Pretty printing
  */
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<F>& element)
 {
     os << "(" << to_string(element.get_assign_operator()) << " " << element.get_function() << " " << element.get_function_expression() << ")";
@@ -150,8 +150,8 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEff
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
     pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
 
-    os << "delete effects=" << negative_simple_effects << ", "
-       << "add effects=" << positive_simple_effects << ", fluent numeric effects=" << fluent_numeric_effects;
+    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects
+       << ", fluent numeric effects=" << fluent_numeric_effects;
     if (auxiliary_numeric_effect.has_value())
     {
         os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();

@@ -25,18 +25,15 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_TFX<Element, P>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_TFX<E, P>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-AtomSelectorNode_TFX<Element, P>::AtomSelectorNode_TFX(Node<Element>&& true_child,
-                                                       Node<Element>&& false_child,
-                                                       Node<Element>&& dontcare_child,
-                                                       GroundAtom<P> atom) :
-    AtomSelectorNodeBase<AtomSelectorNode_TFX<Element, P>, Element, P>(atom),
+template<HasConjunctiveCondition E, FluentOrDerived P>
+AtomSelectorNode_TFX<E, P>::AtomSelectorNode_TFX(Node<E>&& true_child, Node<E>&& false_child, Node<E>&& dontcare_child, GroundAtom<P> atom) :
+    AtomSelectorNodeBase<AtomSelectorNode_TFX<E, P>, E, P>(atom),
     m_true_child(std::move(true_child)),
     m_false_child(std::move(false_child)),
     m_dontcare_child(std::move(dontcare_child))
@@ -46,10 +43,10 @@ AtomSelectorNode_TFX<Element, P>::AtomSelectorNode_TFX(Node<Element>&& true_chil
     assert(m_dontcare_child);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_TFX<Element, P>::generate_applicable_actions(const DenseState& state,
-                                                                   std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                                                   std::vector<const Element*>&) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_TFX<E, P>::generate_applicable_actions(const DenseState& state,
+                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
+                                                             std::vector<const E*>&) const
 {
     ref_applicable_nodes.push_back(m_dontcare_child.get());
 
@@ -63,20 +60,20 @@ void AtomSelectorNode_TFX<Element, P>::generate_applicable_actions(const DenseSt
     }
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TFX<Element, P>::get_true_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TFX<E, P>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TFX<Element, P>::get_false_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TFX<E, P>::get_false_child() const
 {
     return m_false_child;
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TFX<Element, P>::get_dontcare_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TFX<E, P>::get_dontcare_child() const
 {
     return m_dontcare_child;
 }
@@ -86,15 +83,15 @@ template class AtomSelectorNode_TFX<GroundActionImpl, Derived>;
 template class AtomSelectorNode_TFX<GroundAxiomImpl, Fluent>;
 template class AtomSelectorNode_TFX<GroundAxiomImpl, Derived>;
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_TF<Element, P>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_TF<E, P>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-AtomSelectorNode_TF<Element, P>::AtomSelectorNode_TF(Node<Element>&& true_child, Node<Element>&& false_child, GroundAtom<P> atom) :
-    AtomSelectorNodeBase<AtomSelectorNode_TF<Element, P>, Element, P>(atom),
+template<HasConjunctiveCondition E, FluentOrDerived P>
+AtomSelectorNode_TF<E, P>::AtomSelectorNode_TF(Node<E>&& true_child, Node<E>&& false_child, GroundAtom<P> atom) :
+    AtomSelectorNodeBase<AtomSelectorNode_TF<E, P>, E, P>(atom),
     m_true_child(std::move(true_child)),
     m_false_child(std::move(false_child))
 {
@@ -102,10 +99,10 @@ AtomSelectorNode_TF<Element, P>::AtomSelectorNode_TF(Node<Element>&& true_child,
     assert(m_false_child);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_TF<Element, P>::generate_applicable_actions(const DenseState& state,
-                                                                  std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                                                  std::vector<const Element*>&) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_TF<E, P>::generate_applicable_actions(const DenseState& state,
+                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
+                                                            std::vector<const E*>&) const
 {
     if (state.get_atoms<P>().get(this->m_atom->get_index()))
     {
@@ -117,14 +114,14 @@ void AtomSelectorNode_TF<Element, P>::generate_applicable_actions(const DenseSta
     }
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TF<Element, P>::get_true_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TF<E, P>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TF<Element, P>::get_false_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TF<E, P>::get_false_child() const
 {
     return m_false_child;
 }
@@ -134,15 +131,15 @@ template class AtomSelectorNode_TF<GroundActionImpl, Derived>;
 template class AtomSelectorNode_TF<GroundAxiomImpl, Fluent>;
 template class AtomSelectorNode_TF<GroundAxiomImpl, Derived>;
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_TX<Element, P>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_TX<E, P>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-AtomSelectorNode_TX<Element, P>::AtomSelectorNode_TX(Node<Element>&& true_child, Node<Element>&& dontcare_child, GroundAtom<P> atom) :
-    AtomSelectorNodeBase<AtomSelectorNode_TX<Element, P>, Element, P>(atom),
+template<HasConjunctiveCondition E, FluentOrDerived P>
+AtomSelectorNode_TX<E, P>::AtomSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundAtom<P> atom) :
+    AtomSelectorNodeBase<AtomSelectorNode_TX<E, P>, E, P>(atom),
     m_true_child(std::move(true_child)),
     m_dontcare_child(std::move(dontcare_child))
 {
@@ -150,10 +147,10 @@ AtomSelectorNode_TX<Element, P>::AtomSelectorNode_TX(Node<Element>&& true_child,
     assert(m_dontcare_child);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_TX<Element, P>::generate_applicable_actions(const DenseState& state,
-                                                                  std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                                                  std::vector<const Element*>&) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_TX<E, P>::generate_applicable_actions(const DenseState& state,
+                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
+                                                            std::vector<const E*>&) const
 {
     ref_applicable_nodes.push_back(m_dontcare_child.get());
 
@@ -163,14 +160,14 @@ void AtomSelectorNode_TX<Element, P>::generate_applicable_actions(const DenseSta
     }
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TX<Element, P>::get_true_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TX<E, P>::get_true_child() const
 {
     return m_true_child;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_TX<Element, P>::get_dontcare_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_TX<E, P>::get_dontcare_child() const
 {
     return m_dontcare_child;
 }
@@ -180,15 +177,15 @@ template class AtomSelectorNode_TX<GroundActionImpl, Derived>;
 template class AtomSelectorNode_TX<GroundAxiomImpl, Fluent>;
 template class AtomSelectorNode_TX<GroundAxiomImpl, Derived>;
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_FX<Element, P>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_FX<E, P>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-AtomSelectorNode_FX<Element, P>::AtomSelectorNode_FX(Node<Element>&& false_child, Node<Element>&& dontcare_child, GroundAtom<P> atom) :
-    AtomSelectorNodeBase<AtomSelectorNode_FX<Element, P>, Element, P>(atom),
+template<HasConjunctiveCondition E, FluentOrDerived P>
+AtomSelectorNode_FX<E, P>::AtomSelectorNode_FX(Node<E>&& false_child, Node<E>&& dontcare_child, GroundAtom<P> atom) :
+    AtomSelectorNodeBase<AtomSelectorNode_FX<E, P>, E, P>(atom),
     m_false_child(std::move(false_child)),
     m_dontcare_child(std::move(dontcare_child))
 {
@@ -196,10 +193,10 @@ AtomSelectorNode_FX<Element, P>::AtomSelectorNode_FX(Node<Element>&& false_child
     assert(m_dontcare_child);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_FX<Element, P>::generate_applicable_actions(const DenseState& state,
-                                                                  std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                                                  std::vector<const Element*>&) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_FX<E, P>::generate_applicable_actions(const DenseState& state,
+                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
+                                                            std::vector<const E*>&) const
 {
     ref_applicable_nodes.push_back(m_dontcare_child.get());
 
@@ -209,14 +206,14 @@ void AtomSelectorNode_FX<Element, P>::generate_applicable_actions(const DenseSta
     }
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_FX<Element, P>::get_false_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_FX<E, P>::get_false_child() const
 {
     return m_false_child;
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_FX<Element, P>::get_dontcare_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_FX<E, P>::get_dontcare_child() const
 {
     return m_dontcare_child;
 }
@@ -226,24 +223,24 @@ template class AtomSelectorNode_FX<GroundActionImpl, Derived>;
 template class AtomSelectorNode_FX<GroundAxiomImpl, Fluent>;
 template class AtomSelectorNode_FX<GroundAxiomImpl, Derived>;
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_T<Element, P>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_T<E, P>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-AtomSelectorNode_T<Element, P>::AtomSelectorNode_T(Node<Element>&& true_child, GroundAtom<P> atom) :
-    AtomSelectorNodeBase<AtomSelectorNode_T<Element, P>, Element, P>(atom),
+template<HasConjunctiveCondition E, FluentOrDerived P>
+AtomSelectorNode_T<E, P>::AtomSelectorNode_T(Node<E>&& true_child, GroundAtom<P> atom) :
+    AtomSelectorNodeBase<AtomSelectorNode_T<E, P>, E, P>(atom),
     m_true_child(std::move(true_child))
 {
     assert(m_true_child);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_T<Element, P>::generate_applicable_actions(const DenseState& state,
-                                                                 std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                                                 std::vector<const Element*>&) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_T<E, P>::generate_applicable_actions(const DenseState& state,
+                                                           std::vector<const INode<E>*>& ref_applicable_nodes,
+                                                           std::vector<const E*>&) const
 {
     if (state.get_atoms<P>().get(this->m_atom->get_index()))
     {
@@ -251,8 +248,8 @@ void AtomSelectorNode_T<Element, P>::generate_applicable_actions(const DenseStat
     }
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_T<Element, P>::get_true_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_T<E, P>::get_true_child() const
 {
     return m_true_child;
 };
@@ -262,24 +259,24 @@ template class AtomSelectorNode_T<GroundActionImpl, Derived>;
 template class AtomSelectorNode_T<GroundAxiomImpl, Fluent>;
 template class AtomSelectorNode_T<GroundAxiomImpl, Derived>;
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_F<Element, P>::visit_impl(INodeVisitor<Element>& visitor) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_F<E, P>::visit_impl(INodeVisitor<E>& visitor) const
 {
     visitor.accept(*this);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-AtomSelectorNode_F<Element, P>::AtomSelectorNode_F(Node<Element>&& false_child, GroundAtom<P> atom) :
-    AtomSelectorNodeBase<AtomSelectorNode_F<Element, P>, Element, P>(atom),
+template<HasConjunctiveCondition E, FluentOrDerived P>
+AtomSelectorNode_F<E, P>::AtomSelectorNode_F(Node<E>&& false_child, GroundAtom<P> atom) :
+    AtomSelectorNodeBase<AtomSelectorNode_F<E, P>, E, P>(atom),
     m_false_child(std::move(false_child))
 {
     assert(m_false_child);
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void AtomSelectorNode_F<Element, P>::generate_applicable_actions(const DenseState& state,
-                                                                 std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                                                 std::vector<const Element*>&) const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void AtomSelectorNode_F<E, P>::generate_applicable_actions(const DenseState& state,
+                                                           std::vector<const INode<E>*>& ref_applicable_nodes,
+                                                           std::vector<const E*>&) const
 {
     if (!state.get_atoms<P>().get(this->m_atom->get_index()))
     {
@@ -287,8 +284,8 @@ void AtomSelectorNode_F<Element, P>::generate_applicable_actions(const DenseStat
     }
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-const Node<Element>& AtomSelectorNode_F<Element, P>::get_false_child() const
+template<HasConjunctiveCondition E, FluentOrDerived P>
+const Node<E>& AtomSelectorNode_F<E, P>::get_false_child() const
 {
     return m_false_child;
 }

@@ -33,45 +33,43 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 struct NodeCreationStackEntry
 {
     bool expanded;
-    const IInverseNode<Element>* node;
+    const IInverseNode<E>* node;
 };
 
-template<HasConjunctiveCondition Element>
-struct ResultInverseTreeVisitor : public IInverseNodeVisitor<Element>
+template<HasConjunctiveCondition E>
+struct ResultInverseTreeVisitor : public IInverseNodeVisitor<E>
 {
-    std::vector<NodeCreationStackEntry<Element>>& m_stack;
-    std::vector<Node<Element>>& m_result_stack;
+    std::vector<NodeCreationStackEntry<E>>& m_stack;
+    std::vector<Node<E>>& m_result_stack;
 
-    ResultInverseTreeVisitor(std::vector<NodeCreationStackEntry<Element>>& stack, std::vector<Node<Element>>& result_stack) :
-        m_stack(stack),
-        m_result_stack(result_stack)
+    ResultInverseTreeVisitor(std::vector<NodeCreationStackEntry<E>>& stack, std::vector<Node<E>>& result_stack) : m_stack(stack), m_result_stack(result_stack)
     {
     }
 
-    void accept(const InverseAtomSelectorNode_TFX<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TFX<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
-    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const InverseElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_TFX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
@@ -82,134 +80,134 @@ void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSe
 
     // Construct new result
     visitor.m_result_stack.push_back(
-        std::make_unique<AtomSelectorNode_TFX<Element, P>>(std::move(true_child), std::move(false_child), std::move(dont_care_child), atom.get_atom()));
+        std::make_unique<AtomSelectorNode_TFX<E, P>>(std::move(true_child), std::move(false_child), std::move(dont_care_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_TF<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     auto false_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     // Construct new result
-    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_TF<Element, P>>(std::move(true_child), std::move(false_child), atom.get_atom()));
+    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_TF<E, P>>(std::move(true_child), std::move(false_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_TX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     auto dont_care_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     // Construct new result
-    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_TX<Element, P>>(std::move(true_child), std::move(dont_care_child), atom.get_atom()));
+    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_TX<E, P>>(std::move(true_child), std::move(dont_care_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_FX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
     auto false_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     auto dont_care_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     // Construct new result
-    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_FX<Element, P>>(std::move(false_child), std::move(dont_care_child), atom.get_atom()));
+    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_FX<E, P>>(std::move(false_child), std::move(dont_care_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_T<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
     auto true_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     // Construct new result
-    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_T<Element, P>>(std::move(true_child), atom.get_atom()));
+    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_T<E, P>>(std::move(true_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ResultInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_F<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ResultInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
     auto false_child = std::move(visitor.m_result_stack.back());
     visitor.m_result_stack.pop_back();
     // Construct new result
-    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_F<Element, P>>(std::move(false_child), atom.get_atom()));
+    visitor.m_result_stack.push_back(std::make_unique<AtomSelectorNode_F<E, P>>(std::move(false_child), atom.get_atom()));
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TFX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TF<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_FX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_T<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_F<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TFX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TF<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_T<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_F<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint)
 {
     auto true_child = std::move(m_result_stack.back());
     m_result_stack.pop_back();
@@ -217,200 +215,200 @@ void ResultInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSel
     m_result_stack.pop_back();
     // Construct new result
     m_result_stack.push_back(
-        std::make_unique<NumericConstraintSelectorNode_TX<Element>>(std::move(true_child), std::move(dont_care_child), constraint.get_constraint()));
+        std::make_unique<NumericConstraintSelectorNode_TX<E>>(std::move(true_child), std::move(dont_care_child), constraint.get_constraint()));
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseNumericConstraintSelectorNode_T<E>& constraint)
 {
     auto true_child = std::move(m_result_stack.back());
     m_result_stack.pop_back();
     // Construct new result
-    m_result_stack.push_back(std::make_unique<NumericConstraintSelectorNode_T<Element>>(std::move(true_child), constraint.get_constraint()));
+    m_result_stack.push_back(std::make_unique<NumericConstraintSelectorNode_T<E>>(std::move(true_child), constraint.get_constraint()));
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseElementGeneratorNode_Perfect<E>& generator)
 {
     assert(!generator.get_elements().empty());
-    m_result_stack.push_back(std::make_unique<ElementGeneratorNode_Perfect<Element>>(generator.get_elements()));
+    m_result_stack.push_back(std::make_unique<ElementGeneratorNode_Perfect<E>>(generator.get_elements()));
 }
 
-template<HasConjunctiveCondition Element>
-void ResultInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void ResultInverseTreeVisitor<E>::accept(const InverseElementGeneratorNode_Imperfect<E>& generator)
 {
     assert(!generator.get_elements().empty());
-    m_result_stack.push_back(std::make_unique<ElementGeneratorNode_Imperfect<Element>>(generator.get_elements()));
+    m_result_stack.push_back(std::make_unique<ElementGeneratorNode_Imperfect<E>>(generator.get_elements()));
 }
 
-template<HasConjunctiveCondition Element>
-struct ExpandInverseTreeVisitor : public IInverseNodeVisitor<Element>
+template<HasConjunctiveCondition E>
+struct ExpandInverseTreeVisitor : public IInverseNodeVisitor<E>
 {
-    std::vector<NodeCreationStackEntry<Element>>& m_stack;
+    std::vector<NodeCreationStackEntry<E>>& m_stack;
 
-    ExpandInverseTreeVisitor(std::vector<NodeCreationStackEntry<Element>>& stack) : m_stack(stack) {}
+    ExpandInverseTreeVisitor(std::vector<NodeCreationStackEntry<E>>& stack) : m_stack(stack) {}
 
-    void accept(const InverseAtomSelectorNode_TFX<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<Element, Fluent>& atom) override;
-    void accept(const InverseAtomSelectorNode_TFX<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TF<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_TX<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_T<Element, Derived>& atom) override;
-    void accept(const InverseAtomSelectorNode_F<Element, Derived>& atom) override;
-    void accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint) override;
-    void accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint) override;
-    void accept(const InverseElementGeneratorNode_Perfect<Element>& generator) override;
-    void accept(const InverseElementGeneratorNode_Imperfect<Element>& generator) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, Fluent>& atom) override;
+    void accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_TF<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_TX<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_FX<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_T<E, Derived>& atom) override;
+    void accept(const InverseAtomSelectorNode_F<E, Derived>& atom) override;
+    void accept(const InverseNumericConstraintSelectorNode_T<E>& constraint) override;
+    void accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint) override;
+    void accept(const InverseElementGeneratorNode_Perfect<E>& generator) override;
+    void accept(const InverseElementGeneratorNode_Imperfect<E>& generator) override;
 };
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ExpandInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_TFX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TFX<E, P>& atom)
 {
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_true_child().get() });
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_false_child().get() });
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_dontcare_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ExpandInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_TF<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TF<E, P>& atom)
 {
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_true_child().get() });
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_false_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ExpandInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_TX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_TX<E, P>& atom)
 {
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_true_child().get() });
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_dontcare_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ExpandInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_FX<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_FX<E, P>& atom)
 {
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_false_child().get() });
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_dontcare_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ExpandInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_T<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_T<E, P>& atom)
 {
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_true_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_true_child().get() });
 }
 
-template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-void accept_impl(ExpandInverseTreeVisitor<Element>& visitor, const InverseAtomSelectorNode_F<Element, P>& atom)
+template<HasConjunctiveCondition E, FluentOrDerived P>
+void accept_impl(ExpandInverseTreeVisitor<E>& visitor, const InverseAtomSelectorNode_F<E, P>& atom)
 {
-    visitor.m_stack.push_back(NodeCreationStackEntry<Element> { false, atom.get_false_child().get() });
+    visitor.m_stack.push_back(NodeCreationStackEntry<E> { false, atom.get_false_child().get() });
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TFX<Element, Fluent>& atom)
-{
-    accept_impl(*this, atom);
-}
-
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TF<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_FX<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_T<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_F<Element, Fluent>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TFX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Fluent>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TF<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TFX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_TX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TF<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_FX<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_TX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_T<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_FX<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseAtomSelectorNode_F<Element, Derived>& atom)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_T<E, Derived>& atom)
 {
     accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_TX<Element>& constraint)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseAtomSelectorNode_F<E, Derived>& atom)
 {
-    m_stack.push_back(NodeCreationStackEntry<Element> { false, constraint.get_true_child().get() });
-    m_stack.push_back(NodeCreationStackEntry<Element> { false, constraint.get_dontcare_child().get() });
+    accept_impl(*this, atom);
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseNumericConstraintSelectorNode_T<Element>& constraint)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseNumericConstraintSelectorNode_TX<E>& constraint)
 {
-    m_stack.push_back(NodeCreationStackEntry<Element> { false, constraint.get_true_child().get() });
+    m_stack.push_back(NodeCreationStackEntry<E> { false, constraint.get_true_child().get() });
+    m_stack.push_back(NodeCreationStackEntry<E> { false, constraint.get_dontcare_child().get() });
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Perfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseNumericConstraintSelectorNode_T<E>& constraint)
+{
+    m_stack.push_back(NodeCreationStackEntry<E> { false, constraint.get_true_child().get() });
+}
+
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseElementGeneratorNode_Perfect<E>& generator)
 {
     // Nothing to be done
 }
 
-template<HasConjunctiveCondition Element>
-void ExpandInverseTreeVisitor<Element>::accept(const InverseElementGeneratorNode_Imperfect<Element>& generator)
+template<HasConjunctiveCondition E>
+void ExpandInverseTreeVisitor<E>::accept(const InverseElementGeneratorNode_Imperfect<E>& generator)
 {
     // Nothing to be done
 }
 
-template<HasConjunctiveCondition Element>
-Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
+template<HasConjunctiveCondition E>
+Node<E> parse_inverse_tree_iteratively(const InverseNode<E>& root)
 {
-    auto stack = std::vector<NodeCreationStackEntry<Element>> { NodeCreationStackEntry<Element> { false, root.get() } };
-    auto result_stack = std::vector<Node<Element>> {};
+    auto stack = std::vector<NodeCreationStackEntry<E>> { NodeCreationStackEntry<E> { false, root.get() } };
+    auto result_stack = std::vector<Node<E>> {};
 
     while (!stack.empty())
     {
@@ -422,7 +420,7 @@ Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
             // Expand the node
             entry.expanded = true;  // must set this first because entry might be invalidated during visitation.
 
-            auto visitor = ExpandInverseTreeVisitor<Element>(stack);
+            auto visitor = ExpandInverseTreeVisitor<E>(stack);
             cur_node->visit(visitor);
         }
         else
@@ -431,7 +429,7 @@ Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
 
             stack.pop_back();  ///< We can already pop here to avoid duplication in the visitor.
 
-            auto visitor = ResultInverseTreeVisitor<Element>(stack, result_stack);
+            auto visitor = ResultInverseTreeVisitor<E>(stack, result_stack);
             cur_node->visit(visitor);
         }
     }
@@ -446,10 +444,10 @@ Node<Element> parse_inverse_tree_iteratively(const InverseNode<Element>& root)
 template Node<GroundActionImpl> parse_inverse_tree_iteratively(const InverseNode<GroundActionImpl>& root);
 template Node<GroundAxiomImpl> parse_inverse_tree_iteratively(const InverseNode<GroundAxiomImpl>& root);
 
-template<HasConjunctiveCondition Element>
-Node<Element> create_root_generator_node(std::span<const Element*> elements)
+template<HasConjunctiveCondition E>
+Node<E> create_root_generator_node(std::span<const E*> elements)
 {
-    return std::make_unique<ElementGeneratorNode_Perfect<Element>>(elements);
+    return std::make_unique<ElementGeneratorNode_Perfect<E>>(elements);
 }
 
 template Node<GroundActionImpl> create_root_generator_node(std::span<const GroundActionImpl*> elements);

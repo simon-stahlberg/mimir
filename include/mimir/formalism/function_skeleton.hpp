@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class FunctionSkeletonImpl
 {
 private:
@@ -56,10 +56,10 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_parameters)); }
 };
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, const FunctionSkeletonImpl<F>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, FunctionSkeleton<F> element);
 
 }

@@ -98,7 +98,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicStateImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicStateImpl<P>>
 {
 private:
@@ -133,7 +133,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class ConceptAtomicGoalImpl : public ConstructorEvaluatorBase<Concept, ConceptAtomicGoalImpl<P>>
 {
 private:
@@ -490,7 +490,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicStateImpl : public ConstructorEvaluatorBase<Role, RoleAtomicStateImpl<P>>
 {
 private:
@@ -525,7 +525,7 @@ public:
     auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_predicate)); }
 };
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class RoleAtomicGoalImpl : public ConstructorEvaluatorBase<Role, RoleAtomicGoalImpl<P>>
 {
 private:

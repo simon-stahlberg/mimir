@@ -29,7 +29,7 @@ NumericEffectGrounder::NumericEffectGrounder(std::shared_ptr<FunctionGrounder> f
 {
 }
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 GroundNumericEffect<F> NumericEffectGrounder::ground(NumericEffect<F> numeric_effect, const ObjectList& binding)
 {
     return GroundNumericEffect<F>(numeric_effect->get_assign_operator(),

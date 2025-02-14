@@ -183,7 +183,7 @@ void BNFFormatterVisitor::visit(RoleIdentity constructor)
     constructor->get_concept()->accept(*this);
 }
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<D>, BNFFormatterVisitorTag>& data)
 {
     const auto& [constructor, tag] = data;
@@ -195,7 +195,7 @@ extern std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<
 template std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<Concept>, BNFFormatterVisitorTag>& data);
 template std::ostream& operator<<(std::ostream& out, const std::tuple<Constructor<Role>, BNFFormatterVisitorTag>& data);
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 std::ostream& operator<<(std::ostream& out, const std::tuple<std::string, Constructor<D>, BNFFormatterVisitorTag>& data)
 {
     const auto& [name, constructor, tag] = data;

@@ -24,18 +24,18 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition Element>
-class DynamicNodeSplitter : public NodeSplitterBase<DynamicNodeSplitter<Element>, Element>
+template<HasConjunctiveCondition E>
+class DynamicNodeSplitter : public NodeSplitterBase<DynamicNodeSplitter<E>, E>
 {
 private:
     /* Implement NodeSplitterBase interface */
 
-    InverseNode<Element> fit_impl(std::span<const Element*> elements, Statistics& ref_statistics);
+    InverseNode<E> fit_impl(std::span<const E*> elements, Statistics& ref_statistics);
 
-    friend class NodeSplitterBase<DynamicNodeSplitter<Element>, Element>;
+    friend class NodeSplitterBase<DynamicNodeSplitter<E>, E>;
 
 public:
-    DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements);
+    DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements);
 };
 
 }

@@ -22,7 +22,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunctionValueImpl<F>::GroundFunctionValueImpl(Index index, GroundFunction<F> function, double number) :
     m_index(index),
     m_function(std::move(function)),
@@ -30,19 +30,19 @@ GroundFunctionValueImpl<F>::GroundFunctionValueImpl(Index index, GroundFunction<
 {
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Index GroundFunctionValueImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const GroundFunction<F>& GroundFunctionValueImpl<F>::get_function() const
 {
     return m_function;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 double GroundFunctionValueImpl<F>::get_number() const
 {
     return m_number;
@@ -52,7 +52,7 @@ template class GroundFunctionValueImpl<Static>;
 template class GroundFunctionValueImpl<Fluent>;
 template class GroundFunctionValueImpl<Auxiliary>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
@@ -64,7 +64,7 @@ template std::ostream& operator<<(std::ostream& out, const GroundFunctionValueIm
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const GroundFunctionValueImpl<Auxiliary>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, GroundFunctionValue<F> element)
 {
     out << *element;

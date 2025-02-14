@@ -40,7 +40,7 @@ private:
 
     TermList m_numeric_constraint_terms;
 
-    template<FunctionTag F>
+    template<StaticOrFluentOrAuxiliary F>
     Function<F> transform_impl(Function<F> function);
     NumericConstraint transform_impl(NumericConstraint numeric_constraint);
 

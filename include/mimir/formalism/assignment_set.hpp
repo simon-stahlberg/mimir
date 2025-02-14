@@ -41,7 +41,7 @@ namespace mimir
 ///   2. the assignment [i/o] is consistent
 ///
 /// We say that an assignment set is static if all atoms it considers are static.
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 class AssignmentSet
 {
 private:

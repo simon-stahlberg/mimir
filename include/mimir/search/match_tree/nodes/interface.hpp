@@ -24,44 +24,44 @@
 
 namespace mimir::match_tree
 {
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class INodeVisitor
 {
 public:
-    virtual void accept(const AtomSelectorNode_TFX<Element, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TF<Element, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TX<Element, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_FX<Element, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_T<Element, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_F<Element, Fluent>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TFX<Element, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TF<Element, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_TX<Element, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_FX<Element, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_T<Element, Derived>& atom) = 0;
-    virtual void accept(const AtomSelectorNode_F<Element, Derived>& atom) = 0;
-    virtual void accept(const NumericConstraintSelectorNode_T<Element>& constraint) = 0;
-    virtual void accept(const NumericConstraintSelectorNode_TX<Element>& constraint) = 0;
-    virtual void accept(const ElementGeneratorNode_Perfect<Element>& generator) = 0;
-    virtual void accept(const ElementGeneratorNode_Imperfect<Element>& generator) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<E, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<E, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<E, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<E, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<E, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<E, Fluent>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TFX<E, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TF<E, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_TX<E, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_FX<E, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_T<E, Derived>& atom) = 0;
+    virtual void accept(const AtomSelectorNode_F<E, Derived>& atom) = 0;
+    virtual void accept(const NumericConstraintSelectorNode_T<E>& constraint) = 0;
+    virtual void accept(const NumericConstraintSelectorNode_TX<E>& constraint) = 0;
+    virtual void accept(const ElementGeneratorNode_Perfect<E>& generator) = 0;
+    virtual void accept(const ElementGeneratorNode_Imperfect<E>& generator) = 0;
 };
 
 /// @brief `Node` implements the interface of nodes.
-template<HasConjunctiveCondition Element>
+template<HasConjunctiveCondition E>
 class INode
 {
 public:
     virtual ~INode() = default;
 
     virtual void generate_applicable_actions(const DenseState& state,
-                                             std::vector<const INode<Element>*>& ref_applicable_nodes,
-                                             std::vector<const Element*>& ref_applicable_elements) const = 0;
+                                             std::vector<const INode<E>*>& ref_applicable_nodes,
+                                             std::vector<const E*>& ref_applicable_elements) const = 0;
 
-    virtual void visit(INodeVisitor<Element>& visitor) const = 0;
+    virtual void visit(INodeVisitor<E>& visitor) const = 0;
 };
 
-template<HasConjunctiveCondition Element>
-extern std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<Element>&, DotPrinterTag>& tree);
+template<HasConjunctiveCondition E>
+extern std::ostream& operator<<(std::ostream& out, const std::tuple<const Node<E>&, DotPrinterTag>& tree);
 }
 
 #endif

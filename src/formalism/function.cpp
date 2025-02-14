@@ -23,7 +23,7 @@
 
 namespace mimir
 {
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton, TermList terms, IndexList parent_terms_to_terms_mapping) :
     m_index(index),
     m_function_skeleton(std::move(function_skeleton)),
@@ -32,25 +32,25 @@ FunctionImpl<F>::FunctionImpl(Index index, FunctionSkeleton<F> function_skeleton
 {
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 Index FunctionImpl<F>::get_index() const
 {
     return m_index;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const FunctionSkeleton<F>& FunctionImpl<F>::get_function_skeleton() const
 {
     return m_function_skeleton;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const TermList& FunctionImpl<F>::get_terms() const
 {
     return m_terms;
 }
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 const IndexList& FunctionImpl<F>::get_parent_terms_to_terms_mapping() const
 {
     return m_parent_terms_to_terms_mapping;
@@ -60,7 +60,7 @@ template class FunctionImpl<Static>;
 template class FunctionImpl<Fluent>;
 template class FunctionImpl<Auxiliary>;
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, const FunctionImpl<F>& element)
 {
     auto formatter = PDDLFormatter();
@@ -72,7 +72,7 @@ template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Static>&
 template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Fluent>& element);
 template std::ostream& operator<<(std::ostream& out, const FunctionImpl<Auxiliary>& element);
 
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 std::ostream& operator<<(std::ostream& out, Function<F> element)
 {
     out << *element;

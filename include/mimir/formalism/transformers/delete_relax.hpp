@@ -37,13 +37,13 @@ private:
     using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::prepare_impl;
     using BaseCachedRecurseTransformer<DeleteRelaxTransformer>::transform_impl;
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     LiteralList<P> transform_impl(const LiteralList<P>& literals);
     ConditionalEffectList transform_impl(const ConditionalEffectList& effects);
     ActionList transform_impl(const ActionList& actions);
     AxiomList transform_impl(const AxiomList& axioms);
 
-    template<PredicateTag P>
+    template<StaticOrFluentOrDerived P>
     Literal<P> transform_impl(Literal<P> literal);
     ConjunctiveCondition transform_impl(ConjunctiveCondition condition);
     ConjunctiveEffect transform_impl(ConjunctiveEffect effect);

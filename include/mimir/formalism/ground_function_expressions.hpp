@@ -161,7 +161,7 @@ public:
 };
 
 /* FunctionExpressionFunction */
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 class GroundFunctionExpressionFunctionImpl
 {
 private:
@@ -239,7 +239,7 @@ extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressio
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionBinaryOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMultiOperatorImpl& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionMinusImpl& element);
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionFunctionImpl<F>& element);
 extern std::ostream& operator<<(std::ostream& out, const GroundFunctionExpressionImpl& element);
 
@@ -247,7 +247,7 @@ extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionNumbe
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionBinaryOperator element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMultiOperator element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionMinus element);
-template<FunctionTag F>
+template<StaticOrFluentOrAuxiliary F>
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpressionFunction<F> element);
 extern std::ostream& operator<<(std::ostream& out, GroundFunctionExpression element);
 

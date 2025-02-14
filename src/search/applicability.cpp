@@ -41,7 +41,7 @@ namespace mimir
  * ConjunctiveCondition
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const FlatBitset& atom_indices)
 {
     for (const auto& literal : literals)
@@ -67,7 +67,7 @@ bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const D
  * GroundConjunctiveCondition
  */
 
-template<PredicateTag P>
+template<StaticOrFluentOrDerived P>
 bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, const FlatBitset& atoms)
 {
     return is_supseteq(atoms, conjunctive_condition.template get_positive_precondition<P>())  //
@@ -80,7 +80,7 @@ template bool is_applicable<Derived>(const GroundConjunctiveCondition& conjuncti
 
 /// @brief Tests whether the fluents are statically applicable, i.e., contain no conflicting literals.
 /// Without this test we can observe conflicting preconditions in the test_problem of the Ferry domain.
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool is_statically_applicable(const GroundConjunctiveCondition& conjunctive_condition)
 {
     return are_disjoint(conjunctive_condition.template get_positive_precondition<P>(), conjunctive_condition.template get_negative_precondition<P>());
@@ -123,7 +123,7 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
  * GroundConjunctiveEffect
  */
 
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 bool is_applicable(const GroundNumericEffect<F>& effect, const FlatDoubleList& fluent_numeric_variables)
 {
     throw std::logic_error("Should not be called.");
@@ -148,7 +148,7 @@ bool is_applicable(const GroundNumericEffect<Auxiliary>& effect, const FlatDoubl
 /// @param effects
 /// @param fluent_numeric_variables
 /// @return
-template<DynamicFunctionTag F>
+template<FluentOrAuxiliary F>
 static bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatDoubleList& fluent_numeric_variables)
 {
     for (const auto& effect : effects)

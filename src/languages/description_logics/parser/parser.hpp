@@ -40,16 +40,16 @@ using ascii::space;
 ///////////////////////////////////////////////////////////////////////////
 namespace parser
 {
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct ConstructorClass;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct NonTerminalClass;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct ConstructorOrNonTerminalClass;
 
-template<ConstructorTag D>
+template<ConceptOrRole D>
 struct DerivationRuleClass;
 
 struct ConceptOrRoleDerivationRuleClass;

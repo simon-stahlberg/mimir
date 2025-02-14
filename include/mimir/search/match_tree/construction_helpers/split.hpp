@@ -54,7 +54,7 @@ struct AtomSplitDistribution
     }
 };
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 struct AtomSplit
 {
     GroundAtom<P> feature;
@@ -107,7 +107,7 @@ inline bool is_useless_split(const AtomSplitDistribution& distribution) { return
 
 inline bool is_useless_split(const NumericConstraintSplitDistribution& distribution) { return distribution.num_true_elements == 0; }
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 bool is_useless_split(const AtomSplit<P>& split)
 {
     return is_useless_split(split.distribution);
@@ -128,7 +128,7 @@ extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& 
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution);
 
-template<DynamicPredicateTag P>
+template<FluentOrDerived P>
 std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split);
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split);
