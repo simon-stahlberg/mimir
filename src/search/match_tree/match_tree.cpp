@@ -22,7 +22,7 @@
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/search/match_tree/construction_helpers/node_creation.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
-#include "mimir/search/match_tree/node_splitters/static.hpp"
+#include "mimir/search/match_tree/node_splitters/dynamic.hpp"
 #include "mimir/search/match_tree/nodes/generator.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
 
@@ -50,18 +50,18 @@ MatchTree<Element>::MatchTree(const PDDLRepositories& pddl_repositories, std::ve
         auto node_splitter = NodeSplitter<Element> { nullptr };
         switch (m_options.split_strategy)
         {
-            case SplitStrategyEnum::STATIC:
+            case SplitStrategyEnum::DYNAMIC:
             {
-                node_splitter = std::make_unique<StaticNodeSplitter<Element>>(pddl_repositories,
-                                                                              m_options,
-                                                                              std::span<const Element*>(m_elements.begin(), m_elements.end()));
+                node_splitter = std::make_unique<DynamicNodeSplitter<Element>>(pddl_repositories,
+                                                                               m_options,
+                                                                               std::span<const Element*>(m_elements.begin(), m_elements.end()));
                 break;
             }
             case SplitStrategyEnum::HYBRID:
             {
                 throw std::runtime_error("Not implemented.");
             }
-            case SplitStrategyEnum::DYNAMIC:
+            case SplitStrategyEnum::STATIC:
             {
                 throw std::runtime_error("Not implemented.");
             }

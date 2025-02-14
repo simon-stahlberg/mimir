@@ -48,6 +48,7 @@ InverseNode<Element> DynamicNodeSplitter<Element>::fit_impl(std::span<const Elem
     auto root_placeholder = create_root_placeholder_node(elements);
     auto root_refinement_data = this->compute_refinement_data(root_placeholder);
 
+    ++ref_statistics.num_nodes;
     if (!root_refinement_data)
     {
         return create_imperfect_generator_node(root_placeholder);
@@ -66,19 +67,19 @@ InverseNode<Element> DynamicNodeSplitter<Element>::fit_impl(std::span<const Elem
         auto [inverse_node_, placeholder_children_] =
             create_node_and_placeholder_children(std::move(entry.node), entry.refinement_data.useless_splits, entry.refinement_data.split);
 
+        ref_statistics.num_nodes += placeholder_children_.size();
         if (inverse_node_)
         {
             inverse_root = std::move(inverse_node_);
         }
 
-        ref_statistics.num_nodes += placeholder_children_.size();
         for (auto& child : placeholder_children_)
         {
             auto child_refinement_data = this->compute_refinement_data(child);
 
             if (!child_refinement_data)
             {
-                create_imperfect_generator_node(child);
+                create_perfect_generator_node(child);
             }
             else
             {

@@ -62,8 +62,14 @@ protected:
     using AtomDistributions = std::unordered_map<GroundAtom<P>, AtomSplitDistribution>;
     using NumericConstraintDistributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution>;
 
+    /// @brief Compute all possible ways to split the data.
+    /// This operation runs in time O(|E|*|A|) where |E| is the number of elements
+    /// and |A| is the maxmum number of preconditions in an element in E.
     SplitSet compute_splits(const std::span<const Element*>& elements);
 
+    /// @brief Compute the best split if there exists any that is not useless.
+    /// This operation runs in time O(|E|*|A|) where |E| is the number of elements in the node
+    /// and |A| is the maxmum number of preconditions in an element in E.
     std::optional<SplitScoreAndUselessSplits> compute_refinement_data(const PlaceholderNode<Element>& node);
 
 public:

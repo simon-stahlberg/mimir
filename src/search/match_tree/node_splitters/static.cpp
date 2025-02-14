@@ -67,66 +67,7 @@ StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_rep
 template<HasConjunctiveCondition Element>
 InverseNode<Element> StaticNodeSplitter<Element>::fit_impl(std::span<const Element*> elements, Statistics& ref_statistics)
 {
-    auto queue = SplitterQueue<Element>();
-
-    auto root_placeholder = create_root_placeholder_node(elements);
-    auto root_refinement_data = this->compute_refinement_data(root_placeholder);
-
-    if (!root_refinement_data)
-    {
-        return create_imperfect_generator_node(root_placeholder);
-    }
-
-    queue.emplace(std::move(root_placeholder), root_refinement_data.value());
-
-    auto inverse_root = InverseNode<Element> { nullptr };
-
-    while (!queue.empty())
-    {
-        auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
-        queue.pop();
-
-        /* Customization point in derived classes: how to select the node and the split? */
-        auto [inverse_node_, placeholder_children_] =
-            create_node_and_placeholder_children(std::move(entry.node), entry.refinement_data.useless_splits, entry.refinement_data.split);
-
-        if (inverse_node_)
-        {
-            inverse_root = std::move(inverse_node_);
-        }
-
-        ref_statistics.num_nodes += placeholder_children_.size();
-        for (auto& child : placeholder_children_)
-        {
-            auto child_refinement_data = this->compute_refinement_data(child);
-
-            if (!child_refinement_data)
-            {
-                create_imperfect_generator_node(child);
-            }
-            else
-            {
-                queue.emplace(std::move(child), child_refinement_data.value());
-            }
-        }
-
-        if (ref_statistics.num_nodes >= this->m_options.max_num_nodes)
-        {
-            /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
-            while (!queue.empty())
-            {
-                auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
-                queue.pop();
-
-                create_imperfect_generator_node(entry.node);
-            }
-            break;
-        }
-    }
-
-    assert(inverse_root);
-
-    return std::move(inverse_root);
+    throw std::runtime_error("Not implemented.");
 }
 
 template class StaticNodeSplitter<GroundActionImpl>;

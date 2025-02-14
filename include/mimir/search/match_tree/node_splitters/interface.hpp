@@ -29,9 +29,9 @@ namespace mimir::match_tree
 
 enum class SplitStrategyEnum
 {
-    STATIC = 0,
+    DYNAMIC = 0,
     HYBRID = 1,
-    DYNAMIC = 2
+    STATIC = 2,
 };
 
 enum class SplitMetricEnum
