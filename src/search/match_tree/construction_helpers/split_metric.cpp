@@ -50,8 +50,7 @@ double compute_gini_score(const std::vector<size_t>& distribution)
 
 double compute_score(const AtomSplitDistribution& distribution, SplitMetricEnum type)
 {
-    auto packed_distribution =
-        std::vector<size_t> { distribution.m_num_true_elements, distribution.m_num_false_elements, distribution.m_num_dont_care_elements };
+    auto packed_distribution = std::vector<size_t> { distribution.num_true_elements, distribution.num_false_elements, distribution.num_dont_care_elements };
 
     switch (type)
     {
@@ -65,7 +64,7 @@ double compute_score(const AtomSplitDistribution& distribution, SplitMetricEnum 
 
 double compute_score(const NumericConstraintSplitDistribution& distribution, SplitMetricEnum type)
 {
-    auto packed_distribution = std::vector<size_t> { distribution.m_num_true_elements, distribution.m_num_dont_care_elements };
+    auto packed_distribution = std::vector<size_t> { distribution.num_true_elements, distribution.num_dont_care_elements };
 
     switch (type)
     {
@@ -75,6 +74,11 @@ double compute_score(const NumericConstraintSplitDistribution& distribution, Spl
         }
     }
     return 0.0;
+}
+
+double compute_score(const Split& split, SplitMetricEnum type)
+{
+    return std::visit([type](auto&& arg) { return compute_score(arg.distribution, type); }, split);
 }
 
 }

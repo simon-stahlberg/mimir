@@ -23,21 +23,20 @@
 
 namespace mimir::match_tree
 {
-/*
+
 template<HasConjunctiveCondition Element>
-class DynamicNodeSplitter : public INodeSplitter<Element>
+class DynamicNodeSplitter : public NodeSplitterBase<DynamicNodeSplitter<Element>, Element>
 {
 private:
-    const PDDLRepositories& m_pddl_repositories;
+    /* Implement NodeSplitterBase interface */
+
+    InverseNode<Element> fit_impl(std::span<const Element*> elements, Statistics& ref_statistics);
+
+    friend class NodeSplitterBase<DynamicNodeSplitter<Element>, Element>;
 
 public:
-    explicit DynamicNodeSplitter(const PDDLRepositories& pddl_repositories);
-
-    std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> compute_best_split(const PlaceholderNode<Element>& node) override;
-
-    InverseNode<Element> translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const override;
+    DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements);
 };
-*/
 
 }
 

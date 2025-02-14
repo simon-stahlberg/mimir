@@ -35,6 +35,8 @@ extern double compute_gini_score(const std::vector<size_t>& distribution);
 extern double compute_score(const AtomSplitDistribution& distribution, SplitMetricEnum type);
 
 extern double compute_score(const NumericConstraintSplitDistribution& distribution, SplitMetricEnum type);
+
+extern double compute_score(const Split& split, SplitMetricEnum type);
 }
 
 #endif

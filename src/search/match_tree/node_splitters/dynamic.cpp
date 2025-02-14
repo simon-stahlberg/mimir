@@ -19,177 +19,93 @@
 
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
+#include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
+#include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
+#include "mimir/search/match_tree/node_splitters/base_impl.hpp"
 #include "mimir/search/match_tree/node_splitters/interface.hpp"
+
+#include <map>
 
 namespace mimir::match_tree
 {
-// template<HasConjunctiveCondition Element>
-// DynamicNodeSplitter<Element>::DynamicNodeSplitter(const PDDLRepositories& pddl_repositories) : m_pddl_repositories(pddl_repositories)
-//{
-// }
-//
-// template<HasConjunctiveCondition Element>
-// std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> DynamicNodeSplitter<Element>::compute_best_split(const PlaceholderNode<Element>& node)
-//{
-//     /* Collect frequencies */
-//     auto fluent_atom_frequencies = std::unordered_map<GroundAtom<Fluent>, size_t> {};
-//     auto derived_atom_frequencies = std::unordered_map<GroundAtom<Derived>, size_t> {};
-//     auto numeric_constraint_frequencies = std::unordered_map<GroundNumericConstraint, size_t> {};
-//
-//     for (const auto& element : elements)
-//     {
-//         const auto& conjunctive_condition = element->get_conjunctive_condition();
-//
-//         /* Fluent */
-//         for (const auto& index : conjunctive_condition.template get_positive_precondition<Fluent>())
-//         {
-//             ++fluent_atom_frequencies[m_pddl_repositories.template get_ground_atom<Fluent>(index)];
-//         }
-//         for (const auto& index : conjunctive_condition.template get_negative_precondition<Fluent>())
-//         {
-//             ++fluent_atom_frequencies[m_pddl_repositories.template get_ground_atom<Fluent>(index)];
-//         }
-//         /* Derived */
-//         for (const auto& index : conjunctive_condition.template get_positive_precondition<Derived>())
-//         {
-//             ++derived_atom_frequencies[m_pddl_repositories.template get_ground_atom<Derived>(index)];
-//         }
-//         for (const auto& index : conjunctive_condition.template get_negative_precondition<Derived>())
-//         {
-//             ++derived_atom_frequencies[m_pddl_repositories.template get_ground_atom<Derived>(index)];
-//         }
-//         /* Numeric constraint */
-//         for (const auto& numeric_constraint : conjunctive_condition.get_numeric_constraints())
-//         {
-//             ++numeric_constraint_frequencies[numeric_constraint.get()];
-//         }
-//     }
-//
-//     std::cout << "fluent_atom_frequencies: " << fluent_atom_frequencies << std::endl;
-//     std::cout << "derived_atom_frequencies: " << derived_atom_frequencies << std::endl;
-//     std::cout << "numeric_constraint_frequencies: " << numeric_constraint_frequencies << std::endl;
-//
-//     /* Erase previous splits */
-//
-//     class ErasePreviousSplitInverseNodeVisitor : public IInverseNodeVisitor<Element>
-//     {
-//     private:
-//         std::unordered_map<GroundAtom<Fluent>, size_t>& m_fluent_atom_frequencies;
-//         std::unordered_map<GroundAtom<Derived>, size_t>& m_derived_atom_frequencies;
-//         std::unordered_map<GroundNumericConstraint, size_t>& m_numeric_constraint_frequencies;
-//
-//     public:
-//         ErasePreviousSplitInverseNodeVisitor(std::unordered_map<GroundAtom<Fluent>, size_t>& fluent_atom_frequencies,
-//                                              std::unordered_map<GroundAtom<Derived>, size_t>& derived_atom_frequencies,
-//                                              std::unordered_map<GroundNumericConstraint, size_t>& numeric_constraint_frequencies) :
-//             m_fluent_atom_frequencies(fluent_atom_frequencies),
-//             m_derived_atom_frequencies(derived_atom_frequencies),
-//             m_numeric_constraint_frequencies(numeric_constraint_frequencies)
-//         {
-//         }
-//
-//         void repeat_with_parent(const InverseNode<Element>& parent)
-//         {
-//             if (parent)
-//             {
-//                 parent->visit(*this);
-//             }
-//         }
-//
-//         void accept(const InverseAtomSelectorNode<Element, Fluent>& atom) override
-//         {
-//             m_fluent_atom_frequencies.erase(atom.get_atom());
-//             repeat_with_parent(atom.get_parent());
-//         }
-//         void accept(const InverseAtomSelectorNode<Element, Derived>& atom) override
-//         {
-//             m_derived_atom_frequencies.erase(atom.get_atom());
-//             repeat_with_parent(atom.get_parent());
-//         }
-//         void accept(const InverseNumericConstraintSelectorNode<Element>& constraint) override
-//         {
-//             m_numeric_constraint_frequencies.erase(constraint.get_constraint());
-//             repeat_with_parent(constraint.get_parent());
-//         }
-//         void accept(const InverseElementGeneratorNode<Element>& generator) override { repeat_with_parent(generator.get_parent()); }
-//     };
-//
-//     if (parent.has_value())
-//     {
-//         auto erase_past_split_visitor = ErasePreviousSplitInverseNodeVisitor(fluent_atom_frequencies, derived_atom_frequencies,
-//         numeric_constraint_frequencies); parent.value()->visit(erase_past_split_visitor);
-//     }
-//
-//     /* Compute highest frequency */
-//     auto highest_frequency = size_t(0);
-//     for (const auto& [atom, frequency] : fluent_atom_frequencies)
-//     {
-//         highest_frequency = std::max(highest_frequency, frequency);
-//     }
-//     for (const auto& [atom, frequency] : derived_atom_frequencies)
-//     {
-//         highest_frequency = std::max(highest_frequency, frequency);
-//     }
-//     for (const auto& [constraint, frequency] : numeric_constraint_frequencies)
-//     {
-//         highest_frequency = std::max(highest_frequency, frequency);
-//     }
-//
-//     std::cout << "Highest frequency: " << highest_frequency << std::endl;
-//
-//     /* Collect splits with highest frequency */
-//
-//     // TODO: we must change this.
-//     // Iterate descending in the frequency.
-//     // Collect all splits that would result in a useless node until a useful one is found.
-//     // Then in the instantiated node, we must store the useless splits.
-//     auto highest_frequency_splits = CandidateSplitList {};
-//     for (const auto& [atom, frequency] : fluent_atom_frequencies)
-//     {
-//         if (frequency == highest_frequency)
-//             highest_frequency_splits.push_back(atom);
-//     }
-//     for (const auto& [atom, frequency] : derived_atom_frequencies)
-//     {
-//         if (frequency == highest_frequency)
-//             highest_frequency_splits.push_back(atom);
-//     }
-//     for (const auto& [constraint, frequency] : numeric_constraint_frequencies)
-//     {
-//         if (frequency == highest_frequency)
-//             highest_frequency_splits.push_back(constraint);
-//     }
-//
-//     std::cout << "Highest frequency splits: " << highest_frequency_splits << std::endl;
-//
-//     /* Break ties in favor of lexicographically smallest */
-//     // Note: in case we do not get deterministic results, we should work on normal form of function expressions in the translator.
-//     std::sort(highest_frequency_splits.begin(),
-//               highest_frequency_splits.end(),
-//               [](auto&& lhs, auto&& rhs)
-//               {
-//                   std::stringstream ss_lhs;
-//                   ss_lhs << lhs;
-//                   std::stringstream ss_rhs;
-//                   ss_rhs << rhs;
-//                   return ss_lhs.str() < ss_rhs.str();
-//               });
-//
-//     std::cout << "Final split: " << highest_frequency_splits.front() << std::endl;
-//
-//     // TODO: must check whether the split is actually useful...
-//     return { highest_frequency_splits.front(), SplitList {} };
-//}
 
-// template<HasConjunctiveCondition Element>
-// InverseNode<Element> DynamicNodeSplitter<Element>::translate_to_imperfect_generator_node(const PlaceholderNode<Element>& node) const
-//{
-// }
-//
-// template class DynamicNodeSplitter<GroundActionImpl>;
-// template class DynamicNodeSplitter<GroundAxiomImpl>;
+template<HasConjunctiveCondition Element>
+DynamicNodeSplitter<Element>::DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements) :
+    NodeSplitterBase<DynamicNodeSplitter<Element>, Element>(pddl_repositories, options)
+{
+}
+
+template<HasConjunctiveCondition Element>
+InverseNode<Element> DynamicNodeSplitter<Element>::fit_impl(std::span<const Element*> elements, Statistics& ref_statistics)
+{
+    auto queue = SplitterQueue<Element>();
+
+    auto root_placeholder = create_root_placeholder_node(elements);
+    auto root_refinement_data = this->compute_refinement_data(root_placeholder);
+
+    if (!root_refinement_data)
+    {
+        return create_imperfect_generator_node(root_placeholder);
+    }
+
+    queue.emplace(std::move(root_placeholder), root_refinement_data.value());
+
+    auto inverse_root = InverseNode<Element> { nullptr };
+
+    while (!queue.empty())
+    {
+        auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
+        queue.pop();
+
+        /* Customization point in derived classes: how to select the node and the split? */
+        auto [inverse_node_, placeholder_children_] =
+            create_node_and_placeholder_children(std::move(entry.node), entry.refinement_data.useless_splits, entry.refinement_data.split);
+
+        if (inverse_node_)
+        {
+            inverse_root = std::move(inverse_node_);
+        }
+
+        ref_statistics.num_nodes += placeholder_children_.size();
+        for (auto& child : placeholder_children_)
+        {
+            auto child_refinement_data = this->compute_refinement_data(child);
+
+            if (!child_refinement_data)
+            {
+                create_imperfect_generator_node(child);
+            }
+            else
+            {
+                queue.emplace(std::move(child), child_refinement_data.value());
+            }
+        }
+
+        if (ref_statistics.num_nodes >= this->m_options.max_num_nodes)
+        {
+            /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
+            while (!queue.empty())
+            {
+                auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
+                queue.pop();
+
+                create_imperfect_generator_node(entry.node);
+            }
+            break;
+        }
+    }
+
+    assert(inverse_root);
+
+    return std::move(inverse_root);
+}
+
+template class DynamicNodeSplitter<GroundActionImpl>;
+template class DynamicNodeSplitter<GroundAxiomImpl>;
+
 }

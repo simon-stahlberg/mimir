@@ -37,12 +37,11 @@ void InverseAtomSelectorNode_TFX<Element, P>::visit_impl(IInverseNodeVisitor<Ele
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 InverseAtomSelectorNode_TFX<Element, P>::InverseAtomSelectorNode_TFX(const IInverseNode<Element>* parent,
                                                                      SplitList useless_splits,
-                                                                     size_t root_distance,
                                                                      GroundAtom<P> atom,
                                                                      std::span<const Element*> true_elements,
                                                                      std::span<const Element*> false_elements,
                                                                      std::span<const Element*> dontcare_elements) :
-    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TFX<Element, P>, Element, P>(parent, std::move(useless_splits), atom),
     m_true_elements(true_elements),
     m_false_elements(false_elements),
     m_dontcare_elements(dontcare_elements),
@@ -126,11 +125,10 @@ void InverseAtomSelectorNode_TF<Element, P>::visit_impl(IInverseNodeVisitor<Elem
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 InverseAtomSelectorNode_TF<Element, P>::InverseAtomSelectorNode_TF(const IInverseNode<Element>* parent,
                                                                    SplitList useless_splits,
-                                                                   size_t root_distance,
                                                                    GroundAtom<P> atom,
                                                                    std::span<const Element*> true_elements,
                                                                    std::span<const Element*> false_elements) :
-    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TF<Element, P>, Element, P>(parent, std::move(useless_splits), atom),
     m_true_elements(true_elements),
     m_false_elements(false_elements),
     m_true_child(nullptr),
@@ -193,11 +191,10 @@ void InverseAtomSelectorNode_TX<Element, P>::visit_impl(IInverseNodeVisitor<Elem
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 InverseAtomSelectorNode_TX<Element, P>::InverseAtomSelectorNode_TX(const IInverseNode<Element>* parent,
                                                                    SplitList useless_splits,
-                                                                   size_t root_distance,
                                                                    GroundAtom<P> atom,
                                                                    std::span<const Element*> true_elements,
                                                                    std::span<const Element*> dontcare_elements) :
-    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_TX<Element, P>, Element, P>(parent, std::move(useless_splits), atom),
     m_true_elements(true_elements),
     m_dontcare_elements(dontcare_elements),
     m_true_child(nullptr),
@@ -260,11 +257,10 @@ void InverseAtomSelectorNode_FX<Element, P>::visit_impl(IInverseNodeVisitor<Elem
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 InverseAtomSelectorNode_FX<Element, P>::InverseAtomSelectorNode_FX(const IInverseNode<Element>* parent,
                                                                    SplitList useless_splits,
-                                                                   size_t root_distance,
                                                                    GroundAtom<P> atom,
                                                                    std::span<const Element*> false_elements,
                                                                    std::span<const Element*> dontcare_elements) :
-    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_FX<Element, P>, Element, P>(parent, std::move(useless_splits), atom),
     m_false_elements(false_elements),
     m_dontcare_elements(dontcare_elements),
     m_false_child(nullptr),
@@ -327,10 +323,9 @@ void InverseAtomSelectorNode_T<Element, P>::visit_impl(IInverseNodeVisitor<Eleme
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 InverseAtomSelectorNode_T<Element, P>::InverseAtomSelectorNode_T(const IInverseNode<Element>* parent,
                                                                  SplitList useless_splits,
-                                                                 size_t root_distance,
                                                                  GroundAtom<P> atom,
                                                                  std::span<const Element*> true_elements) :
-    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_T<Element, P>, Element, P>(parent, std::move(useless_splits), atom),
     m_true_elements(true_elements),
     m_true_child(nullptr)
 {
@@ -372,10 +367,9 @@ void InverseAtomSelectorNode_F<Element, P>::visit_impl(IInverseNodeVisitor<Eleme
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
 InverseAtomSelectorNode_F<Element, P>::InverseAtomSelectorNode_F(const IInverseNode<Element>* parent,
                                                                  SplitList useless_splits,
-                                                                 size_t root_distance,
                                                                  GroundAtom<P> atom,
                                                                  std::span<const Element*> false_elements) :
-    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>(parent, std::move(useless_splits), root_distance, atom),
+    InverseAtomSelectorNodeBase<InverseAtomSelectorNode_F<Element, P>, Element, P>(parent, std::move(useless_splits), atom),
     m_false_elements(false_elements),
     m_false_child(nullptr)
 {

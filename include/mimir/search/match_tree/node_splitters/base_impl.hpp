@@ -18,16 +18,23 @@
 #ifndef MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_BASE_IMPL_HPP_
 #define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_BASE_IMPL_HPP_
 
+#include "mimir/common/filesystem.hpp"
+#include "mimir/common/printers.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_node_creation.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/interface.hpp"
 #include "mimir/search/match_tree/construction_helpers/inverse_nodes/placeholder.hpp"
 #include "mimir/search/match_tree/construction_helpers/node_creation.hpp"
+#include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/construction_helpers/split_metrics.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_splitters/base.hpp"
+#include "mimir/search/match_tree/node_splitters/interface.hpp"
 #include "mimir/search/match_tree/nodes/interface.hpp"
 #include "mimir/search/match_tree/options.hpp"
 #include "mimir/search/match_tree/statistics.hpp"
+
+#include <queue>
 
 namespace mimir::match_tree
 {
@@ -40,44 +47,135 @@ NodeSplitterBase<Derived_, Element>::NodeSplitterBase(const PDDLRepositories& pd
 }
 
 template<typename Derived_, HasConjunctiveCondition Element>
+SplitSet NodeSplitterBase<Derived_, Element>::compute_splits(const std::span<const Element*>& elements)
+{
+    auto fluent_atom_distributions = AtomDistributions<Fluent> {};
+    auto derived_atom_distributions = AtomDistributions<Derived> {};
+    auto numeric_constraint_distributions = NumericConstraintDistributions {};
+
+    for (const auto& element : elements)
+    {
+        const auto& conjunctive_condition = element->get_conjunctive_condition();
+
+        /* Fluent */
+        for (const auto& index : conjunctive_condition.template get_positive_precondition<Fluent>())
+        {
+            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].num_true_elements;
+        }
+        for (const auto& index : conjunctive_condition.template get_negative_precondition<Fluent>())
+        {
+            ++fluent_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Fluent>(index)].num_false_elements;
+        }
+        /* Derived */
+        for (const auto& index : conjunctive_condition.template get_positive_precondition<Derived>())
+        {
+            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].num_true_elements;
+        }
+        for (const auto& index : conjunctive_condition.template get_negative_precondition<Derived>())
+        {
+            ++derived_atom_distributions[this->m_pddl_repositories.template get_ground_atom<Derived>(index)].num_false_elements;
+        }
+        /* Numeric constraint */
+        for (const auto& numeric_constraint : conjunctive_condition.get_numeric_constraints())
+        {
+            ++numeric_constraint_distributions[numeric_constraint.get()].num_true_elements;
+        }
+    }
+    for (auto& [atom, distribution] : fluent_atom_distributions)
+    {
+        distribution.num_dont_care_elements = elements.size() - distribution.num_true_elements - distribution.num_false_elements;
+    }
+    for (auto& [atom, distribution] : derived_atom_distributions)
+    {
+        distribution.num_dont_care_elements = elements.size() - distribution.num_true_elements - distribution.num_false_elements;
+    }
+    for (auto& [constraint, distribution] : numeric_constraint_distributions)
+    {
+        distribution.num_dont_care_elements = elements.size() - distribution.num_true_elements;
+    }
+
+    auto splits = SplitSet {};
+    for (const auto& [atom, distribution] : fluent_atom_distributions)
+    {
+        splits.insert(AtomSplit<Fluent> { atom, distribution });
+    }
+    for (const auto& [atom, distribution] : derived_atom_distributions)
+    {
+        splits.insert(AtomSplit<Derived> { atom, distribution });
+    }
+    for (const auto& [constraint, distribution] : numeric_constraint_distributions)
+    {
+        splits.insert(NumericConstraintSplit { constraint, distribution });
+    }
+
+    return splits;
+}
+
+template<typename Derived_, HasConjunctiveCondition Element>
+std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, Element>::compute_refinement_data(const PlaceholderNode<Element>& node)
+{
+    auto splits = compute_splits(node->get_elements());
+
+    /* Erase previous useless splits */
+    for (auto cur_node = node->get_parent(); cur_node; cur_node = cur_node->get_parent())
+    {
+        for (const auto& useless_split : cur_node->get_useless_splits())
+        {
+            splits.erase(useless_split);
+        }
+    }
+
+    /* Compute useless splits and best split */
+    auto best_split_and_score = std::optional<SplitAndScore> {};
+    auto useless_splits = SplitList {};
+    for (const auto& split : splits)
+    {
+        if (is_useless_split(split))
+        {
+            useless_splits.push_back(split);
+        }
+        else
+        {
+            const auto score = compute_score(split, m_options.split_metric);
+
+            if (!best_split_and_score || score > best_split_and_score->score)
+            {
+                best_split_and_score = SplitAndScore { split, score };
+            }
+        }
+    }
+
+    if (!best_split_and_score)
+    {
+        return std::nullopt;  ///< no more splitting is needed
+    }
+
+    /* Mark the current split as useless for subsequent splittings */
+    if (best_split_and_score)
+    {
+        useless_splits.push_back(best_split_and_score->split);
+    }
+
+    return SplitScoreAndUselessSplits { best_split_and_score->split, best_split_and_score->score, std::move(useless_splits) };
+}
+
+template<typename Derived_, HasConjunctiveCondition Element>
 std::pair<Node<Element>, Statistics> NodeSplitterBase<Derived_, Element>::fit(std::span<const Element*> elements)
 {
     auto statistics = Statistics();
     statistics.construction_start_time_point = std::chrono::high_resolution_clock::now();
     statistics.num_elements = elements.size();
 
-    auto placeholder_leafs = PlaceholderNodeList<Element> {};
-    placeholder_leafs.push_back(create_root_placeholder_node(std::span<const Element*>(elements.begin(), elements.end())));
-    auto inverse_generator_leafs = InverseNodeList<Element> {};
-    auto inverse_root = InverseNode<Element> { nullptr };
-
-    while (!placeholder_leafs.empty())
-    {
-        /* Customization point in derived classes: how to select the node and the split? */
-        auto [inverse_root_, placeholder_children_] = self().split_node_impl(placeholder_leafs);
-
-        if (inverse_root_)
-        {
-            inverse_root = std::move(inverse_root_);
-        }
-        statistics.num_nodes += placeholder_children_.size();
-        for (auto& child : placeholder_children_)
-        {
-            placeholder_leafs.push_back(std::move(child));
-        }
-
-        if (statistics.num_nodes >= m_options.max_num_nodes)
-        {
-            /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
-            for (auto& placeholder_leaf : placeholder_leafs)
-            {
-                create_imperfect_generator_node(placeholder_leaf);
-            }
-            break;
-        }
-    }
+    auto inverse_root = self().fit_impl(elements, statistics);
 
     auto root = parse_inverse_tree_iteratively(inverse_root);
+
+    if (m_options.enable_dump_dot_file)
+    {
+        auto ss = std::stringstream {};
+        ss << std::make_tuple(std::cref(inverse_root), DotPrinterTag {}) << std::endl;
+        write_to_file(m_options.output_dot_file, ss.str());
+    }
 
     parse_generator_distribution_iteratively(root, statistics);
 

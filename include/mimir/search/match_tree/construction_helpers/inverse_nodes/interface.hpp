@@ -59,17 +59,11 @@ protected:
     size_t m_root_distance;                 ///< The distance to the root node.
 
 public:
-    IInverseNode(const IInverseNode<Element>* parent, SplitList useless_splits, size_t root_distance) :
-        m_parent(parent),
-        m_useless_splits(std::move(useless_splits)),
-        m_root_distance(root_distance)
-    {
-    }
+    IInverseNode(const IInverseNode<Element>* parent, SplitList useless_splits) : m_parent(parent), m_useless_splits(std::move(useless_splits)) {}
     virtual ~IInverseNode() = default;
 
     virtual const IInverseNode<Element>* get_parent() const { return m_parent; }
     virtual const SplitList& get_useless_splits() const { return m_useless_splits; }
-    virtual size_t get_root_distance() const { return m_root_distance; }
 
     virtual void visit(IInverseNodeVisitor<Element>& visitor) const = 0;
 };

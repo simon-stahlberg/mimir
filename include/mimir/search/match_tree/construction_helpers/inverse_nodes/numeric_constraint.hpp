@@ -36,11 +36,8 @@ protected:
     GroundNumericConstraint m_constraint;
 
 public:
-    InverseNumericConstraintSelectorNodeBase(const IInverseNode<Element>* parent,
-                                             SplitList useless_splits,
-                                             size_t root_distance,
-                                             GroundNumericConstraint constraint) :
-        IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
+    InverseNumericConstraintSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, GroundNumericConstraint constraint) :
+        IInverseNode<Element>(parent, std::move(useless_splits)),
         m_constraint(constraint)
     {
         assert(m_constraint);
@@ -75,7 +72,6 @@ public:
 
     InverseNumericConstraintSelectorNode_T(const IInverseNode<Element>* parent,
                                            SplitList useless_splits,
-                                           size_t root_distance,
                                            GroundNumericConstraint constraint,
                                            std::span<const Element*> true_elements);
 
@@ -108,7 +104,6 @@ public:
 
     InverseNumericConstraintSelectorNode_TX(const IInverseNode<Element>* parent,
                                             SplitList useless_splits,
-                                            size_t root_distance,
                                             GroundNumericConstraint constraint,
                                             std::span<const Element*> true_elements,
                                             std::span<const Element*> dontcare_elements);

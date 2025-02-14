@@ -35,8 +35,8 @@ protected:
     GroundAtom<P> m_atom;
 
 public:
-    InverseAtomSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, size_t root_distance, GroundAtom<P> atom) :
-        IInverseNode<Element>(parent, std::move(useless_splits), root_distance),
+    InverseAtomSelectorNodeBase(const IInverseNode<Element>* parent, SplitList useless_splits, GroundAtom<P> atom) :
+        IInverseNode<Element>(parent, std::move(useless_splits)),
         m_atom(atom)
     {
         assert(m_atom);
@@ -78,7 +78,6 @@ public:
 
     explicit InverseAtomSelectorNode_TFX(const IInverseNode<Element>* parent,
                                          SplitList useless_splits,
-                                         size_t root_distance,
                                          GroundAtom<P> atom,
                                          std::span<const Element*> true_elements,
                                          std::span<const Element*> false_elements,
@@ -122,7 +121,6 @@ public:
 
     explicit InverseAtomSelectorNode_TF(const IInverseNode<Element>* parent,
                                         SplitList useless_splits,
-                                        size_t root_distance,
                                         GroundAtom<P> atom,
                                         std::span<const Element*> true_elements,
                                         std::span<const Element*> false_elements);
@@ -162,7 +160,6 @@ public:
 
     explicit InverseAtomSelectorNode_TX(const IInverseNode<Element>* parent,
                                         SplitList useless_splits,
-                                        size_t root_distance,
                                         GroundAtom<P> atom,
                                         std::span<const Element*> true_elements,
                                         std::span<const Element*> dontcare_elements);
@@ -199,7 +196,6 @@ public:
 
     explicit InverseAtomSelectorNode_FX(const IInverseNode<Element>* parent,
                                         SplitList useless_splits,
-                                        size_t root_distance,
                                         GroundAtom<P> atom,
                                         std::span<const Element*> false_elements,
                                         std::span<const Element*> dontcare_elements);
@@ -234,7 +230,6 @@ public:
 
     explicit InverseAtomSelectorNode_T(const IInverseNode<Element>* parent,
                                        SplitList useless_splits,
-                                       size_t root_distance,
                                        GroundAtom<P> atom,
                                        std::span<const Element*> true_elements);
 
@@ -265,7 +260,6 @@ public:
 
     explicit InverseAtomSelectorNode_F(const IInverseNode<Element>* parent,
                                        SplitList useless_splits,
-                                       size_t root_distance,
                                        GroundAtom<P> atom,
                                        std::span<const Element*> false_elements);
 

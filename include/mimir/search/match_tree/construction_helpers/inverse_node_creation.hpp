@@ -53,22 +53,19 @@ bool contains(GroundNumericConstraint constraint, const Element* element)
 }
 
 template<HasConjunctiveCondition Element, DynamicPredicateTag P>
-std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
-                                                                                                                         const SplitList& useless_splits,
-                                                                                                                         size_t root_distance,
-                                                                                                                         AtomSplit<P> split);
+std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
+                                                                                                          const SplitList& useless_splits,
+                                                                                                          AtomSplit<P> split);
 
 template<HasConjunctiveCondition Element>
-std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
-                                                                                                                         const SplitList& useless_splits,
-                                                                                                                         size_t root_distance,
-                                                                                                                         NumericConstraintSplit split);
+std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
+                                                                                                          const SplitList& useless_splits,
+                                                                                                          NumericConstraintSplit split);
 
 template<HasConjunctiveCondition Element>
-std::optional<std::pair<InverseNode<Element>, PlaceholderNodeList<Element>>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
-                                                                                                                         const SplitList& useless_splits,
-                                                                                                                         size_t root_distance,
-                                                                                                                         const Split& split);
+std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> extern create_node_and_placeholder_children(const PlaceholderNode<Element>& node,
+                                                                                                          const SplitList& useless_splits,
+                                                                                                          const Split& split);
 
 template<HasConjunctiveCondition Element>
 extern std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> create_perfect_generator_node(const PlaceholderNode<Element>& node);

@@ -37,74 +37,96 @@ namespace mimir::match_tree
 template<HasConjunctiveCondition Element>
 StaticNodeSplitter<Element>::StaticNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const Element*> elements) :
     NodeSplitterBase<StaticNodeSplitter<Element>, Element>(pddl_repositories, options),
-    m_cur_split_index(0),
-    m_static_splits(this->compute_splits(elements))
+    m_split_to_root_distance()
 {
-    std::cout << "[MatchTree] Static split ordering determined with " << to_string(this->m_options.split_metric) << " score: " << std::endl;
-    for (size_t i = 0; i < m_static_splits.size(); ++i)
+    auto splits = this->compute_splits(elements);
+
+    auto split_and_score_list = SplitAndScoreList {};
+    for (const auto& split : splits)
     {
-        std::cout << "    " << i << ". " << m_static_splits[i] << std::endl;
+        split_and_score_list.push_back(SplitAndScore { split, compute_score(split, options.split_metric) });
+    }
+
+    std::sort(split_and_score_list.begin(), split_and_score_list.end(), [](auto&& lhs, auto&& rhs) { return lhs.score > rhs.score; });
+
+    std::cout << "[MatchTree] Static split ordering determined with " << to_string(this->m_options.split_metric) << " score: " << std::endl;
+    for (size_t i = 0; i < splits.size(); ++i)
+    {
+        const auto& split_and_score = split_and_score_list[i];
+        std::cout << "    " << i << ". " << split_and_score.split << " with score " << split_and_score.score << std::endl;
+    }
+
+    // Initialize extra bookkeeping to obtain the queue priority score of a node, i.e., the root_distance.
+    for (size_t root_distance = 0; root_distance < splits.size(); ++root_distance)
+    {
+        const auto& split_and_score = split_and_score_list[root_distance];
+        m_split_to_root_distance.emplace(split_and_score.split, root_distance);
     }
 }
 
 template<HasConjunctiveCondition Element>
-std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> StaticNodeSplitter<Element>::split_node_impl(PlaceholderNodeList<Element>& ref_leafs)
+InverseNode<Element> StaticNodeSplitter<Element>::fit_impl(std::span<const Element*> elements, Statistics& ref_statistics)
 {
-    assert(!ref_leafs.empty());
+    auto queue = SplitterQueue<Element>();
 
-    for (; m_cur_split_index < m_static_splits.size(); ++m_cur_split_index)
+    auto root_placeholder = create_root_placeholder_node(elements);
+    auto root_refinement_data = this->compute_refinement_data(root_placeholder);
+
+    if (!root_refinement_data)
     {
-        const auto& cur_split = m_static_splits.at(m_cur_split_index);
+        return create_imperfect_generator_node(root_placeholder);
+    }
 
-        for (auto it = ref_leafs.begin(); it != ref_leafs.end(); ++it)
+    queue.emplace(std::move(root_placeholder), root_refinement_data.value());
+
+    auto inverse_root = InverseNode<Element> { nullptr };
+
+    while (!queue.empty())
+    {
+        auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
+        queue.pop();
+
+        /* Customization point in derived classes: how to select the node and the split? */
+        auto [inverse_node_, placeholder_children_] =
+            create_node_and_placeholder_children(std::move(entry.node), entry.refinement_data.useless_splits, entry.refinement_data.split);
+
+        if (inverse_node_)
         {
-            auto& leaf = *it;
-            if (!m_cached_leaf_splits.contains(leaf.get()))
+            inverse_root = std::move(inverse_node_);
+        }
+
+        ref_statistics.num_nodes += placeholder_children_.size();
+        for (auto& child : placeholder_children_)
+        {
+            auto child_refinement_data = this->compute_refinement_data(child);
+
+            if (!child_refinement_data)
             {
-                m_cached_leaf_splits[leaf.get()] = this->compute_splits(leaf->get_elements());
+                create_imperfect_generator_node(child);
             }
-            const auto& leaf_splits = m_cached_leaf_splits.at(leaf.get());
-
-            bool is_useless = true;
-            for (const auto& leaf_split : leaf_splits)
+            else
             {
-                // if (cur_split == leaf_split && !is_useless_split(leaf_split))
-                //{
-                //     is_useless = false;
-                // }
+                queue.emplace(std::move(child), child_refinement_data.value());
             }
         }
-    }
 
-    auto min_root_distance = std::numeric_limits<size_t>::max();
-    auto selected_leaf_it = ref_leafs.begin();
-    for (auto it = ref_leafs.begin(); it != ref_leafs.end(); ++it)
-    {
-        if ((*it)->get_root_distance() < min_root_distance)
+        if (ref_statistics.num_nodes >= this->m_options.max_num_nodes)
         {
-            selected_leaf_it = it;
-            min_root_distance = (*it)->get_root_distance();
+            /* Mark the tree as imperfect and translate the remaining placeholder nodes to generator nodes. */
+            while (!queue.empty())
+            {
+                auto entry = std::move(const_cast<SplitterQueueEntry<Element>&>(queue.top()));
+                queue.pop();
+
+                create_imperfect_generator_node(entry.node);
+            }
+            break;
         }
     }
 
-    auto selected_leaf = std::move(*selected_leaf_it);
-    ref_leafs.erase(selected_leaf_it);
+    assert(inverse_root);
 
-    auto useless_splits = SplitList {};
-
-    for (size_t i = selected_leaf->get_root_distance(); i < m_static_splits.size(); ++i)
-    {
-        auto result = create_node_and_placeholder_children(selected_leaf, useless_splits, i, m_static_splits[i]);
-
-        if (result.has_value())
-        {
-            return std::move(result.value());
-        }
-
-        useless_splits.push_back(m_static_splits[i]);
-    }
-
-    return create_perfect_generator_node(selected_leaf);
+    return std::move(inverse_root);
 }
 
 template class StaticNodeSplitter<GroundActionImpl>;

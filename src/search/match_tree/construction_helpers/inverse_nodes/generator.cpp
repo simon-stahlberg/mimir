@@ -23,10 +23,8 @@
 namespace mimir::match_tree
 {
 template<HasConjunctiveCondition Element>
-InverseElementGeneratorNode_Perfect<Element>::InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent,
-                                                                                  size_t root_distance,
-                                                                                  std::span<const Element*> elements) :
-    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>(parent, root_distance, elements)
+InverseElementGeneratorNode_Perfect<Element>::InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent, std::span<const Element*> elements) :
+    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>(parent, elements)
 {
 }
 
@@ -40,10 +38,8 @@ template class InverseElementGeneratorNode_Perfect<GroundActionImpl>;
 template class InverseElementGeneratorNode_Perfect<GroundAxiomImpl>;
 
 template<HasConjunctiveCondition Element>
-InverseElementGeneratorNode_Imperfect<Element>::InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent,
-                                                                                      size_t root_distance,
-                                                                                      std::span<const Element*> elements) :
-    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>(parent, root_distance, elements)
+InverseElementGeneratorNode_Imperfect<Element>::InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent, std::span<const Element*> elements) :
+    InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>(parent, elements)
 {
 }
 

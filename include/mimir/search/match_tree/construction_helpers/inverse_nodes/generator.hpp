@@ -35,8 +35,8 @@ protected:
     std::span<const Element*> m_elements;
 
 public:
-    InverseElementGeneratorNodeBase(const IInverseNode<Element>* parent, size_t root_distance, std::span<const Element*> elements) :
-        IInverseNode<Element>(parent, SplitList {}, root_distance),
+    InverseElementGeneratorNodeBase(const IInverseNode<Element>* parent, std::span<const Element*> elements) :
+        IInverseNode<Element>(parent, SplitList {}),
         m_elements(elements)
     {
     }
@@ -64,7 +64,7 @@ private:
 public:
     using InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Perfect<Element>, Element>::get_elements;
 
-    InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent, size_t root_distance, std::span<const Element*> elements);
+    InverseElementGeneratorNode_Perfect(const IInverseNode<Element>* parent, std::span<const Element*> elements);
 };
 
 template<HasConjunctiveCondition Element>
@@ -80,7 +80,7 @@ private:
 public:
     using InverseElementGeneratorNodeBase<InverseElementGeneratorNode_Imperfect<Element>, Element>::get_elements;
 
-    InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent, size_t root_distance, std::span<const Element*> elements);
+    InverseElementGeneratorNode_Imperfect(const IInverseNode<Element>* parent, std::span<const Element*> elements);
 };
 }
 

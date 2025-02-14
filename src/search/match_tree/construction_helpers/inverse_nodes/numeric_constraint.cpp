@@ -33,13 +33,9 @@ void InverseNumericConstraintSelectorNode_T<Element>::visit_impl(IInverseNodeVis
 template<HasConjunctiveCondition Element>
 InverseNumericConstraintSelectorNode_T<Element>::InverseNumericConstraintSelectorNode_T(const IInverseNode<Element>* parent,
                                                                                         SplitList useless_splits,
-                                                                                        size_t root_distance,
                                                                                         GroundNumericConstraint constraint,
                                                                                         std::span<const Element*> true_elements) :
-    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>(parent,
-                                                                                                       std::move(useless_splits),
-                                                                                                       root_distance,
-                                                                                                       constraint),
+    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_T<Element>, Element>(parent, std::move(useless_splits), constraint),
     m_true_elements(true_elements),
     m_true_child(nullptr)
 {
@@ -76,14 +72,10 @@ void InverseNumericConstraintSelectorNode_TX<Element>::visit_impl(IInverseNodeVi
 template<HasConjunctiveCondition Element>
 InverseNumericConstraintSelectorNode_TX<Element>::InverseNumericConstraintSelectorNode_TX(const IInverseNode<Element>* parent,
                                                                                           SplitList useless_splits,
-                                                                                          size_t root_distance,
                                                                                           GroundNumericConstraint constraint,
                                                                                           std::span<const Element*> true_elements,
                                                                                           std::span<const Element*> dontcare_elements) :
-    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>(parent,
-                                                                                                        std::move(useless_splits),
-                                                                                                        root_distance,
-                                                                                                        constraint),
+    InverseNumericConstraintSelectorNodeBase<InverseNumericConstraintSelectorNode_TX<Element>, Element>(parent, std::move(useless_splits), constraint),
     m_true_elements(true_elements),
     m_dontcare_elements(dontcare_elements),
     m_true_child(nullptr),

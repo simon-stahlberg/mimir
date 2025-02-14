@@ -26,23 +26,23 @@ namespace mimir::match_tree
 
 extern std::ostream& operator<<(std::ostream& out, const AtomSplitDistribution& distribution)
 {
-    out << "{ #true = " << distribution.m_num_true_elements    //
-        << ", #false = " << distribution.m_num_false_elements  //
-        << ", #dontcare = " << distribution.m_num_dont_care_elements << " }";
+    out << "{ #true = " << distribution.num_true_elements    //
+        << ", #false = " << distribution.num_false_elements  //
+        << ", #dontcare = " << distribution.num_dont_care_elements << " }";
     return out;
 }
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplitDistribution& distribution)
 {
-    out << "{ #true = " << distribution.m_num_true_elements  //
-        << ", #dontcare = " << distribution.m_num_dont_care_elements << " }";
+    out << "{ #true = " << distribution.num_true_elements  //
+        << ", #dontcare = " << distribution.num_dont_care_elements << " }";
     return out;
 }
 
 template<DynamicPredicateTag P>
 std::ostream& operator<<(std::ostream& out, const AtomSplit<P>& split)
 {
-    out << "[" << split.feature << " -> " << split.m_distribution << "]";
+    out << "[" << split.feature << " -> " << split.distribution << "]";
     return out;
 }
 
@@ -51,7 +51,7 @@ template std::ostream& operator<<(std::ostream& out, const AtomSplit<Derived>& s
 
 extern std::ostream& operator<<(std::ostream& out, const NumericConstraintSplit& split)
 {
-    out << "[" << split.feature << " -> " << split.m_distribution << "]";
+    out << "[" << split.feature << " -> " << split.distribution << "]";
     return out;
 }
 

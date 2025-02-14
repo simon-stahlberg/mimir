@@ -19,6 +19,7 @@
 #define MIMIR_SEARCH_MATCH_TREE_NODE_SPLITTERS_STATIC_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/search/match_tree/construction_helpers/split.hpp"
 #include "mimir/search/match_tree/declarations.hpp"
 #include "mimir/search/match_tree/node_splitters/base.hpp"
 
@@ -31,15 +32,11 @@ template<HasConjunctiveCondition Element>
 class StaticNodeSplitter : public NodeSplitterBase<StaticNodeSplitter<Element>, Element>
 {
 private:
-    size_t m_cur_split_index;  ///< Track the index of the current static split being processed, initially 0.
-
-    SplitList m_static_splits;
-
-    std::unordered_map<const PlaceholderNodeImpl<Element>*, SplitList> m_cached_leaf_splits;
+    std::unordered_map<Split, size_t, loki::Hash<Split>, loki::EqualTo<Split>> m_split_to_root_distance;
 
     /* Implement NodeSplitterBase interface */
 
-    std::pair<InverseNode<Element>, PlaceholderNodeList<Element>> split_node_impl(PlaceholderNodeList<Element>& ref_leafs);
+    InverseNode<Element> fit_impl(std::span<const Element*> elements, Statistics& ref_statistics);
 
     friend class NodeSplitterBase<StaticNodeSplitter<Element>, Element>;
 

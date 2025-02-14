@@ -25,11 +25,9 @@ namespace mimir::match_tree
 template<HasConjunctiveCondition Element>
 PlaceholderNodeImpl<Element>::PlaceholderNodeImpl(const IInverseNode<Element>* parent,
                                                   InverseNode<Element>* parents_child,
-                                                  size_t root_distance,
                                                   std::span<const Element*> elements) :
     m_parent(parent),
     m_parents_child(parents_child),
-    m_root_distance(root_distance),
     m_elements(elements)
 {
 }
@@ -45,12 +43,6 @@ InverseNode<Element>& PlaceholderNodeImpl<Element>::get_parents_child() const
 {
     assert(m_parents_child);
     return *m_parents_child;
-}
-
-template<HasConjunctiveCondition Element>
-size_t PlaceholderNodeImpl<Element>::get_root_distance() const
-{
-    return m_root_distance;
 }
 
 template<HasConjunctiveCondition Element>
