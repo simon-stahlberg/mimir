@@ -29,7 +29,7 @@ struct Options
     fs::path output_dot_file = "match_tree.dot";
     size_t max_num_nodes = std::numeric_limits<size_t>::max();
     SplitMetricEnum split_metric = SplitMetricEnum::GINI;
-    SplitStrategyEnum split_strategy = SplitStrategyEnum::STATIC;
+    SplitStrategyEnum split_strategy = SplitStrategyEnum::DYNAMIC;
 };
 
 }

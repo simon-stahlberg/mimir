@@ -25,11 +25,9 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 11)
+    if (argc != 7)
     {
-        std::cout << "Usage: planner_astar <domain:str> <problem:str> <plan:str> <heuristic_type:int> <grounded:bool> <debug:bool> "
-                     "<mt-enable_dump_dot_file:bool> <mt-max_num_nodes:int> <mt-split_metric:int> <mt-split_strategy:int>"
-                  << std::endl;
+        std::cout << "Usage: planner_astar <domain:str> <problem:str> <plan:str> <heuristic_type:int> <grounded:bool> <debug:bool>" << std::endl;
         return 1;
     }
 
@@ -41,11 +39,6 @@ int main(int argc, char** argv)
     const auto heuristic_type = atoi(argv[4]);
     const auto grounded = static_cast<bool>(std::atoi(argv[5]));
     const auto debug = static_cast<bool>(std::atoi(argv[6]));
-    auto match_tree_options = match_tree::Options();
-    match_tree_options.enable_dump_dot_file = static_cast<bool>(std::atoi(argv[7]));
-    match_tree_options.max_num_nodes = static_cast<size_t>(std::atoi(argv[8]));
-    match_tree_options.split_metric = static_cast<match_tree::SplitMetricEnum>(std::atoi(argv[9]));
-    match_tree_options.split_strategy = static_cast<match_tree::SplitStrategyEnum>(std::atoi(argv[10]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -84,10 +77,10 @@ int main(int argc, char** argv)
         auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
-                match_tree_options,
+                match_tree::Options(),
                 std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree_options,
+            delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
                                                                               std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     }

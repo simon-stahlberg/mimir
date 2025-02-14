@@ -25,9 +25,11 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 6)
+    if (argc != 11)
     {
-        std::cout << "Usage: planner_brfs <domain:str> <problem:str> <plan:str> <grounded:bool> <debug:bool>" << std::endl;
+        std::cout << "Usage: planner_astar <domain:str> <problem:str> <plan:str> <heuristic_type:int> <grounded:bool> <debug:bool> "
+                     "<mt-enable_dump_dot_file:bool> <mt-max_num_nodes:int> <mt-split_metric:int> <mt-split_strategy:int>"
+                  << std::endl;
         return 1;
     }
 
@@ -36,8 +38,15 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problem_file_path = fs::path { argv[2] };
     const auto plan_file_name = argv[3];
-    const auto grounded = static_cast<bool>(std::atoi(argv[4]));
-    const auto debug = static_cast<bool>(std::atoi(argv[5]));
+    const auto heuristic_type = atoi(argv[4]);
+    const auto grounded = static_cast<bool>(std::atoi(argv[5]));
+    const auto debug = static_cast<bool>(std::atoi(argv[6]));
+
+    auto match_tree_options = match_tree::Options();
+    match_tree_options.enable_dump_dot_file = static_cast<bool>(std::atoi(argv[7]));
+    match_tree_options.max_num_nodes = static_cast<size_t>(std::atoi(argv[8]));
+    match_tree_options.split_metric = static_cast<match_tree::SplitMetricEnum>(std::atoi(argv[9]));
+    match_tree_options.split_strategy = static_cast<match_tree::SplitStrategyEnum>(std::atoi(argv[10]));
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
@@ -70,15 +79,16 @@ int main(int argc, char** argv)
     auto applicable_action_generator = std::shared_ptr<IApplicableActionGenerator>(nullptr);
     auto axiom_evaluator = std::shared_ptr<IAxiomEvaluator>(nullptr);
     auto state_repository = std::shared_ptr<StateRepository>(nullptr);
+
     if (grounded)
     {
         auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
-                match_tree::Options(),
+                match_tree_options,
                 std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(),
+            delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree_options,
                                                                               std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     }
@@ -103,12 +113,19 @@ int main(int argc, char** argv)
         }
     }
 
-    auto event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
-                                   std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
+    auto event_handler = (debug) ? std::shared_ptr<IAStarAlgorithmEventHandler> { std::make_shared<DebugAStarAlgorithmEventHandler>(false) } :
+                                   std::shared_ptr<IAStarAlgorithmEventHandler> { std::make_shared<DefaultAStarAlgorithmEventHandler>(false) };
 
-    auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, event_handler);
+    auto heuristic = std::shared_ptr<IHeuristic>(nullptr);
+    if (heuristic_type == 0)
+    {
+        heuristic = std::make_shared<BlindHeuristic>(parser.get_problem());
+    }
+    assert(heuristic);
 
-    std::cout << "[BrFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
+    auto result = find_solution_astar(applicable_action_generator, state_repository, heuristic, std::nullopt, event_handler);
+
+    std::cout << "[AStar] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
               << std::endl;
 
     if (result.status == SearchStatus::SOLVED)
