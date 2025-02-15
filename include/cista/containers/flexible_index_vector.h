@@ -26,18 +26,18 @@ struct basic_flexible_index_vector
 {
 private:
     template<std::unsigned_integral T>
-    static constexpr uint8_t get_bit_width()
+    static inline constexpr uint8_t get_bit_width()
     {
         return std::numeric_limits<T>::digits;
     }
 
     bool is_uncompressed() const { return bit_width_ == get_bit_width<IndexType>(); }
 
-    size_t get_block_index(size_t pos) const { return pos >> elements_per_block_log2_; }
+    inline size_t get_block_index(size_t pos) const { return pos >> elements_per_block_log2_; }
 
-    size_t get_element_index(size_t pos) const { return pos & (elements_per_block_ - 1); }
+    inline size_t get_element_index(size_t pos) const { return pos & (elements_per_block_ - 1); }
 
-    IndexType extract_value_at_position(size_t pos) const
+    inline IndexType extract_value_at_position(size_t pos) const
     {
         if (bit_width_ == get_bit_width<IndexType>())  // Fast evaluate
         {
