@@ -21,7 +21,7 @@ namespace cista
 {
 
 template<typename Block, template<typename> typename Ptr>
-struct basic_dynamic_bitset
+struct basic_dual_dynamic_bitset
 {
     using block_type = Block;
 
@@ -56,15 +56,19 @@ struct basic_dynamic_bitset
      * Constructors
      */
 
-    constexpr basic_dynamic_bitset() noexcept = default;
+    constexpr basic_dual_dynamic_bitset() noexcept = default;
 
-    constexpr basic_dynamic_bitset(size_t num_bits) : blocks_((num_bits / block_size) + 1) {}
+    constexpr basic_dual_dynamic_bitset(size_t num_bits) : default_bit_value_(false), blocks_((num_bits / block_size) + 1) {}
+
+    constexpr basic_dual_dynamic_bitset(size_t num_bits, bool default_bit_value) : default_bit_value_(default_bit_value), blocks_((num_bits / block_size) + 1)
+    {
+    }
 
     /**
      * Operators
      */
 
-    friend constexpr bool operator==(const basic_dynamic_bitset& lhs, const basic_dynamic_bitset& rhs)
+    friend constexpr bool operator==(const basic_dual_dynamic_bitset& lhs, const basic_dual_dynamic_bitset& rhs)
     {
         if (&lhs != &rhs)
         {
@@ -76,8 +80,8 @@ struct basic_dynamic_bitset
 
             for (std::size_t index = common_size; index < max_size; ++index)
             {
-                auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : block_zeroes;
-                auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : block_zeroes;
+                auto this_value = index < lhs.blocks_.size() ? lhs.blocks_[index] : (lhs.default_bit_value_ ? block_ones : block_zeroes);
+                auto other_value = index < rhs.blocks_.size() ? rhs.blocks_[index] : (rhs.default_bit_value_ ? block_ones : block_zeroes);
 
                 if (this_value != other_value)
                 {
@@ -170,9 +174,23 @@ struct basic_dynamic_bitset
         constexpr bool operator!=(const const_iterator& other) const { return !(*this == other); }
     };
 
-    constexpr const_iterator begin() const { return const_iterator(blocks_.data(), blocks_.size(), true); }
+    constexpr const_iterator begin() const
+    {
+        if (default_bit_value_)
+        {
+            throw std::runtime_error("Cannot iterate over infinite set.");
+        }
+        return const_iterator(blocks_.data(), blocks_.size(), true);
+    }
 
-    constexpr const_iterator end() const { return const_iterator(blocks_.data(), blocks_.size(), false); }
+    constexpr const_iterator end() const
+    {
+        if (default_bit_value_)
+        {
+            throw std::runtime_error("Cannot iterate over infinite set.");
+        }
+        return const_iterator(blocks_.data(), blocks_.size(), false);
+    }
 
     /**
      * Utility
@@ -183,9 +201,11 @@ struct basic_dynamic_bitset
     {
         int32_t last_non_default_block_index = blocks_.size() - 1;
 
+        const Block default_block = default_bit_value_ ? block_ones : block_zeroes;
+
         for (; last_non_default_block_index >= 0; --last_non_default_block_index)
         {
-            if (blocks_[last_non_default_block_index] != block_zeroes)
+            if (blocks_[last_non_default_block_index] != default_block)
             {
                 break;
             }
@@ -194,11 +214,11 @@ struct basic_dynamic_bitset
         blocks_.resize(last_non_default_block_index + 1);
     }
 
-    constexpr void resize_to_fit(const basic_dynamic_bitset& other)
+    constexpr void resize_to_fit(const basic_dual_dynamic_bitset& other)
     {
         if (blocks_.size() < other.blocks_.size())
         {
-            blocks_.resize(other.blocks_.size(), block_zeroes);
+            blocks_.resize(other.blocks_.size(), default_bit_value_ ? block_ones : block_zeroes);
         }
     }
 
@@ -233,9 +253,15 @@ struct basic_dynamic_bitset
     constexpr bool get(std::size_t position) const
     {
         const std::size_t index = get_index(position);
-        const std::size_t offset = get_offset(position);
 
-        return (index < blocks_.size()) ? ((blocks_[index] & (static_cast<Block>(1) << offset)) != 0) : 0;
+        if (index < blocks_.size())
+        {
+            return (blocks_[index] & (static_cast<Block>(1) << get_offset(position))) != 0;
+        }
+        else
+        {
+            return default_bit_value_;
+        }
     }
 
     /// @brief Set a bit at a specific position
@@ -247,7 +273,7 @@ struct basic_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, block_zeroes);
+            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeroes);
         }
 
         blocks_[index] |= (static_cast<Block>(1) << offset);  // Set the bit at the offset
@@ -262,7 +288,7 @@ struct basic_dynamic_bitset
 
         if (index >= blocks_.size())
         {
-            blocks_.resize(index + 1, block_zeroes);
+            blocks_.resize(index + 1, default_bit_value_ ? block_ones : block_zeroes);
         }
 
         blocks_[index] &= ~(static_cast<Block>(1) << offset);  // Set the bit at the offset
@@ -275,27 +301,31 @@ struct basic_dynamic_bitset
      * Bitset operations
      */
 
-    constexpr basic_dynamic_bitset& operator~()
+    constexpr basic_dual_dynamic_bitset& operator~()
     {
+        default_bit_value_ = !default_bit_value_;
+
         for (Block& value : blocks_)
         {
             value = ~value;
         }
-        shrink_to_fit();
 
         return *this;
     }
 
-    constexpr basic_dynamic_bitset operator|(const basic_dynamic_bitset& other) const
+    constexpr basic_dual_dynamic_bitset operator|(const basic_dual_dynamic_bitset& other) const
     {
-        auto result = basic_dynamic_bitset(*this);
+        auto result = basic_dual_dynamic_bitset(*this);
         result |= other;
 
         return result;
     }
 
-    constexpr basic_dynamic_bitset& operator|=(const basic_dynamic_bitset& other)
+    constexpr basic_dual_dynamic_bitset& operator|=(const basic_dual_dynamic_bitset& other)
     {
+        // Update default bit value
+        default_bit_value_ |= other.default_bit_value_;
+
         // Update blocks
         resize_to_fit(other);
         // Other blocks might still be smaller which is fine
@@ -314,16 +344,19 @@ struct basic_dynamic_bitset
         return *this;
     }
 
-    constexpr basic_dynamic_bitset operator&(const basic_dynamic_bitset& other) const
+    constexpr basic_dual_dynamic_bitset operator&(const basic_dual_dynamic_bitset& other) const
     {
-        auto result = basic_dynamic_bitset(*this);
+        auto result = basic_dual_dynamic_bitset(*this);
         result &= other;
 
         return result;
     }
 
-    constexpr basic_dynamic_bitset& operator&=(const basic_dynamic_bitset& other)
+    constexpr basic_dual_dynamic_bitset& operator&=(const basic_dual_dynamic_bitset& other)
     {
+        // Update default bit value
+        default_bit_value_ &= other.default_bit_value_;
+
         // Update blocks
         resize_to_fit(other);
         // Other blocks might still be smaller which is fine
@@ -343,16 +376,19 @@ struct basic_dynamic_bitset
         return *this;
     }
 
-    constexpr basic_dynamic_bitset operator-(const basic_dynamic_bitset& other) const
+    constexpr basic_dual_dynamic_bitset operator-(const basic_dual_dynamic_bitset& other) const
     {
-        auto result = basic_dynamic_bitset(*this);
+        auto result = basic_dual_dynamic_bitset(*this);
         result -= other;
 
         return result;
     }
 
-    constexpr basic_dynamic_bitset& operator-=(const basic_dynamic_bitset& other)
+    constexpr basic_dual_dynamic_bitset& operator-=(const basic_dual_dynamic_bitset& other)
     {
+        // Update default bit value
+        default_bit_value_ &= !other.default_bit_value_;
+
         // Update blocks
         resize_to_fit(other);
         // Other blocks might still be smaller which is fine
@@ -371,8 +407,15 @@ struct basic_dynamic_bitset
         return *this;
     }
 
-    constexpr bool is_superseteq(const basic_dynamic_bitset& other) const
+    constexpr bool is_superseteq(const basic_dual_dynamic_bitset& other) const
     {
+        if (other.default_bit_value_ && !default_bit_value_)
+        {
+            // blocks has finitely many and other blocks has infinitely many set bits.
+            // Hence blocks cannot be a superseteq of other_blocks.
+            return false;
+        }
+
         std::size_t common_size = std::min(blocks_.size(), other.blocks_.size());
 
         for (std::size_t index = 0; index < common_size; ++index)
@@ -390,6 +433,11 @@ struct basic_dynamic_bitset
             return true;
         }
 
+        if (default_bit_value_)
+        {
+            return true;
+        }
+
         for (std::size_t index = common_size; index < other.blocks_.size(); ++index)
         {
             if (other.blocks_[index])
@@ -402,8 +450,15 @@ struct basic_dynamic_bitset
         return true;
     }
 
-    constexpr bool are_disjoint(const basic_dynamic_bitset& other) const
+    constexpr bool are_disjoint(const basic_dual_dynamic_bitset& other) const
     {
+        if (default_bit_value_ && other.default_bit_value_)
+        {
+            // blocks and other blocks have infinitely many set bits after finite sized explicit bitsets.
+            // Hence blocks and other_blocks cannot be disjoint.
+            return false;
+        }
+
         std::size_t common_size = std::min(blocks_.size(), other.blocks_.size());
 
         for (std::size_t index = 0; index < common_size; ++index)
@@ -412,6 +467,30 @@ struct basic_dynamic_bitset
             {
                 // block and other_block have set bits in common
                 return false;
+            }
+        }
+
+        if (default_bit_value_ && !other.default_bit_value_)
+        {
+            for (std::size_t index = common_size; index < other.blocks_.size(); ++index)
+            {
+                if (other.blocks_[index] > 0)
+                {
+                    // other_blocks has a set bit in common with blocks in the infinite part.
+                    return false;
+                }
+            }
+        }
+
+        if (!default_bit_value_ && other.default_bit_value_)
+        {
+            for (std::size_t index = common_size; index < blocks_.size(); ++index)
+            {
+                if (blocks_[index] > 0)
+                {
+                    // blocks has a set bit in common with other_blocks in the infinite part.
+                    return false;
+                }
             }
         }
 
@@ -432,19 +511,20 @@ struct basic_dynamic_bitset
         return count;
     }
 
+    bool default_bit_value_;
     cista::basic_vector<Block, Ptr> blocks_ {};
 };
 
 namespace raw
 {
 template<typename Block>
-using dynamic_bitset = basic_dynamic_bitset<Block, ptr>;
+using dual_dynamic_bitset = basic_dual_dynamic_bitset<Block, ptr>;
 }
 
 namespace offset
 {
 template<typename Block>
-using dynamic_bitset = basic_dynamic_bitset<Block, ptr>;
+using dual_dynamic_bitset = basic_dual_dynamic_bitset<Block, ptr>;
 }
 
 }  // namespace cista

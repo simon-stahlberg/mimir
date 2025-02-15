@@ -246,9 +246,9 @@ ObjectGraphStaticSccPruningStrategy::create(std::shared_ptr<IApplicableActionGen
     auto always_true_static_atoms = FlatBitset(state_space->get_problem()->get_static_initial_positive_atoms_bitset());
     auto always_true_fluent_atoms = FlatBitset();
     auto always_true_derived_atoms = FlatBitset();
-    auto always_false_static_atoms = FlatBitset(0, 1);
-    auto always_false_fluent_atoms = FlatBitset(0, 1);
-    auto always_false_derived_atoms = FlatBitset(0, 1);
+    auto always_false_static_atoms = FlatBitset();   // TODO: use default bit value 1 before. Maybe wrong now
+    auto always_false_fluent_atoms = FlatBitset();   // TODO: use default bit value 1 before. Maybe wrong now
+    auto always_false_derived_atoms = FlatBitset();  // TODO: use default bit value 1 before. Maybe wrong now
     always_false_static_atoms -= always_true_static_atoms;
 
     auto pruned_static_goal_literals = FlatBitset();

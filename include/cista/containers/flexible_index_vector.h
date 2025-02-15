@@ -33,11 +33,9 @@ private:
 
     bool is_uncompressed() const { return bit_width_ == get_bit_width<IndexType>(); }
 
-    size_t get_elements_per_block() const { return static_cast<size_t>(get_bit_width<IndexType>() / bit_width_); }
+    size_t get_block_index(size_t pos) const { return pos >> elements_per_block_log2_; }
 
-    size_t get_block_index(size_t pos, size_t elements_per_block) const { return pos / elements_per_block; }
-
-    size_t get_element_index(size_t pos, size_t elements_per_block) const { return pos % elements_per_block; }
+    size_t get_element_index(size_t pos) const { return pos & (elements_per_block_ - 1); }
 
     IndexType extract_value_at_position(size_t pos) const
     {
@@ -46,11 +44,10 @@ private:
             return blocks_[pos];
         }
 
-        const size_t elements_per_block = get_elements_per_block();
-        const size_t block_index = get_block_index(pos, elements_per_block);
-        const size_t element_index = get_element_index(pos, elements_per_block);
-        const size_t shift = (element_index * bit_width_);
-        const IndexType mask = ((static_cast<IndexType>(1) << bit_width_) - 1);
+        const size_t block_index = get_block_index(pos);
+        const size_t element_index = get_element_index(pos);
+        const IndexType mask = (static_cast<IndexType>(1) << bit_width_) - 1;
+        const size_t shift = (element_index << bit_width_log2_);
 
         return (blocks_[block_index] >> shift) & mask;
     }
@@ -58,13 +55,43 @@ private:
 public:
     using value_type = IndexType;
 
-    basic_flexible_index_vector() : bit_width_(get_bit_width<IndexType>()), size_(0), blocks_() {}
+    basic_flexible_index_vector() :
+        bit_width_(get_bit_width<IndexType>()),
+        bit_width_log2_(std::bit_width(bit_width_) - 1),
+        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
+        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        size_(0),
+        blocks_()
+    {
+    }
 
-    basic_flexible_index_vector(size_t size) : bit_width_(get_bit_width<IndexType>()), size_(size), blocks_(size) {}
+    basic_flexible_index_vector(size_t size) :
+        bit_width_(get_bit_width<IndexType>()),
+        bit_width_log2_(std::bit_width(bit_width_) - 1),
+        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
+        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        size_(size),
+        blocks_(size)
+    {
+    }
 
-    basic_flexible_index_vector(size_t size, IndexType default_value) : bit_width_(get_bit_width<IndexType>()), size_(size), blocks_(size, default_value) {}
+    basic_flexible_index_vector(size_t size, IndexType default_value) :
+        bit_width_(get_bit_width<IndexType>()),
+        bit_width_log2_(std::bit_width(bit_width_) - 1),
+        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
+        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        size_(size),
+        blocks_(size, default_value)
+    {
+    }
 
-    basic_flexible_index_vector(std::initializer_list<IndexType> init_list) : bit_width_(get_bit_width<IndexType>()), size_(init_list.size()), blocks_()
+    basic_flexible_index_vector(std::initializer_list<IndexType> init_list) :
+        bit_width_(get_bit_width<IndexType>()),
+        bit_width_log2_(std::bit_width(bit_width_) - 1),
+        elements_per_block_(get_bit_width<IndexType>() >> bit_width_log2_),
+        elements_per_block_log2_(std::bit_width(elements_per_block_) - 1),
+        size_(init_list.size()),
+        blocks_()
     {
         blocks_.reserve(size_);
         blocks_.insert(blocks_.end(), init_list.begin(), init_list.end());
@@ -78,31 +105,31 @@ public:
     {
     private:
         uint8_t bit_width_;
+        uint8_t bit_width_log2_;
+        uint8_t elements_per_block_;
+        uint8_t elements_per_block_log2_;
+        IndexType mask_;
         size_t size_;
-        const cista::basic_vector<IndexType, Ptr>* blocks_;
+        const IndexType* blocks_;
 
         size_t pos_;
 
-        size_t get_elements_per_block() const { return static_cast<size_t>(get_bit_width<IndexType>() / bit_width_); }
+        size_t get_block_index(size_t pos) const { return pos >> elements_per_block_log2_; }
 
-        size_t get_block_index(size_t pos, size_t elements_per_block) const { return pos / elements_per_block; }
-
-        size_t get_element_index(size_t pos, size_t elements_per_block) const { return pos % elements_per_block; }
+        size_t get_element_index(size_t pos) const { return pos & (elements_per_block_ - 1); }
 
         IndexType extract_value_at_position(size_t pos) const
         {
             if (bit_width_ == get_bit_width<IndexType>())  // Fast evaluate
             {
-                return (*blocks_)[pos];
+                return blocks_[pos];
             }
 
-            const size_t elements_per_block = get_elements_per_block();
-            const size_t block_index = get_block_index(pos, elements_per_block);
-            const size_t element_index = get_element_index(pos, elements_per_block);
-            const size_t shift = (element_index * bit_width_);
-            const IndexType mask = ((static_cast<IndexType>(1) << bit_width_) - 1);
+            const size_t block_index = get_block_index(pos);
+            const size_t element_index = get_element_index(pos);
+            const size_t shift = (element_index << bit_width_log2_);
 
-            return ((*blocks_)[block_index] >> shift) & mask;
+            return (blocks_[block_index] >> shift) & mask_;
         }
 
     public:
@@ -112,11 +139,31 @@ public:
         using reference = value_type&;
         using iterator_category = std::forward_iterator_tag;
 
-        constexpr const_iterator() : bit_width_(0), size_(0), blocks_(nullptr), pos_(0) {}
-        constexpr const_iterator(uint8_t bit_width, size_t size, const cista::basic_vector<IndexType, Ptr>& blocks, bool begin) :
+        constexpr const_iterator() :
+            bit_width_(0),
+            bit_width_log2_(0),
+            elements_per_block_(0),
+            elements_per_block_log2_(0),
+            mask_(),
+            size_(0),
+            blocks_(nullptr),
+            pos_(0)
+        {
+        }
+        constexpr const_iterator(uint8_t bit_width,
+                                 uint8_t bit_width_log2,
+                                 uint8_t elements_per_block,
+                                 uint8_t elements_per_block_log2,
+                                 size_t size,
+                                 const IndexType* blocks,
+                                 bool begin) :
             bit_width_(bit_width),
+            bit_width_log2_(bit_width_log2),
+            elements_per_block_(elements_per_block),
+            elements_per_block_log2_(elements_per_block_log2),
+            mask_((static_cast<IndexType>(1) << bit_width_) - 1),
             size_(size),
-            blocks_(&blocks),
+            blocks_(blocks),
             pos_(begin ? 0 : size_)
         {
         }
@@ -142,8 +189,14 @@ public:
         constexpr bool operator!=(const const_iterator& other) const { return !(*this == other); }
     };
 
-    const_iterator begin() const { return const_iterator(bit_width_, size_, blocks_, true); }
-    const_iterator end() const { return const_iterator(bit_width_, size_, blocks_, false); }
+    const_iterator begin() const
+    {
+        return const_iterator(bit_width_, bit_width_log2_, elements_per_block_, elements_per_block_log2_, size_, blocks_.data(), true);
+    }
+    const_iterator end() const
+    {
+        return const_iterator(bit_width_, bit_width_log2_, elements_per_block_, elements_per_block_log2_, size_, blocks_.data(), false);
+    }
     auto begin()
     {
         assert(is_uncompressed());
@@ -156,8 +209,8 @@ public:
     }
 
     // We sometimes need const iterators in assertions, we cannot ensured uncompressed here.
-    const_iterator cbegin() { return const_iterator(bit_width_, size_, blocks_, true); }
-    const_iterator cend() { return const_iterator(bit_width_, size_, blocks_, false); }
+    const_iterator cbegin() { return const_iterator(bit_width_, bit_width_log2_, elements_per_block_, elements_per_block_log2_, size_, blocks_.data(), true); }
+    const_iterator cend() { return const_iterator(bit_width_, bit_width_log2_, elements_per_block_, elements_per_block_log2_, size_, blocks_.data(), false); }
 
     /**
      * Modifiers
@@ -227,20 +280,32 @@ public:
      * Compression
      */
 
-    uint8_t determine_bit_width() const
+    void initialize_compressed_format()
     {
         assert(is_uncompressed());
 
-        uint8_t max_bit_width = 0;
+        IndexType max_index = *std::max_element(blocks_.begin(), blocks_.end());
 
-        for (const auto& block : blocks_)
+        if (max_index == 0)
         {
-            // Calculate the bit width of the current block
-            uint8_t bit_width = (block == 0) ? 1 : static_cast<uint8_t>(std::bit_width(block));
-            max_bit_width = std::max(max_bit_width, bit_width);
+            bit_width_ = 1;
+            bit_width_log2_ = 0;
+            elements_per_block_ = get_bit_width<IndexType>();
+            elements_per_block_log2_ = std::bit_width(elements_per_block_) - 1;
+        }
+        else
+        {
+            bit_width_ = std::bit_ceil(static_cast<IndexType>(std::bit_width(max_index)));
+            bit_width_log2_ = std::bit_width(bit_width_) - 1;
+            elements_per_block_ = get_bit_width<IndexType>() >> bit_width_log2_;
+            elements_per_block_log2_ = std::bit_width(elements_per_block_) - 1;
         }
 
-        return max_bit_width;
+        // std::cout << "max_index: " << max_index << "\n"
+        //           << "bit_width_: " << static_cast<size_t>(bit_width_) << "\n"
+        //           << "bit_width_log2_: " << static_cast<size_t>(bit_width_log2_) << "\n"
+        //           << "elements_per_block_: " << static_cast<size_t>(elements_per_block_) << "\n"
+        //           << "elements_per_block_log2_: " << static_cast<size_t>(elements_per_block_log2_) << std::endl;
     }
 
     void compress()
@@ -250,7 +315,7 @@ public:
             return;  // Already optimal
         }
 
-        bit_width_ = determine_bit_width();
+        initialize_compressed_format();
 
         if (bit_width_ == get_bit_width<IndexType>())
         {
@@ -258,7 +323,6 @@ public:
         }
 
         // Now compress blocks_
-        const size_t elements_per_block = get_elements_per_block();
         const IndexType mask = (1ULL << bit_width_) - 1;  ///< Mask for extracting the required number of bits
         size_t shift_bits = 0;                            ///< Tracks the bit position for packing smaller values
         size_t packed_index = 0;                          ///< New position in blocks_ for writing packed data
@@ -279,7 +343,7 @@ public:
             shift_bits += bit_width_;
 
             // Write the buffer if its full
-            if (++element_index == elements_per_block)
+            if (++element_index == elements_per_block_)
             {
                 assert(packed_index < element_count);
                 assert(packed_index < blocks_.size());
@@ -310,6 +374,8 @@ public:
      */
 
     uint8_t bit_width() const { return bit_width_; }
+    uint8_t bit_width_log2() const { return bit_width_log2_; }
+
     IndexType size() const { return size_; }
     const cista::basic_vector<IndexType, Ptr>& blocks() const { return blocks_; }
 
@@ -318,6 +384,9 @@ public:
      */
 
     uint8_t bit_width_;
+    uint8_t bit_width_log2_;
+    uint8_t elements_per_block_;
+    uint8_t elements_per_block_log2_;
     IndexType size_;
     cista::basic_vector<IndexType, Ptr> blocks_ {};
 };

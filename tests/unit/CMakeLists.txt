@@ -17,6 +17,7 @@ add_gtest(algorithms_itertools_test                        "algorithms/itertools
 add_gtest(algorithms_memory_pool_test                      "algorithms/memory_pool.cpp")
 add_gtest(algorithms_nauty_test                            "algorithms/nauty.cpp")
 
+add_gtest(cista_dual_dynamic_bitset_test                   "cista/dual_dynamic_bitset.cpp")
 add_gtest(cista_dynamic_bitset_test                        "cista/dynamic_bitset.cpp")
 add_gtest(cista_flexible_index_vector_test                 "cista/flexible_index_vector.cpp")
 add_gtest(cista_optional_test                              "cista/optional.cpp")
