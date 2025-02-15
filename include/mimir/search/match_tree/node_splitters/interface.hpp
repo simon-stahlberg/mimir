@@ -36,7 +36,14 @@ enum class SplitStrategyEnum
 
 enum class SplitMetricEnum
 {
-    GINI = 0
+    GINI = 0,
+    FREQUENCY = 1
+};
+
+enum class OptimizationDirectionEnum
+{
+    MINIMIZE,
+    MAXIMIZE
 };
 
 /// @brief `INodeSplitter` computes the best split for a given set of elements.

@@ -35,6 +35,32 @@ namespace mimir::match_tree
 {
 
 template<HasConjunctiveCondition E>
+struct SplitterQueueEntry
+{
+    PlaceholderNode<E> node;
+
+    SplitScoreAndUselessSplits refinement_data;  ///< entries in the queue must have a well-defined next split
+};
+
+template<HasConjunctiveCondition E>
+struct SplitterQueueEntryComparator
+{
+private:
+    OptimizationDirectionEnum m_direction;
+
+public:
+    explicit SplitterQueueEntryComparator(OptimizationDirectionEnum direction) : m_direction(direction) {}
+
+    bool operator()(const SplitterQueueEntry<E>& lhs, const SplitterQueueEntry<E>& rhs) const
+    {
+        return better_score(rhs.refinement_data.score, lhs.refinement_data.score, m_direction);  // priority queue has swapped meanings of lhs and rhs.
+    }
+};
+
+template<HasConjunctiveCondition E>
+using SplitterQueue = std::priority_queue<SplitterQueueEntry<E>, std::vector<SplitterQueueEntry<E>>, SplitterQueueEntryComparator<E>>;
+
+template<HasConjunctiveCondition E>
 DynamicNodeSplitter<E>::DynamicNodeSplitter(const PDDLRepositories& pddl_repositories, const Options& options, std::span<const E*> elements) :
     NodeSplitterBase<DynamicNodeSplitter<E>, E>(pddl_repositories, options)
 {
@@ -43,7 +69,7 @@ DynamicNodeSplitter<E>::DynamicNodeSplitter(const PDDLRepositories& pddl_reposit
 template<HasConjunctiveCondition E>
 InverseNode<E> DynamicNodeSplitter<E>::fit_impl(std::span<const E*> elements, Statistics& ref_statistics)
 {
-    auto queue = SplitterQueue<E>();
+    auto queue = SplitterQueue<E>(SplitterQueueEntryComparator<E>(this->m_options.optimization_direction));
 
     auto root_placeholder = create_root_placeholder_node(elements);
     auto root_refinement_data = this->compute_refinement_data(root_placeholder);
@@ -62,6 +88,8 @@ InverseNode<E> DynamicNodeSplitter<E>::fit_impl(std::span<const E*> elements, St
     {
         auto entry = std::move(const_cast<SplitterQueueEntry<E>&>(queue.top()));
         queue.pop();
+
+        // std::cout << std::endl << "Pop: " << entry.refinement_data.split << " " << entry.refinement_data.score << std::endl;
 
         /* Customization point in derived classes: how to select the node and the split? */
         auto [inverse_node_, placeholder_children_] =

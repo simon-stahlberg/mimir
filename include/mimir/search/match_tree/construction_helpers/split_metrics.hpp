@@ -30,7 +30,14 @@ namespace mimir::match_tree
 extern std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string;
 extern const std::string& to_string(SplitMetricEnum split_metric);
 
-extern double compute_gini_score(const std::vector<size_t>& distribution);
+extern std::unordered_map<OptimizationDirectionEnum, std::string> optimization_direction_enum_to_string;
+extern const std::string& to_string(OptimizationDirectionEnum direction);
+
+/// @brief Return the worst possible score for the metric type.
+extern double worst_score(OptimizationDirectionEnum direction);
+
+/// @brief Return true iff lhs has a better score than rhs for the metric type.
+extern bool better_score(double lhs, double rhs, OptimizationDirectionEnum direction);
 
 extern double compute_score(const AtomSplitDistribution& distribution, SplitMetricEnum type);
 

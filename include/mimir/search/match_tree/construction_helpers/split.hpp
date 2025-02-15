@@ -47,11 +47,6 @@ struct AtomSplitDistribution
     size_t num_true_elements = 0;
     size_t num_false_elements = 0;
     size_t num_dont_care_elements = 0;
-
-    auto identifying_members() const
-    {
-        return std::forward_as_tuple(std::as_const(num_true_elements), std::as_const(num_false_elements), std::as_const(num_dont_care_elements));
-    }
 };
 
 template<FluentOrDerived P>
@@ -61,15 +56,13 @@ struct AtomSplit
 
     AtomSplitDistribution distribution;
 
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(feature), std::as_const(distribution)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(feature)); }
 };
 
 struct NumericConstraintSplitDistribution
 {
     size_t num_true_elements;
     size_t num_dont_care_elements;
-
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(num_true_elements), std::as_const(num_dont_care_elements)); }
 };
 
 struct NumericConstraintSplit
@@ -77,7 +70,7 @@ struct NumericConstraintSplit
     GroundNumericConstraint feature;
     NumericConstraintSplitDistribution distribution;
 
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(feature), std::as_const(distribution)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(feature)); }
 };
 
 using Split = std::variant<AtomSplit<Fluent>, AtomSplit<Derived>, NumericConstraintSplit>;

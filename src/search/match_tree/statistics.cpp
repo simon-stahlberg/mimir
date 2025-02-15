@@ -235,13 +235,10 @@ std::ostream& operator<<(std::ostream& os, const Statistics& statistics)
        << "[MatchTreeStatistics] Total number of elements: " << num_elements << "\n"
        << "[MatchTreeStatistics] Generators - total number: " << num_generators << "\n"
        << "[MatchTreeStatistics] Generators - average number of elements: " << num_elements_per_generator << "\n"
-       << "[MatchTreeStatistics] Generators - distribution gini score: " << compute_gini_score(statistics.generator_distribution) << "\n"
        << "[MatchTreeStatistics] Perfect generators - total number: " << num_perfect_generators << "\n"
        << "[MatchTreeStatistics] Perfect generators - average number of elements: " << num_elements_per_perfect_generator << "\n"
-       << "[MatchTreeStatistics] Perfect generators - distribution gini score: " << compute_gini_score(statistics.perfect_generator_distribution) << "\n"
        << "[MatchTreeStatistics] Imperfect generators - total number: " << num_imperfect_generators << "\n"
-       << "[MatchTreeStatistics] Imperfect generators - average number of elements: " << num_elements_per_imperfect_generator << "\n"
-       << "[MatchTreeStatistics] Imperfect generators - distribution gini score: " << compute_gini_score(statistics.imperfect_generator_distribution);
+       << "[MatchTreeStatistics] Imperfect generators - average number of elements: " << num_elements_per_imperfect_generator;
 
     return os;
 }

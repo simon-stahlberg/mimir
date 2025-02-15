@@ -39,6 +39,10 @@
 namespace mimir::match_tree
 {
 
+template<FluentOrDerived P>
+using AtomDistributions = std::unordered_map<GroundAtom<P>, AtomSplitDistribution>;
+using NumericConstraintDistributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution>;
+
 template<typename Derived_, HasConjunctiveCondition E>
 NodeSplitterBase<Derived_, E>::NodeSplitterBase(const PDDLRepositories& pddl_repositories, const Options& options) :
     m_pddl_repositories(pddl_repositories),
@@ -126,7 +130,8 @@ std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, E>::compute
     }
 
     /* Compute useless splits and best split */
-    auto best_split_and_score = std::optional<SplitAndScore> {};
+    auto best_split = std::optional<Split>();
+    auto best_score = worst_score(m_options.optimization_direction);
     auto useless_splits = SplitList {};
     for (const auto& split : splits)
     {
@@ -138,25 +143,32 @@ std::optional<SplitScoreAndUselessSplits> NodeSplitterBase<Derived_, E>::compute
         {
             const auto score = compute_score(split, m_options.split_metric);
 
-            if (!best_split_and_score || score > best_split_and_score->score)
+            // std::cout << "Evaluate split: " << split << " " << score << " " << best_score << std::endl;
+
+            if (better_score(score, best_score, m_options.optimization_direction))
             {
-                best_split_and_score = SplitAndScore { split, score };
+                best_split = split;
+                best_score = score;
             }
         }
     }
 
-    if (!best_split_and_score)
+    if (!best_split)
     {
         return std::nullopt;  ///< no more splitting is needed
     }
 
+    // std::cout << best_split.value() << " " << best_score << std::endl;
+
     /* Mark the current split as useless for subsequent splittings */
-    if (best_split_and_score)
+    if (best_split)
     {
-        useless_splits.push_back(best_split_and_score->split);
+        useless_splits.push_back(best_split.value());
     }
 
-    return SplitScoreAndUselessSplits { best_split_and_score->split, best_split_and_score->score, std::move(useless_splits) };
+    // std::cout << "useless splits: " << useless_splits << std::endl;
+
+    return SplitScoreAndUselessSplits { best_split.value(), best_score, std::move(useless_splits) };
 }
 
 template<typename Derived_, HasConjunctiveCondition E>

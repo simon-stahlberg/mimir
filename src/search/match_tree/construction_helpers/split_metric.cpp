@@ -22,10 +22,56 @@ namespace mimir::match_tree
 
 std::unordered_map<SplitMetricEnum, std::string> split_metric_enum_to_string = {
     { SplitMetricEnum::GINI, "Gini" },
+    { SplitMetricEnum::FREQUENCY, "MaxFrequency" },
 };
 const std::string& to_string(SplitMetricEnum split_metric) { return split_metric_enum_to_string.at(split_metric); }
 
-double compute_gini_score(const std::vector<size_t>& distribution)
+std::unordered_map<OptimizationDirectionEnum, std::string> optimization_direction_enum_to_string = {
+    { OptimizationDirectionEnum::MINIMIZE, "minimize" },
+    { OptimizationDirectionEnum::MAXIMIZE, "maxmimize" },
+};
+const std::string& to_string(OptimizationDirectionEnum direction)
+{
+    {
+        return optimization_direction_enum_to_string.at(direction);
+    }
+}
+
+extern double worst_score(OptimizationDirectionEnum direction)
+{
+    switch (direction)
+    {
+        case OptimizationDirectionEnum::MINIMIZE:
+        {
+            return std::numeric_limits<double>::infinity();
+        }
+        case OptimizationDirectionEnum::MAXIMIZE:
+        {
+            return -std::numeric_limits<double>::infinity();
+        }
+    }
+
+    throw std::runtime_error("worst_score(type): Undefined worst score for direction: " + to_string(direction));
+}
+
+bool better_score(double lhs, double rhs, OptimizationDirectionEnum direction)
+{
+    switch (direction)
+    {
+        case OptimizationDirectionEnum::MINIMIZE:
+        {
+            return lhs < rhs;
+        }
+        case OptimizationDirectionEnum::MAXIMIZE:
+        {
+            return lhs > rhs;
+        }
+    }
+
+    throw std::runtime_error("better_score(lhs, rhs, type): Undefined comparison for direction: " + to_string(direction));
+}
+
+static double compute_gini_score(const std::vector<size_t>& distribution)
 {
     size_t total = 0;
     for (size_t count : distribution)
@@ -58,8 +104,13 @@ double compute_score(const AtomSplitDistribution& distribution, SplitMetricEnum 
         {
             return compute_gini_score(packed_distribution);
         }
+        case SplitMetricEnum::FREQUENCY:
+        {
+            return distribution.num_true_elements + distribution.num_false_elements;
+        }
     }
-    return 0.0;
+
+    throw std::runtime_error("compute_score(distribution, type): Undefined score computation of atom distribution for type: " + to_string(type));
 }
 
 double compute_score(const NumericConstraintSplitDistribution& distribution, SplitMetricEnum type)
@@ -72,8 +123,13 @@ double compute_score(const NumericConstraintSplitDistribution& distribution, Spl
         {
             return compute_gini_score(packed_distribution);
         }
+        case SplitMetricEnum::FREQUENCY:
+        {
+            return distribution.num_true_elements;
+        }
     }
-    return 0.0;
+
+    throw std::runtime_error("compute_score(distribution, type): Undefined score computation of numeric constraint distribution for type: " + to_string(type));
 }
 
 double compute_score(const Split& split, SplitMetricEnum type)

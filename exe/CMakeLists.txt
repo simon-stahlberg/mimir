@@ -4,6 +4,9 @@
 add_executable(planner_astar "planner_astar.cpp")
 target_link_libraries(planner_astar mimir::core)
 
+add_executable(planner_astar_mt "planner_astar_mt.cpp")
+target_link_libraries(planner_astar_mt mimir::core)
+
 add_executable(planner_brfs "planner_brfs.cpp")
 target_link_libraries(planner_brfs mimir::core)
 

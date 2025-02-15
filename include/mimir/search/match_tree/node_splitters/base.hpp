@@ -26,26 +26,6 @@
 namespace mimir::match_tree
 {
 
-template<HasConjunctiveCondition E>
-struct SplitterQueueEntry
-{
-    PlaceholderNode<E> node;
-
-    SplitScoreAndUselessSplits refinement_data;  ///< entries in the queue must have a well-defined next split
-};
-
-template<HasConjunctiveCondition E>
-struct SplitterQueueEntryComparator
-{
-    bool operator()(const SplitterQueueEntry<E>& lhs, const SplitterQueueEntry<E>& rhs) const
-    {
-        return lhs.refinement_data.score < rhs.refinement_data.score;  // highest score first.
-    }
-};
-
-template<HasConjunctiveCondition E>
-using SplitterQueue = std::priority_queue<SplitterQueueEntry<E>, std::vector<SplitterQueueEntry<E>>, SplitterQueueEntryComparator<E>>;
-
 template<typename Derived_, HasConjunctiveCondition E>
 class NodeSplitterBase : public INodeSplitter<E>
 {
@@ -57,10 +37,6 @@ private:
 protected:
     const PDDLRepositories& m_pddl_repositories;
     const Options& m_options;
-
-    template<FluentOrDerived P>
-    using AtomDistributions = std::unordered_map<GroundAtom<P>, AtomSplitDistribution>;
-    using NumericConstraintDistributions = std::unordered_map<GroundNumericConstraint, NumericConstraintSplitDistribution>;
 
     /// @brief Compute all possible ways to split the data.
     /// This operation runs in time O(|E|*|A|) where |E| is the number of elements

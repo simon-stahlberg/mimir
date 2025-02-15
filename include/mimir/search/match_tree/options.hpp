@@ -28,8 +28,9 @@ struct Options
     bool enable_dump_dot_file = false;
     fs::path output_dot_file = "match_tree.dot";
     size_t max_num_nodes = std::numeric_limits<size_t>::max();
-    SplitMetricEnum split_metric = SplitMetricEnum::GINI;
     SplitStrategyEnum split_strategy = SplitStrategyEnum::DYNAMIC;
+    SplitMetricEnum split_metric = SplitMetricEnum::GINI;
+    OptimizationDirectionEnum optimization_direction = OptimizationDirectionEnum::MAXIMIZE;
 };
 
 }
