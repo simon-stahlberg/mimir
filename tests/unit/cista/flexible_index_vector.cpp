@@ -128,6 +128,9 @@ TEST(CistaTests, CistaFlexibleIndexVectorTest)
     auto vec = Vector({ 1, 16, 2, 4, 9 });
 
     EXPECT_EQ(vec.bit_width(), 16);
+    EXPECT_EQ(vec.bit_width_log2(), 4);
+    EXPECT_EQ(vec.elements_per_block(), 1);
+    EXPECT_EQ(vec.elements_per_block_log2(), 0);
     EXPECT_EQ(vec.size(), 5);
     EXPECT_EQ(vec.blocks().size(), 5);
     EXPECT_EQ(vec[0], 1);
@@ -150,9 +153,12 @@ TEST(CistaTests, CistaFlexibleIndexVectorTest)
 
     const auto& const_vec = vec;
 
-    EXPECT_EQ(const_vec.bit_width(), 5);
+    EXPECT_EQ(const_vec.bit_width(), 8);
+    EXPECT_EQ(const_vec.bit_width_log2(), 3);
+    EXPECT_EQ(const_vec.elements_per_block(), 2);
+    EXPECT_EQ(const_vec.elements_per_block_log2(), 1);
     EXPECT_EQ(const_vec.size(), 5);
-    EXPECT_EQ(const_vec.blocks().size(), 2);
+    EXPECT_EQ(const_vec.blocks().size(), 3);
     EXPECT_EQ(const_vec[0], 1);
     EXPECT_EQ(const_vec[1], 16);
     EXPECT_EQ(const_vec[2], 2);
@@ -180,8 +186,12 @@ TEST(CistaTests, CistaFlexibleIndexVectorTest)
     // Deserialize.
     const auto& deserialized = *cista::deserialize<Vector>(buf.begin().base(), buf.end().base());
 
+    EXPECT_EQ(deserialized.bit_width(), 8);
+    EXPECT_EQ(deserialized.bit_width_log2(), 3);
+    EXPECT_EQ(deserialized.elements_per_block(), 2);
+    EXPECT_EQ(deserialized.elements_per_block_log2(), 1);
     EXPECT_EQ(deserialized.size(), 5);
-    EXPECT_EQ(deserialized.blocks().size(), 2);
+    EXPECT_EQ(deserialized.blocks().size(), 3);
     EXPECT_EQ(deserialized[0], 1);
     EXPECT_EQ(deserialized[1], 16);
     EXPECT_EQ(deserialized[2], 2);

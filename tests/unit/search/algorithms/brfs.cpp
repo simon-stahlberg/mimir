@@ -132,7 +132,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAssemblyTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 1);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 14);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_EQ(axiom_evaluator_statistics.m_match_tree_partition_statistics.front().num_nodes, 3);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -174,7 +179,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 8);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 108);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_EQ(axiom_evaluator_statistics.m_match_tree_partition_statistics.front().num_nodes, 27);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -216,7 +226,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBarmanTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 11);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 189);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -258,7 +273,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks3opsTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 79);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -300,7 +320,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedBlocks4opsTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 53);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -343,7 +368,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedChildsnackTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 13);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -385,7 +415,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDeliveryTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 29);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -427,7 +462,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedDriverlogTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 9);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 27);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -469,7 +509,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedFerryTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 25);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -511,7 +556,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGridTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 86);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -553,7 +603,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedGripperTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 3);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 41);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -595,7 +650,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedHikingTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 57);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -637,7 +697,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedLogisticsTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 25);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -679,7 +744,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 5);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 13);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -722,7 +792,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicFullAdlTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 34);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_EQ(axiom_evaluator_statistics.m_match_tree_partition_statistics.front().num_nodes, 11);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -767,7 +842,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedMiconicSimpleAdlTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 5);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -811,7 +891,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedPhilosophersTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 18);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 98);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_EQ(axiom_evaluator_statistics.m_match_tree_partition_statistics.front().num_nodes, 35);
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -854,7 +939,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRewardTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 11);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -896,7 +986,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedRoversTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 15);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -938,7 +1033,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSatelliteTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 7);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 20);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -980,7 +1080,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedScheduleTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 2);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 83);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1022,7 +1127,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedSpannerTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 4);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 13);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1064,7 +1174,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedTransportTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 5);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 231);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1106,7 +1221,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedVisitallTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 8);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 15);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 
@@ -1149,7 +1269,12 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedWoodworkingTest)
     EXPECT_EQ(result.plan.value().get_actions().size(), 2);
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
+
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 77);
+
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
+
+    EXPECT_TRUE(axiom_evaluator_statistics.m_match_tree_partition_statistics.empty());
 
     const auto& brfs_statistics = brfs.get_algorithm_statistics();
 

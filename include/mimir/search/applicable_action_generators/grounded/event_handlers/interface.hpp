@@ -97,7 +97,9 @@ public:
     }
 
     void on_finish_build_action_match_tree(const match_tree::MatchTree<GroundActionImpl>& match_tree) override
-    {  //
+    {
+        m_statistics.statistics = match_tree.get_statistics();
+
         if (!m_quiet)
         {
             self().on_finish_build_action_match_tree_impl(match_tree);

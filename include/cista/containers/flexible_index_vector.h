@@ -375,6 +375,8 @@ public:
 
     uint8_t bit_width() const { return bit_width_; }
     uint8_t bit_width_log2() const { return bit_width_log2_; }
+    uint8_t elements_per_block() const { return elements_per_block_; };
+    uint8_t elements_per_block_log2() const { return elements_per_block_log2_; };
 
     IndexType size() const { return size_; }
     const cista::basic_vector<IndexType, Ptr>& blocks() const { return blocks_; }
