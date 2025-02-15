@@ -37,6 +37,17 @@ static GroundLiteralList<P> ground_nullary_literals(const LiteralList<P>& litera
     return ground_literals;
 }
 
+static GroundNumericConstraintList ground_nullary_numeric_constraints(const NumericConstraintList& numeric_constraints, PDDLRepositories& pddl_repositories)
+{
+    auto ground_numeric_constraints = GroundNumericConstraintList {};
+    for (const auto& numeric_constraint : numeric_constraints)
+    {
+        // TODO: we have to ground function and function expressions. Perhaps the ground should become part of the repository?
+    }
+
+    return ground_numeric_constraints;
+}
+
 PDDLRepositories::PDDLRepositories() : m_repositories() {}
 
 PDDLRepositories::PDDLRepositories(PDDLRepositories&& other) = default;
@@ -369,6 +380,12 @@ ConjunctiveCondition PDDLRepositories::get_or_create_conjunctive_condition(Varia
               nullary_derived_conditions.end(),
               [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
 
+    auto nullary_numeric_constraints = ground_nullary_numeric_constraints(numeric_constraints, *this);
+
+    std::sort(nullary_numeric_constraints.begin(),
+              nullary_numeric_constraints.end(),
+              [](const auto& l, const auto& r) { return l->get_index() < r->get_index(); });
+
     return boost::hana::at_key(m_repositories, boost::hana::type<ConjunctiveConditionImpl> {})
         .get_or_create(std::move(parameters),
                        std::move(static_conditions),
@@ -377,7 +394,8 @@ ConjunctiveCondition PDDLRepositories::get_or_create_conjunctive_condition(Varia
                        std::move(nullary_static_conditions),
                        std::move(nullary_fluent_conditions),
                        std::move(nullary_derived_conditions),
-                       std::move(numeric_constraints));
+                       std::move(numeric_constraints),
+                       std::move(nullary_numeric_constraints));
 }
 
 Action PDDLRepositories::get_or_create_action(std::string name,

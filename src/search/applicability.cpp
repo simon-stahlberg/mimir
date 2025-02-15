@@ -57,10 +57,26 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
     return true;
 }
 
+static bool nullary_numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& fluent_numeric_variables)
+{
+    for (const auto& numeric_constraint : numeric_constraints)
+    {
+        // We dont have access to arity in ground numeric constraint, so we cannot check that its zero...
+
+        if (!evaluate(numeric_constraint, fluent_numeric_variables))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, const DenseState& dense_state)
 {
     return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
-           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>());
+           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>())
+           && nullary_numeric_constraints_hold(conjunctive_condition->get_nullary_numeric_constraints(), dense_state.get_numeric_variables());
 }
 
 /**

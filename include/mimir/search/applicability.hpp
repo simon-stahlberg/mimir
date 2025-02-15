@@ -29,7 +29,7 @@ namespace mimir
  * ConjunctiveCondition
  */
 
-/// @brief Return true iff all nullary literals in the precondition hold, false otherwise.
+/// @brief Return true iff all nullary literals and constraints in the precondition hold, false otherwise.
 extern bool nullary_conditions_hold(ConjunctiveCondition precondition, const DenseState& dense_state);
 
 /**
