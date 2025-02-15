@@ -48,10 +48,18 @@ struct ProblemContext
 
 using ProblemContextList = std::vector<ProblemContext>;
 
-using ProblemVertex = Vertex<State>;
+/// @brief `ProblemVertex` encapsulates information about a state in the context of a `ProblemClassGraph`.
+/// The `Index` is the index of the corresponding `ClassVertex` in the `ProblemClassGraph`.
+/// The `State` is the underlying planning state.
+using ProblemVertex = Vertex<Index, State>;
 
-inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
+inline Index get_global_state_index(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
 
+inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
+
+/// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `ProblemClassGraph`.
+/// The `Index` is the index of the corresponding `ClassEdge` in the `ProblemClassGraph`.
+/// The `GroundAction` is the underlying ground action.
 using ProblemEdge = Edge<GroundAction>;
 
 inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<0>(); }
@@ -74,13 +82,23 @@ struct ClassOptions
     ProblemOptions options = ProblemOptions();
 };
 
-using ClassVertex = Vertex<ProblemVertex>;
+/// @brief `ClassVertex` encapsulates information about a problem vertex where
+/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassGraph`
+/// the second `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
+using ClassVertex = Vertex<Index, Index>;
 
-inline const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) { return vertex.get_property<0>(); }
+inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
 
-using ClassEdge = Edge<ProblemEdge>;
+inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex.get_property<1>(); }
 
-inline const ProblemEdge& get_problem_vertex(const ClassEdge& edge) { return edge.get_property<0>(); }
+/// @brief `ClassEdge` encapsulates information about a problem edge where
+/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassGraph`
+/// the second `Index` is the index of the `ProblemEdge` in the `ProblemGraph`.
+using ClassEdge = Edge<Index, Index>;
+
+inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<0>(); }
+
+inline Index get_problem_vertex_index(const ClassEdge& edge) { return edge.get_property<1>(); }
 
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
@@ -94,10 +112,18 @@ class ProblemClassGraph
 private:
     ProblemGraphList m_problem_graphs;
 
-    ClassGraph m_class_graph;
-
 public:
     ProblemClassGraph(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
+};
+
+class GlobalTupleGraph
+{
+private:
+public:
+    /// @brief Create a `TupleGraph` for the `vertex` in the `graph`.
+    /// @param graph
+    /// @param vertex
+    GlobalTupleGraph(const ProblemGraph& graph, Index vertex);
 };
 }
 
