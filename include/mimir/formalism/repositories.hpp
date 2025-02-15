@@ -28,6 +28,7 @@
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_effects.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_function_value.hpp"
@@ -168,6 +169,24 @@ class PDDLRepositories
 {
 private:
     PDDLTypeToRepository m_repositories;
+
+    // TODO: move grounding tables here to keep all formalism related objects in one place, e.g.,
+
+    /*
+        template<typename T>
+        using LiteralGroundingTable = absl::flat_hash_map<ObjectList, T, loki::Hash<ObjectList>>;
+
+        // We a table for each pair (is_negated,predicate_index) since those are context independent.
+        template<typename T>
+        using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
+
+        using GroundedTypeToGroundingTableList =
+            boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
+                             boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
+                             boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>>;
+
+        GroundedTypeToGroundingTableList m_grounding_tables;
+    */
 
 public:
     PDDLRepositories();
@@ -353,6 +372,27 @@ public:
                                   OptimizationMetric optimization_metric,
                                   AxiomList axioms);
 
+    /* Grounding */
+
+    /*
+        GroundAction ground(Action action, const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index, ObjectList
+       binding);
+
+        GroundAxiom ground(Axiom axiom, ObjectList binding);
+
+        GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
+
+        template<StaticOrFluentOrAuxiliary F>
+        GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
+
+        template<StaticOrFluentOrDerived P>
+        GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
+
+        GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
+
+        template<FluentOrAuxiliary F>
+        GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
+    */
     /* Accessors */
 
     // Factory

@@ -520,6 +520,38 @@ Problem PDDLRepositories::get_or_create_problem(std::optional<fs::path> filepath
                        std::move(axioms));
 }
 
+/**
+ * Grounding
+ */
+
+static void ground_terms(const TermList& terms, const ObjectList& binding, ObjectList& out_terms)
+{
+    out_terms.clear();
+
+    for (const auto& term : terms)
+    {
+        std::visit(
+            [&](auto&& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, Object>)
+                {
+                    out_terms.emplace_back(arg);
+                }
+                else if constexpr (std::is_same_v<T, Variable>)
+                {
+                    assert(arg->get_parameter_index() < binding.size());
+                    out_terms.emplace_back(binding[arg->get_parameter_index()]);
+                }
+            },
+            term->get_variant());
+    }
+}
+
+/**
+ * Accessors
+ */
+
 // Factory
 const PDDLTypeToRepository& PDDLRepositories::get_pddl_type_to_factory() const { return m_repositories; }
 

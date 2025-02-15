@@ -592,46 +592,52 @@ Index Edge::get_object_if_overlap(const Term& term) const
  * StaticConsistencyGraph
  */
 
-StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
-                                               Index begin_parameter_index,
-                                               Index end_parameter_index,
-                                               const LiteralList<Static>& static_conditions) :
-    m_problem(problem)
+std::tuple<Vertices, std::vector<IndexList>, std::vector<IndexList>>
+StaticConsistencyGraph::compute_vertices(Problem problem, Index begin_parameter_index, Index end_parameter_index, const LiteralList<Static>& static_conditions)
 {
-    const auto& static_assignment_set = m_problem->get_static_assignment_set();
+    const auto& static_assignment_set = problem->get_static_assignment_set();
 
-    /* 1. Compute vertices */
+    auto vertices = Vertices {};
+    auto vertices_by_parameter_index = std::vector<IndexList> {};
+    auto objects_by_parameter_index = std::vector<IndexList> {};
 
     for (Index parameter_index = begin_parameter_index; parameter_index < end_parameter_index; ++parameter_index)
     {
         IndexList vertex_partition;
         IndexList object_partition;
 
-        for (const auto& object : m_problem->get_objects())
+        for (const auto& object : problem->get_objects())
         {
             const auto object_index = object->get_index();
-            const auto vertex_index = static_cast<Index>(m_vertices.size());
+            const auto vertex_index = static_cast<Index>(vertices.size());
             auto vertex = Vertex(vertex_index, parameter_index, object_index);
 
             if (vertex.consistent_literals(static_conditions, static_assignment_set))
             {
                 vertex_partition.push_back(vertex_index);
                 object_partition.push_back(object_index);
-                m_vertices.push_back(std::move(vertex));
+                vertices.push_back(std::move(vertex));
             }
         }
-        m_vertices_by_parameter_index.push_back(std::move(vertex_partition));
-        m_objects_by_parameter_index.push_back(std::move(object_partition));
+        vertices_by_parameter_index.push_back(std::move(vertex_partition));
+        objects_by_parameter_index.push_back(std::move(object_partition));
     }
 
-    /* 2. Compute edges */
+    return std::make_tuple(std::move(vertices), std::move(vertices_by_parameter_index), std::move(objects_by_parameter_index));
+}
 
-    for (Index first_vertex_index = 0; first_vertex_index < m_vertices.size(); ++first_vertex_index)
+Edges StaticConsistencyGraph::compute_edges(Problem problem, const LiteralList<Static>& static_conditions, const Vertices& vertices)
+{
+    const auto& static_assignment_set = problem->get_static_assignment_set();
+
+    auto edges = Edges {};
+
+    for (Index first_vertex_index = 0; first_vertex_index < vertices.size(); ++first_vertex_index)
     {
-        for (Index second_vertex_index = (first_vertex_index + 1); second_vertex_index < m_vertices.size(); ++second_vertex_index)
+        for (Index second_vertex_index = (first_vertex_index + 1); second_vertex_index < vertices.size(); ++second_vertex_index)
         {
-            const auto& first_vertex = m_vertices.at(first_vertex_index);
-            const auto& second_vertex = m_vertices.at(second_vertex_index);
+            const auto& first_vertex = vertices.at(first_vertex_index);
+            const auto& second_vertex = vertices.at(second_vertex_index);
 
             // Part 1 of definition of substitution consistency graph (Stahlberg-ecai2023): exclude I^\neq
             if (first_vertex.get_parameter_index() != second_vertex.get_parameter_index())
@@ -641,11 +647,28 @@ StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
 
                 if (edge.consistent_literals(static_conditions, static_assignment_set))
                 {
-                    m_edges.push_back(std::move(edge));
+                    edges.push_back(std::move(edge));
                 }
             }
         }
     }
+
+    return edges;
+}
+
+StaticConsistencyGraph::StaticConsistencyGraph(Problem problem,
+                                               Index begin_parameter_index,
+                                               Index end_parameter_index,
+                                               const LiteralList<Static>& static_conditions)
+{
+    auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
+        compute_vertices(problem, begin_parameter_index, end_parameter_index, static_conditions);
+
+    m_vertices = std::move(vertices_);
+    m_vertices_by_parameter_index = std::move(vertices_by_parameter_index_);
+    m_objects_by_parameter_index = std::move(objects_by_parameter_index_);
+
+    m_edges = compute_edges(problem, static_conditions, m_vertices);
 }
 
 }

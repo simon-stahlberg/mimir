@@ -115,7 +115,7 @@ using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 /// 2) Iterate over all `ProblemEdge` in P and add the corresponding `ClassEdge` to E.
 ///
 /// Observations:
-/// a) The graph G = (V, E) of `ClassGraph` represents all problems P.
+/// a) The graph G = (V, E) represents all problems P.
 /// b) If symmetry pruning was disabled, the number of vertices in G is exactly the sum of the number of vertices in all problems P.
 /// c) If symmetry pruning was enabled, the number of vertices of G can be exponentially smaller.
 class ProblemClassGraph

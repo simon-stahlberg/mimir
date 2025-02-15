@@ -35,9 +35,9 @@ private:
     GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
 
-    using PerActionData = std::tuple<GroundActionImpl,                                         ///< Builder
-                                     GroundingTable<GroundAction>,                             ///< Cache
-                                     std::vector<consistency_graph::StaticConsistencyGraph>>;  ///< Per cond effect object indices by parameter index
+    using PerActionData = std::tuple<GroundActionImpl,                      ///< Builder
+                                     GroundingTable<GroundAction>,          ///< Cache
+                                     std::vector<std::vector<IndexList>>>;  ///< Per cond effect object indices by parameter index
 
     std::unordered_map<Action, PerActionData> m_per_action_datas;
 

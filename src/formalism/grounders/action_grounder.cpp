@@ -50,7 +50,7 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 
     for (const auto& action : problem->get_domain()->get_actions())
     {
-        auto cond_effect_static_consistency_graphs = std::vector<consistency_graph::StaticConsistencyGraph>();
+        auto cond_effect_static_consistency_graphs = std::vector<std::vector<IndexList>>();
         cond_effect_static_consistency_graphs.reserve(action->get_conditional_effects().size());
 
         auto action_builder = GroundActionImpl();
@@ -58,15 +58,15 @@ ActionGrounder::ActionGrounder(std::shared_ptr<LiteralGrounder> literal_grounder
 
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
-            auto static_consistency_graph = consistency_graph::StaticConsistencyGraph(problem,
-                                                                                      action->get_arity(),
-                                                                                      action->get_arity() + conditional_effect->get_arity(),
-                                                                                      conditional_effect->get_conjunctive_condition()->get_literals<Static>());
+            auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
+                consistency_graph::StaticConsistencyGraph::compute_vertices(problem,
+                                                                            action->get_arity(),
+                                                                            action->get_arity() + conditional_effect->get_arity(),
+                                                                            conditional_effect->get_conjunctive_condition()->get_literals<Static>());
 
-            num_cond_effects +=
-                (conditional_effect->get_arity() > 0) ? get_size_cartesian_product(static_consistency_graph.get_objects_by_parameter_index()) : 1;
+            num_cond_effects += (conditional_effect->get_arity() > 0) ? get_size_cartesian_product(objects_by_parameter_index_) : 1;
 
-            cond_effect_static_consistency_graphs.push_back(std::move(static_consistency_graph));
+            cond_effect_static_consistency_graphs.push_back(std::move(objects_by_parameter_index_));
         }
 
         action_builder.get_conditional_effects().resize(num_cond_effects);
@@ -209,8 +209,7 @@ GroundAction ActionGrounder::ground(Action action, ObjectList binding)
 
             if (lifted_cond_effect->get_arity() > 0)
             {
-                const auto& cond_effect_static_consistency_graph = cond_effect_static_consistency_graphs.at(i);
-                const auto& objects_by_parameter_index = cond_effect_static_consistency_graph.get_objects_by_parameter_index();
+                const auto& objects_by_parameter_index = cond_effect_static_consistency_graphs.at(i);
 
                 // Resize binding to have additional space for all variables in quantified effect.
                 binding_cond_effect.resize(binding.size() + lifted_cond_effect->get_arity());
