@@ -73,6 +73,7 @@ int main(int argc, char** argv)
     /* Gfas */
     auto options = FaithfulAbstractionsOptions();
     options.fa_options.pruning_strategy = pruning_strategy;
+    options.fa_options.compute_complete_abstraction_mapping = false;
     auto gfas = GlobalFaithfulAbstraction::create(memories, options);
 
     size_t num_gfa_states = 0;
@@ -92,19 +93,7 @@ int main(int argc, char** argv)
         num_isomorphic_states += gfa.get_num_isomorphic_states();
         num_non_isomorphic_states += gfa.get_num_non_isomorphic_states();
 
-        /*
-        for (const auto& gfa_state : gfa.get_states())
-        {
-            std::cout << std::make_tuple(gfa.get_problem(),
-                                            gfa.get_abstractions()
-                                                .at(gfa_state.get_faithful_abstraction_index())
-                                                .get_states()
-                                                .at(gfa_state.get_faithful_abstraction_vertex_index())
-                                                .get_representative_state(),
-                                            std::cref(*gfa.get_pddl_repositories()))
-                        << std::endl;
-        }
-        */
+        std::cout << gfa << std::endl;
     }
     std::cout << "Num gfas: " << gfas.size() << std::endl;
     std::cout << "Num gfa states: " << num_gfa_states << std::endl;

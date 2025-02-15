@@ -29,7 +29,7 @@ namespace mimir::datasets
 {
 
 /**
- * Problem
+ * ProblemGraph
  */
 
 struct ProblemOptions
@@ -60,18 +60,19 @@ inline State get_state(const ProblemVertex& vertex) { return vertex.get_property
 /// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `ProblemClassGraph`.
 /// The `Index` is the index of the corresponding `ClassEdge` in the `ProblemClassGraph`.
 /// The `GroundAction` is the underlying ground action.
-using ProblemEdge = Edge<GroundAction>;
+using ProblemEdge = Edge<Index, GroundAction>;
 
-inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<0>(); }
+inline Index get_global_edge_index(const ProblemEdge& edge) { return edge.get_property<0>(); }
+
+inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
 
 using StaticProblemGraph = StaticGraph<ProblemVertex, ProblemEdge>;
+using StaticProblemGraphList = std::vector<StaticProblemGraph>;
 using ProblemGraph = StaticBidirectionalGraph<StaticProblemGraph>;
 using ProblemGraphList = std::vector<ProblemGraph>;
 
 /**
- * Class is a graph on top of problems.
- *
- * For simplicity each class vertex (resp. edge) contains a copy of a problem vertex (resp. edge).
+ * ClassGraph
  */
 
 struct ClassOptions
@@ -98,32 +99,42 @@ using ClassEdge = Edge<Index, Index>;
 
 inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<0>(); }
 
-inline Index get_problem_vertex_index(const ClassEdge& edge) { return edge.get_property<1>(); }
+inline Index get_problem_edge_index(const ClassEdge& edge) { return edge.get_property<1>(); }
 
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 
-/**
- * Class
- */
-
+/// @brief `ProblemClassGraph` encapsulates a `ProblemGraphList` Q with an additional `ClassGraph` structure on top.
+/// From each `ClassVertex` (resp. `ClassEdge`) one can access the single representative `ProblemVertex` (resp. `ProblemEdge`).
+/// From each `ProblemVertex` (resp. `ProblemEdge`) one can access the corresponding `ClassVertex` (resp. `ClassEdge`).
+///
+/// Example use case 1:
+/// Learning general policies from a subset of problem P from a class of problems Q.
+/// From P we construct a subgraph G = (V, E) of `ClassGraph` as follows:
+/// 1) Iterate over all `ProblemVertex` in P and add the corresponding `ClassVertex` to V.
+/// 2) Iterate over all `ProblemEdge` in P and add the corresponding `ClassEdge` to E.
+///
+/// Observations:
+/// a) The graph G = (V, E) of `ClassGraph` represents all problems P.
+/// b) If symmetry pruning was disabled, the number of vertices in G is exactly the sum of the number of vertices in all problems P.
+/// c) If symmetry pruning was enabled, the number of vertices of G can be exponentially smaller.
 class ProblemClassGraph
 {
 private:
-    ProblemGraphList m_problem_graphs;
+    ProblemGraphList m_problem_graphs;  ///< The child-level graphs.
+    ClassGraph m_class_graph;           ///< The top-level graph.
 
 public:
     ProblemClassGraph(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
-};
 
-class GlobalTupleGraph
-{
-private:
-public:
-    /// @brief Create a `TupleGraph` for the `vertex` in the `graph`.
-    /// @param graph
-    /// @param vertex
-    GlobalTupleGraph(const ProblemGraph& graph, Index vertex);
+    const ProblemGraphList& get_problem_graphs() const;
+    const ClassGraph& get_class_graph() const;
+
+    const ProblemGraph& get_problem_graph(const ClassVertex& vertex) const;
+    const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
+
+    const ProblemGraph& get_problem_graph(const ClassEdge& edge) const;
+    const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
 };
 }
 
