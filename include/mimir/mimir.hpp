@@ -90,6 +90,7 @@
 #include "mimir/datasets/abstraction.hpp"
 #include "mimir/datasets/faithful_abstraction.hpp"
 #include "mimir/datasets/global_faithful_abstraction.hpp"
+#include "mimir/datasets/problem_class_graph.hpp"
 #include "mimir/datasets/state_space.hpp"
 
 /**

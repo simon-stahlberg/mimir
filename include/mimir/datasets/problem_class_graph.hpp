@@ -20,6 +20,7 @@
 
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/graphs/declarations.hpp"
 #include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
@@ -52,8 +53,9 @@ using ProblemContextList = std::vector<ProblemContext>;
 /// The `Index` is the index of the corresponding `ClassVertex` in the `ProblemClassGraph`.
 /// The `State` is the underlying planning state.
 using ProblemVertex = Vertex<Index, State>;
+using ProblemVertexList = std::vector<ProblemVertex>;
 
-inline Index get_global_state_index(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
+inline Index get_class_vertex_index(const ProblemVertex& vertex) { return vertex.get_property<0>(); }
 
 inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
@@ -61,8 +63,9 @@ inline State get_state(const ProblemVertex& vertex) { return vertex.get_property
 /// The `Index` is the index of the corresponding `ClassEdge` in the `ProblemClassGraph`.
 /// The `GroundAction` is the underlying ground action.
 using ProblemEdge = Edge<Index, GroundAction>;
+using ProblemEdgeList = std::vector<ProblemEdge>;
 
-inline Index get_global_edge_index(const ProblemEdge& edge) { return edge.get_property<0>(); }
+inline Index get_class_edge_index(const ProblemEdge& edge) { return edge.get_property<0>(); }
 
 inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
 
@@ -87,6 +90,7 @@ struct ClassOptions
 /// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassGraph`
 /// the second `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
 using ClassVertex = Vertex<Index, Index>;
+using ClassVertexList = std::vector<ClassVertex>;
 
 inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
 
@@ -96,6 +100,7 @@ inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex
 /// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassGraph`
 /// the second `Index` is the index of the `ProblemEdge` in the `ProblemGraph`.
 using ClassEdge = Edge<Index, Index>;
+using ClassEdgeList = std::vector<ClassEdge>;
 
 inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<0>(); }
 
@@ -127,15 +132,43 @@ private:
 public:
     ProblemClassGraph(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
 
+    /**
+     * Getters
+     */
+
     const ProblemGraphList& get_problem_graphs() const;
     const ClassGraph& get_class_graph() const;
 
+    /// @brief Ground `Class` related structures to `Problem` related structures
+    /// to access detailed problem specific information about the state.
     const ProblemGraph& get_problem_graph(const ClassVertex& vertex) const;
-    const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
-
     const ProblemGraph& get_problem_graph(const ClassEdge& edge) const;
+    const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
     const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
+
+    /// @brief Lift `Problem` related structures to `Class` related structures.
+    const ClassVertex& get_class_vertex(const ProblemVertex& vertex) const;
+    const ClassEdge& get_class_edge(const ProblemEdge& edge) const;
+
+    /**
+     * Construct subgraphs for learning from fragments of the `ClassGraph`.
+     */
+
+    /// @brief Create the subgraph induced by the given `ProblemVertexList`.
+    ClassGraph create_induced_subgraph(const ProblemVertexList& vertices) const;
+    /// @brief Create the subgraph induced by the given problem indices.
+    ClassGraph create_induced_subgraph(const IndexList& problem_indices) const;
 };
+
+/**
+ * Default printing of vertices and edges in a static graph.
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex);
+extern std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge);
+
+extern std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex);
+extern std::ostream& operator<<(std::ostream& out, const ClassEdge& edge);
 }
 
 #endif

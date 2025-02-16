@@ -223,6 +223,8 @@ public:
      * Getters
      */
 
+    const G& get_graph() const;
+
     const VertexList& get_vertices() const;
     const VertexType& get_vertex(VertexIndex vertex) const;
     const EdgeList& get_edges() const;
@@ -293,6 +295,8 @@ public:
     /**
      * Getters
      */
+
+    const G& get_graph() const;
 
     const VertexList& get_vertices() const;
     const VertexType& get_vertex(VertexIndex vertex) const;
@@ -738,6 +742,12 @@ StaticForwardGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 }
 
 template<IsStaticGraph G>
+const G& StaticForwardGraph<G>::get_graph() const
+{
+    return m_graph;
+}
+
+template<IsStaticGraph G>
 const StaticForwardGraph<G>::VertexList& StaticForwardGraph<G>::get_vertices() const
 {
     return m_graph.get_vertices();
@@ -900,6 +910,12 @@ StaticBidirectionalGraph<G>::get_adjacent_edge_indices(VertexIndex vertex) const
 }
 
 template<IsStaticGraph G>
+const G& StaticBidirectionalGraph<G>::get_graph() const
+{
+    return m_graph;
+}
+
+template<IsStaticGraph G>
 const StaticBidirectionalGraph<G>::VertexList& StaticBidirectionalGraph<G>::get_vertices() const
 {
     return m_graph.get_vertices();
@@ -961,6 +977,45 @@ template<IsTraversalDirection Direction>
 Degree StaticBidirectionalGraph<G>::get_degree(VertexIndex vertex) const
 {
     return m_graph.template get_degree<Direction>(vertex);
+}
+
+template<IsVertex V, IsEdge E>
+std::ostream& operator<<(std::ostream& out, const StaticGraph<V, E>& graph)
+{
+    out << "digraph Tree {\n"
+           "rankdir=TB;\n\n";
+
+    /* Node definitions */
+    for (const auto& vertex : graph.get_vertices())
+    {
+        out << "n" << vertex.get_index() << " [label=\"" << vertex << "\"];\n";
+    }
+    out << "\n";
+
+    /* Edge definitions */
+    for (const auto& edge : graph.get_edges())
+    {
+        out << "n" << edge.get_source() << " -> " << "n" << edge.get_target() << " [label=\"" << edge << "\"];\n";
+    }
+    out << "\n";
+
+    out << "}\n";  // end graph
+
+    return out;
+}
+
+template<IsStaticGraph G>
+std::ostream& operator<<(std::ostream& out, const StaticForwardGraph<G>& graph)
+{
+    out << graph.get_graph();
+    return out;
+}
+
+template<IsStaticGraph G>
+std::ostream& operator<<(std::ostream& out, const StaticBidirectionalGraph<G>& graph)
+{
+    out << graph.get_graph();
+    return out;
 }
 
 }

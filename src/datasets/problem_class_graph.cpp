@@ -18,6 +18,7 @@
 #include "mimir/datasets/problem_class_graph.hpp"
 
 #include "mimir/algorithms/nauty.hpp"
+#include "mimir/formalism/ground_action.hpp"
 
 namespace mimir::datasets
 {
@@ -83,6 +84,42 @@ const ProblemGraph& ProblemClassGraph::get_problem_graph(const ClassEdge& edge) 
 const ProblemEdge& ProblemClassGraph::get_problem_edge(const ClassEdge& edge) const
 {
     return m_problem_graphs.at(get_problem_index(edge)).get_edge(get_problem_edge_index(edge));
+}
+
+std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
+{
+    out << "vertex_index=" << vertex.get_index() << "\n"                     //
+        << " class_vertex_index=" << get_class_vertex_index(vertex) << "\n"  //
+        << " state_index=" << get_state(vertex)->get_index();
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
+{
+    out << "edge_index=" << edge.get_index() << "\n"                     //
+        << " source_index=" << edge.get_source() << "\n"                 //
+        << " target_index=" << edge.get_target() << "\n"                 //
+        << " class_vertex_index=" << get_class_edge_index(edge) << "\n"  //
+        << " action_index=" << get_action(edge)->get_index();
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex)
+{
+    out << "vertex_index=" << vertex.get_index()           //
+        << " problem_index=" << get_problem_index(vertex)  //
+        << " problem_vertex_index=" << get_problem_vertex_index(vertex);
+    return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
+{
+    out << "edge_index=" << edge.get_index() << "\n"             //
+        << " source_index=" << edge.get_source() << "\n"         //
+        << " target_index=" << edge.get_target() << "\n"         //
+        << " problem_index=" << get_problem_index(edge) << "\n"  //
+        << " problem_vertex_index=" << get_problem_edge_index(edge);
+    return out;
 }
 
 }
