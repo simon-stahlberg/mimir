@@ -27,6 +27,7 @@
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_effects.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_function_value.hpp"
@@ -351,6 +352,22 @@ void PDDLFormatter::write(const NumericEffectImpl<F>& element, std::ostream& out
     write(*element.get_function_expression(), out);
     out << ")";
 }
+
+template void PDDLFormatter::write(const NumericEffectImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const NumericEffectImpl<Auxiliary>& element, std::ostream& out);
+
+template<FluentOrAuxiliary F>
+void PDDLFormatter::write(const GroundNumericEffectImpl<F>& element, std::ostream& out)
+{
+    out << "(" << to_string(element.get_assign_operator()) << " ";
+    write(*element.get_function(), out);
+    out << " ";
+    write(*element.get_function_expression(), out);
+    out << ")";
+}
+
+template void PDDLFormatter::write(const GroundNumericEffectImpl<Fluent>& element, std::ostream& out);
+template void PDDLFormatter::write(const GroundNumericEffectImpl<Auxiliary>& element, std::ostream& out);
 
 void PDDLFormatter::write(const ConjunctiveEffectImpl& element, std::ostream& out)
 {

@@ -17,8 +17,10 @@
 
 #include "mimir/formalism/ground_effects.hpp"
 
+#include "formatter.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/hash_cista.hpp"
+#include "mimir/common/printers.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -31,9 +33,11 @@ namespace mimir
 
 /* GroundNumericEffect */
 template<FluentOrAuxiliary F>
-GroundNumericEffect<F>::GroundNumericEffect(loki::AssignOperatorEnum assign_operator,
-                                            GroundFunction<F> function,
-                                            GroundFunctionExpression function_expression) :
+GroundNumericEffectImpl<F>::GroundNumericEffectImpl(Index index,
+                                                    loki::AssignOperatorEnum assign_operator,
+                                                    GroundFunction<F> function,
+                                                    GroundFunctionExpression function_expression) :
+    m_index(index),
     m_assign_operator(assign_operator),
     m_function(function),
     m_function_expression(function_expression)
@@ -41,40 +45,31 @@ GroundNumericEffect<F>::GroundNumericEffect(loki::AssignOperatorEnum assign_oper
 }
 
 template<FluentOrAuxiliary F>
-loki::AssignOperatorEnum& GroundNumericEffect<F>::get_assign_operator()
+Index GroundNumericEffectImpl<F>::get_index() const
 {
-    return m_assign_operator;
+    return m_index;
 }
+
 template<FluentOrAuxiliary F>
-loki::AssignOperatorEnum GroundNumericEffect<F>::get_assign_operator() const
+loki::AssignOperatorEnum GroundNumericEffectImpl<F>::get_assign_operator() const
 {
     return m_assign_operator;
 }
 
 template<FluentOrAuxiliary F>
-FlatExternalPtr<const GroundFunctionImpl<F>>& GroundNumericEffect<F>::get_function()
-{
-    return m_function;
-}
-template<FluentOrAuxiliary F>
-FlatExternalPtr<const GroundFunctionImpl<F>> GroundNumericEffect<F>::get_function() const
+const GroundFunction<F>& GroundNumericEffectImpl<F>::get_function() const
 {
     return m_function;
 }
 
 template<FluentOrAuxiliary F>
-FlatExternalPtr<const GroundFunctionExpressionImpl>& GroundNumericEffect<F>::get_function_expression()
-{
-    return m_function_expression;
-}
-template<FluentOrAuxiliary F>
-FlatExternalPtr<const GroundFunctionExpressionImpl> GroundNumericEffect<F>::get_function_expression() const
+const GroundFunctionExpression& GroundNumericEffectImpl<F>::get_function_expression() const
 {
     return m_function_expression;
 }
 
-template class GroundNumericEffect<Fluent>;
-template class GroundNumericEffect<Auxiliary>;
+template class GroundNumericEffectImpl<Fluent>;
+template class GroundNumericEffectImpl<Auxiliary>;
 
 /* GroundConjunctiveEffect */
 
@@ -90,9 +85,15 @@ GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_fluent_numeric_eff
 
 const GroundNumericEffectList<Fluent>& GroundConjunctiveEffect::get_fluent_numeric_effects() const { return m_fluent_numeric_effects; }
 
-cista::optional<GroundNumericEffect<Auxiliary>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() { return m_auxiliary_numeric_effect; }
+cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect()
+{
+    return m_auxiliary_numeric_effect;
+}
 
-const cista::optional<GroundNumericEffect<Auxiliary>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() const { return m_auxiliary_numeric_effect; }
+const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& GroundConjunctiveEffect::get_auxiliary_numeric_effect() const
+{
+    return m_auxiliary_numeric_effect;
+}
 
 /* GroundConditionalEffect */
 
@@ -113,7 +114,7 @@ const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect()
 template<FluentOrAuxiliary F>
 std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    return { effect.get_assign_operator(), evaluate(effect.get_function_expression().get(), fluent_numeric_variables) };
+    return { effect->get_assign_operator(), evaluate(effect->get_function_expression(), fluent_numeric_variables) };
 }
 
 template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables);
@@ -124,35 +125,44 @@ template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNume
  */
 
 template<FluentOrAuxiliary F>
-std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<F>& element)
+std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element)
 {
-    os << "(" << to_string(element.get_assign_operator()) << " " << element.get_function() << " " << element.get_function_expression() << ")";
-
-    return os;
+    auto formatter = PDDLFormatter();
+    formatter.write(element, out);
+    return out;
 }
 
-template std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<Fluent>& data);
-template std::ostream& operator<<(std::ostream& os, const GroundNumericEffect<Auxiliary>& data);
+template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<Fluent>& element);
+template std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<Auxiliary>& element);
+
+template<FluentOrAuxiliary F>
+std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element)
+{
+    out << *element;
+    return out;
+}
+
+template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Fluent> element);
+template std::ostream& operator<<(std::ostream& out, GroundNumericEffect<Auxiliary> element);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data)
 {
     const auto& [conjunctive_effect, pddl_repositories] = data;
 
-    const auto& positive_effect_bitset = conjunctive_effect.get_positive_effects();
-    const auto& negative_effect_bitset = conjunctive_effect.get_negative_effects();
+    const auto& positive_literal_indices = conjunctive_effect.get_positive_effects();
+    const auto& negative_literal_indices = conjunctive_effect.get_negative_effects();
+
+    auto positive_literals = GroundAtomList<Fluent> {};
+    auto negative_literals = GroundAtomList<Fluent> {};
     const auto& fluent_numeric_effects = conjunctive_effect.get_fluent_numeric_effects();
     const auto& auxiliary_numeric_effect = conjunctive_effect.get_auxiliary_numeric_effect();
 
-    auto positive_simple_effects = GroundAtomList<Fluent> {};
-    auto negative_simple_effects = GroundAtomList<Fluent> {};
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_literal_indices, positive_literals);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_literal_indices, negative_literals);
 
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_effect_bitset, positive_simple_effects);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_effect_bitset, negative_simple_effects);
-
-    os << "delete effects=" << negative_simple_effects << ", " << "add effects=" << positive_simple_effects
-       << ", fluent numeric effects=" << fluent_numeric_effects;
-    if (auxiliary_numeric_effect.has_value())
+    os << "delete effects=" << negative_literals << ", " << "add effects=" << positive_literals << ", fluent numeric effects=" << fluent_numeric_effects;
+    if (auxiliary_numeric_effect)
     {
         os << ", auxiliary numeric effects=" << auxiliary_numeric_effect.value();
     }

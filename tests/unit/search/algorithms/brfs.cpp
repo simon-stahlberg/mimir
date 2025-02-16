@@ -177,7 +177,7 @@ TEST(MimirTests, SearchAlgorithmsBrFSGroundedAirportTest)
 
     const auto& applicable_action_generator_statistics = brfs.get_applicable_action_generator_statistics();
 
-    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 107);
+    EXPECT_EQ(applicable_action_generator_statistics.statistics.num_nodes, 108);
 
     const auto& axiom_evaluator_statistics = brfs.get_axiom_evaluator_statistics();
 

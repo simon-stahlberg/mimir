@@ -32,31 +32,45 @@ namespace mimir
 {
 
 template<FluentOrAuxiliary F>
-class GroundNumericEffect
+class GroundNumericEffectImpl
 {
 private:
-    loki::AssignOperatorEnum m_assign_operator = loki::AssignOperatorEnum::ASSIGN;
-    FlatExternalPtr<const GroundFunctionImpl<F>> m_function = nullptr;
-    FlatExternalPtr<const GroundFunctionExpressionImpl> m_function_expression = nullptr;
+    Index m_index;
+    loki::AssignOperatorEnum m_assign_operator;
+    GroundFunction<F> m_function;
+    GroundFunctionExpression m_function_expression;
+
+    // Below: add additional members if needed and initialize them in the constructor
+
+    GroundNumericEffectImpl(Index index, loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
+
+    // Give access to the constructor.
+    template<typename T, typename Hash, typename EqualTo>
+    friend class loki::SegmentedRepository;
 
 public:
-    GroundNumericEffect() = default;
-    GroundNumericEffect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
+    // moveable but not copyable
+    GroundNumericEffectImpl(const GroundNumericEffectImpl& other) = delete;
+    GroundNumericEffectImpl& operator=(const GroundNumericEffectImpl& other) = delete;
+    GroundNumericEffectImpl(GroundNumericEffectImpl&& other) = default;
+    GroundNumericEffectImpl& operator=(GroundNumericEffectImpl&& other) = default;
 
-    loki::AssignOperatorEnum& get_assign_operator();
+    Index get_index() const;
     loki::AssignOperatorEnum get_assign_operator() const;
+    const GroundFunction<F>& get_function() const;
+    const GroundFunctionExpression& get_function_expression() const;
 
-    FlatExternalPtr<const GroundFunctionImpl<F>>& get_function();
-    FlatExternalPtr<const GroundFunctionImpl<F>> get_function() const;
-
-    FlatExternalPtr<const GroundFunctionExpressionImpl>& get_function_expression();
-    FlatExternalPtr<const GroundFunctionExpressionImpl> get_function_expression() const;
-
-    auto cista_members() noexcept { return std::tie(m_assign_operator, m_function, m_function_expression); }
+    /// @brief Return a tuple of const references to the members that uniquely identify an object.
+    /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
+    /// @return a tuple containing const references to the members defining the object's identity.
+    auto identifying_members() const
+    {
+        return std::forward_as_tuple(std::as_const(m_assign_operator), std::as_const(m_function), std::as_const(m_function_expression));
+    }
 };
 
 template<FluentOrAuxiliary F>
-using GroundNumericEffectList = cista::offset::vector<GroundNumericEffect<F>>;
+using GroundNumericEffectList = cista::offset::vector<FlatExternalPtr<const GroundNumericEffectImpl<F>>>;
 
 class GroundConjunctiveEffect
 {
@@ -64,7 +78,7 @@ private:
     FlatIndexList m_positive_effects = FlatIndexList();
     FlatIndexList m_negative_effects = FlatIndexList();
     GroundNumericEffectList<Fluent> m_fluent_numeric_effects = GroundNumericEffectList<Fluent>();
-    cista::optional<GroundNumericEffect<Auxiliary>> m_auxiliary_numeric_effect = std::nullopt;
+    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>> m_auxiliary_numeric_effect = std::nullopt;
 
 public:
     /* Propositional effects */
@@ -78,8 +92,8 @@ public:
     GroundNumericEffectList<Fluent>& get_fluent_numeric_effects();
     const GroundNumericEffectList<Fluent>& get_fluent_numeric_effects() const;
 
-    cista::optional<GroundNumericEffect<Auxiliary>>& get_auxiliary_numeric_effect();
-    const cista::optional<GroundNumericEffect<Auxiliary>>& get_auxiliary_numeric_effect() const;
+    cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& get_auxiliary_numeric_effect();
+    const cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& get_auxiliary_numeric_effect() const;
 
     auto cista_members() noexcept { return std::tie(m_positive_effects, m_negative_effects, m_fluent_numeric_effects, m_auxiliary_numeric_effect); }
 };
@@ -115,6 +129,12 @@ extern std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumeri
 /**
  * Pretty printing
  */
+
+template<FluentOrAuxiliary F>
+std::ostream& operator<<(std::ostream& out, const GroundNumericEffectImpl<F>& element);
+
+template<FluentOrAuxiliary F>
+std::ostream& operator<<(std::ostream& out, GroundNumericEffect<F> element);
 
 template<>
 std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveEffect, const PDDLRepositories&>& data);

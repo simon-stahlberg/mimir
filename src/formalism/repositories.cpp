@@ -325,6 +325,22 @@ PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_o
 template NumericEffect<Auxiliary>
 PDDLRepositories::get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<Auxiliary> function, FunctionExpression function_expression);
 
+template<FluentOrAuxiliary F>
+GroundNumericEffect<F> PDDLRepositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
+                                                                             GroundFunction<F> function,
+                                                                             GroundFunctionExpression function_expression)
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericEffectImpl<F>> {})
+        .get_or_create(std::move(assign_operator), std::move(function), std::move(function_expression));
+}
+
+template GroundNumericEffect<Fluent> PDDLRepositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
+                                                                                           GroundFunction<Fluent> function,
+                                                                                           GroundFunctionExpression function_expression);
+template GroundNumericEffect<Auxiliary> PDDLRepositories::get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator,
+                                                                                              GroundFunction<Auxiliary> function,
+                                                                                              GroundFunctionExpression function_expression);
+
 ConjunctiveEffect PDDLRepositories::get_or_create_conjunctive_effect(VariableList parameters,
                                                                      LiteralList<Fluent> effects,
                                                                      NumericEffectList<Fluent> fluent_numeric_effects,
@@ -557,7 +573,7 @@ template<StaticOrFluentOrDerived P>
 GroundLiteral<P> PDDLRepositories::ground(Literal<P> literal, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
-    auto& grounding_tables = boost::hana::at_key(m_literal_grounding_tables, boost::hana::type<GroundLiteral<P>> {});
+    auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundLiteral<P>> {});
 
     /* 2. Access the context-independent literal grounding table */
     const auto is_negated = literal->is_negated();
@@ -676,7 +692,7 @@ template<StaticOrFluentOrAuxiliary F>
 GroundFunction<F> PDDLRepositories::ground(Function<F> function, const ObjectList& binding)
 {
     /* 1. Access the type specific grounding tables. */
-    auto& grounding_tables = boost::hana::at_key(m_function_grounding_tables, boost::hana::type<GroundFunction<F>> {});
+    auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundFunction<F>> {});
 
     /* 2. Access the context-independent function grounding table */
     const auto function_skeleton_index = function->get_function_skeleton()->get_index();
@@ -721,16 +737,19 @@ template GroundFunction<Auxiliary> PDDLRepositories::ground(Function<Auxiliary> 
 
 GroundFunctionExpression PDDLRepositories::ground(FunctionExpression fexpr, Problem problem, const ObjectList& binding)
 {
+    /* 1. Access the type specific grounding tables. */
+    auto& grounding_tables = boost::hana::at_key(m_grounding_tables, boost::hana::type<GroundFunctionExpression> {});
+
     /* 2. Access the context-specific fexpr grounding table
      */
 
     const auto fexpr_index = fexpr->get_index();
-    if (fexpr_index >= m_function_expression_grounding_tables.size())
+    if (fexpr_index >= grounding_tables.size())
     {
-        m_function_expression_grounding_tables.resize(fexpr_index + 1);
+        grounding_tables.resize(fexpr_index + 1);
     }
 
-    auto& grounding_table = m_function_expression_grounding_tables.at(fexpr_index);
+    auto& grounding_table = grounding_tables.at(fexpr_index);
 
     /* 3. Check if grounding is cached */
 
@@ -841,9 +860,9 @@ GroundNumericConstraint PDDLRepositories::ground(NumericConstraint numeric_const
 template<FluentOrAuxiliary F>
 GroundNumericEffect<F> PDDLRepositories::ground(NumericEffect<F> numeric_effect, Problem problem, const ObjectList& binding)
 {
-    return GroundNumericEffect<F>(numeric_effect->get_assign_operator(),
-                                  ground(numeric_effect->get_function(), binding),
-                                  ground(numeric_effect->get_function_expression(), problem, binding));
+    return get_or_create_ground_numeric_effect(numeric_effect->get_assign_operator(),
+                                               ground(numeric_effect->get_function(), binding),
+                                               ground(numeric_effect->get_function_expression(), problem, binding));
 }
 
 template GroundNumericEffect<Fluent> PDDLRepositories::ground(NumericEffect<Fluent> numeric_effect, Problem problem, const ObjectList& binding);
@@ -876,7 +895,7 @@ void PDDLRepositories::ground_and_fill_vector(const NumericEffectList<Fluent>& n
 void PDDLRepositories::ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
                                                 Problem problem,
                                                 const ObjectList& binding,
-                                                cista::optional<GroundNumericEffect<Auxiliary>>& ref_numeric_effect)
+                                                cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect)
 {
     if (numeric_effect.has_value())
     {
@@ -1299,6 +1318,24 @@ size_t PDDLRepositories::get_estimated_memory_usage_in_bytes_for_axioms() const
 
 // Factory
 const PDDLTypeToRepository& PDDLRepositories::get_pddl_type_to_factory() const { return m_repositories; }
+
+// GroundNumericConstraint
+
+GroundNumericConstraint PDDLRepositories::get_ground_numeric_constraint(size_t numeric_constraint_index) const
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericConstraintImpl> {}).at(numeric_constraint_index);
+}
+
+// GroundNumericEffect
+
+template<FluentOrAuxiliary F>
+GroundNumericEffect<F> PDDLRepositories::get_ground_numeric_effect(size_t numeric_effect_index) const
+{
+    return boost::hana::at_key(m_repositories, boost::hana::type<GroundNumericEffectImpl<F>> {}).at(numeric_effect_index);
+}
+
+template GroundNumericEffect<Fluent> PDDLRepositories::get_ground_numeric_effect(size_t numeric_effect_index) const;
+template GroundNumericEffect<Auxiliary> PDDLRepositories::get_ground_numeric_effect(size_t numeric_effect_index) const;
 
 // GroundAtom
 template<StaticOrFluentOrDerived P>

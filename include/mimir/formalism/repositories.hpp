@@ -95,6 +95,8 @@ template<StaticOrFluentOrAuxiliary F>
 using FunctionSkeletonRepository = SegmentedPDDLRepository<FunctionSkeletonImpl<F>>;
 template<FluentOrAuxiliary F>
 using NumericEffectRepository = SegmentedPDDLRepository<NumericEffectImpl<F>>;
+template<FluentOrAuxiliary F>
+using GroundNumericEffectRepository = SegmentedPDDLRepository<GroundNumericEffectImpl<F>>;
 using ConjunctiveEffectRepository = SegmentedPDDLRepository<ConjunctiveEffectImpl>;
 using ConditionalEffectRepository = SegmentedPDDLRepository<ConditionalEffectImpl>;
 using NumericConstraintRepository = SegmentedPDDLRepository<NumericConstraintImpl>;
@@ -156,6 +158,8 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<FunctionSkeletonImpl<Auxiliary>>, FunctionSkeletonRepository<Auxiliary>>,
     boost::hana::pair<boost::hana::type<NumericEffectImpl<Fluent>>, NumericEffectRepository<Fluent>>,
     boost::hana::pair<boost::hana::type<NumericEffectImpl<Auxiliary>>, NumericEffectRepository<Auxiliary>>,
+    boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<Fluent>>, GroundNumericEffectRepository<Fluent>>,
+    boost::hana::pair<boost::hana::type<GroundNumericEffectImpl<Auxiliary>>, GroundNumericEffectRepository<Auxiliary>>,
     boost::hana::pair<boost::hana::type<ConjunctiveEffectImpl>, ConjunctiveEffectRepository>,
     boost::hana::pair<boost::hana::type<ConditionalEffectImpl>, ConditionalEffectRepository>,
     boost::hana::pair<boost::hana::type<NumericConstraintImpl>, NumericConstraintRepository>,
@@ -167,36 +171,28 @@ using PDDLTypeToRepository = boost::hana::map<
     boost::hana::pair<boost::hana::type<DomainImpl>, DomainRepository>,
     boost::hana::pair<boost::hana::type<ProblemImpl>, ProblemRepository>>;
 
+// A table for each pair (is_negated,predicate_index) since those are context independent.
+template<typename T>
+using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
+
+using PDDLTypeToGroundingTable =
+    boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
+                     boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
+                     boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>,
+                     boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
+                     boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
+                     boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>,
+                     boost::hana::pair<boost::hana::type<GroundFunctionExpression>, GroundingTableList<GroundFunctionExpression>>>;
+
 /// @brief Collection of factories for the unique creation of PDDL objects.
 class PDDLRepositories
 {
 private:
     PDDLTypeToRepository m_repositories;
 
-    // TODO: move grounding tables here to keep all formalism related objects in one place, e.g.,
+    PDDLTypeToGroundingTable m_grounding_tables;
 
-    // We a table for each pair (is_negated,predicate_index) since those are context independent.
-    template<typename T>
-    using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
-
-    using GroundedLiteralTypeToGroundingTableList =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>>;
-
-    GroundedLiteralTypeToGroundingTableList m_literal_grounding_tables;
-
-    using GroundedFunctionTypeToGroundingTableList =
-        boost::hana::map<boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
-                         boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>>;
-
-    GroundedFunctionTypeToGroundingTableList m_function_grounding_tables;
-
-    template<typename T>
-    using LiteralGroundingTable = absl::flat_hash_map<ObjectList, T, loki::Hash<ObjectList>>;
-
-    GroundingTableList<GroundFunctionExpression> m_function_expression_grounding_tables;
+    /* For ground actions and axioms we also create a reusable builder. */
 
     GroundActionImplSet m_actions;
     GroundActionList m_actions_by_index;
@@ -321,6 +317,10 @@ public:
     template<FluentOrAuxiliary F>
     NumericEffect<F> get_or_create_numeric_effect(loki::AssignOperatorEnum assign_operator, Function<F> function, FunctionExpression function_expression);
 
+    template<FluentOrAuxiliary F>
+    GroundNumericEffect<F>
+    get_or_create_ground_numeric_effect(loki::AssignOperatorEnum assign_operator, GroundFunction<F> function, GroundFunctionExpression function_expression);
+
     /// @brief Get or create a simple effect for the given parameters.
     ConjunctiveEffect get_or_create_conjunctive_effect(VariableList parameters,
                                                        LiteralList<Fluent> effects,
@@ -438,7 +438,7 @@ public:
     void ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
                                   Problem problem,
                                   const ObjectList& binding,
-                                  cista::optional<GroundNumericEffect<Auxiliary>>& ref_numeric_effect);
+                                  cista::optional<FlatExternalPtr<const GroundNumericEffectImpl<Auxiliary>>>& ref_numeric_effect);
 
     GroundAction ground(Action action,
                         Problem problem,
@@ -461,6 +461,26 @@ public:
 
     // Factory
     const PDDLTypeToRepository& get_pddl_type_to_factory() const;
+
+    // GroundNumericConstraint
+    GroundNumericConstraint get_ground_numeric_constraint(size_t numeric_constraint_index) const;
+
+    template<std::ranges::forward_range Iterable>
+    void get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices,
+                                                     GroundNumericConstraintList& out_ground_numeric_constraints) const;
+
+    template<std::ranges::forward_range Iterable>
+    GroundNumericConstraintList get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const;
+
+    // GroundNumericEffect
+    template<FluentOrAuxiliary F>
+    GroundNumericEffect<F> get_ground_numeric_effect(size_t numeric_effect_index) const;
+
+    template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+    void get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices, GroundNumericEffectList<F>& out_ground_numeric_effect) const;
+
+    template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+    GroundNumericEffectList<F> get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const;
 
     // GroundAtom
     template<StaticOrFluentOrDerived P>
@@ -508,14 +528,57 @@ public:
  * Implementations
  */
 
+// GroundNumericConstraint
+template<std::ranges::forward_range Iterable>
+void PDDLRepositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices,
+                                                                   GroundNumericConstraintList& out_ground_numeric_constraints) const
+{
+    out_ground_numeric_constraints.clear();
+
+    for (const auto& index : numeric_constraint_indices)
+    {
+        out_ground_numeric_constraints.push_back(get_ground_numeric_constraint(index));
+    }
+}
+
+template<std::ranges::forward_range Iterable>
+GroundNumericConstraintList PDDLRepositories::get_ground_numeric_constraints_from_indices(const Iterable& numeric_constraint_indices) const
+{
+    auto result = GroundNumericConstraintList {};
+    get_ground_numeric_constraints_from_indices(numeric_constraint_indices, result);
+    return result;
+}
+
+// GroundNumericEffect
+template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+void PDDLRepositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices,
+                                                               GroundNumericEffectList<F>& out_ground_numeric_effect) const
+{
+    out_ground_numeric_effect.clear();
+
+    for (const auto& index : numeric_effect_indices)
+    {
+        out_ground_numeric_effect.push_back(get_ground_numeric_effect<F>(index));
+    }
+}
+
+template<FluentOrAuxiliary F, std::ranges::forward_range Iterable>
+GroundNumericEffectList<F> PDDLRepositories::get_ground_numeric_effects_from_indices(const Iterable& numeric_effect_indices) const
+{
+    auto result = GroundNumericEffectList<F> {};
+    get_ground_numeric_effects_from_indices(numeric_effect_indices, result);
+    return result;
+}
+
+// Atom
 template<StaticOrFluentOrDerived P, std::ranges::forward_range Iterable>
 void PDDLRepositories::get_ground_atoms_from_indices(const Iterable& atom_indices, GroundAtomList<P>& out_ground_atoms) const
 {
     out_ground_atoms.clear();
 
-    for (const auto& atom_index : atom_indices)
+    for (const auto& index : atom_indices)
     {
-        out_ground_atoms.push_back(get_ground_atom<P>(atom_index));
+        out_ground_atoms.push_back(get_ground_atom<P>(index));
     }
 }
 

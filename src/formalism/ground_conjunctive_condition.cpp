@@ -157,12 +157,12 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCon
     // TODO(numerical): add numeric constraints
     const auto& [conjunctive_condition, pddl_repositories] = data;
 
-    const auto& positive_static_precondition_bitset = conjunctive_condition.get_positive_precondition<Static>();
-    const auto& negative_static_precondition_bitset = conjunctive_condition.get_negative_precondition<Static>();
-    const auto& positive_fluent_precondition_bitset = conjunctive_condition.get_positive_precondition<Fluent>();
-    const auto& negative_fluent_precondition_bitset = conjunctive_condition.get_negative_precondition<Fluent>();
-    const auto& positive_derived_precondition_bitset = conjunctive_condition.get_positive_precondition<Derived>();
-    const auto& negative_derived_precondition_bitset = conjunctive_condition.get_negative_precondition<Derived>();
+    const auto& positive_static_precondition_indices = conjunctive_condition.get_positive_precondition<Static>();
+    const auto& negative_static_precondition_indices = conjunctive_condition.get_negative_precondition<Static>();
+    const auto& positive_fluent_precondition_indices = conjunctive_condition.get_positive_precondition<Fluent>();
+    const auto& negative_fluent_precondition_indices = conjunctive_condition.get_negative_precondition<Fluent>();
+    const auto& positive_derived_precondition_indices = conjunctive_condition.get_positive_precondition<Derived>();
+    const auto& negative_derived_precondition_indices = conjunctive_condition.get_negative_precondition<Derived>();
 
     auto positive_static_precondition = GroundAtomList<Static> {};
     auto negative_static_precondition = GroundAtomList<Static> {};
@@ -170,18 +170,19 @@ std::ostream& operator<<(std::ostream& os, const std::tuple<GroundConjunctiveCon
     auto negative_fluent_precondition = GroundAtomList<Fluent> {};
     auto positive_derived_precondition = GroundAtomList<Derived> {};
     auto negative_derived_precondition = GroundAtomList<Derived> {};
+    const auto& ground_numeric_constraints = conjunctive_condition.get_numeric_constraints();
 
-    pddl_repositories.get_ground_atoms_from_indices<Static>(positive_static_precondition_bitset, positive_static_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Static>(negative_static_precondition_bitset, negative_static_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_bitset, positive_fluent_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_bitset, negative_fluent_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_bitset, positive_derived_precondition);
-    pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_bitset, negative_derived_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Static>(positive_static_precondition_indices, positive_static_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Static>(negative_static_precondition_indices, negative_static_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(positive_fluent_precondition_indices, positive_fluent_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Fluent>(negative_fluent_precondition_indices, negative_fluent_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(positive_derived_precondition_indices, positive_derived_precondition);
+    pddl_repositories.get_ground_atoms_from_indices<Derived>(negative_derived_precondition_indices, negative_derived_precondition);
 
     os << "positive static precondition=" << positive_static_precondition << ", " << "negative static precondition=" << negative_static_precondition << ", "
        << "positive fluent precondition=" << positive_fluent_precondition << ", " << "negative fluent precondition=" << negative_fluent_precondition << ", "
        << "positive derived precondition=" << positive_derived_precondition << ", " << "negative derived precondition=" << negative_derived_precondition << ", "
-       << "numeric constraints=" << conjunctive_condition.get_numeric_constraints();
+       << "numeric constraints=" << ground_numeric_constraints;
 
     return os;
 }

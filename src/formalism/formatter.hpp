@@ -49,6 +49,8 @@ public:
     void write(const DomainImpl& element, std::ostream& out);
     template<FluentOrAuxiliary F>
     void write(const NumericEffectImpl<F>& element, std::ostream& out);
+    template<FluentOrAuxiliary F>
+    void write(const GroundNumericEffectImpl<F>& element, std::ostream& out);
     void write(const ConjunctiveEffectImpl& element, std::ostream& out);
     void write(const ConditionalEffectImpl& element, std::ostream& out);
     void write(const FunctionExpressionNumberImpl& element, std::ostream& out);

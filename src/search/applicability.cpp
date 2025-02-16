@@ -140,23 +140,23 @@ bool is_applicable(const GroundConjunctiveCondition& conjunctive_condition, Prob
  */
 
 template<FluentOrAuxiliary F>
-bool is_applicable(const GroundNumericEffect<F>& effect, const FlatDoubleList& fluent_numeric_variables)
+bool is_applicable(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables)
 {
     throw std::logic_error("Should not be called.");
 }
 
 template<>
-bool is_applicable(const GroundNumericEffect<Fluent>& effect, const FlatDoubleList& fluent_numeric_variables)
+bool is_applicable(GroundNumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    return ((effect.get_function()->get_index() < fluent_numeric_variables.size())
-            && (fluent_numeric_variables[effect.get_function()->get_index()] != UNDEFINED_CONTINUOUS_COST))
-           && (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return ((effect->get_function()->get_index() < fluent_numeric_variables.size())
+            && (fluent_numeric_variables[effect->get_function()->get_index()] != UNDEFINED_CONTINUOUS_COST))
+           && (evaluate(effect->get_function_expression(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
 template<>
-bool is_applicable(const GroundNumericEffect<Auxiliary>& effect, const FlatDoubleList& fluent_numeric_variables)
+bool is_applicable(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables)
 {
-    return (evaluate(effect.get_function_expression().get(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return (evaluate(effect->get_function_expression(), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
 /// @brief Return true iff the numeric effects are applicable, i.e., all numeric effects are well-defined.
@@ -169,7 +169,7 @@ static bool is_applicable(const GroundNumericEffectList<F>& effects, const FlatD
 {
     for (const auto& effect : effects)
     {
-        if (!is_applicable(effect, fluent_numeric_variables))
+        if (!is_applicable(effect.get(), fluent_numeric_variables))
         {
             return false;
         }
@@ -181,7 +181,7 @@ bool is_applicable(const GroundConjunctiveEffect& conjunctive_effect, const Dens
 {
     return is_applicable(conjunctive_effect.get_fluent_numeric_effects(), dense_state.get_numeric_variables())
            && (!conjunctive_effect.get_auxiliary_numeric_effect().has_value()
-               || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value(), dense_state.get_numeric_variables()));
+               || is_applicable(conjunctive_effect.get_auxiliary_numeric_effect().value().get(), dense_state.get_numeric_variables()));
 }
 
 /**

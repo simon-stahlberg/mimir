@@ -82,6 +82,11 @@ using NumericEffect = const NumericEffectImpl<F>*;
 template<FluentOrAuxiliary F>
 using NumericEffectList = std::vector<NumericEffect<F>>;
 
+template<FluentOrAuxiliary F>
+class GroundNumericEffectImpl;
+template<FluentOrAuxiliary F>
+using GroundNumericEffect = const GroundNumericEffectImpl<F>*;
+
 class ConjunctiveEffectImpl;
 using ConjunctiveEffect = const ConjunctiveEffectImpl*;
 

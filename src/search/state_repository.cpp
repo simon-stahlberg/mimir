@@ -214,12 +214,12 @@ static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList
 {
     for (const auto& numeric_effect : numeric_effects)
     {
-        const auto index = numeric_effect.get_function()->get_index();
+        const auto index = numeric_effect->get_function()->get_index();
         if (index >= ref_numeric_variables.size())
         {
             ref_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
         }
-        const auto assign_operator_and_value = evaluate(numeric_effect, numeric_variables);
+        const auto assign_operator_and_value = evaluate(numeric_effect.get(), numeric_variables);
 
         apply_numeric_effect(assign_operator_and_value, ref_numeric_variables[index]);
     }
@@ -253,7 +253,7 @@ static void apply_action_effects(GroundAction action,
     collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(), state_fluent_numeric_variables, ref_fluent_numeric_variables);
     if (conjunctive_effect.get_auxiliary_numeric_effect().has_value())
     {
-        collect_applied_auxiliary_numeric_effects(conjunctive_effect.get_auxiliary_numeric_effect().value(),
+        collect_applied_auxiliary_numeric_effects(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
                                                   state_fluent_numeric_variables,
                                                   ref_successor_state_metric_score);
     }
@@ -269,7 +269,7 @@ static void apply_action_effects(GroundAction action,
                                                    ref_fluent_numeric_variables);
             if (conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().has_value())
             {
-                collect_applied_auxiliary_numeric_effects(conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().value(),
+                collect_applied_auxiliary_numeric_effects(conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().value().get(),
                                                           state_fluent_numeric_variables,
                                                           ref_successor_state_metric_score);
             }
