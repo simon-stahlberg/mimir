@@ -33,14 +33,12 @@ namespace mimir
 
 DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
     m_problem(problem),
-    m_pddl_repositories(std::move(pddl_repositories)),
-    m_delete_relax_transformer(*m_pddl_repositories),  ///< We have to use input grounders pddl_repositories to map the relaxed actions/axioms
-                                                       /// back to unrelaxed actions/axioms
+    m_pddl_repositories(pddl_repositories),
+    m_delete_free_pddl_repositories(std::make_shared<PDDLRepositories>()),
+    m_delete_relax_transformer(*m_delete_free_pddl_repositories),
     m_delete_free_problem(m_delete_relax_transformer.run(m_problem)),
-    // m_delete_free_grounder(std::make_shared<Grounder>(m_delete_free_problem,
-    //                                                   m_pddl_repositories)),  // important to instantiate the grounder for the delete-free problem!
-    m_delete_free_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem, m_pddl_repositories)),
-    m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_problem, m_pddl_repositories)),
+    m_delete_free_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_delete_free_problem, m_delete_free_pddl_repositories)),
+    m_delete_free_axiom_evalator(std::make_shared<LiftedAxiomEvaluator>(m_delete_free_problem, m_delete_free_pddl_repositories)),
     m_delete_free_state_repository(StateRepository(std::static_pointer_cast<IAxiomEvaluator>(m_delete_free_axiom_evalator)))
 {
     std::cout << "[DeleteRelaxedProblemExplorator] Started delete relaxed exploration." << std::endl;
@@ -93,6 +91,17 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(Problem problem, 
               << m_delete_free_state_repository.get_reached_derived_ground_atoms_bitset().count() << std::endl;
 }
 
+static ObjectList translate_into_pddl_repositories(const ObjectList& objects, PDDLRepositories& ref_repositories)
+{
+    auto result = ObjectList {};
+    result.reserve(objects.size());
+    for (const auto& object : objects)
+    {
+        result.push_back(ref_repositories.get_or_create_object(object->get_name()));
+    }
+    return result;
+}
+
 std::shared_ptr<GroundedAxiomEvaluator>
 DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree::Options& options,
                                                                 std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) const
@@ -119,17 +128,22 @@ DeleteRelaxedProblemExplorator::create_grounded_axiom_evaluator(const match_tree
 
     /* Store ground axioms in corresponding partition. */
     auto ground_axiom_partitioning = std::vector<GroundAxiomList>(num_partitions);
-    for (const auto& ground_axiom : m_pddl_repositories->get_ground_axioms())
+
+    for (const auto& delete_free_ground_axiom : m_delete_free_pddl_repositories->get_ground_axioms())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        const auto& axiom = m_pddl_repositories->get_axiom(ground_axiom->get_axiom_index());
-        for (const auto& unrelaxed_axiom : m_delete_relax_transformer.get_unrelaxed_axioms(axiom))
+        for (const auto& axiom :
+             m_delete_relax_transformer.get_unrelaxed_axioms(m_delete_free_pddl_repositories->get_axiom(delete_free_ground_axiom->get_axiom_index())))
         {
-            auto axiom_arguments = m_pddl_repositories->get_objects_from_indices(ground_axiom->get_object_indices());
-            auto grounded_axiom = m_pddl_repositories->ground(unrelaxed_axiom, m_problem, std::move(axiom_arguments));
-            if (is_statically_applicable(grounded_axiom->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
+            auto binding =
+                translate_into_pddl_repositories(m_delete_free_pddl_repositories->get_objects_from_indices(delete_free_ground_axiom->get_object_indices()),
+                                                 *m_pddl_repositories);
+
+            auto ground_axiom = m_pddl_repositories->ground(axiom, m_problem, std::move(binding));
+
+            if (is_statically_applicable(ground_axiom->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
             {
-                ground_axiom_partitioning.at(axiom_to_partition.at(unrelaxed_axiom)).push_back(grounded_axiom);
+                ground_axiom_partitioning.at(axiom_to_partition.at(axiom)).push_back(ground_axiom);
             }
         }
     }
@@ -196,14 +210,20 @@ DeleteRelaxedProblemExplorator::create_grounded_applicable_action_generator(cons
     }
 
     auto ground_actions = GroundActionList {};
-    for (const auto& action : m_pddl_repositories->get_ground_actions())
+    for (const auto& delete_free_ground_action : m_delete_free_pddl_repositories->get_ground_actions())
     {
         // Map relaxed to unrelaxed actions and ground them with the same arguments.
-        for (const auto& unrelaxed_action : m_delete_relax_transformer.get_unrelaxed_actions(m_pddl_repositories->get_action(action->get_action_index())))
+        for (const auto& action :
+             m_delete_relax_transformer.get_unrelaxed_actions(m_delete_free_pddl_repositories->get_action(delete_free_ground_action->get_action_index())))
         {
-            auto action_arguments = m_pddl_repositories->get_objects_from_indices(action->get_object_indices());
-            const auto& conditional_effect_candidate_objects = per_action_conditional_effects_candidate_objects.at(unrelaxed_action);
-            auto grounded_action = m_pddl_repositories->ground(unrelaxed_action, m_problem, std::move(action_arguments), conditional_effect_candidate_objects);
+            auto binding =
+                translate_into_pddl_repositories(m_delete_free_pddl_repositories->get_objects_from_indices(delete_free_ground_action->get_object_indices()),
+                                                 *m_pddl_repositories);
+
+            const auto& conditional_effect_candidate_objects = per_action_conditional_effects_candidate_objects.at(action);
+
+            auto grounded_action = m_pddl_repositories->ground(action, m_problem, std::move(binding), conditional_effect_candidate_objects);
+
             if (is_statically_applicable(grounded_action->get_conjunctive_condition(), m_problem->get_static_initial_positive_atoms_bitset()))
             {
                 ground_actions.push_back(grounded_action);

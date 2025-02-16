@@ -36,9 +36,10 @@ private:
     Problem m_problem;
     std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
+    /* We store all delete-free info separately, allowing us to discard it after instantiating the generator and evaluator. */
+    std::shared_ptr<PDDLRepositories> m_delete_free_pddl_repositories;
     DeleteRelaxTransformer m_delete_relax_transformer;
     Problem m_delete_free_problem;
-    // std::shared_ptr<Grounder> m_delete_free_grounder;
     std::shared_ptr<LiftedApplicableActionGenerator> m_delete_free_applicable_action_generator;
     std::shared_ptr<LiftedAxiomEvaluator> m_delete_free_axiom_evalator;
     StateRepository m_delete_free_state_repository;
