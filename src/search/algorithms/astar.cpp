@@ -148,8 +148,6 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
         const auto state = openlist.top();
         openlist.pop();
 
-        event_handler->on_expand_state(state, problem, pddl_repositories);
-
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
@@ -210,6 +208,8 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
         }
 
         /* Expand the successors of the state. */
+
+        event_handler->on_expand_state(state, problem, pddl_repositories);
 
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {

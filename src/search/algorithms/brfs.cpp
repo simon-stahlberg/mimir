@@ -120,8 +120,6 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
         const auto state = queue.front();
         queue.pop_front();
 
-        event_handler->on_expand_state(state, problem, pddl_repositories);
-
         // We need this before goal test for correct statistics reporting.
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
@@ -169,6 +167,8 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
                 return result;
             }
         }
+
+        event_handler->on_expand_state(state, problem, pddl_repositories);
 
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {

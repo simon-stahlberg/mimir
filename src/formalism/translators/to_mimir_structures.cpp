@@ -359,7 +359,12 @@ void ToMimirStructures::prepare_grounded(loki::Function function)
     prepare_common(function->get_function_skeleton());
     prepare_grounded(function->get_terms());
 }
-void ToMimirStructures::prepare_grounded(loki::FunctionValue function_value) { prepare_grounded(function_value->get_function()); }
+void ToMimirStructures::prepare_grounded(loki::FunctionValue function_value)
+{
+    prepare_grounded(function_value->get_function());
+
+    m_function_to_value.emplace(function_value->get_function(), function_value->get_number());
+}
 void ToMimirStructures::prepare_grounded(loki::Condition condition)
 {
     auto condition_ptr = condition;
@@ -579,10 +584,26 @@ FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionM
 FunctionExpression ToMimirStructures::translate_lifted(loki::FunctionExpressionFunction function_expression)
 {
     return std::visit(
-        [this](auto&& function) -> FunctionExpression
+        [&](auto&& function) -> FunctionExpression
         {
             using T = std::decay_t<decltype(function)>;
-            if constexpr (std::is_same_v<T, Function<Static>> || std::is_same_v<T, Function<Fluent>>)
+            if constexpr (std::is_same_v<T, Function<Static>>)
+            {
+                if (function->get_terms().size() == 0)
+                {
+                    if (!m_function_to_value.contains(function_expression->get_function()))
+                    {
+                        throw std::runtime_error("ToMimirStructures::translate_lifted(function_expression): undefined static function value "
+                                                 + to_string(function) + ".");
+                    }
+                    return m_pddl_repositories.get_or_create_function_expression(
+                        m_pddl_repositories.get_or_create_function_expression_number(m_function_to_value.at(function_expression->get_function())));
+                }
+
+                return this->m_pddl_repositories.get_or_create_function_expression(
+                    this->m_pddl_repositories.get_or_create_function_expression_function(function));
+            }
+            else if constexpr (std::is_same_v<T, Function<Fluent>>)
             {
                 return this->m_pddl_repositories.get_or_create_function_expression(
                     this->m_pddl_repositories.get_or_create_function_expression_function(function));
@@ -1097,18 +1118,18 @@ GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExp
 GroundFunctionExpression ToMimirStructures::translate_grounded(loki::FunctionExpressionFunction function_expression)
 {
     return std::visit(
-        [this](auto&& ground_function)
+        [&](auto&& ground_function)
         {
             using T = std::decay_t<decltype(ground_function)>;
             if constexpr (std::is_same_v<T, GroundFunction<Static>>)
             {
-                if (!m_static_function_to_value.contains(ground_function))
+                if (!m_function_to_value.contains(function_expression->get_function()))
                 {
                     throw std::runtime_error("ToMimirStructures::translate_grounded(function_expression): undefined static function value "
                                              + to_string(ground_function) + ".");
                 }
                 return m_pddl_repositories.get_or_create_ground_function_expression(
-                    m_pddl_repositories.get_or_create_ground_function_expression_number(m_static_function_to_value.at(ground_function)));
+                    m_pddl_repositories.get_or_create_ground_function_expression_number(m_function_to_value.at(function_expression->get_function())));
             }
             else if constexpr (std::is_same_v<T, GroundFunction<Fluent>>)
             {
@@ -1351,12 +1372,6 @@ Problem ToMimirStructures::translate_grounded(loki::Problem problem)
             static_or_fluent_or_auxiliary_function_value);
     }
 
-    // Initialize member that is used in numeric goal grounding.
-    for (const auto& function_value : static_function_values)
-    {
-        m_static_function_to_value.emplace(function_value->get_function(), function_value->get_number());
-    }
-
     auto static_goal_literals = GroundLiteralList<Static> {};
     auto fluent_goal_literals = GroundLiteralList<Fluent> {};
     auto derived_goal_literals = GroundLiteralList<Derived> {};
@@ -1401,13 +1416,13 @@ Problem ToMimirStructures::run(loki::Problem problem)
 
 ToMimirStructures::ToMimirStructures(PDDLRepositories& pddl_repositories) :
     m_pddl_repositories(pddl_repositories),
+    m_function_to_value(),
     m_fluent_predicates(),
     m_derived_predicates(),
     m_lifted_fexpr_functions(),
     m_grounded_metric_fexpr_functions(),
     m_grounded_goal_fexpr_functions(),
-    m_effect_function_skeletons(),
-    m_static_function_to_value()
+    m_effect_function_skeletons()
 {
 }
 }
