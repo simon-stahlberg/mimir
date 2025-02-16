@@ -32,7 +32,8 @@ void DefaultAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state, P
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
                                                                GroundAction action,
-                                                               ContinuousCost g_value,
+                                                               ContinuousCost action_cost,
+                                                               State successor_state,
                                                                Problem problem,
                                                                const PDDLRepositories& pddl_repositories) const
 {
@@ -40,7 +41,8 @@ void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
                                                                        GroundAction action,
-                                                                       ContinuousCost g_value,
+                                                                       ContinuousCost action_cost,
+                                                                       State successor_state,
                                                                        Problem problem,
                                                                        const PDDLRepositories& pddl_repositories) const
 {
@@ -48,7 +50,8 @@ void DefaultAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State sta
 
 void DefaultAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                            GroundAction action,
-                                                                           ContinuousCost g_value,
+                                                                           ContinuousCost action_cost,
+                                                                           State successor_state,
                                                                            Problem problem,
                                                                            const PDDLRepositories& pddl_repositories) const
 {

@@ -19,6 +19,7 @@
 
 #include "mimir/formalism/effects.hpp"
 #include "mimir/search/satisficing_binding_generators/action.hpp"
+#include "mimir/search/satisficing_binding_generators/base_impl.hpp"
 
 namespace mimir
 {
@@ -87,5 +88,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_if_fires(ConditionalEff
     return !(!is_valid_binding(effect->get_conjunctive_effect(), dense_state, binding)  //
              && SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::is_valid_binding(effect->get_conjunctive_condition(), dense_state, binding));
 }
+
+template class SatisficingBindingGenerator<ActionSatisficingBindingGenerator>;
 
 }

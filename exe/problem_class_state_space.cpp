@@ -44,17 +44,18 @@ int main(int argc, char** argv)
         contexts.emplace_back(parser.get_problem(), state_repository, applicable_action_generator);
     }
 
-    auto pcg = mimir::datasets::ProblemClassGraph(contexts);
+    auto pcss = mimir::datasets::ProblemClassStateSpace(contexts);
 
-    for (size_t i = 0; i < pcg.get_problem_graphs().size(); ++i)
+    for (size_t i = 0; i < pcss.get_problem_state_spaces().size(); ++i)
     {
-        const auto& pg_i = pcg.get_problem_graphs()[i];
-        std::cout << i << ". has num states: " << pg_i.get_num_vertices() << " and num edges: " << pg_i.get_num_edges() << std::endl;
+        const auto& pss_i = pcss.get_problem_state_spaces()[i];
+        std::cout << i << ". has num vertices: " << pss_i.get_graph().get_num_vertices() << " and num edges: " << pss_i.get_graph().get_num_edges()
+                  << std::endl;
     }
 
-    const auto& cg = pcg.get_class_graph();
+    const auto& css = pcss.get_class_state_space();
 
-    std::cout << "Class graph has num states: " << cg.get_num_vertices() << " and num edges: " << cg.get_num_edges() << std::endl;
+    std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
 
     return 0;
 }

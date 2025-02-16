@@ -34,6 +34,40 @@
 
 namespace mimir::datasets
 {
+/**
+ * ProblemStateSpace
+ */
+
+ProblemStateSpace::ProblemStateSpace(ProblemGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices) :
+    m_graph(std::move(graph)),
+    m_goal_vertices(std::move(goal_vertices)),
+    m_unsolvable_vertices(std::move(unsolvable_vertices))
+{
+}
+
+const ProblemGraph& ProblemStateSpace::get_graph() const { return m_graph; }
+const IndexSet& ProblemStateSpace::get_goal_vertices() const { return m_goal_vertices; }
+const IndexSet& ProblemStateSpace::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
+
+/**
+ * ClassStateSpace
+ */
+
+ClassStateSpace::ClassStateSpace(ClassGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices) :
+    m_graph(std::move(graph)),
+    m_goal_vertices(std::move(goal_vertices)),
+    m_unsolvable_vertices(std::move(unsolvable_vertices))
+{
+}
+
+const ClassGraph& ClassStateSpace::get_graph() const { return m_graph; }
+const IndexSet& ClassStateSpace::get_goal_vertices() const { return m_goal_vertices; }
+const IndexSet& ClassStateSpace::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
+
+/**
+ * ProblemClassStateSpace
+ */
+
 using CertificateToIndex =
     std::unordered_map<nauty_wrapper::Certificate, Index, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>>;
 
@@ -44,44 +78,58 @@ private:
     StaticProblemGraph& m_graph;
     CertificateToIndex& m_symmetries;
 
+    StateMap<VertexIndex> m_state_to_vertex_index;
+    IndexSet m_goal_vertex_indices;
+
     /* Implement AlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>;
 
-    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
-
-    void on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
-
-    void on_generate_state_impl(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) const
+    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories)
     {
+        if (!m_state_to_vertex_index.contains(state))
+            m_state_to_vertex_index.emplace(state, m_graph.add_vertex(VertexIndex(-1), state));
+    }
+
+    void on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories)
+    {
+        m_goal_vertex_indices.insert(m_state_to_vertex_index.at(state));
+    }
+
+    void on_generate_state_impl(State state,
+                                GroundAction action,
+                                ContinuousCost action_cost,
+                                State successor_state,
+                                Problem problem,
+                                const PDDLRepositories& pddl_repositories)
+    {
+        const auto source_vertex_index = m_state_to_vertex_index.at(state);
+        const auto target_vertex_index = m_state_to_vertex_index.contains(successor_state) ? m_state_to_vertex_index.at(successor_state) :
+                                                                                             m_graph.add_vertex(VertexIndex(-1), successor_state);
+        m_state_to_vertex_index.emplace(successor_state, target_vertex_index);
+        m_graph.add_directed_edge(source_vertex_index, target_vertex_index, EdgeIndex(-1), action, action_cost);
     }
 
     void on_generate_state_in_search_tree_impl(State state,
                                                GroundAction action,
                                                ContinuousCost action_cost,
+                                               State successor_state,
                                                Problem problem,
-                                               const PDDLRepositories& pddl_repositories) const
+                                               const PDDLRepositories& pddl_repositories)
     {
     }
 
     void on_generate_state_not_in_search_tree_impl(State state,
                                                    GroundAction action,
                                                    ContinuousCost action_cost,
+                                                   State successor_state,
                                                    Problem problem,
-                                                   const PDDLRepositories& pddl_repositories) const
+                                                   const PDDLRepositories& pddl_repositories)
     {
     }
 
-    void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) const {}
+    void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
 
-    void on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
-
-    bool on_external_pruning_check_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const
-    {
-        // TODO: skip symmetric nodes if symmetry pruning enabled.
-        return false;
-    }
-
-    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) {}
 
     void on_end_search_impl(uint64_t num_reached_fluent_atoms,
                             uint64_t num_reached_derived_atoms,
@@ -97,11 +145,11 @@ private:
     {
     }
 
-    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) const {}
+    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) {}
 
-    void on_unsolvable_impl() const {}
+    void on_unsolvable_impl() {}
 
-    void on_exhausted_impl() const {}
+    void on_exhausted_impl() {}
 
 public:
     explicit ProblemGraphBrFSAlgorithmEventHandler(const ProblemOptions& options,
@@ -116,8 +164,7 @@ public:
     }
 };
 
-static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_static_problem_graph(const ProblemContext& context,
-                                                                                                     const ProblemOptions& options)
+static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_problem_graph(const ProblemContext& context, const ProblemOptions& options)
 {
     const auto problem = context.problem;
     const auto applicable_action_generator = context.applicable_action_generator;
@@ -137,7 +184,7 @@ static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_
     auto symmetries = CertificateToIndex {};
 
     auto goal_test = std::make_shared<ProblemGoal>(problem);
-    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, symmetries);
+    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, symmetries, false);
     auto result = find_solution_brfs(applicable_action_generator,
                                      state_repository,
                                      state_repository->get_or_create_initial_state(),
@@ -154,13 +201,12 @@ static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_
     return std::make_pair(std::move(graph), std::move(symmetries));
 }
 
-static std::vector<std::pair<StaticProblemGraph, CertificateToIndex>> compute_static_problem_graphs(const ProblemContextList& contexts,
-                                                                                                    const ProblemOptions& options)
+static std::vector<std::pair<StaticProblemGraph, CertificateToIndex>> compute_problem_graphs(const ProblemContextList& contexts, const ProblemOptions& options)
 {
     auto problem_graphs = std::vector<std::pair<StaticProblemGraph, CertificateToIndex>> {};
     for (const auto& context : contexts)
     {
-        auto result = compute_static_problem_graph(context, options);
+        auto result = compute_problem_graph(context, options);
 
         if (!result)
         {
@@ -173,7 +219,7 @@ static std::vector<std::pair<StaticProblemGraph, CertificateToIndex>> compute_st
     return problem_graphs;
 }
 
-ProblemClassGraph::ProblemClassGraph(const ProblemContextList& contexts, const ClassOptions& options)
+ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& contexts, const ClassOptions& options)
 {
     // Main idea:
     // 1. iterate over problems, expand then with symmetry pruning
@@ -183,31 +229,86 @@ ProblemClassGraph::ProblemClassGraph(const ProblemContextList& contexts, const C
         Note: we cannot insert certificates immediately as failures would result in unnecessary
     */
 
-    auto static_problem_graphs = compute_static_problem_graphs(contexts, options.options);
+    auto problem_graphs = compute_problem_graphs(contexts, options.options);
+
+    if (options.sort_ascending_by_num_states)
+    {
+        std::sort(problem_graphs.begin(),
+                  problem_graphs.end(),
+                  [](auto&& lhs, auto&& rhs) { return lhs.first.get_num_vertices() < rhs.first.get_num_vertices(); });
+    }
+
+    std::cout << "Num problem graphs: " << problem_graphs.size() << std::endl;
 
     /* Step 2: Compute the `ClassGraph` by looping through the `StaticProblemGraphs`.
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
      */
 
-    auto symmetries = CertificateToIndex {};
+    auto class_graph = StaticClassGraph {};
+    auto class_goal_states = IndexSet {};
+    auto class_unsolvable_states = IndexSet {};
+
+    if (options.symmetry_pruning)
+    {
+        auto symmetries = CertificateToIndex {};
+    }
+    else
+    {
+        auto per_problem_vertex_to_class_vertex = std::vector<IndexList>(problem_graphs.size());
+
+        auto problem_index = Index(0);
+        auto class_vertex_index = Index(0);
+
+        for (const auto& [problem_graph, problem_symmetries] : problem_graphs)
+        {
+            assert(problem_symmetries.empty());
+
+            auto& problem_vertex_to_class_vertex = per_problem_vertex_to_class_vertex[problem_index];
+            problem_vertex_to_class_vertex.resize(problem_graph.get_num_vertices(), Index(-1));
+
+            std::cout << "Problem graph num vertices: " << problem_graph.get_num_vertices() << std::endl;
+
+            for (const auto& vertex : problem_graph.get_vertices())
+            {
+                problem_vertex_to_class_vertex[vertex.get_index()] = class_graph.add_vertex(problem_index, vertex.get_index());
+            }
+            for (const auto& edge : problem_graph.get_edges())
+            {
+                class_graph.add_directed_edge(problem_vertex_to_class_vertex.at(edge.get_source()),
+                                              problem_vertex_to_class_vertex.at(edge.get_target()),
+                                              problem_index,
+                                              edge.get_index());
+            }
+
+            ++problem_index;
+        }
+    }
+
+    m_class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)), std::move(class_goal_states), std::move(class_unsolvable_states));
 }
 
-const ProblemGraphList& ProblemClassGraph::get_problem_graphs() const { return m_problem_graphs; }
+const ProblemStateSpaceList& ProblemClassStateSpace::get_problem_state_spaces() const { return m_problem_state_spaces; }
 
-const ClassGraph& ProblemClassGraph::get_class_graph() const { return m_class_graph; }
+const ClassStateSpace& ProblemClassStateSpace::get_class_state_space() const { return m_class_state_space; }
 
-const ProblemGraph& ProblemClassGraph::get_problem_graph(const ClassVertex& vertex) const { return m_problem_graphs.at(get_problem_index(vertex)); }
-
-const ProblemVertex& ProblemClassGraph::get_problem_vertex(const ClassVertex& vertex) const
+const ProblemStateSpace& ProblemClassStateSpace::get_problem_state_space(const ClassVertex& vertex) const
 {
-    return m_problem_graphs.at(get_problem_index(vertex)).get_vertex(get_problem_vertex_index(vertex));
+    return m_problem_state_spaces.at(get_problem_index(vertex));
 }
 
-const ProblemGraph& ProblemClassGraph::get_problem_graph(const ClassEdge& edge) const { return m_problem_graphs.at(get_problem_index(edge)); }
-
-const ProblemEdge& ProblemClassGraph::get_problem_edge(const ClassEdge& edge) const
+const ProblemStateSpace& ProblemClassStateSpace::get_problem_state_space(const ClassEdge& edge) const
 {
-    return m_problem_graphs.at(get_problem_index(edge)).get_edge(get_problem_edge_index(edge));
+    return m_problem_state_spaces.at(get_problem_index(edge));
+}
+
+const ProblemVertex& ProblemClassStateSpace::get_problem_vertex(const ClassVertex& vertex) const
+{
+    return m_problem_state_spaces.at(get_problem_index(vertex)).get_graph().get_vertex(get_problem_vertex_index(vertex));
+}
+
+const ProblemEdge& ProblemClassStateSpace::get_problem_edge(const ClassEdge& edge) const
+{
+    return m_problem_state_spaces.at(get_problem_index(edge)).get_graph().get_edge(get_problem_edge_index(edge));
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)

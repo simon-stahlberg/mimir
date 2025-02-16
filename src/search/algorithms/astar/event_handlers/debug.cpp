@@ -35,18 +35,20 @@ void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state, Pro
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state,
                                                              GroundAction action,
-                                                             ContinuousCost g_value,
+                                                             ContinuousCost action_cost,
+                                                             State successor_state,
                                                              Problem problem,
                                                              const PDDLRepositories& pddl_repositories) const
 {
-    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << " g_value:" << g_value << "\n"
-              << "[AStar] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
+    std::cout << "[AStar] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << " cost:" << action_cost << "\n"
+              << "[AStar] Successor: " << std::make_tuple(problem, successor_state, std::cref(pddl_repositories)) << "\n"
               << std::endl;
 }
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state,
                                                                      GroundAction action,
-                                                                     ContinuousCost g_value,
+                                                                     ContinuousCost action_cost,
+                                                                     State successor_state,
                                                                      Problem problem,
                                                                      const PDDLRepositories& pddl_repositories) const
 {
@@ -54,7 +56,8 @@ void DebugAStarAlgorithmEventHandler::on_generate_state_relaxed_impl(State state
 
 void DebugAStarAlgorithmEventHandler::on_generate_state_not_relaxed_impl(State state,
                                                                          GroundAction action,
-                                                                         ContinuousCost g_value,
+                                                                         ContinuousCost action_cost,
+                                                                         State successor_state,
                                                                          Problem problem,
                                                                          const PDDLRepositories& pddl_repositories) const
 {

@@ -148,6 +148,8 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
         const auto state = openlist.top();
         openlist.pop();
 
+        event_handler->on_expand_state(state, problem, pddl_repositories);
+
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
         /* Avoid unnecessary extra work by testing whether shortest distance was proven. */
@@ -209,20 +211,19 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
         /* Expand the successors of the state. */
 
-        event_handler->on_expand_state(state, problem, pddl_repositories);
-
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
             const auto [successor_state, successor_state_metric_value] =
                 state_repository->get_or_create_successor_state(state, action, get_g_value(search_node));
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
+            const auto action_cost = successor_state_metric_value - get_g_value(search_node);
 
             if (successor_state_metric_value == UNDEFINED_CONTINUOUS_COST)
             {
                 throw std::runtime_error("find_solution_astar(...): evaluating the metric on the successor state yielded NaN.");
             }
 
-            event_handler->on_generate_state(successor_state, action, successor_state_metric_value, problem, pddl_repositories);
+            event_handler->on_generate_state(state, action, action_cost, successor_state, problem, pddl_repositories);
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
 
@@ -266,14 +267,14 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                     continue;
                 }
 
-                event_handler->on_generate_state_relaxed(successor_state, action, successor_state_metric_value, problem, pddl_repositories);
+                event_handler->on_generate_state_relaxed(state, action, action_cost, successor_state, problem, pddl_repositories);
 
                 const auto successor_f_value = get_g_value(successor_search_node) + get_h_value(successor_search_node);
                 openlist.insert(successor_f_value, successor_state);
             }
             else
             {
-                event_handler->on_generate_state_not_relaxed(successor_state, action, successor_state_metric_value, problem, pddl_repositories);
+                event_handler->on_generate_state_not_relaxed(state, action, action_cost, successor_state, problem, pddl_repositories);
             }
         }
 

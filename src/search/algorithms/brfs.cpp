@@ -120,6 +120,8 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
         const auto state = queue.front();
         queue.pop_front();
 
+        event_handler->on_expand_state(state, problem, pddl_repositories);
+
         // We need this before goal test for correct statistics reporting.
         auto search_node = get_or_create_search_node(state->get_index(), default_search_node, search_nodes);
 
@@ -168,30 +170,21 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
             }
         }
 
-        event_handler->on_expand_state(state, problem, pddl_repositories);
-
         for (const auto& action : applicable_action_generator->create_applicable_action_generator(state))
         {
             /* Open state. */
             const auto [successor_state, successor_state_metric_value] =
                 state_repository->get_or_create_successor_state(state, action, get_g_value(search_node));
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
-            auto action_cost = get_g_value(search_node) - get_g_value(successor_search_node);
+            auto action_cost = successor_state_metric_value - get_g_value(search_node);
 
-            event_handler->on_generate_state(successor_state, action, action_cost, problem, pddl_repositories);
-
-            const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
-            if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state)
-                || event_handler->on_external_pruning_check(state, problem, pddl_repositories))
+            event_handler->on_generate_state(state, action, action_cost, successor_state, problem, pddl_repositories);
+            if (pruning_strategy->test_prune_successor_state(state, successor_state, (successor_search_node->get_status() == SearchNodeStatus::NEW)))
             {
-                event_handler->on_generate_state_not_in_search_tree(successor_state, action, action_cost, problem, pddl_repositories);
-                event_handler->on_prune_state(successor_state, problem, pddl_repositories);
+                event_handler->on_generate_state_not_in_search_tree(state, action, action_cost, successor_state, problem, pddl_repositories);
                 continue;
             }
-            else
-            {
-                event_handler->on_generate_state_in_search_tree(successor_state, action, action_cost, problem, pddl_repositories);
-            }
+            event_handler->on_generate_state_in_search_tree(state, action, action_cost, successor_state, problem, pddl_repositories);
 
             successor_search_node->get_status() = SearchNodeStatus::OPEN;
             successor_search_node->get_parent_state() = state->get_index();

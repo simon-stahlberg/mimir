@@ -19,7 +19,7 @@
 #define MIMIR_SEARCH_SATISFICING_BINDING_GENERATOR_ACTION_HPP_
 
 #include "mimir/search/declarations.hpp"
-#include "mimir/search/satisficing_binding_generators/interface.hpp"
+#include "mimir/search/satisficing_binding_generators/base.hpp"
 
 namespace mimir
 {

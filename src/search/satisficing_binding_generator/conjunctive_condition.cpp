@@ -17,6 +17,8 @@
 
 #include "mimir/search/satisficing_binding_generators/conjunctive_condition.hpp"
 
+#include "mimir/search/satisficing_binding_generators/base_impl.hpp"
+
 namespace mimir
 {
 
@@ -28,4 +30,6 @@ ConjunctiveConditionSatisficingBindingGenerator::ConjunctiveConditionSatisficing
     SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>(conjunctive_condition, problem, pddl_repositories, event_handler)
 {
 }
+
+template class SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>;
 }

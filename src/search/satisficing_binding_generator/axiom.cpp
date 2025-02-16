@@ -18,6 +18,7 @@
 #include "mimir/search/satisficing_binding_generators/axiom.hpp"
 
 #include "mimir/formalism/action.hpp"
+#include "mimir/search/satisficing_binding_generators/base_impl.hpp"
 
 namespace mimir
 {
@@ -30,4 +31,6 @@ AxiomSatisficingBindingGenerator::AxiomSatisficingBindingGenerator(Axiom axiom,
     m_axiom(axiom)
 {
 }
+
+template class SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>;
 }

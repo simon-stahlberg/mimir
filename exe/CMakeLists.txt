@@ -19,5 +19,5 @@ target_link_libraries(planner_brfs mimir::core)
 add_executable(gfa "gfa.cpp")
 target_link_libraries(gfa mimir::core)
 
-add_executable(pcg "problem_class_graph.cpp")
-target_link_libraries(pcg mimir::core)
+add_executable(pcss "problem_class_state_space.cpp")
+target_link_libraries(pcss mimir::core)

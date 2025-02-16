@@ -49,8 +49,8 @@ struct ProblemContext
 
 using ProblemContextList = std::vector<ProblemContext>;
 
-/// @brief `ProblemVertex` encapsulates information about a state in the context of a `ProblemClassGraph`.
-/// The `Index` is the index of the corresponding `ClassVertex` in the `ProblemClassGraph`.
+/// @brief `ProblemVertex` encapsulates information about a state in the context of a `ProblemClassStateSpace`.
+/// The `Index` is the index of the corresponding `ClassVertex` in the `ProblemClassStateSpace`.
 /// The `State` is the underlying planning state.
 using ProblemVertex = Vertex<Index, State>;
 using ProblemVertexList = std::vector<ProblemVertex>;
@@ -59,20 +59,40 @@ inline Index get_class_vertex_index(const ProblemVertex& vertex) { return vertex
 
 inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
-/// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `ProblemClassGraph`.
-/// The `Index` is the index of the corresponding `ClassEdge` in the `ProblemClassGraph`.
+/// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `ProblemClassStateSpace`.
+/// The `Index` is the index of the corresponding `ClassEdge` in the `ProblemClassStateSpace`.
 /// The `GroundAction` is the underlying ground action.
-using ProblemEdge = Edge<Index, GroundAction>;
+using ProblemEdge = Edge<Index, GroundAction, ContinuousCost>;
 using ProblemEdgeList = std::vector<ProblemEdge>;
 
 inline Index get_class_edge_index(const ProblemEdge& edge) { return edge.get_property<0>(); }
 
 inline GroundAction get_action(const ProblemEdge& edge) { return edge.get_property<1>(); }
 
+inline ContinuousCost get_action_cost(const ProblemEdge& edge) { return edge.get_property<2>(); }
+
 using StaticProblemGraph = StaticGraph<ProblemVertex, ProblemEdge>;
 using StaticProblemGraphList = std::vector<StaticProblemGraph>;
 using ProblemGraph = StaticBidirectionalGraph<StaticProblemGraph>;
 using ProblemGraphList = std::vector<ProblemGraph>;
+
+class ProblemStateSpace
+{
+private:
+    ProblemGraph m_graph;
+    IndexSet m_goal_vertices;
+    IndexSet m_unsolvable_vertices;
+
+public:
+    ProblemStateSpace() = default;
+    ProblemStateSpace(ProblemGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+
+    const ProblemGraph& get_graph() const;
+    const IndexSet& get_goal_vertices() const;
+    const IndexSet& get_unsolvable_vertices() const;
+};
+
+using ProblemStateSpaceList = std::vector<ProblemStateSpace>;
 
 /**
  * ClassGraph
@@ -80,14 +100,14 @@ using ProblemGraphList = std::vector<ProblemGraph>;
 
 struct ClassOptions
 {
-    bool symmetry_pruning = true;
+    bool symmetry_pruning = false;
     bool sort_ascending_by_num_states = true;
 
     ProblemOptions options = ProblemOptions();
 };
 
 /// @brief `ClassVertex` encapsulates information about a problem vertex where
-/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassGraph`
+/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassStateSpace`
 /// the second `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
 using ClassVertex = Vertex<Index, Index>;
 using ClassVertexList = std::vector<ClassVertex>;
@@ -97,7 +117,7 @@ inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_pr
 inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex.get_property<1>(); }
 
 /// @brief `ClassEdge` encapsulates information about a problem edge where
-/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassGraph`
+/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassStateSpace`
 /// the second `Index` is the index of the `ProblemEdge` in the `ProblemGraph`.
 using ClassEdge = Edge<Index, Index>;
 using ClassEdgeList = std::vector<ClassEdge>;
@@ -109,7 +129,23 @@ inline Index get_problem_edge_index(const ClassEdge& edge) { return edge.get_pro
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 
-/// @brief `ProblemClassGraph` encapsulates a `ProblemGraphList` Q with an additional `ClassGraph` structure on top.
+class ClassStateSpace
+{
+private:
+    ClassGraph m_graph;
+    IndexSet m_goal_vertices;
+    IndexSet m_unsolvable_vertices;
+
+public:
+    ClassStateSpace() = default;
+    ClassStateSpace(ClassGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+
+    const ClassGraph& get_graph() const;
+    const IndexSet& get_goal_vertices() const;
+    const IndexSet& get_unsolvable_vertices() const;
+};
+
+/// @brief `ProblemClassStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassGraph` structure on top.
 /// From each `ClassVertex` (resp. `ClassEdge`) one can access the single representative `ProblemVertex` (resp. `ProblemEdge`).
 /// From each `ProblemVertex` (resp. `ProblemEdge`) one can access the corresponding `ClassVertex` (resp. `ClassEdge`).
 ///
@@ -123,26 +159,26 @@ using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 /// a) The graph G = (V, E) represents all problems P.
 /// b) If symmetry pruning was disabled, the number of vertices in G is exactly the sum of the number of vertices in all problems P.
 /// c) If symmetry pruning was enabled, the number of vertices of G can be exponentially smaller.
-class ProblemClassGraph
+class ProblemClassStateSpace
 {
 private:
-    ProblemGraphList m_problem_graphs;  ///< The child-level graphs.
-    ClassGraph m_class_graph;           ///< The top-level graph.
+    ProblemStateSpaceList m_problem_state_spaces;  ///< The child-level state spaces.
+    ClassStateSpace m_class_state_space;           ///< The top-level state space.
 
 public:
-    ProblemClassGraph(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
+    ProblemClassStateSpace(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
 
     /**
      * Getters
      */
 
-    const ProblemGraphList& get_problem_graphs() const;
-    const ClassGraph& get_class_graph() const;
+    const ProblemStateSpaceList& get_problem_state_spaces() const;
+    const ClassStateSpace& get_class_state_space() const;
 
     /// @brief Ground `Class` related structures to `Problem` related structures
     /// to access detailed problem specific information about the state.
-    const ProblemGraph& get_problem_graph(const ClassVertex& vertex) const;
-    const ProblemGraph& get_problem_graph(const ClassEdge& edge) const;
+    const ProblemStateSpace& get_problem_state_space(const ClassVertex& vertex) const;
+    const ProblemStateSpace& get_problem_state_space(const ClassEdge& edge) const;
     const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
     const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
 
@@ -151,13 +187,13 @@ public:
     const ClassEdge& get_class_edge(const ProblemEdge& edge) const;
 
     /**
-     * Construct subgraphs for learning from fragments of the `ClassGraph`.
+     * Construct subgraphs for learning from fragments of the `ClassStateSpace`.
      */
 
     /// @brief Create the subgraph induced by the given `ProblemVertexList`.
-    ClassGraph create_induced_subgraph(const ProblemVertexList& vertices) const;
+    ClassStateSpace create_induced_subspace(const ProblemVertexList& vertices) const;
     /// @brief Create the subgraph induced by the given problem indices.
-    ClassGraph create_induced_subgraph(const IndexList& problem_indices) const;
+    ClassStateSpace create_induced_subspace(const IndexList& problem_indices) const;
 };
 
 /**
