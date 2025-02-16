@@ -26,7 +26,7 @@
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/declarations.hpp"
 
-namespace mimir::datasets
+namespace mimir
 {
 
 /**

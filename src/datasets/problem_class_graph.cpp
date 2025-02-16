@@ -21,6 +21,7 @@
 #include "mimir/common/timers.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -32,7 +33,7 @@
 #include "mimir/search/search_space.hpp"
 #include "mimir/search/state_repository.hpp"
 
-namespace mimir::datasets
+namespace mimir
 {
 /**
  * ProblemStateSpace
@@ -76,10 +77,10 @@ class ProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBa
 private:
     const ProblemOptions& m_options;
     StaticProblemGraph& m_graph;
+    IndexSet& m_goal_vertices;
     CertificateToIndex& m_symmetries;
 
     StateMap<VertexIndex> m_state_to_vertex_index;
-    IndexSet m_goal_vertex_indices;
 
     /* Implement AlgorithmEventHandlerBase interface */
     friend class BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>;
@@ -92,7 +93,7 @@ private:
 
     void on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories)
     {
-        m_goal_vertex_indices.insert(m_state_to_vertex_index.at(state));
+        m_goal_vertices.insert(m_state_to_vertex_index.at(state));
     }
 
     void on_generate_state_impl(State state,
@@ -154,17 +155,19 @@ private:
 public:
     explicit ProblemGraphBrFSAlgorithmEventHandler(const ProblemOptions& options,
                                                    StaticProblemGraph& graph,
+                                                   IndexSet& goal_vertices,
                                                    CertificateToIndex& symmetries,
                                                    bool quiet = true) :
         BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>(quiet),
         m_options(options),
         m_graph(graph),
+        m_goal_vertices(goal_vertices),
         m_symmetries(symmetries)
     {
     }
 };
 
-static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_problem_graph(const ProblemContext& context, const ProblemOptions& options)
+static std::optional<std::pair<ProblemStateSpace, CertificateToIndex>> compute_problem_graph(const ProblemContext& context, const ProblemOptions& options)
 {
     const auto problem = context.problem;
     const auto applicable_action_generator = context.applicable_action_generator;
@@ -181,10 +184,11 @@ static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_
     }
 
     auto graph = StaticProblemGraph();
+    auto goal_vertices = IndexSet {};
     auto symmetries = CertificateToIndex {};
 
     auto goal_test = std::make_shared<ProblemGoal>(problem);
-    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, symmetries, false);
+    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, symmetries, false);
     auto result = find_solution_brfs(applicable_action_generator,
                                      state_repository,
                                      state_repository->get_or_create_initial_state(),
@@ -198,12 +202,21 @@ static std::optional<std::pair<StaticProblemGraph, CertificateToIndex>> compute_
         return std::nullopt;
     }
 
-    return std::make_pair(std::move(graph), std::move(symmetries));
+    if (options.remove_if_unsolvable && goal_vertices.empty())
+    {
+        return std::nullopt;
+    }
+
+    auto unsolvable_vertices = IndexSet {};
+
+    // TODO compute unsolvable vertices
+
+    return std::make_pair(ProblemStateSpace(ProblemGraph(std::move(graph)), std::move(goal_vertices), std::move(unsolvable_vertices)), std::move(symmetries));
 }
 
-static std::vector<std::pair<StaticProblemGraph, CertificateToIndex>> compute_problem_graphs(const ProblemContextList& contexts, const ProblemOptions& options)
+static std::vector<std::pair<ProblemStateSpace, CertificateToIndex>> compute_problem_graphs(const ProblemContextList& contexts, const ProblemOptions& options)
 {
-    auto problem_graphs = std::vector<std::pair<StaticProblemGraph, CertificateToIndex>> {};
+    auto problem_graphs = std::vector<std::pair<ProblemStateSpace, CertificateToIndex>> {};
     for (const auto& context : contexts)
     {
         auto result = compute_problem_graph(context, options);
@@ -235,18 +248,16 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
     {
         std::sort(problem_graphs.begin(),
                   problem_graphs.end(),
-                  [](auto&& lhs, auto&& rhs) { return lhs.first.get_num_vertices() < rhs.first.get_num_vertices(); });
+                  [](auto&& lhs, auto&& rhs) { return lhs.first.get_graph().get_num_vertices() < rhs.first.get_graph().get_num_vertices(); });
     }
-
-    std::cout << "Num problem graphs: " << problem_graphs.size() << std::endl;
 
     /* Step 2: Compute the `ClassGraph` by looping through the `StaticProblemGraphs`.
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
      */
 
     auto class_graph = StaticClassGraph {};
-    auto class_goal_states = IndexSet {};
-    auto class_unsolvable_states = IndexSet {};
+    auto class_goal_vertices = IndexSet {};
+    auto class_unsolvable_vertices = IndexSet {};
 
     if (options.symmetry_pruning)
     {
@@ -254,37 +265,60 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
     }
     else
     {
+        /* Simple instantiation without symmetry reduction. */
         auto per_problem_vertex_to_class_vertex = std::vector<IndexList>(problem_graphs.size());
 
-        auto problem_index = Index(0);
-        auto class_vertex_index = Index(0);
+        auto problem_idx = Index(0);
 
-        for (const auto& [problem_graph, problem_symmetries] : problem_graphs)
+        for (auto& [problem_state_space, problem_symmetries] : problem_graphs)
         {
             assert(problem_symmetries.empty());
 
-            auto& problem_vertex_to_class_vertex = per_problem_vertex_to_class_vertex[problem_index];
-            problem_vertex_to_class_vertex.resize(problem_graph.get_num_vertices(), Index(-1));
+            const auto& problem_graph = problem_state_space.get_graph();
+            auto& problem_goal_vertices = problem_state_space.get_goal_vertices();
+            auto& problem_unsolvable_vertices = problem_state_space.get_unsolvable_vertices();
 
-            std::cout << "Problem graph num vertices: " << problem_graph.get_num_vertices() << std::endl;
+            auto final_problem_graph = StaticProblemGraph();
 
-            for (const auto& vertex : problem_graph.get_vertices())
+            auto& problem_v_idx_to_class_v_idx = per_problem_vertex_to_class_vertex[problem_idx];
+            problem_v_idx_to_class_v_idx.resize(problem_graph.get_num_vertices(), Index(-1));
+
+            for (const auto& v : problem_graph.get_vertices())
             {
-                problem_vertex_to_class_vertex[vertex.get_index()] = class_graph.add_vertex(problem_index, vertex.get_index());
+                const auto problem_v_idx = v.get_index();
+                problem_v_idx_to_class_v_idx[problem_v_idx] = class_graph.add_vertex(problem_idx, problem_v_idx);
+                const auto class_v_idx = problem_v_idx_to_class_v_idx[problem_v_idx];
+                [[maybe_unused]] const auto new_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v));
+                assert(problem_v_idx == new_problem_v_idx);
+                if (problem_goal_vertices.contains(problem_v_idx))
+                {
+                    class_goal_vertices.insert(class_v_idx);
+                }
+                if (problem_unsolvable_vertices.contains(problem_v_idx))
+                {
+                    class_unsolvable_vertices.insert(class_v_idx);
+                }
             }
-            for (const auto& edge : problem_graph.get_edges())
+            for (const auto& e : problem_graph.get_edges())
             {
-                class_graph.add_directed_edge(problem_vertex_to_class_vertex.at(edge.get_source()),
-                                              problem_vertex_to_class_vertex.at(edge.get_target()),
-                                              problem_index,
-                                              edge.get_index());
+                const auto problem_e_idx = e.get_index();
+                const auto class_e_idx = class_graph.add_directed_edge(problem_v_idx_to_class_v_idx.at(e.get_source()),
+                                                                       problem_v_idx_to_class_v_idx.at(e.get_target()),
+                                                                       problem_idx,
+                                                                       problem_e_idx);
+                [[maybe_unused]] const auto new_problem_e_idx =
+                    final_problem_graph.add_directed_edge(e.get_source(), e.get_target(), class_e_idx, get_action(e), get_action_cost(e));
+                assert(problem_e_idx == new_problem_e_idx);
             }
 
-            ++problem_index;
+            m_problem_state_spaces.push_back(
+                ProblemStateSpace(ProblemGraph(std::move(final_problem_graph)), std::move(problem_goal_vertices), std::move(problem_unsolvable_vertices)));
+
+            ++problem_idx;
         }
     }
 
-    m_class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)), std::move(class_goal_states), std::move(class_unsolvable_states));
+    m_class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)), std::move(class_goal_vertices), std::move(class_unsolvable_vertices));
 }
 
 const ProblemStateSpaceList& ProblemClassStateSpace::get_problem_state_spaces() const { return m_problem_state_spaces; }
@@ -346,5 +380,4 @@ std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
         << " problem_vertex_index=" << get_problem_edge_index(edge);
     return out;
 }
-
 }

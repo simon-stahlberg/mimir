@@ -33,7 +33,7 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
 
-    auto contexts = mimir::datasets::ProblemContextList();
+    auto contexts = mimir::ProblemContextList();
     for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
     {
         auto parser = PDDLParser(domain_file_path, problem_filepath.path());
@@ -44,18 +44,20 @@ int main(int argc, char** argv)
         contexts.emplace_back(parser.get_problem(), state_repository, applicable_action_generator);
     }
 
-    auto pcss = mimir::datasets::ProblemClassStateSpace(contexts);
+    auto pcss = mimir::ProblemClassStateSpace(contexts);
 
     for (size_t i = 0; i < pcss.get_problem_state_spaces().size(); ++i)
     {
         const auto& pss_i = pcss.get_problem_state_spaces()[i];
         std::cout << i << ". has num vertices: " << pss_i.get_graph().get_num_vertices() << " and num edges: " << pss_i.get_graph().get_num_edges()
                   << std::endl;
+        std::cout << pss_i.get_graph() << std::endl;
     }
 
     const auto& css = pcss.get_class_state_space();
 
     std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
+    std::cout << css.get_graph() << std::endl;
 
     return 0;
 }
