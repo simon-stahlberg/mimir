@@ -29,8 +29,11 @@ namespace mimir
 
 void DefaultBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
+void DefaultBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+
 void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
                                                               GroundAction action,
+                                                              ContinuousCost action_cost,
                                                               Problem problem,
                                                               const PDDLRepositories& pddl_repositories) const
 {
@@ -38,6 +41,7 @@ void DefaultBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
 
 void DefaultBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
                                                                              GroundAction action,
+                                                                             ContinuousCost action_cost,
                                                                              Problem problem,
                                                                              const PDDLRepositories& pddl_repositories) const
 {
@@ -45,6 +49,7 @@ void DefaultBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(Sta
 
 void DefaultBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
                                                                                  GroundAction action,
+                                                                                 ContinuousCost action_cost,
                                                                                  Problem problem,
                                                                                  const PDDLRepositories& pddl_repositories) const
 {
@@ -58,6 +63,11 @@ void DefaultBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, 
 }
 
 void DefaultBrFSAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+
+bool DefaultBrFSAlgorithmEventHandler::on_external_pruning_check_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const
+{
+    return false;
+}
 
 void DefaultBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
 {

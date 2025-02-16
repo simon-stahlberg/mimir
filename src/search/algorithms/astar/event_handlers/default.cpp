@@ -28,6 +28,8 @@ namespace mimir
 {
 void DefaultAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
 
+void DefaultAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+
 void DefaultAStarAlgorithmEventHandler::on_generate_state_impl(State state,
                                                                GroundAction action,
                                                                ContinuousCost g_value,

@@ -173,6 +173,8 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
 
         if (search_node->get_status() == SearchNodeStatus::GOAL)
         {
+            event_handler->on_expand_goal_state(state, problem, pddl_repositories);
+
             event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
                                          state_repository->get_reached_derived_ground_atoms_bitset().count(),
                                          state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),

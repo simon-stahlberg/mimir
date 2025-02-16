@@ -45,6 +45,9 @@ public:
     /// This is happens immediately before on_generate_state for successors of `state`.
     virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
+    /// @brief React on expanding a goal `state`.
+    virtual void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+
     /// @brief React on generating a successor `state` by applying an action.
     virtual void on_generate_state(State state, GroundAction action, ContinuousCost g_value, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
@@ -129,6 +132,14 @@ public:
         if (!m_quiet)
         {
             self().on_expand_state_impl(state, problem, pddl_repositories);
+        }
+    }
+
+    void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    {
+        if (!m_quiet)
+        {
+            self().on_expand_goal_state_impl(state, problem, pddl_repositories);
         }
     }
 

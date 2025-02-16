@@ -69,7 +69,8 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
                                 std::optional<State> start_state_,
                                 std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> event_handler_,
                                 std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_,
-                                std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy_)
+                                std::optional<std::shared_ptr<IPruningStrategy>> pruning_strategy_,
+                                bool exhaustive)
 {
     assert(applicable_action_generator && state_repository);
 
@@ -132,34 +133,39 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
 
         if (goal_strategy->test_dynamic_goal(state))
         {
-            event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
-                                         state_repository->get_reached_derived_ground_atoms_bitset().count(),
-                                         state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
-                                         state_repository->get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
-                                         search_nodes.get_estimated_memory_usage_in_bytes(),
-                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
-                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
-                                         state_repository->get_state_count(),
-                                         search_nodes.size(),
-                                         pddl_repositories.get_num_ground_actions(),
-                                         pddl_repositories.get_num_ground_axioms());
-            if (!event_handler->is_quiet())
+            event_handler->on_expand_goal_state(state, problem, pddl_repositories);
+
+            if (!exhaustive)
             {
-                applicable_action_generator->on_end_search();
-                state_repository->get_axiom_evaluator()->on_end_search();
+                event_handler->on_end_search(state_repository->get_reached_fluent_ground_atoms_bitset().count(),
+                                             state_repository->get_reached_derived_ground_atoms_bitset().count(),
+                                             state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
+                                             state_repository->get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
+                                             search_nodes.get_estimated_memory_usage_in_bytes(),
+                                             pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
+                                             pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
+                                             state_repository->get_state_count(),
+                                             search_nodes.size(),
+                                             pddl_repositories.get_num_ground_actions(),
+                                             pddl_repositories.get_num_ground_axioms());
+                if (!event_handler->is_quiet())
+                {
+                    applicable_action_generator->on_end_search();
+                    state_repository->get_axiom_evaluator()->on_end_search();
+                }
+
+                auto plan_actions = GroundActionList {};
+                auto state_trajectory = IndexList {};
+                extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
+                extract_ground_action_sequence(start_state, 0, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
+                result.goal_state = state;
+                result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
+                result.status = SearchStatus::SOLVED;
+
+                event_handler->on_solved(result.plan.value(), pddl_repositories);
+
+                return result;
             }
-
-            auto plan_actions = GroundActionList {};
-            auto state_trajectory = IndexList {};
-            extract_state_trajectory(search_nodes, search_node, state->get_index(), state_trajectory);
-            extract_ground_action_sequence(start_state, 0, state_trajectory, *applicable_action_generator, *state_repository, plan_actions);
-            result.goal_state = state;
-            result.plan = Plan(std::move(plan_actions), get_g_value(search_node));
-            result.status = SearchStatus::SOLVED;
-
-            event_handler->on_solved(result.plan.value(), pddl_repositories);
-
-            return result;
         }
 
         event_handler->on_expand_state(state, problem, pddl_repositories);
@@ -170,14 +176,21 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
             const auto [successor_state, successor_state_metric_value] =
                 state_repository->get_or_create_successor_state(state, action, get_g_value(search_node));
             auto successor_search_node = get_or_create_search_node(successor_state->get_index(), default_search_node, search_nodes);
+            auto action_cost = get_g_value(search_node) - get_g_value(successor_search_node);
 
-            event_handler->on_generate_state(successor_state, action, problem, pddl_repositories);
+            event_handler->on_generate_state(successor_state, action, action_cost, problem, pddl_repositories);
 
             const bool is_new_successor_state = (successor_search_node->get_status() == SearchNodeStatus::NEW);
-            if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state))
+            if (pruning_strategy->test_prune_successor_state(state, successor_state, is_new_successor_state)
+                || event_handler->on_external_pruning_check(state, problem, pddl_repositories))
             {
+                event_handler->on_generate_state_not_in_search_tree(successor_state, action, action_cost, problem, pddl_repositories);
                 event_handler->on_prune_state(successor_state, problem, pddl_repositories);
                 continue;
+            }
+            else
+            {
+                event_handler->on_generate_state_in_search_tree(successor_state, action, action_cost, problem, pddl_repositories);
             }
 
             successor_search_node->get_status() = SearchNodeStatus::OPEN;
@@ -207,5 +220,4 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
     result.status = SearchStatus::EXHAUSTED;
     return result;
 }
-
 }

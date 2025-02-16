@@ -31,6 +31,8 @@ void DebugAStarAlgorithmEventHandler::on_expand_state_impl(State state, Problem 
               << std::endl;
 }
 
+void DebugAStarAlgorithmEventHandler::on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+
 void DebugAStarAlgorithmEventHandler::on_generate_state_impl(State state,
                                                              GroundAction action,
                                                              ContinuousCost g_value,

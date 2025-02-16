@@ -40,20 +40,34 @@ public:
     /// @brief React on expanding a state.
     virtual void on_expand_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
+    /// @brief React on expanding a goal `state`.
+    virtual void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+
     /// @brief React on generating a state by applying an action.
-    virtual void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void
+    on_generate_state(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on generating a state in the search tree by applying an action.
-    virtual void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state_in_search_tree(State state,
+                                                  GroundAction action,
+                                                  ContinuousCost action_cost,
+                                                  Problem problem,
+                                                  const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on generating a state not in the search tree by applying an action.
-    virtual void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+    virtual void on_generate_state_not_in_search_tree(State state,
+                                                      GroundAction action,
+                                                      ContinuousCost action_cost,
+                                                      Problem problem,
+                                                      const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on finishing expanding a g-layer.
     virtual void on_finish_g_layer() = 0;
 
     /// @brief React on pruning a state.
     virtual void on_prune_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
+
+    virtual bool on_external_pruning_check(State state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
 
     /// @brief React on starting a search.
     virtual void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) = 0;
@@ -117,29 +131,45 @@ public:
         }
     }
 
-    void on_generate_state(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_expand_goal_state(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    {
+        if (!m_quiet)
+        {
+            self().on_expand_goal_state_impl(state, problem, pddl_repositories);
+        }
+    }
+
+    void on_generate_state(State state, GroundAction action, ContinuousCost action_cost, Problem problem, const PDDLRepositories& pddl_repositories) override
     {
         m_statistics.increment_num_generated();
 
         if (!m_quiet)
         {
-            self().on_generate_state_impl(state, action, problem, pddl_repositories);
+            self().on_generate_state_impl(state, action, action_cost, problem, pddl_repositories);
         }
     }
 
-    void on_generate_state_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_in_search_tree(State state,
+                                          GroundAction action,
+                                          ContinuousCost action_cost,
+                                          Problem problem,
+                                          const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_in_search_tree_impl(state, action, problem, pddl_repositories);
+            self().on_generate_state_in_search_tree_impl(state, action, action_cost, problem, pddl_repositories);
         }
     }
 
-    void on_generate_state_not_in_search_tree(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) override
+    void on_generate_state_not_in_search_tree(State state,
+                                              GroundAction action,
+                                              ContinuousCost action_cost,
+                                              Problem problem,
+                                              const PDDLRepositories& pddl_repositories) override
     {
         if (!m_quiet)
         {
-            self().on_generate_state_not_in_search_tree_impl(state, action, problem, pddl_repositories);
+            self().on_generate_state_not_in_search_tree_impl(state, action, action_cost, problem, pddl_repositories);
         }
     }
 
@@ -164,6 +194,11 @@ public:
         {
             self().on_prune_state_impl(state, problem, pddl_repositories);
         }
+    }
+
+    bool on_external_pruning_check(State state, Problem problem, const PDDLRepositories& pddl_repositories) override
+    {
+        return self().on_external_pruning_check_impl(state, problem, pddl_repositories);
     }
 
     void on_start_search(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) override

@@ -31,7 +31,13 @@ void DebugBrFSAlgorithmEventHandler::on_expand_state_impl(State state, Problem p
               << std::endl;
 }
 
-void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundAction action, Problem problem, const PDDLRepositories& pddl_repositories) const
+void DebugBrFSAlgorithmEventHandler::on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+
+void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state,
+                                                            GroundAction action,
+                                                            ContinuousCost action_cost,
+                                                            Problem problem,
+                                                            const PDDLRepositories& pddl_repositories) const
 {
     std::cout << "[BrFS] Action: " << std::make_tuple(action, std::cref(pddl_repositories), FullActionFormatterTag {}) << "\n"
               << "[BrFS] Successor: " << std::make_tuple(problem, state, std::cref(pddl_repositories)) << "\n"
@@ -40,6 +46,7 @@ void DebugBrFSAlgorithmEventHandler::on_generate_state_impl(State state, GroundA
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State state,
                                                                            GroundAction action,
+                                                                           ContinuousCost action_cost,
                                                                            Problem problem,
                                                                            const PDDLRepositories& pddl_repositories) const
 {
@@ -47,6 +54,7 @@ void DebugBrFSAlgorithmEventHandler::on_generate_state_in_search_tree_impl(State
 
 void DebugBrFSAlgorithmEventHandler::on_generate_state_not_in_search_tree_impl(State state,
                                                                                GroundAction action,
+                                                                               ContinuousCost action_cost,
                                                                                Problem problem,
                                                                                const PDDLRepositories& pddl_repositories) const
 {
@@ -59,6 +67,11 @@ void DebugBrFSAlgorithmEventHandler::on_finish_g_layer_impl(uint32_t g_value, ui
 }
 
 void DebugBrFSAlgorithmEventHandler::on_prune_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const {}
+
+bool DebugBrFSAlgorithmEventHandler::on_external_pruning_check_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories) const
+{
+    return false;
+}
 
 void DebugBrFSAlgorithmEventHandler::on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories) const
 {
