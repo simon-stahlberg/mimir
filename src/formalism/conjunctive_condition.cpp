@@ -21,6 +21,7 @@
 #include "mimir/common/collections.hpp"
 #include "mimir/common/concepts.hpp"
 #include "mimir/formalism/ground_literal.hpp"
+#include "mimir/formalism/ground_numeric_constraint.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/numeric_constraint.hpp"
 #include "mimir/formalism/variable.hpp"

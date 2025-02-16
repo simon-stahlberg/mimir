@@ -73,7 +73,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(is_applicable(grounded_axiom, m_grounder->get_problem(), dense_state));
+                assert(is_applicable(grounded_axiom, m_problem, dense_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 

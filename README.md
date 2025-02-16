@@ -13,6 +13,7 @@ Mimir is a C++20-based planning library with Python bindings, designed for both 
   - `:equality`
   - `:existential-preconditions`
   - `:negative-preconditions`
+  - `:numeric-fluents`
   - `:strips`
   - `:typing`
   - `:universal-preconditions`

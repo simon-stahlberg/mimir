@@ -1002,6 +1002,12 @@ GroundAction PDDLRepositories::ground(Action action,
                         binding_cond_effect[binding.size() + pos] = get_object(binding_cond[pos]);
                     }
 
+                    // Ensure that there is enough space in the action specific builder.
+                    // We never clear cond_effects to avoid frequent allocation and deallocation.
+                    if (j == cond_effects.size())
+                    {
+                        cond_effects.resize(j + 1);
+                    }
                     auto& cond_effect_j = cond_effects.at(j++);
                     auto& cond_conjunctive_condition_j = cond_effect_j.get_conjunctive_condition();
                     auto& cond_positive_fluent_precondition_j = cond_conjunctive_condition_j.get_positive_precondition<Fluent>();
@@ -1072,6 +1078,12 @@ GroundAction PDDLRepositories::ground(Action action,
             }
             else
             {
+                // Ensure that there is enough space in the action specific builder.
+                // We never clear cond_effects to avoid frequent allocation and deallocation.
+                if (j == cond_effects.size())
+                {
+                    cond_effects.resize(j + 1);
+                }
                 auto& cond_effect = cond_effects.at(j++);
                 auto& cond_conjunctive_condition = cond_effect.get_conjunctive_condition();
                 auto& cond_positive_fluent_precondition = cond_conjunctive_condition.get_positive_precondition<Fluent>();

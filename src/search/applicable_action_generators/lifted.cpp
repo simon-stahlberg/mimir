@@ -61,7 +61,7 @@ LiftedApplicableActionGenerator::LiftedApplicableActionGenerator(Problem problem
         for (const auto& conditional_effect : action->get_conditional_effects())
         {
             auto [vertices_, vertices_by_parameter_index_, objects_by_parameter_index_] =
-                consistency_graph::StaticConsistencyGraph::compute_vertices(problem,
+                consistency_graph::StaticConsistencyGraph::compute_vertices(m_problem,
                                                                             action->get_arity(),
                                                                             action->get_arity() + conditional_effect->get_arity(),
                                                                             conditional_effect->get_conjunctive_condition()->get_literals<Static>());
