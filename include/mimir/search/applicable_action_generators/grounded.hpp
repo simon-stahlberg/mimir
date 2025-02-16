@@ -36,7 +36,8 @@ namespace mimir
 class GroundedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    std::shared_ptr<ActionGrounder> m_grounder;
+    Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::unique_ptr<match_tree::MatchTree<GroundActionImpl>> m_match_tree;
 
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_event_handler;
@@ -46,10 +47,13 @@ private:
 
 public:
     /// @brief Simplest construction
-    GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder, std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree);
+    GroundedApplicableActionGenerator(Problem problem,
+                                      std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree);
 
     /// @brief Complete construction
-    GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
+    GroundedApplicableActionGenerator(Problem problem,
+                                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                                       std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                       std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler);
 
@@ -76,7 +80,6 @@ public:
 
     Problem get_problem() const override;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
-    const std::shared_ptr<ActionGrounder>& get_action_grounder() const override;
 };
 
 }

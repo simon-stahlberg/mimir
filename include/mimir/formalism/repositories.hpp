@@ -27,13 +27,16 @@
 #include "mimir/formalism/function.hpp"
 #include "mimir/formalism/function_expressions.hpp"
 #include "mimir/formalism/function_skeleton.hpp"
+#include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
+#include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_effects.hpp"
 #include "mimir/formalism/ground_function.hpp"
 #include "mimir/formalism/ground_function_expressions.hpp"
 #include "mimir/formalism/ground_function_value.hpp"
 #include "mimir/formalism/ground_literal.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
+#include "mimir/formalism/grounding_table.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/numeric_constraint.hpp"
@@ -172,21 +175,44 @@ private:
 
     // TODO: move grounding tables here to keep all formalism related objects in one place, e.g.,
 
-    /*
-        template<typename T>
-        using LiteralGroundingTable = absl::flat_hash_map<ObjectList, T, loki::Hash<ObjectList>>;
+    // We a table for each pair (is_negated,predicate_index) since those are context independent.
+    template<typename T>
+    using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
 
-        // We a table for each pair (is_negated,predicate_index) since those are context independent.
-        template<typename T>
-        using LiteralGroundingTableList = std::array<std::vector<GroundingTable<T>>, 2>;
+    using GroundedLiteralTypeToGroundingTableList =
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>>;
 
-        using GroundedTypeToGroundingTableList =
-            boost::hana::map<boost::hana::pair<boost::hana::type<GroundLiteral<Static>>, LiteralGroundingTableList<GroundLiteral<Static>>>,
-                             boost::hana::pair<boost::hana::type<GroundLiteral<Fluent>>, LiteralGroundingTableList<GroundLiteral<Fluent>>>,
-                             boost::hana::pair<boost::hana::type<GroundLiteral<Derived>>, LiteralGroundingTableList<GroundLiteral<Derived>>>>;
+    GroundedLiteralTypeToGroundingTableList m_literal_grounding_tables;
 
-        GroundedTypeToGroundingTableList m_grounding_tables;
-    */
+    using GroundedFunctionTypeToGroundingTableList =
+        boost::hana::map<boost::hana::pair<boost::hana::type<GroundFunction<Static>>, GroundingTableList<GroundFunction<Static>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Fluent>>, GroundingTableList<GroundFunction<Fluent>>>,
+                         boost::hana::pair<boost::hana::type<GroundFunction<Auxiliary>>, GroundingTableList<GroundFunction<Auxiliary>>>>;
+
+    GroundedFunctionTypeToGroundingTableList m_function_grounding_tables;
+
+    template<typename T>
+    using LiteralGroundingTable = absl::flat_hash_map<ObjectList, T, loki::Hash<ObjectList>>;
+
+    GroundingTableList<GroundFunctionExpression> m_function_expression_grounding_tables;
+
+    GroundActionImplSet m_actions;
+    GroundActionList m_actions_by_index;
+
+    using PerActionData = std::tuple<GroundActionImpl,               ///< Builder
+                                     GroundingTable<GroundAction>>;  ///< Cache
+
+    std::unordered_map<Action, PerActionData> m_per_action_datas;
+
+    GroundAxiomImplSet m_axioms;
+    GroundAxiomList m_axioms_by_index;
+
+    using PerAxiomData = std::tuple<GroundAxiomImpl,               ///< Builder
+                                    GroundingTable<GroundAxiom>>;  ///< Cache
+
+    std::unordered_map<Axiom, PerAxiomData> m_per_axiom_data;
 
 public:
     PDDLRepositories();
@@ -374,25 +400,63 @@ public:
 
     /* Grounding */
 
-    /*
-        GroundAction ground(Action action, const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index, ObjectList
-       binding);
+    template<StaticOrFluentOrDerived P>
+    GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
 
-        GroundAxiom ground(Axiom axiom, ObjectList binding);
+    template<StaticOrFluentOrDerived P>
+    void ground_and_fill_bitset(const std::vector<Literal<P>>& literals,
+                                FlatBitset& ref_positive_bitset,
+                                FlatBitset& ref_negative_bitset,
+                                const ObjectList& binding);
 
-        GroundFunctionExpression ground(FunctionExpression fexpr, const ObjectList& binding);
+    template<StaticOrFluentOrDerived P>
+    void ground_and_fill_vector(const std::vector<Literal<P>>& literals,
+                                FlatIndexList& ref_positive_indices,
+                                FlatIndexList& ref_negative_indices,
+                                const ObjectList& binding);
 
-        template<StaticOrFluentOrAuxiliary F>
-        GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
+    GroundFunctionExpression ground(FunctionExpression fexpr, Problem problem, const ObjectList& binding);
 
-        template<StaticOrFluentOrDerived P>
-        GroundLiteral<P> ground(Literal<P> literal, const ObjectList& binding);
+    GroundNumericConstraint ground(NumericConstraint numeric_constraint, Problem problem, const ObjectList& binding);
 
-        GroundNumericConstraint ground(NumericConstraint numeric_constraint, const ObjectList& binding);
+    template<FluentOrAuxiliary F>
+    GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, Problem problem, const ObjectList& binding);
 
-        template<FluentOrAuxiliary F>
-        GroundNumericEffect<F> ground(NumericEffect<F> numeric_effect, const ObjectList& binding);
-    */
+    template<StaticOrFluentOrAuxiliary F>
+    GroundFunction<F> ground(Function<F> function, const ObjectList& binding);
+
+    void ground_and_fill_vector(const NumericConstraintList& numeric_constraints,
+                                Problem problem,
+                                const ObjectList& binding,
+                                FlatExternalPtrList<const GroundNumericConstraintImpl>& ref_numeric_constraints);
+
+    void ground_and_fill_vector(const NumericEffectList<Fluent>& numeric_effects,
+                                Problem problem,
+                                const ObjectList& binding,
+                                GroundNumericEffectList<Fluent>& ref_numeric_effects);
+
+    void ground_and_fill_optional(const std::optional<NumericEffect<Auxiliary>>& numeric_effect,
+                                  Problem problem,
+                                  const ObjectList& binding,
+                                  cista::optional<GroundNumericEffect<Auxiliary>>& ref_numeric_effect);
+
+    GroundAction ground(Action action,
+                        Problem problem,
+                        ObjectList binding,
+                        const std::vector<std::vector<IndexList>>& candidate_conditional_effect_objects_by_parameter_index);
+
+    const GroundActionList& get_ground_actions() const;
+    GroundAction get_ground_action(Index action_index) const;
+    size_t get_num_ground_actions() const;
+    size_t get_estimated_memory_usage_in_bytes_for_actions() const;
+
+    GroundAxiom ground(Axiom axiom, Problem problem, ObjectList binding);
+
+    const GroundAxiomList& get_ground_axioms() const;
+    GroundAxiom get_ground_axiom(Index axiom_index) const;
+    size_t get_num_ground_axioms() const;
+    size_t get_estimated_memory_usage_in_bytes_for_axioms() const;
+
     /* Accessors */
 
     // Factory

@@ -19,7 +19,6 @@
 
 #include "mimir/formalism/axiom.hpp"
 #include "mimir/formalism/domain.hpp"
-#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
@@ -29,16 +28,22 @@
 
 namespace mimir
 {
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder,
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
+                                               std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :
-    GroundedAxiomEvaluator(std::move(axiom_grounder), std::move(match_tree_partitioning), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+    GroundedAxiomEvaluator(problem,
+                           std::move(pddl_repositories),
+                           std::move(match_tree_partitioning),
+                           std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
 {
 }
 
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder,
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
+                                               std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
-    m_grounder(std::move(axiom_grounder)),
+    m_problem(problem),
+    m_pddl_repositories(pddl_repositories),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
 {
@@ -91,11 +96,9 @@ void GroundedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_fini
 
 void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
-Problem GroundedAxiomEvaluator::get_problem() const { return m_grounder->get_problem(); }
+Problem GroundedAxiomEvaluator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<PDDLRepositories>& GroundedAxiomEvaluator::get_pddl_repositories() const { return m_grounder->get_pddl_repositories(); }
-
-const std::shared_ptr<AxiomGrounder>& GroundedAxiomEvaluator::get_axiom_grounder() const { return m_grounder; }
+const std::shared_ptr<PDDLRepositories>& GroundedAxiomEvaluator::get_pddl_repositories() const { return m_pddl_repositories; }
 
 const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

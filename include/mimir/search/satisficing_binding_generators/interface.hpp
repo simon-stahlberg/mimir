@@ -22,12 +22,9 @@
 #include "mimir/algorithms/kpkc.hpp"
 #include "mimir/common/printers.hpp"
 #include "mimir/formalism/assignment_set.hpp"
+#include "mimir/formalism/consistency_graph.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/formalism/effects.hpp"
-#include "mimir/formalism/grounders/consistency_graph.hpp"
-#include "mimir/formalism/grounders/function_expression_grounder.hpp"
-#include "mimir/formalism/grounders/literal_grounder.hpp"
-#include "mimir/formalism/grounders/numeric_constraint_grounder.hpp"
 #include "mimir/formalism/literal.hpp"
 #include "mimir/formalism/object.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -53,9 +50,9 @@ template<typename Derived_>
 class SatisficingBindingGenerator
 {
 protected:
-    std::shared_ptr<LiteralGrounder> m_literal_grounder;
-    std::shared_ptr<NumericConstraintGrounder> m_numeric_constraint_grounder;
     ConjunctiveCondition m_conjunctive_condition;
+    Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<ISatisficingBindingGeneratorEventHandler> m_event_handler;
 
     consistency_graph::StaticConsistencyGraph m_static_consistency_graph;
@@ -102,9 +99,9 @@ protected:
                                               const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set);
 
 public:
-    SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                ConjunctiveCondition conjunctive_condition,
+    SatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
+                                Problem problem,
+                                std::shared_ptr<PDDLRepositories> pddl_repositories,
                                 std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 
     mimir::generator<ObjectList> create_binding_generator(State state,
@@ -129,9 +126,9 @@ public:
      * Getters
      */
 
-    const std::shared_ptr<LiteralGrounder>& get_literal_grounder() const;
-
     const ConjunctiveCondition& get_conjunctive_condition() const;
+    Problem get_problem() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
     const std::shared_ptr<ISatisficingBindingGeneratorEventHandler>& get_event_handler() const;
     const consistency_graph::StaticConsistencyGraph& get_static_consistency_graph() const;
 };
@@ -162,7 +159,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_dynamic_binding(const Liter
 {
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_literal_grounder->ground(literal, binding);
+        auto ground_literal = m_pddl_repositories->ground(literal, binding);
 
         if (ground_literal->is_negated() == atom_indices.get(ground_literal->get_atom()->get_index()))
         {
@@ -180,7 +177,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const NumericConstr
 {
     for (const auto& constraint : constraints)
     {
-        if (!evaluate(m_numeric_constraint_grounder->ground(constraint, binding), fluent_numeric_variables))
+        if (!evaluate(m_pddl_repositories->ground(constraint, m_problem, binding), fluent_numeric_variables))
         {
             return false;
         }
@@ -191,13 +188,11 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const NumericConstr
 template<typename Derived_>
 bool SatisficingBindingGenerator<Derived_>::is_valid_static_binding(const LiteralList<Static>& literals, const ObjectList& binding)
 {
-    const auto problem = m_literal_grounder->get_problem();
-
     for (const auto& literal : literals)
     {
-        auto ground_literal = m_literal_grounder->ground(literal, binding);
+        auto ground_literal = m_pddl_repositories->ground(literal, binding);
 
-        if (ground_literal->is_negated() == problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
+        if (ground_literal->is_negated() == m_problem->get_static_initial_positive_atoms_bitset().get(ground_literal->get_atom()->get_index()))
         {
             return false;
         }
@@ -234,7 +229,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::nullary_case
     }
     else
     {
-        m_event_handler->on_invalid_binding(binding, *m_literal_grounder->get_pddl_repositories());
+        m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
     }
 }
 
@@ -251,7 +246,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(c
             && vertex.consistent_literals(m_conjunctive_condition->get_literals<Derived>(), derived_assignment_sets)
             && vertex.consistent_literals(m_conjunctive_condition->get_numeric_constraints(), static_numeric_assignment_set, fluent_numeric_assignment_set))
         {
-            auto binding = ObjectList { m_literal_grounder->get_pddl_repositories()->get_object(vertex.get_object_index()) };
+            auto binding = ObjectList { m_pddl_repositories->get_object(vertex.get_object_index()) };
 
             if (is_valid_binding(dense_state, binding))
             {
@@ -259,7 +254,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::unary_case(c
             }
             else
             {
-                m_event_handler->on_invalid_binding(binding, *m_literal_grounder->get_pddl_repositories());
+                m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
             }
         }
     }
@@ -328,7 +323,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
             const auto& vertex = vertices[clique[index]];
             const auto parameter_index = vertex.get_parameter_index();
             const auto object_index = vertex.get_object_index();
-            binding[parameter_index] = m_literal_grounder->get_pddl_repositories()->get_object(object_index);
+            binding[parameter_index] = m_pddl_repositories->get_object(object_index);
         }
 
         if (is_valid_binding(dense_state, binding))
@@ -337,32 +332,28 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::general_case
         }
         else
         {
-            m_event_handler->on_invalid_binding(binding, *m_literal_grounder->get_pddl_repositories());
+            m_event_handler->on_invalid_binding(binding, *m_pddl_repositories);
         }
     };
 }
 
 template<typename Derived_>
-SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                                   std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                                   ConjunctiveCondition conjunctive_condition,
+SatisficingBindingGenerator<Derived_>::SatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
+                                                                   Problem problem,
+                                                                   std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                    std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
-    m_literal_grounder(literal_grounder),
-    m_numeric_constraint_grounder(numeric_constraint_grounder),
     m_conjunctive_condition(conjunctive_condition),
+    m_problem(problem),
+    m_pddl_repositories(pddl_repositories),
     m_event_handler(event_handler.value_or(std::make_shared<DefaultSatisficingBindingGeneratorEventHandler>())),
-    m_static_consistency_graph(m_literal_grounder->get_problem(),
-                               0,
-                               m_conjunctive_condition->get_parameters().size(),
-                               m_conjunctive_condition->get_literals<Static>()),
+    m_static_consistency_graph(m_problem, 0, m_conjunctive_condition->get_parameters().size(), m_conjunctive_condition->get_literals<Static>()),
     m_dense_state(),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_literal_grounder->get_problem()->get_objects().size(), m_literal_grounder->get_problem()->get_domain()->get_predicates<Fluent>()),
-    m_derived_assignment_set(m_literal_grounder->get_problem()->get_objects().size(),
-                             m_literal_grounder->get_problem()->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_literal_grounder->get_problem()->get_objects().size(), m_literal_grounder->get_problem()->get_domain()->get_functions<Fluent>()),
+    m_fluent_assignment_set(m_problem->get_objects().size(), m_problem->get_domain()->get_predicates<Fluent>()),
+    m_derived_assignment_set(m_problem->get_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_problem->get_objects().size(), m_problem->get_domain()->get_functions<Fluent>()),
     m_full_consistency_graph(m_static_consistency_graph.get_vertices().size(), boost::dynamic_bitset<>(m_static_consistency_graph.get_vertices().size())),
     m_consistent_vertices(m_static_consistency_graph.get_vertices().size()),
     m_kpkc_workspace(KPKCWorkspace(m_static_consistency_graph.get_vertices_by_parameter_index()))
@@ -430,19 +421,19 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
         co_return;
     }
 
-    m_literal_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
+    m_pddl_repositories->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
     m_fluent_assignment_set.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
-    m_literal_grounder->get_pddl_repositories()->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
+    m_pddl_repositories->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
-    m_literal_grounder->get_pddl_repositories()->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    m_pddl_repositories->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
     m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
-    const auto& static_numeric_assignment_set = m_literal_grounder->get_problem()->get_static_initial_numeric_assignment_set();
+    const auto& static_numeric_assignment_set = m_problem->get_static_initial_numeric_assignment_set();
 
     for (const auto& binding :
          create_binding_generator(dense_state, m_fluent_assignment_set, m_derived_assignment_set, static_numeric_assignment_set, m_numeric_assignment_set))
@@ -450,19 +441,19 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
         GroundLiteralList<Static> static_grounded_literals;
         for (const auto& static_literal : m_conjunctive_condition->get_literals<Static>())
         {
-            static_grounded_literals.emplace_back(m_literal_grounder->ground(static_literal, binding));
+            static_grounded_literals.emplace_back(m_pddl_repositories->ground(static_literal, binding));
         }
 
         GroundLiteralList<Fluent> fluent_grounded_literals;
         for (const auto& fluent_literal : m_conjunctive_condition->get_literals<Fluent>())
         {
-            fluent_grounded_literals.emplace_back(m_literal_grounder->ground(fluent_literal, binding));
+            fluent_grounded_literals.emplace_back(m_pddl_repositories->ground(fluent_literal, binding));
         }
 
         GroundLiteralList<Derived> derived_grounded_literals;
         for (const auto& derived_literal : m_conjunctive_condition->get_literals<Derived>())
         {
-            derived_grounded_literals.emplace_back(m_literal_grounder->ground(derived_literal, binding));
+            derived_grounded_literals.emplace_back(m_pddl_repositories->ground(derived_literal, binding));
         }
 
         co_yield std::make_pair(binding, std::make_tuple(static_grounded_literals, fluent_grounded_literals, derived_grounded_literals));
@@ -470,15 +461,21 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
 }
 
 template<typename Derived_>
-const std::shared_ptr<LiteralGrounder>& SatisficingBindingGenerator<Derived_>::get_literal_grounder() const
-{
-    return m_literal_grounder;
-}
-
-template<typename Derived_>
 const ConjunctiveCondition& SatisficingBindingGenerator<Derived_>::get_conjunctive_condition() const
 {
     return m_conjunctive_condition;
+}
+
+template<typename Derived_>
+Problem SatisficingBindingGenerator<Derived_>::get_problem() const
+{
+    return m_problem;
+}
+
+template<typename Derived_>
+const std::shared_ptr<PDDLRepositories>& SatisficingBindingGenerator<Derived_>::get_pddl_repositories() const
+{
+    return m_pddl_repositories;
 }
 
 template<typename Derived_>

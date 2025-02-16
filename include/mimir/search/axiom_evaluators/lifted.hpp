@@ -30,7 +30,8 @@ namespace mimir
 class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    std::shared_ptr<AxiomGrounder> m_grounder;
+    Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
@@ -44,9 +45,11 @@ private:
     NumericAssignmentSet<Fluent> m_numeric_assignment_set;
 
 public:
-    explicit LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder);
+    LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 
-    LiftedAxiomEvaluator(std::shared_ptr<AxiomGrounder> axiom_grounder, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
+    LiftedAxiomEvaluator(Problem problem,
+                         std::shared_ptr<PDDLRepositories> pddl_repositories,
+                         std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -66,7 +69,6 @@ public:
 
     Problem get_problem() const override;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
-    const std::shared_ptr<AxiomGrounder>& get_axiom_grounder() const override;
     const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
 };
 

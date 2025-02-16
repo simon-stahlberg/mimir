@@ -19,7 +19,6 @@
 
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
@@ -64,8 +63,7 @@ StateSpace::StateSpace(bool use_unit_cost_one,
 std::optional<StateSpace> StateSpace::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const StateSpaceOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
+    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
@@ -76,7 +74,7 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
                                              std::shared_ptr<StateRepository> state_repository,
                                              const StateSpaceOptions& options)
 {
-    const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
+    const auto problem = applicable_action_generator->get_problem();
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
@@ -202,8 +200,7 @@ StateSpaceList StateSpace::create(const fs::path& domain_filepath, const std::ve
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
         auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
         auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
         auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));

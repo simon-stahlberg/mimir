@@ -38,9 +38,9 @@ public:
     using SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    ConjunctiveConditionSatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                    std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                    ConjunctiveCondition conjunctive_condition,
+    ConjunctiveConditionSatisficingBindingGenerator(ConjunctiveCondition conjunctive_condition,
+                                                    Problem problem,
+                                                    std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                     std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 };
 

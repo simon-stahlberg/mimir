@@ -17,7 +17,6 @@
 
 #include "mimir/search/applicable_action_generators/grounded.hpp"
 
-#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/search/applicability.hpp"
 #include "mimir/search/applicable_action_generators/grounded/event_handlers.hpp"
 #include "mimir/search/applicable_action_generators/lifted.hpp"
@@ -27,18 +26,22 @@
 namespace mimir
 {
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
+                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :
-    GroundedApplicableActionGenerator(std::move(action_grounder),
+    GroundedApplicableActionGenerator(problem,
+                                      std::move(pddl_repositories),
                                       std::move(match_tree),
                                       std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
+                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
-    m_grounder(std::move(action_grounder)),
+    m_problem(problem),
+    m_pddl_repositories(std::move(pddl_repositories)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),
     m_dense_state()
@@ -64,14 +67,12 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
     }
 }
 
-Problem GroundedApplicableActionGenerator::get_problem() const { return m_grounder->get_problem(); }
+Problem GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
 
-const std::shared_ptr<PDDLRepositories>& GroundedApplicableActionGenerator::get_pddl_repositories() const { return m_grounder->get_pddl_repositories(); }
+const std::shared_ptr<PDDLRepositories>& GroundedApplicableActionGenerator::get_pddl_repositories() const { return m_pddl_repositories; }
 
 void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 
 void GroundedApplicableActionGenerator::on_end_search() { m_event_handler->on_end_search(); }
-
-const std::shared_ptr<ActionGrounder>& GroundedApplicableActionGenerator::get_action_grounder() const { return m_grounder; }
 
 }

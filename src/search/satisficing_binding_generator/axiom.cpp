@@ -22,14 +22,11 @@
 namespace mimir
 {
 
-AxiomSatisficingBindingGenerator::AxiomSatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                                   std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                                   Axiom axiom,
+AxiomSatisficingBindingGenerator::AxiomSatisficingBindingGenerator(Axiom axiom,
+                                                                   Problem problem,
+                                                                   std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                    std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
-    SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>(literal_grounder,
-                                                                  numeric_constraint_grounder,
-                                                                  axiom->get_conjunctive_condition(),
-                                                                  event_handler),
+    SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>(axiom->get_conjunctive_condition(), problem, pddl_repositories, event_handler),
     m_axiom(axiom)
 {
 }

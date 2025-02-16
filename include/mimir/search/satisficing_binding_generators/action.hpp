@@ -54,9 +54,9 @@ public:
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_event_handler;
     using SatisficingBindingGenerator<ActionSatisficingBindingGenerator>::get_static_consistency_graph;
 
-    ActionSatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                      std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                      Action action,
+    ActionSatisficingBindingGenerator(Action action,
+                                      Problem problem,
+                                      std::shared_ptr<PDDLRepositories> pddl_repositories,
                                       std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 };
 

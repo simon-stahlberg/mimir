@@ -17,7 +17,6 @@
 
 #include "mimir/search/algorithms/siw.hpp"
 
-#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"

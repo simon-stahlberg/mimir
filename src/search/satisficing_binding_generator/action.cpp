@@ -23,14 +23,11 @@
 namespace mimir
 {
 
-ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(std::shared_ptr<LiteralGrounder> literal_grounder,
-                                                                     std::shared_ptr<NumericConstraintGrounder> numeric_constraint_grounder,
-                                                                     Action action,
+ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action,
+                                                                     Problem problem,
+                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
                                                                      std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
-    SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(literal_grounder,
-                                                                   numeric_constraint_grounder,
-                                                                   action->get_conjunctive_condition(),
-                                                                   event_handler),
+    SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), problem, pddl_repositories, event_handler),
     m_action(action)
 {
 }
@@ -46,7 +43,7 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& 
 template<FluentOrAuxiliary F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
 {
-    return (evaluate(this->m_numeric_constraint_grounder->get_fexpr_grounder()->ground(effect->get_function_expression(), binding), fluent_numeric_variables)
+    return (evaluate(this->m_pddl_repositories->ground(effect->get_function_expression(), this->m_problem, binding), fluent_numeric_variables)
             != UNDEFINED_CONTINUOUS_COST);
 }
 

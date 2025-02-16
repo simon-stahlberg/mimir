@@ -18,7 +18,6 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/common/printers.hpp"
-#include "mimir/formalism/grounders/action_grounder.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"

@@ -18,10 +18,9 @@
 #include "mimir/search/algorithms/astar.hpp"
 
 #include "mimir/formalism/ground_function_expressions.hpp"
-#include "mimir/formalism/grounders/action_grounder.hpp"
-#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/metric.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/astar/event_handlers.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
@@ -179,12 +178,12 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                                          state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
                                          state_repository->get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
                                          search_nodes.get_estimated_memory_usage_in_bytes(),
-                                         applicable_action_generator->get_action_grounder()->get_estimated_memory_usage_in_bytes_for_actions(),
-                                         state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_estimated_memory_usage_in_bytes_for_axioms(),
+                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
+                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
                                          state_repository->get_state_count(),
                                          search_nodes.size(),
-                                         applicable_action_generator->get_action_grounder()->get_num_ground_actions(),
-                                         state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms());
+                                         pddl_repositories.get_num_ground_actions(),
+                                         pddl_repositories.get_num_ground_axioms());
             if (!event_handler->is_quiet())
             {
                 applicable_action_generator->on_end_search();
@@ -287,12 +286,12 @@ SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> app
                                  state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
                                  state_repository->get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
                                  search_nodes.get_estimated_memory_usage_in_bytes(),
-                                 applicable_action_generator->get_action_grounder()->get_estimated_memory_usage_in_bytes_for_actions(),
-                                 state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_estimated_memory_usage_in_bytes_for_axioms(),
+                                 pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
+                                 pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
                                  state_repository->get_state_count(),
                                  search_nodes.size(),
-                                 applicable_action_generator->get_action_grounder()->get_num_ground_actions(),
-                                 state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms());
+                                 pddl_repositories.get_num_ground_actions(),
+                                 pddl_repositories.get_num_ground_axioms());
     event_handler->on_exhausted();
 
     result.status = SearchStatus::EXHAUSTED;

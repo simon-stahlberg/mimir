@@ -20,7 +20,6 @@
 #include "mimir/algorithms/BS_thread_pool.hpp"
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
-#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/axiom_evaluators/grounded.hpp"
@@ -91,8 +90,7 @@ std::optional<FaithfulAbstraction>
 FaithfulAbstraction::create(const fs::path& domain_filepath, const fs::path& problem_filepath, const FaithfulAbstractionOptions& options)
 {
     auto parser = PDDLParser(domain_filepath, problem_filepath);
-    auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
+    auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
     auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
     auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
     auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));
@@ -103,8 +101,8 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
                                                                std::shared_ptr<StateRepository> state_repository,
                                                                const FaithfulAbstractionOptions& options)
 {
-    const auto problem = applicable_action_generator->get_action_grounder()->get_problem();
-    const auto pddl_repositories = applicable_action_generator->get_action_grounder()->get_pddl_repositories();
+    const auto problem = applicable_action_generator->get_problem();
+    const auto pddl_repositories = applicable_action_generator->get_pddl_repositories();
 
     auto stop_watch = StopWatch(options.timeout_ms);
 
@@ -416,8 +414,7 @@ FaithfulAbstraction::create(const fs::path& domain_filepath, const std::vector<f
     for (const auto& problem_filepath : problem_filepaths)
     {
         auto parser = PDDLParser(domain_filepath, problem_filepath);
-        auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(grounder);
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
         auto applicable_action_generator = delete_relaxed_problem_explorator.create_grounded_applicable_action_generator();
         auto axiom_evaluator = delete_relaxed_problem_explorator.create_grounded_axiom_evaluator();
         auto state_repository = std::make_shared<StateRepository>(std::dynamic_pointer_cast<IAxiomEvaluator>(axiom_evaluator));

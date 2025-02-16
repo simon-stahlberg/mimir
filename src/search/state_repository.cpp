@@ -22,7 +22,6 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_atom.hpp"
 #include "mimir/formalism/ground_literal.hpp"
-#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicability.hpp"
@@ -34,8 +33,8 @@ namespace mimir
 
 StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluator) :
     m_axiom_evaluator(std::move(axiom_evaluator)),
-    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_axioms().empty()
-                                   || !m_axiom_evaluator->get_axiom_grounder()->get_problem()->get_domain()->get_axioms().empty()),
+    m_problem_or_domain_has_axioms(!m_axiom_evaluator->get_problem()->get_axioms().empty()
+                                   || !m_axiom_evaluator->get_problem()->get_domain()->get_axioms().empty()),
     m_states(),
     m_derived_atoms_set(),
     m_reached_fluent_atoms(),
@@ -51,7 +50,7 @@ StateRepository::StateRepository(std::shared_ptr<IAxiomEvaluator> axiom_evaluato
 
 State StateRepository::get_or_create_initial_state()
 {
-    const auto problem = m_axiom_evaluator->get_axiom_grounder()->get_problem();
+    const auto problem = m_axiom_evaluator->get_problem();
     return get_or_create_state(problem->get_fluent_initial_atoms(), problem->get_function_to_value<Fluent>());
 }
 

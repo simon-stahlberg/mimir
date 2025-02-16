@@ -33,17 +33,18 @@ namespace mimir
 class DeleteRelaxedProblemExplorator
 {
 private:
-    std::shared_ptr<Grounder> m_grounder;
+    Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
 
     DeleteRelaxTransformer m_delete_relax_transformer;
     Problem m_delete_free_problem;
-    std::shared_ptr<Grounder> m_delete_free_grounder;
+    // std::shared_ptr<Grounder> m_delete_free_grounder;
     std::shared_ptr<LiftedApplicableActionGenerator> m_delete_free_applicable_action_generator;
     std::shared_ptr<LiftedAxiomEvaluator> m_delete_free_axiom_evalator;
     StateRepository m_delete_free_state_repository;
 
 public:
-    explicit DeleteRelaxedProblemExplorator(std::shared_ptr<Grounder> grounder);
+    explicit DeleteRelaxedProblemExplorator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     // Uncopyable
     DeleteRelaxedProblemExplorator(const DeleteRelaxedProblemExplorator& other) = delete;
@@ -59,7 +60,8 @@ public:
     create_grounded_applicable_action_generator(const match_tree::Options& options = match_tree::Options(),
                                                 std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler = nullptr) const;
 
-    const std::shared_ptr<Grounder>& get_grounder() const;
+    Problem get_problem() const;
+    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const;
 };
 
 }  // namespace mimir

@@ -33,10 +33,11 @@ namespace mimir
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    std::shared_ptr<ActionGrounder> m_grounder;
+    Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
-    std::unordered_map<Action, ActionSatisficingBindingGenerator> m_action_precondition_grounders;
+    std::unordered_map<Action, std::pair<ActionSatisficingBindingGenerator, std::vector<std::vector<IndexList>>>> m_action_grounding_data;
 
     /* Memory for reuse */
     DenseState m_dense_state;
@@ -49,10 +50,11 @@ private:
 
 public:
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder);
+    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(std::shared_ptr<ActionGrounder> action_grounder,
+    LiftedApplicableActionGenerator(Problem problem,
+                                    std::shared_ptr<PDDLRepositories> pddl_repositories,
                                     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
@@ -74,7 +76,6 @@ public:
 
     Problem get_problem() const override;
     const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
-    const std::shared_ptr<ActionGrounder>& get_action_grounder() const override;
 };
 
 }  // namespace mimir

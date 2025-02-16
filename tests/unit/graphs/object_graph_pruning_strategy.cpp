@@ -17,8 +17,8 @@
 
 #include "mimir/graphs/object_graph_pruning_strategy.hpp"
 
-#include "mimir/formalism/grounders/grounder.hpp"
 #include "mimir/formalism/parser.hpp"
+#include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 
@@ -32,9 +32,9 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategySingleSCCTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "delivery/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "delivery/test_problem.pddl");
     const auto parser = PDDLParser(domain_file, problem_file);
-    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder());
-    const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
+    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+    const auto axiom_evaluator =
+        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator, state_repository).value();
 
@@ -47,9 +47,9 @@ TEST(MimirTests, GraphsObjectGraphPruningStrategyMultiSCCTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
     const auto parser = PDDLParser(domain_file, problem_file);
-    const auto grounder = std::make_shared<Grounder>(parser.get_problem(), parser.get_pddl_repositories());
-    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(grounder->get_action_grounder());
-    const auto axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(grounder->get_axiom_grounder()));
+    const auto applicable_action_generator = std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(), parser.get_pddl_repositories());
+    const auto axiom_evaluator =
+        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
     const auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     const auto pruning_strategy = ObjectGraphStaticSccPruningStrategy::create(applicable_action_generator, state_repository).value();
 

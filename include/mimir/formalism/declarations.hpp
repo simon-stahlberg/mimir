@@ -233,19 +233,6 @@ class TermImpl;
 using Term = const TermImpl*;
 using TermList = std::vector<Term>;
 
-/**
- * Grounders
- */
-
-class ActionGrounder;
-class AxiomGrounder;
-class FunctionExpressionGrounder;
-class FunctionGrounder;
-class LiteralGrounder;
-class NumericConstraintGrounder;
-class NumericEffectGrounder;
-class Grounder;
-
 }
 
 #endif

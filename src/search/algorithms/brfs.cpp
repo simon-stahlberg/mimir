@@ -17,8 +17,6 @@
 
 #include "mimir/search/algorithms/brfs.hpp"
 
-#include "mimir/formalism/grounders/action_grounder.hpp"
-#include "mimir/formalism/grounders/axiom_grounder.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
@@ -139,12 +137,12 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
                                          state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
                                          state_repository->get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
                                          search_nodes.get_estimated_memory_usage_in_bytes(),
-                                         applicable_action_generator->get_action_grounder()->get_estimated_memory_usage_in_bytes_for_actions(),
-                                         state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_estimated_memory_usage_in_bytes_for_axioms(),
+                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
+                                         pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
                                          state_repository->get_state_count(),
                                          search_nodes.size(),
-                                         applicable_action_generator->get_action_grounder()->get_num_ground_actions(),
-                                         state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms());
+                                         pddl_repositories.get_num_ground_actions(),
+                                         pddl_repositories.get_num_ground_axioms());
             if (!event_handler->is_quiet())
             {
                 applicable_action_generator->on_end_search();
@@ -198,12 +196,12 @@ SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> appl
                                  state_repository->get_estimated_memory_usage_in_bytes_for_unextended_state_portion(),
                                  state_repository->get_estimated_memory_usage_in_bytes_for_extended_state_portion(),
                                  search_nodes.get_estimated_memory_usage_in_bytes(),
-                                 applicable_action_generator->get_action_grounder()->get_estimated_memory_usage_in_bytes_for_actions(),
-                                 state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_estimated_memory_usage_in_bytes_for_axioms(),
+                                 pddl_repositories.get_estimated_memory_usage_in_bytes_for_actions(),
+                                 pddl_repositories.get_estimated_memory_usage_in_bytes_for_axioms(),
                                  state_repository->get_state_count(),
                                  search_nodes.size(),
-                                 applicable_action_generator->get_action_grounder()->get_num_ground_actions(),
-                                 state_repository->get_axiom_evaluator()->get_axiom_grounder()->get_num_ground_axioms());
+                                 pddl_repositories.get_num_ground_actions(),
+                                 pddl_repositories.get_num_ground_axioms());
     event_handler->on_exhausted();
 
     result.status = SearchStatus::EXHAUSTED;
