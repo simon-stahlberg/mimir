@@ -55,58 +55,6 @@ public:
     virtual bool prune(Index, GroundLiteral<Derived>) const { return false; }
 };
 
-/// @brief `ObjectGraphStaticPruningStrategy` is a strategy for pruning
-/// irrelevant static information during the construction of an object graph.
-/// Static information is irrelevant if no ground action reachable from
-/// the given state ever uses it in a precondition of effect.
-class ObjectGraphStaticSccPruningStrategy : public ObjectGraphPruningStrategy
-{
-public:
-    struct SccPruningComponent;
-    ObjectGraphStaticSccPruningStrategy(size_t num_components, std::vector<SccPruningComponent> pruning_components, std::vector<size_t> component_map);
-
-    bool prune(Index, Object object) const override;
-    bool prune(Index, GroundAtom<Static> atom) const override;
-    bool prune(Index, GroundAtom<Fluent> atom) const override;
-    bool prune(Index, GroundAtom<Derived> atom) const override;
-    bool prune(Index, GroundLiteral<Static> literal) const override;
-    bool prune(Index, GroundLiteral<Fluent> literal) const override;
-    bool prune(Index, GroundLiteral<Derived> literal) const override;
-
-    struct SccPruningComponent
-    {
-        FlatBitset m_pruned_objects;
-        FlatBitset m_pruned_static_goal_literal;
-        FlatBitset m_pruned_fluent_goal_literal;
-        FlatBitset m_pruned_derived_goal_literal;
-
-        SccPruningComponent& operator&=(const SccPruningComponent& other);
-
-        template<StaticOrFluentOrDerived P>
-        const FlatBitset& get_pruned_goal_literals() const;
-    };
-
-    static std::optional<ObjectGraphStaticSccPruningStrategy> create(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                                                     std::shared_ptr<StateRepository> state_repository,
-                                                                     const StateSpaceOptions& options = StateSpaceOptions());
-
-    size_t get_num_components() const;
-    const std::vector<SccPruningComponent>& get_pruning_components() const;
-    const std::vector<size_t>& get_component_map() const;
-
-private:
-    size_t m_num_components;
-    std::vector<SccPruningComponent> m_pruning_components;
-    std::vector<size_t> m_component_map;
-};
-
-/**
- * Pretty printing
- */
-
-extern std::ostream& operator<<(std::ostream& out,
-                                const std::tuple<const ObjectGraphStaticSccPruningStrategy::SccPruningComponent&, Problem, const PDDLRepositories&>& data);
-
 }
 
 #endif
