@@ -35,7 +35,7 @@ namespace mimir
 
 struct ProblemOptions
 {
-    bool symmetry_pruning = false;
+    bool symmetry_pruning = true;
     bool mark_true_goal_literals = false;
     bool remove_if_unsolvable = true;
     uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
@@ -167,7 +167,7 @@ private:
 
 public:
     ClassStateSpace() = default;
-    ClassStateSpace(ClassGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+    explicit ClassStateSpace(ClassGraph graph);
     ClassStateSpace(const ClassStateSpace& other) = delete;
     ClassStateSpace& operator=(const ClassStateSpace& other) = delete;
     ClassStateSpace(ClassStateSpace&& other) = default;

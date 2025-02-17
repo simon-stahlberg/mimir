@@ -165,7 +165,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
             EXPECT_GT(distance_map.at(goal_state), 0);
         }
         // There are zero deadend state.
-        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 0);
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), UNDEFINED_DISCRETE_COST), 0);
     }
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
@@ -178,7 +178,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
 
         EXPECT_EQ(distance_map.at(state_space.get_initial_vertex_index()), 4);
         // There is one deadend state.
-        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), std::numeric_limits<ContinuousCost>::infinity()), 1);
+        EXPECT_EQ(std::count(distance_map.begin(), distance_map.end(), UNDEFINED_DISCRETE_COST), 1);
     }
 }
 
