@@ -43,6 +43,36 @@ namespace mimir
  * ProblemStateSpace
  */
 
+class ProblemStateSpace
+{
+private:
+    ProblemGraph m_graph;
+    IndexSet m_goal_vertices;
+    IndexSet m_unsolvable_vertices;
+    DiscreteCostList m_unit_goal_distances;
+    ContinuousCostList m_action_goal_distances;
+
+public:
+    ProblemStateSpace() = default;
+    ProblemStateSpace(ProblemGraph graph,
+                      IndexSet goal_vertices,
+                      IndexSet unsolvable_vertices,
+                      DiscreteCostList unit_goal_distances,
+                      ContinuousCostList action_goal_distances);
+    ProblemStateSpace(const ProblemStateSpace& other) = delete;
+    ProblemStateSpace& operator=(const ProblemStateSpace& other) = delete;
+    ProblemStateSpace(ProblemStateSpace&& other) = default;
+    ProblemStateSpace& operator=(ProblemStateSpace&& other) = default;
+
+    const ProblemGraph& get_graph() const;
+    const IndexSet& get_goal_vertices() const;
+    const IndexSet& get_unsolvable_vertices() const;
+    const DiscreteCostList& get_unit_goal_distances() const;
+    const ContinuousCostList& get_action_goal_distances() const;
+};
+
+using ProblemStateSpaceList = std::vector<ProblemStateSpace>;
+
 ProblemStateSpace::ProblemStateSpace(ProblemGraph graph,
                                      IndexSet goal_vertices,
                                      IndexSet unsolvable_vertices,
@@ -182,25 +212,13 @@ private:
 
         auto certificate = compute_certificate(successor_state, problem, pddl_repositories);
         auto it = m_symm_data.equiv_classes.find(certificate.get());
-        const auto is_non_symmetric = (it != m_symm_data.equiv_classes.end());
+        const auto is_symmetric = (it != m_symm_data.equiv_classes.end());
 
-        if (is_non_symmetric)
-        {
-            /* New class determined: add vertex and edge! */
-
-            assert(m_graph.get_num_vertices() == m_symm_data.per_state_equiv_class.size());
-            assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
-
-            m_symm_data.per_state_equiv_class.push_back(std::move(certificate));
-            m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
-
-            const auto target_v_idx = m_graph.add_vertex(VertexIndex(-1), successor_state);
-            m_state_to_vertex_index.emplace(successor_state, target_v_idx);
-            m_graph.add_directed_edge(source_v_idx, target_v_idx, EdgeIndex(-1), action, action_cost);
-        }
-        else
+        if (is_symmetric)
         {
             /* Existing class re-encountered: add edge if between existing representative states! */
+
+            std::cout << "Symmetric: " << successor_state->get_index() << std::endl;
 
             if (m_symm_data.prunable_states.contains(successor_state))
             {
@@ -211,6 +229,22 @@ private:
 
             /* Always mark symmetric states as prunable. */
             m_symm_data.prunable_states.insert(successor_state);
+        }
+        else
+        {
+            /* New class determined: add vertex and edge! */
+
+            std::cout << "Non symmetric: " << successor_state->get_index() << std::endl;
+
+            assert(m_graph.get_num_vertices() == m_symm_data.per_state_equiv_class.size());
+            assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
+
+            m_symm_data.per_state_equiv_class.push_back(std::move(certificate));
+            m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
+
+            const auto target_v_idx = m_graph.add_vertex(VertexIndex(-1), successor_state);
+            m_state_to_vertex_index.emplace(successor_state, target_v_idx);
+            m_graph.add_directed_edge(source_v_idx, target_v_idx, EdgeIndex(-1), action, action_cost);
         }
     }
 
@@ -570,8 +604,8 @@ static std::vector<ProblemStateSpace> compute_problem_graphs_without_symmetry_re
     return problem_graphs;
 }
 
-static std::pair<std::vector<ProblemStateSpace>, ClassStateSpace>
-compute_problem_and_class_state_spaces_with_symmetry_reduction(const ProblemContextList& contexts, const ClassOptions& options)
+static std::pair<ProblemGraphList, ClassStateSpace> compute_problem_and_class_state_spaces_with_symmetry_reduction(const ProblemContextList& contexts,
+                                                                                                                   const ClassOptions& options)
 {
     auto problem_graphs = compute_problem_graphs_with_symmetry_reduction(contexts, options.problem_options);
 
@@ -586,11 +620,15 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const ProblemCont
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
      */
 
-    auto problem_state_spaces = ProblemStateSpaceList {};
+    auto final_problem_graphs = ProblemGraphList {};
 
     auto class_graph = StaticClassGraph {};
 
     auto problem_vertex_certificate_to_class_v_idx = CertificateToIndex {};
+
+    auto problem_idx = Index(0);
+
+    std::cout << "Num problem graphs: " << problem_graphs.size() << std::endl;
 
     for (auto& [problem_state_space, vertex_certificates] : problem_graphs)
     {
@@ -601,29 +639,93 @@ compute_problem_and_class_state_spaces_with_symmetry_reduction(const ProblemCont
         auto& problem_action_goal_distances = problem_state_space.get_action_goal_distances();
 
         auto final_problem_graph = StaticProblemGraph();
+        bool has_equivalent_initial_state = false;
+        auto problem_v_idx_to_class_v_idx = std::unordered_map<Index, Index> {};
+        auto problem_v_idx_to_final_v_idx = std::unordered_map<Index, Index> {};
+        auto instantiated_class_v_idxs = IndexSet {};
 
-        for (VertexIndex v_idx = 0; v_idx < problem_graph.get_num_vertices(); ++v_idx)
+        for (VertexIndex problem_v_idx = 0; problem_v_idx < problem_graph.get_num_vertices(); ++problem_v_idx)
         {
-            auto result = problem_vertex_certificate_to_class_v_idx.emplace(std::move(vertex_certificates.at(v_idx)), class_graph.get_num_vertices());
+            const auto& v = problem_graph.get_vertex(problem_v_idx);
+            const auto unit_goal_distance = problem_unit_goal_distances.at(problem_v_idx);
+            const auto action_goal_distance = problem_action_goal_distances.at(problem_v_idx);
+            const auto is_goal = problem_goal_vertices.contains(problem_v_idx);
+            const auto is_unsolvable = problem_unsolvable_vertices.contains(problem_v_idx);
+
+            auto result = problem_vertex_certificate_to_class_v_idx.emplace(std::move(vertex_certificates.at(problem_v_idx)), class_graph.get_num_vertices());
 
             if (result.second)
             {
                 /* Discovered new class vertex. */
+
+                const auto class_v_idx = result.first->second;
+
+                class_graph.add_vertex(class_v_idx, problem_idx, problem_v_idx, unit_goal_distance, action_goal_distance, is_goal, is_unsolvable);
+                const auto final_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v));
+
+                problem_v_idx_to_final_v_idx.emplace(problem_v_idx, final_problem_v_idx);
+                problem_v_idx_to_class_v_idx.emplace(problem_v_idx, class_v_idx);
+                instantiated_class_v_idxs.insert(class_v_idx);
             }
             else
             {
                 /* Encountered existing class vertex. */
+
+                if (problem_v_idx == 0)
+                {
+                    has_equivalent_initial_state = true;
+                    break;
+                }
+
+                /* We create a node in the problem graph that points to the class vertex.
+                   We cannot skip it to be able to compute tuple graphs in the problem graph of a representative of a class vertex. */
+                const auto class_v_idx = result.first->second;
+                const auto final_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v));
+
+                problem_v_idx_to_class_v_idx.emplace(problem_v_idx, class_v_idx);
+                problem_v_idx_to_final_v_idx.emplace(problem_v_idx, final_problem_v_idx);
             }
         }
+
+        if (has_equivalent_initial_state)
+        {
+            continue;
+        }
+
+        for (const auto& e : problem_graph.get_edges())
+        {
+            const auto problem_e_idx = e.get_index();
+            const auto class_e_idx = Index(class_graph.get_num_edges());
+            const auto action_cost = get_action_cost(e);
+
+            const auto final_problem_src_v_idx = problem_v_idx_to_final_v_idx.at(e.get_source());
+            const auto final_problem_dst_v_idx = problem_v_idx_to_final_v_idx.at(e.get_target());
+
+            const auto class_src_v_idx = problem_v_idx_to_class_v_idx.at(e.get_source());
+            const auto class_dst_v_idx = problem_v_idx_to_class_v_idx.at(e.get_target());
+
+            /* Only instantiate class edge if the edge transitions between a newly instantiated class vertex. */
+            if (instantiated_class_v_idxs.contains(class_src_v_idx) || instantiated_class_v_idxs.contains(class_dst_v_idx))
+            {
+                class_graph.add_directed_edge(class_src_v_idx, class_dst_v_idx, class_e_idx, problem_idx, problem_e_idx, action_cost);
+            }
+
+            /* Always instantiate a problem edge. Same reasons as for vertices above applies. */
+            final_problem_graph.add_directed_edge(final_problem_src_v_idx, final_problem_dst_v_idx, class_e_idx, get_action(e), get_action_cost(e));
+        }
+
+        final_problem_graphs.push_back(ProblemGraph(std::move(final_problem_graph)));
+
+        ++problem_idx;
     }
 
     auto class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)));
 
-    return { std::move(problem_state_spaces), std::move(class_state_space) };
+    return { std::move(final_problem_graphs), std::move(class_state_space) };
 }
 
-static std::pair<std::vector<ProblemStateSpace>, ClassStateSpace>
-compute_problem_and_class_state_spaces_without_symmetry_reduction(const ProblemContextList& contexts, const ClassOptions& options)
+static std::pair<ProblemGraphList, ClassStateSpace> compute_problem_and_class_state_spaces_without_symmetry_reduction(const ProblemContextList& contexts,
+                                                                                                                      const ClassOptions& options)
 {
     auto problem_graphs = compute_problem_graphs_without_symmetry_reduction(contexts, options.problem_options);
 
@@ -638,7 +740,7 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const ProblemC
         Meanwhile, translate each `StaticProblemGraph` into a `ProblemGraph` that maps to the `ClassVertices` and `ClassEdges`
      */
 
-    auto problem_state_spaces = ProblemStateSpaceList {};
+    auto final_problem_graphs = ProblemGraphList {};
 
     auto class_graph = StaticClassGraph {};
 
@@ -667,8 +769,8 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const ProblemC
             problem_v_idx_to_class_v_idx[problem_v_idx] = class_v_idx;
             const auto unit_goal_distance = problem_unit_goal_distances.at(problem_v_idx);
             const auto action_goal_distance = problem_action_goal_distances.at(problem_v_idx);
-            const auto is_goal = (unit_goal_distance == 0);
-            const auto is_unsolvable = (unit_goal_distance == UNDEFINED_DISCRETE_COST);
+            const auto is_goal = problem_goal_vertices.contains(problem_v_idx);
+            const auto is_unsolvable = problem_unsolvable_vertices.contains(problem_v_idx);
 
             class_graph.add_vertex(class_v_idx, problem_idx, problem_v_idx, unit_goal_distance, action_goal_distance, is_goal, is_unsolvable);
             final_problem_graph.add_vertex(class_v_idx, get_state(v));
@@ -688,18 +790,14 @@ compute_problem_and_class_state_spaces_without_symmetry_reduction(const ProblemC
             final_problem_graph.add_directed_edge(e.get_source(), e.get_target(), class_e_idx, get_action(e), get_action_cost(e));
         }
 
-        problem_state_spaces.push_back(ProblemStateSpace(ProblemGraph(std::move(final_problem_graph)),
-                                                         std::move(problem_goal_vertices),
-                                                         std::move(problem_unsolvable_vertices),
-                                                         std::move(problem_unit_goal_distances),
-                                                         std::move(problem_action_goal_distances)));
+        final_problem_graphs.push_back(ProblemGraph(std::move(final_problem_graph)));
 
         ++problem_idx;
     }
 
     auto class_state_space = ClassStateSpace(ClassGraph(std::move(class_graph)));
 
-    return { std::move(problem_state_spaces), std::move(class_state_space) };
+    return { std::move(final_problem_graphs), std::move(class_state_space) };
 }
 
 ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& contexts, const ClassOptions& options)
@@ -715,39 +813,33 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
     if (options.problem_options.symmetry_pruning)
     {
         auto [problem_state_spaces_, class_state_space_] = compute_problem_and_class_state_spaces_with_symmetry_reduction(contexts, options);
-        m_problem_state_spaces = std::move(problem_state_spaces_);
+        m_problem_graphs = std::move(problem_state_spaces_);
         m_class_state_space = std::move(class_state_space_);
     }
     else
     {
         auto [problem_state_spaces_, class_state_space_] = compute_problem_and_class_state_spaces_without_symmetry_reduction(contexts, options);
-        m_problem_state_spaces = std::move(problem_state_spaces_);
+        m_problem_graphs = std::move(problem_state_spaces_);
         m_class_state_space = std::move(class_state_space_);
     }
 }
 
-const ProblemStateSpaceList& ProblemClassStateSpace::get_problem_state_spaces() const { return m_problem_state_spaces; }
+const ProblemGraphList& ProblemClassStateSpace::get_problem_state_spaces() const { return m_problem_graphs; }
 
 const ClassStateSpace& ProblemClassStateSpace::get_class_state_space() const { return m_class_state_space; }
 
-const ProblemStateSpace& ProblemClassStateSpace::get_problem_state_space(const ClassVertex& vertex) const
-{
-    return m_problem_state_spaces.at(get_problem_index(vertex));
-}
+const ProblemGraph& ProblemClassStateSpace::get_problem_state_space(const ClassVertex& vertex) const { return m_problem_graphs.at(get_problem_index(vertex)); }
 
-const ProblemStateSpace& ProblemClassStateSpace::get_problem_state_space(const ClassEdge& edge) const
-{
-    return m_problem_state_spaces.at(get_problem_index(edge));
-}
+const ProblemGraph& ProblemClassStateSpace::get_problem_state_space(const ClassEdge& edge) const { return m_problem_graphs.at(get_problem_index(edge)); }
 
 const ProblemVertex& ProblemClassStateSpace::get_problem_vertex(const ClassVertex& vertex) const
 {
-    return m_problem_state_spaces.at(get_problem_index(vertex)).get_graph().get_vertex(get_problem_vertex_index(vertex));
+    return m_problem_graphs.at(get_problem_index(vertex)).get_graph().get_vertex(get_problem_vertex_index(vertex));
 }
 
 const ProblemEdge& ProblemClassStateSpace::get_problem_edge(const ClassEdge& edge) const
 {
-    return m_problem_state_spaces.at(get_problem_index(edge)).get_graph().get_edge(get_problem_edge_index(edge));
+    return m_problem_graphs.at(get_problem_index(edge)).get_graph().get_edge(get_problem_edge_index(edge));
 }
 
 const ClassVertex& ProblemClassStateSpace::get_class_vertex(const ProblemVertex& vertex) const
@@ -760,6 +852,8 @@ const ClassEdge& ProblemClassStateSpace::get_class_edge(const ProblemEdge& edge)
     return m_class_state_space.get_graph().get_edge(get_class_edge_index(edge));
 }
 
+ClassStateSpace ProblemClassStateSpace::create_induced_subspace(const ClassVertexList& vertices) const {}
+
 ClassStateSpace ProblemClassStateSpace::create_induced_subspace(const ProblemVertexList& vertices) const {}
 
 ClassStateSpace ProblemClassStateSpace::create_induced_subspace(const IndexList& problem_indices) const
@@ -768,7 +862,7 @@ ClassStateSpace ProblemClassStateSpace::create_induced_subspace(const IndexList&
 
     for (const auto p_idx : problem_indices)
     {
-        const auto& pss = m_problem_state_spaces.at(p_idx);
+        const auto& pss = m_problem_graphs.at(p_idx);
     }
 }
 

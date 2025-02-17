@@ -35,7 +35,7 @@ namespace mimir
 
 struct ProblemOptions
 {
-    bool symmetry_pruning = true;
+    bool symmetry_pruning = false;
     bool mark_true_goal_literals = false;
     bool remove_if_unsolvable = true;
     uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
@@ -77,36 +77,6 @@ using StaticProblemGraph = StaticGraph<ProblemVertex, ProblemEdge>;
 using StaticProblemGraphList = std::vector<StaticProblemGraph>;
 using ProblemGraph = StaticBidirectionalGraph<StaticProblemGraph>;
 using ProblemGraphList = std::vector<ProblemGraph>;
-
-class ProblemStateSpace
-{
-private:
-    ProblemGraph m_graph;
-    IndexSet m_goal_vertices;
-    IndexSet m_unsolvable_vertices;
-    DiscreteCostList m_unit_goal_distances;
-    ContinuousCostList m_action_goal_distances;
-
-public:
-    ProblemStateSpace() = default;
-    ProblemStateSpace(ProblemGraph graph,
-                      IndexSet goal_vertices,
-                      IndexSet unsolvable_vertices,
-                      DiscreteCostList unit_goal_distances,
-                      ContinuousCostList action_goal_distances);
-    ProblemStateSpace(const ProblemStateSpace& other) = delete;
-    ProblemStateSpace& operator=(const ProblemStateSpace& other) = delete;
-    ProblemStateSpace(ProblemStateSpace&& other) = default;
-    ProblemStateSpace& operator=(ProblemStateSpace&& other) = default;
-
-    const ProblemGraph& get_graph() const;
-    const IndexSet& get_goal_vertices() const;
-    const IndexSet& get_unsolvable_vertices() const;
-    const DiscreteCostList& get_unit_goal_distances() const;
-    const ContinuousCostList& get_action_goal_distances() const;
-};
-
-using ProblemStateSpaceList = std::vector<ProblemStateSpace>;
 
 /**
  * ClassGraph
@@ -161,7 +131,10 @@ using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 class ClassStateSpace
 {
 private:
-    ClassGraph m_graph;
+    ClassGraph m_graph;  ///< Core data.
+
+    /* Initialize additional convenience data in the constructor! */
+
     IndexSet m_goal_vertices;        ///< Convenience data.
     IndexSet m_unsolvable_vertices;  ///< Convenience data.
 
@@ -173,9 +146,10 @@ public:
     ClassStateSpace(ClassStateSpace&& other) = default;
     ClassStateSpace& operator=(ClassStateSpace&& other) = default;
 
-    const ClassGraph& get_graph() const;
-    const IndexSet& get_goal_vertices() const;
-    const IndexSet& get_unsolvable_vertices() const;
+    const ClassGraph& get_graph() const;  ///< Core data getter.
+
+    const IndexSet& get_goal_vertices() const;        ///< Convenience data getter.
+    const IndexSet& get_unsolvable_vertices() const;  ///< Convenience data getter.
 };
 
 /// @brief `ProblemClassStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassGraph` structure on top.
@@ -191,8 +165,8 @@ public:
 class ProblemClassStateSpace
 {
 private:
-    ProblemStateSpaceList m_problem_state_spaces;  ///< The child-level state spaces.
-    ClassStateSpace m_class_state_space;           ///< The top-level state space.
+    ProblemGraphList m_problem_graphs;    ///< The child-level graphs.
+    ClassStateSpace m_class_state_space;  ///< The top-level state space.
 
 public:
     ProblemClassStateSpace(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
@@ -201,13 +175,13 @@ public:
      * Getters
      */
 
-    const ProblemStateSpaceList& get_problem_state_spaces() const;
+    const ProblemGraphList& get_problem_state_spaces() const;
     const ClassStateSpace& get_class_state_space() const;
 
     /// @brief Ground `Class` related structures to `Problem` related structures
     /// to access detailed problem specific information about the state.
-    const ProblemStateSpace& get_problem_state_space(const ClassVertex& vertex) const;
-    const ProblemStateSpace& get_problem_state_space(const ClassEdge& edge) const;
+    const ProblemGraph& get_problem_state_space(const ClassVertex& vertex) const;
+    const ProblemGraph& get_problem_state_space(const ClassEdge& edge) const;
     const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
     const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
 
@@ -219,6 +193,10 @@ public:
      * Construct subgraphs for learning from fragments of the `ClassStateSpace`.
      */
 
+    /// @brief Create the induced `ClassStateSpace` by the given `ClassVertexList`.
+    /// This function copies the set of `ClassVertex`
+    /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
+    ClassStateSpace create_induced_subspace(const ClassVertexList& vertices) const;
     /// @brief Create the induced `ClassStateSpace` by the given `ProblemVertexList`.
     /// This function copies the corresponding set of `ClassVertex`
     /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
