@@ -15,25 +15,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_GROUND_ACTION_EDGE_HPP_
-#define MIMIR_DATASETS_GROUND_ACTION_EDGE_HPP_
+#include "mimir/datasets/problem_class_graph.hpp"
 
-#include "mimir/formalism/declarations.hpp"
-#include "mimir/graphs/graph_edges.hpp"
+#include <gtest/gtest.h>
 
-#include <span>
-#include <vector>
-
-namespace mimir
+namespace mimir::tests
 {
 
-using GroundActionEdge = Edge<GroundAction, ContinuousCost>;
-using GroundActionEdgeList = std::vector<GroundActionEdge>;
-
-inline GroundAction get_creating_action(const GroundActionEdge& edge) { return edge.get_property<0>(); }
-
-inline ContinuousCost get_cost(const GroundActionEdge& edge) { return edge.get_property<1>(); }
+TEST(MimirTests, DatasetsProblemClassGraphConstructorTest) {}
 
 }
-
-#endif

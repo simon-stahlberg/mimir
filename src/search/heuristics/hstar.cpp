@@ -17,7 +17,8 @@
 
 #include "mimir/search/heuristics/hstar.hpp"
 
-#include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/problem_class_graph.hpp"
+#include "mimir/search/state_repository.hpp"
 
 namespace mimir
 {
@@ -26,13 +27,17 @@ HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> appli
     m_estimates()
 {
     // We simply create a state space and copy the estimates
-    auto state_space_options = StateSpaceOptions();
-    state_space_options.remove_if_unsolvable = false;
+    auto class_options = ClassOptions();
+    class_options.problem_options.remove_if_unsolvable = false;
 
-    auto state_space = StateSpace::create(applicable_action_generator, state_repository, state_space_options).value();
-    for (size_t state_index = 0; state_index < state_space.get_num_vertices(); ++state_index)
+    auto problem_class_state_space =
+        ProblemClassStateSpace(ProblemContextList { ProblemContext { state_repository->get_problem(), state_repository, applicable_action_generator } },
+                               class_options);
+    const auto& class_graph = problem_class_state_space.get_class_state_space().get_graph();
+    for (const auto& class_vertex : class_graph.get_vertices())
     {
-        m_estimates.emplace(get_state(state_space.get_vertex(state_index)), state_space.get_goal_distance(state_index));
+        const auto& problem_vertex = problem_class_state_space.get_problem_vertex(class_vertex);
+        m_estimates.emplace(get_state(problem_vertex), get_action_goal_distance(class_vertex));
     }
 }
 

@@ -27,15 +27,6 @@
 namespace mimir
 {
 
-struct StateSpaceOptions;
-struct StateSpacesOptions;
-class StateSpace;
-
-struct FaithfulAbstractionOptions;
-struct FaithfulAbstractionsOptions;
-class FaithfulAbstraction;
-class GlobalFaithfulAbstraction;
-
 }
 
 #endif

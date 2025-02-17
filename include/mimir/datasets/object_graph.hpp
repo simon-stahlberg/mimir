@@ -19,9 +19,9 @@
 #define MIMIR_GRAPHS_OBJECT_GRAPH_HPP_
 
 #include "mimir/common/types_cista.hpp"
+#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
-#include "mimir/graphs/object_graph_pruning_strategy.hpp"
 #include "mimir/search/state.hpp"
 
 #include <ostream>

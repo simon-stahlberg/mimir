@@ -15,14 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/object_graph_pruning_strategy.hpp"
+#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/types_cista.hpp"
+#include "mimir/datasets/object_graph.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/formalism/utils.hpp"
-#include "mimir/graphs/object_graph.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/applicable_action_generators/grounded.hpp"

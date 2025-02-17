@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/object_graph_pruning_strategy.hpp"
+#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/repositories.hpp"

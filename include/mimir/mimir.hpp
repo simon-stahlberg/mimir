@@ -87,11 +87,10 @@
  * DataSet
  */
 
-#include "mimir/datasets/abstraction.hpp"
-#include "mimir/datasets/faithful_abstraction.hpp"
-#include "mimir/datasets/global_faithful_abstraction.hpp"
+#include "mimir/datasets/object_graph.hpp"
+#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 #include "mimir/datasets/problem_class_graph.hpp"
-#include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/tuple_graph.hpp"
 
 /**
  * Graphs
@@ -102,8 +101,6 @@
 #include "mimir/graphs/color_function.hpp"
 #include "mimir/graphs/digraph.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
-#include "mimir/graphs/object_graph.hpp"
-#include "mimir/graphs/tuple_graph.hpp"
 
 /**
  * Algorithms

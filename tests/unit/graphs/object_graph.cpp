@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/object_graph.hpp"
+#include "mimir/datasets/object_graph.hpp"
 
 #include "mimir/algorithms/nauty.hpp"
-#include "mimir/datasets/state_space.hpp"
+#include "mimir/datasets/problem_class_graph.hpp"
 
 #include <gtest/gtest.h>
 #include <unordered_set>

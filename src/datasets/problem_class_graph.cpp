@@ -19,10 +19,10 @@
 
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
+#include "mimir/datasets/object_graph.hpp"
+#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/problem.hpp"
-#include "mimir/graphs/object_graph.hpp"
-#include "mimir/graphs/object_graph_pruning_strategy.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/brfs.hpp"

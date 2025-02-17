@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/tuple_graph.hpp"
+#include "mimir/datasets/tuple_graph.hpp"
 
 #include "mimir/formalism/utils.hpp"
 
