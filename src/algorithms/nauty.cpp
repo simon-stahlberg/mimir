@@ -49,6 +49,13 @@ size_t UniqueCertificateSharedPtrEqualTo::operator()(const std::shared_ptr<const
     return loki::EqualTo<Certificate>()(*lhs, *rhs);
 }
 
+size_t UniqueCertificateUniquePtrHash::operator()(const std::unique_ptr<const Certificate>& element) const { return loki::Hash<Certificate>()(*element); }
+
+size_t UniqueCertificateUniquePtrEqualTo::operator()(const std::unique_ptr<const Certificate>& lhs, const std::unique_ptr<const Certificate>& rhs) const
+{
+    return loki::EqualTo<Certificate>()(*lhs, *rhs);
+}
+
 bool operator==(const Certificate& lhs, const Certificate& rhs) { return loki::EqualTo<Certificate>()(lhs, rhs); }
 
 bool operator<(const Certificate& lhs, const Certificate& rhs)
@@ -66,8 +73,9 @@ bool operator<(const Certificate& lhs, const Certificate& rhs)
 
 std::ostream& operator<<(std::ostream& os, const Certificate& element)
 {
-    os << "CertificateNauty(" << "canonical_graph=" << element.get_canonical_graph() << ", " << "canonical_coloring=" << element.get_canonical_coloring()
-       << ")";
+    os << "CertificateNauty("
+       << "canonical_graph=" << element.get_canonical_graph() << ", "
+       << "canonical_coloring=" << element.get_canonical_coloring() << ")";
     return os;
 }
 

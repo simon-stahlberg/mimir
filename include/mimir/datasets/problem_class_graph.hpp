@@ -35,6 +35,8 @@ namespace mimir
 
 struct ProblemOptions
 {
+    bool symmetry_pruning = false;
+    bool mark_true_goal_literals = false;
     bool remove_if_unsolvable = true;
     uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
     uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
@@ -92,6 +94,10 @@ public:
                       IndexSet unsolvable_vertices,
                       DiscreteCostList unit_goal_distances,
                       ContinuousCostList action_goal_distances);
+    ProblemStateSpace(const ProblemStateSpace& other) = delete;
+    ProblemStateSpace& operator=(const ProblemStateSpace& other) = delete;
+    ProblemStateSpace(ProblemStateSpace&& other) = default;
+    ProblemStateSpace& operator=(ProblemStateSpace&& other) = default;
 
     const ProblemGraph& get_graph() const;
     const IndexSet& get_goal_vertices() const;
@@ -108,10 +114,9 @@ using ProblemStateSpaceList = std::vector<ProblemStateSpace>;
 
 struct ClassOptions
 {
-    bool symmetry_pruning = false;
     bool sort_ascending_by_num_states = true;
 
-    ProblemOptions options = ProblemOptions();
+    ProblemOptions problem_options = ProblemOptions();
 };
 
 /// @brief `ClassVertex` encapsulates information about a vertex where
@@ -163,6 +168,10 @@ private:
 public:
     ClassStateSpace() = default;
     ClassStateSpace(ClassGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+    ClassStateSpace(const ClassStateSpace& other) = delete;
+    ClassStateSpace& operator=(const ClassStateSpace& other) = delete;
+    ClassStateSpace(ClassStateSpace&& other) = default;
+    ClassStateSpace& operator=(ClassStateSpace&& other) = default;
 
     const ClassGraph& get_graph() const;
     const IndexSet& get_goal_vertices() const;

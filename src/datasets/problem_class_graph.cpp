@@ -21,11 +21,14 @@
 #include "mimir/common/timers.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/problem.hpp"
+#include "mimir/graphs/object_graph.hpp"
+#include "mimir/graphs/object_graph_pruning_strategy.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
+#include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/heuristics/blind.hpp"
 #include "mimir/search/metric.hpp"
@@ -78,8 +81,196 @@ const IndexSet& ClassStateSpace::get_unsolvable_vertices() const { return m_unso
  * ProblemClassStateSpace
  */
 
-using CertificateToIndex =
-    std::unordered_map<nauty_wrapper::Certificate, Index, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>>;
+using CertificateToIndex = std::unordered_map<std::unique_ptr<const nauty_wrapper::Certificate>,
+                                              nauty_wrapper::UniqueCertificateUniquePtrHash,
+                                              nauty_wrapper::UniqueCertificateUniquePtrEqualTo>;
+
+using CertificateSet = std::unordered_set<loki::ObserverPtr<const nauty_wrapper::Certificate>,
+                                          loki::Hash<loki::ObserverPtr<const nauty_wrapper::Certificate>>,
+                                          loki::EqualTo<loki::ObserverPtr<const nauty_wrapper::Certificate>>>;
+using CertificateList = std::vector<std::unique_ptr<const nauty_wrapper::Certificate>>;
+
+struct SymmetriesData
+{
+    ProblemColorFunction color_function;
+    CertificateSet equiv_classes;
+    CertificateList per_state_equiv_class;
+    std::unique_ptr<ObjectGraphPruningStrategy> object_graph_pruning_strategy;
+    StateSet prunable_states;
+
+    explicit SymmetriesData(Problem problem) :
+        color_function(ProblemColorFunction(problem)),
+        equiv_classes(),
+        per_state_equiv_class(),
+        object_graph_pruning_strategy(std::make_unique<ObjectGraphPruningStrategy>(ObjectGraphPruningStrategy()))
+    {
+    }
+};
+
+/// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
+class SymmetryStatePruning : public IPruningStrategy
+{
+private:
+    std::optional<SymmetriesData>& m_symm_data;
+
+public:
+    explicit SymmetryStatePruning(std::optional<SymmetriesData>& symm_data) : m_symm_data(symm_data) {}
+
+    bool test_prune_initial_state(State state) override { return false; }
+    bool test_prune_successor_state(State state, State succ_state, bool is_new_succ) override
+    {
+        assert(m_symm_data);
+        return !is_new_succ || m_symm_data->prunable_states.contains(succ_state);
+    }
+};
+
+class SymmetryReducedProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>
+{
+private:
+    const ProblemOptions& m_options;
+    StaticProblemGraph& m_graph;
+    IndexSet& m_goal_vertices;
+    SymmetriesData& m_symm_data;
+
+    StateMap<VertexIndex> m_state_to_vertex_index;
+
+    /* Implement AlgorithmEventHandlerBase interface */
+    friend class BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>;
+
+    std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state, Problem problem, const PDDLRepositories& pddl_repositories)
+    {
+        const auto object_graph = create_object_graph(m_symm_data.color_function,
+                                                      pddl_repositories,
+                                                      problem,
+                                                      state,
+                                                      state->get_index(),
+                                                      m_options.mark_true_goal_literals,
+                                                      *m_symm_data.object_graph_pruning_strategy);
+
+        return std::make_unique<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
+    }
+
+    void on_expand_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories)
+    {
+        if (!m_state_to_vertex_index.contains(state))
+        {
+            m_state_to_vertex_index.emplace(state, m_graph.add_vertex(VertexIndex(-1), state));
+        }
+    }
+
+    void on_expand_goal_state_impl(State state, Problem problem, const PDDLRepositories& pddl_repositories)
+    {
+        m_goal_vertices.insert(m_state_to_vertex_index.at(state));
+    }
+
+    void on_generate_state_impl(State state,
+                                GroundAction action,
+                                ContinuousCost action_cost,
+                                State successor_state,
+                                Problem problem,
+                                const PDDLRepositories& pddl_repositories)
+    {
+        const auto source_v_idx = m_state_to_vertex_index.at(state);
+
+        auto certificate = compute_certificate(successor_state, problem, pddl_repositories);
+        auto it = m_symm_data.equiv_classes.find(certificate.get());
+        const auto is_non_symmetric = (it != m_symm_data.equiv_classes.end());
+
+        if (is_non_symmetric)
+        {
+            /* New class determined: add vertex and edge! */
+
+            assert(m_graph.get_num_vertices() == m_symm_data.per_state_equiv_class.size());
+            assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
+
+            m_symm_data.per_state_equiv_class.push_back(std::move(certificate));
+            m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
+
+            const auto target_v_idx = m_graph.add_vertex(VertexIndex(-1), successor_state);
+            m_state_to_vertex_index.emplace(successor_state, target_v_idx);
+            m_graph.add_directed_edge(source_v_idx, target_v_idx, EdgeIndex(-1), action, action_cost);
+        }
+        else
+        {
+            /* Existing class re-encountered: add edge if between existing representative states! */
+
+            if (m_symm_data.prunable_states.contains(successor_state))
+            {
+                /* Always add edges between symmetric states. */
+                const auto target_v_idx = m_state_to_vertex_index.at(successor_state);
+                m_graph.add_directed_edge(source_v_idx, target_v_idx, EdgeIndex(-1), action, action_cost);
+            }
+
+            /* Always mark symmetric states as prunable. */
+            m_symm_data.prunable_states.insert(successor_state);
+        }
+    }
+
+    void on_generate_state_in_search_tree_impl(State state,
+                                               GroundAction action,
+                                               ContinuousCost action_cost,
+                                               State successor_state,
+                                               Problem problem,
+                                               const PDDLRepositories& pddl_repositories)
+    {
+    }
+
+    void on_generate_state_not_in_search_tree_impl(State state,
+                                                   GroundAction action,
+                                                   ContinuousCost action_cost,
+                                                   State successor_state,
+                                                   Problem problem,
+                                                   const PDDLRepositories& pddl_repositories)
+    {
+    }
+
+    void on_finish_g_layer_impl(uint32_t g_value, uint64_t num_expanded_states, uint64_t num_generated_states) {}
+
+    void on_start_search_impl(State start_state, Problem problem, const PDDLRepositories& pddl_repositories)
+    {
+        const auto v_idx = m_graph.add_vertex(VertexIndex(-1), start_state);
+        m_state_to_vertex_index.emplace(start_state, v_idx);
+
+        /* Compute certificate for start state. */
+        m_symm_data.per_state_equiv_class.push_back(compute_certificate(start_state, problem, pddl_repositories));
+        m_symm_data.equiv_classes.insert(m_symm_data.per_state_equiv_class.back().get());
+        m_symm_data.prunable_states.insert(start_state);
+    }
+
+    void on_end_search_impl(uint64_t num_reached_fluent_atoms,
+                            uint64_t num_reached_derived_atoms,
+                            uint64_t num_bytes_for_unextended_state_portion,
+                            uint64_t num_bytes_for_extended_state_portion,
+                            uint64_t num_bytes_for_nodes,
+                            uint64_t num_bytes_for_actions,
+                            uint64_t num_bytes_for_axioms,
+                            uint64_t num_states,
+                            uint64_t num_nodes,
+                            uint64_t num_actions,
+                            uint64_t num_axioms) const
+    {
+    }
+
+    void on_solved_impl(const Plan& plan, const PDDLRepositories& pddl_repositories) {}
+
+    void on_unsolvable_impl() {}
+
+    void on_exhausted_impl() {}
+
+public:
+    explicit SymmetryReducedProblemGraphBrFSAlgorithmEventHandler(const ProblemOptions& options,
+                                                                  StaticProblemGraph& graph,
+                                                                  IndexSet& goal_vertices,
+                                                                  SymmetriesData& symm_data,
+                                                                  bool quiet = true) :
+        BrFSAlgorithmEventHandlerBase<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(quiet),
+        m_options(options),
+        m_graph(graph),
+        m_goal_vertices(goal_vertices),
+        m_symm_data(symm_data)
+    {
+    }
+};
 
 class ProblemGraphBrFSAlgorithmEventHandler : public BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>
 {
@@ -87,7 +278,6 @@ private:
     const ProblemOptions& m_options;
     StaticProblemGraph& m_graph;
     IndexSet& m_goal_vertices;
-    CertificateToIndex& m_symmetries;
 
     StateMap<VertexIndex> m_state_to_vertex_index;
 
@@ -162,21 +352,16 @@ private:
     void on_exhausted_impl() {}
 
 public:
-    explicit ProblemGraphBrFSAlgorithmEventHandler(const ProblemOptions& options,
-                                                   StaticProblemGraph& graph,
-                                                   IndexSet& goal_vertices,
-                                                   CertificateToIndex& symmetries,
-                                                   bool quiet = true) :
+    explicit ProblemGraphBrFSAlgorithmEventHandler(const ProblemOptions& options, StaticProblemGraph& graph, IndexSet& goal_vertices, bool quiet = true) :
         BrFSAlgorithmEventHandlerBase<ProblemGraphBrFSAlgorithmEventHandler>(quiet),
         m_options(options),
         m_graph(graph),
-        m_goal_vertices(goal_vertices),
-        m_symmetries(symmetries)
+        m_goal_vertices(goal_vertices)
     {
     }
 };
 
-static std::optional<std::pair<ProblemStateSpace, CertificateToIndex>> compute_problem_graph(const ProblemContext& context, const ProblemOptions& options)
+static std::optional<std::pair<ProblemStateSpace, CertificateList>> compute_problem_graph(const ProblemContext& context, const ProblemOptions& options)
 {
     const auto problem = context.problem;
     const auto applicable_action_generator = context.applicable_action_generator;
@@ -194,16 +379,24 @@ static std::optional<std::pair<ProblemStateSpace, CertificateToIndex>> compute_p
 
     auto graph = StaticProblemGraph();
     auto goal_vertices = IndexSet {};
-    auto symmetries = CertificateToIndex {};
+
+    // TODO: this initialization towards running brfs looks a bit messy.
+
+    auto symm_data = options.symmetry_pruning ? std::optional<SymmetriesData>(problem) : std::nullopt;
 
     auto goal_test = std::make_shared<ProblemGoal>(problem);
-    auto event_handler = std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, symmetries, false);
+    auto event_handler = options.symmetry_pruning ? std::dynamic_pointer_cast<IBrFSAlgorithmEventHandler>(
+                             std::make_shared<SymmetryReducedProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, symm_data.value(), false)) :
+                                                    std::dynamic_pointer_cast<IBrFSAlgorithmEventHandler>(
+                                                        std::make_shared<ProblemGraphBrFSAlgorithmEventHandler>(options, graph, goal_vertices, false));
+    auto pruning_strategy = options.symmetry_pruning ? std::dynamic_pointer_cast<IPruningStrategy>(std::make_shared<SymmetryStatePruning>(symm_data)) :
+                                                       std::dynamic_pointer_cast<IPruningStrategy>(std::make_shared<DuplicateStatePruning>());
     auto result = find_solution_brfs(applicable_action_generator,
                                      state_repository,
                                      state_repository->get_or_create_initial_state(),
                                      event_handler,
                                      goal_test,
-                                     std::nullopt,
+                                     pruning_strategy,
                                      true);
 
     if (result.status != EXHAUSTED)
@@ -248,17 +441,20 @@ static std::optional<std::pair<ProblemStateSpace, CertificateToIndex>> compute_p
     auto [action_predecessors, action_goal_distances] =
         dijkstra_shortest_paths(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), edge_action_costs, goal_vertices.begin(), goal_vertices.end());
 
+    /* Fetch the equiv class data. */
+    auto per_state_equiv_classes = options.symmetry_pruning ? std::move(symm_data->per_state_equiv_class) : CertificateList {};
+
     return std::make_pair(ProblemStateSpace(std::move(bidir_graph),
                                             std::move(goal_vertices),
                                             std::move(unsolvable_vertices),
                                             std::move(unit_goal_distances),
                                             std::move(action_goal_distances)),
-                          std::move(symmetries));
+                          std::move(per_state_equiv_classes));
 }
 
-static std::vector<std::pair<ProblemStateSpace, CertificateToIndex>> compute_problem_graphs(const ProblemContextList& contexts, const ProblemOptions& options)
+static std::vector<std::pair<ProblemStateSpace, CertificateList>> compute_problem_graphs(const ProblemContextList& contexts, const ProblemOptions& options)
 {
-    auto problem_graphs = std::vector<std::pair<ProblemStateSpace, CertificateToIndex>> {};
+    auto problem_graphs = std::vector<std::pair<ProblemStateSpace, CertificateList>> {};
     for (const auto& context : contexts)
     {
         auto result = compute_problem_graph(context, options);
@@ -268,7 +464,7 @@ static std::vector<std::pair<ProblemStateSpace, CertificateToIndex>> compute_pro
             continue;
         }
 
-        problem_graphs.push_back(std::move(result.value()));
+        problem_graphs.emplace_back(std::move(result->first), std::move(result->second));
     }
 
     return problem_graphs;
@@ -284,7 +480,7 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
         Note: we cannot insert certificates immediately as failures would result in unnecessary
     */
 
-    auto problem_graphs = compute_problem_graphs(contexts, options.options);
+    auto problem_graphs = compute_problem_graphs(contexts, options.problem_options);
 
     if (options.sort_ascending_by_num_states)
     {
@@ -301,9 +497,22 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
     auto class_goal_vertices = IndexSet {};
     auto class_unsolvable_vertices = IndexSet {};
 
-    if (options.symmetry_pruning)
+    if (options.problem_options.symmetry_pruning)
     {
-        auto symmetries = CertificateToIndex {};
+        auto problem_certificate_to_class_v_idx = CertificateToIndex {};
+
+        for (auto& [problem_state_space, problem_symmetries] : problem_graphs)
+        {
+            assert(!problem_symmetries.empty());
+
+            const auto& problem_graph = problem_state_space.get_graph();
+            auto& problem_goal_vertices = problem_state_space.get_goal_vertices();
+            auto& problem_unsolvable_vertices = problem_state_space.get_unsolvable_vertices();
+            auto& problem_unit_goal_distances = problem_state_space.get_unit_goal_distances();
+            auto& problem_action_goal_distances = problem_state_space.get_action_goal_distances();
+
+            auto final_problem_graph = StaticProblemGraph();
+        }
     }
     else
     {

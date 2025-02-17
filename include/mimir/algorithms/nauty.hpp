@@ -46,6 +46,10 @@ private:
 
 public:
     Certificate(std::string canonical_graph, mimir::ColorList canonical_coloring);
+    Certificate(const Certificate& other) = delete;
+    Certificate& operator=(const Certificate& other) = delete;
+    Certificate(Certificate&& other) = default;
+    Certificate& operator=(Certificate&& other) = default;
 
     const std::string& get_canonical_graph() const;
     const mimir::ColorList& get_canonical_coloring() const;
@@ -69,6 +73,16 @@ struct UniqueCertificateSharedPtrHash
 struct UniqueCertificateSharedPtrEqualTo
 {
     size_t operator()(const std::shared_ptr<const Certificate>& lhs, const std::shared_ptr<const Certificate>& rhs) const;
+};
+
+struct UniqueCertificateUniquePtrHash
+{
+    size_t operator()(const std::unique_ptr<const Certificate>& element) const;
+};
+
+struct UniqueCertificateUniquePtrEqualTo
+{
+    size_t operator()(const std::unique_ptr<const Certificate>& lhs, const std::unique_ptr<const Certificate>& rhs) const;
 };
 
 /// @brief `DenseGraph` encapsulates a dense graph representation compatible with Nauty.
