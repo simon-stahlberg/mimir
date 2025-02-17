@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_DATASETS_PROBLEM_CLASS_STATE_SPACE_HPP_
-#define MIMIR_DATASETS_PROBLEM_CLASS_STATE_SPACE_HPP_
+#ifndef MIMIR_DATASETS_GENERALIZED_STATE_SPACE_HPP_
+#define MIMIR_DATASETS_GENERALIZED_STATE_SPACE_HPP_
 
 #include "mimir/common/types.hpp"
 #include "mimir/formalism/declarations.hpp"
@@ -32,15 +32,6 @@ namespace mimir
 /**
  * ProblemGraph
  */
-
-struct ProblemOptions
-{
-    bool symmetry_pruning = false;
-    bool mark_true_goal_literals = false;
-    bool remove_if_unsolvable = true;
-    uint32_t max_num_states = std::numeric_limits<uint32_t>::max();
-    uint32_t timeout_ms = std::numeric_limits<uint32_t>::max();
-};
 
 struct ProblemContext
 {
@@ -81,13 +72,6 @@ using ProblemGraphList = std::vector<ProblemGraph>;
 /**
  * ClassGraph
  */
-
-struct ClassOptions
-{
-    bool sort_ascending_by_num_states = true;
-
-    ProblemOptions problem_options = ProblemOptions();
-};
 
 /// @brief `ClassVertex` encapsulates information about a vertex where
 /// the first `Index` is the index of the `ClassVertex` in the `ClassGraph`.
@@ -132,6 +116,11 @@ inline Index get_action_cost(const ClassEdge& edge) { return edge.get_property<3
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
 
+/**
+ * ClassStateSpace
+ */
+
+/// @brief `ClassStateSpace` encapsulated state spaces of a collection of problems.
 class ClassStateSpace
 {
 private:
@@ -160,6 +149,10 @@ public:
     const IndexSet& get_alive_vertices() const;       ///< Convenience data getter.
 };
 
+/**
+ * GeneralizedStateSpace
+ */
+
 /// @brief `GeneralizedStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassStateSpace` structure on top.
 ///
 /// There is a one-to-many mapping from `ClassVertex` (resp. `ClassEdge`) to `ProblemVertex` (resp. `ProblemEdge`),
@@ -178,13 +171,48 @@ private:
     ClassStateSpace m_class_state_space;    ///< The top-level state space.
 
 public:
+    /**
+     * Options
+     */
+
+    struct Options
+    {
+        bool sort_ascending_by_num_states;
+
+        struct ProblemSpecific
+        {
+            bool symmetry_pruning;
+            bool mark_true_goal_literals;
+            bool remove_if_unsolvable;
+            uint32_t max_num_states;
+            uint32_t timeout_ms;
+
+            ProblemSpecific() :
+                symmetry_pruning(false),
+                mark_true_goal_literals(false),
+                remove_if_unsolvable(true),
+                max_num_states(std::numeric_limits<uint32_t>::max()),
+                timeout_ms(std::numeric_limits<uint32_t>::max())
+            {
+            }
+        };
+
+        ProblemSpecific problem_options;
+
+        Options() : sort_ascending_by_num_states(true), problem_options() {}
+    };
+
+    /**
+     * Constructors
+     */
+
     /* Construct from contexts. */
-    GeneralizedStateSpace(ProblemContextList contexts, const ClassOptions& options = ClassOptions());
-    GeneralizedStateSpace(ProblemContext context, const ClassOptions& options = ClassOptions());
+    GeneralizedStateSpace(ProblemContextList contexts, const Options& options = Options());
+    GeneralizedStateSpace(ProblemContext context, const Options& options = Options());
 
     /* Construct from files. */
-    GeneralizedStateSpace(const fs::path& domain_filepath, const fs::path& problem_filepath, const ClassOptions& options = ClassOptions());
-    GeneralizedStateSpace(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const ClassOptions& options = ClassOptions());
+    GeneralizedStateSpace(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options = Options());
+    GeneralizedStateSpace(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const Options& options = Options());
 
     /**
      * Getters

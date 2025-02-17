@@ -27,7 +27,7 @@ HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> appli
     m_estimates()
 {
     // We simply create a state space and copy the estimates
-    auto class_options = ClassOptions();
+    auto class_options = GeneralizedStateSpace::Options();
     class_options.problem_options.remove_if_unsolvable = false;
 
     auto problem_class_state_space =

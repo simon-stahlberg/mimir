@@ -19,12 +19,14 @@
 #define MIMIR_DATASETS_KNOWLEDGE_BASE_HPP_
 
 #include "mimir/datasets/generalized_state_space.hpp"
+#include "mimir/datasets/tuple_graph.hpp"
 
 namespace mimir
 {
 class TupleGraph;
 using TupleGraphList = std::vector<TupleGraph>;
 
+/// @brief `KnowledgeBase` encapsulates information obtained from a collection of planning problems.
 class KnowledgeBase
 {
 private:
@@ -32,6 +34,39 @@ private:
 
     std::optional<TupleGraphList> m_tuple_graphs;  ///< first optional component.
 public:
+    /**
+     * Options
+     */
+
+    struct Options
+    {
+        GeneralizedStateSpace::Options state_space_options;
+
+        struct TupleGraphSpecific
+        {
+            size_t width;
+            bool enable_dominance_pruning;
+
+            TupleGraphSpecific() : width(0), enable_dominance_pruning(true) {}
+        };
+
+        std::optional<TupleGraphSpecific> tuple_graph_options;
+
+        Options() : state_space_options(), tuple_graph_options(std::nullopt) {}
+    };
+
+    /**
+     * Constructors
+     */
+
+    static std::unique_ptr<KnowledgeBase> create();
+
+    /**
+     * Getters
+     */
+
+    const GeneralizedStateSpace& get_generalized_state_space() const;
+    const std::optional<TupleGraphList>& get_tuple_graphs() const;
 };
 }
 

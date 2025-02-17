@@ -32,7 +32,7 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
 
     {
-        auto class_options = ClassOptions();
+        auto class_options = GeneralizedStateSpace::Options();
         class_options.problem_options.symmetry_pruning = false;
         const auto problem_class_state_space = GeneralizedStateSpace(domain_file, std::vector<fs::path> { problem1_file, problem2_file }, class_options);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
@@ -47,7 +47,7 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
     }
 
     {
-        auto class_options = ClassOptions();
+        auto class_options = GeneralizedStateSpace::Options();
         class_options.problem_options.symmetry_pruning = true;
         const auto problem_class_state_space = GeneralizedStateSpace(domain_file, std::vector<fs::path> { problem1_file, problem2_file }, class_options);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
