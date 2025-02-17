@@ -18,7 +18,7 @@
 #include "mimir/datasets/object_graph.hpp"
 
 #include "mimir/algorithms/nauty.hpp"
-#include "mimir/datasets/problem_class_state_space.hpp"
+#include "mimir/datasets/generalized_state_space.hpp"
 
 #include <gtest/gtest.h>
 #include <unordered_set>

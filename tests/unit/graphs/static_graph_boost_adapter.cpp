@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
 
-#include "mimir/datasets/problem_class_state_space.hpp"
+#include "mimir/datasets/generalized_state_space.hpp"
 
 #include <boost/graph/graph_concepts.hpp>
 #include <boost/graph/properties.hpp>
@@ -30,7 +30,7 @@ TEST(MimirTests, GraphsVertexListGraphTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-    const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+    const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
     const auto& class_state_space = problem_class_state_space.get_class_state_space();
     const auto& class_graph = class_state_space.get_graph();
     auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -49,7 +49,7 @@ TEST(MimirTests, GraphsIncidenceGraphTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-    const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+    const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
     const auto& class_state_space = problem_class_state_space.get_class_state_space();
     const auto& class_graph = class_state_space.get_graph();
     auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -82,7 +82,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -97,7 +97,7 @@ TEST(MimirTests, GraphsStrongComponentsTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -125,7 +125,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -145,7 +145,7 @@ TEST(MimirTests, GraphsDijkstraShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, BackwardTraversal());
@@ -165,7 +165,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -184,7 +184,7 @@ TEST(MimirTests, GraphsBreadthFirstSearchTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, BackwardTraversal());
@@ -203,7 +203,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, ForwardTraversal());
@@ -232,7 +232,7 @@ TEST(MimirTests, GraphsFloydWarshallAllPairsShortestPathTest)
     {
         const auto domain_file = fs::path(std::string(DATA_DIR) + "spanner/domain.pddl");
         const auto problem_file = fs::path(std::string(DATA_DIR) + "spanner/test_problem.pddl");
-        const auto problem_class_state_space = ProblemClassStateSpace(domain_file, problem_file);
+        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, problem_file);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
         auto graph = TraversalDirectionTaggedType(class_graph, BackwardTraversal());

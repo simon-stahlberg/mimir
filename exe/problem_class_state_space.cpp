@@ -44,7 +44,7 @@ int main(int argc, char** argv)
         contexts.emplace_back(parser.get_problem(), state_repository, applicable_action_generator);
     }
 
-    auto pcss = mimir::ProblemClassStateSpace(contexts);
+    auto pcss = mimir::GeneralizedStateSpace(contexts);
 
     for (size_t i = 0; i < pcss.get_problem_state_spaces().size(); ++i)
     {

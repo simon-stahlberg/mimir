@@ -87,9 +87,9 @@
  * DataSet
  */
 
+#include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/datasets/object_graph_pruning_strategy.hpp"
-#include "mimir/datasets/problem_class_state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
 
 /**

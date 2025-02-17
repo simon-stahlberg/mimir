@@ -17,7 +17,7 @@
 
 #include "mimir/search/heuristics/hstar.hpp"
 
-#include "mimir/datasets/problem_class_state_space.hpp"
+#include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/search/state_repository.hpp"
 
 namespace mimir
@@ -31,7 +31,7 @@ HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> appli
     class_options.problem_options.remove_if_unsolvable = false;
 
     auto problem_class_state_space =
-        ProblemClassStateSpace(ProblemContext { state_repository->get_problem(), state_repository, applicable_action_generator }, class_options);
+        GeneralizedStateSpace(ProblemContext { state_repository->get_problem(), state_repository, applicable_action_generator }, class_options);
 
     const auto& class_graph = problem_class_state_space.get_class_state_space().get_graph();
 

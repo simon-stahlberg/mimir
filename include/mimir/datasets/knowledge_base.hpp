@@ -15,13 +15,24 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/problem_class_state_space.hpp"
+#ifndef MIMIR_DATASETS_KNOWLEDGE_BASE_HPP_
+#define MIMIR_DATASETS_KNOWLEDGE_BASE_HPP_
 
-#include <gtest/gtest.h>
+#include "mimir/datasets/generalized_state_space.hpp"
 
-namespace mimir::tests
+namespace mimir
 {
+class TupleGraph;
+using TupleGraphList = std::vector<TupleGraph>;
 
-TEST(MimirTests, DatasetsProblemClassGraphConstructorTest) {}
+class KnowledgeBase
+{
+private:
+    GeneralizedStateSpace m_state_space;  ///< central component.
 
+    std::optional<TupleGraphList> m_tuple_graphs;  ///< first optional component.
+public:
+};
 }
+
+#endif

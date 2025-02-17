@@ -51,8 +51,8 @@ struct ProblemContext
 
 using ProblemContextList = std::vector<ProblemContext>;
 
-/// @brief `ProblemVertex` encapsulates information about a state in the context of a `ProblemClassStateSpace`.
-/// The `Index` is the index of the corresponding `ClassVertex` in the `ProblemClassStateSpace`.
+/// @brief `ProblemVertex` encapsulates information about a state in the context of a `GeneralizedStateSpace`.
+/// The `Index` is the index of the corresponding `ClassVertex` in the `GeneralizedStateSpace`.
 /// The `State` is the underlying planning state.
 using ProblemVertex = Vertex<Index, State>;
 using ProblemVertexList = std::vector<ProblemVertex>;
@@ -61,8 +61,8 @@ inline Index get_class_vertex_index(const ProblemVertex& vertex) { return vertex
 
 inline State get_state(const ProblemVertex& vertex) { return vertex.get_property<1>(); }
 
-/// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `ProblemClassStateSpace`.
-/// The `Index` is the index of the corresponding `ClassEdge` in the `ProblemClassStateSpace`.
+/// @brief `ProblemEdge` encapsulates information about a state transition in the context of a `GeneralizedStateSpace`.
+/// The `Index` is the index of the corresponding `ClassEdge` in the `GeneralizedStateSpace`.
 /// The `GroundAction` is the underlying ground action.
 using ProblemEdge = Edge<Index, GroundAction, ContinuousCost>;
 using ProblemEdgeList = std::vector<ProblemEdge>;
@@ -93,7 +93,7 @@ struct ClassOptions
 /// the first `Index` is the index of the `ClassVertex` in the `ClassGraph`.
 /// the second `Index` is the index to the `ProblemGraph` in the `ClassGraph`
 /// the third `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
-using ClassVertex = Vertex<Index, Index, Index, DiscreteCost, ContinuousCost, bool, bool>;
+using ClassVertex = Vertex<Index, Index, Index, DiscreteCost, ContinuousCost, bool, bool, bool, bool>;
 using ClassVertexList = std::vector<ClassVertex>;
 
 inline Index get_class_vertex_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
@@ -106,9 +106,13 @@ inline DiscreteCost get_unit_goal_distance(const ClassVertex& vertex) { return v
 
 inline ContinuousCost get_action_goal_distance(const ClassVertex& vertex) { return vertex.get_property<4>(); }
 
-inline bool is_goal(const ClassVertex& vertex) { return vertex.get_property<5>(); }
+inline bool is_initial(const ClassVertex& vertex) { return vertex.get_property<5>(); }
 
-inline bool is_unsolvable(const ClassVertex& vertex) { return vertex.get_property<6>(); }
+inline bool is_goal(const ClassVertex& vertex) { return vertex.get_property<6>(); }
+
+inline bool is_unsolvable(const ClassVertex& vertex) { return vertex.get_property<7>(); }
+
+inline bool is_alive(const ClassVertex& vertex) { return vertex.get_property<8>(); }
 
 /// @brief `ClassEdge` encapsulates information about an edge where
 /// the first `Index` is the index of the `ClassEdge` in the `ClassGraph`.
@@ -135,8 +139,10 @@ private:
 
     /* Initialize additional convenience data in the constructor! */
 
+    IndexSet m_initial_vertices;     ///< Convenience data.
     IndexSet m_goal_vertices;        ///< Convenience data.
     IndexSet m_unsolvable_vertices;  ///< Convenience data.
+    IndexSet m_alive_vertices;       ///< Convenience data.
 
 public:
     ClassStateSpace() = default;
@@ -148,11 +154,13 @@ public:
 
     const ClassGraph& get_graph() const;  ///< Core data getter.
 
+    const IndexSet& get_initial_vertices() const;     ///< Convenience data getter.
     const IndexSet& get_goal_vertices() const;        ///< Convenience data getter.
     const IndexSet& get_unsolvable_vertices() const;  ///< Convenience data getter.
+    const IndexSet& get_alive_vertices() const;       ///< Convenience data getter.
 };
 
-/// @brief `ProblemClassStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassGraph` structure on top.
+/// @brief `GeneralizedStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassStateSpace` structure on top.
 ///
 /// There is a one-to-many mapping from `ClassVertex` (resp. `ClassEdge`) to `ProblemVertex` (resp. `ProblemEdge`),
 /// which is a strict one-to-many mapping, if symmetries across different problems are detected.
@@ -160,23 +168,29 @@ public:
 /// From each `ProblemVertex` (resp. `ProblemEdge`) one can access the corresponding `ClassVertex` (resp. `ClassEdge`).
 ///
 /// Example use case 1: Learning general policies
-/// The `ClassGraph` contains the relevant vertices and edges and provide access to their underlying representative state or ground action.
+/// The `ClassStateSpace` contains the relevant vertices and edges and provide access to their underlying representative state or ground action.
 /// When learning from a subset of problems or subset of states, one can use `create_induced_subspace`, to obtain the subspace.
-class ProblemClassStateSpace
+class GeneralizedStateSpace
 {
 private:
-    ProblemGraphList m_problem_graphs;    ///< The child-level graphs.
-    ClassStateSpace m_class_state_space;  ///< The top-level state space.
+    ProblemContextList m_problem_contexts;  ///< The problem contexts.
+    ProblemGraphList m_problem_graphs;      ///< The child-level graphs.
+    ClassStateSpace m_class_state_space;    ///< The top-level state space.
 
 public:
-    ProblemClassStateSpace(const ProblemContextList& contexts, const ClassOptions& options = ClassOptions());
-    ProblemClassStateSpace(const ProblemContext& context, const ClassOptions& options = ClassOptions());
-    ProblemClassStateSpace(const fs::path& domain_filepath, const fs::path& problem_filepath, const ClassOptions& options = ClassOptions());
+    /* Construct from contexts. */
+    GeneralizedStateSpace(ProblemContextList contexts, const ClassOptions& options = ClassOptions());
+    GeneralizedStateSpace(ProblemContext context, const ClassOptions& options = ClassOptions());
+
+    /* Construct from files. */
+    GeneralizedStateSpace(const fs::path& domain_filepath, const fs::path& problem_filepath, const ClassOptions& options = ClassOptions());
+    GeneralizedStateSpace(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const ClassOptions& options = ClassOptions());
 
     /**
      * Getters
      */
 
+    const ProblemContextList& get_problem_contexts() const;
     const ProblemGraphList& get_problem_state_spaces() const;
     const ClassStateSpace& get_class_state_space() const;
 
