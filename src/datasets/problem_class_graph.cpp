@@ -22,6 +22,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/graphs/static_graph.hpp"
+#include "mimir/graphs/static_graph_boost_adapter.hpp"
 #include "mimir/search/algorithms/brfs.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
@@ -39,16 +40,24 @@ namespace mimir
  * ProblemStateSpace
  */
 
-ProblemStateSpace::ProblemStateSpace(ProblemGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices) :
+ProblemStateSpace::ProblemStateSpace(ProblemGraph graph,
+                                     IndexSet goal_vertices,
+                                     IndexSet unsolvable_vertices,
+                                     DiscreteCostList unit_goal_distances,
+                                     ContinuousCostList action_goal_distances) :
     m_graph(std::move(graph)),
     m_goal_vertices(std::move(goal_vertices)),
-    m_unsolvable_vertices(std::move(unsolvable_vertices))
+    m_unsolvable_vertices(std::move(unsolvable_vertices)),
+    m_unit_goal_distances(std::move(unit_goal_distances)),
+    m_action_goal_distances(std::move(action_goal_distances))
 {
 }
 
 const ProblemGraph& ProblemStateSpace::get_graph() const { return m_graph; }
 const IndexSet& ProblemStateSpace::get_goal_vertices() const { return m_goal_vertices; }
 const IndexSet& ProblemStateSpace::get_unsolvable_vertices() const { return m_unsolvable_vertices; }
+const DiscreteCostList& ProblemStateSpace::get_unit_goal_distances() const { return m_unit_goal_distances; }
+const ContinuousCostList& ProblemStateSpace::get_action_goal_distances() const { return m_action_goal_distances; }
 
 /**
  * ClassStateSpace
@@ -199,19 +208,52 @@ static std::optional<std::pair<ProblemStateSpace, CertificateToIndex>> compute_p
 
     if (result.status != EXHAUSTED)
     {
-        return std::nullopt;
+        return std::nullopt;  ///< ran out of resources.
     }
 
     if (options.remove_if_unsolvable && goal_vertices.empty())
     {
-        return std::nullopt;
+        return std::nullopt;  ///< initial vertex is unsolvable.
     }
 
+    /* Translate into bidirection graph for making subsequent operations more efficient */
+    auto bidir_graph = ProblemGraph(std::move(graph));
+
+    /* Compute unit goal distances. */
+    auto [unit_predecessors, unit_goal_distances] =
+        breadth_first_search(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), goal_vertices.begin(), goal_vertices.end());
+
+    if (options.remove_if_unsolvable && unit_goal_distances.at(0) == UNDEFINED_DISCRETE_COST)  // 0 is the index of the vertex for the initial state.
+    {
+        return std::nullopt;  ///< initial vertex is unsolvable.
+    }
+
+    /* Compute unsolvable vertices. */
     auto unsolvable_vertices = IndexSet {};
+    for (VertexIndex v_idx = 0; v_idx < bidir_graph.get_num_vertices(); ++v_idx)
+    {
+        if (unit_goal_distances[v_idx] == UNDEFINED_DISCRETE_COST)
+        {
+            unsolvable_vertices.insert(v_idx);
+        }
+    }
 
-    // TODO compute unsolvable vertices
+    /* Compute action goal distances. */
+    auto edge_action_costs = ContinuousCostList();
+    edge_action_costs.reserve(bidir_graph.get_num_edges());
+    for (const auto& edge : bidir_graph.get_edges())
+    {
+        edge_action_costs.push_back(get_action_cost(edge));
+    }
+    auto [action_predecessors, action_goal_distances] =
+        dijkstra_shortest_paths(TraversalDirectionTaggedType(bidir_graph, BackwardTraversal()), edge_action_costs, goal_vertices.begin(), goal_vertices.end());
 
-    return std::make_pair(ProblemStateSpace(ProblemGraph(std::move(graph)), std::move(goal_vertices), std::move(unsolvable_vertices)), std::move(symmetries));
+    return std::make_pair(ProblemStateSpace(std::move(bidir_graph),
+                                            std::move(goal_vertices),
+                                            std::move(unsolvable_vertices),
+                                            std::move(unit_goal_distances),
+                                            std::move(action_goal_distances)),
+                          std::move(symmetries));
 }
 
 static std::vector<std::pair<ProblemStateSpace, CertificateToIndex>> compute_problem_graphs(const ProblemContextList& contexts, const ProblemOptions& options)
@@ -277,6 +319,8 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
             const auto& problem_graph = problem_state_space.get_graph();
             auto& problem_goal_vertices = problem_state_space.get_goal_vertices();
             auto& problem_unsolvable_vertices = problem_state_space.get_unsolvable_vertices();
+            auto& problem_unit_goal_distances = problem_state_space.get_unit_goal_distances();
+            auto& problem_action_goal_distances = problem_state_space.get_action_goal_distances();
 
             auto final_problem_graph = StaticProblemGraph();
 
@@ -286,10 +330,16 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
             for (const auto& v : problem_graph.get_vertices())
             {
                 const auto problem_v_idx = v.get_index();
-                problem_v_idx_to_class_v_idx[problem_v_idx] = class_graph.add_vertex(problem_idx, problem_v_idx);
-                const auto class_v_idx = problem_v_idx_to_class_v_idx[problem_v_idx];
-                [[maybe_unused]] const auto new_problem_v_idx = final_problem_graph.add_vertex(class_v_idx, get_state(v));
-                assert(problem_v_idx == new_problem_v_idx);
+                const auto class_v_idx = Index(class_graph.get_num_vertices());
+                problem_v_idx_to_class_v_idx[problem_v_idx] = class_v_idx;
+                const auto unit_goal_distance = problem_unit_goal_distances.at(problem_v_idx);
+                const auto action_goal_distance = problem_action_goal_distances.at(problem_v_idx);
+                const auto is_goal = (unit_goal_distance == 0);
+                const auto is_unsolvable = (unit_goal_distance == UNDEFINED_DISCRETE_COST);
+
+                class_graph.add_vertex(class_v_idx, problem_idx, problem_v_idx, unit_goal_distance, action_goal_distance, is_goal, is_unsolvable);
+                final_problem_graph.add_vertex(class_v_idx, get_state(v));
+
                 if (problem_goal_vertices.contains(problem_v_idx))
                 {
                     class_goal_vertices.insert(class_v_idx);
@@ -302,17 +352,23 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
             for (const auto& e : problem_graph.get_edges())
             {
                 const auto problem_e_idx = e.get_index();
-                const auto class_e_idx = class_graph.add_directed_edge(problem_v_idx_to_class_v_idx.at(e.get_source()),
-                                                                       problem_v_idx_to_class_v_idx.at(e.get_target()),
-                                                                       problem_idx,
-                                                                       problem_e_idx);
-                [[maybe_unused]] const auto new_problem_e_idx =
-                    final_problem_graph.add_directed_edge(e.get_source(), e.get_target(), class_e_idx, get_action(e), get_action_cost(e));
-                assert(problem_e_idx == new_problem_e_idx);
+                const auto class_e_idx = Index(class_graph.get_num_edges());
+                const auto action_cost = get_action_cost(e);
+
+                class_graph.add_directed_edge(problem_v_idx_to_class_v_idx.at(e.get_source()),
+                                              problem_v_idx_to_class_v_idx.at(e.get_target()),
+                                              class_e_idx,
+                                              problem_idx,
+                                              problem_e_idx,
+                                              action_cost);
+                final_problem_graph.add_directed_edge(e.get_source(), e.get_target(), class_e_idx, get_action(e), get_action_cost(e));
             }
 
-            m_problem_state_spaces.push_back(
-                ProblemStateSpace(ProblemGraph(std::move(final_problem_graph)), std::move(problem_goal_vertices), std::move(problem_unsolvable_vertices)));
+            m_problem_state_spaces.push_back(ProblemStateSpace(ProblemGraph(std::move(final_problem_graph)),
+                                                               std::move(problem_goal_vertices),
+                                                               std::move(problem_unsolvable_vertices),
+                                                               std::move(problem_unit_goal_distances),
+                                                               std::move(problem_action_goal_distances)));
 
             ++problem_idx;
         }
@@ -345,39 +401,68 @@ const ProblemEdge& ProblemClassStateSpace::get_problem_edge(const ClassEdge& edg
     return m_problem_state_spaces.at(get_problem_index(edge)).get_graph().get_edge(get_problem_edge_index(edge));
 }
 
+const ClassVertex& ProblemClassStateSpace::get_class_vertex(const ProblemVertex& vertex) const
+{
+    return m_class_state_space.get_graph().get_vertex(get_class_vertex_index(vertex));
+}
+
+const ClassEdge& ProblemClassStateSpace::get_class_edge(const ProblemEdge& edge) const
+{
+    return m_class_state_space.get_graph().get_edge(get_class_edge_index(edge));
+}
+
+ClassStateSpace ProblemClassStateSpace::create_induced_subspace(const ProblemVertexList& vertices) const {}
+
+ClassStateSpace ProblemClassStateSpace::create_induced_subspace(const IndexList& problem_indices) const
+{
+    auto class_graph = StaticClassGraph();
+
+    for (const auto p_idx : problem_indices)
+    {
+        const auto& pss = m_problem_state_spaces.at(p_idx);
+    }
+}
+
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
 {
-    out << "vertex_index=" << vertex.get_index() << "\n"                     //
-        << " class_vertex_index=" << get_class_vertex_index(vertex) << "\n"  //
-        << " state_index=" << get_state(vertex)->get_index();
+    out << "problem_v_idx=" << vertex.get_index() << "\n"             //
+        << " class_v_idx=" << get_class_vertex_index(vertex) << "\n"  //
+        << " state_idx=" << get_state(vertex)->get_index();
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemEdge& edge)
 {
-    out << "edge_index=" << edge.get_index() << "\n"                     //
-        << " source_index=" << edge.get_source() << "\n"                 //
-        << " target_index=" << edge.get_target() << "\n"                 //
-        << " class_vertex_index=" << get_class_edge_index(edge) << "\n"  //
-        << " action_index=" << get_action(edge)->get_index();
+    out << "problem_e_idx=" << edge.get_index() << "\n"           //
+        << " problem_src_idx=" << edge.get_source() << "\n"       //
+        << " problem_dst_idx=" << edge.get_target() << "\n"       //
+        << " class_v_idx=" << get_class_edge_index(edge) << "\n"  //
+        << " action_idx=" << get_action(edge)->get_index();
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const ClassVertex& vertex)
 {
-    out << "vertex_index=" << vertex.get_index()           //
-        << " problem_index=" << get_problem_index(vertex)  //
-        << " problem_vertex_index=" << get_problem_vertex_index(vertex);
+    out << "class_v_idx=" << vertex.get_index() << "\n"                      //
+        << " class_v_idx=" << get_class_vertex_index(vertex) << "\n"         //
+        << " problem_idx=" << get_problem_index(vertex) << "\n"              //
+        << " problem_v_idx=" << get_problem_vertex_index(vertex) << "\n"     //
+        << " unit_goal_dist=" << get_unit_goal_distance(vertex) << "\n"      //
+        << " action_goal_dist=" << get_action_goal_distance(vertex) << "\n"  //
+        << " is_goal=" << is_goal(vertex) << "\n"                            //
+        << " is_unsolvable=" << is_unsolvable(vertex);
     return out;
 }
 
 std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
 {
-    out << "edge_index=" << edge.get_index() << "\n"             //
-        << " source_index=" << edge.get_source() << "\n"         //
-        << " target_index=" << edge.get_target() << "\n"         //
-        << " problem_index=" << get_problem_index(edge) << "\n"  //
-        << " problem_vertex_index=" << get_problem_edge_index(edge);
+    out << "class_e_idx=" << edge.get_index() << "\n"                 //
+        << " class_src_idx=" << edge.get_source() << "\n"             //
+        << " class_dst_idx=" << edge.get_target() << "\n"             //
+        << " class_e_idx=" << get_class_edge_index(edge) << "\n"      //
+        << " problem_idx=" << get_problem_index(edge) << "\n"         //
+        << " problem_e_idx=" << get_problem_edge_index(edge) << "\n"  //
+        << " action_cost=" << get_action_cost(edge);
     return out;
 }
 }

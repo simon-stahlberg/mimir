@@ -339,9 +339,9 @@ template<typename VertexDescriptor>
 struct CustomBFSVisitor : public boost::bfs_visitor<>
 {
     std::reference_wrapper<std::vector<VertexDescriptor>> predecessors;
-    std::reference_wrapper<ContinuousCostList> distances;
+    std::reference_wrapper<DiscreteCostList> distances;
 
-    CustomBFSVisitor(std::vector<VertexDescriptor>& p, ContinuousCostList& d) : predecessors(p), distances(d) {}
+    CustomBFSVisitor(std::vector<VertexDescriptor>& p, DiscreteCostList& d) : predecessors(p), distances(d) {}
 
     template<typename Edge, typename Graph>
     void tree_edge(Edge e, const Graph& g) const
@@ -354,7 +354,7 @@ struct CustomBFSVisitor : public boost::bfs_visitor<>
 };
 
 template<IsStaticGraph Graph, IsTraversalDirection Direction, class SourceInputIter>
-std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, ContinuousCostList>
+std::tuple<std::vector<typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor>, DiscreteCostList>
 breadth_first_search(const TraversalDirectionTaggedType<Graph, Direction>& g, SourceInputIter s_begin, SourceInputIter s_end)
 {
     using vertex_descriptor_type = typename boost::graph_traits<TraversalDirectionTaggedType<Graph, Direction>>::vertex_descriptor;
@@ -366,11 +366,11 @@ breadth_first_search(const TraversalDirectionTaggedType<Graph, Direction>& g, So
     {
         p.at(v) = v;
     }
-    auto inf = std::numeric_limits<ContinuousCost>::infinity();
-    auto d = ContinuousCostList(g.get().get_num_vertices(), inf);
+    auto inf = std::numeric_limits<DiscreteCost>::max();
+    auto d = DiscreteCostList(g.get().get_num_vertices(), inf);
     for (auto it = s_begin; it != s_end; ++it)
     {
-        d.at(*it) = 0;
+        d.at(*it) = DiscreteCost(0);
     }
     auto visitor = CustomBFSVisitor(p, d);
     auto color_vector = std::vector<boost::default_color_type>(g.get().get_num_vertices(), boost::white_color);

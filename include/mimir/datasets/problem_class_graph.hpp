@@ -82,14 +82,22 @@ private:
     ProblemGraph m_graph;
     IndexSet m_goal_vertices;
     IndexSet m_unsolvable_vertices;
+    DiscreteCostList m_unit_goal_distances;
+    ContinuousCostList m_action_goal_distances;
 
 public:
     ProblemStateSpace() = default;
-    ProblemStateSpace(ProblemGraph graph, IndexSet goal_vertices, IndexSet unsolvable_vertices);
+    ProblemStateSpace(ProblemGraph graph,
+                      IndexSet goal_vertices,
+                      IndexSet unsolvable_vertices,
+                      DiscreteCostList unit_goal_distances,
+                      ContinuousCostList action_goal_distances);
 
     const ProblemGraph& get_graph() const;
     const IndexSet& get_goal_vertices() const;
     const IndexSet& get_unsolvable_vertices() const;
+    const DiscreteCostList& get_unit_goal_distances() const;
+    const ContinuousCostList& get_action_goal_distances() const;
 };
 
 using ProblemStateSpaceList = std::vector<ProblemStateSpace>;
@@ -106,25 +114,41 @@ struct ClassOptions
     ProblemOptions options = ProblemOptions();
 };
 
-/// @brief `ClassVertex` encapsulates information about a problem vertex where
-/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassStateSpace`
-/// the second `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
-using ClassVertex = Vertex<Index, Index>;
+/// @brief `ClassVertex` encapsulates information about a vertex where
+/// the first `Index` is the index of the `ClassVertex` in the `ClassGraph`.
+/// the second `Index` is the index to the `ProblemGraph` in the `ClassGraph`
+/// the third `Index` is the index of the `ProblemVertex` in the `ProblemGraph`
+using ClassVertex = Vertex<Index, Index, Index, DiscreteCost, ContinuousCost, bool, bool>;
 using ClassVertexList = std::vector<ClassVertex>;
 
-inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
+inline Index get_class_vertex_index(const ClassVertex& vertex) { return vertex.get_property<0>(); }
 
-inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex.get_property<1>(); }
+inline Index get_problem_index(const ClassVertex& vertex) { return vertex.get_property<1>(); }
 
-/// @brief `ClassEdge` encapsulates information about a problem edge where
-/// the first `Index` is the index to the `ProblemGraph` in the problem graphs of the `ProblemClassStateSpace`
-/// the second `Index` is the index of the `ProblemEdge` in the `ProblemGraph`.
-using ClassEdge = Edge<Index, Index>;
+inline Index get_problem_vertex_index(const ClassVertex& vertex) { return vertex.get_property<2>(); }
+
+inline DiscreteCost get_unit_goal_distance(const ClassVertex& vertex) { return vertex.get_property<3>(); }
+
+inline ContinuousCost get_action_goal_distance(const ClassVertex& vertex) { return vertex.get_property<4>(); }
+
+inline bool is_goal(const ClassVertex& vertex) { return vertex.get_property<5>(); }
+
+inline bool is_unsolvable(const ClassVertex& vertex) { return vertex.get_property<6>(); }
+
+/// @brief `ClassEdge` encapsulates information about an edge where
+/// the first `Index` is the index of the `ClassEdge` in the `ClassGraph`.
+/// the second `Index` is the index to the `ProblemGraph` in the `ClassGraph`.
+/// the third `Index` is the index of the `ProblemEdge` in the `ProblemGraph`.
+using ClassEdge = Edge<Index, Index, Index, ContinuousCost>;
 using ClassEdgeList = std::vector<ClassEdge>;
 
-inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<0>(); }
+inline Index get_class_edge_index(const ClassEdge& edge) { return edge.get_property<0>(); }
 
-inline Index get_problem_edge_index(const ClassEdge& edge) { return edge.get_property<1>(); }
+inline Index get_problem_index(const ClassEdge& edge) { return edge.get_property<1>(); }
+
+inline Index get_problem_edge_index(const ClassEdge& edge) { return edge.get_property<2>(); }
+
+inline Index get_action_cost(const ClassEdge& edge) { return edge.get_property<3>(); }
 
 using StaticClassGraph = StaticGraph<ClassVertex, ClassEdge>;
 using ClassGraph = StaticBidirectionalGraph<StaticClassGraph>;
@@ -133,8 +157,8 @@ class ClassStateSpace
 {
 private:
     ClassGraph m_graph;
-    IndexSet m_goal_vertices;
-    IndexSet m_unsolvable_vertices;
+    IndexSet m_goal_vertices;        ///< Convenience data.
+    IndexSet m_unsolvable_vertices;  ///< Convenience data.
 
 public:
     ClassStateSpace() = default;
@@ -146,19 +170,15 @@ public:
 };
 
 /// @brief `ProblemClassStateSpace` encapsulates a `ProblemGraphList` Q with an additional `ClassGraph` structure on top.
+///
+/// There is a one-to-many mapping from `ClassVertex` (resp. `ClassEdge`) to `ProblemVertex` (resp. `ProblemEdge`),
+/// which is a strict one-to-many mapping, if symmetries across different problems are detected.
 /// From each `ClassVertex` (resp. `ClassEdge`) one can access the single representative `ProblemVertex` (resp. `ProblemEdge`).
 /// From each `ProblemVertex` (resp. `ProblemEdge`) one can access the corresponding `ClassVertex` (resp. `ClassEdge`).
 ///
-/// Example use case 1:
-/// Learning general policies from a subset of problem P from a class of problems Q.
-/// From P we construct a subgraph G = (V, E) of `ClassGraph` as follows:
-/// 1) Iterate over all `ProblemVertex` in P and add the corresponding `ClassVertex` to V.
-/// 2) Iterate over all `ProblemEdge` in P and add the corresponding `ClassEdge` to E.
-///
-/// Observations:
-/// a) The graph G = (V, E) represents all problems P.
-/// b) If symmetry pruning was disabled, the number of vertices in G is exactly the sum of the number of vertices in all problems P.
-/// c) If symmetry pruning was enabled, the number of vertices of G can be exponentially smaller.
+/// Example use case 1: Learning general policies
+/// The `ClassGraph` contains the relevant vertices and edges and provide access to their underlying representative state or ground action.
+/// When learning from a subset of problems or subset of states, one can use `create_induced_subspace`, to obtain the subspace.
 class ProblemClassStateSpace
 {
 private:
@@ -190,9 +210,13 @@ public:
      * Construct subgraphs for learning from fragments of the `ClassStateSpace`.
      */
 
-    /// @brief Create the subgraph induced by the given `ProblemVertexList`.
+    /// @brief Create the induced `ClassStateSpace` by the given `ProblemVertexList`.
+    /// This function copies the corresponding set of `ClassVertex`
+    /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
     ClassStateSpace create_induced_subspace(const ProblemVertexList& vertices) const;
-    /// @brief Create the subgraph induced by the given problem indices.
+    /// @brief Create the induced `ClassStateSpace` by the given `problem_indices`.
+    /// This function copies the corresponding sets of `ClassVertex`
+    /// and `ClassEdge` into a new `ClassGraph`.
     ClassStateSpace create_induced_subspace(const IndexList& problem_indices) const;
 };
 

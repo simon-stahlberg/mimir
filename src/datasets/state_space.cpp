@@ -157,7 +157,10 @@ std::optional<StateSpace> StateSpace::create(std::shared_ptr<IApplicableActionGe
         auto [predecessors_, goal_distances_] = breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
                                                                      goal_vertex_indices.begin(),
                                                                      goal_vertex_indices.end());
-        goal_distances = std::move(goal_distances_);
+        for (const auto& distance : goal_distances_)
+        {
+            goal_distances.push_back(distance);
+        }
     }
     else
     {
@@ -253,7 +256,11 @@ ContinuousCostList StateSpace::compute_shortest_distances_from_vertices(const In
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
     {
         auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
-        distances = std::move(distances_);
+
+        for (const auto& distance : distances_)
+        {
+            distances.push_back(distance);
+        }
     }
     else
     {
@@ -417,8 +424,10 @@ Index StateSpace::sample_vertex_index_with_goal_distance(ContinuousCost goal_dis
 std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
 {
     // 2. Header
-    out << "digraph {" << "\n"
-        << "rankdir=\"LR\"" << "\n";
+    out << "digraph {"
+        << "\n"
+        << "rankdir=\"LR\""
+        << "\n";
 
     // 3. Draw states
     for (Index vertex = 0; vertex < state_space.get_num_vertices(); ++vertex)
@@ -463,7 +472,8 @@ std::ostream& operator<<(std::ostream& out, const StateSpace& state_space)
     for (const auto& transition : state_space.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->"
+            << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"" << std::make_tuple(get_creating_action(transition), std::cref(*state_space.get_pddl_repositories()), PlanActionFormatterTag {})

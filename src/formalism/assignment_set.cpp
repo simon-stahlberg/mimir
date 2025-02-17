@@ -171,7 +171,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
     std::sort(m_ground_function_to_value.begin(), m_ground_function_to_value.end(), [](auto&& lhs, auto&& rhs) { return lhs.second < rhs.second; });
 
     /* Compute lower and upper bounds. */
-    for (const auto [function, value] : m_ground_function_to_value)
+    for (const auto& [function, value] : m_ground_function_to_value)
     {
         const auto& arity = function->get_arity();
         const auto& function_skeleton = function->get_function_skeleton();

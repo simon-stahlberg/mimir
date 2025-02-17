@@ -366,7 +366,10 @@ std::optional<FaithfulAbstraction> FaithfulAbstraction::create(std::shared_ptr<I
         auto [predecessors_, goal_distances_] = breadth_first_search(TraversalDirectionTaggedType(bidirectional_graph, BackwardTraversal()),
                                                                      abstract_goal_states.begin(),
                                                                      abstract_goal_states.end());
-        abstract_goal_distances = std::move(goal_distances_);
+        for (const auto& distance : goal_distances_)
+        {
+            abstract_goal_distances.push_back(distance);
+        }
     }
     else
     {
@@ -480,7 +483,10 @@ ContinuousCostList FaithfulAbstraction::compute_shortest_distances_from_vertices
         || std::all_of(m_graph.get_edges().begin(), m_graph.get_edges().end(), [](const auto& transition) { return get_cost(transition) == 1; }))
     {
         auto [predecessors_, distances_] = breadth_first_search(TraversalDirectionTaggedType(m_graph, Direction()), states.begin(), states.end());
-        distances = std::move(distances_);
+        for (const auto& distance : distances_)
+        {
+            distances.push_back(distance);
+        }
     }
     else
     {
@@ -642,8 +648,10 @@ const std::map<ContinuousCost, IndexList>& FaithfulAbstraction::get_vertex_indic
 std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstraction)
 {
     // 2. Header
-    out << "digraph {" << "\n"
-        << "rankdir=\"LR\"" << "\n";
+    out << "digraph {"
+        << "\n"
+        << "rankdir=\"LR\""
+        << "\n";
 
     // 3. Draw states
     for (size_t vertex = 0; vertex < abstraction.get_num_vertices(); ++vertex)
@@ -692,7 +700,8 @@ std::ostream& operator<<(std::ostream& out, const FaithfulAbstraction& abstracti
     for (const auto& transition : abstraction.get_graph().get_edges())
     {
         // direction
-        out << "s" << transition.get_source() << "->" << "s" << transition.get_target() << " [";
+        out << "s" << transition.get_source() << "->"
+            << "s" << transition.get_target() << " [";
 
         // label
         out << "label=\"";
