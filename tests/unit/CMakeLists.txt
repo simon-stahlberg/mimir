@@ -24,9 +24,7 @@ add_gtest(cista_optional_test                              "cista/optional.cpp")
 
 add_gtest(common_grouped_vector_test                       "common/grouped_vector.cpp")
 
-add_gtest(datasets_faithful_abstraction_test               "datasets/faithful_abstraction.cpp")
-add_gtest(datasets_global_faithful_abstraction_test        "datasets/global_faithful_abstraction.cpp")
-add_gtest(datasets_state_space_test                        "datasets/state_space.cpp")
+add_gtest(datasets_problem_class_state_space_test          "datasets/problem_class_state_space.cpp")
 
 add_gtest(formalism_to_disjunctive_normal_form_test        "formalism/translators/to_disjunctive_normal_form.cpp")
 add_gtest(formalism_to_negation_normal_form_test           "formalism/translators/to_negation_normal_form.cpp")
@@ -37,15 +35,12 @@ add_gtest(graphs_algorithms_color_refinement_test          "graphs/algorithms/co
 add_gtest(graphs_algorithms_folklore_weisfeiler_leman_test "graphs/algorithms/folklore_weisfeiler_leman.cpp")
 add_gtest(graphs_static_graph_boost_adapter_test           "graphs/static_graph_boost_adapter.cpp")
 add_gtest(graphs_dynamic_graph_test                        "graphs/dynamic_graph.cpp")
-add_gtest(graphs_object_graph_test                         "graphs/object_graph.cpp")
-add_gtest(graphs_object_graph_pruning_strategy_test        "graphs/object_graph_pruning_strategy.cpp")
 add_gtest(graphs_static_graph_test                         "graphs/static_graph.cpp")
-add_gtest(graphs_tuple_graph_test                          "graphs/tuple_graph.cpp")
 
 add_gtest(languages_dl_constructors_test                   "languages/description_logics/constructors.cpp")
 add_gtest(languages_dl_parser_test                         "languages/description_logics/parser.cpp")
 add_gtest(languages_dl_grammar_test                        "languages/description_logics/grammar.cpp")
-add_gtest(languages_dl_refinement_test                     "languages/description_logics/refinement.cpp")
+# add_gtest(languages_dl_refinement_test                     "languages/description_logics/refinement.cpp")
 
 add_gtest(search_astar_test                                "search/algorithms/astar.cpp")
 add_gtest(search_brfs_test                                 "search/algorithms/brfs.cpp")

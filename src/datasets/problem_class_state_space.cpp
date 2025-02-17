@@ -15,13 +15,14 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/problem_class_graph.hpp"
+#include "mimir/datasets/problem_class_state_space.hpp"
 
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/datasets/object_graph.hpp"
 #include "mimir/datasets/object_graph_pruning_strategy.hpp"
 #include "mimir/formalism/ground_action.hpp"
+#include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/graphs/static_graph_boost_adapter.hpp"
@@ -29,7 +30,10 @@
 #include "mimir/search/algorithms/brfs/event_handlers/interface.hpp"
 #include "mimir/search/algorithms/strategies/goal_strategy.hpp"
 #include "mimir/search/algorithms/strategies/pruning_strategy.hpp"
+#include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/applicable_action_generators/interface.hpp"
+#include "mimir/search/axiom_evaluators.hpp"
+#include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/heuristics/blind.hpp"
 #include "mimir/search/metric.hpp"
 #include "mimir/search/openlists/priority_queue.hpp"
@@ -218,8 +222,6 @@ private:
         {
             /* Existing class re-encountered: add edge if between existing representative states! */
 
-            std::cout << "Symmetric: " << successor_state->get_index() << std::endl;
-
             if (m_symm_data.prunable_states.contains(successor_state))
             {
                 /* Always add edges between symmetric states. */
@@ -233,8 +235,6 @@ private:
         else
         {
             /* New class determined: add vertex and edge! */
-
-            std::cout << "Non symmetric: " << successor_state->get_index() << std::endl;
 
             assert(m_graph.get_num_vertices() == m_symm_data.per_state_equiv_class.size());
             assert(m_graph.get_num_vertices() == m_state_to_vertex_index.size());
@@ -628,8 +628,6 @@ static std::pair<ProblemGraphList, ClassStateSpace> compute_problem_and_class_st
 
     auto problem_idx = Index(0);
 
-    std::cout << "Num problem graphs: " << problem_graphs.size() << std::endl;
-
     for (auto& [problem_state_space, vertex_certificates] : problem_graphs)
     {
         const auto& problem_graph = problem_state_space.get_graph();
@@ -822,6 +820,25 @@ ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContextList& context
         m_problem_graphs = std::move(problem_state_spaces_);
         m_class_state_space = std::move(class_state_space_);
     }
+}
+
+ProblemClassStateSpace::ProblemClassStateSpace(const ProblemContext& context, const ClassOptions& options) :
+    ProblemClassStateSpace(ProblemContextList { context }, options)
+{
+}
+
+static ProblemContext create_problem_context(const fs::path& domain_filepath, const fs::path& problem_filepath)
+{
+    auto parser = PDDLParser(domain_filepath, problem_filepath);
+    auto delete_relaxed_exploration = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+    auto state_repository = std::make_shared<StateRepository>(delete_relaxed_exploration.create_grounded_axiom_evaluator());
+    auto applicable_action_generator = delete_relaxed_exploration.create_grounded_applicable_action_generator();
+    return ProblemContext { parser.get_problem(), state_repository, applicable_action_generator };
+}
+
+ProblemClassStateSpace::ProblemClassStateSpace(const fs::path& domain_filepath, const fs::path& problem_filepath, const ClassOptions& options) :
+    ProblemClassStateSpace(create_problem_context(domain_filepath, problem_filepath), options)
+{
 }
 
 const ProblemGraphList& ProblemClassStateSpace::get_problem_state_spaces() const { return m_problem_graphs; }

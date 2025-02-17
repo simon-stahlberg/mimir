@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/datasets/problem_class_graph.hpp"
+#include "mimir/datasets/problem_class_state_space.hpp"
 
 #include <gtest/gtest.h>
 

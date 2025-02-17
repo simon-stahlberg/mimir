@@ -17,7 +17,7 @@
 
 #include "mimir/languages/description_logics/refinement.hpp"
 
-#include "mimir/datasets/problem_class_graph.hpp"
+#include "mimir/datasets/problem_class_state_space.hpp"
 #include "mimir/formalism/domain.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/predicate.hpp"
