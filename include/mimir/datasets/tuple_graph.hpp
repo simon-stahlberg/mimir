@@ -53,6 +53,7 @@ using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
 class TupleGraph
 {
 private:
+    const ProblemContext& m_context;
     const ProblemGraph& m_problem_graph;
     const TupleIndexMapper& m_index_mapper;
     InternalTupleGraph m_graph;
@@ -61,12 +62,14 @@ private:
     IndexGroupedVector<const Index> m_problem_vertices_grouped_by_distance;
 
 public:
-    TupleGraph(const ProblemGraph& problem_graph,
+    TupleGraph(const ProblemContext& context,
+               const ProblemGraph& problem_graph,
                const TupleIndexMapper& index_mapper,
                InternalTupleGraph graph,
                IndexGroupedVector<const Index> vertices_grouped_by_distance,
                IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
 
+    const ProblemContext& get_context() const;
     const ProblemGraph& get_problem_graph() const;
     const TupleIndexMapper& get_index_mapper() const;
     const InternalTupleGraph& get_graph() const;

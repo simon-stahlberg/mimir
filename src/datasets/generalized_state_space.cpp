@@ -843,13 +843,13 @@ GeneralizedStateSpace::GeneralizedStateSpace(SearchContext context, const Genera
 
 const SearchContextList& GeneralizedStateSpace::get_search_contexts() const { return m_search_contexts; }
 
-const ProblemGraphList& GeneralizedStateSpace::get_problem_state_spaces() const { return m_problem_graphs; }
+const ProblemGraphList& GeneralizedStateSpace::get_problem_graphs() const { return m_problem_graphs; }
 
 const ClassStateSpace& GeneralizedStateSpace::get_class_state_space() const { return m_class_state_space; }
 
-const ProblemGraph& GeneralizedStateSpace::get_problem_state_space(const ClassVertex& vertex) const { return m_problem_graphs.at(get_problem_index(vertex)); }
+const ProblemGraph& GeneralizedStateSpace::get_problem_graph(const ClassVertex& vertex) const { return m_problem_graphs.at(get_problem_index(vertex)); }
 
-const ProblemGraph& GeneralizedStateSpace::get_problem_state_space(const ClassEdge& edge) const { return m_problem_graphs.at(get_problem_index(edge)); }
+const ProblemGraph& GeneralizedStateSpace::get_problem_graph(const ClassEdge& edge) const { return m_problem_graphs.at(get_problem_index(edge)); }
 
 const ProblemVertex& GeneralizedStateSpace::get_problem_vertex(const ClassVertex& vertex) const
 {

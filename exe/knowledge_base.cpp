@@ -26,7 +26,7 @@ int main(int argc, char** argv)
 {
     if (argc != 3)
     {
-        std::cout << "Usage: pcg <domain:str> <problems:str>" << std::endl;
+        std::cout << "Usage: pcg <domain_filepath:str> <problems_directory:str>" << std::endl;
         return 1;
     }
 
@@ -37,9 +37,9 @@ int main(int argc, char** argv)
                                     KnowledgeBase::Options(GeneralizedStateSpace::Options(), TupleGraphCollection::Options()));
     const auto& pcss = kb->get_generalized_state_space();
 
-    for (size_t i = 0; i < pcss.get_problem_state_spaces().size(); ++i)
+    for (size_t i = 0; i < pcss.get_problem_graphs().size(); ++i)
     {
-        const auto& pss_i = pcss.get_problem_state_spaces()[i];
+        const auto& pss_i = pcss.get_problem_graphs()[i];
         std::cout << i << ". has num vertices: " << pss_i.get_graph().get_num_vertices() << " and num edges: " << pss_i.get_graph().get_num_edges()
                   << std::endl;
         // std::cout << pss_i.get_graph() << std::endl;
@@ -48,7 +48,17 @@ int main(int argc, char** argv)
     const auto& css = pcss.get_class_state_space();
 
     std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
-    // std::cout << css.get_graph() << std::endl;
+    std::cout << css.get_graph() << std::endl;
+
+    if (kb->get_tuple_graphs().has_value())
+    {
+        auto class_v_idx = size_t(0);
+        for (const auto& tuple_graph : kb->get_tuple_graphs().value().get_per_class_vertex_tuple_graph())
+        {
+            std::cout << "Class vertex index: " << class_v_idx++ << std::endl;
+            std::cout << tuple_graph << std::endl;
+        }
+    }
 
     return 0;
 }

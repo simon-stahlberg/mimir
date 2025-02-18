@@ -182,7 +182,7 @@ public:
             uint32_t timeout_ms;
 
             ProblemSpecific() :
-                symmetry_pruning(false),
+                symmetry_pruning(true),
                 mark_true_goal_literals(false),
                 remove_if_unsolvable(true),
                 max_num_states(std::numeric_limits<uint32_t>::max()),
@@ -209,13 +209,13 @@ public:
      */
 
     const SearchContextList& get_search_contexts() const;
-    const ProblemGraphList& get_problem_state_spaces() const;
+    const ProblemGraphList& get_problem_graphs() const;
     const ClassStateSpace& get_class_state_space() const;
 
     /// @brief Ground `Class` related structures to `Problem` related structures
     /// to access detailed problem specific information about the state.
-    const ProblemGraph& get_problem_state_space(const ClassVertex& vertex) const;
-    const ProblemGraph& get_problem_state_space(const ClassEdge& edge) const;
+    const ProblemGraph& get_problem_graph(const ClassVertex& vertex) const;
+    const ProblemGraph& get_problem_graph(const ClassEdge& edge) const;
     const ProblemVertex& get_problem_vertex(const ClassVertex& vertex) const;
     const ProblemEdge& get_problem_edge(const ClassEdge& edge) const;
 

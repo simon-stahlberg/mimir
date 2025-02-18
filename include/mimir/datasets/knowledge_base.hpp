@@ -29,9 +29,9 @@ namespace mimir
 class KnowledgeBase
 {
 private:
-    GeneralizedStateSpace m_state_space;  ///< central component.
+    GeneralizedStateSpace m_state_space;  ///< Required core component.
 
-    std::optional<TupleGraphCollection> m_tuple_graphs;  ///< first optional component.
+    std::optional<TupleGraphCollection> m_tuple_graphs;  ///< First optional component. Pass TupleGraphCollection::Options to instantiate it!
 public:
     /**
      * Options
