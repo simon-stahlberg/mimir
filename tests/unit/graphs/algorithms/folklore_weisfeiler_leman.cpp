@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
 
-#include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 
 #include <gtest/gtest.h>
 

@@ -28,6 +28,7 @@ namespace mimir
 {
 class KnowledgeBase;
 class GeneralizedStateSpace;
+class TupleGraph;
 class TupleGraphCollection;
 }
 

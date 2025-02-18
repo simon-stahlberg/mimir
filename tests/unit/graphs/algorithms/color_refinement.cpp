@@ -17,7 +17,7 @@
 
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 
-#include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 
 #include <gtest/gtest.h>
 

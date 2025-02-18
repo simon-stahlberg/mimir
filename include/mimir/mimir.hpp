@@ -101,8 +101,9 @@
 #include "mimir/graphs/algorithms/color_refinement.hpp"
 #include "mimir/graphs/algorithms/folklore_weisfeiler_leman.hpp"
 #include "mimir/graphs/color_function.hpp"
-#include "mimir/graphs/digraph.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/digraph.hpp"
+#include "mimir/graphs/concrete/digraph_edge_colored.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 
 /**
  * Algorithms

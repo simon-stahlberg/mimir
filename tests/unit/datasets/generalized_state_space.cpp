@@ -37,6 +37,7 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
         SearchContextList { SearchContext(ProblemContext(domain_file, problem1_file)), SearchContext(ProblemContext(domain_file, problem2_file)) };
 
     {
+        /* Without symmetry reduction */
         auto options = GeneralizedStateSpace::Options();
         options.problem_options.symmetry_pruning = false;
         const auto problem_class_state_space = GeneralizedStateSpace(search_contexts, options);
@@ -52,6 +53,7 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
     }
 
     {
+        /* With symmetry reduction */
         auto options = GeneralizedStateSpace::Options();
         options.problem_options.symmetry_pruning = true;
         const auto problem_class_state_space = GeneralizedStateSpace(search_contexts, options);

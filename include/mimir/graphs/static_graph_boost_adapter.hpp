@@ -20,8 +20,6 @@
 
 #include "mimir/common/concepts.hpp"
 #include "mimir/graphs/boost_adapter_utils.hpp"
-#include "mimir/graphs/digraph.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
 #include "mimir/graphs/static_graph.hpp"
 
 #include <boost/graph/breadth_first_search.hpp>
@@ -224,20 +222,6 @@ degree(typename boost::graph_traits<mimir::TraversalDirectionTaggedType<Graph, D
 {
     return g.get().template get_degree<ForwardTraversal>(u) + g.get().template get_degree<BackwardTraversal>(u);
 }
-
-/* Assert that the concepts are satisfied */
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::GraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::VertexListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::IncidenceGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::EdgeListGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::AdjacencyGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<TraversalDirectionTaggedType<StaticDigraph, ForwardTraversal>>) );
-BOOST_CONCEPT_ASSERT((boost::BidirectionalGraphConcept<TraversalDirectionTaggedType<StaticDigraph, BackwardTraversal>>) );
 
 }
 

@@ -26,7 +26,7 @@
 namespace mimir::tests
 {
 
-TEST(MimirTests, GraphsObjectGraphDenseTest)
+TEST(MimirTests, DataSetsObjectGraphDenseTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
@@ -44,91 +44,48 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     {
         const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
 
-        // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
-        // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
-
-        const auto object_graph =
-            create_object_graph(color_function, *search_context.get_problem_context().get_repositories(), state_space.get_problem(), state);
-
-        // std::cout << object_graph << std::endl;
+        const auto object_graph = create_object_graph(state,
+                                                      search_context.get_problem_context().get_problem(),
+                                                      *search_context.get_problem_context().get_repositories(),
+                                                      color_function);
 
         auto certificate = nauty_wrapper::DenseGraph(object_graph).compute_certificate();
 
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_num_vertices(), 28);
     EXPECT_EQ(certificates.size(), 12);
 }
 
-TEST(MimirTests, GraphsObjectGraphSparseTest)
+TEST(MimirTests, DataSetsObjectGraphSparseTest)
 {
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto state_space = StateSpace::create(domain_file, problem_file).value();
+    auto search_context = SearchContext(ProblemContext(domain_file, problem_file));
 
-    const auto color_function = ProblemColorFunction(state_space.get_problem());
+    auto options = GeneralizedStateSpace::Options();
+    options.problem_options.symmetry_pruning = false;
+    const auto problem_class_state_space = GeneralizedStateSpace(search_context, options);
+
+    const auto color_function = ProblemColorFunction(search_context.get_problem_context().get_problem());
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
-    for (const auto& vertex : state_space.get_graph().get_vertices())
+    for (const auto& vertex : problem_class_state_space.get_class_state_space().get_graph().get_vertices())
     {
-        const auto state = get_state(vertex);
-        // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
-        // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
+        const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
 
-        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state);
-
-        // std::cout << object_graph << std::endl;
+        const auto object_graph = create_object_graph(state,
+                                                      search_context.get_problem_context().get_problem(),
+                                                      *search_context.get_problem_context().get_repositories(),
+                                                      color_function);
 
         auto certificate = nauty_wrapper::SparseGraph(object_graph).compute_certificate();
 
         certificates.insert(std::move(certificate));
     }
 
-    EXPECT_EQ(state_space.get_num_vertices(), 28);
     EXPECT_EQ(certificates.size(), 12);
-}
-
-TEST(MimirTests, GraphsObjectGraphPruningTest)
-{
-    const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
-    const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
-    const auto state_space = StateSpace::create(domain_file, problem_file).value();
-
-    class PruneAllObjects : public ObjectGraphPruningStrategy
-    {
-    public:
-        bool prune(Index, Object) const override { return true; };
-        bool prune(Index, GroundAtom<Static>) const override { return true; };
-        bool prune(Index, GroundAtom<Fluent>) const override { return true; };
-        bool prune(Index, GroundAtom<Derived>) const override { return true; };
-        bool prune(Index, GroundLiteral<Static>) const override { return true; }
-        bool prune(Index, GroundLiteral<Fluent>) const override { return true; }
-        bool prune(Index, GroundLiteral<Derived>) const override { return true; }
-    };
-
-    const auto color_function = ProblemColorFunction(state_space.get_problem());
-    auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
-
-    for (const auto& vertex : state_space.get_graph().get_vertices())
-    {
-        const auto state = get_state(vertex);
-        // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
-        // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
-
-        const auto object_graph =
-            create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state, 0, true, PruneAllObjects());
-
-        // std::cout << object_graph << std::endl;
-
-        auto certificate = nauty_wrapper::SparseGraph(object_graph).compute_certificate();
-
-        certificates.insert(std::move(certificate));
-    }
-
-    EXPECT_EQ(state_space.get_num_vertices(), 28);
-    EXPECT_EQ(certificates.size(), 1);
 }
 
 }

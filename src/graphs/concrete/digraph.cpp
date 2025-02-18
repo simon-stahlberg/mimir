@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/concrete/digraph.hpp"
 
 #include <cassert>
 #include <stdexcept>
@@ -40,8 +40,7 @@ std::ostream& operator<<(std::ostream& out, const StaticDigraph& digraph)
     {
         for (const auto& succ_vertex : digraph.template get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
         {
-            out << "t" << vertex.get_index() << "->"
-                << "t" << succ_vertex.get_index() << "\n";
+            out << "t" << vertex.get_index() << "->" << "t" << succ_vertex.get_index() << "\n";
         }
     }
     out << "}";  // end digraph

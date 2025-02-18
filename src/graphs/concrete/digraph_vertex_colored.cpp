@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/digraph_vertex_colored.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 
 #include <algorithm>
 
@@ -35,15 +35,13 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<const StaticVertexC
     {
         const auto& color_name = color_function.get_color_name(get_color(vertex));
         out << "t" << vertex.get_index() << "[";
-        out << "label=\"" << color_name << " (" << get_color(vertex) << ")"
-            << "\"]\n";
+        out << "label=\"" << color_name << " (" << get_color(vertex) << ")" << "\"]\n";
     }
     for (const auto& vertex : vertex_colored_digraph.get_vertices())
     {
         for (const auto& succ_vertex : vertex_colored_digraph.template get_adjacent_vertices<ForwardTraversal>(vertex.get_index()))
         {
-            out << "t" << vertex.get_index() << "->"
-                << "t" << succ_vertex.get_index() << "\n";
+            out << "t" << vertex.get_index() << "->" << "t" << succ_vertex.get_index() << "\n";
         }
     }
     out << "}";  // end digraph

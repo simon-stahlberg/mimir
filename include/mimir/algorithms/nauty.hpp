@@ -19,8 +19,8 @@
 #define MIMIR_ALGORITHMS_NAUTY_HPP_
 
 #include "mimir/common/printers.hpp"
+#include "mimir/graphs/concrete/digraph_vertex_colored.hpp"
 #include "mimir/graphs/declarations.hpp"
-#include "mimir/graphs/digraph_vertex_colored.hpp"
 
 #include <loki/details/utils/equal_to.hpp>
 #include <loki/details/utils/hash.hpp>

@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/concrete/digraph.hpp"
 
 #include <gtest/gtest.h>
 

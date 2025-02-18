@@ -15,12 +15,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_GRAPHS_TUPLE_GRAPH_HPP_
-#define MIMIR_GRAPHS_TUPLE_GRAPH_HPP_
+#ifndef MIMIR_DATASETS_TUPLE_GRAPH_HPP_
+#define MIMIR_DATASETS_TUPLE_GRAPH_HPP_
 
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/datasets/generalized_state_space.hpp"
-#include "mimir/graphs/digraph.hpp"
+#include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/algorithms/iw/dynamic_novelty_table.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_generators.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
