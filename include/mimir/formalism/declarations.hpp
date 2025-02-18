@@ -40,6 +40,8 @@ namespace mimir
  * Forward declarations
  */
 
+class ProblemContext;
+
 template<StaticOrFluentOrDerived P>
 class AssignmentSet;
 template<StaticOrFluentTag F>

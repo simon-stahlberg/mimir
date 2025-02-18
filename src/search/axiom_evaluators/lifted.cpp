@@ -25,29 +25,27 @@
 
 namespace mimir
 {
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories) :
-    LiftedAxiomEvaluator(problem, std::move(pddl_repositories), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(ProblemContext problem_context) :
+    LiftedAxiomEvaluator(std::move(problem_context), std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>())
 {
 }
 
-LiftedAxiomEvaluator::LiftedAxiomEvaluator(Problem problem,
-                                           std::shared_ptr<PDDLRepositories> pddl_repositories,
-                                           std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
-    m_problem(problem),
-    m_pddl_repositories(pddl_repositories),
+LiftedAxiomEvaluator::LiftedAxiomEvaluator(ProblemContext problem_context, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler) :
+    m_problem_context(std::move(problem_context)),
     m_event_handler(event_handler),
     m_condition_grounders(),
     m_fluent_atoms(),
     m_derived_atoms(),
     m_fluent_functions(),
-    m_fluent_assignment_set(m_problem->get_objects().size(), m_problem->get_domain()->get_predicates<Fluent>()),
-    m_derived_assignment_set(m_problem->get_objects().size(), m_problem->get_problem_and_domain_derived_predicates()),
-    m_numeric_assignment_set(m_problem->get_objects().size(), m_problem->get_domain()->get_functions<Fluent>())
+    m_fluent_assignment_set(m_problem_context.get_problem()->get_objects().size(), m_problem_context.get_problem()->get_domain()->get_predicates<Fluent>()),
+    m_derived_assignment_set(m_problem_context.get_problem()->get_objects().size(),
+                             m_problem_context.get_problem()->get_problem_and_domain_derived_predicates()),
+    m_numeric_assignment_set(m_problem_context.get_problem()->get_objects().size(), m_problem_context.get_problem()->get_domain()->get_functions<Fluent>())
 {
     /* 3. Initialize condition grounders */
-    for (const auto& axiom : m_problem->get_problem_and_domain_axioms())
+    for (const auto& axiom : m_problem_context.get_problem()->get_problem_and_domain_axioms())
     {
-        m_condition_grounders.emplace(axiom, AxiomSatisficingBindingGenerator(axiom, m_problem, m_pddl_repositories));
+        m_condition_grounders.emplace(axiom, AxiomSatisficingBindingGenerator(axiom, m_problem_context));
     }
 }
 
@@ -61,25 +59,28 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
     m_event_handler->on_start_generating_applicable_axioms();
 
-    m_pddl_repositories->get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
+    const auto problem = m_problem_context.get_problem();
+    auto& pddl_repositories = *m_problem_context.get_repositories();
+
+    pddl_repositories.get_ground_atoms_from_indices(dense_fluent_atoms, m_fluent_atoms);
     m_fluent_assignment_set.reset();
     m_fluent_assignment_set.insert_ground_atoms(m_fluent_atoms);
 
-    m_pddl_repositories->get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
+    pddl_repositories.get_ground_atoms_from_indices(dense_derived_atoms, m_derived_atoms);
     m_derived_assignment_set.reset();
     m_derived_assignment_set.insert_ground_atoms(m_derived_atoms);
 
     m_numeric_assignment_set.reset();
-    m_pddl_repositories->get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
+    pddl_repositories.get_ground_functions(dense_numeric_variables.size(), m_fluent_functions);
     m_numeric_assignment_set.insert_ground_function_values(m_fluent_functions, dense_numeric_variables);
 
-    const auto& static_numeric_assignment_set = m_problem->get_static_initial_numeric_assignment_set();
+    const auto& static_numeric_assignment_set = problem->get_static_initial_numeric_assignment_set();
 
     /* 2. Fixed point computation */
 
     auto applicable_axioms = GroundAxiomList {};
 
-    for (const auto& partition : m_problem->get_problem_and_domain_axiom_partitioning())
+    for (const auto& partition : problem->get_problem_and_domain_axiom_partitioning())
     {
         bool reached_partition_fixed_point;
 
@@ -112,16 +113,16 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                                                                                   static_numeric_assignment_set,
                                                                                   m_numeric_assignment_set))
                 {
-                    const auto num_ground_axioms = m_pddl_repositories->get_num_ground_axioms();
+                    const auto num_ground_axioms = pddl_repositories.get_num_ground_axioms();
 
-                    const auto ground_axiom = m_pddl_repositories->ground(axiom, m_problem, std::move(binding));
+                    const auto ground_axiom = pddl_repositories.ground(axiom, problem, std::move(binding));
 
-                    assert(is_applicable(ground_axiom, m_problem, dense_state));
+                    assert(is_applicable(ground_axiom, problem, dense_state));
 
                     m_event_handler->on_ground_axiom(ground_axiom);
 
-                    (m_pddl_repositories->get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
-                                                                                         m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
+                    (pddl_repositories.get_num_ground_axioms() > num_ground_axioms) ? m_event_handler->on_ground_axiom_cache_miss(ground_axiom) :
+                                                                                      m_event_handler->on_ground_axiom_cache_hit(ground_axiom);
 
                     applicable_axioms.emplace_back(ground_axiom);
                 }
@@ -140,7 +141,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
                 if (!dense_derived_atoms.get(grounded_atom_index))
                 {
                     // GENERATED NEW DERIVED ATOM!
-                    const auto new_ground_atom = m_pddl_repositories->get_ground_atom<Derived>(grounded_atom_index);
+                    const auto new_ground_atom = pddl_repositories.get_ground_atom<Derived>(grounded_atom_index);
                     reached_partition_fixed_point = false;
 
                     // Update the assignment set
@@ -161,9 +162,7 @@ void LiftedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_finish
 
 void LiftedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
-Problem LiftedAxiomEvaluator::get_problem() const { return m_problem; }
-
-const std::shared_ptr<PDDLRepositories>& LiftedAxiomEvaluator::get_pddl_repositories() const { return m_pddl_repositories; }
+const ProblemContext& LiftedAxiomEvaluator::get_problem_context() const { return m_problem_context; }
 
 const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& LiftedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

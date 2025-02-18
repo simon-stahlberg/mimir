@@ -29,8 +29,7 @@
 namespace mimir
 {
 
-extern SearchResult find_solution_brfs(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                       std::shared_ptr<StateRepository> state_repository,
+extern SearchResult find_solution_brfs(const SearchContext& context,
                                        std::optional<State> start_state = std::nullopt,
                                        std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> event_handler = std::nullopt,
                                        std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy = std::nullopt,

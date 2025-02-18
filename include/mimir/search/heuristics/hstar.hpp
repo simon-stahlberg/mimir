@@ -29,7 +29,7 @@ namespace mimir
 class HStarHeuristic : public IHeuristic
 {
 public:
-    HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository);
+    explicit HStarHeuristic(const SearchContext& search_context);
 
     double compute_heuristic(State state, bool is_goal_state) override;
 

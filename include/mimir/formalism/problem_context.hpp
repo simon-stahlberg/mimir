@@ -15,39 +15,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
-#define MIMIR_SEARCH_AXIOM_EVALUATORS_INTERFACE_HPP_
+#ifndef MIMIR_FORMALISM_PROBLEM_CONTEXT_HPP_
+#define MIMIR_FORMALISM_PROBLEM_CONTEXT_HPP_
 
-#include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/problem_context.hpp"
-#include "mimir/search/declarations.hpp"
 
 namespace mimir
 {
-
-/**
- * Dynamic interface class.
- */
-class IAxiomEvaluator
+class ProblemContext
 {
+private:
+    Problem m_problem;
+    std::shared_ptr<PDDLRepositories> m_repositories;
+
 public:
-    virtual ~IAxiomEvaluator() = default;
+    ProblemContext(const fs::path& domain_filepath, const fs::path& problem_filepath);
+    ProblemContext(Problem problem, std::shared_ptr<PDDLRepositories> repositories);
 
-    /// @brief Generate all applicable axioms for a given set of ground atoms by running fixed point computation.
-    virtual void generate_and_apply_axioms(DenseState& dense_state) = 0;
+    static std::vector<ProblemContext> create(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths);
+    static std::vector<ProblemContext> create(const fs::path& domain_filepath, const fs::path& problems_directory);
 
-    /// @brief Accumulate event handler statistics during search.
-    virtual void on_finish_search_layer() = 0;
-    virtual void on_end_search() = 0;
-
-    /**
-     * Getters
-     */
-
-    virtual const ProblemContext& get_problem_context() const = 0;
+    Problem get_problem() const;
+    const std::shared_ptr<PDDLRepositories>& get_repositories() const;
 };
 
+using ProblemContextList = std::vector<ProblemContext>;
 }
 
 #endif

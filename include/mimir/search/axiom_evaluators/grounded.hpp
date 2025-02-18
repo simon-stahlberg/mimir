@@ -29,18 +29,14 @@ namespace mimir
 class GroundedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    ProblemContext m_problem_context;
     std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>> m_match_tree_partitioning;
     std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> m_event_handler;
 
 public:
-    GroundedAxiomEvaluator(Problem problem,
-                           std::shared_ptr<PDDLRepositories> pddl_repositories,
-                           std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
+    GroundedAxiomEvaluator(ProblemContext problem_context, std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning);
 
-    GroundedAxiomEvaluator(Problem problem,
-                           std::shared_ptr<PDDLRepositories> pddl_repositories,
+    GroundedAxiomEvaluator(ProblemContext problem_context,
                            std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                            std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler);
 
@@ -60,8 +56,7 @@ public:
      * Getters
      */
 
-    Problem get_problem() const override;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
+    const ProblemContext& get_problem_context() const override;
     const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& get_event_handler() const;
 };
 

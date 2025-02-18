@@ -25,10 +25,9 @@ namespace mimir
 {
 
 ActionSatisficingBindingGenerator::ActionSatisficingBindingGenerator(Action action,
-                                                                     Problem problem,
-                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                                                     ProblemContext problem_context,
                                                                      std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
-    SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), problem, pddl_repositories, event_handler),
+    SatisficingBindingGenerator<ActionSatisficingBindingGenerator>(action->get_conjunctive_condition(), std::move(problem_context), event_handler),
     m_action(action)
 {
 }
@@ -44,8 +43,10 @@ bool ActionSatisficingBindingGenerator::is_valid_binding_impl(const DenseState& 
 template<FluentOrAuxiliary F>
 bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables, const ObjectList& binding)
 {
-    return (evaluate(this->m_pddl_repositories->ground(effect->get_function_expression(), this->m_problem, binding), fluent_numeric_variables)
-            != UNDEFINED_CONTINUOUS_COST);
+    const auto problem = this->m_problem_context.get_problem();
+    auto& pddl_repositories = *this->m_problem_context.get_repositories();
+
+    return (evaluate(pddl_repositories.ground(effect->get_function_expression(), problem, binding), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
 }
 
 template bool

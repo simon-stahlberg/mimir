@@ -33,8 +33,7 @@ namespace mimir
 class LiftedApplicableActionGenerator : public IApplicableActionGenerator
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    ProblemContext m_problem_context;
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_event_handler;
 
     std::unordered_map<Action, std::pair<ActionSatisficingBindingGenerator, std::vector<std::vector<IndexList>>>> m_action_grounding_data;
@@ -50,12 +49,10 @@ private:
 
 public:
     /// @brief Simplest construction
-    LiftedApplicableActionGenerator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    explicit LiftedApplicableActionGenerator(ProblemContext problem_context);
 
     /// @brief Complete construction
-    LiftedApplicableActionGenerator(Problem problem,
-                                    std::shared_ptr<PDDLRepositories> pddl_repositories,
-                                    std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
+    LiftedApplicableActionGenerator(ProblemContext problem_context, std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> event_handler);
 
     // Uncopyable
     LiftedApplicableActionGenerator(const LiftedApplicableActionGenerator& other) = delete;
@@ -74,8 +71,7 @@ public:
      * Getters
      */
 
-    Problem get_problem() const override;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
+    const ProblemContext& get_problem_context() const override;
 };
 
 }  // namespace mimir

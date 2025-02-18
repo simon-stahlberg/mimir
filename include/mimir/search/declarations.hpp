@@ -28,6 +28,8 @@
 namespace mimir
 {
 
+class SearchContext;
+
 // StateRepository
 class StateRepository;
 

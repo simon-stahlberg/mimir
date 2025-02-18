@@ -26,22 +26,18 @@
 namespace mimir
 {
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
-                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ProblemContext problem_context,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree) :
-    GroundedApplicableActionGenerator(problem,
-                                      std::move(pddl_repositories),
+    GroundedApplicableActionGenerator(std::move(problem_context),
                                       std::move(match_tree),
                                       std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>())
 {
 }
 
-GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(Problem problem,
-                                                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
+GroundedApplicableActionGenerator::GroundedApplicableActionGenerator(ProblemContext problem_context,
                                                                      std::unique_ptr<match_tree::MatchTree<GroundActionImpl>>&& match_tree,
                                                                      std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> event_handler) :
-    m_problem(problem),
-    m_pddl_repositories(std::move(pddl_repositories)),
+    m_problem_context(std::move(problem_context)),
     m_match_tree(std::move(match_tree)),
     m_event_handler(std::move(event_handler)),
     m_dense_state()
@@ -62,14 +58,12 @@ mimir::generator<GroundAction> GroundedApplicableActionGenerator::create_applica
 
     for (const auto& ground_action : ground_actions)
     {
-        assert(is_applicable(ground_action, m_problem, dense_state));
+        assert(is_applicable(ground_action, m_problem_context.get_problem(), dense_state));
         co_yield ground_action;
     }
 }
 
-Problem GroundedApplicableActionGenerator::get_problem() const { return m_problem; }
-
-const std::shared_ptr<PDDLRepositories>& GroundedApplicableActionGenerator::get_pddl_repositories() const { return m_pddl_repositories; }
+const ProblemContext& GroundedApplicableActionGenerator::get_problem_context() const { return m_problem_context; }
 
 void GroundedApplicableActionGenerator::on_finish_search_layer() { m_event_handler->on_finish_search_layer(); }
 

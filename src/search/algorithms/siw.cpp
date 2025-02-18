@@ -17,6 +17,7 @@
 
 #include "mimir/search/algorithms/siw.hpp"
 
+#include "mimir/formalism/problem_context.hpp"
 #include "mimir/search/algorithms/brfs/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
 #include "mimir/search/algorithms/iw/tuple_index_mapper.hpp"
@@ -26,6 +27,7 @@
 #include "mimir/search/applicable_action_generators/interface.hpp"
 #include "mimir/search/axiom_evaluators/interface.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <sstream>
@@ -62,8 +64,7 @@ bool ProblemGoalCounter::test_static_goal() { return m_problem->static_goal_hold
 bool ProblemGoalCounter::test_dynamic_goal(State state) { return count_unsatisfied_goals(state) < m_initial_num_unsatisfied_goals; }
 
 /* SIW */
-SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                               std::shared_ptr<StateRepository> state_repository,
+SearchResult find_solution_siw(const SearchContext& context,
                                std::optional<State> start_state_,
                                std::optional<size_t> max_arity_,
                                std::optional<std::shared_ptr<ISIWAlgorithmEventHandler>> siw_event_handler_,
@@ -71,15 +72,17 @@ SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> appli
                                std::optional<std::shared_ptr<IBrFSAlgorithmEventHandler>> brfs_event_handler_,
                                std::optional<std::shared_ptr<IGoalStrategy>> goal_strategy_)
 {
-    assert(applicable_action_generator && state_repository);
+    const auto problem = context.get_problem_context().get_problem();
+    auto& pddl_repositories = *context.get_problem_context().get_repositories();
+    auto& applicable_action_generator = *context.get_applicable_action_generator();
+    auto& state_repository = *context.get_state_repository();
 
     const auto max_arity = (max_arity_.has_value()) ? max_arity_.value() : MAX_ARITY - 1;
-    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository->get_or_create_initial_state();
+    const auto start_state = (start_state_.has_value()) ? start_state_.value() : state_repository.get_or_create_initial_state();
     const auto siw_event_handler = (siw_event_handler_.has_value()) ? siw_event_handler_.value() : std::make_shared<DefaultSIWAlgorithmEventHandler>();
     const auto iw_event_handler = (iw_event_handler_.has_value()) ? iw_event_handler_.value() : std::make_shared<DefaultIWAlgorithmEventHandler>();
     const auto brfs_event_handler = (brfs_event_handler_.has_value()) ? brfs_event_handler_.value() : std::make_shared<DefaultBrFSAlgorithmEventHandler>();
-    const auto goal_strategy =
-        (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(applicable_action_generator->get_problem());
+    const auto goal_strategy = (goal_strategy_.has_value()) ? goal_strategy_.value() : std::make_shared<ProblemGoal>(problem);
 
     if (max_arity >= MAX_ARITY)
     {
@@ -89,8 +92,6 @@ SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> appli
 
     auto result = SearchResult();
 
-    const auto problem = applicable_action_generator->get_problem();
-    const auto& pddl_repositories = *applicable_action_generator->get_pddl_repositories();
     siw_event_handler->on_start_search(problem, start_state, pddl_repositories);
 
     if (!goal_strategy->test_static_goal())
@@ -110,13 +111,8 @@ SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> appli
 
         auto partial_plan = std::optional<Plan> {};
 
-        const auto sub_result = find_solution_iw(applicable_action_generator,
-                                                 state_repository,
-                                                 cur_state,
-                                                 max_arity,
-                                                 iw_event_handler,
-                                                 brfs_event_handler,
-                                                 std::make_shared<ProblemGoalCounter>(problem, cur_state));
+        const auto sub_result =
+            find_solution_iw(context, cur_state, max_arity, iw_event_handler, brfs_event_handler, std::make_shared<ProblemGoalCounter>(problem, cur_state));
 
         if (sub_result.status == SearchStatus::UNSOLVABLE)
         {
@@ -146,8 +142,8 @@ SearchResult find_solution_siw(std::shared_ptr<IApplicableActionGenerator> appli
     siw_event_handler->on_end_search();
     if (!siw_event_handler->is_quiet())
     {
-        applicable_action_generator->on_end_search();
-        state_repository->get_axiom_evaluator()->on_end_search();
+        applicable_action_generator.on_end_search();
+        state_repository.get_axiom_evaluator()->on_end_search();
     }
     result.plan = Plan(std::move(out_plan_actions), out_plan_cost);
     siw_event_handler->on_solved(result.plan.value(), pddl_repositories);

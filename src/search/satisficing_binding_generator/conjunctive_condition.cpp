@@ -24,10 +24,9 @@ namespace mimir
 
 ConjunctiveConditionSatisficingBindingGenerator::ConjunctiveConditionSatisficingBindingGenerator(
     ConjunctiveCondition conjunctive_condition,
-    Problem problem,
-    std::shared_ptr<PDDLRepositories> pddl_repositories,
+    ProblemContext problem_context,
     std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler) :
-    SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>(conjunctive_condition, problem, pddl_repositories, event_handler)
+    SatisficingBindingGenerator<ConjunctiveConditionSatisficingBindingGenerator>(conjunctive_condition, std::move(problem_context), event_handler)
 {
 }
 

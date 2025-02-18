@@ -23,15 +23,13 @@
 namespace mimir
 {
 
-HStarHeuristic::HStarHeuristic(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator, std::shared_ptr<StateRepository> state_repository) :
-    m_estimates()
+HStarHeuristic::HStarHeuristic(const SearchContext& search_context) : m_estimates()
 {
     // We simply create a state space and copy the estimates
     auto class_options = GeneralizedStateSpace::Options();
     class_options.problem_options.remove_if_unsolvable = false;
 
-    auto problem_class_state_space =
-        GeneralizedStateSpace(ProblemContext { state_repository->get_problem(), state_repository, applicable_action_generator }, class_options);
+    auto problem_class_state_space = GeneralizedStateSpace(search_context, class_options);
 
     const auto& class_graph = problem_class_state_space.get_class_state_space().get_graph();
 

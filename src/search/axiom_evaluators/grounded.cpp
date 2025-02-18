@@ -28,22 +28,16 @@
 
 namespace mimir
 {
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
-                                               std::shared_ptr<PDDLRepositories> pddl_repositories,
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(ProblemContext problem_context,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning) :
-    GroundedAxiomEvaluator(problem,
-                           std::move(pddl_repositories),
-                           std::move(match_tree_partitioning),
-                           std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
+    GroundedAxiomEvaluator(std::move(problem_context), std::move(match_tree_partitioning), std::make_shared<DefaultGroundedAxiomEvaluatorEventHandler>())
 {
 }
 
-GroundedAxiomEvaluator::GroundedAxiomEvaluator(Problem problem,
-                                               std::shared_ptr<PDDLRepositories> pddl_repositories,
+GroundedAxiomEvaluator::GroundedAxiomEvaluator(ProblemContext problem_context,
                                                std::vector<std::unique_ptr<match_tree::MatchTree<GroundAxiomImpl>>>&& match_tree_partitioning,
                                                std::shared_ptr<IGroundedAxiomEvaluatorEventHandler> event_handler) :
-    m_problem(problem),
-    m_pddl_repositories(pddl_repositories),
+    m_problem_context(std::move(problem_context)),
     m_match_tree_partitioning(std::move(match_tree_partitioning)),
     m_event_handler(std::move(event_handler))
 {
@@ -73,7 +67,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             for (const auto& grounded_axiom : applicable_axioms)
             {
-                assert(is_applicable(grounded_axiom, m_problem, dense_state));
+                assert(is_applicable(grounded_axiom, m_problem_context.get_problem(), dense_state));
 
                 assert(!grounded_axiom->get_derived_effect().is_negated);
 
@@ -96,9 +90,7 @@ void GroundedAxiomEvaluator::on_finish_search_layer() { m_event_handler->on_fini
 
 void GroundedAxiomEvaluator::on_end_search() { m_event_handler->on_end_search(); }
 
-Problem GroundedAxiomEvaluator::get_problem() const { return m_problem; }
-
-const std::shared_ptr<PDDLRepositories>& GroundedAxiomEvaluator::get_pddl_repositories() const { return m_pddl_repositories; }
+const ProblemContext& GroundedAxiomEvaluator::get_problem_context() const { return m_problem_context; }
 
 const std::shared_ptr<IGroundedAxiomEvaluatorEventHandler>& GroundedAxiomEvaluator::get_event_handler() const { return m_event_handler; }
 }

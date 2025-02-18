@@ -25,6 +25,7 @@
 #include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph.hpp"
 #include "mimir/search/declarations.hpp"
+#include "mimir/search/search_context.hpp"
 
 namespace mimir
 {
@@ -32,13 +33,6 @@ namespace mimir
 /**
  * ProblemGraph
  */
-
-struct ProblemContext
-{
-    Problem problem = nullptr;
-    std::shared_ptr<StateRepository> state_repository = nullptr;
-    std::shared_ptr<IApplicableActionGenerator> applicable_action_generator = nullptr;
-};
 
 using ProblemContextList = std::vector<ProblemContext>;
 
@@ -166,9 +160,9 @@ public:
 class GeneralizedStateSpace
 {
 private:
-    ProblemContextList m_problem_contexts;  ///< The problem contexts.
-    ProblemGraphList m_problem_graphs;      ///< The child-level graphs.
-    ClassStateSpace m_class_state_space;    ///< The top-level state space.
+    SearchContextList m_search_contexts;  ///< The search contexts.
+    ProblemGraphList m_problem_graphs;    ///< The child-level graphs.
+    ClassStateSpace m_class_state_space;  ///< The top-level state space.
 
 public:
     /**
@@ -207,18 +201,14 @@ public:
      */
 
     /* Construct from contexts. */
-    GeneralizedStateSpace(ProblemContextList contexts, const Options& options = Options());
-    GeneralizedStateSpace(ProblemContext context, const Options& options = Options());
-
-    /* Construct from files. */
-    GeneralizedStateSpace(const fs::path& domain_filepath, const fs::path& problem_filepath, const Options& options = Options());
-    GeneralizedStateSpace(const fs::path& domain_filepath, const std::vector<fs::path>& problem_filepaths, const Options& options = Options());
+    GeneralizedStateSpace(SearchContextList contexts, const Options& options = Options());
+    GeneralizedStateSpace(SearchContext context, const Options& options = Options());
 
     /**
      * Getters
      */
 
-    const ProblemContextList& get_problem_contexts() const;
+    const SearchContextList& get_search_contexts() const;
     const ProblemGraphList& get_problem_state_spaces() const;
     const ClassStateSpace& get_class_state_space() const;
 

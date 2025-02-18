@@ -41,28 +41,28 @@ int main(int argc, char** argv)
 
     std::cout << "Parsing PDDL files..." << std::endl;
 
-    auto parser = PDDLParser(domain_file_path, problem_file_path);
+    auto problem_context = ProblemContext(domain_file_path, problem_file_path);
 
     if (debug)
     {
         std::cout << "Domain:" << std::endl;
-        std::cout << *parser.get_domain() << std::endl;
+        std::cout << *problem_context.get_problem()->get_domain() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Problem:" << std::endl;
-        std::cout << *parser.get_problem() << std::endl;
+        std::cout << *problem_context.get_problem() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Static Predicates:" << std::endl;
-        std::cout << parser.get_domain()->get_predicates<Static>() << std::endl;
+        std::cout << problem_context.get_problem()->get_domain()->get_predicates<Static>() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Fluent Predicates:" << std::endl;
-        std::cout << parser.get_domain()->get_predicates<Fluent>() << std::endl;
+        std::cout << problem_context.get_problem()->get_domain()->get_predicates<Fluent>() << std::endl;
 
         std::cout << std::endl;
         std::cout << "Derived Predicates:" << std::endl;
-        std::cout << parser.get_domain()->get_predicates<Derived>() << std::endl;
+        std::cout << problem_context.get_problem()->get_domain()->get_predicates<Derived>() << std::endl;
         std::cout << std::endl;
     }
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
     auto state_repository = std::shared_ptr<StateRepository>(nullptr);
     if (grounded)
     {
-        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
+        auto delete_relaxed_problem_explorator = DeleteRelaxedProblemExplorator(problem_context);
         applicable_action_generator =
             std::dynamic_pointer_cast<IApplicableActionGenerator>(delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(
                 match_tree::Options(),
@@ -84,13 +84,9 @@ int main(int argc, char** argv)
     else
     {
         applicable_action_generator = std::dynamic_pointer_cast<IApplicableActionGenerator>(
-            std::make_shared<LiftedApplicableActionGenerator>(parser.get_problem(),
-                                                              parser.get_pddl_repositories(),
-                                                              std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
+            std::make_shared<LiftedApplicableActionGenerator>(problem_context, std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>(false)));
         axiom_evaluator = std::dynamic_pointer_cast<IAxiomEvaluator>(
-            std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(),
-                                                   parser.get_pddl_repositories(),
-                                                   std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
+            std::make_shared<LiftedAxiomEvaluator>(problem_context, std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>(false)));
         state_repository = std::make_shared<StateRepository>(axiom_evaluator);
     }
 
@@ -108,7 +104,9 @@ int main(int argc, char** argv)
     auto event_handler = (debug) ? std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DebugBrFSAlgorithmEventHandler>(false) } :
                                    std::shared_ptr<IBrFSAlgorithmEventHandler> { std::make_shared<DefaultBrFSAlgorithmEventHandler>(false) };
 
-    auto result = find_solution_brfs(applicable_action_generator, state_repository, std::nullopt, event_handler);
+    auto search_context = SearchContext(problem_context, applicable_action_generator, state_repository);
+
+    auto result = find_solution_brfs(search_context, std::nullopt, event_handler);
 
     std::cout << "[BrFS] Total time: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start_time)
               << std::endl;
@@ -122,7 +120,7 @@ int main(int argc, char** argv)
             std::cerr << "Error opening file!" << std::endl;
             return 1;
         }
-        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*parser.get_pddl_repositories()));
+        plan_file << std::make_tuple(std::cref(result.plan.value()), std::cref(*problem_context.get_repositories()));
         plan_file.close();
     }
 

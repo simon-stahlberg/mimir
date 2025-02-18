@@ -33,18 +33,7 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
 
-    auto contexts = mimir::ProblemContextList();
-    for (const auto& problem_filepath : fs::directory_iterator(problems_directory))
-    {
-        auto parser = PDDLParser(domain_file_path, problem_filepath.path());
-        auto delete_relaxed_problem_exploration = DeleteRelaxedProblemExplorator(parser.get_problem(), parser.get_pddl_repositories());
-        auto applicable_action_generator = delete_relaxed_problem_exploration.create_grounded_applicable_action_generator();
-        auto axiom_evaluator = delete_relaxed_problem_exploration.create_grounded_axiom_evaluator();
-        auto state_repository = std::make_shared<StateRepository>(axiom_evaluator);
-        contexts.emplace_back(parser.get_problem(), state_repository, applicable_action_generator);
-    }
-
-    auto pcss = mimir::GeneralizedStateSpace(contexts);
+    auto pcss = mimir::GeneralizedStateSpace(SearchContext::create(ProblemContext::create(domain_file_path, problems_directory)));
 
     for (size_t i = 0; i < pcss.get_problem_state_spaces().size(); ++i)
     {

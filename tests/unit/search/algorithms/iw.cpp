@@ -18,7 +18,6 @@
 #include "mimir/search/algorithms/iw.hpp"
 
 #include "mimir/formalism/declarations.hpp"
-#include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/algorithms.hpp"
 #include "mimir/search/algorithms/iw/event_handlers.hpp"
@@ -28,6 +27,7 @@
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/delete_relaxed_problem_explorator.hpp"
 #include "mimir/search/plan.hpp"
+#include "mimir/search/search_context.hpp"
 #include "mimir/search/state_repository.hpp"
 
 #include <gtest/gtest.h>
@@ -39,9 +39,8 @@ namespace mimir::tests
 class LiftedIWPlanner
 {
 private:
-    PDDLParser m_parser;
+    ProblemContext m_problem_context;
     size_t m_arity;
-
     std::shared_ptr<ILiftedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<LiftedApplicableActionGenerator> m_applicable_action_generator;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_axiom_evaluator_event_handler;
@@ -49,27 +48,24 @@ private:
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+    SearchContext m_search_context;
 
 public:
     LiftedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_parser(PDDLParser(domain_file, problem_file)),
+        m_problem_context(domain_file, problem_file),
         m_arity(arity),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultLiftedApplicableActionGeneratorEventHandler>()),
-        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_parser.get_problem(),
-                                                                                        m_parser.get_pddl_repositories(),
-                                                                                        m_applicable_action_generator_event_handler)),
+        m_applicable_action_generator(std::make_shared<LiftedApplicableActionGenerator>(m_problem_context, m_applicable_action_generator_event_handler)),
         m_axiom_evaluator_event_handler(std::make_shared<DefaultLiftedAxiomEvaluatorEventHandler>()),
-        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_parser.get_problem(), m_parser.get_pddl_repositories(), m_axiom_evaluator_event_handler)),
+        m_axiom_evaluator(std::make_shared<LiftedAxiomEvaluator>(m_problem_context, m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>())
+        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
+        m_search_context(m_problem_context, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution()
-    {
-        return find_solution_iw(m_applicable_action_generator, m_state_repository, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler);
-    }
+    SearchResult find_solution() { return find_solution_iw(m_search_context, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler); }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 
@@ -85,9 +81,8 @@ public:
 class GroundedIWPlanner
 {
 private:
-    PDDLParser m_parser;
+    ProblemContext m_problem_context;
     size_t m_arity;
-
     DeleteRelaxedProblemExplorator m_delete_relaxed_problem_explorator;
     std::shared_ptr<IGroundedApplicableActionGeneratorEventHandler> m_applicable_action_generator_event_handler;
     std::shared_ptr<GroundedApplicableActionGenerator> m_applicable_action_generator;
@@ -96,12 +91,13 @@ private:
     std::shared_ptr<StateRepository> m_state_repository;
     std::shared_ptr<IBrFSAlgorithmEventHandler> m_brfs_event_handler;
     std::shared_ptr<IIWAlgorithmEventHandler> m_iw_event_handler;
+    SearchContext m_search_context;
 
 public:
     GroundedIWPlanner(const fs::path& domain_file, const fs::path& problem_file, size_t arity) :
-        m_parser(PDDLParser(domain_file, problem_file)),
+        m_problem_context(domain_file, problem_file),
         m_arity(arity),
-        m_delete_relaxed_problem_explorator(m_parser.get_problem(), m_parser.get_pddl_repositories()),
+        m_delete_relaxed_problem_explorator(m_problem_context),
         m_applicable_action_generator_event_handler(std::make_shared<DefaultGroundedApplicableActionGeneratorEventHandler>()),
         m_applicable_action_generator(
             m_delete_relaxed_problem_explorator.create_grounded_applicable_action_generator(match_tree::Options(),
@@ -110,14 +106,12 @@ public:
         m_axiom_evaluator(m_delete_relaxed_problem_explorator.create_grounded_axiom_evaluator(match_tree::Options(), m_axiom_evaluator_event_handler)),
         m_state_repository(std::make_shared<StateRepository>(m_axiom_evaluator)),
         m_brfs_event_handler(std::make_shared<DefaultBrFSAlgorithmEventHandler>()),
-        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>())
+        m_iw_event_handler(std::make_shared<DefaultIWAlgorithmEventHandler>()),
+        m_search_context(m_problem_context, m_applicable_action_generator, m_state_repository)
     {
     }
 
-    SearchResult find_solution()
-    {
-        return find_solution_iw(m_applicable_action_generator, m_state_repository, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler);
-    }
+    SearchResult find_solution() { return find_solution_iw(m_search_context, std::nullopt, m_arity, m_iw_event_handler, m_brfs_event_handler); }
 
     const IWAlgorithmStatistics& get_iw_statistics() const { return m_iw_event_handler->get_statistics(); }
 

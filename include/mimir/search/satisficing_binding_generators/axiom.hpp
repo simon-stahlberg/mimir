@@ -41,8 +41,7 @@ public:
     using SatisficingBindingGenerator<AxiomSatisficingBindingGenerator>::get_static_consistency_graph;
 
     AxiomSatisficingBindingGenerator(Axiom axiom,
-                                     Problem problem,
-                                     std::shared_ptr<PDDLRepositories> pddl_repositories,
+                                     ProblemContext problem_context,
                                      std::optional<std::shared_ptr<ISatisficingBindingGeneratorEventHandler>> event_handler = std::nullopt);
 };
 

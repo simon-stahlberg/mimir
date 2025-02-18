@@ -30,8 +30,7 @@ namespace mimir
 class LiftedAxiomEvaluator : public IAxiomEvaluator
 {
 private:
-    Problem m_problem;
-    std::shared_ptr<PDDLRepositories> m_pddl_repositories;
+    ProblemContext m_problem_context;
     std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> m_event_handler;
 
     std::unordered_map<Axiom, AxiomSatisficingBindingGenerator> m_condition_grounders;
@@ -45,11 +44,9 @@ private:
     NumericAssignmentSet<Fluent> m_numeric_assignment_set;
 
 public:
-    LiftedAxiomEvaluator(Problem problem, std::shared_ptr<PDDLRepositories> pddl_repositories);
+    explicit LiftedAxiomEvaluator(ProblemContext problem_context);
 
-    LiftedAxiomEvaluator(Problem problem,
-                         std::shared_ptr<PDDLRepositories> pddl_repositories,
-                         std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
+    LiftedAxiomEvaluator(ProblemContext problem_context, std::shared_ptr<ILiftedAxiomEvaluatorEventHandler> event_handler);
 
     // Uncopyable
     LiftedAxiomEvaluator(const LiftedAxiomEvaluator& other) = delete;
@@ -67,8 +64,7 @@ public:
      * Getters.
      */
 
-    Problem get_problem() const override;
-    const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const override;
+    const ProblemContext& get_problem_context() const override;
     const std::shared_ptr<ILiftedAxiomEvaluatorEventHandler>& get_event_handler() const;
 };
 

@@ -21,6 +21,7 @@
 #include "mimir/algorithms/generator.hpp"
 #include "mimir/common/types_cista.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem_context.hpp"
 #include "mimir/search/declarations.hpp"
 
 namespace mimir
@@ -48,8 +49,7 @@ public:
      * Getters
      */
 
-    virtual Problem get_problem() const = 0;
-    virtual const std::shared_ptr<PDDLRepositories>& get_pddl_repositories() const = 0;
+    virtual const ProblemContext& get_problem_context() const = 0;
 };
 
 }

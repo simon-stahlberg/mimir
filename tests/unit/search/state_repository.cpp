@@ -17,11 +17,11 @@
 
 #include "mimir/search/state_repository.hpp"
 
-#include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/repositories.hpp"
 #include "mimir/search/applicable_action_generators.hpp"
 #include "mimir/search/axiom_evaluators.hpp"
 #include "mimir/search/metric.hpp"
+#include "mimir/search/search_context.hpp"
 
 #include <gtest/gtest.h>
 
@@ -33,13 +33,13 @@ TEST(MimirTests, SearchStateRepositoryTest)
     // Instantiate lifted version
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl");
-    PDDLParser parser(domain_file, problem_file);
-    auto applicable_action_generator = LiftedApplicableActionGenerator(parser.get_problem(), parser.get_pddl_repositories());
-    const auto axiom_evaluator =
-        std::dynamic_pointer_cast<IAxiomEvaluator>(std::make_shared<LiftedAxiomEvaluator>(parser.get_problem(), parser.get_pddl_repositories()));
-    auto state_repository = StateRepository(axiom_evaluator);
+
+    auto search_context = SearchContext(ProblemContext(domain_file, problem_file), SearchContext::Options(SearchContext::SearchMode::LIFTED));
+
+    auto& applicable_action_generator = *search_context.get_applicable_action_generator();
+    auto& state_repository = *search_context.get_state_repository();
     auto initial_state = state_repository.get_or_create_initial_state();
-    auto initial_state_metric_value = compute_initial_state_metric_value(parser.get_problem());
+    auto initial_state_metric_value = compute_initial_state_metric_value(search_context.get_problem_context().get_problem());
 
     for (const auto& action : applicable_action_generator.create_applicable_action_generator(initial_state))
     {

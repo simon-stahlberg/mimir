@@ -17,6 +17,8 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 
+#include "mimir/search/search_context.hpp"
+
 #include <gtest/gtest.h>
 
 namespace mimir::tests
@@ -31,10 +33,13 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
     // The spanner is at location 2.
     const auto problem2_file = fs::path(std::string(DATA_DIR) + "spanner/p-1-1-2-1(2).pddl");
 
+    auto search_contexts =
+        SearchContextList { SearchContext(ProblemContext(domain_file, problem1_file)), SearchContext(ProblemContext(domain_file, problem2_file)) };
+
     {
-        auto class_options = GeneralizedStateSpace::Options();
-        class_options.problem_options.symmetry_pruning = false;
-        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, std::vector<fs::path> { problem1_file, problem2_file }, class_options);
+        auto options = GeneralizedStateSpace::Options();
+        options.problem_options.symmetry_pruning = false;
+        const auto problem_class_state_space = GeneralizedStateSpace(search_contexts, options);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
 
@@ -47,9 +52,9 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
     }
 
     {
-        auto class_options = GeneralizedStateSpace::Options();
-        class_options.problem_options.symmetry_pruning = true;
-        const auto problem_class_state_space = GeneralizedStateSpace(domain_file, std::vector<fs::path> { problem1_file, problem2_file }, class_options);
+        auto options = GeneralizedStateSpace::Options();
+        options.problem_options.symmetry_pruning = true;
+        const auto problem_class_state_space = GeneralizedStateSpace(search_contexts, options);
         const auto& class_state_space = problem_class_state_space.get_class_state_space();
         const auto& class_graph = class_state_space.get_graph();
 

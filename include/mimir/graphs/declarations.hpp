@@ -31,6 +31,10 @@
 namespace mimir
 {
 
+/**
+ * Types
+ */
+
 using VertexIndex = Index;
 using VertexIndexList = std::vector<VertexIndex>;
 using VertexIndexSet = std::unordered_set<VertexIndex>;
@@ -50,6 +54,10 @@ using ColorArray = std::array<Color, K>;
 using ColorSet = std::unordered_set<Color>;
 template<typename T>
 using ColorMap = std::unordered_map<Color, T>;
+
+/**
+ * Forward declarations
+ */
 
 }
 

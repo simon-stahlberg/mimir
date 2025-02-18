@@ -30,8 +30,7 @@
 namespace mimir
 {
 
-extern SearchResult find_solution_astar(std::shared_ptr<IApplicableActionGenerator> applicable_action_generator,
-                                        std::shared_ptr<StateRepository> state_repository,
+extern SearchResult find_solution_astar(const SearchContext& context,
                                         std::shared_ptr<IHeuristic> heuristic,
                                         std::optional<State> start_state = std::nullopt,
                                         std::optional<std::shared_ptr<IAStarAlgorithmEventHandler>> event_handler = std::nullopt,
