@@ -36,8 +36,11 @@ int main(int argc, char** argv)
     auto state_space_options = GeneralizedStateSpace::Options();
     state_space_options.problem_options.symmetry_pruning = true;
 
+    auto tuple_graph_options = TupleGraphCollection::Options();
+    tuple_graph_options.width = 1;
+
     auto kb = KnowledgeBase::create(SearchContext::create(ProblemContext::create(domain_file_path, problems_directory)),
-                                    KnowledgeBase::Options(state_space_options, TupleGraphCollection::Options()));
+                                    KnowledgeBase::Options(state_space_options, tuple_graph_options));
     const auto& pcss = kb->get_generalized_state_space();
 
     for (size_t i = 0; i < pcss.get_problem_graphs().size(); ++i)
