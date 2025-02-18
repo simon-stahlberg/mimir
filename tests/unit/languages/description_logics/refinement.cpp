@@ -36,6 +36,12 @@ namespace mimir::tests
 TEST(MimirTests, LanguagesDescriptionLogicsRefinementBrfsTest)
 {
     auto bnf_description = std::string(R"(
+    
+        [start_symbols]
+        concept = <concept>
+        role = <role>
+
+        [grammar_rules]
         <concept_bot>                        ::= @concept_bot
         <concept_top>                        ::= @concept_top
         <concept_ball_state>                 ::= @concept_atomic_state "ball"

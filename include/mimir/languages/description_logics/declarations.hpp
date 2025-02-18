@@ -22,6 +22,7 @@
 #include "mimir/languages/description_logics/constructor_tag.hpp"
 
 #include <boost/hana.hpp>
+#include <unordered_set>
 #include <variant>
 #include <vector>
 
@@ -159,6 +160,8 @@ template<dl::ConceptOrRole D>
 using DerivationRule = const DerivationRuleImpl<D>*;
 template<ConceptOrRole D>
 using DerivationRuleList = std::vector<DerivationRule<D>>;
+template<ConceptOrRole D>
+using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
 using ConceptOrRoleToDerivationRuleList = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, DerivationRuleList<Concept>>,
                                                            boost::hana::pair<boost::hana::type<Role>, DerivationRuleList<Role>>>;
 

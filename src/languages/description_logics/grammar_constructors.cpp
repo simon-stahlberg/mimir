@@ -28,15 +28,15 @@ namespace mimir::dl::grammar
  */
 
 template<dl::ConceptOrRole D>
-NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name)), m_rule(std::nullopt)
+NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(index), m_name(std::move(name))
 {
 }
 
 template<dl::ConceptOrRole D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor) const
 {
-    assert(m_rule.has_value());
-    return m_rule.value()->test_match(constructor);
+    // assert(m_rule.has_value());
+    // return m_rule.value()->test_match(constructor);
 }
 
 template<dl::ConceptOrRole D>
@@ -55,19 +55,6 @@ template<dl::ConceptOrRole D>
 const std::string& NonTerminalImpl<D>::get_name() const
 {
     return m_name;
-}
-
-template<dl::ConceptOrRole D>
-DerivationRule<D> NonTerminalImpl<D>::get_rule() const
-{
-    assert(m_rule.has_value());
-    return m_rule.value();
-}
-
-template<dl::ConceptOrRole D>
-void NonTerminalImpl<D>::set_rule(DerivationRule<D> rule) const
-{
-    m_rule = rule;
 }
 
 template class NonTerminalImpl<Concept>;

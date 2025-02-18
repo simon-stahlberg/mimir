@@ -22,11 +22,7 @@
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar(std::string bnf_description, Domain domain) :
-    m_grammar_constructor_repos(),
-    m_primitive_production_rules(),
-    m_composite_production_rules(),
-    m_alternative_rules()
+Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos()
 {
     const auto rules = parse(bnf_description, domain, m_grammar_constructor_repos);
     // m_concept_rules = std::move(concept_rules);
@@ -36,45 +32,18 @@ Grammar::Grammar(std::string bnf_description, Domain domain) :
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    return std::any_of(get_primitive_production_rules<D>().begin(),
-                       get_primitive_production_rules<D>().end(),
-                       [&constructor](const auto& rule) { return rule->test_match(constructor); })
-           || std::any_of(get_composite_production_rules<D>().begin(),
-                          get_composite_production_rules<D>().end(),
-                          [&constructor](const auto& rule) { return rule->test_match(constructor); })
-           || std::any_of(get_alternative_rules<D>().begin(),
-                          get_alternative_rules<D>().end(),
-                          [&constructor](const auto& rule) { return rule->test_match(constructor); });
+    //     return std::any_of(get_primitive_production_rules<D>().begin(),
+    //                        get_primitive_production_rules<D>().end(),
+    //                        [&constructor](const auto& rule) { return rule->test_match(constructor); })
+    //            || std::any_of(get_composite_production_rules<D>().begin(),
+    //                           get_composite_production_rules<D>().end(),
+    //                           [&constructor](const auto& rule) { return rule->test_match(constructor); })
+    //            || std::any_of(get_alternative_rules<D>().begin(),
+    //                           get_alternative_rules<D>().end(),
+    //                           [&constructor](const auto& rule) { return rule->test_match(constructor); });
 }
 
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
 template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
-
-template<ConceptOrRole D>
-const DerivationRuleList<D>& Grammar::get_primitive_production_rules() const
-{
-    return boost::hana::at_key(m_primitive_production_rules, boost::hana::type<D> {});
-}
-
-template const DerivationRuleList<Concept>& Grammar::get_primitive_production_rules() const;
-template const DerivationRuleList<Role>& Grammar::get_primitive_production_rules() const;
-
-template<ConceptOrRole D>
-const DerivationRuleList<D>& Grammar::get_composite_production_rules() const
-{
-    return boost::hana::at_key(m_composite_production_rules, boost::hana::type<D> {});
-}
-
-template const DerivationRuleList<Concept>& Grammar::get_composite_production_rules() const;
-template const DerivationRuleList<Role>& Grammar::get_composite_production_rules() const;
-
-template<ConceptOrRole D>
-const DerivationRuleList<D>& Grammar::get_alternative_rules() const
-{
-    return boost::hana::at_key(m_alternative_rules, boost::hana::type<D> {});
-}
-
-template const DerivationRuleList<Concept>& Grammar::get_alternative_rules() const;
-template const DerivationRuleList<Role>& Grammar::get_alternative_rules() const;
 
 }

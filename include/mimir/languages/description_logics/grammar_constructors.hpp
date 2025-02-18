@@ -43,8 +43,6 @@ private:
     Index m_index;
     // Use name for equality and hash since rule is deferred instantiated.
     std::string m_name;
-    // Mutable for deferred instantiation.
-    mutable std::optional<DerivationRule<D>> m_rule;
 
     NonTerminalImpl(Index index, std::string name);
 
@@ -65,15 +63,11 @@ public:
 
     Index get_index() const;
     const std::string& get_name() const;
-    DerivationRule<D> get_rule() const;
-
-    // Deferred initialization for internal usage. Users should not use it.
-    void set_rule(DerivationRule<D> rule) const;
 
     /// @brief Return a tuple of const references to the members that uniquely identify an object.
     /// This enables the automatic generation of `loki::Hash` and `loki::EqualTo` specializations.
     /// @return a tuple containing const references to the members defining the object's identity.
-    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_name), std::as_const(m_rule)); }
+    auto identifying_members() const { return std::forward_as_tuple(std::as_const(m_name)); }
 };
 
 /**
