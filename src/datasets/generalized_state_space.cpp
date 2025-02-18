@@ -927,4 +927,5 @@ std::ostream& operator<<(std::ostream& out, const ClassEdge& edge)
         << " action_cost=" << get_action_cost(edge);
     return out;
 }
+
 }

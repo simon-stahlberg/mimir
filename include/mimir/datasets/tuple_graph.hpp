@@ -58,8 +58,8 @@ private:
     const TupleIndexMapper& m_index_mapper;
     InternalTupleGraph m_graph;
 
-    IndexGroupedVector<const Index> m_vertices_grouped_by_distance;
-    IndexGroupedVector<const Index> m_problem_vertices_grouped_by_distance;
+    IndexGroupedVector<const Index> m_v_idxs_grouped_by_distance;
+    IndexGroupedVector<const Index> m_problem_v_idxs_grouped_by_distance;
 
 public:
     TupleGraph(const ProblemContext& context,

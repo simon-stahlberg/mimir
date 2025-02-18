@@ -32,8 +32,8 @@ TupleGraph::TupleGraph(const ProblemContext& context,
     m_problem_graph(problem_graph),
     m_index_mapper(index_mapper),
     m_graph(std::move(graph)),
-    m_vertices_grouped_by_distance(std::move(vertices_grouped_by_distance)),
-    m_problem_vertices_grouped_by_distance(std::move(problem_vertices_grouped_by_distance))
+    m_v_idxs_grouped_by_distance(std::move(vertices_grouped_by_distance)),
+    m_problem_v_idxs_grouped_by_distance(std::move(problem_vertices_grouped_by_distance))
 {
 }
 
@@ -45,9 +45,9 @@ const TupleIndexMapper& TupleGraph::get_index_mapper() const { return m_index_ma
 
 const InternalTupleGraph& TupleGraph::get_graph() const { return m_graph; }
 
-const IndexGroupedVector<const Index>& TupleGraph::get_vertices_grouped_by_distance() const { return m_vertices_grouped_by_distance; }
+const IndexGroupedVector<const Index>& TupleGraph::get_vertices_grouped_by_distance() const { return m_v_idxs_grouped_by_distance; }
 
-const IndexGroupedVector<const Index>& TupleGraph::get_problem_vertices_grouped_by_distance() const { return m_problem_vertices_grouped_by_distance; }
+const IndexGroupedVector<const Index>& TupleGraph::get_problem_vertices_grouped_by_distance() const { return m_problem_v_idxs_grouped_by_distance; }
 
 TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options) :
     m_per_problem_index_mapper(),

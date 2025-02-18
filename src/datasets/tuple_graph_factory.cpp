@@ -29,8 +29,8 @@ private:
     const TupleGraphCollection::Options& m_options;
 
     StaticTupleGraph m_internal_tuple_graph;
-    IndexGroupedVectorBuilder<const Index> m_vertices_grouped_by_distance;
-    IndexGroupedVectorBuilder<const Index> m_problem_vertices_grouped_by_distance;
+    IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
+    IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
 
     Index m_root_v_idx;
 
@@ -38,20 +38,20 @@ private:
     {
         const auto empty_t_idx = m_index_mapper.get_empty_tuple_index();  ///< we use empty tuple in all vertices
 
-        m_vertices_grouped_by_distance.start_group();
-        m_problem_vertices_grouped_by_distance.start_group();
+        m_v_idxs_grouped_by_distance.start_group();
+        m_problem_v_idxs_grouped_by_distance.start_group();
 
         m_root_v_idx = m_internal_tuple_graph.add_vertex(empty_t_idx, IndexList { m_problem_vertex.get_index() });
 
-        m_vertices_grouped_by_distance.add_group_element(m_root_v_idx);
+        m_v_idxs_grouped_by_distance.add_group_element(m_root_v_idx);
     }
 
     void compute_distance_one_vertices()
     {
         const auto empty_t_idx = m_index_mapper.get_empty_tuple_index();  ///< we use empty tuple in all vertices
 
-        m_vertices_grouped_by_distance.start_group();
-        m_problem_vertices_grouped_by_distance.start_group();
+        m_v_idxs_grouped_by_distance.start_group();
+        m_problem_v_idxs_grouped_by_distance.start_group();
 
         for (const auto& adj_problem_vertex : m_graph.get_adjacent_vertices<ForwardTraversal>(m_problem_vertex.get_index()))
         {
@@ -63,8 +63,8 @@ private:
             const auto adj_v_idx = m_internal_tuple_graph.add_vertex(empty_t_idx, IndexList { adj_problem_vertex.get_index() });
             m_internal_tuple_graph.add_directed_edge(m_root_v_idx, adj_v_idx);
 
-            m_vertices_grouped_by_distance.add_group_element(adj_v_idx);
-            m_problem_vertices_grouped_by_distance.add_group_element(adj_problem_vertex.get_index());
+            m_v_idxs_grouped_by_distance.add_group_element(adj_v_idx);
+            m_problem_v_idxs_grouped_by_distance.add_group_element(adj_problem_vertex.get_index());
         }
     }
 
@@ -80,8 +80,8 @@ public:
         m_index_mapper(index_mapper),
         m_options(options),
         m_internal_tuple_graph(),
-        m_vertices_grouped_by_distance(),
-        m_problem_vertices_grouped_by_distance()
+        m_v_idxs_grouped_by_distance(),
+        m_problem_v_idxs_grouped_by_distance()
     {
     }
 
@@ -95,8 +95,8 @@ public:
                           m_graph,
                           m_index_mapper,
                           InternalTupleGraph(std::move(m_internal_tuple_graph)),
-                          m_vertices_grouped_by_distance.get_result(),
-                          m_problem_vertices_grouped_by_distance.get_result());
+                          m_v_idxs_grouped_by_distance.get_result(),
+                          m_problem_v_idxs_grouped_by_distance.get_result());
     }
 };
 
@@ -119,32 +119,45 @@ private:
     const TupleGraphCollection::Options& m_options;
 
     StaticTupleGraph m_internal_tuple_graph;
-    IndexGroupedVectorBuilder<const Index> m_vertices_grouped_by_distance;
-    IndexGroupedVectorBuilder<const Index> m_problem_vertices_grouped_by_distance;
+    IndexGroupedVectorBuilder<const Index> m_v_idxs_grouped_by_distance;
+    IndexGroupedVectorBuilder<const Index> m_problem_v_idxs_grouped_by_distance;
 
     // Common book-keeping
-    IndexList prev_problem_v_idxs;
-    IndexList curr_problem_v_idxs;
-    IndexSet visited_problem_v_idxs;
-    IndexList prev_v_idxs;
-    IndexList curr_v_idxs;
-    DynamicNoveltyTable novelty_table;  ///< it will never resize since the problem graph is complete.
+    IndexList m_prev_problem_v_idxs;
+    IndexList m_curr_problem_v_idxs;
+    IndexSet m_visited_problem_v_idxs;
+    IndexList m_prev_v_idxs;
+    IndexList m_curr_v_idxs;
+    DynamicNoveltyTable m_novelty_table;  ///< it will never resize since the problem graph is complete.
+
+    IndexSet m_novel_t_idxs_set;
+    IndexList m_novel_t_idxs_vec;
+    IndexMap<IndexSet> m_novel_t_idx_to_problem_v_idxs;   ///< one-to-one mapping
+    IndexMap<IndexList> m_problem_v_idx_to_novel_t_idxs;  ///< one-to-many mapping
+
+    IndexMap<IndexSet> m_cur_novel_t_idx_to_extended_problem_v_idx;
+    IndexMap<IndexSet> m_cur_extended_novel_t_idx_to_prev_problem_v_idxs;
+    IndexSet m_cur_extended_novel_t_idxs_set;
+    IndexList m_cur_extended_novel_t_idxs_vec;
+
+    IndexMap<IndexSet> m_t_idx_to_dominating_t_idxs;
 
     void compute_distance_zero_vertices()
     {
-        m_vertices_grouped_by_distance.start_group();
-        m_problem_vertices_grouped_by_distance.start_group();
+        m_v_idxs_grouped_by_distance.start_group();
+        m_problem_v_idxs_grouped_by_distance.start_group();
 
         const auto root_state = get_state(m_problem_vertex);
         const auto root_problem_v_idx = m_problem_vertex.get_index();
 
-        novelty_table.compute_novel_tuple_indices(root_state, novel_t_idx_vec);
+        m_novelty_table.compute_novel_tuple_indices(root_state, m_novel_t_idxs_vec);
 
-        for (const auto& novel_tuple_index : novel_t_idx_vec)
+        for (const auto& novel_tuple_index : m_novel_t_idxs_vec)
         {
-            const auto vertex_index = m_internal_tuple_graph.add_vertex(novel_tuple_index, IndexList { root_problem_v_idx });
+            const auto v_idx = m_internal_tuple_graph.add_vertex(novel_tuple_index, IndexList { root_problem_v_idx });
 
-            m_vertices_grouped_by_distance.add_group_element(vertex_index);
+            m_curr_v_idxs.push_back(v_idx);
+            m_v_idxs_grouped_by_distance.add_group_element(v_idx);
 
             if (m_options.enable_dominance_pruning)
             {
@@ -152,25 +165,237 @@ private:
                 break;
             }
         }
-        novelty_table.insert_tuple_indices(novel_t_idx_vec);
+        m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
 
-        m_problem_vertices_grouped_by_distance.add_group_element(root_problem_v_idx);
-        curr_problem_v_idxs.clear();
-        curr_problem_v_idxs.push_back(root_problem_v_idx);
-        visited_problem_v_idxs.insert(root_problem_v_idx);
+        m_problem_v_idxs_grouped_by_distance.add_group_element(root_problem_v_idx);
+        m_curr_problem_v_idxs.clear();
+        m_curr_problem_v_idxs.push_back(root_problem_v_idx);
+        m_visited_problem_v_idxs.insert(root_problem_v_idx);
     }
 
-    IndexSet novel_t_idx_set;
-    IndexList novel_t_idx_vec;
-    IndexMap<Index> novel_t_idx_to_problem_v_idx;       ///< one-to-one mapping
-    IndexMap<IndexList> problem_v_idx_to_novel_t_idxs;  ///< one-to-many mapping
+    bool compute_next_state_layer()
+    {
+        bool success = false;
 
-    IndexMap<IndexSet> cur_novel_t_idx_to_extended_problem_v_idx;
-    IndexMap<IndexSet> cur_extended_novel_t_idx_to_prev_problem_v_idxs;
-    IndexSet cur_extended_novel_t_idxs_set;
-    IndexList cur_extended_novel_t_idxs_vec;
+        for (const auto& prev_problem_v_idx : m_prev_problem_v_idxs)
+        {
+            for (const auto& curr_problem_v_idx : m_graph.get_adjacent_vertex_indices<ForwardTraversal>(prev_problem_v_idx))
+            {
+                if (!m_visited_problem_v_idxs.contains(curr_problem_v_idx))
+                {
+                    m_curr_problem_v_idxs.push_back(curr_problem_v_idx);
+                    m_visited_problem_v_idxs.insert(curr_problem_v_idx);
+                    success = true;
+                }
+            }
+        }
 
-    IndexMap<IndexSet> t_idx_to_dominating_t_idxs;
+        return success;
+    }
+
+    bool compute_next_layer()
+    {
+        // Swap prev and curr data structures.
+        std::swap(m_curr_problem_v_idxs, m_prev_problem_v_idxs);
+        std::swap(m_curr_v_idxs, m_prev_v_idxs);
+        m_curr_problem_v_idxs.clear();
+        m_curr_v_idxs.clear();
+
+        {
+            const auto success = compute_next_state_layer();
+
+            if (!success)
+            {
+                return false;
+            }
+        }
+
+        {
+            compute_next_novel_tuple_indices();
+
+            if (m_novel_t_idxs_vec.empty())
+            {
+                return false;
+            }
+        }
+
+        {
+            extend_optimal_plans_from_prev_layer();
+
+            if (m_cur_extended_novel_t_idxs_set.empty())
+            {
+                return false;
+            }
+        }
+
+        {
+            const auto success = instantiate_next_layer();
+
+            if (!success)
+            {
+                return false;
+            }
+        }
+
+        // Create nonempty group.
+        m_problem_v_idxs_grouped_by_distance.start_group();
+        for (const auto& problem_v_idx : m_curr_problem_v_idxs)
+        {
+            m_problem_v_idxs_grouped_by_distance.add_group_element(problem_v_idx);
+        }
+        m_v_idxs_grouped_by_distance.start_group();
+        for (const auto& v_idx : m_curr_v_idxs)
+        {
+            m_v_idxs_grouped_by_distance.add_group_element(v_idx);
+        }
+
+        return true;
+    }
+
+    void compute_next_novel_tuple_indices()
+    {
+        // Clear data structures
+        m_novel_t_idxs_set.clear();
+        m_novel_t_idxs_vec.clear();
+        m_novel_t_idx_to_problem_v_idxs.clear();
+        m_problem_v_idx_to_novel_t_idxs.clear();
+
+        for (const auto& problem_v_idx : m_curr_problem_v_idxs)
+        {
+            m_novelty_table.compute_novel_tuple_indices(get_state(m_graph.get_vertex(problem_v_idx)), m_novel_t_idxs_vec);
+
+            for (const auto& novel_t_idx : m_novel_t_idxs_vec)
+            {
+                m_novel_t_idx_to_problem_v_idxs[novel_t_idx].insert(problem_v_idx);
+            }
+            m_problem_v_idx_to_novel_t_idxs.emplace(problem_v_idx, m_novel_t_idxs_vec);
+            m_novel_t_idxs_set.insert(m_novel_t_idxs_vec.begin(), m_novel_t_idxs_vec.end());
+        }
+
+        m_novel_t_idxs_vec.clear();
+        m_novel_t_idxs_vec.insert(m_novel_t_idxs_vec.end(), m_novel_t_idxs_set.begin(), m_novel_t_idxs_set.end());
+        m_novelty_table.insert_tuple_indices(m_novel_t_idxs_vec);
+    }
+
+    void extend_optimal_plans_from_prev_layer()
+    {
+        // Clear data structures
+        m_cur_extended_novel_t_idxs_set.clear();
+        m_cur_extended_novel_t_idxs_vec.clear();
+        m_cur_extended_novel_t_idx_to_prev_problem_v_idxs.clear();
+
+        // Part 2 of definition of width: Check whether all optimal plans for tuple t_{i-1}
+        // can be extended into an optimal plan for tuple t_i by means of a single action.
+        for (const auto& prev_v_idx : m_prev_v_idxs)
+        {
+            m_cur_novel_t_idx_to_extended_problem_v_idx.clear();
+
+            // Bookkeeping..
+            for (const auto prev_problem_v_idx : get_problem_vertices(m_internal_tuple_graph.get_vertex(prev_v_idx)))
+            {
+                // "[...] by means of a single action".
+                for (const auto& curr_problem_v_idx : m_graph.get_adjacent_vertex_indices<ForwardTraversal>(prev_problem_v_idx))
+                {
+                    if (m_problem_v_idx_to_novel_t_idxs.contains(curr_problem_v_idx))
+                    {
+                        for (const auto target_tuple_index : m_problem_v_idx_to_novel_t_idxs.at(curr_problem_v_idx))
+                        {
+                            m_cur_novel_t_idx_to_extended_problem_v_idx[target_tuple_index].insert(prev_problem_v_idx);
+                        }
+                    }
+                }
+            }
+
+            // "Check whether all optimal plans for tuple t_{i-1}
+            // can be extended into an optimal plan for tuple t_i [...]""
+            for (const auto& [cur_novel_t_idx, extended_states] : m_cur_novel_t_idx_to_extended_problem_v_idx)
+            {
+                bool all_optimal_plans_extended = (extended_states.size() == get_problem_vertices(m_internal_tuple_graph.get_vertex(prev_v_idx)).size());
+
+                if (all_optimal_plans_extended)
+                {
+                    m_cur_extended_novel_t_idxs_set.insert(cur_novel_t_idx);
+                    m_cur_extended_novel_t_idx_to_prev_problem_v_idxs[cur_novel_t_idx].insert(prev_v_idx);
+                }
+            }
+        }
+        m_cur_extended_novel_t_idxs_vec.insert(m_cur_extended_novel_t_idxs_vec.end(),
+                                               m_cur_extended_novel_t_idxs_set.begin(),
+                                               m_cur_extended_novel_t_idxs_set.end());
+    }
+
+    bool instantiate_next_layer()
+    {  // Clear data structures
+        m_t_idx_to_dominating_t_idxs.clear();
+
+        if (m_options.enable_dominance_pruning)
+        {
+            for (size_t i = 0; i < m_cur_extended_novel_t_idxs_vec.size(); ++i)
+            {
+                const auto tuple_index_1 = m_cur_extended_novel_t_idxs_vec.at(i);
+
+                const auto& problem_v_idxs_1 = m_novel_t_idx_to_problem_v_idxs.at(tuple_index_1);
+
+                for (size_t j = 0; j < m_cur_extended_novel_t_idxs_vec.size(); ++j)
+                {
+                    const auto tuple_index_2 = m_cur_extended_novel_t_idxs_vec.at(j);
+
+                    const auto& problem_v_idxs_2 = m_novel_t_idx_to_problem_v_idxs.at(tuple_index_2);
+
+                    if (i < j && problem_v_idxs_1 == problem_v_idxs_2)
+                    {
+                        // Keep smallest tuple_index with a specific set of underlying states.
+                        m_cur_extended_novel_t_idxs_set.erase(tuple_index_2);
+                        continue;
+                    }
+
+                    if (problem_v_idxs_1.size() == problem_v_idxs_2.size())
+                    {
+                        continue;  ///< not a strict subset!
+                    }
+
+                    const auto is_subset = std::all_of(problem_v_idxs_2.begin(),
+                                                       problem_v_idxs_2.end(),
+                                                       [&problem_v_idxs_1](const auto& element) { return problem_v_idxs_1.count(element); });
+                    if (is_subset)
+                    {
+                        // tuple_index_1 is dominated by tuple_index_2 because problem_v_idxs_2 < problem_v_idxs_1.
+                        m_t_idx_to_dominating_t_idxs[tuple_index_2].insert(tuple_index_1);
+                    }
+                }
+            }
+
+            // Keep only tuple indices whose underlying states is a smallest subset.
+            for (const auto& [dominating_tuple_index, dominated_tuple_indices] : m_t_idx_to_dominating_t_idxs)
+            {
+                for (const auto& dominated_tuple_index : dominated_tuple_indices)
+                {
+                    m_cur_extended_novel_t_idxs_set.erase(dominated_tuple_index);
+                }
+            }
+        }
+
+        if (m_cur_extended_novel_t_idxs_set.size() == 0)
+        {
+            return false;
+        }
+
+        for (const auto& t_idx : m_cur_extended_novel_t_idxs_set)
+        {
+            const auto& cur_problem_v_idxs = m_novel_t_idx_to_problem_v_idxs.at(t_idx);
+
+            const auto cur_v_idx = m_internal_tuple_graph.add_vertex(t_idx, IndexList(cur_problem_v_idxs.begin(), cur_problem_v_idxs.end()));
+
+            m_curr_v_idxs.push_back(cur_v_idx);
+
+            for (const auto prev_v_idx : m_cur_extended_novel_t_idx_to_prev_problem_v_idxs.at(t_idx))  // .at?
+            {
+                m_internal_tuple_graph.add_directed_edge(prev_v_idx, cur_v_idx);
+            }
+        }
+
+        return true;
+    }
 
 public:
     TupleGraphArityGreaterZeroComputation(const ProblemVertex& problem_vertex,
@@ -184,23 +409,23 @@ public:
         m_index_mapper(index_mapper),
         m_options(options),
         m_internal_tuple_graph(),
-        m_vertices_grouped_by_distance(),
-        m_problem_vertices_grouped_by_distance(),
-        prev_problem_v_idxs(),
-        curr_problem_v_idxs(),
-        visited_problem_v_idxs(),
-        prev_v_idxs(),
-        curr_v_idxs(),
-        novelty_table(m_index_mapper),
-        novel_t_idx_set(),
-        novel_t_idx_vec(),
-        novel_t_idx_to_problem_v_idx(),
-        problem_v_idx_to_novel_t_idxs(),
-        cur_novel_t_idx_to_extended_problem_v_idx(),
-        cur_extended_novel_t_idx_to_prev_problem_v_idxs(),
-        cur_extended_novel_t_idxs_set(),
-        cur_extended_novel_t_idxs_vec(),
-        t_idx_to_dominating_t_idxs()
+        m_v_idxs_grouped_by_distance(),
+        m_problem_v_idxs_grouped_by_distance(),
+        m_prev_problem_v_idxs(),
+        m_curr_problem_v_idxs(),
+        m_visited_problem_v_idxs(),
+        m_prev_v_idxs(),
+        m_curr_v_idxs(),
+        m_novelty_table(m_index_mapper),
+        m_novel_t_idxs_set(),
+        m_novel_t_idxs_vec(),
+        m_novel_t_idx_to_problem_v_idxs(),
+        m_problem_v_idx_to_novel_t_idxs(),
+        m_cur_novel_t_idx_to_extended_problem_v_idx(),
+        m_cur_extended_novel_t_idx_to_prev_problem_v_idxs(),
+        m_cur_extended_novel_t_idxs_set(),
+        m_cur_extended_novel_t_idxs_vec(),
+        m_t_idx_to_dominating_t_idxs()
     {
     }
 
@@ -208,12 +433,22 @@ public:
     {
         compute_distance_zero_vertices();
 
+        while (true)
+        {
+            auto success = compute_next_layer();
+
+            if (!success)
+            {
+                break;
+            }
+        }
+
         return TupleGraph(m_context,
                           m_graph,
                           m_index_mapper,
                           InternalTupleGraph(std::move(m_internal_tuple_graph)),
-                          m_vertices_grouped_by_distance.get_result(),
-                          m_problem_vertices_grouped_by_distance.get_result());
+                          m_v_idxs_grouped_by_distance.get_result(),
+                          m_problem_v_idxs_grouped_by_distance.get_result());
     }
 };
 

@@ -37,7 +37,7 @@ int main(int argc, char** argv)
     state_space_options.problem_options.symmetry_pruning = true;
 
     auto tuple_graph_options = TupleGraphCollection::Options();
-    tuple_graph_options.width = 1;
+    tuple_graph_options.width = 2;
 
     auto kb = KnowledgeBase::create(SearchContext::create(ProblemContext::create(domain_file_path, problems_directory)),
                                     KnowledgeBase::Options(state_space_options, tuple_graph_options));
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
     const auto& css = pcss.get_class_state_space();
 
     std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
-    std::cout << css.get_graph() << std::endl;
+    // std::cout << css.get_graph() << std::endl;
 
     if (kb->get_tuple_graphs().has_value())
     {
