@@ -42,6 +42,8 @@ private:
 public:
     TupleIndexMapper(size_t arity, size_t num_atoms);
 
+    void initialize(size_t arity, size_t num_atoms);
+
     TupleIndex to_tuple_index(const AtomIndexList& atom_indices) const;
 
     void to_atom_indices(TupleIndex tuple_index, AtomIndexList& out_atom_indices) const;

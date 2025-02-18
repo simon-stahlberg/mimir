@@ -33,8 +33,11 @@ int main(int argc, char** argv)
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
 
+    auto state_space_options = GeneralizedStateSpace::Options();
+    state_space_options.problem_options.symmetry_pruning = true;
+
     auto kb = KnowledgeBase::create(SearchContext::create(ProblemContext::create(domain_file_path, problems_directory)),
-                                    KnowledgeBase::Options(GeneralizedStateSpace::Options(), TupleGraphCollection::Options()));
+                                    KnowledgeBase::Options(state_space_options, TupleGraphCollection::Options()));
     const auto& pcss = kb->get_generalized_state_space();
 
     for (size_t i = 0; i < pcss.get_problem_graphs().size(); ++i)

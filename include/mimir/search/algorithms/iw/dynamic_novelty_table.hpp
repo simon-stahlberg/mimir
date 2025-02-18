@@ -31,7 +31,7 @@ namespace mimir
 class DynamicNoveltyTable
 {
 private:
-    std::shared_ptr<TupleIndexMapper> m_tuple_index_mapper;
+    TupleIndexMapper m_tuple_index_mapper;
 
     std::vector<bool> m_table;
 
@@ -42,7 +42,7 @@ private:
     StatePairTupleIndexGenerator m_state_pair_tuple_index_generator;
 
 public:
-    explicit DynamicNoveltyTable(std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+    explicit DynamicNoveltyTable(TupleIndexMapper tuple_index_mapper);
 
     void compute_novel_tuple_indices(const State state, TupleIndexList& out_novel_tuple_indices);
 

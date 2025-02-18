@@ -47,6 +47,15 @@ namespace mimir
 
 TupleIndexMapper::TupleIndexMapper(size_t arity, size_t num_atoms) : m_arity(arity), m_num_atoms(num_atoms), m_empty_tuple_index(0)
 {
+    initialize(arity, num_atoms);
+}
+
+void TupleIndexMapper::initialize(size_t arity, size_t num_atoms)
+{
+    m_arity = arity;
+    m_num_atoms = num_atoms;
+    m_empty_tuple_index = 0;
+
     if (!(arity >= 0 && arity < MAX_ARITY))
     {
         throw std::runtime_error("TupleIndexMapper only works with 0 <= arity < " + std::to_string(MAX_ARITY) + ".");
@@ -125,17 +134,12 @@ TupleIndex TupleIndexMapper::get_empty_tuple_index() const { return m_empty_tupl
  * StateTupleIndexGenerator
  */
 
-StateTupleIndexGenerator::StateTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    tuple_index_mapper(std::move(tuple_index_mapper_)),
-    atom_indices()
-{
-    assert(tuple_index_mapper);
-}
+StateTupleIndexGenerator::StateTupleIndexGenerator(const TupleIndexMapper* tuple_index_mapper_) : tuple_index_mapper(tuple_index_mapper_), atom_indices() {}
 
 StateTupleIndexGenerator::const_iterator::const_iterator() : m_tuple_index_mapper(nullptr), m_atoms(nullptr) {}
 
 StateTupleIndexGenerator::const_iterator::const_iterator(StateTupleIndexGenerator* stig, bool begin) :
-    m_tuple_index_mapper(begin ? stig->tuple_index_mapper.get() : nullptr),
+    m_tuple_index_mapper(begin ? stig->tuple_index_mapper : nullptr),
     m_atoms(begin ? &stig->atom_indices : nullptr),
     m_end(!begin),
     m_cur(begin ? 0 : -1)
@@ -285,10 +289,7 @@ StateTupleIndexGenerator::const_iterator StateTupleIndexGenerator::end() const {
  * StatePairTupleIndexGenerator
  */
 
-StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper_) :
-    tuple_index_mapper(std::move(tuple_index_mapper_))
-{
-}
+StatePairTupleIndexGenerator::StatePairTupleIndexGenerator(const TupleIndexMapper* tuple_index_mapper_) : tuple_index_mapper(tuple_index_mapper_) {}
 
 StatePairTupleIndexGenerator::const_iterator::const_iterator() :
     m_tuple_index_mapper(nullptr),
@@ -304,7 +305,7 @@ StatePairTupleIndexGenerator::const_iterator::const_iterator() :
 }
 
 StatePairTupleIndexGenerator::const_iterator::const_iterator(StatePairTupleIndexGenerator* sptig, bool begin) :
-    m_tuple_index_mapper(begin ? sptig->tuple_index_mapper.get() : nullptr),
+    m_tuple_index_mapper(begin ? sptig->tuple_index_mapper : nullptr),
     m_a_atoms(begin ? &sptig->a_atom_indices : nullptr),
     m_a_jumpers(begin ? &sptig->a_index_jumper : nullptr),
     m_indices(),
@@ -687,30 +688,32 @@ StatePairTupleIndexGenerator::const_iterator StatePairTupleIndexGenerator::end()
  * DynamicNoveltyTable
  */
 
-DynamicNoveltyTable::DynamicNoveltyTable(std::shared_ptr<TupleIndexMapper> tuple_index_mapper) :
-    m_tuple_index_mapper(std::move(tuple_index_mapper)),
-    m_table(std::vector<bool>(m_tuple_index_mapper->get_max_tuple_index() + 1, false)),
-    m_state_tuple_index_generator(m_tuple_index_mapper),
-    m_state_pair_tuple_index_generator(m_tuple_index_mapper)
+DynamicNoveltyTable::DynamicNoveltyTable(TupleIndexMapper tuple_index_mapper) :
+    m_tuple_index_mapper(tuple_index_mapper),
+    m_table(std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false)),
+    m_state_tuple_index_generator(&m_tuple_index_mapper),
+    m_state_pair_tuple_index_generator(&m_tuple_index_mapper)
 {
 }
 
 void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
 {
     // Fetch data.
-    const auto arity = m_tuple_index_mapper->get_arity();
-    const auto old_placeholder = m_tuple_index_mapper->get_num_atoms();
+    const auto arity = m_tuple_index_mapper.get_arity();
+    const auto old_placeholder = m_tuple_index_mapper.get_num_atoms();
 
     // Compute size of new table
-    auto new_size = m_tuple_index_mapper->get_num_atoms();
+    auto new_size = m_tuple_index_mapper.get_num_atoms();
     while (new_size < atom_index + 1 + 1)  // additional +1 for placeholder
     {
         // Use doubling strategy to get amortized cost O(arity) for resize.
         new_size *= 2;
     }
     const auto new_placeholder = new_size;
-    auto new_tuple_index_mapper = std::make_shared<TupleIndexMapper>(arity, new_size);
-    auto new_table = std::vector<bool>(new_tuple_index_mapper->get_max_tuple_index() + 1, false);
+
+    m_tuple_index_mapper.initialize(arity, new_size);  ///< resize to fit all tuples
+
+    auto new_table = std::vector<bool>(m_tuple_index_mapper.get_max_tuple_index() + 1, false);
 
     // Convert tuple indices that are not novel from old to new table.
     auto atom_indices = AtomIndexList(arity);
@@ -718,7 +721,7 @@ void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
     {
         if (m_table[tuple_index])
         {
-            m_tuple_index_mapper->to_atom_indices(tuple_index, atom_indices);
+            m_tuple_index_mapper.to_atom_indices(tuple_index, atom_indices);
             for (size_t i = 0; i < arity; ++i)
             {
                 if (atom_indices[i] == old_placeholder)
@@ -726,13 +729,12 @@ void DynamicNoveltyTable::resize_to_fit(AtomIndex atom_index)
                     atom_indices[i] = new_placeholder;
                 }
             }
-            const auto new_tuple_index = new_tuple_index_mapper->to_tuple_index(atom_indices);
+            const auto new_tuple_index = m_tuple_index_mapper.to_tuple_index(atom_indices);
             new_table[new_tuple_index] = true;
         }
     }
 
     // Swap old and new data.
-    m_tuple_index_mapper = std::move(new_tuple_index_mapper);
     m_table = std::move(new_table);
 }
 
@@ -816,7 +818,7 @@ bool ArityZeroNoveltyPruning::test_prune_successor_state(const State state, cons
     return state != m_initial_state || state == succ_state;
 }
 
-ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_novelty_table(std::make_shared<TupleIndexMapper>(arity, num_atoms)) {}
+ArityKNoveltyPruning::ArityKNoveltyPruning(size_t arity, size_t num_atoms) : m_index_mapper(arity, num_atoms), m_novelty_table(m_index_mapper) {}
 
 bool ArityKNoveltyPruning::test_prune_initial_state(const State state)
 {

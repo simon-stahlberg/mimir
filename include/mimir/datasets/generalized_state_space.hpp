@@ -182,7 +182,7 @@ public:
             uint32_t timeout_ms;
 
             ProblemSpecific() :
-                symmetry_pruning(true),
+                symmetry_pruning(false),
                 mark_true_goal_literals(false),
                 remove_if_unsolvable(true),
                 max_num_states(std::numeric_limits<uint32_t>::max()),

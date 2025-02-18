@@ -74,6 +74,16 @@ static TupleGraph create_tuple_graph_width_greater_zero(const ProblemVertex& pro
                                                         const TupleIndexMapper& index_mapper,
                                                         const TupleGraphCollection::Options& options)
 {
+    IndexGroupedVectorBuilder<const TupleGraphVertex> m_vertices_grouped_by_distance;
+    IndexGroupedVectorBuilder<const State> m_states_grouped_by_distance;
+
+    // Common book-keeping
+    StateList prev_states;
+    StateList curr_states;
+    TupleGraphVertexList prev_vertices;
+    TupleGraphVertexList curr_vertices;
+    StateSet visited_states;
+    auto novelty_table = DynamicNoveltyTable(index_mapper);
 }
 
 TupleGraph create_tuple_graph(const ProblemVertex& vertex,

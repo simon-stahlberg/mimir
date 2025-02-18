@@ -36,7 +36,7 @@ namespace mimir
 class StateTupleIndexGenerator
 {
 private:
-    std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+    const TupleIndexMapper* tuple_index_mapper;
 
     // Preallocated memory for reuse
     AtomIndexList atom_indices;
@@ -44,7 +44,7 @@ private:
     friend class const_iterator;
 
 public:
-    explicit StateTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+    explicit StateTupleIndexGenerator(const TupleIndexMapper* tuple_index_mapper);
 
     class const_iterator
     {
@@ -100,7 +100,7 @@ public:
 class StatePairTupleIndexGenerator
 {
 private:
-    std::shared_ptr<TupleIndexMapper> tuple_index_mapper;
+    const TupleIndexMapper* tuple_index_mapper;
 
     // Preallocated memory for reuse
     std::array<std::vector<size_t>, 2> a_index_jumper;
@@ -109,7 +109,7 @@ private:
     friend class const_iterator;
 
 public:
-    explicit StatePairTupleIndexGenerator(std::shared_ptr<TupleIndexMapper> tuple_index_mapper);
+    explicit StatePairTupleIndexGenerator(const TupleIndexMapper* tuple_index_mapper);
 
     class const_iterator
     {
