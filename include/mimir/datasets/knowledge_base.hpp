@@ -25,7 +25,7 @@
 namespace mimir
 {
 
-/// @brief `KnowledgeBase` encapsulates information obtained from a collection of planning problems.
+/// @brief `KnowledgeBase` encapsulates information obtained from a class of planning problems.
 class KnowledgeBase
 {
 private:

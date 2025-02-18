@@ -18,6 +18,7 @@
 #include "mimir/datasets/object_graph.hpp"
 
 #include "mimir/formalism/repositories.hpp"
+#include "mimir/search/state.hpp"
 
 namespace mimir
 {
@@ -26,22 +27,37 @@ namespace mimir
  * ObjectGraph
  */
 
-static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(const ProblemColorFunction& color_function,
+static std::unordered_map<Object, VertexIndex> add_objects_graph_structures(State state,
                                                                             Problem problem,
-                                                                            Index state_index,
-                                                                            const ObjectGraphPruningStrategy& pruning_strategy,
+                                                                            const PDDLRepositories& pddl_repositories,
+                                                                            const ProblemColorFunction& color_function,
                                                                             StaticVertexColoredDigraph& out_digraph)
 {
     std::unordered_map<Object, VertexIndex> object_to_vertex_index;
 
-    for (const auto& object : problem->get_objects())
+    const auto add_atom_objects_func = [&](auto&& atom)
     {
-        if (!pruning_strategy.prune(state_index, object))
+        for (const auto& object : atom->get_objects())
         {
-            const auto vertex_color = color_function.get_color(object);
-            const auto vertex_index = out_digraph.add_vertex(vertex_color);
-            object_to_vertex_index.emplace(object, vertex_index);
+            if (!object_to_vertex_index.contains(object))
+            {
+                const auto vertex_color = color_function.get_color(object);
+                object_to_vertex_index.emplace(object, out_digraph.add_vertex(vertex_color));
+            }
         }
+    };
+
+    for (const auto& atom : problem->get_static_initial_atoms())
+    {
+        add_atom_objects_func(atom);
+    }
+    for (const auto& atom_index : state->get_atoms<Fluent>())
+    {
+        add_atom_objects_func(pddl_repositories.get_ground_atom<Fluent>(atom_index));
+    }
+    for (const auto& atom_index : state->get_atoms<Derived>())
+    {
+        add_atom_objects_func(pddl_repositories.get_ground_atom<Fluent>(atom_index));
     }
 
     return object_to_vertex_index;
@@ -65,43 +81,32 @@ static void add_ground_atom_graph_structures(const ProblemColorFunction& color_f
     }
 }
 
-static void add_ground_atoms_graph_structures(const ProblemColorFunction& color_function,
-                                              const PDDLRepositories& pddl_repositories,
+static void add_ground_atoms_graph_structures(State state,
                                               Problem problem,
-                                              State state,
-                                              Index state_index,
-                                              const ObjectGraphPruningStrategy& pruning_strategy,
+                                              const PDDLRepositories& pddl_repositories,
+                                              const ProblemColorFunction& color_function,
                                               const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                               StaticVertexColoredDigraph& out_digraph)
 {
     for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Static>(problem->get_static_initial_positive_atoms_bitset()))
     {
-        if (!pruning_strategy.prune(state_index, atom))
-        {
-            add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
-        }
+        add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
     for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Fluent>(state->get_atoms<Fluent>()))
     {
-        if (!pruning_strategy.prune(state_index, atom))
-        {
-            add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
-        }
+        add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
     for (const auto& atom : pddl_repositories.get_ground_atoms_from_indices<Derived>(state->get_atoms<Derived>()))
     {
-        if (!pruning_strategy.prune(state_index, atom))
-        {
-            add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
-        }
+        add_ground_atom_graph_structures(color_function, object_to_vertex_index, atom, out_digraph);
     }
 }
 
 template<StaticOrFluentOrDerived P>
-static void add_ground_literal_graph_structures(const ProblemColorFunction& color_function,
+static void add_ground_literal_graph_structures(State state,
+                                                const ProblemColorFunction& color_function,
                                                 const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                 bool mark_true_goal_literals,
-                                                State state,
                                                 GroundLiteral<P> literal,
                                                 StaticVertexColoredDigraph& out_digraph)
 {
@@ -117,67 +122,47 @@ static void add_ground_literal_graph_structures(const ProblemColorFunction& colo
     }
 }
 
-static void add_ground_goal_literals_graph_structures(const ProblemColorFunction& color_function,
-                                                      const PDDLRepositories& pddl_repositories,
-                                                      bool mark_true_goal_literals,
+static void add_ground_goal_literals_graph_structures(State state,
                                                       Problem problem,
-                                                      State state,
-                                                      Index state_index,
-                                                      const ObjectGraphPruningStrategy& pruning_strategy,
+                                                      const PDDLRepositories& pddl_repositories,
+                                                      const ProblemColorFunction& color_function,
+                                                      bool mark_true_goal_literals,
                                                       const std::unordered_map<Object, VertexIndex>& object_to_vertex_index,
                                                       StaticVertexColoredDigraph& out_digraph)
 {
     for (const auto& literal : problem->get_goal_condition<Static>())
     {
-        if (!pruning_strategy.prune(state_index, literal))
-        {
-            add_ground_literal_graph_structures(color_function, object_to_vertex_index, mark_true_goal_literals, state, literal, out_digraph);
-        }
+        add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
     for (const auto& literal : problem->get_goal_condition<Fluent>())
     {
-        if (!pruning_strategy.prune(state_index, literal))
-        {
-            add_ground_literal_graph_structures(color_function, object_to_vertex_index, mark_true_goal_literals, state, literal, out_digraph);
-        }
+        add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
     for (const auto& literal : problem->get_goal_condition<Derived>())
     {
-        if (!pruning_strategy.prune(state_index, literal))
-        {
-            add_ground_literal_graph_structures(color_function, object_to_vertex_index, mark_true_goal_literals, state, literal, out_digraph);
-        }
+        add_ground_literal_graph_structures(state, color_function, object_to_vertex_index, mark_true_goal_literals, literal, out_digraph);
     }
 }
 
-StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                               const PDDLRepositories& pddl_repositories,
+StaticVertexColoredDigraph create_object_graph(State state,
                                                Problem problem,
-                                               State state,
-                                               Index state_index,
-                                               bool mark_true_goal_literals,
-                                               const ObjectGraphPruningStrategy& pruning_strategy)
+                                               const PDDLRepositories& pddl_repositories,
+                                               const ProblemColorFunction& color_function,
+                                               bool mark_true_goal_literals)
 {
+    // TODO: perhaps we could store a partially initialized object graph in the problem that we can simply copy? :)
+
     auto vertex_colored_digraph = StaticVertexColoredDigraph();
 
-    const auto object_to_vertex_index = add_objects_graph_structures(color_function, problem, state_index, pruning_strategy, vertex_colored_digraph);
+    const auto object_to_vertex_index = add_objects_graph_structures(state, problem, pddl_repositories, color_function, vertex_colored_digraph);
 
-    add_ground_atoms_graph_structures(color_function,
-                                      pddl_repositories,
-                                      problem,
-                                      state,
-                                      state_index,
-                                      pruning_strategy,
-                                      object_to_vertex_index,
-                                      vertex_colored_digraph);
+    add_ground_atoms_graph_structures(state, problem, pddl_repositories, color_function, object_to_vertex_index, vertex_colored_digraph);
 
-    add_ground_goal_literals_graph_structures(color_function,
-                                              pddl_repositories,
-                                              mark_true_goal_literals,
+    add_ground_goal_literals_graph_structures(state,
                                               problem,
-                                              state,
-                                              state_index,
-                                              pruning_strategy,
+                                              pddl_repositories,
+                                              color_function,
+                                              mark_true_goal_literals,
                                               object_to_vertex_index,
                                               vertex_colored_digraph);
 

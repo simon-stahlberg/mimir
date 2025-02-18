@@ -25,6 +25,7 @@ add_gtest(cista_optional_test                              "cista/optional.cpp")
 add_gtest(common_grouped_vector_test                       "common/grouped_vector.cpp")
 
 add_gtest(datasets_generalized_state_space_test            "datasets/generalized_state_space.cpp")
+# add_gtest(datasets_object_graph_test                       "datasets/object_graph.cpp")
 
 add_gtest(formalism_to_disjunctive_normal_form_test        "formalism/translators/to_disjunctive_normal_form.cpp")
 add_gtest(formalism_to_negation_normal_form_test           "formalism/translators/to_negation_normal_form.cpp")

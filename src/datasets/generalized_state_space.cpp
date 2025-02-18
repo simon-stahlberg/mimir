@@ -20,7 +20,6 @@
 #include "mimir/algorithms/nauty.hpp"
 #include "mimir/common/timers.hpp"
 #include "mimir/datasets/object_graph.hpp"
-#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/parser.hpp"
 #include "mimir/formalism/problem.hpp"
@@ -148,16 +147,9 @@ struct SymmetriesData
     ProblemColorFunction color_function;
     CertificateSet equiv_classes;
     CertificateList per_state_equiv_class;
-    std::unique_ptr<ObjectGraphPruningStrategy> object_graph_pruning_strategy;
     StateSet representative_states;
 
-    explicit SymmetriesData(Problem problem) :
-        color_function(ProblemColorFunction(problem)),
-        equiv_classes(),
-        per_state_equiv_class(),
-        object_graph_pruning_strategy(std::make_unique<ObjectGraphPruningStrategy>(ObjectGraphPruningStrategy()))
-    {
-    }
+    explicit SymmetriesData(Problem problem) : color_function(ProblemColorFunction(problem)), equiv_classes(), per_state_equiv_class() {}
 };
 
 /// @brief `SymmetryStatePruning` extends the brfs pruning strategy by additionally pruning symmetric states.
@@ -191,13 +183,7 @@ private:
 
     std::unique_ptr<const nauty_wrapper::Certificate> compute_certificate(State state, Problem problem, const PDDLRepositories& pddl_repositories)
     {
-        const auto object_graph = create_object_graph(m_symm_data.color_function,
-                                                      pddl_repositories,
-                                                      problem,
-                                                      state,
-                                                      state->get_index(),
-                                                      m_options.mark_true_goal_literals,
-                                                      *m_symm_data.object_graph_pruning_strategy);
+        const auto object_graph = create_object_graph(state, problem, pddl_repositories, m_symm_data.color_function, m_options.mark_true_goal_literals);
 
         return std::make_unique<const nauty_wrapper::Certificate>(nauty_wrapper::SparseGraph(object_graph).compute_certificate());
     }

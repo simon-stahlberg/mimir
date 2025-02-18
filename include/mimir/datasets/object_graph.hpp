@@ -19,10 +19,9 @@
 #define MIMIR_GRAPHS_OBJECT_GRAPH_HPP_
 
 #include "mimir/common/types_cista.hpp"
-#include "mimir/datasets/object_graph_pruning_strategy.hpp"
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/formalism/problem_context.hpp"
 #include "mimir/graphs/digraph_vertex_colored.hpp"
-#include "mimir/search/state.hpp"
 
 #include <ostream>
 
@@ -34,20 +33,17 @@ namespace mimir
  */
 
 /// @brief Create an object graph as a vertex colored graph for a given state.
-/// @param color_function is the function used to color the vertices in the object graph.
-/// @param pddl_repositories is the PDDLFactory.
-/// @param problem is the Problem.
 /// @param state is the state.
+/// @param problem is the Problem.
+/// @param pddl_repositories is the PDDLRepository.
+/// @param color_function is the function used to color the vertices in the object graph.
 /// @param mark_true_goal_literals represents whether literals that are true should have a special color.
-/// @param pruning_strategy is the strategy used for pruning information from the object graph.
 /// @return a vertex colored graph that represents the object graph.
-extern StaticVertexColoredDigraph create_object_graph(const ProblemColorFunction& color_function,
-                                                      const PDDLRepositories& pddl_repositories,
+extern StaticVertexColoredDigraph create_object_graph(State state,
                                                       Problem problem,
-                                                      State state,
-                                                      Index state_index = 0,
-                                                      bool mark_true_goal_literals = false,
-                                                      const ObjectGraphPruningStrategy& pruning_strategy = ObjectGraphPruningStrategy());
+                                                      const PDDLRepositories& pddl_repositories,
+                                                      const ProblemColorFunction& color_function,
+                                                      bool mark_true_goal_literals = false);
 
 }
 

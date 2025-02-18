@@ -31,19 +31,24 @@ TEST(MimirTests, GraphsObjectGraphDenseTest)
     const auto domain_file = fs::path(std::string(DATA_DIR) + "gripper/domain.pddl");
     const auto problem_file = fs::path(std::string(DATA_DIR) + "gripper/p-2-0.pddl");
 
-    const auto state_space = StateSpace::create(domain_file, problem_file).value();
+    auto search_context = SearchContext(ProblemContext(domain_file, problem_file));
 
-    const auto color_function = ProblemColorFunction(state_space.get_problem());
+    auto options = GeneralizedStateSpace::Options();
+    options.problem_options.symmetry_pruning = false;
+    const auto problem_class_state_space = GeneralizedStateSpace(search_context, options);
+
+    const auto color_function = ProblemColorFunction(search_context.get_problem_context().get_problem());
     auto certificates = std::unordered_set<nauty_wrapper::Certificate, loki::Hash<nauty_wrapper::Certificate>, loki::EqualTo<nauty_wrapper::Certificate>> {};
 
-    for (const auto& vertex : state_space.get_graph().get_vertices())
+    for (const auto& vertex : problem_class_state_space.get_class_state_space().get_graph().get_vertices())
     {
-        const auto state = get_state(vertex);
+        const auto state = get_state(problem_class_state_space.get_problem_vertex(vertex));
 
         // std::cout << std::make_tuple(state_space->get_applicable_action_generator()->get_problem(), state,
         // std::cref(state_space->get_applicable_action_generator()->get_pddl_repositories())) << std::endl;
 
-        const auto object_graph = create_object_graph(color_function, *state_space.get_pddl_repositories(), state_space.get_problem(), state);
+        const auto object_graph =
+            create_object_graph(color_function, *search_context.get_problem_context().get_repositories(), state_space.get_problem(), state);
 
         // std::cout << object_graph << std::endl;
 
