@@ -52,7 +52,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
     // EXPECT_EQ(grammar.get_alternative_rules<dl::Concept>().size(), 4);
     // EXPECT_EQ(grammar.get_alternative_rules<dl::Role>().size(), 4);
 
-    auto constructor_repositories = dl::create_default_constructor_type_to_repository();
+    auto constructor_repositories = dl::ConstructorRepositories();
 
     const auto predicate_at_robby = parser.get_domain()->get_name_to_predicate<Fluent>().at("at-robby");
     const auto concept_at_robby =

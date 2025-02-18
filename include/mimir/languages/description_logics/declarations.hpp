@@ -228,6 +228,12 @@ using RoleIdentity = const RoleIdentityImpl*;
 
 class Visitor;
 
+/**
+ * Grammar
+ */
+
+class Grammar;
+
 }
 }
 

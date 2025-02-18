@@ -44,7 +44,7 @@ struct Context
 };
 
 static Constructor<Concept>
-parse(const dl::ast::Constructor<Concept>& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::Constructor<Concept>& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor(
         [&](const auto& arg) -> Constructor<Concept>
@@ -70,7 +70,7 @@ parse(const dl::ast::Constructor<Concept>& node, Domain domain, ConceptOrRoleToR
 }
 
 static Constructor<Role>
-parse(const dl::ast::Constructor<Role>& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::Constructor<Role>& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor(
         [&](const auto& arg) -> Constructor<Role>
@@ -94,7 +94,7 @@ parse(const dl::ast::Constructor<Role>& node, Domain domain, ConceptOrRoleToRepo
 }
 
 template<ConceptOrRole D>
-static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     const auto& non_terminal = boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<NonTerminalImpl<D>> {}).get_or_create(node.name);
     boost::hana::at_key(context.m_non_terminals_by_name, boost::hana::type<D> {}).emplace(node.name, non_terminal);
@@ -103,7 +103,7 @@ static NonTerminal<D> parse(const dl::ast::NonTerminal<D>& node, Domain domain, 
 
 template<ConceptOrRole D>
 static ConstructorOrNonTerminal<D>
-parse(const dl::ast::ConstructorOrNonTerminal<D>& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConstructorOrNonTerminal<D>& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::apply_visitor(
         [&](const auto& arg) -> ConstructorOrNonTerminal<D>
@@ -114,18 +114,18 @@ parse(const dl::ast::ConstructorOrNonTerminal<D>& node, Domain domain, ConceptOr
         node);
 }
 
-static ConceptBot parse(const dl::ast::ConceptBot& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static ConceptBot parse(const dl::ast::ConceptBot& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptBotImpl> {}).get_or_create();
 }
 
-static ConceptTop parse(const dl::ast::ConceptTop& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static ConceptTop parse(const dl::ast::ConceptTop& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptTopImpl> {}).get_or_create();
 }
 
 static std::variant<ConceptAtomicState<Static>, ConceptAtomicState<Fluent>, ConceptAtomicState<Derived>>
-parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptAtomicState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -161,7 +161,7 @@ parse(const dl::ast::ConceptAtomicState& node, Domain domain, ConceptOrRoleToRep
 }
 
 static std::variant<ConceptAtomicGoal<Static>, ConceptAtomicGoal<Fluent>, ConceptAtomicGoal<Derived>>
-parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -200,28 +200,29 @@ parse(const dl::ast::ConceptAtomicGoal& node, Domain domain, ConceptOrRoleToRepo
 }
 
 static ConceptIntersection
-parse(const dl::ast::ConceptIntersection& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptIntersection& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptIntersectionImpl> {})
         .get_or_create(parse(node.concept_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
                        parse(node.concept_or_non_terminal_right, domain, ref_grammar_constructor_repos, context));
 }
 
-static ConceptUnion parse(const dl::ast::ConceptUnion& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static ConceptUnion parse(const dl::ast::ConceptUnion& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptUnionImpl> {})
         .get_or_create(parse(node.concept_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
                        parse(node.concept_or_non_terminal_right, domain, ref_grammar_constructor_repos, context));
 }
 
-static ConceptNegation parse(const dl::ast::ConceptNegation& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static ConceptNegation
+parse(const dl::ast::ConceptNegation& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptNegationImpl> {})
         .get_or_create(parse(node.concept_or_non_terminal, domain, ref_grammar_constructor_repos, context));
 }
 
 static ConceptValueRestriction
-parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptValueRestriction& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptValueRestrictionImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context),
@@ -229,7 +230,7 @@ parse(const dl::ast::ConceptValueRestriction& node, Domain domain, ConceptOrRole
 }
 
 static ConceptExistentialQuantification
-parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptExistentialQuantificationImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context),
@@ -237,7 +238,7 @@ parse(const dl::ast::ConceptExistentialQuantification& node, Domain domain, Conc
 }
 
 static ConceptRoleValueMapContainment
-parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptRoleValueMapContainmentImpl> {})
         .get_or_create(parse(node.role_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
@@ -245,14 +246,14 @@ parse(const dl::ast::ConceptRoleValueMapContainment& node, Domain domain, Concep
 }
 
 static ConceptRoleValueMapEquality
-parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::ConceptRoleValueMapEquality& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<ConceptRoleValueMapEqualityImpl> {})
         .get_or_create(parse(node.role_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
                        parse(node.role_or_non_terminal_right, domain, ref_grammar_constructor_repos, context));
 }
 
-static ConceptNominal parse(const dl::ast::ConceptNominal& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static ConceptNominal parse(const dl::ast::ConceptNominal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (!domain->get_name_to_constants().contains(node.object_name))
     {
@@ -262,13 +263,13 @@ static ConceptNominal parse(const dl::ast::ConceptNominal& node, Domain domain, 
         .get_or_create(domain->get_name_to_constants().at(node.object_name));
 }
 
-static RoleUniversal parse(const dl::ast::RoleUniversal& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleUniversal parse(const dl::ast::RoleUniversal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleUniversalImpl> {}).get_or_create();
 }
 
 static std::variant<RoleAtomicState<Static>, RoleAtomicState<Fluent>, RoleAtomicState<Derived>>
-parse(const dl::ast::RoleAtomicState& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleAtomicState& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -304,7 +305,7 @@ parse(const dl::ast::RoleAtomicState& node, Domain domain, ConceptOrRoleToReposi
 }
 
 static std::variant<RoleAtomicGoal<Static>, RoleAtomicGoal<Fluent>, RoleAtomicGoal<Derived>>
-parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleAtomicGoal& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     if (domain->get_name_to_predicate<Static>().count(node.predicate_name))
     {
@@ -339,33 +340,35 @@ parse(const dl::ast::RoleAtomicGoal& node, Domain domain, ConceptOrRoleToReposit
     }
 }
 
-static RoleIntersection parse(const dl::ast::RoleIntersection& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleIntersection
+parse(const dl::ast::RoleIntersection& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleIntersectionImpl> {})
         .get_or_create(parse(node.role_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
                        parse(node.role_or_non_terminal_right, domain, ref_grammar_constructor_repos, context));
 }
 
-static RoleUnion parse(const dl::ast::RoleUnion& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleUnion parse(const dl::ast::RoleUnion& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleUnionImpl> {})
         .get_or_create(parse(node.role_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
                        parse(node.role_or_non_terminal_right, domain, ref_grammar_constructor_repos, context));
 }
 
-static RoleComplement parse(const dl::ast::RoleComplement& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleComplement parse(const dl::ast::RoleComplement& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleComplementImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context));
 }
 
-static RoleInverse parse(const dl::ast::RoleInverse& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleInverse parse(const dl::ast::RoleInverse& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleInverseImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context));
 }
 
-static RoleComposition parse(const dl::ast::RoleComposition& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleComposition
+parse(const dl::ast::RoleComposition& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleCompositionImpl> {})
         .get_or_create(parse(node.role_or_non_terminal_left, domain, ref_grammar_constructor_repos, context),
@@ -373,27 +376,28 @@ static RoleComposition parse(const dl::ast::RoleComposition& node, Domain domain
 }
 
 static RoleTransitiveClosure
-parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleTransitiveClosure& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleTransitiveClosureImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context));
 }
 
 static RoleReflexiveTransitiveClosure
-parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::RoleReflexiveTransitiveClosure& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleReflexiveTransitiveClosureImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context));
 }
 
-static RoleRestriction parse(const dl::ast::RoleRestriction& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleRestriction
+parse(const dl::ast::RoleRestriction& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleRestrictionImpl> {})
         .get_or_create(parse(node.role_or_non_terminal, domain, ref_grammar_constructor_repos, context),
                        parse(node.concept_or_non_terminal, domain, ref_grammar_constructor_repos, context));
 }
 
-static RoleIdentity parse(const dl::ast::RoleIdentity& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+static RoleIdentity parse(const dl::ast::RoleIdentity& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     return boost::hana::at_key(ref_grammar_constructor_repos, boost::hana::type<RoleIdentityImpl> {})
         .get_or_create(parse(node.concept_or_non_terminal, domain, ref_grammar_constructor_repos, context));
@@ -405,7 +409,7 @@ static RoleIdentity parse(const dl::ast::RoleIdentity& node, Domain domain, Conc
 
 template<ConceptOrRole D>
 static DerivationRule<D>
-parse(const dl::ast::DerivationRule<D>& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::DerivationRule<D>& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     auto non_terminal = parse(node.non_terminal, domain, ref_grammar_constructor_repos, context);
     auto constructor_or_non_terminals = ConstructorOrNonTerminalList<D> {};
@@ -423,7 +427,7 @@ parse(const dl::ast::DerivationRule<D>& node, Domain domain, ConceptOrRoleToRepo
 }
 
 static ConceptOrRoleToDerivationRuleList
-parse(const dl::ast::Grammar& node, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos, Context& context)
+parse(const dl::ast::Grammar& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos, Context& context)
 {
     auto rules = ConceptOrRoleToDerivationRuleList {};
 
@@ -477,7 +481,8 @@ parse(const dl::ast::Grammar& node, Domain domain, ConceptOrRoleToRepository& re
     return rules;
 }
 
-ConceptOrRoleToDerivationRuleList parse(const std::string& bnf_grammar_description, Domain domain, ConceptOrRoleToRepository& ref_grammar_constructor_repos)
+ConceptOrRoleToDerivationRuleList
+parse(const std::string& bnf_grammar_description, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
 {
     auto ast = dl::ast::Grammar();
     dl::parse_ast(bnf_grammar_description, dl::grammar_parser(), ast);

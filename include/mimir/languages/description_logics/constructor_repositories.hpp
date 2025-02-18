@@ -59,7 +59,7 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
-using ConceptOrRoleToRepository =
+using ConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<ConceptBotImpl>, ConceptBotRepository>,  //
                      boost::hana::pair<boost::hana::type<ConceptTopImpl>, ConceptTopRepository>,
                      boost::hana::pair<boost::hana::type<ConceptAtomicStateImpl<Static>>, ConceptAtomicStateRepository<Static>>,
@@ -92,8 +92,6 @@ using ConceptOrRoleToRepository =
                      boost::hana::pair<boost::hana::type<RoleReflexiveTransitiveClosureImpl>, RoleReflexiveTransitiveClosureRepository>,
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
-
-extern ConceptOrRoleToRepository create_default_constructor_type_to_repository();
 
 }
 

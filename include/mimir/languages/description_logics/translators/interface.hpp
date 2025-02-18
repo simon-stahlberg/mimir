@@ -28,7 +28,7 @@
 #include <variant>
 #include <vector>
 
-namespace mimir::dl
+namespace mimir::dl::grammar
 {
 
 /**
@@ -46,40 +46,19 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 public:
-    template<std::ranges::forward_range Range>
-    void prepare(const Range& input)
-    {
-        std::ranges::for_each(input, [this](auto&& arg) { this->prepare(*arg); });
-    }
     template<typename T>
     void prepare(const T& element)
     {
         self().prepare_base(element);
     }
 
-    /// @brief Translate a container of elements into a container of elements.
-    template<IsBackInsertibleRange Range>
-    auto translate(const Range& input)
-    {
-        std::remove_cvref_t<Range> output;
-
-        if constexpr (requires { output.reserve(std::ranges::size(input)); })
-        {
-            output.reserve(std::ranges::size(input));
-        }
-
-        std::ranges::transform(input, std::back_inserter(output), [this](auto&& arg) { return this->translate(*arg); });
-
-        return output;
-    }
     template<typename T>
     auto translate(const T& element)
     {
         return self().translate_base(element);
     }
 
-    /// @brief Collect information and apply problem translation.
-    ConceptOrRoleToDerivationRuleList run(const ConceptOrRoleToDerivationRuleList& derivation_rules) { return self().run_base(derivation_rules); }
+    grammar::Grammar run(const grammar::Grammar& grammar) { return self().run_base(grammar); }
 };
 
 }

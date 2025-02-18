@@ -44,16 +44,55 @@ private:
     constexpr auto& self() { return static_cast<Derived_&>(*this); }
 
 protected:
-    ConceptOrRoleToRepository m_constructor_repositories;
+    GrammarConstructorRepositories m_constructor_repositories;
 
-    explicit BaseRecurseTranslator(ConceptOrRoleToRepository& constructor_repositories) : m_constructor_repositories(constructor_repositories) {}
+    explicit BaseRecurseTranslator(GrammarConstructorRepositories& constructor_repositories) : m_constructor_repositories(constructor_repositories) {}
 
 protected:
     /* Implement ITranslator interface */
     friend class ITranslator<BaseRecurseTranslator<Derived_>>;
 
-    /// @brief Apply grammar translation.
-    ///        Default behavior reparses it into the constructor_repositories.
+    /**
+     * Prepare step.
+     */
+    template<std::ranges::forward_range Range>
+    void prepare_base(const Range& range)
+    {
+        self().prepare_impl(range);
+    }
+    template<std::ranges::forward_range Range>
+    void prepare_impl(const Range& range)
+    {
+        std::ranges::for_each(range, [this](auto&& arg) { this->prepare(arg); });
+    }
+    template<typename T>
+    void prepare_base(const T& element)
+    {
+        self().prepare_impl(element);
+    }
+
+    /**
+     * Translate step.
+     */
+    template<IsBackInsertibleRange Range>
+    auto translate_base(const Range& input)
+    {
+        return self().translate_impl(input);
+    }
+    template<IsBackInsertibleRange Range>
+    auto translate_impl(const Range& input)
+    {
+        std::remove_cvref_t<Range> output;
+
+        if constexpr (requires { output.reserve(std::ranges::size(input)); })
+        {
+            output.reserve(std::ranges::size(input));
+        }
+
+        std::ranges::transform(input, std::back_inserter(output), [this](auto&& arg) { return this->translate(arg); });
+
+        return output;
+    }
     template<typename T>
     auto translate_base(const T& element)
     {
@@ -61,47 +100,61 @@ protected:
     }
 
     template<ConceptOrRole D>
-    DerivationRule<D> translate_impl(const DerivationRuleImpl<D>& constructor)
+    DerivationRule<D> translate_impl(DerivationRule<D> constructor)
     {
-        constructor.
+        return boost::hana::at_key(m_constructor_repositories, boost::hana::type<DerivationRuleImpl<D>> {})
+            .get_or_create(this->translate(constructor->get_non_terminal()), this->translate(constructor->get_constructor_or_non_terminals()));
     }
     template<ConceptOrRole D>
-    NonTerminal<D> translate_impl(const NonTerminalImpl<D>& constructor)
+    NonTerminal<D> translate_impl(NonTerminal<D> constructor)
     {
+        return boost::hana::at_key(m_constructor_repositories, boost::hana::type<NonTerminalImpl<D>> {}).get_or_create(constructor->get_name(), nullptr);
     }
     template<ConceptOrRole D>
-    Choice<D> translate_impl(const ChoiceImpl<D>& constructor) = 0;
+    ConstructorOrNonTerminal<D> translate_impl(ConstructorOrNonTerminal<D> constructor)
+    {
+        return boost::hana::at_key(m_constructor_repositories, boost::hana::type<ConstructorOrNonTerminal<D>> {})
+            .get_or_create(std::visit([](auto&& arg) { return this->translate(arg); }, constructor->get_constructor_or_non_terminal));
+    }
 
-    ConceptBot translate_impl(ConceptBot constructor) = 0;
-    ConceptTop translate_impl(ConceptTop constructor) = 0;
+    ConceptBot translate_impl(ConceptBot constructor) {}
+    ConceptTop translate_impl(ConceptTop constructor) {}
     template<StaticOrFluentOrDerived P>
-    ConceptAtomicState<P> tanslate_impl(const ConceptAtomicStateImpl<P>& constructor);
+    ConceptAtomicState<P> translate_impl(ConceptAtomicState<P> constructor)
+    {
+    }
     template<StaticOrFluentOrDerived P>
-    ConceptAtomicState<P> translate_impl(const ConceptAtomicGoalImpl<P>& constructor);
-    ConceptIntersection translate_impl(const ConceptIntersectionImpl& constructor) = 0;
-    ConceptUnion translate_impl(const ConceptUnionImpl& constructor) = 0;
-    ConceptNegation translate_impl(const ConceptNegationImpl& constructor) = 0;
-    ConceptValueRestriction translate_impl(const ConceptValueRestrictionImpl& constructor) = 0;
-    ConceptExistentialQuantification translate_impl(const ConceptExistentialQuantificationImpl& constructor) = 0;
-    ConceptRoleValueMapContainment translate_impl(const ConceptRoleValueMapContainmentImpl& constructor) = 0;
-    ConceptRoleValueMapEquality translate_impl(const ConceptRoleValueMapEqualityImpl& constructor) = 0;
-    ConceptNominal translate_impl(const ConceptNominalImpl& constructor) = 0;
+    ConceptAtomicState<P> translate_impl(ConceptAtomicGoal<P> constructor)
+    {
+    }
+    ConceptIntersection translate_impl(ConceptIntersection constructor) {}
+    ConceptUnion translate_impl(ConceptUnion constructor) {}
+    ConceptNegation translate_impl(ConceptNegation constructor) {}
+    ConceptValueRestriction translate_impl(ConceptValueRestriction constructor) {}
+    ConceptExistentialQuantification translate_impl(ConceptExistentialQuantification constructor) {}
+    ConceptRoleValueMapContainment translate_impl(ConceptRoleValueMapContainment constructor) {}
+    ConceptRoleValueMapEquality translate_impl(ConceptRoleValueMapEquality constructor) {}
+    ConceptNominal translate_impl(ConceptNominal constructor) {}
 
     /* Roles */
-    RoleUniversal translate_impl(const RoleUniversalImpl& constructor) = 0;
+    RoleUniversal translate_impl(RoleUniversal constructor) {}
     template<StaticOrFluentOrDerived P>
-    RoleAtomicState<P> translate_impl(const RoleAtomicStateImpl<P>& constructor) = 0;
+    RoleAtomicState<P> translate_impl(RoleAtomicState<P> constructor)
+    {
+    }
     template<StaticOrFluentOrDerived P>
-    RoleAtomicGoal<P> translate_impl(const RoleAtomicGoalImpl<P>& constructor) = 0;
-    RoleIntersection translate_impl(const RoleIntersectionImpl& constructor) = 0;
-    RoleUnion translate_impl(const RoleUnionImpl& constructor) = 0;
-    RoleComplement translate_impl(const RoleComplementImpl& constructor) = 0;
-    RoleInverse translate_impl(const RoleInverseImpl& constructor) = 0;
-    RoleComposition translate_impl(const RoleCompositionImpl& constructor) = 0;
-    RoleTransitiveClosure translate_impl(const RoleTransitiveClosureImpl& constructor) = 0;
-    RoleReflexiveTransitiveClosure translate_impl(const RoleReflexiveTransitiveClosureImpl& constructor) = 0;
-    RoleRestriction translate_impl(const RoleRestrictionImpl& constructor) = 0;
-    RoleIdentity translate_impl(const RoleIdentityImpl& constructor) = 0;
+    RoleAtomicGoal<P> translate_impl(RoleAtomicGoal<P> constructor)
+    {
+    }
+    RoleIntersection translate_impl(RoleIntersection constructor) {}
+    RoleUnion translate_impl(RoleUnion constructor) {}
+    RoleComplement translate_impl(RoleComplement constructor) {}
+    RoleInverse translate_impl(RoleInverse constructor) {}
+    RoleComposition translate_impl(RoleComposition constructor) {}
+    RoleTransitiveClosure translate_impl(RoleTransitiveClosure constructor) {}
+    RoleReflexiveTransitiveClosure translate_impl(RoleReflexiveTransitiveClosure constructor) {}
+    RoleRestriction translate_impl(RoleRestriction constructor) {}
+    RoleIdentity translate_impl(RoleIdentity constructor) {}
 };
 
 }

@@ -24,12 +24,14 @@ namespace mimir
 {
 TupleGraph::TupleGraph(const ProblemContext& context,
                        const ProblemGraph& problem_graph,
+                       const ClassGraph& class_graph,
                        const TupleIndexMapper& index_mapper,
                        InternalTupleGraph graph,
                        IndexGroupedVector<const Index> vertices_grouped_by_distance,
                        IndexGroupedVector<const Index> problem_vertices_grouped_by_distance) :
     m_context(context),
     m_problem_graph(problem_graph),
+    m_class_graph(class_graph),
     m_index_mapper(index_mapper),
     m_graph(std::move(graph)),
     m_v_idxs_grouped_by_distance(std::move(vertices_grouped_by_distance)),
@@ -38,6 +40,8 @@ TupleGraph::TupleGraph(const ProblemContext& context,
 }
 
 const ProblemContext& TupleGraph::get_context() const { return m_context; }
+
+const ClassGraph& TupleGraph::get_class_graph() const { return m_class_graph; }
 
 const ProblemGraph& TupleGraph::get_problem_graph() const { return m_problem_graph; }
 
@@ -68,6 +72,7 @@ TupleGraphCollection::TupleGraphCollection(const GeneralizedStateSpace& state_sp
     {
         m_per_class_vertex_tuple_graph.push_back(create_tuple_graph(state_space.get_problem_vertex(class_vertex),
                                                                     state_space.get_problem_graph(class_vertex),
+                                                                    state_space.get_class_state_space().get_graph(),
                                                                     state_space.get_search_contexts().at(get_problem_index(class_vertex)).get_problem_context(),
                                                                     m_per_problem_index_mapper.at(get_problem_index(class_vertex)),
                                                                     options));

@@ -30,7 +30,7 @@ class Grammar
 {
 private:
     /* Memory */
-    ConceptOrRoleToRepository m_grammar_constructor_repos;
+    GrammarConstructorRepositories m_grammar_constructor_repos;
 
     /* The rules of the grammar. */
     ConceptOrRoleToDerivationRuleList m_primitive_production_rules;

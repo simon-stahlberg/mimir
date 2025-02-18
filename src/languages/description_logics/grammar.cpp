@@ -23,7 +23,7 @@ namespace mimir::dl::grammar
 {
 
 Grammar::Grammar(std::string bnf_description, Domain domain) :
-    m_grammar_constructor_repos(create_default_constructor_type_to_repository()),
+    m_grammar_constructor_repos(),
     m_primitive_production_rules(),
     m_composite_production_rules(),
     m_alternative_rules()

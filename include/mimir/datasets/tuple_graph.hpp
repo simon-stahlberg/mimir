@@ -54,7 +54,8 @@ class TupleGraph
 {
 private:
     const ProblemContext& m_context;
-    const ProblemGraph& m_problem_graph;
+    const ProblemGraph& m_problem_graph;  ///< child-level problem graph.
+    const ClassGraph& m_class_graph;      ///< top-level class graph for convenience.
     const TupleIndexMapper& m_index_mapper;
     InternalTupleGraph m_graph;
 
@@ -64,6 +65,7 @@ private:
 public:
     TupleGraph(const ProblemContext& context,
                const ProblemGraph& problem_graph,
+               const ClassGraph& class_graph,
                const TupleIndexMapper& index_mapper,
                InternalTupleGraph graph,
                IndexGroupedVector<const Index> vertices_grouped_by_distance,
@@ -71,6 +73,7 @@ public:
 
     const ProblemContext& get_context() const;
     const ProblemGraph& get_problem_graph() const;
+    const ClassGraph& get_class_graph() const;
     const TupleIndexMapper& get_index_mapper() const;
     const InternalTupleGraph& get_graph() const;
     const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
