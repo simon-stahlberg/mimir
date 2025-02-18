@@ -20,11 +20,10 @@
 
 #include "mimir/datasets/generalized_state_space.hpp"
 #include "mimir/datasets/tuple_graph.hpp"
+#include "mimir/search/search_context.hpp"
 
 namespace mimir
 {
-class TupleGraph;
-using TupleGraphList = std::vector<TupleGraph>;
 
 /// @brief `KnowledgeBase` encapsulates information obtained from a collection of planning problems.
 class KnowledgeBase
@@ -32,7 +31,7 @@ class KnowledgeBase
 private:
     GeneralizedStateSpace m_state_space;  ///< central component.
 
-    std::optional<TupleGraphList> m_tuple_graphs;  ///< first optional component.
+    std::optional<TupleGraphCollection> m_tuple_graphs;  ///< first optional component.
 public:
     /**
      * Options
@@ -42,31 +41,33 @@ public:
     {
         GeneralizedStateSpace::Options state_space_options;
 
-        struct TupleGraphSpecific
-        {
-            size_t width;
-            bool enable_dominance_pruning;
-
-            TupleGraphSpecific() : width(0), enable_dominance_pruning(true) {}
-        };
-
-        std::optional<TupleGraphSpecific> tuple_graph_options;
+        std::optional<TupleGraphCollection::Options> tuple_graph_options;
 
         Options() : state_space_options(), tuple_graph_options(std::nullopt) {}
+        Options(const GeneralizedStateSpace::Options& state_space_options,
+                const std::optional<TupleGraphCollection::Options>& tuple_graph_options = std::nullopt) :
+            state_space_options(state_space_options),
+            tuple_graph_options(tuple_graph_options)
+        {
+        }
     };
 
     /**
      * Constructors
      */
 
-    static std::unique_ptr<KnowledgeBase> create();
+    KnowledgeBase(SearchContextList contexts, const Options& options = Options());
+    KnowledgeBase(SearchContext context, const Options& options = Options());
+
+    static std::unique_ptr<KnowledgeBase> create(SearchContextList contexts, const Options& options = Options());
+    static std::unique_ptr<KnowledgeBase> create(SearchContext context, const Options& options = Options());
 
     /**
      * Getters
      */
 
     const GeneralizedStateSpace& get_generalized_state_space() const;
-    const std::optional<TupleGraphList>& get_tuple_graphs() const;
+    const std::optional<TupleGraphCollection>& get_tuple_graphs() const;
 };
 }
 

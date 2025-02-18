@@ -58,6 +58,8 @@ public:
     TupleIndex get_empty_tuple_index() const;
 };
 
+using TupleIndexMapperList = std::vector<TupleIndexMapper>;
+
 }
 
 #endif

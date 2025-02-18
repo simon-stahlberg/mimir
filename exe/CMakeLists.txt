@@ -16,5 +16,5 @@ target_link_libraries(planner_brfs mimir::core)
 #add_executable(planner_siw "planner_siw.cpp")
 #target_link_libraries(planner_siw mimir::core)
 
-add_executable(pcss "problem_class_state_space.cpp")
-target_link_libraries(pcss mimir::core)
+add_executable(kb "knowledge_base.cpp")
+target_link_libraries(kb mimir::core)

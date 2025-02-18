@@ -24,29 +24,31 @@ using namespace mimir;
 
 int main(int argc, char** argv)
 {
-    if (argc != 5)
+    if (argc != 3)
     {
-        std::cout << "Usage: pcg <domain:str> <problems:str> <max_num_state:int> <pruning_strategy:int>" << std::endl;
+        std::cout << "Usage: pcg <domain:str> <problems:str>" << std::endl;
         return 1;
     }
 
     const auto domain_file_path = fs::path { argv[1] };
     const auto problems_directory = fs::path { argv[2] };
 
-    auto pcss = mimir::GeneralizedStateSpace(SearchContext::create(ProblemContext::create(domain_file_path, problems_directory)));
+    auto kb = KnowledgeBase::create(SearchContext::create(ProblemContext::create(domain_file_path, problems_directory)),
+                                    KnowledgeBase::Options(GeneralizedStateSpace::Options(), TupleGraphCollection::Options()));
+    const auto& pcss = kb->get_generalized_state_space();
 
     for (size_t i = 0; i < pcss.get_problem_state_spaces().size(); ++i)
     {
         const auto& pss_i = pcss.get_problem_state_spaces()[i];
         std::cout << i << ". has num vertices: " << pss_i.get_graph().get_num_vertices() << " and num edges: " << pss_i.get_graph().get_num_edges()
                   << std::endl;
-        std::cout << pss_i.get_graph() << std::endl;
+        // std::cout << pss_i.get_graph() << std::endl;
     }
 
     const auto& css = pcss.get_class_state_space();
 
     std::cout << "Class graph has num vertices: " << css.get_graph().get_num_vertices() << " and num edges: " << css.get_graph().get_num_edges() << std::endl;
-    std::cout << css.get_graph() << std::endl;
+    // std::cout << css.get_graph() << std::endl;
 
     return 0;
 }

@@ -31,7 +31,78 @@
 
 namespace mimir
 {
+/**
+ * Implementation of TupleGraphs (Lipovetzky and Geffner ECAI2012)
+ * Source: https://www-i6.informatik.rwth-aachen.de/~hector.geffner/www.dtic.upf.edu/~hgeffner/width-ecai-2012.pdf
+ */
 
+/// @brief `TupleGraphVertex` encapsulates information about a vertex in a tuple graph.
+using TupleGraphVertex = Vertex<Index, IndexList>;
+using TupleGraphVertexList = std::vector<TupleGraphVertex>;
+
+inline Index get_tuple_index(const TupleGraphVertex& vertex) { return vertex.get_property<0>(); }
+
+inline const IndexList& get_problem_vertices(const TupleGraphVertex& vertex) { return vertex.get_property<1>(); }
+
+using TupleGraphEdge = Edge<>;
+using TupleGraphEdgeList = std::vector<TupleGraphEdge>;
+
+using StaticTupleGraph = StaticGraph<TupleGraphVertex, TupleGraphEdge>;
+using InternalTupleGraph = StaticBidirectionalGraph<StaticTupleGraph>;
+
+class TupleGraph
+{
+private:
+    const ProblemGraph& m_problem_graph;
+    const TupleIndexMapper& m_index_mapper;
+    InternalTupleGraph m_graph;
+
+    IndexGroupedVector<const Index> m_vertices_grouped_by_distance;
+    IndexGroupedVector<const Index> m_problem_vertices_grouped_by_distance;
+
+public:
+    TupleGraph(const ProblemGraph& problem_graph,
+               const TupleIndexMapper& index_mapper,
+               InternalTupleGraph graph,
+               IndexGroupedVector<const Index> vertices_grouped_by_distance,
+               IndexGroupedVector<const Index> problem_vertices_grouped_by_distance);
+
+    const ProblemGraph& get_problem_graph() const;
+    const TupleIndexMapper& get_index_mapper() const;
+    const InternalTupleGraph& get_graph() const;
+    const IndexGroupedVector<const Index>& get_vertices_grouped_by_distance() const;
+    const IndexGroupedVector<const Index>& get_problem_vertices_grouped_by_distance() const;
+};
+
+using TupleGraphList = std::vector<TupleGraph>;
+
+/// @brief `TupleGraphCollection` encapsulates tuple graphs for each class vertex in a `GeneralizedStateSpace`.
+class TupleGraphCollection
+{
+private:
+    TupleIndexMapperList m_per_problem_index_mapper;
+
+    TupleGraphList m_per_class_vertex_tuple_graph;
+
+public:
+    struct Options
+    {
+        size_t width;
+        bool enable_dominance_pruning;
+
+        Options() : width(0), enable_dominance_pruning(true) {}
+    };
+
+    TupleGraphCollection(const GeneralizedStateSpace& state_space, const Options& options = Options());
+
+    const TupleGraphList& get_per_class_vertex_tuple_graph() const;
+};
+
+/**
+ * Pretty printing as dot representation
+ */
+
+extern std::ostream& operator<<(std::ostream& out, const TupleGraph& tuple_graph);
 }
 
 #endif
