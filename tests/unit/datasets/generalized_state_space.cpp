@@ -66,6 +66,45 @@ TEST(MimirTests, DatasetsGeneralizedStateSpaceConstructorTest)
         EXPECT_EQ(class_state_space.get_goal_vertices().size(), 1);
         EXPECT_EQ(class_state_space.get_unsolvable_vertices().size(), 3);
         EXPECT_EQ(class_state_space.get_alive_vertices().size(), 8);
+
+        // Test subspace from problem index 0
+        const auto& class_state_space_0 = problem_class_state_space.create_induced_subspace_from_problem_indices(IndexList { 0 });
+        const auto& class_graph_0 = class_state_space_0.get_graph();
+
+        EXPECT_EQ(class_graph_0.get_num_vertices(), 7);
+        EXPECT_EQ(class_graph_0.get_num_edges(), 6);
+        EXPECT_EQ(class_state_space_0.get_initial_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_0.get_goal_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_0.get_unsolvable_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_0.get_alive_vertices().size(), 5);
+
+        // Test subspace from problem index 1
+        const auto& class_state_space_1 = problem_class_state_space.create_induced_subspace_from_problem_indices(IndexList { 1 });
+        const auto& class_graph_1 = class_state_space_1.get_graph();
+
+        EXPECT_EQ(class_graph_1.get_num_vertices(), 8);
+        EXPECT_EQ(class_graph_1.get_num_edges(), 7);
+        EXPECT_EQ(class_state_space_1.get_initial_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_1.get_goal_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_1.get_unsolvable_vertices().size(), 2);
+        EXPECT_EQ(class_state_space_1.get_alive_vertices().size(), 5);
+
+        // Test subspace from even vertex indices
+        auto class_vertex_indices = IndexList {};
+        for (Index i = 0; i < class_graph.get_num_vertices(); i += 2)
+        {
+            class_vertex_indices.push_back(i);
+        }
+
+        const auto& class_state_space_even = problem_class_state_space.create_induced_subspace_from_class_vertex_indices(class_vertex_indices);
+        const auto& class_graph_even = class_state_space_even.get_graph();
+
+        EXPECT_EQ(class_graph_even.get_num_vertices(), 6);
+        EXPECT_EQ(class_graph_even.get_num_edges(), 2);
+        EXPECT_EQ(class_state_space_even.get_initial_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_even.get_goal_vertices().size(), 1);
+        EXPECT_EQ(class_state_space_even.get_unsolvable_vertices().size(), 2);
+        EXPECT_EQ(class_state_space_even.get_alive_vertices().size(), 3);
     }
 }
 

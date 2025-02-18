@@ -21,7 +21,9 @@
 #include "mimir/common/concepts.hpp"
 #include "mimir/common/grouped_vector.hpp"
 #include "mimir/graphs/graph_edge_interface.hpp"
+#include "mimir/graphs/graph_edges.hpp"
 #include "mimir/graphs/graph_vertex_interface.hpp"
+#include "mimir/graphs/graph_vertices.hpp"
 #include "mimir/graphs/static_graph_interface.hpp"
 #include "mimir/graphs/static_graph_iterators.hpp"
 
@@ -93,6 +95,14 @@ public:
         requires HasVertexProperties<V, VertexProperties...>
     VertexIndex add_vertex(VertexProperties&&... properties);
 
+    /// @brief Add a vertex to the graph that has the same properties as the given vertex.
+    /// @tparam ...VertexProperties the types of the vertex properties. Must match the properties mentioned in the vertex constructor.
+    /// @param vertex is the given vertex.
+    /// @return the index of the newly created vertex.
+    template<typename... VertexProperties>
+        requires HasVertexProperties<V, VertexProperties...>
+    VertexIndex add_vertex(const Vertex<VertexProperties...>& vertex);
+
     /// @brief Add a directed edge from source to target to the graph with edge properties args.
     /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
     /// @param source the source vertex.
@@ -102,6 +112,16 @@ public:
     template<typename... EdgeProperties>
         requires HasEdgeProperties<E, EdgeProperties...>
     EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties);
+
+    /// @brief Add an edge to the graph that has the same properties as the given edge.
+    /// @tparam ...EdgeProperties the types of the edge properties. Must match the properties mentioned in the edge constructor.
+    /// @param source the source vertex.
+    /// @param target the target vertex.
+    /// @param edge is the given edge.
+    /// @return the index of the newly created edge.
+    template<typename... EdgeProperties>
+        requires HasEdgeProperties<E, EdgeProperties...>
+    EdgeIndex add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge);
 
     /// @brief Add two anti-parallel directed edges to the graph with the identical edge properties, representing the undirected edge.
     ///
@@ -350,6 +370,14 @@ VertexIndex StaticGraph<V, E>::add_vertex(VertexProperties&&... properties)
 }
 
 template<IsVertex V, IsEdge E>
+template<typename... VertexProperties>
+    requires HasVertexProperties<V, VertexProperties...>
+VertexIndex StaticGraph<V, E>::add_vertex(const Vertex<VertexProperties...>& vertex)
+{
+    return std::apply([this](auto&&... properties) { return this->add_vertex(std::forward<decltype(properties)>(properties)...); }, vertex.get_properties());
+}
+
+template<IsVertex V, IsEdge E>
 template<typename... EdgeProperties>
     requires HasEdgeProperties<E, EdgeProperties...>
 EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, EdgeProperties&&... properties)
@@ -364,6 +392,16 @@ EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex t
     m_slice.push_back(index);
 
     return index;
+}
+
+template<IsVertex V, IsEdge E>
+template<typename... EdgeProperties>
+    requires HasEdgeProperties<E, EdgeProperties...>
+EdgeIndex StaticGraph<V, E>::add_directed_edge(VertexIndex source, VertexIndex target, const Edge<EdgeProperties...>& edge)
+{
+    return std::apply([this, source, target](auto&&... properties)
+                      { return this->add_directed_edge(source, target, std::forward<decltype(properties)>(properties)...); },
+                      edge.get_properties());
 }
 
 template<IsVertex V, IsEdge E>

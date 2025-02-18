@@ -227,18 +227,14 @@ public:
      * Construct subgraphs for learning from fragments of the `ClassStateSpace`.
      */
 
-    /// @brief Create the induced `ClassStateSpace` by the given `ClassVertexList`.
+    /// @brief Create the induced `ClassStateSpace` by the given `class_vertex_indices`.
     /// This function copies the set of `ClassVertex`
     /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
-    ClassStateSpace create_induced_subspace(const ClassVertexList& vertices) const;
-    /// @brief Create the induced `ClassStateSpace` by the given `ProblemVertexList`.
-    /// This function copies the corresponding set of `ClassVertex`
-    /// and all `ClassEdge` between those vertices into a new `ClassGraph`.
-    ClassStateSpace create_induced_subspace(const ProblemVertexList& vertices) const;
+    ClassStateSpace create_induced_subspace_from_class_vertex_indices(const IndexList& class_vertex_indices) const;
     /// @brief Create the induced `ClassStateSpace` by the given `problem_indices`.
     /// This function copies the corresponding sets of `ClassVertex`
     /// and `ClassEdge` into a new `ClassGraph`.
-    ClassStateSpace create_induced_subspace(const IndexList& problem_indices) const;
+    ClassStateSpace create_induced_subspace_from_problem_indices(const IndexList& problem_indices) const;
 };
 
 /**

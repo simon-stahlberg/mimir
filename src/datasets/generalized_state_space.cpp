@@ -857,18 +857,66 @@ const ClassEdge& GeneralizedStateSpace::get_class_edge(const ProblemEdge& edge) 
     return m_class_state_space.get_graph().get_edge(get_class_edge_index(edge));
 }
 
-ClassStateSpace GeneralizedStateSpace::create_induced_subspace(const ClassVertexList& vertices) const {}
-
-ClassStateSpace GeneralizedStateSpace::create_induced_subspace(const ProblemVertexList& vertices) const {}
-
-ClassStateSpace GeneralizedStateSpace::create_induced_subspace(const IndexList& problem_indices) const
+static ClassStateSpace create_induced_subspace_helper(const IndexSet& subgraph_class_v_idxs, const ClassGraph& complete_graph)
 {
-    auto class_graph = StaticClassGraph();
+    auto sub_graph = StaticClassGraph();
 
-    for (const auto p_idx : problem_indices)
+    /* 2. Instantiate vertices */
+    auto old_to_new_class_v_idxs = IndexMap<Index> {};
+
+    for (const auto& class_v_idx : subgraph_class_v_idxs)
     {
-        const auto& pss = m_problem_graphs.at(p_idx);
+        const auto& class_v = complete_graph.get_vertex(class_v_idx);
+
+        const auto new_class_v_idx = sub_graph.add_vertex(class_v);
+
+        old_to_new_class_v_idxs.emplace(class_v_idx, new_class_v_idx);
     }
+
+    /* 3. Instantiate edges */
+    for (const auto& class_v_idx : subgraph_class_v_idxs)
+    {
+        for (const auto& class_e : complete_graph.get_adjacent_edges<ForwardTraversal>(class_v_idx))
+        {
+            if (subgraph_class_v_idxs.contains(class_e.get_target()))
+            {
+                const auto new_class_source_v_idx = old_to_new_class_v_idxs.at(class_e.get_source());
+                const auto new_class_target_v_idx = old_to_new_class_v_idxs.at(class_e.get_target());
+
+                sub_graph.add_directed_edge(new_class_source_v_idx, new_class_target_v_idx, class_e);
+            }
+        }
+    }
+
+    /* Return a `ClassStateSpace` that wraps a bidirectional `ClassGraph` obtained from the `StaticClassGraph`. */
+    return ClassStateSpace(ClassGraph(std::move(sub_graph)));
+}
+
+ClassStateSpace GeneralizedStateSpace::create_induced_subspace_from_class_vertex_indices(const IndexList& class_vertex_indices) const
+{
+    auto unique_class_v_idxs = IndexSet(class_vertex_indices.begin(), class_vertex_indices.end());
+
+    return create_induced_subspace_helper(unique_class_v_idxs, m_class_state_space.get_graph());
+}
+
+ClassStateSpace GeneralizedStateSpace::create_induced_subspace_from_problem_indices(const IndexList& problem_indices) const
+{
+    /* Collect unique class vertices */
+    auto unique_class_v_idxs = IndexSet {};
+
+    for (const auto& problem_idx : problem_indices)
+    {
+        const auto& problem_graph = m_problem_graphs.at(problem_idx);
+
+        for (const auto& problem_vertex : problem_graph.get_vertices())
+        {
+            const auto& class_vertex = get_class_vertex(problem_vertex);
+
+            unique_class_v_idxs.insert(class_vertex.get_index());
+        }
+    }
+
+    return create_induced_subspace_helper(unique_class_v_idxs, m_class_state_space.get_graph());
 }
 
 std::ostream& operator<<(std::ostream& out, const ProblemVertex& vertex)
