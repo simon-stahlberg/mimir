@@ -80,6 +80,9 @@ struct RoleReflexiveTransitiveClosureClass;
 struct RoleRestrictionClass;
 struct RoleIdentityClass;
 
+struct GrammarHeadClass;
+struct GrammarBodyClass;
+
 typedef x3::rule<ConstructorClass<Concept>, ast::Constructor<Concept>> concept_type;
 typedef x3::rule<ConceptBotClass, ast::ConceptBot> concept_bot_type;
 typedef x3::rule<ConceptTopClass, ast::ConceptTop> concept_top_type;
@@ -116,6 +119,9 @@ typedef x3::rule<DerivationRuleClass<Role>, ast::DerivationRule<Role>> role_deri
 
 typedef x3::rule<ConceptOrRoleDerivationRuleClass, ast::ConceptOrRoleDerivationRule> concept_or_role_derivation_rule_type;
 
+typedef x3::rule<GrammarHeadClass, ast::GrammarHead> grammar_head_type;
+typedef x3::rule<GrammarBodyClass, ast::GrammarBody> grammar_body_type;
+
 BOOST_SPIRIT_DECLARE(concept_type,
                      concept_bot_type,
                      concept_top_type,
@@ -150,7 +156,7 @@ BOOST_SPIRIT_DECLARE(role_type,
                      role_choice_type,
                      role_derivation_rule_type)
 
-BOOST_SPIRIT_DECLARE(concept_or_role_derivation_rule_type)
+BOOST_SPIRIT_DECLARE(concept_or_role_derivation_rule_type, grammar_head_type, grammar_body_type)
 
 }
 
@@ -189,6 +195,9 @@ parser::role_choice_type const& role_choice();
 parser::role_derivation_rule_type const& role_derivation_rule();
 
 parser::concept_or_role_derivation_rule_type const& concept_or_role_derivation_rule();
+
+parser::grammar_head_type const& grammar_head();
+parser::grammar_body_type const& grammar_body();
 }
 
 #endif

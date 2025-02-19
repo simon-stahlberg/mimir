@@ -28,22 +28,50 @@
 namespace mimir::tests
 {
 
+TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
+{
+    {
+        auto bnf_description = std::string(R"(
+    [start_symbols]
+
+    [grammar_rules]
+        <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
+        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
+        <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
+        <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
+        <role_at_state> ::= @role_atomic_state "at"
+        <role_at_goal> ::= @role_atomic_goal "at" false
+        <role_intersection> ::= @role_intersection <role> <role_at_goal>
+        <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
+    )");
+
+        auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
+
+        EXPECT_ANY_THROW(dl::grammar::Grammar::parse(bnf_description, parser.get_domain()));
+    }
+}
+
 TEST(MimirTests, LanguagesDescriptionLogicsGrammarTest)
 {
     auto bnf_description = std::string(R"(
-<concept_at-robby_state> ::= @concept_atomic_state "at-robby"
-<concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
-<concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
-<concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
-<role_at_state> ::= @role_atomic_state "at"
-<role_at_goal> ::= @role_atomic_goal "at" false
-<role_intersection> ::= @role_intersection <role> <role_at_goal>
-<role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
+    [start_symbols]
+        concept = <concept>
+        role = <role>
+
+    [grammar_rules]
+        <concept_at-robby_state> ::= @concept_atomic_state "at-robby"
+        <concept_at-robby_goal> ::= @concept_atomic_goal "at-robby" false
+        <concept_intersection> ::= @concept_intersection <concept_at-robby_state> <concept_at-robby_goal>
+        <concept> ::= <concept_at-robby_state> | <concept_at-robby_goal> | <concept_intersection>
+        <role_at_state> ::= @role_atomic_state "at"
+        <role_at_goal> ::= @role_atomic_goal "at" false
+        <role_intersection> ::= @role_intersection <role> <role_at_goal>
+        <role> ::= <role_at_state> | <role_at_goal> | <role_intersection>
 )");
 
     auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-    auto grammar = dl::grammar::Grammar(bnf_description, parser.get_domain());
+    auto grammar = dl::grammar::Grammar::parse(bnf_description, parser.get_domain());
 
     // EXPECT_EQ(grammar.get_primitive_production_rules<dl::Concept>().size(), 4);
     // EXPECT_EQ(grammar.get_primitive_production_rules<dl::Role>().size(), 4);

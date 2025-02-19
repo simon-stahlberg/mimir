@@ -27,7 +27,7 @@
 namespace mimir::dl::grammar
 {
 
-extern GrammarRules parse(const std::string& bnf_grammar_description, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos);
+extern Grammar parse(const std::string& bnf_grammar_description, Domain domain);
 
 }
 

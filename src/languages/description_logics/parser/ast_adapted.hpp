@@ -57,6 +57,9 @@ BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleReflexiveTransitiveClosure, role_o
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleRestriction, role_or_non_terminal, concept_or_non_terminal)
 BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::RoleIdentity, concept_or_non_terminal)
 
-BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::Grammar, rules)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::GrammarHead, concept_start, role_start)
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::GrammarBody, rules)
+
+BOOST_FUSION_ADAPT_STRUCT(mimir::dl::ast::Grammar, head, body)
 
 #endif

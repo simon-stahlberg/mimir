@@ -17,17 +17,24 @@
 
 #include "mimir/languages/description_logics/grammar.hpp"
 
+#include "mimir/languages/description_logics/parser/parser.hpp"
+#include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 #include "parser.hpp"
 
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar(std::string bnf_description, Domain domain) : m_grammar_constructor_repos()
+Grammar::Grammar() : m_repositories(), m_start_symbols(), m_rules() {}
+
+Grammar::Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules) :
+    m_repositories(std::move(repositories)),
+    m_start_symbols(std::move(start_symbols)),
+    m_rules(std::move(rules))
 {
-    const auto rules = parse(bnf_description, domain, m_grammar_constructor_repos);
-    // m_concept_rules = std::move(concept_rules);
-    // m_role_rules = std::move(role_rules);
 }
+
+/// @brief Create a grammar from a BNF description.
+Grammar Grammar::parse(std::string bnf_description, Domain domain) { return ::mimir::dl::grammar::parse(bnf_description, domain); }
 
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const

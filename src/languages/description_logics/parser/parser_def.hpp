@@ -93,6 +93,10 @@ role_choice_type const role_choice = "role_choice";
 role_derivation_rule_type const role_derivation_rule = "role_derivation_rule";
 
 concept_or_role_derivation_rule_type const concept_or_role_derivation_rule = "concept_or_role_derivation_rule";
+
+grammar_head_type const grammar_head = "grammar_head";
+grammar_body_type const grammar_body = "grammar_body";
+
 grammar_type const grammar = "grammar";
 
 ///////////////////////////////////////////////////////////////////////////
@@ -150,7 +154,11 @@ const auto role_choice_def = role_non_terminal | role;
 const auto role_derivation_rule_def = role_non_terminal > "::=" > (role_choice % lit("|"));
 
 const auto concept_or_role_derivation_rule_def = (concept_derivation_rule | role_derivation_rule);
-const auto grammar_def = *concept_or_role_derivation_rule;
+const auto grammar_head_def = lit("[start_symbols]")                                 //
+                              > -(lit("concept") > lit("=") > concept_non_terminal)  //
+                              > -(lit("role") > lit("=") > role_non_terminal);
+const auto grammar_body_def = lit("[grammar_rules]") > *concept_or_role_derivation_rule;
+const auto grammar_def = grammar_head > grammar_body;
 
 BOOST_SPIRIT_DEFINE(concept_,
                     concept_bot,
@@ -186,7 +194,7 @@ BOOST_SPIRIT_DEFINE(role,
                     role_choice,
                     role_derivation_rule)
 
-BOOST_SPIRIT_DEFINE(concept_or_role_derivation_rule, grammar)
+BOOST_SPIRIT_DEFINE(concept_or_role_derivation_rule, grammar_head, grammar_body, grammar)
 
 ///////////////////////////////////////////////////////////////////////////
 // Annotation and Error handling
@@ -303,6 +311,12 @@ struct RoleIdentityClass : x3::annotate_on_success
 struct ConceptOrRoleDerivationRuleClass : x3::annotate_on_success
 {
 };
+struct GrammarHeadClass : x3::annotate_on_success
+{
+};
+struct GrammarBodyClass : x3::annotate_on_success
+{
+};
 struct GrammarClass : x3::annotate_on_success, error_handler_base
 {
 };
@@ -345,6 +359,8 @@ parser::role_choice_type const& role_choice() { return parser::role_choice; }
 parser::role_derivation_rule_type const& role_derivation_rule() { return parser::role_derivation_rule; }
 
 parser::concept_or_role_derivation_rule_type const& concept_or_role_derivation_rule() { return parser::concept_or_role_derivation_rule; }
+parser::grammar_head_type const& grammar_head() { return parser::grammar_head; }
+parser::grammar_body_type const& grammar_body() { return parser::grammar_body; }
 parser::grammar_type const& grammar_parser() { return parser::grammar; }
 }
 

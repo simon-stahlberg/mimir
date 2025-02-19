@@ -26,52 +26,28 @@
 namespace mimir::dl::grammar
 {
 
-using StartNonterminals = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
-                                           boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
+using StartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
+                                      boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
 
-using PerNonterminalGrammarRules =
-    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
-                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
-
-class GrammarRules
-{
-private:
-    StartNonterminals m_start_nonterminals;
-    PerNonterminalGrammarRules m_rules;
-
-public:
-    GrammarRules() : m_start_nonterminals(), m_rules() {}
-    explicit GrammarRules(PerNonterminalGrammarRules rules, StartNonterminals start_nonterminals) :
-        m_start_nonterminals(std::move(start_nonterminals)),
-        m_rules(std::move(rules))
-    {
-    }
-
-    template<ConceptOrRole D>
-    const std::optional<NonTerminal<D>>& get_start_nonterminal() const
-    {
-        return boost::hana::at_key(m_start_nonterminals, boost::hana::type<D> {});
-    }
-
-    template<ConceptOrRole D>
-    const DerivationRuleSet<D>& get_rules(NonTerminal<D> non_terminal) const
-    {
-        return boost::hana::at_key(m_rules, boost::hana::type<D> {}).at(non_terminal);
-    }
-};
+using GrammarRules = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
+                                      boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
 
 class Grammar
 {
 private:
     /* Memory */
-    GrammarConstructorRepositories m_grammar_constructor_repos;
+    GrammarConstructorRepositories m_repositories;
 
     /* The rules of the grammar. */
+    StartSymbols m_start_symbols;
     GrammarRules m_rules;
 
 public:
+    Grammar();
+    Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules);
+
     /// @brief Create a grammar from a BNF description.
-    Grammar(std::string bnf_description, Domain domain);
+    static Grammar parse(std::string bnf_description, Domain domain);
 
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.
@@ -84,13 +60,16 @@ public:
      */
 
     template<ConceptOrRole D>
-    const DerivationRuleList<D>& get_primitive_production_rules() const;
+    const std::optional<NonTerminal<D>>& get_start_symbols() const
+    {
+        return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
+    }
 
     template<ConceptOrRole D>
-    const DerivationRuleList<D>& get_composite_production_rules() const;
-
-    template<ConceptOrRole D>
-    const DerivationRuleList<D>& get_alternative_rules() const;
+    const DerivationRuleSet<D>& get_rules(NonTerminal<D> non_terminal) const
+    {
+        return boost::hana::at_key(m_rules, boost::hana::type<D> {}).at(non_terminal);
+    }
 };
 }
 

@@ -60,6 +60,12 @@ struct RoleReflexiveTransitiveClosure;
 struct RoleRestriction;
 struct RoleIdentity;
 
+struct ConceptOrRoleDerivationRule;
+
+struct GrammarHead;
+struct GrammarBody;
+struct Grammar;
+
 template<ConceptOrRole D>
 struct Constructor
 {
@@ -273,9 +279,21 @@ struct ConceptOrRoleDerivationRule : x3::position_tagged, x3::variant<Derivation
     using base_type::operator=;
 };
 
-struct Grammar : x3::position_tagged
+struct GrammarHead : x3::position_tagged
+{
+    boost::optional<NonTerminal<Concept>> concept_start;
+    boost::optional<NonTerminal<Role>> role_start;
+};
+
+struct GrammarBody : x3::position_tagged
 {
     std::vector<ConceptOrRoleDerivationRule> rules;
+};
+
+struct Grammar : x3::position_tagged
+{
+    GrammarHead head;
+    GrammarBody body;
 };
 
 }

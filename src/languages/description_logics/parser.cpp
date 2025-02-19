@@ -18,6 +18,7 @@
 #include "parser.hpp"
 
 #include "mimir/formalism/predicate.hpp"
+#include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
 #include "mimir/languages/description_logics/parser/ast.hpp"
 #include "mimir/languages/description_logics/parser/parser.hpp"
@@ -393,83 +394,74 @@ static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, Domain do
         .get_or_create(non_terminal, constructor_or_non_terminals);
 }
 
-static ConceptOrRoleToDerivationRuleList parse(const dl::ast::Grammar& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
+static StartSymbols parse(const dl::ast::GrammarHead& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
 {
-    auto rules = ConceptOrRoleToDerivationRuleList {};
-
-    return rules;
-
-    std::for_each(node.rules.begin(),
-                  node.rules.end(),
-                  [&](const dl::ast::ConceptOrRoleDerivationRule& rule_node)
-                  {
-                      boost::apply_visitor(
-                          [&](const auto& arg)
-                          {
-                              using T = std::decay_t<decltype(arg)>;
-                              if constexpr (std::is_same_v<T, dl::ast::DerivationRule<Concept>>)
-                              {
-                                  boost::hana::at_key(rules, boost::hana::type<Concept> {}).push_back(parse(arg, domain, ref_grammar_constructor_repos));
-                              }
-                              else if constexpr (std::is_same_v<T, dl::ast::DerivationRule<Role>>)
-                              {
-                                  boost::hana::at_key(rules, boost::hana::type<Role> {}).push_back(parse(arg, domain, ref_grammar_constructor_repos));
-                              }
-                              else
-                              {
-                                  throw std::runtime_error("Unknown rule type.");
-                              }
-                          },
-                          rule_node);
-                  });
-
-    return rules;
-}
-
-GrammarRules parse(const std::string& bnf_grammar_description, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
-{
-    auto ast = dl::ast::Grammar();
-    dl::parse_ast(bnf_grammar_description, dl::grammar_parser(), ast);
-
-    auto hana_rules = parse(ast, domain, ref_grammar_constructor_repos);
-
-    auto grouped_rules = PerNonterminalGrammarRules();
-    auto start_nonterminals = StartNonterminals();
-
-    boost::hana::for_each(hana_rules,
-                          [&](auto&& pair)
-                          {
-                              auto key = boost::hana::first(pair);
-                              const auto& value = boost::hana::second(pair);
-
-                              for (const auto& derivation_rule : value)
-                              {
-                                  if constexpr (std::same_as<decltype(key), boost::hana::type<Concept>>)
-                                  {
-                                      if (derivation_rule->get_non_terminal()->get_name() == "<concept_start>")
-                                      {
-                                          boost::hana::at_key(start_nonterminals, key) = derivation_rule->get_non_terminal();
-                                      }
-                                  }
-                                  else if constexpr (std::same_as<decltype(key), boost::hana::type<Role>>)
-                                  {
-                                      if (derivation_rule->get_non_terminal()->get_name() == "<role_start>")
-                                      {
-                                          boost::hana::at_key(start_nonterminals, key) = derivation_rule->get_non_terminal();
-                                      }
-                                  }
-                                  boost::hana::at_key(grouped_rules, key)[derivation_rule->get_non_terminal()].insert(derivation_rule);
-                              }
-                          });
-
-    bool has_start_nonterminal = boost::hana::any_of(boost::hana::values(start_nonterminals), [](auto&& value) { return value.has_value(); });
-
-    if (!has_start_nonterminal)
+    if (!node.concept_start.has_value() && !node.role_start.has_value())
     {
-        throw std::runtime_error("parse(bnf_grammar_description, domain, ref_grammar_constructor_repos): Failed to detect a start symbol. Does your grammar "
-                                 "contain at least one start symbol of <concept_start> or <role_start>?");
+        throw std::runtime_error("parse(node, domain, ref_grammar_constructor_repos): No start symbols defined.");
     }
 
-    return GrammarRules(std::move(grouped_rules), std::move(start_nonterminals));
+    auto start_symbols = StartSymbols();
+
+    if (node.concept_start)
+    {
+        boost::hana::at_key(start_symbols, boost::hana::type<Concept> {}) = parse(node.concept_start.value(), domain, ref_grammar_constructor_repos);
+    }
+
+    if (node.role_start)
+    {
+        boost::hana::at_key(start_symbols, boost::hana::type<Role> {}) = parse(node.role_start.value(), domain, ref_grammar_constructor_repos);
+    }
+
+    return start_symbols;
 }
+
+static GrammarRules parse(const dl::ast::GrammarBody& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
+{
+    auto rules = GrammarRules {};
+
+    for (const auto& part : node.rules)
+    {
+        boost::apply_visitor(
+            [&](const auto& arg)
+            {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, dl::ast::DerivationRule<Concept>>)
+                {
+                    const auto concept_derivation_rule = parse(arg, domain, ref_grammar_constructor_repos);
+                    boost::hana::at_key(rules, boost::hana::type<Concept> {})[concept_derivation_rule->get_non_terminal()].insert(concept_derivation_rule);
+                }
+                else if constexpr (std::is_same_v<T, dl::ast::DerivationRule<Role>>)
+                {
+                    const auto role_derivation_rule = parse(arg, domain, ref_grammar_constructor_repos);
+                    boost::hana::at_key(rules, boost::hana::type<Role> {})[role_derivation_rule->get_non_terminal()].insert(role_derivation_rule);
+                }
+                else
+                {
+                    throw std::runtime_error("Unknown rule type.");
+                }
+            },
+            part);
+    }
+
+    return rules;
+}
+
+Grammar parse(const dl::ast::Grammar& node, Domain domain)
+{
+    auto repositories = GrammarConstructorRepositories();
+    auto start_symbols = parse(node.head, domain, repositories);
+    auto rules = parse(node.body, domain, repositories);
+
+    return Grammar(std::move(repositories), std::move(start_symbols), std::move(rules));
+}
+
+Grammar parse(const std::string& bnf_description, Domain domain)
+{
+    auto ast = dl::ast::Grammar();
+    dl::parse_ast(bnf_description, dl::grammar_parser(), ast);
+
+    return parse(ast, domain);
+}
+
 }
