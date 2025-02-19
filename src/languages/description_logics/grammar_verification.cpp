@@ -18,6 +18,7 @@
 #include "mimir/languages/description_logics/grammar_verification.hpp"
 
 #include "mimir/languages/description_logics/grammar.hpp"
+#include "mimir/languages/description_logics/grammar_constructor_visitor_interface.hpp"
 
 namespace mimir::dl::grammar
 {
@@ -25,101 +26,79 @@ namespace mimir::dl::grammar
 using NonTerminalSet = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_set<NonTerminal<Concept>>>,
                                         boost::hana::pair<boost::hana::type<Role>, std::unordered_set<NonTerminal<Role>>>>;
 
-template<ConceptOrRole D>
-static void parse_non_terminals_in_body(ConstructorOrNonTerminal<D> constructor, NonTerminalSet& ref_non_terminals)
+class CollectNonTerminalsVisitor : public Visitor
 {
-}
+private:
+    NonTerminalSet& m_head_non_terminals;
+    NonTerminalSet& m_body_non_terminals;
 
-static void parse_non_terminals_in_body(ConceptTop constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptBot constructor, NonTerminalSet& ref_non_terminals) {}
-template<StaticOrFluentOrDerived P>
-static void parse_non_terminals_in_body(ConceptAtomicState<P> constructor, NonTerminalSet& ref_non_terminals)
-{
-}
-template<StaticOrFluentOrDerived P>
-static void parse_non_terminals_in_body(ConceptAtomicGoal<P> constructor, NonTerminalSet& ref_non_terminals)
-{
-}
-static void parse_non_terminals_in_body(ConceptIntersection constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptUnion constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptNegation constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptValueRestriction constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptExistentialQuantification constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptRoleValueMapContainment constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(ConceptRoleValueMapEquality constructor, NonTerminalSet& ref_non_terminals) {}
+public:
+    /* Concepts */
+    void visit(DerivationRule<Concept> constructor) {}
+    void visit(NonTerminal<Concept> constructor) {}
+    void visit(ConstructorOrNonTerminal<Concept> constructor) {}
+    void visit(ConceptBot constructor) {}
+    void visit(ConceptTop constructor) {}
+    void visit(ConceptAtomicState<Static> constructor) {}
+    void visit(ConceptAtomicState<Fluent> constructor) {}
+    void visit(ConceptAtomicState<Derived> constructor) {}
+    void visit(ConceptAtomicGoal<Static> constructor) {}
+    void visit(ConceptAtomicGoal<Fluent> constructor) {}
+    void visit(ConceptAtomicGoal<Derived> constructor) {}
+    void visit(ConceptIntersection constructor) {}
+    void visit(ConceptUnion constructor) {}
+    void visit(ConceptNegation constructor) {}
+    void visit(ConceptValueRestriction constructor) {}
+    void visit(ConceptExistentialQuantification constructor) {}
+    void visit(ConceptRoleValueMapContainment constructor) {}
+    void visit(ConceptRoleValueMapEquality constructor) {}
+    void visit(ConceptNominal constructor) {}
 
-static void parse_non_terminals_in_body(RoleUniversalImpl constructor, NonTerminalSet& ref_non_terminals) {}
-template<StaticOrFluentOrDerived P>
-static void parse_non_terminals_in_body(RoleAtomicState<P> constructor, NonTerminalSet& ref_non_terminals)
-{
-}
-template<StaticOrFluentOrDerived P>
-static void parse_non_terminals_in_body(RoleAtomicGoal<P> constructor, NonTerminalSet& ref_non_terminals)
-{
-}
-static void parse_non_terminals_in_body(RoleIntersection constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleUnion constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleComplement constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleInverse constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleComposition constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleTransitiveClosure constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleReflexiveTransitiveClosure constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleRestriction constructor, NonTerminalSet& ref_non_terminals) {}
-static void parse_non_terminals_in_body(RoleIdentity constructor, NonTerminalSet& ref_non_terminals) {}
+    /* Roles */
+    void visit(DerivationRule<Role> constructor) {}
+    void visit(NonTerminal<Role> constructor) {}
+    void visit(ConstructorOrNonTerminal<Role> constructor) {}
+    void visit(RoleUniversal constructor) {}
+    void visit(RoleAtomicState<Static> constructor) {}
+    void visit(RoleAtomicState<Fluent> constructor) {}
+    void visit(RoleAtomicState<Derived> constructor) {}
+    void visit(RoleAtomicGoal<Static> constructor) {}
+    void visit(RoleAtomicGoal<Fluent> constructor) {}
+    void visit(RoleAtomicGoal<Derived> constructor) {}
+    void visit(RoleIntersection constructor) {}
+    void visit(RoleUnion constructor) {}
+    void visit(RoleComplement constructor) {}
+    void visit(RoleInverse constructor) {}
+    void visit(RoleComposition constructor) {}
+    void visit(RoleTransitiveClosure constructor) {}
+    void visit(RoleReflexiveTransitiveClosure constructor) {}
+    void visit(RoleRestriction constructor) {}
+    void visit(RoleIdentity constructor) {}
 
-template<ConceptOrRole D>
-void parse_non_terminals_in_body(ConstructorOrNonTerminal<D> constructor, NonTerminalSet& ref_non_terminals)
-{
-    std::visit(
-        [&](auto&& arg)
-        {
-            using T = std::decay_t<decltype(arg)>;
-            if constexpr (std::is_same_v<T, NonTerminal<D>>)
-            {
-                // ref_non_terminals.insert(arg);
-            }
-            else if constexpr (std::is_same_v<T, Constructor<D>>)
-            {
-                // TODO: parse recursively
-            }
-            else
-            {
-                static_assert(dependent_false<T>::value,
-                              "parse_non_terminal(non_terminal, ref_non_terminals): Missing implementation for ConstructorOrNonTerminal type.");
-            }
-        },
-        constructor->get_constructor_or_non_terminal());
-}
-
-template<ConceptOrRole D>
-static void parse_body_non_terminals(DerivationRule<D> rule, NonTerminalSet& ref_body_nonterminals)
-{
-    for (const auto& part : rule->get_constructor_or_non_terminals())
+    CollectNonTerminalsVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
+        m_head_non_terminals(head_non_terminals),
+        m_body_non_terminals(body_non_terminals)
     {
-        parse_non_terminals_in_body(part, ref_body_nonterminals);
     }
-}
+};
 
 bool verify_grammar_is_well_defined(const Grammar& grammar)
 {
     auto head_nonterminals = NonTerminalSet {};
     auto body_nonterminals = NonTerminalSet {};
 
+    auto visitor = CollectNonTerminalsVisitor(head_nonterminals, body_nonterminals);
+
     boost::hana::for_each(grammar.get_rules(),
                           [&](auto&& pair)
                           {
-                              auto key = boost::hana::first(pair);
                               auto value = boost::hana::second(pair);
 
                               for (const auto& rules_entry : value)
                               {
-                                  const auto head_nonterminal = rules_entry.first;
-
-                                  boost::hana::at_key(head_nonterminals, key).insert(head_nonterminal);
-
                                   for (const auto& rule : rules_entry.second)
                                   {
-                                      parse_body_non_terminals(rule, body_nonterminals);
+                                      visitor.visit(rule);
                                   }
                               }
                           });
