@@ -24,10 +24,6 @@
 namespace mimir::dl::cnf_grammar
 {
 
-struct Undefined
-{
-};
-
 /// @brief `Primitive` only have to be generated in the first step
 struct Primitive
 {

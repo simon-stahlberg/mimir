@@ -250,6 +250,8 @@ template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 class ConstructorImpl;
 template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 using Constructor = const ConstructorImpl<D, C>*;
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+using ConstructorList = std::vector<Constructor<D, C>>;
 
 /* NonTerminal */
 template<dl::ConceptOrRole D>
