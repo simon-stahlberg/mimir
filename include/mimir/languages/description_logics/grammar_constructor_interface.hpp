@@ -46,8 +46,7 @@ public:
 
     virtual ~ConstructorImpl() = default;
 
-    // TODO: this requires the grammar to be passed
-    virtual bool test_match(dl::Constructor<D> constructor) const = 0;
+    virtual bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const = 0;
 
     /// @brief Accept a visitor.
     virtual void accept(Visitor& visitor) const = 0;

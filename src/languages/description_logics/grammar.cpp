@@ -39,15 +39,16 @@ Grammar Grammar::parse(std::string bnf_description, Domain domain) { return ::mi
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    //     return std::any_of(get_primitive_production_rules<D>().begin(),
-    //                        get_primitive_production_rules<D>().end(),
-    //                        [&constructor](const auto& rule) { return rule->test_match(constructor); })
-    //            || std::any_of(get_composite_production_rules<D>().begin(),
-    //                           get_composite_production_rules<D>().end(),
-    //                           [&constructor](const auto& rule) { return rule->test_match(constructor); })
-    //            || std::any_of(get_alternative_rules<D>().begin(),
-    //                           get_alternative_rules<D>().end(),
-    //                           [&constructor](const auto& rule) { return rule->test_match(constructor); });
+    const auto& start_symbol = get_start_symbol<D>();
+
+    if (!start_symbol)
+    {
+        return false;  ///< sentence is not part of language.
+    }
+
+    const auto& rules = get_rules<D>(start_symbol.value());
+
+    return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, *this); });
 }
 
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;

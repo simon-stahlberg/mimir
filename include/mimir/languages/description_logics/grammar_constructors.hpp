@@ -57,7 +57,7 @@ public:
     NonTerminalImpl(NonTerminalImpl&& other) = default;
     NonTerminalImpl& operator=(NonTerminalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<D> constructor) const;
+    bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
     void accept(Visitor& visitor) const;
 
@@ -94,7 +94,7 @@ public:
     ConstructorOrNonTerminalImpl(ConstructorOrNonTerminalImpl&& other) = default;
     ConstructorOrNonTerminalImpl& operator=(ConstructorOrNonTerminalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<D> constructor) const;
+    bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
     void accept(Visitor& visitor) const;
 
@@ -132,7 +132,7 @@ public:
     DerivationRuleImpl(DerivationRuleImpl&& other) = default;
     DerivationRuleImpl& operator=(DerivationRuleImpl&& other) = default;
 
-    bool test_match(dl::Constructor<D> constructor) const;
+    bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
     void accept(Visitor& visitor) const;
 
@@ -168,7 +168,7 @@ public:
     ConceptBotImpl(ConceptBotImpl&& other) = default;
     ConceptBotImpl& operator=(ConceptBotImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -198,7 +198,7 @@ public:
     ConceptTopImpl(ConceptTopImpl&& other) = default;
     ConceptTopImpl& operator=(ConceptTopImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -230,7 +230,7 @@ public:
     ConceptAtomicStateImpl(ConceptAtomicStateImpl&& other) = default;
     ConceptAtomicStateImpl& operator=(ConceptAtomicStateImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -264,7 +264,7 @@ public:
     ConceptAtomicGoalImpl(ConceptAtomicGoalImpl&& other) = default;
     ConceptAtomicGoalImpl& operator=(ConceptAtomicGoalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -300,7 +300,7 @@ public:
     ConceptIntersectionImpl(ConceptIntersectionImpl&& other) = default;
     ConceptIntersectionImpl& operator=(ConceptIntersectionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -339,7 +339,7 @@ public:
     ConceptUnionImpl(ConceptUnionImpl&& other) = default;
     ConceptUnionImpl& operator=(ConceptUnionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -375,7 +375,7 @@ public:
     ConceptNegationImpl(ConceptNegationImpl&& other) = default;
     ConceptNegationImpl& operator=(ConceptNegationImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -408,7 +408,7 @@ public:
     ConceptValueRestrictionImpl(ConceptValueRestrictionImpl&& other) = default;
     ConceptValueRestrictionImpl& operator=(ConceptValueRestrictionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -444,7 +444,7 @@ public:
     ConceptExistentialQuantificationImpl(ConceptExistentialQuantificationImpl&& other) = default;
     ConceptExistentialQuantificationImpl& operator=(ConceptExistentialQuantificationImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -480,7 +480,7 @@ public:
     ConceptRoleValueMapContainmentImpl(ConceptRoleValueMapContainmentImpl&& other) = default;
     ConceptRoleValueMapContainmentImpl& operator=(ConceptRoleValueMapContainmentImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -516,7 +516,7 @@ public:
     ConceptRoleValueMapEqualityImpl(ConceptRoleValueMapEqualityImpl&& other) = default;
     ConceptRoleValueMapEqualityImpl& operator=(ConceptRoleValueMapEqualityImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -549,7 +549,7 @@ public:
     ConceptNominalImpl(ConceptNominalImpl&& other) = default;
     ConceptNominalImpl& operator=(ConceptNominalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Concept> constructor) const override;
+    bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -584,7 +584,7 @@ public:
     RoleUniversalImpl(RoleUniversalImpl&& other) = default;
     RoleUniversalImpl& operator=(RoleUniversalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -616,7 +616,7 @@ public:
     RoleAtomicStateImpl(RoleAtomicStateImpl&& other) = default;
     RoleAtomicStateImpl& operator=(RoleAtomicStateImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -650,7 +650,7 @@ public:
     RoleAtomicGoalImpl(RoleAtomicGoalImpl&& other) = default;
     RoleAtomicGoalImpl& operator=(RoleAtomicGoalImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -684,7 +684,7 @@ public:
     RoleIntersectionImpl(RoleIntersectionImpl&& other) = default;
     RoleIntersectionImpl& operator=(RoleIntersectionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -718,7 +718,7 @@ public:
     RoleUnionImpl(RoleUnionImpl&& other) = default;
     RoleUnionImpl& operator=(RoleUnionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -751,7 +751,7 @@ public:
     RoleComplementImpl(RoleComplementImpl&& other) = default;
     RoleComplementImpl& operator=(RoleComplementImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -783,7 +783,7 @@ public:
     RoleInverseImpl(RoleInverseImpl&& other) = default;
     RoleInverseImpl& operator=(RoleInverseImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -816,7 +816,7 @@ public:
     RoleCompositionImpl(RoleCompositionImpl&& other) = default;
     RoleCompositionImpl& operator=(RoleCompositionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -849,7 +849,7 @@ public:
     RoleTransitiveClosureImpl(RoleTransitiveClosureImpl&& other) = default;
     RoleTransitiveClosureImpl& operator=(RoleTransitiveClosureImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -881,7 +881,7 @@ public:
     RoleReflexiveTransitiveClosureImpl(RoleReflexiveTransitiveClosureImpl&& other) = default;
     RoleReflexiveTransitiveClosureImpl& operator=(RoleReflexiveTransitiveClosureImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -914,7 +914,7 @@ public:
     RoleRestrictionImpl(RoleRestrictionImpl&& other) = default;
     RoleRestrictionImpl& operator=(RoleRestrictionImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 
@@ -947,7 +947,7 @@ public:
     RoleIdentityImpl(RoleIdentityImpl&& other) = default;
     RoleIdentityImpl& operator=(RoleIdentityImpl&& other) = default;
 
-    bool test_match(dl::Constructor<Role> constructor) const override;
+    bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
     void accept(Visitor& visitor) const override;
 

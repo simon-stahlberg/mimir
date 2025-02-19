@@ -60,7 +60,7 @@ public:
      */
 
     template<ConceptOrRole D>
-    const std::optional<NonTerminal<D>>& get_start_symbols() const
+    const std::optional<NonTerminal<D>>& get_start_symbol() const
     {
         return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
     }
