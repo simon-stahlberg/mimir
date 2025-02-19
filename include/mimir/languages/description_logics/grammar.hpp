@@ -33,6 +33,11 @@ using StartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concep
 using GrammarRules = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
                                       boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
 
+enum class GrammarSpecificationEnum
+{
+    FRANCES_ET_AL_AAAI2021 = 0,
+};
+
 class Grammar
 {
 private:
@@ -47,8 +52,12 @@ public:
     Grammar();
     Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules);
 
-    /// @brief Create a grammar from a BNF description.
+    /// @brief Create a grammar from a BNF description for a given domain.
+    /// The domain is used for error checking only to ensure that predicates or constants are available.
     static Grammar parse(std::string bnf_description, Domain domain);
+
+    /// @brief Create a predefined grammar for a given domain.
+    static Grammar create(GrammarSpecificationEnum type, Domain domain);
 
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.

@@ -35,8 +35,12 @@ Grammar::Grammar(GrammarConstructorRepositories repositories, StartSymbols start
     verify_grammar_is_well_defined(*this);
 }
 
-/// @brief Create a grammar from a BNF description.
 Grammar Grammar::parse(std::string bnf_description, Domain domain) { return ::mimir::dl::grammar::parse(bnf_description, domain); }
+
+Grammar Grammar::create(GrammarSpecificationEnum type, Domain domain)
+{
+    // TODO
+}
 
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
