@@ -19,6 +19,7 @@
 #define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_GRAMMAR_HPP_
 
 #include "mimir/formalism/declarations.hpp"
+#include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
 
 #include <loki/loki.hpp>
@@ -70,6 +71,8 @@ public:
     {
         return boost::hana::at_key(m_rules, boost::hana::type<D> {}).at(non_terminal);
     }
+
+    const GrammarRules& get_rules() const { return m_rules; }
 };
 }
 
