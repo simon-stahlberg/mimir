@@ -34,7 +34,10 @@ private:
 
 public:
     /* Concepts */
-    void visit(DerivationRule<Concept> constructor) {}
+    void visit(DerivationRule<Concept> constructor)
+    {
+        boost::hana::at_key(m_head_non_terminals, boost::hana::type<Concept> {}).insert(constructor->get_non_terminal());
+    }
     void visit(NonTerminal<Concept> constructor) {}
     void visit(ConstructorOrNonTerminal<Concept> constructor) {}
     void visit(ConceptBot constructor) {}
