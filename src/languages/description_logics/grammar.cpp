@@ -17,6 +17,7 @@
 
 #include "mimir/languages/description_logics/grammar.hpp"
 
+#include "mimir/languages/description_logics/grammar_verification.hpp"
 #include "mimir/languages/description_logics/parser/parser.hpp"
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 #include "parser.hpp"
@@ -31,6 +32,7 @@ Grammar::Grammar(GrammarConstructorRepositories repositories, StartSymbols start
     m_start_symbols(std::move(start_symbols)),
     m_rules(std::move(rules))
 {
+    verify_grammar_is_well_defined(*this);
 }
 
 /// @brief Create a grammar from a BNF description.

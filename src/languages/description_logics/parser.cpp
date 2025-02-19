@@ -396,11 +396,6 @@ static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, Domain do
 
 static StartSymbols parse(const dl::ast::GrammarHead& node, Domain domain, GrammarConstructorRepositories& ref_grammar_constructor_repos)
 {
-    if (!node.concept_start.has_value() && !node.role_start.has_value())
-    {
-        throw std::runtime_error("parse(node, domain, ref_grammar_constructor_repos): No start symbols defined.");
-    }
-
     auto start_symbols = StartSymbols();
 
     if (node.concept_start)

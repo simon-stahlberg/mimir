@@ -34,49 +34,24 @@ private:
 
 public:
     /* Concepts */
-    void visit(DerivationRule<Concept> constructor)
+    void visit(DerivationRule<Concept> constructor) override
     {
+        // Store the head nonterminal but do not visit the head non terminal.
         boost::hana::at_key(m_head_non_terminals, boost::hana::type<Concept> {}).insert(constructor->get_non_terminal());
+        // Recurse further
+        Visitor::visit(constructor->get_constructor_or_non_terminals());
     }
-    void visit(NonTerminal<Concept> constructor) {}
-    void visit(ConstructorOrNonTerminal<Concept> constructor) {}
-    void visit(ConceptBot constructor) {}
-    void visit(ConceptTop constructor) {}
-    void visit(ConceptAtomicState<Static> constructor) {}
-    void visit(ConceptAtomicState<Fluent> constructor) {}
-    void visit(ConceptAtomicState<Derived> constructor) {}
-    void visit(ConceptAtomicGoal<Static> constructor) {}
-    void visit(ConceptAtomicGoal<Fluent> constructor) {}
-    void visit(ConceptAtomicGoal<Derived> constructor) {}
-    void visit(ConceptIntersection constructor) {}
-    void visit(ConceptUnion constructor) {}
-    void visit(ConceptNegation constructor) {}
-    void visit(ConceptValueRestriction constructor) {}
-    void visit(ConceptExistentialQuantification constructor) {}
-    void visit(ConceptRoleValueMapContainment constructor) {}
-    void visit(ConceptRoleValueMapEquality constructor) {}
-    void visit(ConceptNominal constructor) {}
+    void visit(NonTerminal<Concept> constructor) override { boost::hana::at_key(m_body_non_terminals, boost::hana::type<Concept> {}).insert(constructor); }
 
     /* Roles */
-    void visit(DerivationRule<Role> constructor) {}
-    void visit(NonTerminal<Role> constructor) {}
-    void visit(ConstructorOrNonTerminal<Role> constructor) {}
-    void visit(RoleUniversal constructor) {}
-    void visit(RoleAtomicState<Static> constructor) {}
-    void visit(RoleAtomicState<Fluent> constructor) {}
-    void visit(RoleAtomicState<Derived> constructor) {}
-    void visit(RoleAtomicGoal<Static> constructor) {}
-    void visit(RoleAtomicGoal<Fluent> constructor) {}
-    void visit(RoleAtomicGoal<Derived> constructor) {}
-    void visit(RoleIntersection constructor) {}
-    void visit(RoleUnion constructor) {}
-    void visit(RoleComplement constructor) {}
-    void visit(RoleInverse constructor) {}
-    void visit(RoleComposition constructor) {}
-    void visit(RoleTransitiveClosure constructor) {}
-    void visit(RoleReflexiveTransitiveClosure constructor) {}
-    void visit(RoleRestriction constructor) {}
-    void visit(RoleIdentity constructor) {}
+    void visit(DerivationRule<Role> constructor) override
+    {
+        // Store the head nonterminal but do not visit the head non terminal.
+        boost::hana::at_key(m_head_non_terminals, boost::hana::type<Role> {}).insert(constructor->get_non_terminal());
+        // Recurse further
+        Visitor::visit(constructor->get_constructor_or_non_terminals());
+    }
+    void visit(NonTerminal<Role> constructor) override { boost::hana::at_key(m_body_non_terminals, boost::hana::type<Role> {}).insert(constructor); }
 
     CollectNonTerminalsVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
         m_head_non_terminals(head_non_terminals),
@@ -85,7 +60,7 @@ public:
     }
 };
 
-bool verify_grammar_is_well_defined(const Grammar& grammar)
+void verify_grammar_is_well_defined(const Grammar& grammar)
 {
     auto head_nonterminals = NonTerminalSet {};
     auto body_nonterminals = NonTerminalSet {};
@@ -103,6 +78,57 @@ bool verify_grammar_is_well_defined(const Grammar& grammar)
                                   {
                                       visitor.visit(rule);
                                   }
+                              }
+                          });
+
+    /* 1. Verify that all body non-terminals appear in a head. */
+    boost::hana::for_each(body_nonterminals,
+                          [&](auto&& pair)
+                          {
+                              auto& key = boost::hana::first(pair);
+                              auto& non_terminals = boost::hana::second(pair);
+
+                              for (const auto& body_nonterminal : non_terminals)
+                              {
+                                  if (!boost::hana::at_key(head_nonterminals, key).contains(body_nonterminal))
+                                  {
+                                      throw std::runtime_error("verify_grammar_is_well_defined(grammar): The body nonterminal " + body_nonterminal->get_name()
+                                                               + " is never defined in a rule head.");
+                                  }
+                              }
+                          });
+
+    /* 2. Verify that grammar has a start symbol. */
+    if (!boost::hana::any_of(boost::hana::values(grammar.get_start_symbols()), [](auto&& value) { return value.has_value(); }))
+    {
+        throw std::runtime_error("verify_grammar_is_well_defined(grammar): The grammar does not define any start symbol.");
+    }
+
+    /* 3. Verify that all start symbols appear in a head. */
+    boost::hana::for_each(grammar.get_start_symbols(),
+                          [&](auto&& pair)
+                          {
+                              auto& key = boost::hana::first(pair);
+                              auto& start_non_terminal = boost::hana::second(pair);
+
+                              if (start_non_terminal.has_value() && !boost::hana::at_key(head_nonterminals, key).contains(start_non_terminal.value()))
+                              {
+                                  throw std::runtime_error("verify_grammar_is_well_defined(grammar): The start nonterminal "
+                                                           + start_non_terminal.value()->get_name() + " is never defined in a rule head.");
+                              }
+                          });
+
+    /* 4. Verify that all start symbols only appear in a head. */
+    boost::hana::for_each(grammar.get_start_symbols(),
+                          [&](auto&& pair)
+                          {
+                              auto& key = boost::hana::first(pair);
+                              auto& start_non_terminal = boost::hana::second(pair);
+
+                              if (start_non_terminal.has_value() && boost::hana::at_key(body_nonterminals, key).contains(start_non_terminal.value()))
+                              {
+                                  throw std::runtime_error("verify_grammar_is_well_defined(grammar): The start nonterminal "
+                                                           + start_non_terminal.value()->get_name() + " should not appear in a rule body.");
                               }
                           });
 }

@@ -66,6 +66,8 @@ public:
         return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
     }
 
+    const StartSymbols& get_start_symbols() const { return m_start_symbols; }
+
     template<ConceptOrRole D>
     const DerivationRuleSet<D>& get_rules(NonTerminal<D> non_terminal) const
     {

@@ -22,7 +22,7 @@
 
 namespace mimir::dl::grammar
 {
-extern bool verify_grammar_is_well_defined(const Grammar& grammar);
+extern void verify_grammar_is_well_defined(const Grammar& grammar);
 }
 
 #endif

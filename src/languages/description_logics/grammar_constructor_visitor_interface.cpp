@@ -26,7 +26,7 @@ namespace mimir::dl::grammar
 /* Concepts */
 void Visitor::visit(DerivationRule<Concept> constructor)
 {
-    this->visit(constructor->get_non_terminal());
+    constructor->get_non_terminal()->accept(*this);
     this->visit(constructor->get_constructor_or_non_terminals());
 }
 void Visitor::visit(NonTerminal<Concept> constructor) {}
@@ -41,41 +41,41 @@ void Visitor::visit(ConceptAtomicGoal<Fluent> constructor) {}
 void Visitor::visit(ConceptAtomicGoal<Derived> constructor) {}
 void Visitor::visit(ConceptIntersection constructor)
 {
-    this->visit(constructor->get_concept_or_non_terminal_left());
-    this->visit(constructor->get_concept_or_non_terminal_right());
+    constructor->get_concept_or_non_terminal_left()->accept(*this);
+    constructor->get_concept_or_non_terminal_right()->accept(*this);
 }
 void Visitor::visit(ConceptUnion constructor)
 {
-    this->visit(constructor->get_concept_or_non_terminal_left());
-    this->visit(constructor->get_concept_or_non_terminal_right());
+    constructor->get_concept_or_non_terminal_left()->accept(*this);
+    constructor->get_concept_or_non_terminal_right()->accept(*this);
 }
-void Visitor::visit(ConceptNegation constructor) { this->visit(constructor->get_concept_or_non_terminal()); }
+void Visitor::visit(ConceptNegation constructor) { constructor->get_concept_or_non_terminal()->accept(*this); }
 void Visitor::visit(ConceptValueRestriction constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal());
-    this->visit(constructor->get_concept_or_non_terminal());
+    constructor->get_role_or_non_terminal()->accept(*this);
+    constructor->get_concept_or_non_terminal()->accept(*this);
 }
 void Visitor::visit(ConceptExistentialQuantification constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal());
-    this->visit(constructor->get_concept_or_non_terminal());
+    constructor->get_role_or_non_terminal()->accept(*this);
+    constructor->get_concept_or_non_terminal()->accept(*this);
 }
 void Visitor::visit(ConceptRoleValueMapContainment constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal_left());
-    this->visit(constructor->get_role_or_non_terminal_right());
+    constructor->get_role_or_non_terminal_left()->accept(*this);
+    constructor->get_role_or_non_terminal_right()->accept(*this);
 }
 void Visitor::visit(ConceptRoleValueMapEquality constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal_left());
-    this->visit(constructor->get_role_or_non_terminal_right());
+    constructor->get_role_or_non_terminal_left()->accept(*this);
+    constructor->get_role_or_non_terminal_right()->accept(*this);
 }
 void Visitor::visit(ConceptNominal constructor) {}
 
 /* Roles */
 void Visitor::visit(DerivationRule<Role> constructor)
 {
-    this->visit(constructor->get_non_terminal());
+    constructor->get_non_terminal()->accept(*this);
     this->visit(constructor->get_constructor_or_non_terminals());
 }
 void Visitor::visit(NonTerminal<Role> constructor) {}
@@ -89,28 +89,28 @@ void Visitor::visit(RoleAtomicGoal<Fluent> constructor) {}
 void Visitor::visit(RoleAtomicGoal<Derived> constructor) {}
 void Visitor::visit(RoleIntersection constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal_left());
-    this->visit(constructor->get_role_or_non_terminal_right());
+    constructor->get_role_or_non_terminal_left()->accept(*this);
+    constructor->get_role_or_non_terminal_right()->accept(*this);
 }
 void Visitor::visit(RoleUnion constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal_left());
-    this->visit(constructor->get_role_or_non_terminal_right());
+    constructor->get_role_or_non_terminal_left()->accept(*this);
+    constructor->get_role_or_non_terminal_right()->accept(*this);
 }
-void Visitor::visit(RoleComplement constructor) { this->visit(constructor->get_role_or_non_terminal()); }
-void Visitor::visit(RoleInverse constructor) { this->visit(constructor->get_role_or_non_terminal()); }
+void Visitor::visit(RoleComplement constructor) { constructor->get_role_or_non_terminal()->accept(*this); }
+void Visitor::visit(RoleInverse constructor) { constructor->get_role_or_non_terminal()->accept(*this); }
 void Visitor::visit(RoleComposition constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal_left());
-    this->visit(constructor->get_role_or_non_terminal_right());
+    constructor->get_role_or_non_terminal_left()->accept(*this);
+    constructor->get_role_or_non_terminal_right()->accept(*this);
 }
-void Visitor::visit(RoleTransitiveClosure constructor) { this->visit(constructor->get_role_or_non_terminal()); }
-void Visitor::visit(RoleReflexiveTransitiveClosure constructor) { this->visit(constructor->get_role_or_non_terminal()); }
+void Visitor::visit(RoleTransitiveClosure constructor) { constructor->get_role_or_non_terminal()->accept(*this); }
+void Visitor::visit(RoleReflexiveTransitiveClosure constructor) { constructor->get_role_or_non_terminal()->accept(*this); }
 void Visitor::visit(RoleRestriction constructor)
 {
-    this->visit(constructor->get_role_or_non_terminal());
-    this->visit(constructor->get_concept_or_non_terminal());
+    constructor->get_role_or_non_terminal()->accept(*this);
+    constructor->get_concept_or_non_terminal()->accept(*this);
 }
-void Visitor::visit(RoleIdentity constructor) { this->visit(constructor->get_concept_or_non_terminal()); }
+void Visitor::visit(RoleIdentity constructor) { constructor->get_concept_or_non_terminal()->accept(*this); }
 
 }
