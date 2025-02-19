@@ -30,7 +30,7 @@ namespace mimir::dl::cnf_grammar
  * Grammar constructor hierarchy parallel to dl constructors.
  */
 
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B = Undefined, Commutativity A = Undefined>
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 class ConstructorImpl
 {
 protected:

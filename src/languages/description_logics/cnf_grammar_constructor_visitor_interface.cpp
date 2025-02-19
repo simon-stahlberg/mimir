@@ -15,32 +15,11 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTORS_TAG_HPP_
-#define MIMIR_LANGUAGES_DESCRIPTION_LOGICS_CNF_GRAMMAR_CONSTRUCTORS_TAG_HPP_
+#include "mimir/languages/description_logics/cnf_grammar_constructor_visitor_interface.hpp"
 
-#include <concepts>
-#include <cstddef>
+#include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
 
 namespace mimir::dl::cnf_grammar
 {
 
-struct Undefined
-{
-};
-
-/// @brief `Primitive` only have to be generated in the first step
-struct Primitive
-{
-};
-
-/// @brief `Composite` are refined in all subsequent steps
-struct Composite
-{
-};
-
-template<typename T>
-concept PrimitiveOrComposite = std::is_same<T, Primitive>::value || std::is_same<T, Composite>::value;
-
 }
-
-#endif

@@ -246,26 +246,16 @@ namespace cnf_grammar
  */
 
 /* Constructor */
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B = Undefined, Commutativity A = Undefined>
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
 class ConstructorImpl;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B = Undefined, Commutativity A = Undefined>
-using Constructor = const ConstructorImpl<D>*;
+template<dl::ConceptOrRole D, PrimitiveOrComposite C>
+using Constructor = const ConstructorImpl<D, C>*;
 
 /* NonTerminal */
 template<dl::ConceptOrRole D>
 class NonTerminalImpl;
 template<dl::ConceptOrRole D>
 using NonTerminal = const NonTerminalImpl<D>*;
-
-/* DerivationRule */
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B, Commutativity A>
-class DerivationRuleImpl;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B, Commutativity A>
-using DerivationRule = const DerivationRuleImpl<D>*;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B, Commutativity A>
-using DerivationRuleList = std::vector<DerivationRule<D>>;
-template<dl::ConceptOrRole D, PrimitiveOrComposite C, Arity B, Commutativity A>
-using DerivationRuleSet = std::unordered_set<DerivationRule<D>>;
 
 /* Concrete concepts */
 class ConceptTopImpl;
