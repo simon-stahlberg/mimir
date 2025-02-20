@@ -36,7 +36,7 @@ NonTerminalImpl<D>::NonTerminalImpl(Index index, std::string name) : m_index(ind
 template<dl::ConceptOrRole D>
 bool NonTerminalImpl<D>::test_match(dl::Constructor<D> constructor, const Grammar& grammar) const
 {
-    const auto& rules = grammar.get_rules(this);
+    const auto& rules = grammar.get_rules_container().get(this);
 
     return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, grammar); });
 }

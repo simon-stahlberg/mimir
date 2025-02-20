@@ -70,12 +70,12 @@ public:
      */
 
     template<ConceptOrRole D>
-    const std::optional<NonTerminal<D>>& get_start_symbol() const
+    const std::optional<NonTerminal<D>>& get() const
     {
         return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
     }
 
-    const StartSymbols& get_start_symbols() const { return m_start_symbols; }
+    const StartSymbols& get() const { return m_start_symbols; }
 
     template<ConceptOrRole D, PrimitiveOrComposite C>
     const ConstructorList<D, C>& get_rules(NonTerminal<D> non_terminal) const

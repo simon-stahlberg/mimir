@@ -25,7 +25,7 @@
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar(ConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules) :
+Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, GrammarRulesContainer rules) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
     m_rules(std::move(rules))
@@ -53,19 +53,23 @@ Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    const auto& start_symbol = get_start_symbol<D>();
+    const auto& start_symbol = m_start_symbols.template get_start_symbol<D>();
 
     if (!start_symbol)
     {
         return false;  ///< sentence is not part of language.
     }
 
-    const auto& rules = get_rules<D>(start_symbol.value());
+    const auto& rules = m_rules.template get<D>(start_symbol.value());
 
     return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, *this); });
 }
 
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
 template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
+
+const StartSymbolsContainer& Grammar::get_start_symbols_container() const { return m_start_symbols; }
+
+const GrammarRulesContainer& Grammar::get_rules_container() const { return m_rules; }
 
 }

@@ -265,13 +265,13 @@ public:
 
 Grammar translate_to_cnf(const Grammar& grammar)
 {
-    auto start_symbols = StartSymbols();
-    auto grammar_rules = GrammarRules {};
+    auto start_symbols = StartSymbolsContainer();
+    auto grammar_rules = GrammarRulesContainer();
     // auto repositories = GrammarConstructorRepositories();
 
     /* Step 1: flatten A ::= B | C  ==> A ::= B and A::= C */
 
-    boost::hana::for_each(grammar.get_rules(),
+    boost::hana::for_each(grammar.get_rules_container().get(),
                           [&](auto&& pair)
                           {
                               auto key = boost::hana::first(pair);

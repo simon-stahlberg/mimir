@@ -236,6 +236,8 @@ class Visitor;
  * Grammar
  */
 
+class StartSymbolsContainer;
+class GrammarRulesContainer;
 class Grammar;
 
 /**

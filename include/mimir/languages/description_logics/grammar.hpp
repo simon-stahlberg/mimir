@@ -21,16 +21,12 @@
 #include "mimir/formalism/declarations.hpp"
 #include "mimir/languages/description_logics/declarations.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_repositories.hpp"
+#include "mimir/languages/description_logics/grammar_containers.hpp"
 
 #include <loki/loki.hpp>
 
 namespace mimir::dl::grammar
 {
-using StartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
-                                      boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
-
-using GrammarRules = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
-                                      boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
 
 enum class GrammarSpecificationEnum
 {
@@ -44,11 +40,11 @@ private:
     ConstructorRepositories m_repositories;
 
     /* The rules of the grammar. */
-    StartSymbols m_start_symbols;
-    GrammarRules m_rules;
+    StartSymbolsContainer m_start_symbols;
+    GrammarRulesContainer m_rules;
 
 public:
-    Grammar(ConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules);
+    Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, GrammarRulesContainer rules);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.
@@ -67,21 +63,8 @@ public:
      * Getters
      */
 
-    template<ConceptOrRole D>
-    const std::optional<NonTerminal<D>>& get_start_symbol() const
-    {
-        return boost::hana::at_key(m_start_symbols, boost::hana::type<D> {});
-    }
-
-    const StartSymbols& get_start_symbols() const { return m_start_symbols; }
-
-    template<ConceptOrRole D>
-    const DerivationRuleSet<D>& get_rules(NonTerminal<D> non_terminal) const
-    {
-        return boost::hana::at_key(m_rules, boost::hana::type<D> {}).at(non_terminal);
-    }
-
-    const GrammarRules& get_rules() const { return m_rules; }
+    const StartSymbolsContainer& get_start_symbols_container() const;
+    const GrammarRulesContainer& get_rules_container() const;
 };
 }
 

@@ -68,7 +68,7 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
 
     auto visitor = CollectNonTerminalsVisitor(head_nonterminals, body_nonterminals);
 
-    boost::hana::for_each(grammar.get_rules(),
+    boost::hana::for_each(grammar.get_rules_container().get(),
                           [&](auto&& pair)
                           {
                               auto value = boost::hana::second(pair);
@@ -100,13 +100,13 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
                           });
 
     /* 2. Verify that grammar has a start symbol. */
-    if (!boost::hana::any_of(boost::hana::values(grammar.get_start_symbols()), [](auto&& value) { return value.has_value(); }))
+    if (!boost::hana::any_of(boost::hana::values(grammar.get_start_symbols_container().get()), [](auto&& value) { return value.has_value(); }))
     {
         throw std::runtime_error("verify_grammar_is_well_defined(grammar): The grammar does not define any start symbol.");
     }
 
     /* 3. Verify that all start symbols appear in a head. */
-    boost::hana::for_each(grammar.get_start_symbols(),
+    boost::hana::for_each(grammar.get_start_symbols_container().get(),
                           [&](auto&& pair)
                           {
                               auto& key = boost::hana::first(pair);
@@ -120,7 +120,7 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
                           });
 
     /* 4. Verify that all start symbols only appear in a head. */
-    boost::hana::for_each(grammar.get_start_symbols(),
+    boost::hana::for_each(grammar.get_start_symbols_container().get(),
                           [&](auto&& pair)
                           {
                               auto& key = boost::hana::first(pair);

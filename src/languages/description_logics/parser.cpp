@@ -366,49 +366,30 @@ static DerivationRule<D> parse(const dl::ast::DerivationRule<D>& node, Domain do
     return ref_repositories.template get_or_create_derivation_rule<D>(non_terminal, std::move(constructor_or_non_terminals));
 }
 
-static StartSymbols parse(const dl::ast::GrammarHead& node, Domain domain, ConstructorRepositories& ref_repositories)
+static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, Domain domain, ConstructorRepositories& ref_repositories)
 {
-    auto start_symbols = StartSymbols();
+    auto start_symbols = StartSymbolsContainer();
 
     if (node.concept_start)
     {
-        boost::hana::at_key(start_symbols, boost::hana::type<Concept> {}) = parse(node.concept_start.value(), domain, ref_repositories);
+        start_symbols.insert(parse(node.concept_start.value(), domain, ref_repositories));
     }
 
     if (node.role_start)
     {
-        boost::hana::at_key(start_symbols, boost::hana::type<Role> {}) = parse(node.role_start.value(), domain, ref_repositories);
+        start_symbols.insert(parse(node.role_start.value(), domain, ref_repositories));
     }
 
     return start_symbols;
 }
 
-static GrammarRules parse(const dl::ast::GrammarBody& node, Domain domain, ConstructorRepositories& ref_repositories)
+static GrammarRulesContainer parse(const dl::ast::GrammarBody& node, Domain domain, ConstructorRepositories& ref_repositories)
 {
-    auto rules = GrammarRules {};
+    auto rules = GrammarRulesContainer {};
 
     for (const auto& part : node.rules)
     {
-        boost::apply_visitor(
-            [&](const auto& arg)
-            {
-                using T = std::decay_t<decltype(arg)>;
-                if constexpr (std::is_same_v<T, dl::ast::DerivationRule<Concept>>)
-                {
-                    const auto concept_derivation_rule = parse(arg, domain, ref_repositories);
-                    boost::hana::at_key(rules, boost::hana::type<Concept> {})[concept_derivation_rule->get_non_terminal()].insert(concept_derivation_rule);
-                }
-                else if constexpr (std::is_same_v<T, dl::ast::DerivationRule<Role>>)
-                {
-                    const auto role_derivation_rule = parse(arg, domain, ref_repositories);
-                    boost::hana::at_key(rules, boost::hana::type<Role> {})[role_derivation_rule->get_non_terminal()].insert(role_derivation_rule);
-                }
-                else
-                {
-                    throw std::runtime_error("Unknown rule type.");
-                }
-            },
-            part);
+        boost::apply_visitor([&](const auto& arg) { rules.insert(parse(arg, domain, ref_repositories)); }, part);
     }
 
     return rules;
