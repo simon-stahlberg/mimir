@@ -198,6 +198,7 @@ using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNum
                                                      GroundFunctionExpressionBinaryOperator,
                                                      GroundFunctionExpressionMultiOperator,
                                                      GroundFunctionExpressionMinus,
+                                                     // GroundFunctionExpressionFunction<Static>,
                                                      GroundFunctionExpressionFunction<Fluent>,
                                                      GroundFunctionExpressionFunction<Auxiliary>>;
 

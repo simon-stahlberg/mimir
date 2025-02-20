@@ -106,7 +106,7 @@ TEST(MimirTests, DatasetsKnowledgeBaseConstructorTest)
             num_tuple_graph_edges += tuple_graph.get_graph().get_num_edges();
         }
 
-        EXPECT_EQ(num_tuple_graph_vertices, 47);
+        EXPECT_EQ(num_tuple_graph_vertices, 47);  ///< Nice! symmetry reduction decreases the size of tuple graphs :)
         EXPECT_EQ(num_tuple_graph_edges, 35);
     }
 }

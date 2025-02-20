@@ -22,6 +22,15 @@
 
 namespace mimir
 {
+/*
+Regarding the issue of sharing a domain across different problems:
+
+After a little bit of extra thinking I am coming to the conclusion that all translators in the formalism component need to be rewritten to accept a set of
+problems to ensure that the indexing schemas are synchronized after each step. Furthermore, problem-specific substitutions must be prohibitted. Furthermore2,
+the SegmentedRepository is currently not powerful enough to combine domain constants and problem specific objects into indexing schemas. Same with predicates,
+which might occur when translating complicated goals into derived predicates + axioms. It is not something that can be implemented quickly and requires a decent
+understanding of the whole translation process and the overall internals of the library.
+*/
 class DomainImpl
 {
 private:

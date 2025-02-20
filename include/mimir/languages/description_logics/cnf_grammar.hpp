@@ -56,15 +56,8 @@ private:
     GrammarRules m_rules;
 
 public:
-    Grammar();
-    Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules);
-
-    /// @brief Create a grammar from a BNF description for a given domain.
-    /// The domain is used for error checking only to ensure that predicates or constants are available.
-    static Grammar parse(std::string bnf_description, Domain domain);
-
-    /// @brief Create a predefined grammar for a given domain.
-    static Grammar create(GrammarSpecificationEnum type, Domain domain);
+    /// @brief Translate a grammar to CNF.
+    explicit Grammar(const grammar::Grammar& grammar);
 
     /// @brief Tests whether a dl constructor satisfies the grammar specification.
     /// @param constructor is the dl constructor to test.

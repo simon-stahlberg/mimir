@@ -52,7 +52,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
 
         auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar::parse(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
     }
 
     {
@@ -73,7 +73,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
 
         auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar::parse(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
     }
 
     {
@@ -97,7 +97,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
 
         auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar::parse(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
     }
 
     {
@@ -121,7 +121,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarParseTest)
 
         auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-        EXPECT_ANY_THROW(dl::grammar::Grammar::parse(bnf_description, parser.get_domain()));
+        EXPECT_ANY_THROW(dl::grammar::Grammar(bnf_description, parser.get_domain()));
     }
 }
 
@@ -147,7 +147,7 @@ TEST(MimirTests, LanguagesDescriptionLogicsGrammarTestMatchTest)
 
     auto parser = PDDLParser(fs::path(std::string(DATA_DIR) + "gripper/domain.pddl"), fs::path(std::string(DATA_DIR) + "gripper/test_problem.pddl"));
 
-    auto grammar = dl::grammar::Grammar::parse(bnf_description, parser.get_domain());
+    auto grammar = dl::grammar::Grammar(bnf_description, parser.get_domain());
 
     auto constructor_repositories = dl::ConstructorRepositories();
 

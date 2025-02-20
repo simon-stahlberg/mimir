@@ -25,8 +25,6 @@
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar() : m_repositories(), m_start_symbols(), m_rules() {}
-
 Grammar::Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
@@ -35,11 +33,21 @@ Grammar::Grammar(GrammarConstructorRepositories repositories, StartSymbols start
     verify_grammar_is_well_defined(*this);
 }
 
-Grammar Grammar::parse(std::string bnf_description, Domain domain) { return ::mimir::dl::grammar::parse(bnf_description, domain); }
+Grammar::Grammar(std::string bnf_description, Domain domain)
+{
+    auto grammar = mimir::dl::grammar::parse(bnf_description, domain);
+    m_repositories = std::move(grammar.m_repositories);
+    m_start_symbols = std::move(grammar.m_start_symbols);
+    m_rules = std::move(grammar.m_rules);
 
-Grammar Grammar::create(GrammarSpecificationEnum type, Domain domain)
+    verify_grammar_is_well_defined(*this);
+}
+
+Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
 {
     // TODO
+
+    verify_grammar_is_well_defined(*this);
 }
 
 template<ConceptOrRole D>
