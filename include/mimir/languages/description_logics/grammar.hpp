@@ -41,14 +41,14 @@ class Grammar
 {
 private:
     /* Memory */
-    GrammarConstructorRepositories m_repositories;
+    ConstructorRepositories m_repositories;
 
     /* The rules of the grammar. */
     StartSymbols m_start_symbols;
     GrammarRules m_rules;
 
 public:
-    Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules);
+    Grammar(ConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules);
 
     /// @brief Create a grammar from a BNF description for a given domain.
     /// The domain is used for error checking only to ensure that predicates or constants are available.

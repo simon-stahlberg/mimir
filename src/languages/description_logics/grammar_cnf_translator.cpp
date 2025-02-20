@@ -267,7 +267,7 @@ Grammar translate_to_cnf(const Grammar& grammar)
 {
     auto start_symbols = StartSymbols();
     auto grammar_rules = GrammarRules {};
-    auto repositories = GrammarConstructorRepositories();
+    // auto repositories = GrammarConstructorRepositories();
 
     /* Step 1: flatten A ::= B | C  ==> A ::= B and A::= C */
 

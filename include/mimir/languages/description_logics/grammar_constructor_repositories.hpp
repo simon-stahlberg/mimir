@@ -73,7 +73,7 @@ using RoleReflexiveTransitiveClosureRepository = SegmentedDLRepository<RoleRefle
 using RoleRestrictionRepository = SegmentedDLRepository<RoleRestrictionImpl>;
 using RoleIdentityFactory = SegmentedDLRepository<RoleIdentityImpl>;
 
-using GrammarConstructorRepositories =
+using HanaConstructorRepositories =
     boost::hana::map<boost::hana::pair<boost::hana::type<NonTerminalImpl<Concept>>, NonTerminalFactory<Concept>>,
                      boost::hana::pair<boost::hana::type<ConstructorOrNonTerminalImpl<Concept>>, ChoiceFactory<Concept>>,
                      boost::hana::pair<boost::hana::type<DerivationRuleImpl<Concept>>, DerivationRuleFactory<Concept>>,
@@ -113,18 +113,27 @@ using GrammarConstructorRepositories =
                      boost::hana::pair<boost::hana::type<RoleRestrictionImpl>, RoleRestrictionRepository>,
                      boost::hana::pair<boost::hana::type<RoleIdentityImpl>, RoleIdentityFactory>>;
 
-class DLConstructorRepositories
+class ConstructorRepositories
 {
 private:
-    GrammarConstructorRepositories m_repositories;
+    HanaConstructorRepositories m_repositories;
 
 public:
+    ConstructorRepositories() = default;
+    ConstructorRepositories(const ConstructorRepositories& other) = delete;
+    ConstructorRepositories& operator=(const ConstructorRepositories& other) = delete;
+    ConstructorRepositories(ConstructorRepositories&& other) = default;
+    ConstructorRepositories& operator=(ConstructorRepositories&& other) = default;
+
+    HanaConstructorRepositories& get_repositories();
+    const HanaConstructorRepositories& get_repositories() const;
+
     template<ConceptOrRole D>
-    DerivationRule<D> get_or_create_concept_derivation_rule(NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals);
+    DerivationRule<D> get_or_create_derivation_rule(NonTerminal<D> non_terminal, ConstructorOrNonTerminalList<D> constructor_or_non_terminals);
     template<ConceptOrRole D>
-    NonTerminal<D> get_or_create_concept_nonterminal(std::string name);
+    NonTerminal<D> get_or_create_nonterminal(std::string name);
     template<ConceptOrRole D>
-    ConstructorOrNonTerminal<D> get_or_create_concept_constructor_or_nonterminal(std::variant<Constructor<D>, NonTerminal<D>> choice);
+    ConstructorOrNonTerminal<D> get_or_create_constructor_or_nonterminal(std::variant<Constructor<D>, NonTerminal<D>> choice);
 
     /* Concepts */
     ConceptBot get_or_create_concept_bot();

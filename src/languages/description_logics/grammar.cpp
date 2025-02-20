@@ -25,7 +25,7 @@
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar(GrammarConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules) :
+Grammar::Grammar(ConstructorRepositories repositories, StartSymbols start_symbols, GrammarRules rules) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
     m_rules(std::move(rules))
