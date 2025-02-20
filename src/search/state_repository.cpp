@@ -215,6 +215,8 @@ static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList
                                                    const FlatDoubleList& fluent_numeric_variables,
                                                    FlatDoubleList& ref_numeric_variables)
 {
+    assert(&fluent_numeric_variables != &ref_numeric_variables);
+
     for (const auto& numeric_effect : numeric_effects)
     {
         const auto index = numeric_effect->get_function()->get_index();
@@ -296,7 +298,7 @@ static void apply_action_effects(GroundAction action,
     if (!problem->get_domain()->get_auxiliary_function().has_value())
     {
         ref_successor_state_metric_score =
-            evaluate(problem->get_optimization_metric()->get_function_expression(), problem->get_function_to_value<Static>(), ref_fluent_numeric_variables);
+            evaluate(problem->get_optimization_metric()->get_function_expression(), const_static_numeric_variables, ref_fluent_numeric_variables);
     }
 }
 

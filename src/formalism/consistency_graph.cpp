@@ -372,6 +372,28 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
             {
+                std::cout << arg << " : "
+                          << (evaluate_function_expression_partially(arg->get_left_function_expression(),
+                                                                     assignment,
+                                                                     static_numeric_assignment_set,
+                                                                     fluent_numeric_assignment_set))
+                          << " "
+                          << (evaluate_function_expression_partially(arg->get_right_function_expression(),
+                                                                     assignment,
+                                                                     static_numeric_assignment_set,
+                                                                     fluent_numeric_assignment_set))
+                          << " = "
+                          << (evaluate_binary_bounds(arg->get_binary_operator(),
+                                                     evaluate_function_expression_partially(arg->get_left_function_expression(),
+                                                                                            assignment,
+                                                                                            static_numeric_assignment_set,
+                                                                                            fluent_numeric_assignment_set),
+                                                     evaluate_function_expression_partially(arg->get_right_function_expression(),
+                                                                                            assignment,
+                                                                                            static_numeric_assignment_set,
+                                                                                            fluent_numeric_assignment_set)))
+                          << std::endl;
+
                 return evaluate_binary_bounds(arg->get_binary_operator(),
                                               evaluate_function_expression_partially(arg->get_left_function_expression(),
                                                                                      assignment,
@@ -384,6 +406,13 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionMultiOperator>)
             {
+                auto left_values = std::vector<Bounds<ContinuousCost>> {};
+                for (const auto& f : arg->get_function_expressions())
+                {
+                    left_values.push_back(evaluate_function_expression_partially(f, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set));
+                }
+                std::cout << arg << " : " << left_values << std::endl;
+
                 return std::accumulate(
                     std::next(arg->get_function_expressions().begin()),  // Start from the second expression
                     arg->get_function_expressions().end(),
@@ -405,6 +434,7 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
                                                                            assignment,
                                                                            static_numeric_assignment_set,
                                                                            fluent_numeric_assignment_set);
+                assert(-bounds.upper < -bounds.lower);
                 return Bounds<ContinuousCost>(-bounds.upper, -bounds.lower);
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
@@ -433,6 +463,29 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
                                                         const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                         const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
+    std::cout << numeric_constraint << std::endl;
+
+    std::cout << (evaluate(numeric_constraint->get_binary_comparator(),
+                           evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
+                                                                  assignment,
+                                                                  static_numeric_assignment_set,
+                                                                  fluent_numeric_assignment_set),
+                           evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
+                                                                  assignment,
+                                                                  static_numeric_assignment_set,
+                                                                  fluent_numeric_assignment_set)))
+              << " "
+              << (evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
+                                                         assignment,
+                                                         static_numeric_assignment_set,
+                                                         fluent_numeric_assignment_set))
+              << " "
+              << (evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
+                                                         assignment,
+                                                         static_numeric_assignment_set,
+                                                         fluent_numeric_assignment_set))
+              << std::endl;
+
     return evaluate(numeric_constraint->get_binary_comparator(),
                     evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
                                                            assignment,

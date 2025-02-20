@@ -68,7 +68,7 @@ inline ContinuousCost extract_ground_action_sequence(State start_state,
                 }
             }
         }
-        std::cout << lowest_metric_value << std::endl;
+
         out_ground_action_sequence.push_back(lowest_action);
         state = lowest_state;
         state_metric_value = lowest_metric_value;

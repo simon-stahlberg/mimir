@@ -36,13 +36,13 @@ struct Bounds
     /// @brief Return true iff there forall x in lhs and forall y in rhs : x != y.
     friend bool operator!=(const Bounds& lhs, const Bounds& rhs) { return !(lhs == rhs); }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x > y.
-    friend bool operator>(const Bounds& lhs, const Bounds& rhs) { return lhs.lower > rhs.lower && lhs.upper > rhs.lower; }
+    friend bool operator>(const Bounds& lhs, const Bounds& rhs) { return lhs.upper > rhs.lower; }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x >= y.
-    friend bool operator>=(const Bounds& lhs, const Bounds& rhs) { return lhs.lower >= rhs.lower && lhs.upper >= rhs.lower; }
+    friend bool operator>=(const Bounds& lhs, const Bounds& rhs) { return lhs.upper >= rhs.lower; }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x < y.
-    friend bool operator<(const Bounds& lhs, const Bounds& rhs) { return lhs.lower < rhs.upper && lhs.upper < rhs.upper; }
+    friend bool operator<(const Bounds& lhs, const Bounds& rhs) { return lhs.lower < rhs.upper; }
     /// @brief Return true iff there exist x in lhs and exists y in rhs : x <= y.
-    friend bool operator<=(const Bounds& lhs, const Bounds& rhs) { return lhs.lower <= rhs.upper && lhs.upper <= rhs.upper; }
+    friend bool operator<=(const Bounds& lhs, const Bounds& rhs) { return lhs.lower <= rhs.upper; }
 
     // Static unbounded instance
     inline static const Bounds unbounded = []
