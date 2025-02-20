@@ -242,6 +242,8 @@ class NonTerminalVisitor;
 template<ConceptOrRole D>
 class DerivationRuleVisitor;
 
+class GrammarVisitor;
+
 /**
  * Grammar
  */

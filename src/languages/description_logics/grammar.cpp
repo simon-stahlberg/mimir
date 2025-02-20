@@ -18,6 +18,7 @@
 #include "mimir/languages/description_logics/grammar.hpp"
 
 #include "mimir/languages/description_logics/grammar_verification.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 #include "mimir/languages/description_logics/parser/parser.hpp"
 #include "mimir/languages/description_logics/parser/parser_wrapper.hpp"
 #include "parser.hpp"
@@ -67,6 +68,8 @@ bool Grammar::test_match(dl::Constructor<D> constructor) const
 
 template bool Grammar::test_match(dl::Constructor<Concept> constructor) const;
 template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
+
+void Grammar::accept(GrammarVisitor& visitor) const { visitor.visit(*this); }
 
 const StartSymbolsContainer& Grammar::get_start_symbols_container() const { return m_start_symbols; }
 

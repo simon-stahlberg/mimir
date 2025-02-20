@@ -60,6 +60,12 @@ public:
     bool test_match(dl::Constructor<D> constructor) const;
 
     /**
+     * Visitor
+     */
+
+    void accept(GrammarVisitor& visitor) const;
+
+    /**
      * Getters
      */
 

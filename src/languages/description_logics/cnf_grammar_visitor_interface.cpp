@@ -15,9 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "mimir/languages/description_logics/cnf_grammar_constructor_visitor_interface.hpp"
-
 #include "mimir/languages/description_logics/cnf_grammar_constructors.hpp"
+#include "mimir/languages/description_logics/cnf_grammar_visitor_interface.hpp"
 
 namespace mimir::dl::cnf_grammar
 {

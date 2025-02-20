@@ -33,6 +33,10 @@ using HanaDerivationRules =
     boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
                      boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
 
+template<typename Key>
+using HanaNonTerminalMap = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<Key, NonTerminal<Concept>>>,
+                                            boost::hana::pair<boost::hana::type<Role>, std::unordered_map<Key, NonTerminal<Role>>>>;
+
 class StartSymbolsContainer
 {
 private:
@@ -67,6 +71,7 @@ public:
         return boost::hana::at_key(m_symbols, boost::hana::type<D> {});
     }
 
+    HanaStartSymbols& get() { return m_symbols; }
     const HanaStartSymbols& get() const { return m_symbols; }
 };
 
@@ -102,7 +107,49 @@ public:
         return boost::hana::at_key(m_rules, boost::hana::type<D> {}).at(non_terminal);
     }
 
+    HanaDerivationRules& get() { return m_rules; }
     const HanaDerivationRules& get() const { return m_rules; }
+};
+
+/**
+ * NonTerminalSet
+ */
+
+template<typename Key>
+class NonTerminalMap
+{
+private:
+    HanaNonTerminalMap<Key> m_map;
+
+public:
+    /**
+     * Modifiers
+     */
+
+    template<ConceptOrRole D>
+    auto insert(const Key& key, NonTerminal<D> element)
+    {
+        return boost::hana::at_key(m_map, boost::hana::type<D> {}).emplace(key, element);
+    }
+
+    /**
+     * Accessors
+     */
+
+    template<ConceptOrRole D>
+    bool contains(const Key& key) const
+    {
+        return boost::hana::at_key(m_map, boost::hana::type<D> {}).contains(key);
+    }
+
+    template<ConceptOrRole D>
+    const std::unordered_map<Key, NonTerminal<D>>& get() const
+    {
+        return boost::hana::at_key(m_map, boost::hana::type<D> {});
+    }
+
+    HanaNonTerminalMap<Key>& get() { return m_map; }
+    const HanaNonTerminalMap<Key>& get() const { return m_map; }
 };
 }
 

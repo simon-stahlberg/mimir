@@ -18,7 +18,7 @@
 #include "mimir/languages/description_logics/grammar_verification.hpp"
 
 #include "mimir/languages/description_logics/grammar.hpp"
-#include "mimir/languages/description_logics/grammar_constructor_visitor_interface.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
 namespace mimir::dl::grammar
 {
@@ -27,7 +27,7 @@ using NonTerminalSet = boost::hana::map<boost::hana::pair<boost::hana::type<Conc
                                         boost::hana::pair<boost::hana::type<Role>, std::unordered_set<NonTerminal<Role>>>>;
 
 template<ConceptOrRole D>
-class CollectNonTerminalsDerivationRuleVisitor : public DerivationRuleVisitor<D>
+class CollectHeadAndBodyNonTerminalsDerivationRuleVisitor : public RecurseDerivationRuleVisitor<D>
 {
 private:
     NonTerminalSet& m_head_non_terminals;
@@ -45,7 +45,7 @@ public:
         }
     }
 
-    CollectNonTerminalsDerivationRuleVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
+    CollectHeadAndBodyNonTerminalsDerivationRuleVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
         m_head_non_terminals(head_non_terminals),
         m_body_non_terminals(body_non_terminals)
     {
@@ -53,7 +53,7 @@ public:
 };
 
 template<ConceptOrRole D>
-class CollectNonTerminalsNonTerminalVisitor : public NonTerminalVisitor<D>
+class CollectHeadAndBodyNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
 {
 private:
     NonTerminalSet& m_head_non_terminals;
@@ -62,7 +62,7 @@ private:
 public:
     void visit(NonTerminal<D> constructor) override { boost::hana::at_key(m_body_non_terminals, boost::hana::type<D> {}).insert(constructor); }
 
-    CollectNonTerminalsNonTerminalVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
+    CollectHeadAndBodyNonTerminalsNonTerminalVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
         m_head_non_terminals(head_non_terminals),
         m_body_non_terminals(body_non_terminals)
     {
@@ -74,14 +74,14 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
     auto head_nonterminals = NonTerminalSet {};
     auto body_nonterminals = NonTerminalSet {};
 
-    auto concept_visitor = ConstructorVisitor<Concept>();
-    auto role_visitor = ConstructorVisitor<Role>();
-    auto concept_or_nonterminal_visitor = ConstructorOrNonTerminalVisitor<Concept>();
-    auto role_or_nonterminal_visitor = ConstructorOrNonTerminalVisitor<Role>();
-    auto concept_nonterminal_visitor = CollectNonTerminalsNonTerminalVisitor<Concept>(head_nonterminals, body_nonterminals);
-    auto role_nonterminal_visitor = CollectNonTerminalsNonTerminalVisitor<Role>(head_nonterminals, body_nonterminals);
-    auto concept_derivation_rule_visitor = CollectNonTerminalsDerivationRuleVisitor<Concept>(head_nonterminals, body_nonterminals);
-    auto role_derivation_rule_visitor = CollectNonTerminalsDerivationRuleVisitor<Role>(head_nonterminals, body_nonterminals);
+    auto concept_visitor = RecurseConstructorVisitor<Concept>();
+    auto role_visitor = RecurseConstructorVisitor<Role>();
+    auto concept_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Concept>();
+    auto role_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Role>();
+    auto concept_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Concept>(head_nonterminals, body_nonterminals);
+    auto role_nonterminal_visitor = CollectHeadAndBodyNonTerminalsNonTerminalVisitor<Role>(head_nonterminals, body_nonterminals);
+    auto concept_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Concept>(head_nonterminals, body_nonterminals);
+    auto role_derivation_rule_visitor = CollectHeadAndBodyNonTerminalsDerivationRuleVisitor<Role>(head_nonterminals, body_nonterminals);
 
     concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
     role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);

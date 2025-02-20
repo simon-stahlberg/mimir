@@ -18,13 +18,56 @@
 #include "mimir/languages/description_logics/grammar_cnf_translator.hpp"
 
 #include "mimir/languages/description_logics/grammar.hpp"
-#include "mimir/languages/description_logics/grammar_constructor_visitor_interface.hpp"
+#include "mimir/languages/description_logics/grammar_visitor_interface.hpp"
 
 namespace mimir::dl::grammar
 {
+template<ConceptOrRole D>
+class CollectNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
+{
+private:
+    NonTerminalMap<std::string>& m_nonterminal_map;
+
+public:
+    CollectNonTerminalsNonTerminalVisitor(NonTerminalMap<std::string>& nonterminal_map) : m_nonterminal_map(nonterminal_map) {}
+
+    void visit(NonTerminal<D> constructor) override { m_nonterminal_map.insert(constructor->get_name(), constructor); }
+};
+
+static NonTerminalMap<std::string> collect_nonterminals_from_grammar(const Grammar& grammar)
+{
+    auto nonterminal_map = NonTerminalMap<std::string>();
+
+    auto concept_visitor = RecurseConstructorVisitor<Concept>();
+    auto role_visitor = RecurseConstructorVisitor<Role>();
+    auto concept_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Concept>();
+    auto role_or_nonterminal_visitor = RecurseConstructorOrNonTerminalVisitor<Role>();
+    auto concept_nonterminal_visitor = CollectNonTerminalsNonTerminalVisitor<Concept>(nonterminal_map);
+    auto role_nonterminal_visitor = CollectNonTerminalsNonTerminalVisitor<Role>(nonterminal_map);
+    auto concept_derivation_rule_visitor = RecurseDerivationRuleVisitor<Concept>();
+    auto role_derivation_rule_visitor = RecurseDerivationRuleVisitor<Role>();
+    auto concept_start_symbol_visitor = RecurseNonTerminalVisitor<Concept>();
+    auto role_start_symbol_visitor = RecurseNonTerminalVisitor<Role>();
+    auto grammar_visitor = RecurseGrammarVisitor();
+
+    concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
+    role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_visitor);
+    concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_or_nonterminal_visitor);
+    role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_visitor);
+    grammar_visitor.initialize(concept_start_symbol_visitor, role_start_symbol_visitor, concept_derivation_rule_visitor, role_derivation_rule_visitor);
+
+    grammar.accept(grammar_visitor);
+
+    return nonterminal_map;
+}
 
 Grammar translate_to_cnf(const Grammar& grammar)
 {
+    /* Collect all non-terminals to assign new names during translation */
+    auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
+
     auto start_symbols = StartSymbolsContainer();
     auto grammar_rules = DerivationRulesContainer();
     // auto repositories = GrammarConstructorRepositories();
@@ -50,7 +93,5 @@ Grammar translate_to_cnf(const Grammar& grammar)
                                   }
                               }
                           });
-    {
-    }
 }
 }
