@@ -22,14 +22,29 @@
 
 namespace mimir::dl::cnf_grammar
 {
+/**
+ * Concept
+ */
 
-class Visitor
+template<ConceptOrRole D>
+class ConstructorVisitor
 {
-public:
-    virtual ~Visitor() {}
+};
 
-    /* Concepts */
-    virtual void visit(NonTerminal<Concept> constructor);
+template<>
+class ConstructorVisitor<Concept>
+{
+protected:
+    NonTerminalVisitor<Concept>* m_concept_nonterminal_visitor;
+    NonTerminalVisitor<Role>* m_role_nonterminal_visitor;
+
+public:
+    ConstructorVisitor() = default;
+
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void initialize(NonTerminalVisitor<Concept>& concept_nonterminal_visitor, NonTerminalVisitor<Role>& role_nonterminal_visitor);
+
     virtual void visit(ConceptBot constructor);
     virtual void visit(ConceptTop constructor);
     virtual void visit(ConceptAtomicState<Static> constructor);
@@ -46,9 +61,26 @@ public:
     virtual void visit(ConceptRoleValueMapContainment constructor);
     virtual void visit(ConceptRoleValueMapEquality constructor);
     virtual void visit(ConceptNominal constructor);
+};
 
-    /* Roles */
-    virtual void visit(NonTerminal<Role> constructor);
+/**
+ * Role
+ */
+
+template<>
+class ConstructorVisitor<Role>
+{
+protected:
+    NonTerminalVisitor<Concept>* m_concept_nonterminal_visitor;
+    NonTerminalVisitor<Role>* m_role_nonterminal_visitor;
+
+public:
+    ConstructorVisitor() = default;
+
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void initialize(NonTerminalVisitor<Concept>& concept_nonterminal_visitor, NonTerminalVisitor<Role>& role_nonterminal_visitor);
+
     virtual void visit(RoleUniversal constructor);
     virtual void visit(RoleAtomicState<Static> constructor);
     virtual void visit(RoleAtomicState<Fluent> constructor);
@@ -67,6 +99,18 @@ public:
     virtual void visit(RoleIdentity constructor);
 };
 
+/**
+ * NonTerminal
+ */
+
+template<ConceptOrRole D>
+class NonTerminalVisitor
+{
+public:
+    virtual ~NonTerminalVisitor() = default;
+
+    virtual void visit(NonTerminal<D> constructor);
+};
 }
 
 #endif

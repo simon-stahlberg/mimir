@@ -341,7 +341,11 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-class Visitor;
+template<ConceptOrRole D>
+class ConstructorVisitor;
+
+template<ConceptOrRole D>
+class NonTerminalVisitor;
 
 /**
  * Grammar
