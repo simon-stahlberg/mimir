@@ -68,7 +68,13 @@ inline ContinuousCost extract_ground_action_sequence(State start_state,
                 }
             }
         }
-
+        // std::cout << std::make_tuple(lowest_action, std::cref(*state_repository.get_problem_context().get_repositories()), FullActionFormatterTag {})
+        //           << std::endl;
+        // std::cout << std::make_tuple(state_repository.get_problem_context().get_problem(),
+        //                              lowest_state,
+        //                              std::cref(*state_repository.get_problem_context().get_repositories()))
+        //           << std::endl;
+        // std::cout << lowest_metric_value << " " << lowest_metric_value - state_metric_value << std::endl << std::endl << std::endl;
         out_ground_action_sequence.push_back(lowest_action);
         state = lowest_state;
         state_metric_value = lowest_metric_value;

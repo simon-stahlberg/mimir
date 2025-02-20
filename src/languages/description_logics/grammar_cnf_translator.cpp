@@ -263,5 +263,40 @@ public:
     virtual void visit(RoleIdentity constructor);
 };
 
-Grammar translate_to_cnf(const Grammar& grammar) {}
+Grammar translate_to_cnf(const Grammar& grammar)
+{
+    auto start_symbols = StartSymbols();
+    auto grammar_rules = GrammarRules {};
+    auto repositories = GrammarConstructorRepositories();
+
+    /* Step 1: flatten A ::= B | C  ==> A ::= B and A::= C */
+
+    boost::hana::for_each(grammar.get_rules(),
+                          [&](auto&& pair)
+                          {
+                              auto key = boost::hana::first(pair);
+                              const auto& second = boost::hana::second(pair);
+
+                              for (const auto& non_terminal_and_rules : second)
+                              {
+                                  const auto& [non_terminal, rules] = non_terminal_and_rules;
+
+                                  for (const auto& rule : rules)
+                                  {
+                                      for (const auto& choice : rule->get_constructor_or_non_terminals())
+                                      {
+                                          //  boost::hana::at_key(grammar_rules, key).
+                                      }
+                                  }
+                              }
+                          });
+    {
+    }
+
+    auto visitor1 = FlattenChoicesVisitor();
+
+    auto visitor2 = SubstitutePrimitivesVisitor();
+
+    auto visitor3 = SubstituteCompositesVisitor();
+}
 }

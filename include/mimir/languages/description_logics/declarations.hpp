@@ -237,6 +237,12 @@ class Visitor;
  */
 
 class Grammar;
+
+/**
+ * Repositories
+ */
+
+class ConstructorRepositories;
 }
 
 namespace cnf_grammar

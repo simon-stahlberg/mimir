@@ -26,7 +26,6 @@
 
 namespace mimir::dl::grammar
 {
-
 using StartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
                                       boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
 
