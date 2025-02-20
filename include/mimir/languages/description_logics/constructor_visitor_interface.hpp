@@ -24,6 +24,8 @@
 namespace mimir::dl
 {
 
+// TODO split visitor for consistency!
+
 class Visitor
 {
 public:

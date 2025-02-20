@@ -22,6 +22,11 @@
 
 namespace mimir::dl::grammar
 {
+
+/**
+ * Step 1: Collect all non terminals to assign novel names to newly generated ones.
+ */
+
 template<ConceptOrRole D>
 class CollectNonTerminalsNonTerminalVisitor : public RecurseNonTerminalVisitor<D>
 {
@@ -68,30 +73,8 @@ Grammar translate_to_cnf(const Grammar& grammar)
     /* Collect all non-terminals to assign new names during translation */
     auto nonterminal_map = collect_nonterminals_from_grammar(grammar);
 
-    auto start_symbols = StartSymbolsContainer();
-    auto grammar_rules = DerivationRulesContainer();
     // auto repositories = GrammarConstructorRepositories();
 
     /* Step 1: flatten A ::= B | C  ==> A ::= B and A::= C */
-
-    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
-                          [&](auto&& pair)
-                          {
-                              auto key = boost::hana::first(pair);
-                              const auto& second = boost::hana::second(pair);
-
-                              for (const auto& non_terminal_and_rules : second)
-                              {
-                                  const auto& [non_terminal, rules] = non_terminal_and_rules;
-
-                                  for (const auto& rule : rules)
-                                  {
-                                      for (const auto& choice : rule->get_constructor_or_non_terminals())
-                                      {
-                                          //  boost::hana::at_key(grammar_rules, key).
-                                      }
-                                  }
-                              }
-                          });
 }
 }
