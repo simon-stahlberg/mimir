@@ -166,7 +166,7 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
 {
     DenseState::translate(state, m_dense_state_builder);
 
-    return get_or_create_successor_state(m_dense_state_builder, action, state_metric_value);
+    return get_or_create_successor_state(state, m_dense_state_builder, action, state_metric_value);
 }
 
 static void apply_numeric_effect(const std::pair<loki::AssignOperatorEnum, ContinuousCost>& numeric_effect, ContinuousCost& ref_value)
@@ -240,8 +240,8 @@ static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<
 }
 
 static void apply_action_effects(GroundAction action,
-                                 const FlatDoubleList& state_fluent_numeric_variables,
                                  Problem problem,
+                                 State state,
                                  const DenseState& dense_state,
                                  FlatBitset& ref_dense_fluent_atoms,
                                  FlatBitset& ref_negative_applied_effects,
@@ -250,20 +250,21 @@ static void apply_action_effects(GroundAction action,
                                  ContinuousCost& ref_successor_state_metric_score)
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
-    const auto& static_numeric_variables = problem->get_function_to_value<Static>();
+    const auto& const_fluent_numeric_variables = state->get_numeric_variables();
+    const auto& const_static_numeric_variables = problem->get_function_to_value<Static>();
 
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
 
     collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(),
-                                           static_numeric_variables,
-                                           state_fluent_numeric_variables,
+                                           const_static_numeric_variables,
+                                           const_fluent_numeric_variables,
                                            ref_fluent_numeric_variables);
     if (conjunctive_effect.get_auxiliary_numeric_effect().has_value())
     {
         collect_applied_auxiliary_numeric_effects(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
-                                                  static_numeric_variables,
-                                                  state_fluent_numeric_variables,
+                                                  const_static_numeric_variables,
+                                                  const_fluent_numeric_variables,
                                                   ref_successor_state_metric_score);
     }
 
@@ -274,14 +275,14 @@ static void apply_action_effects(GroundAction action,
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
             collect_applied_fluent_numeric_effects(conditional_effect.get_conjunctive_effect().get_fluent_numeric_effects(),
-                                                   static_numeric_variables,
-                                                   state_fluent_numeric_variables,
+                                                   const_static_numeric_variables,
+                                                   const_fluent_numeric_variables,
                                                    ref_fluent_numeric_variables);
             if (conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().has_value())
             {
                 collect_applied_auxiliary_numeric_effects(conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().value().get(),
-                                                          static_numeric_variables,
-                                                          state_fluent_numeric_variables,
+                                                          const_static_numeric_variables,
+                                                          const_fluent_numeric_variables,
                                                           ref_successor_state_metric_score);
             }
         }
@@ -299,7 +300,8 @@ static void apply_action_effects(GroundAction action,
     }
 }
 
-std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
+std::pair<State, ContinuousCost>
+StateRepository::get_or_create_successor_state(State state, DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value)
 {
     const auto problem = m_axiom_evaluator->get_problem_context().get_problem();
 
@@ -336,8 +338,8 @@ std::pair<State, ContinuousCost> StateRepository::get_or_create_successor_state(
     /* 2. Apply action effects to construct non-extended state. */
 
     apply_action_effects(action,
-                         dense_fluent_numeric_variables,
                          problem,
+                         state,
                          dense_state,
                          dense_fluent_atoms,
                          m_applied_negative_effect_atoms,

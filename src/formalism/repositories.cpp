@@ -823,15 +823,15 @@ GroundFunctionExpression PDDLRepositories::ground(FunctionExpression fexpr, Prob
                                -std::get<GroundFunctionExpressionNumber>(ground_fexpr->get_variant())->get_number())) :
                            ground_fexpr;
             }
-            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
-            {
-                return get_or_create_ground_function_expression(
-                    get_or_create_ground_function_expression_function<Fluent>(ground(arg->get_function(), binding)));
-            }
             else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Static>>)
             {
                 return get_or_create_ground_function_expression(
                     get_or_create_ground_function_expression_number(problem->get_function_value<Static>(ground(arg->get_function(), binding))));
+            }
+            else if constexpr (std::is_same_v<T, FunctionExpressionFunction<Fluent>>)
+            {
+                return get_or_create_ground_function_expression(
+                    get_or_create_ground_function_expression_function<Fluent>(ground(arg->get_function(), binding)));
             }
             else
             {

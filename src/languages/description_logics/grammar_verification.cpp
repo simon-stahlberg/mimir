@@ -17,6 +17,7 @@
 
 #include "mimir/languages/description_logics/grammar_verification.hpp"
 
+#include "grammar_constructor_visitor_interface_impl.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_visitor_interface.hpp"
 

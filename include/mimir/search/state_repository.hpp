@@ -85,7 +85,10 @@ public:
     /// @param state_metric_value is the metric value of the dense state.
     /// @param workspace is the workspace containing preallocated memory.
     /// @return the extended successor state and its metric value.
-    std::pair<State, ContinuousCost> get_or_create_successor_state(DenseState& dense_state, GroundAction action, ContinuousCost state_metric_value);
+    std::pair<State, ContinuousCost> get_or_create_successor_state(State state,  ///< for parallel application of numeric effects
+                                                                   DenseState& dense_state,
+                                                                   GroundAction action,
+                                                                   ContinuousCost state_metric_value);
 
     /**
      * Getters

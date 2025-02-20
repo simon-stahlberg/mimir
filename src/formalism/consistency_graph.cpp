@@ -520,7 +520,8 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
                                  const NumericAssignmentSet<Static>& static_assignment_set,
                                  const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
+    // return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
+    return true;
 }
 
 Index Vertex::get_object_if_overlap(const Term& term) const
@@ -559,7 +560,8 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const NumericAssignmentSet<Static>& static_assignment_set,
                                const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
+    // return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
+    return true;
 }
 
 Index Edge::get_object_if_overlap(const Term& term) const

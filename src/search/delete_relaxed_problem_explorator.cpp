@@ -48,6 +48,7 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(ProblemContext pr
     auto initial_state = m_delete_free_state_repository.get_or_create_initial_state();
 
     auto dense_state = DenseState(initial_state);
+    auto state = initial_state;
 
     // Keep track of changes
     bool reached_delete_free_explore_fixpoint = true;
@@ -65,7 +66,8 @@ DeleteRelaxedProblemExplorator::DeleteRelaxedProblemExplorator(ProblemContext pr
         {
             // Note that get_or_create_successor_state already modifies dense_state to be the successor state.
             // TODO(numeric): in the delete relaxation, we have to remove all numeric constraints and effects.
-            m_delete_free_state_repository.get_or_create_successor_state(dense_state, action, 0);
+            const auto [successor_state, metric_value] = m_delete_free_state_repository.get_or_create_successor_state(state, dense_state, action, 0);
+            state = successor_state;
         }
 
         // Create and all applicable axioms and apply them

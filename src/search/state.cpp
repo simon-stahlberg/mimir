@@ -36,7 +36,7 @@ const FlatDoubleList StateImpl::s_empty_numeric_variables = FlatDoubleList();
 
 bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
 {
-    return evaluate(numeric_constraint, get_numeric_variables(), static_numeric_variables);
+    return evaluate(numeric_constraint, static_numeric_variables, get_numeric_variables());
 }
 
 bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const

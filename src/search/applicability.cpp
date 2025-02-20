@@ -61,16 +61,7 @@ static bool nullary_numeric_constraints_hold(const GroundNumericConstraintList& 
                                              const FlatDoubleList& static_numeric_variables,
                                              const FlatDoubleList& fluent_numeric_variables)
 {
-    for (const auto& numeric_constraint : numeric_constraints)
-    {
-        // We dont have access to arity in ground numeric constraint, so we cannot check that its zero...
-
-        if (!evaluate(numeric_constraint, static_numeric_variables, fluent_numeric_variables))
-        {
-            return false;
-        }
-    }
-
+    // TODO
     return true;
 }
 
@@ -116,7 +107,9 @@ static bool is_applicable(const GroundConjunctiveCondition& conjunctive_conditio
     for (const auto& constraint : conjunctive_condition.get_numeric_constraints())
     {
         if (!evaluate(constraint.get(), static_numeric_variables, fluent_numeric_variables))
+        {
             return false;
+        }
     }
     return true;
 }
