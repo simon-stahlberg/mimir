@@ -24,7 +24,7 @@ namespace mimir::dl::cnf_grammar
 
 Grammar::Grammar(const grammar::Grammar& grammar)
 {
-    /* 1. Substitute primitives in complicated rules. */
+    /* 1. Substitute primitives in composite rule bodies. */
 
     /* 2. Decompose complicated rules into simple rules. */
 }

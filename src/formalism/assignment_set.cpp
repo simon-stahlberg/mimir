@@ -182,7 +182,7 @@ void NumericAssignmentSet<F>::insert_ground_function_values(const GroundFunction
         empty_assignment_bound.lower =
             (empty_assignment_bound.lower == -std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.lower, value);
         empty_assignment_bound.upper =
-            (empty_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::min(empty_assignment_bound.upper, value);
+            (empty_assignment_bound.upper == std::numeric_limits<ContinuousCost>::infinity()) ? value : std::max(empty_assignment_bound.upper, value);
 
         for (size_t first_index = 0; first_index < arity; ++first_index)
         {

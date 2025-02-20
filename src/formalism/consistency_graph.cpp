@@ -372,28 +372,6 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
             }
             else if constexpr (std::is_same_v<T, FunctionExpressionBinaryOperator>)
             {
-                std::cout << arg << " : "
-                          << (evaluate_function_expression_partially(arg->get_left_function_expression(),
-                                                                     assignment,
-                                                                     static_numeric_assignment_set,
-                                                                     fluent_numeric_assignment_set))
-                          << " "
-                          << (evaluate_function_expression_partially(arg->get_right_function_expression(),
-                                                                     assignment,
-                                                                     static_numeric_assignment_set,
-                                                                     fluent_numeric_assignment_set))
-                          << " = "
-                          << (evaluate_binary_bounds(arg->get_binary_operator(),
-                                                     evaluate_function_expression_partially(arg->get_left_function_expression(),
-                                                                                            assignment,
-                                                                                            static_numeric_assignment_set,
-                                                                                            fluent_numeric_assignment_set),
-                                                     evaluate_function_expression_partially(arg->get_right_function_expression(),
-                                                                                            assignment,
-                                                                                            static_numeric_assignment_set,
-                                                                                            fluent_numeric_assignment_set)))
-                          << std::endl;
-
                 return evaluate_binary_bounds(arg->get_binary_operator(),
                                               evaluate_function_expression_partially(arg->get_left_function_expression(),
                                                                                      assignment,
@@ -411,7 +389,6 @@ static Bounds<ContinuousCost> evaluate_function_expression_partially(FunctionExp
                 {
                     left_values.push_back(evaluate_function_expression_partially(f, assignment, static_numeric_assignment_set, fluent_numeric_assignment_set));
                 }
-                std::cout << arg << " : " << left_values << std::endl;
 
                 return std::accumulate(
                     std::next(arg->get_function_expressions().begin()),  // Start from the second expression
@@ -463,29 +440,6 @@ static bool is_partially_evaluated_constraint_satisfied(NumericConstraint numeri
                                                         const NumericAssignmentSet<Static>& static_numeric_assignment_set,
                                                         const NumericAssignmentSet<Fluent>& fluent_numeric_assignment_set)
 {
-    std::cout << numeric_constraint << std::endl;
-
-    std::cout << (evaluate(numeric_constraint->get_binary_comparator(),
-                           evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
-                                                                  assignment,
-                                                                  static_numeric_assignment_set,
-                                                                  fluent_numeric_assignment_set),
-                           evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
-                                                                  assignment,
-                                                                  static_numeric_assignment_set,
-                                                                  fluent_numeric_assignment_set)))
-              << " "
-              << (evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
-                                                         assignment,
-                                                         static_numeric_assignment_set,
-                                                         fluent_numeric_assignment_set))
-              << " "
-              << (evaluate_function_expression_partially(numeric_constraint->get_right_function_expression(),
-                                                         assignment,
-                                                         static_numeric_assignment_set,
-                                                         fluent_numeric_assignment_set))
-              << std::endl;
-
     return evaluate(numeric_constraint->get_binary_comparator(),
                     evaluate_function_expression_partially(numeric_constraint->get_left_function_expression(),
                                                            assignment,
@@ -573,8 +527,7 @@ bool Vertex::consistent_literals(const NumericConstraintList& numeric_constraint
                                  const NumericAssignmentSet<Static>& static_assignment_set,
                                  const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    // return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
-    return true;
+    return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
 
 Index Vertex::get_object_if_overlap(const Term& term) const
@@ -613,8 +566,7 @@ bool Edge::consistent_literals(const NumericConstraintList& numeric_constraints,
                                const NumericAssignmentSet<Static>& static_assignment_set,
                                const NumericAssignmentSet<Fluent>& fluent_assignment_set) const
 {
-    // return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
-    return true;
+    return consistent_numeric_constraints_helper(numeric_constraints, static_assignment_set, fluent_assignment_set, *this);
 }
 
 Index Edge::get_object_if_overlap(const Term& term) const
