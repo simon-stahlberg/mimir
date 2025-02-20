@@ -100,7 +100,7 @@ void LiftedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
             for (const auto& axiom : relevant_axioms)
             {
                 // We move this check here to avoid unnecessary creations of mimir::generator.
-                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), dense_state))
+                if (!nullary_conditions_hold(axiom->get_conjunctive_condition(), problem, dense_state))
                 {
                     continue;
                 }

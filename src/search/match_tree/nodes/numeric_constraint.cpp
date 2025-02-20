@@ -20,6 +20,7 @@
 #include "mimir/formalism/ground_action.hpp"
 #include "mimir/formalism/ground_axiom.hpp"
 #include "mimir/formalism/ground_numeric_constraint.hpp"
+#include "mimir/formalism/problem.hpp"
 #include "mimir/search/dense_state.hpp"
 
 namespace mimir::match_tree
@@ -40,10 +41,11 @@ NumericConstraintSelectorNode_T<E>::NumericConstraintSelectorNode_T(Node<E>&& tr
 
 template<HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_T<E>::generate_applicable_actions(const DenseState& state,
+                                                                     Problem problem,
                                                                      std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                      std::vector<const E*>&) const
 {
-    if (evaluate(this->m_constraint, state.get_numeric_variables()))
+    if (evaluate(this->m_constraint, problem->get_function_to_value<Static>(), state.get_numeric_variables()))
     {
         ref_applicable_nodes.push_back(m_true_child.get());
     }
@@ -76,12 +78,13 @@ NumericConstraintSelectorNode_TX<E>::NumericConstraintSelectorNode_TX(Node<E>&& 
 
 template<HasConjunctiveCondition E>
 void NumericConstraintSelectorNode_TX<E>::generate_applicable_actions(const DenseState& state,
+                                                                      Problem problem,
                                                                       std::vector<const INode<E>*>& ref_applicable_nodes,
                                                                       std::vector<const E*>&) const
 {
     ref_applicable_nodes.push_back(m_dontcare_child.get());
 
-    if (evaluate(this->m_constraint, state.get_numeric_variables()))
+    if (evaluate(this->m_constraint, problem->get_function_to_value<Static>(), state.get_numeric_variables()))
     {
         ref_applicable_nodes.push_back(m_true_child.get());
     }

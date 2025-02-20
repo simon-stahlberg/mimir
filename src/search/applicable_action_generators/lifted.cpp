@@ -114,7 +114,7 @@ mimir::generator<GroundAction> LiftedApplicableActionGenerator::create_applicabl
         auto& [condition_grounder, conditional_effects_candidate_objects] = grounding_data;
 
         // We move this check here to avoid unnecessary creations of mimir::generator.
-        if (!nullary_conditions_hold(action->get_conjunctive_condition(), dense_state))
+        if (!nullary_conditions_hold(action->get_conjunctive_condition(), problem, dense_state))
         {
             continue;
         }

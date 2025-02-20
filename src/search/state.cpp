@@ -34,13 +34,16 @@ const FlatIndexList StateImpl::s_empty_derived_atoms = FlatIndexList();
 
 const FlatDoubleList StateImpl::s_empty_numeric_variables = FlatDoubleList();
 
-bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint) const { return evaluate(numeric_constraint, get_numeric_variables()); }
+bool StateImpl::numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const
+{
+    return evaluate(numeric_constraint, get_numeric_variables(), static_numeric_variables);
+}
 
-bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints) const
+bool StateImpl::numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const
 {
     for (const auto& constraint : numeric_constraints)
     {
-        if (!numeric_constraint_holds(constraint))
+        if (!numeric_constraint_holds(constraint, static_numeric_variables))
         {
             return false;
         }

@@ -53,9 +53,6 @@ private:
 
     /* Computed in prepare step */
 
-    // To substitute ground functions in ground function expressions.
-    std::unordered_map<loki::Function, ContinuousCost> m_function_to_value;
-
     // For type analysis of predicates.
     std::unordered_set<std::string> m_fluent_predicates;   ///< Fluent predicates that appear in an effect
     std::unordered_set<std::string> m_derived_predicates;  ///< Derived predicates

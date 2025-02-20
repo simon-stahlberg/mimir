@@ -46,7 +46,10 @@ bool ActionSatisficingBindingGenerator::is_valid_binding(NumericEffect<F> effect
     const auto problem = this->m_problem_context.get_problem();
     auto& pddl_repositories = *this->m_problem_context.get_repositories();
 
-    return (evaluate(pddl_repositories.ground(effect->get_function_expression(), problem, binding), fluent_numeric_variables) != UNDEFINED_CONTINUOUS_COST);
+    return (evaluate(pddl_repositories.ground(effect->get_function_expression(), problem, binding),
+                     problem->get_function_to_value<Static>(),
+                     fluent_numeric_variables)
+            != UNDEFINED_CONTINUOUS_COST);
 }
 
 template bool

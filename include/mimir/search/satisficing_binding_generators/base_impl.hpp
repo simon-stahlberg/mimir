@@ -86,7 +86,7 @@ bool SatisficingBindingGenerator<Derived_>::is_valid_binding(const NumericConstr
 
     for (const auto& constraint : constraints)
     {
-        if (!evaluate(pddl_repositories.ground(constraint, problem, binding), fluent_numeric_variables))
+        if (!evaluate(pddl_repositories.ground(constraint, problem, binding), problem->get_function_to_value<Static>(), fluent_numeric_variables))
         {
             return false;
         }
@@ -300,7 +300,7 @@ mimir::generator<ObjectList> SatisficingBindingGenerator<Derived_>::create_bindi
     /* Important optimization:
        Moving the nullary_conditions_check out of this function had a large impact on memory allocations/deallocations.
        To avoid accidental errors, we ensure that we checked whether all nullary conditions are satisfied. */
-    assert(nullary_conditions_hold(m_conjunctive_condition, dense_state));
+    assert(nullary_conditions_hold(m_conjunctive_condition, m_problem_context.get_problem(), dense_state));
 
     if (m_conjunctive_condition->get_arity() == 0)
     {
@@ -334,7 +334,7 @@ SatisficingBindingGenerator<Derived_>::create_ground_conjunction_generator(const
     auto& dense_numeric_variables = dense_state.get_numeric_variables();
 
     // We have to check here to avoid unnecessary creations of mimir::generator.
-    if (!nullary_conditions_hold(m_conjunctive_condition, dense_state))
+    if (!nullary_conditions_hold(m_conjunctive_condition, m_problem_context.get_problem(), dense_state))
     {
         co_return;
     }

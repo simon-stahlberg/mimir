@@ -211,7 +211,8 @@ static void apply_numeric_effect(const std::pair<loki::AssignOperatorEnum, Conti
 }
 
 static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList<Fluent>& numeric_effects,
-                                                   const FlatDoubleList& numeric_variables,
+                                                   const FlatDoubleList& static_numeric_variables,
+                                                   const FlatDoubleList& fluent_numeric_variables,
                                                    FlatDoubleList& ref_numeric_variables)
 {
     for (const auto& numeric_effect : numeric_effects)
@@ -221,17 +222,18 @@ static void collect_applied_fluent_numeric_effects(const GroundNumericEffectList
         {
             ref_numeric_variables.resize(index + 1, UNDEFINED_CONTINUOUS_COST);
         }
-        const auto assign_operator_and_value = evaluate(numeric_effect.get(), numeric_variables);
+        const auto assign_operator_and_value = evaluate(numeric_effect.get(), static_numeric_variables, fluent_numeric_variables);
 
         apply_numeric_effect(assign_operator_and_value, ref_numeric_variables[index]);
     }
 }
 
 static void collect_applied_auxiliary_numeric_effects(const GroundNumericEffect<Auxiliary>& numeric_effect,
-                                                      const FlatDoubleList& numeric_variables,
+                                                      const FlatDoubleList& static_numeric_variables,
+                                                      const FlatDoubleList& fluent_numeric_variables,
                                                       ContinuousCost& ref_successor_state_metric_score)
 {
-    const auto assign_operator_and_value = evaluate(numeric_effect, numeric_variables);
+    const auto assign_operator_and_value = evaluate(numeric_effect, static_numeric_variables, fluent_numeric_variables);
     assert(assign_operator_and_value.second != UNDEFINED_CONTINUOUS_COST);
 
     apply_numeric_effect(assign_operator_and_value, ref_successor_state_metric_score);
@@ -248,14 +250,19 @@ static void apply_action_effects(GroundAction action,
                                  ContinuousCost& ref_successor_state_metric_score)
 {
     const auto& conjunctive_effect = action->get_conjunctive_effect();
+    const auto& static_numeric_variables = problem->get_function_to_value<Static>();
 
     insert_into_bitset(conjunctive_effect.get_negative_effects(), ref_negative_applied_effects);
     insert_into_bitset(conjunctive_effect.get_positive_effects(), ref_positive_applied_effects);
 
-    collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(), state_fluent_numeric_variables, ref_fluent_numeric_variables);
+    collect_applied_fluent_numeric_effects(conjunctive_effect.get_fluent_numeric_effects(),
+                                           static_numeric_variables,
+                                           state_fluent_numeric_variables,
+                                           ref_fluent_numeric_variables);
     if (conjunctive_effect.get_auxiliary_numeric_effect().has_value())
     {
         collect_applied_auxiliary_numeric_effects(conjunctive_effect.get_auxiliary_numeric_effect().value().get(),
+                                                  static_numeric_variables,
                                                   state_fluent_numeric_variables,
                                                   ref_successor_state_metric_score);
     }
@@ -267,11 +274,13 @@ static void apply_action_effects(GroundAction action,
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_negative_effects(), ref_negative_applied_effects);
             insert_into_bitset(conditional_effect.get_conjunctive_effect().get_positive_effects(), ref_positive_applied_effects);
             collect_applied_fluent_numeric_effects(conditional_effect.get_conjunctive_effect().get_fluent_numeric_effects(),
+                                                   static_numeric_variables,
                                                    state_fluent_numeric_variables,
                                                    ref_fluent_numeric_variables);
             if (conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().has_value())
             {
                 collect_applied_auxiliary_numeric_effects(conditional_effect.get_conjunctive_effect().get_auxiliary_numeric_effect().value().get(),
+                                                          static_numeric_variables,
                                                           state_fluent_numeric_variables,
                                                           ref_successor_state_metric_score);
             }
@@ -285,7 +294,8 @@ static void apply_action_effects(GroundAction action,
     // Update metric in case of a fluent one.
     if (!problem->get_domain()->get_auxiliary_function().has_value())
     {
-        ref_successor_state_metric_score = evaluate(problem->get_optimization_metric()->get_function_expression(), ref_fluent_numeric_variables);
+        ref_successor_state_metric_score =
+            evaluate(problem->get_optimization_metric()->get_function_expression(), problem->get_function_to_value<Static>(), ref_fluent_numeric_variables);
     }
 }
 

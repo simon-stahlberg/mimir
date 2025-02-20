@@ -67,7 +67,7 @@ public:
  * Utils
  */
 
-extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& fluent_numeric_variables);
+extern bool evaluate(GroundNumericConstraint effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Printing

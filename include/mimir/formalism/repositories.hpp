@@ -290,7 +290,7 @@ public:
     GroundFunctionExpressionMinus get_or_create_ground_function_expression_minus(GroundFunctionExpression function_expression);
 
     /// @brief Get or create a function function expression for the given parameters.
-    template<FluentOrAuxiliary F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunctionExpressionFunction<F> get_or_create_ground_function_expression_function(GroundFunction<F> function);
 
     /// @brief Get or create a function expression for the given parameters.
@@ -298,7 +298,7 @@ public:
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionBinaryOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMultiOperator fexpr);
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionMinus fexpr);
-    template<FluentOrAuxiliary F>
+    template<StaticOrFluentOrAuxiliary F>
     GroundFunctionExpression get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr);
 
     /// @brief Get or create a function for the given parameters.

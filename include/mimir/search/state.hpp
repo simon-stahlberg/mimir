@@ -44,9 +44,9 @@ struct StateImpl
     static const FlatIndexList s_empty_derived_atoms;       ///< Returned, if m_derived_atoms is a nullptr.
     static const FlatDoubleList s_empty_numeric_variables;  ///< Returned, if m_numeric_variables is a nullptr.
 
-    bool numeric_constraint_holds(GroundNumericConstraint numeric_constraint) const;
+    bool numeric_constraint_holds(GroundNumericConstraint numeric_constraint, const FlatDoubleList& static_numeric_variables) const;
 
-    bool numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints) const;
+    bool numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints, const FlatDoubleList& static_numeric_variables) const;
 
     /// @brief log(N) operation, ideally, we get rid of it, perhaps useful to expose to python users
     template<FluentOrDerived P>

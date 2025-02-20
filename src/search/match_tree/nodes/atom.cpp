@@ -45,6 +45,7 @@ AtomSelectorNode_TFX<E, P>::AtomSelectorNode_TFX(Node<E>&& true_child, Node<E>&&
 
 template<HasConjunctiveCondition E, FluentOrDerived P>
 void AtomSelectorNode_TFX<E, P>::generate_applicable_actions(const DenseState& state,
+                                                             Problem,
                                                              std::vector<const INode<E>*>& ref_applicable_nodes,
                                                              std::vector<const E*>&) const
 {
@@ -101,6 +102,7 @@ AtomSelectorNode_TF<E, P>::AtomSelectorNode_TF(Node<E>&& true_child, Node<E>&& f
 
 template<HasConjunctiveCondition E, FluentOrDerived P>
 void AtomSelectorNode_TF<E, P>::generate_applicable_actions(const DenseState& state,
+                                                            Problem,
                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
                                                             std::vector<const E*>&) const
 {
@@ -149,6 +151,7 @@ AtomSelectorNode_TX<E, P>::AtomSelectorNode_TX(Node<E>&& true_child, Node<E>&& d
 
 template<HasConjunctiveCondition E, FluentOrDerived P>
 void AtomSelectorNode_TX<E, P>::generate_applicable_actions(const DenseState& state,
+                                                            Problem,
                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
                                                             std::vector<const E*>&) const
 {
@@ -195,6 +198,7 @@ AtomSelectorNode_FX<E, P>::AtomSelectorNode_FX(Node<E>&& false_child, Node<E>&& 
 
 template<HasConjunctiveCondition E, FluentOrDerived P>
 void AtomSelectorNode_FX<E, P>::generate_applicable_actions(const DenseState& state,
+                                                            Problem,
                                                             std::vector<const INode<E>*>& ref_applicable_nodes,
                                                             std::vector<const E*>&) const
 {
@@ -239,6 +243,7 @@ AtomSelectorNode_T<E, P>::AtomSelectorNode_T(Node<E>&& true_child, GroundAtom<P>
 
 template<HasConjunctiveCondition E, FluentOrDerived P>
 void AtomSelectorNode_T<E, P>::generate_applicable_actions(const DenseState& state,
+                                                           Problem,
                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
                                                            std::vector<const E*>&) const
 {
@@ -275,6 +280,7 @@ AtomSelectorNode_F<E, P>::AtomSelectorNode_F(Node<E>&& false_child, GroundAtom<P
 
 template<HasConjunctiveCondition E, FluentOrDerived P>
 void AtomSelectorNode_F<E, P>::generate_applicable_actions(const DenseState& state,
+                                                           Problem,
                                                            std::vector<const INode<E>*>& ref_applicable_nodes,
                                                            std::vector<const E*>&) const
 {

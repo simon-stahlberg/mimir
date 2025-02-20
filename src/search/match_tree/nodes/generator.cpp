@@ -33,7 +33,9 @@ ElementGeneratorNode_Perfect<E>::ElementGeneratorNode_Perfect(std::span<const E*
 }
 
 template<HasConjunctiveCondition E>
-void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const DenseState& state, std::vector<const E*>& ref_applicable_elements) const
+void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const DenseState& state,
+                                                                       Problem problem,
+                                                                       std::vector<const E*>& ref_applicable_elements) const
 {
     if constexpr (std::is_same_v<E, GroundActionImpl>)
     {
@@ -41,7 +43,7 @@ void ElementGeneratorNode_Perfect<E>::generate_applicable_actions_impl(const Den
         {
             for (const auto& element : this->m_elements)
             {
-                if (is_dynamically_applicable(element, state))
+                if (is_dynamically_applicable(element, problem, state))
                 {
                     ref_applicable_elements.push_back(element);
                 }
@@ -81,11 +83,13 @@ ElementGeneratorNode_Imperfect<E>::ElementGeneratorNode_Imperfect(std::span<cons
 }
 
 template<HasConjunctiveCondition E>
-void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const DenseState& state, std::vector<const E*>& ref_applicable_elements) const
+void ElementGeneratorNode_Imperfect<E>::generate_applicable_actions_impl(const DenseState& state,
+                                                                         Problem problem,
+                                                                         std::vector<const E*>& ref_applicable_elements) const
 {
     for (const auto& element : this->m_elements)
     {
-        if (is_dynamically_applicable(element, state))
+        if (is_dynamically_applicable(element, problem, state))
         {
             ref_applicable_elements.push_back(element);
         }

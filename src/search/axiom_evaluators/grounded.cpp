@@ -61,7 +61,7 @@ void GroundedAxiomEvaluator::generate_and_apply_axioms(DenseState& dense_state)
 
             applicable_axioms.clear();
 
-            match_tree->generate_applicable_elements_iteratively(dense_state, applicable_axioms);
+            match_tree->generate_applicable_elements_iteratively(dense_state, m_problem_context.get_problem(), applicable_axioms);
 
             /* Apply applicable axioms */
 

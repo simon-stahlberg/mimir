@@ -124,7 +124,8 @@ using GroundEffectConditionalList = cista::offset::vector<GroundConditionalEffec
  */
 
 template<FluentOrAuxiliary F>
-extern std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables);
+extern std::pair<loki::AssignOperatorEnum, ContinuousCost>
+evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Pretty printing

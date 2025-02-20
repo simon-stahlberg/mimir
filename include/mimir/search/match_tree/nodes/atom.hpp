@@ -70,7 +70,10 @@ public:
 
     explicit AtomSelectorNode_TFX(Node<E>&& true_child, Node<E>&& false_child, Node<E>&& dontcare_child, GroundAtom<P> atom);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const DenseState& state,
+                                     Problem problem,
+                                     std::vector<const INode<E>*>& ref_applicable_nodes,
+                                     std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
     const Node<E>& get_false_child() const;
@@ -98,7 +101,10 @@ public:
 
     explicit AtomSelectorNode_TF(Node<E>&& true_child, Node<E>&& false_child, GroundAtom<P> atom);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const DenseState& state,
+                                     Problem problem,
+                                     std::vector<const INode<E>*>& ref_applicable_nodes,
+                                     std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
     const Node<E>& get_false_child() const;
@@ -125,7 +131,10 @@ public:
 
     explicit AtomSelectorNode_TX(Node<E>&& true_child, Node<E>&& dontcare_child, GroundAtom<P> atom);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const DenseState& state,
+                                     Problem problem,
+                                     std::vector<const INode<E>*>& ref_applicable_nodes,
+                                     std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
     const Node<E>& get_dontcare_child() const;
@@ -152,7 +161,10 @@ public:
 
     explicit AtomSelectorNode_FX(Node<E>&& false_child, Node<E>&& dontcare_child, GroundAtom<P> atom);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const DenseState& state,
+                                     Problem problem,
+                                     std::vector<const INode<E>*>& ref_applicable_nodes,
+                                     std::vector<const E*>&) const override;
 
     const Node<E>& get_false_child() const;
     const Node<E>& get_dontcare_child() const;
@@ -175,7 +187,10 @@ public:
 
     explicit AtomSelectorNode_T(Node<E>&& true_child, GroundAtom<P> atom);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const DenseState& state,
+                                     Problem problem,
+                                     std::vector<const INode<E>*>& ref_applicable_nodes,
+                                     std::vector<const E*>&) const override;
 
     const Node<E>& get_true_child() const;
 };
@@ -197,7 +212,10 @@ public:
 
     explicit AtomSelectorNode_F(Node<E>&& false_child, GroundAtom<P> atom);
 
-    void generate_applicable_actions(const DenseState& state, std::vector<const INode<E>*>& ref_applicable_nodes, std::vector<const E*>&) const override;
+    void generate_applicable_actions(const DenseState& state,
+                                     Problem problem,
+                                     std::vector<const INode<E>*>& ref_applicable_nodes,
+                                     std::vector<const E*>&) const override;
 
     const Node<E>& get_false_child() const;
 };

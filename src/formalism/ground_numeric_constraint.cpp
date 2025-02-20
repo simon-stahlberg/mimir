@@ -48,10 +48,10 @@ const GroundFunctionExpression& GroundNumericConstraintImpl::get_right_function_
  * Utils
  */
 
-bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& fluent_numeric_variables)
+bool evaluate(GroundNumericConstraint constraint, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
-    const auto left_value = evaluate(constraint->get_left_function_expression(), fluent_numeric_variables);
-    const auto right_value = evaluate(constraint->get_right_function_expression(), fluent_numeric_variables);
+    const auto left_value = evaluate(constraint->get_left_function_expression(), static_numeric_variables, fluent_numeric_variables);
+    const auto right_value = evaluate(constraint->get_right_function_expression(), static_numeric_variables, fluent_numeric_variables);
 
     /* Constraint is not satisfied for NaN values. */
     if (left_value == UNDEFINED_CONTINUOUS_COST || right_value == UNDEFINED_CONTINUOUS_COST)

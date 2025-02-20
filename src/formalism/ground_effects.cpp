@@ -112,13 +112,16 @@ const GroundConjunctiveEffect& GroundConditionalEffect::get_conjunctive_effect()
  */
 
 template<FluentOrAuxiliary F>
-std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& fluent_numeric_variables)
+std::pair<loki::AssignOperatorEnum, ContinuousCost>
+evaluate(GroundNumericEffect<F> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
-    return { effect->get_assign_operator(), evaluate(effect->get_function_expression(), fluent_numeric_variables) };
+    return { effect->get_assign_operator(), evaluate(effect->get_function_expression(), static_numeric_variables, fluent_numeric_variables) };
 }
 
-template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& fluent_numeric_variables);
-template std::pair<loki::AssignOperatorEnum, ContinuousCost> evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& fluent_numeric_variables);
+template std::pair<loki::AssignOperatorEnum, ContinuousCost>
+evaluate(GroundNumericEffect<Fluent> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
+template std::pair<loki::AssignOperatorEnum, ContinuousCost>
+evaluate(GroundNumericEffect<Auxiliary> effect, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
 /**
  * Pretty printing

@@ -126,7 +126,7 @@ const GroundFunctionExpressionVariant& GroundFunctionExpressionImpl::get_variant
 
 /* Utils */
 
-ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables)
+ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables)
 {
     return std::visit(
         [&](auto&& arg) -> ContinuousCost
@@ -139,26 +139,36 @@ ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fl
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionBinaryOperator>)
             {
                 return evaluate_binary(arg->get_binary_operator(),
-                                       evaluate(arg->get_left_function_expression(), fluent_numeric_variables),
-                                       evaluate(arg->get_right_function_expression(), fluent_numeric_variables));
+                                       evaluate(arg->get_left_function_expression(), static_numeric_variables, fluent_numeric_variables),
+                                       evaluate(arg->get_right_function_expression(), static_numeric_variables, fluent_numeric_variables));
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionMultiOperator>)
             {
-                return std::accumulate(std::next(arg->get_function_expressions().begin()),  // Start from the second expression
-                                       arg->get_function_expressions().end(),
-                                       evaluate(arg->get_function_expressions().front(), fluent_numeric_variables),  // Initial bounds
-                                       [&](const auto& value, const auto& child_expr)
-                                       { return evaluate_multi(arg->get_multi_operator(), value, evaluate(child_expr, fluent_numeric_variables)); });
+                return std::accumulate(
+                    std::next(arg->get_function_expressions().begin()),  // Start from the second expression
+                    arg->get_function_expressions().end(),
+                    evaluate(arg->get_function_expressions().front(), static_numeric_variables, fluent_numeric_variables),  // Initial bounds
+                    [&](const auto& value, const auto& child_expr)
+                    { return evaluate_multi(arg->get_multi_operator(), value, evaluate(child_expr, static_numeric_variables, fluent_numeric_variables)); });
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionMinus>)
             {
-                const auto val = evaluate(arg->get_function_expression(), fluent_numeric_variables);
+                const auto val = evaluate(arg->get_function_expression(), static_numeric_variables, fluent_numeric_variables);
                 if (val == UNDEFINED_CONTINUOUS_COST)
                 {
                     return UNDEFINED_CONTINUOUS_COST;
                 }
 
                 return -val;
+            }
+            else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Static>>)
+            {
+                if (arg->get_function()->get_index() >= static_numeric_variables.size())
+                {
+                    return UNDEFINED_CONTINUOUS_COST;
+                }
+
+                return static_numeric_variables[arg->get_function()->get_index()];
             }
             else if constexpr (std::is_same_v<T, GroundFunctionExpressionFunction<Fluent>>)
             {

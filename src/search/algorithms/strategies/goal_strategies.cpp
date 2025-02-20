@@ -30,6 +30,6 @@ bool ProblemGoal::test_dynamic_goal(State state)
     // This uses the efficient check.
     return state->literals_hold<Fluent>(m_problem->get_positive_goal_atoms_indices<Fluent>(), m_problem->get_negative_goal_atoms_indices<Fluent>())
            && state->literals_hold<Derived>(m_problem->get_positive_goal_atoms_indices<Derived>(), m_problem->get_negative_goal_atoms_indices<Derived>())
-           && state->numeric_constraints_hold(m_problem->get_numeric_goal_condition());
+           && state->numeric_constraints_hold(m_problem->get_numeric_goal_condition(), m_problem->get_function_to_value<Static>());
 }
 }

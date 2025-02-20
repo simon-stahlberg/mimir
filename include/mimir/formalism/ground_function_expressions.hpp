@@ -193,12 +193,11 @@ public:
 };
 
 /* GroundFunctionExpression */
-// GroundFunctionExpressionFunction<Static> are evaluated during grounding
 using GroundFunctionExpressionVariant = std::variant<GroundFunctionExpressionNumber,
                                                      GroundFunctionExpressionBinaryOperator,
                                                      GroundFunctionExpressionMultiOperator,
                                                      GroundFunctionExpressionMinus,
-                                                     // GroundFunctionExpressionFunction<Static>,
+                                                     GroundFunctionExpressionFunction<Static>,
                                                      GroundFunctionExpressionFunction<Fluent>,
                                                      GroundFunctionExpressionFunction<Auxiliary>>;
 
@@ -232,7 +231,7 @@ public:
 
 /* Utils */
 
-extern ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& fluent_numeric_variables);
+extern ContinuousCost evaluate(GroundFunctionExpression fexpr, const FlatDoubleList& static_numeric_variables, const FlatDoubleList& fluent_numeric_variables);
 
 /* Printing */
 

@@ -241,12 +241,13 @@ GroundFunctionExpressionMinus PDDLRepositories::get_or_create_ground_function_ex
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionMinusImpl> {}).get_or_create(std::move(function_expression));
 }
 
-template<FluentOrAuxiliary F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunctionExpressionFunction<F> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<F> function)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionFunctionImpl<F>> {}).get_or_create(std::move(function));
 }
 
+template GroundFunctionExpressionFunction<Static> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<Static> function);
 template GroundFunctionExpressionFunction<Fluent> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<Fluent> function);
 template GroundFunctionExpressionFunction<Auxiliary> PDDLRepositories::get_or_create_ground_function_expression_function(GroundFunction<Auxiliary> function);
 
@@ -270,11 +271,12 @@ GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_express
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
 
-template<FluentOrAuxiliary F>
+template<StaticOrFluentOrAuxiliary F>
 GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<F> fexpr)
 {
     return boost::hana::at_key(m_repositories, boost::hana::type<GroundFunctionExpressionImpl> {}).get_or_create(fexpr);
 }
+template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Static> fexpr);
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Fluent> fexpr);
 template GroundFunctionExpression PDDLRepositories::get_or_create_ground_function_expression(GroundFunctionExpressionFunction<Auxiliary> fexpr);
 
