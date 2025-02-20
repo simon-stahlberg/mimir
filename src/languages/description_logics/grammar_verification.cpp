@@ -68,7 +68,7 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
 
     auto visitor = CollectNonTerminalsVisitor(head_nonterminals, body_nonterminals);
 
-    boost::hana::for_each(grammar.get_rules_container().get(),
+    boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                           [&](auto&& pair)
                           {
                               auto value = boost::hana::second(pair);

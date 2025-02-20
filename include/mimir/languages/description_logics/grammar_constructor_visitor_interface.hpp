@@ -86,59 +86,6 @@ public:
     virtual void visit(RoleIdentity constructor);
 };
 
-/// @brief Recursively copies into the members.
-/*
-class TranslateVisitor : public Visitor
-{
-public:
-    StartSymbols& m_start_symbols;
-    GrammarRules& m_grammar_rules;
-    GrammarConstructorRepositories& m_repositories;
-
-    void visit(DerivationRule<Concept> constructor) override;
-    void visit(NonTerminal<Concept> constructor) override;
-    void visit(ConstructorOrNonTerminal<Concept> constructor) override;
-    void visit(ConceptBot constructor) override;
-    void visit(ConceptTop constructor) override;
-    void visit(ConceptAtomicState<Static> constructor) override;
-    void visit(ConceptAtomicState<Fluent> constructor) override;
-    void visit(ConceptAtomicState<Derived> constructor) override;
-    void visit(ConceptAtomicGoal<Static> constructor) override;
-    void visit(ConceptAtomicGoal<Fluent> constructor) override;
-    void visit(ConceptAtomicGoal<Derived> constructor) override;
-    void visit(ConceptIntersection constructor) override;
-    void visit(ConceptUnion constructor) override;
-    void visit(ConceptNegation constructor) override;
-    void visit(ConceptValueRestriction constructor) override;
-    void visit(ConceptExistentialQuantification constructor) override;
-    void visit(ConceptRoleValueMapContainment constructor) override;
-    void visit(ConceptRoleValueMapEquality constructor) override;
-    void visit(ConceptNominal constructor) override;
-
-    void visit(DerivationRule<Role> constructor) override;
-    void visit(NonTerminal<Role> constructor) override;
-    void visit(ConstructorOrNonTerminal<Role> constructor) override;
-    void visit(RoleUniversal constructor) override;
-    void visit(RoleAtomicState<Static> constructor) override;
-    void visit(RoleAtomicState<Fluent> constructor) override;
-    void visit(RoleAtomicState<Derived> constructor) override;
-    void visit(RoleAtomicGoal<Static> constructor) override;
-    void visit(RoleAtomicGoal<Fluent> constructor) override;
-    void visit(RoleAtomicGoal<Derived> constructor) override;
-    void visit(RoleIntersection constructor) override;
-    void visit(RoleUnion constructor) override;
-    void visit(RoleComplement constructor) override;
-    void visit(RoleInverse constructor) override;
-    void visit(RoleComposition constructor) override;
-    void visit(RoleTransitiveClosure constructor) override;
-    void visit(RoleReflexiveTransitiveClosure constructor) override;
-    void visit(RoleRestriction constructor) override;
-    void visit(RoleIdentity constructor) override;
-
-    TranslateVisitor(StartSymbols& start_symbols, GrammarRules& grammar_rules, GrammarConstructorRepositories& repositories);
-};
-*/
-
 }
 
 #endif

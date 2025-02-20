@@ -29,8 +29,9 @@ namespace mimir::dl::grammar
 using HanaStartSymbols = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::optional<NonTerminal<Concept>>>,
                                           boost::hana::pair<boost::hana::type<Role>, std::optional<NonTerminal<Role>>>>;
 
-using HanaGrammarRules = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
-                                          boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
+using HanaDerivationRules =
+    boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_map<NonTerminal<Concept>, DerivationRuleSet<Concept>>>,
+                     boost::hana::pair<boost::hana::type<Role>, std::unordered_map<NonTerminal<Role>, DerivationRuleSet<Role>>>>;
 
 class StartSymbolsContainer
 {
@@ -69,17 +70,17 @@ public:
     const HanaStartSymbols& get() const { return m_symbols; }
 };
 
-class GrammarRulesContainer
+class DerivationRulesContainer
 {
 private:
-    HanaGrammarRules m_rules;
+    HanaDerivationRules m_rules;
 
 public:
-    GrammarRulesContainer() = default;
-    GrammarRulesContainer(const GrammarRulesContainer& other) = delete;
-    GrammarRulesContainer& operator=(const GrammarRulesContainer& other) = delete;
-    GrammarRulesContainer(GrammarRulesContainer&& other) = default;
-    GrammarRulesContainer& operator=(GrammarRulesContainer&& other) = default;
+    DerivationRulesContainer() = default;
+    DerivationRulesContainer(const DerivationRulesContainer& other) = delete;
+    DerivationRulesContainer& operator=(const DerivationRulesContainer& other) = delete;
+    DerivationRulesContainer(DerivationRulesContainer&& other) = default;
+    DerivationRulesContainer& operator=(DerivationRulesContainer&& other) = default;
 
     /**
      * Modifiers
@@ -101,7 +102,7 @@ public:
         return boost::hana::at_key(m_rules, boost::hana::type<D> {}).at(non_terminal);
     }
 
-    const HanaGrammarRules& get() const { return m_rules; }
+    const HanaDerivationRules& get() const { return m_rules; }
 };
 }
 

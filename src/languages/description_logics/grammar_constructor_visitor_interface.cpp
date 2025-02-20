@@ -19,6 +19,7 @@
 
 #include "grammar_constructor_visitor_interface_impl.hpp"
 #include "mimir/languages/description_logics/grammar_constructors.hpp"
+#include "mimir/languages/description_logics/grammar_containers.hpp"
 
 namespace mimir::dl::grammar
 {
@@ -113,56 +114,4 @@ void Visitor::visit(RoleRestriction constructor)
 }
 void Visitor::visit(RoleIdentity constructor) { constructor->get_concept_or_non_terminal()->accept(*this); }
 
-/**
- * TranslateVisitor
- */
-
-/*
-void TranslateVisitor::visit(DerivationRule<Concept> constructor) {}
-void TranslateVisitor::visit(NonTerminal<Concept> constructor) {}
-void TranslateVisitor::visit(ConstructorOrNonTerminal<Concept> constructor) {}
-void TranslateVisitor::visit(ConceptBot constructor) {}
-void TranslateVisitor::visit(ConceptTop constructor) {}
-void TranslateVisitor::visit(ConceptAtomicState<Static> constructor) {}
-void TranslateVisitor::visit(ConceptAtomicState<Fluent> constructor) {}
-void TranslateVisitor::visit(ConceptAtomicState<Derived> constructor) {}
-void TranslateVisitor::visit(ConceptAtomicGoal<Static> constructor) {}
-void TranslateVisitor::visit(ConceptAtomicGoal<Fluent> constructor) {}
-void TranslateVisitor::visit(ConceptAtomicGoal<Derived> constructor) {}
-void TranslateVisitor::visit(ConceptIntersection constructor) {}
-void TranslateVisitor::visit(ConceptUnion constructor) {}
-void TranslateVisitor::visit(ConceptNegation constructor) {}
-void TranslateVisitor::visit(ConceptValueRestriction constructor) {}
-void TranslateVisitor::visit(ConceptExistentialQuantification constructor) {}
-void TranslateVisitor::visit(ConceptRoleValueMapContainment constructor) {}
-void TranslateVisitor::visit(ConceptRoleValueMapEquality constructor) {}
-void TranslateVisitor::visit(ConceptNominal constructor) {}
-
-void TranslateVisitor::visit(DerivationRule<Role> constructor) {}
-void TranslateVisitor::visit(NonTerminal<Role> constructor) {}
-void TranslateVisitor::visit(ConstructorOrNonTerminal<Role> constructor) {}
-void TranslateVisitor::visit(RoleUniversal constructor) {}
-void TranslateVisitor::visit(RoleAtomicState<Static> constructor) {}
-void TranslateVisitor::visit(RoleAtomicState<Fluent> constructor) {}
-void TranslateVisitor::visit(RoleAtomicState<Derived> constructor) {}
-void TranslateVisitor::visit(RoleAtomicGoal<Static> constructor) {}
-void TranslateVisitor::visit(RoleAtomicGoal<Fluent> constructor) {}
-void TranslateVisitor::visit(RoleAtomicGoal<Derived> constructor) {}
-void TranslateVisitor::visit(RoleIntersection constructor) {}
-void TranslateVisitor::visit(RoleUnion constructor) {}
-void TranslateVisitor::visit(RoleComplement constructor) {}
-void TranslateVisitor::visit(RoleInverse constructor) {}
-void TranslateVisitor::visit(RoleComposition constructor) {}
-void TranslateVisitor::visit(RoleTransitiveClosure constructor) {}
-void TranslateVisitor::visit(RoleReflexiveTransitiveClosure constructor) {}
-void TranslateVisitor::visit(RoleRestriction constructor) {}
-void TranslateVisitor::visit(RoleIdentity constructor) {}
-
-TranslateVisitor::TranslateVisitor(StartSymbols& start_symbols, GrammarRules& grammar_rules, GrammarConstructorRepositories& repositories) :
-    m_start_symbols(start_symbols),
-    m_grammar_rules(grammar_rules),
-    m_repositories(repositories)
-{
-}
-*/
 }

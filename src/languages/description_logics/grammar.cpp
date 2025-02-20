@@ -25,10 +25,10 @@
 namespace mimir::dl::grammar
 {
 
-Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, GrammarRulesContainer rules) :
+Grammar::Grammar(ConstructorRepositories repositories, StartSymbolsContainer start_symbols, DerivationRulesContainer derivation_rules) :
     m_repositories(std::move(repositories)),
     m_start_symbols(std::move(start_symbols)),
-    m_rules(std::move(rules))
+    m_derivation_rules(std::move(derivation_rules))
 {
     verify_grammar_is_well_defined(*this);
 }
@@ -38,7 +38,7 @@ Grammar::Grammar(std::string bnf_description, Domain domain)
     auto grammar = mimir::dl::grammar::parse(bnf_description, domain);
     m_repositories = std::move(grammar.m_repositories);
     m_start_symbols = std::move(grammar.m_start_symbols);
-    m_rules = std::move(grammar.m_rules);
+    m_derivation_rules = std::move(grammar.m_derivation_rules);
 
     verify_grammar_is_well_defined(*this);
 }
@@ -53,14 +53,14 @@ Grammar::Grammar(GrammarSpecificationEnum type, Domain domain)
 template<ConceptOrRole D>
 bool Grammar::test_match(dl::Constructor<D> constructor) const
 {
-    const auto& start_symbol = m_start_symbols.template get_start_symbol<D>();
+    const auto& start_symbol = m_start_symbols.template get<D>();
 
     if (!start_symbol)
     {
         return false;  ///< sentence is not part of language.
     }
 
-    const auto& rules = m_rules.template get<D>(start_symbol.value());
+    const auto& rules = m_derivation_rules.template get<D>(start_symbol.value());
 
     return std::any_of(rules.begin(), rules.end(), [&, constructor](auto&& rule) { return rule->test_match(constructor, *this); });
 }
@@ -70,6 +70,6 @@ template bool Grammar::test_match(dl::Constructor<Role> constructor) const;
 
 const StartSymbolsContainer& Grammar::get_start_symbols_container() const { return m_start_symbols; }
 
-const GrammarRulesContainer& Grammar::get_rules_container() const { return m_rules; }
+const DerivationRulesContainer& Grammar::get_derivation_rules_container() const { return m_derivation_rules; }
 
 }

@@ -383,25 +383,25 @@ static StartSymbolsContainer parse(const dl::ast::GrammarHead& node, Domain doma
     return start_symbols;
 }
 
-static GrammarRulesContainer parse(const dl::ast::GrammarBody& node, Domain domain, ConstructorRepositories& ref_repositories)
+static DerivationRulesContainer parse(const dl::ast::GrammarBody& node, Domain domain, ConstructorRepositories& ref_repositories)
 {
-    auto rules = GrammarRulesContainer {};
+    auto derivation_rules = DerivationRulesContainer {};
 
     for (const auto& part : node.rules)
     {
-        boost::apply_visitor([&](const auto& arg) { rules.insert(parse(arg, domain, ref_repositories)); }, part);
+        boost::apply_visitor([&](const auto& arg) { derivation_rules.insert(parse(arg, domain, ref_repositories)); }, part);
     }
 
-    return rules;
+    return derivation_rules;
 }
 
 Grammar parse(const dl::ast::Grammar& node, Domain domain)
 {
     auto repositories = ConstructorRepositories();
     auto start_symbols = parse(node.head, domain, repositories);
-    auto rules = parse(node.body, domain, repositories);
+    auto derivation_rules = parse(node.body, domain, repositories);
 
-    return Grammar(std::move(repositories), std::move(start_symbols), std::move(rules));
+    return Grammar(std::move(repositories), std::move(start_symbols), std::move(derivation_rules));
 }
 
 Grammar parse(const std::string& bnf_description, Domain domain)
