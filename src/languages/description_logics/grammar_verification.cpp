@@ -17,7 +17,6 @@
 
 #include "mimir/languages/description_logics/grammar_verification.hpp"
 
-#include "grammar_constructor_visitor_interface_impl.hpp"
 #include "mimir/languages/description_logics/grammar.hpp"
 #include "mimir/languages/description_logics/grammar_constructor_visitor_interface.hpp"
 
@@ -27,34 +26,43 @@ namespace mimir::dl::grammar
 using NonTerminalSet = boost::hana::map<boost::hana::pair<boost::hana::type<Concept>, std::unordered_set<NonTerminal<Concept>>>,
                                         boost::hana::pair<boost::hana::type<Role>, std::unordered_set<NonTerminal<Role>>>>;
 
-class CollectNonTerminalsVisitor : public Visitor
+template<ConceptOrRole D>
+class CollectNonTerminalsDerivationRuleVisitor : public DerivationRuleVisitor<D>
 {
 private:
     NonTerminalSet& m_head_non_terminals;
     NonTerminalSet& m_body_non_terminals;
 
 public:
-    /* Concepts */
-    void visit(DerivationRule<Concept> constructor) override
+    void visit(DerivationRule<D> constructor) override
     {
         // Store the head nonterminal but do not visit the head non terminal.
-        boost::hana::at_key(m_head_non_terminals, boost::hana::type<Concept> {}).insert(constructor->get_non_terminal());
-        // Recurse further
-        Visitor::visit(constructor->get_constructor_or_non_terminals());
-    }
-    void visit(NonTerminal<Concept> constructor) override { boost::hana::at_key(m_body_non_terminals, boost::hana::type<Concept> {}).insert(constructor); }
+        boost::hana::at_key(m_head_non_terminals, boost::hana::type<D> {}).insert(constructor->get_non_terminal());
 
-    /* Roles */
-    void visit(DerivationRule<Role> constructor) override
+        for (const auto& constructor_or_nonterminal : constructor->get_constructor_or_non_terminals())
+        {
+            constructor_or_nonterminal->accept(*this->m_constructor_or_nonterminal_visitor);
+        }
+    }
+
+    CollectNonTerminalsDerivationRuleVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
+        m_head_non_terminals(head_non_terminals),
+        m_body_non_terminals(body_non_terminals)
     {
-        // Store the head nonterminal but do not visit the head non terminal.
-        boost::hana::at_key(m_head_non_terminals, boost::hana::type<Role> {}).insert(constructor->get_non_terminal());
-        // Recurse further
-        Visitor::visit(constructor->get_constructor_or_non_terminals());
     }
-    void visit(NonTerminal<Role> constructor) override { boost::hana::at_key(m_body_non_terminals, boost::hana::type<Role> {}).insert(constructor); }
+};
 
-    CollectNonTerminalsVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
+template<ConceptOrRole D>
+class CollectNonTerminalsNonTerminalVisitor : public NonTerminalVisitor<D>
+{
+private:
+    NonTerminalSet& m_head_non_terminals;
+    NonTerminalSet& m_body_non_terminals;
+
+public:
+    void visit(NonTerminal<D> constructor) override { boost::hana::at_key(m_body_non_terminals, boost::hana::type<D> {}).insert(constructor); }
+
+    CollectNonTerminalsNonTerminalVisitor(NonTerminalSet& head_non_terminals, NonTerminalSet& body_non_terminals) :
         m_head_non_terminals(head_non_terminals),
         m_body_non_terminals(body_non_terminals)
     {
@@ -66,7 +74,21 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
     auto head_nonterminals = NonTerminalSet {};
     auto body_nonterminals = NonTerminalSet {};
 
-    auto visitor = CollectNonTerminalsVisitor(head_nonterminals, body_nonterminals);
+    auto concept_visitor = ConstructorVisitor<Concept>();
+    auto role_visitor = ConstructorVisitor<Role>();
+    auto concept_or_nonterminal_visitor = ConstructorOrNonTerminalVisitor<Concept>();
+    auto role_or_nonterminal_visitor = ConstructorOrNonTerminalVisitor<Role>();
+    auto concept_nonterminal_visitor = CollectNonTerminalsNonTerminalVisitor<Concept>(head_nonterminals, body_nonterminals);
+    auto role_nonterminal_visitor = CollectNonTerminalsNonTerminalVisitor<Role>(head_nonterminals, body_nonterminals);
+    auto concept_derivation_rule_visitor = CollectNonTerminalsDerivationRuleVisitor<Concept>(head_nonterminals, body_nonterminals);
+    auto role_derivation_rule_visitor = CollectNonTerminalsDerivationRuleVisitor<Role>(head_nonterminals, body_nonterminals);
+
+    concept_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    role_visitor.initialize(concept_or_nonterminal_visitor, role_or_nonterminal_visitor);
+    concept_or_nonterminal_visitor.initialize(concept_nonterminal_visitor, concept_visitor);
+    role_or_nonterminal_visitor.initialize(role_nonterminal_visitor, role_visitor);
+    concept_derivation_rule_visitor.initialize(concept_nonterminal_visitor, concept_or_nonterminal_visitor);
+    role_derivation_rule_visitor.initialize(role_nonterminal_visitor, role_or_nonterminal_visitor);
 
     boost::hana::for_each(grammar.get_derivation_rules_container().get(),
                           [&](auto&& pair)
@@ -77,7 +99,20 @@ void verify_grammar_is_well_defined(const Grammar& grammar)
                               {
                                   for (const auto& rule : rules_entry.second)
                                   {
-                                      visitor.visit(rule);
+                                      using T = std::decay_t<decltype(rule)>;
+                                      if constexpr (std::is_same_v<T, DerivationRule<Concept>>)
+                                      {
+                                          rule->accept(concept_derivation_rule_visitor);
+                                      }
+                                      else if constexpr (std::is_same_v<T, DerivationRule<Role>>)
+                                      {
+                                          rule->accept(role_derivation_rule_visitor);
+                                      }
+                                      else
+                                      {
+                                          static_assert(dependent_false<T>::value,
+                                                        "verify_grammar_is_well_defined(grammar): Missing implementation for DerivationRule type.");
+                                      }
                                   }
                               }
                           });

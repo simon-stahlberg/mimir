@@ -230,7 +230,17 @@ using RoleIdentity = const RoleIdentityImpl*;
  * Visitors
  */
 
-class Visitor;
+template<ConceptOrRole D>
+class ConstructorVisitor;
+
+template<ConceptOrRole D>
+class ConstructorOrNonTerminalVisitor;
+
+template<ConceptOrRole D>
+class NonTerminalVisitor;
+
+template<ConceptOrRole D>
+class DerivationRuleVisitor;
 
 /**
  * Grammar

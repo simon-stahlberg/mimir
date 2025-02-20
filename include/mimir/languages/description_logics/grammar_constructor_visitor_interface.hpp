@@ -27,26 +27,29 @@ namespace mimir::dl::grammar
 {
 
 /**
- * Default behavior recursively visits all grammar constructors.
+ * Concept
  */
-class Visitor
+
+template<ConceptOrRole D>
+class ConstructorVisitor
 {
+};
+
+template<>
+class ConstructorVisitor<Concept>
+{
+protected:
+    ConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
+    ConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+
 public:
-    virtual ~Visitor() {}
+    ConstructorVisitor() = default;
 
-    /**
-     * Generic visits.
-     */
-    template<std::ranges::forward_range Range>
-    void visit(const Range& range);
+    virtual ~ConstructorVisitor() = default;
 
-    template<typename... Ts>
-    void visit(const std::variant<Ts...>& variant);
+    virtual void initialize(ConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                            ConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
 
-    /* Concepts */
-    virtual void visit(DerivationRule<Concept> constructor);
-    virtual void visit(NonTerminal<Concept> constructor);
-    virtual void visit(ConstructorOrNonTerminal<Concept> constructor);
     virtual void visit(ConceptBot constructor);
     virtual void visit(ConceptTop constructor);
     virtual void visit(ConceptAtomicState<Static> constructor);
@@ -63,11 +66,27 @@ public:
     virtual void visit(ConceptRoleValueMapContainment constructor);
     virtual void visit(ConceptRoleValueMapEquality constructor);
     virtual void visit(ConceptNominal constructor);
+};
 
-    /* Roles */
-    virtual void visit(DerivationRule<Role> constructor);
-    virtual void visit(NonTerminal<Role> constructor);
-    virtual void visit(ConstructorOrNonTerminal<Role> constructor);
+/**
+ * Role
+ */
+
+template<>
+class ConstructorVisitor<Role>
+{
+protected:
+    ConstructorOrNonTerminalVisitor<Concept>* m_concept_or_nonterminal_visitor;
+    ConstructorOrNonTerminalVisitor<Role>* m_role_or_nonterminal_visitor;
+
+public:
+    ConstructorVisitor() = default;
+
+    virtual ~ConstructorVisitor() = default;
+
+    virtual void initialize(ConstructorOrNonTerminalVisitor<Concept>& concept_or_nonterminal_visitor,
+                            ConstructorOrNonTerminalVisitor<Role>& role_or_nonterminal_visitor);
+
     virtual void visit(RoleUniversal constructor);
     virtual void visit(RoleAtomicState<Static> constructor);
     virtual void visit(RoleAtomicState<Fluent> constructor);
@@ -84,6 +103,61 @@ public:
     virtual void visit(RoleReflexiveTransitiveClosure constructor);
     virtual void visit(RoleRestriction constructor);
     virtual void visit(RoleIdentity constructor);
+};
+
+/**
+ * ConstructorOrRoleNonTerminal
+ */
+
+template<ConceptOrRole D>
+class ConstructorOrNonTerminalVisitor
+{
+protected:
+    NonTerminalVisitor<D>* m_nonterminal_visitor;
+    ConstructorVisitor<D>* m_constructor_visitor;
+
+public:
+    ConstructorOrNonTerminalVisitor() = default;
+
+    virtual ~ConstructorOrNonTerminalVisitor() = default;
+
+    virtual void initialize(NonTerminalVisitor<D>& nonterminal_visitor, ConstructorVisitor<D>& constructor_visitor);
+
+    virtual void visit(ConstructorOrNonTerminal<D> constructor);
+};
+
+/**
+ * NonTerminal
+ */
+
+template<ConceptOrRole D>
+class NonTerminalVisitor
+{
+public:
+    virtual ~NonTerminalVisitor() = default;
+
+    virtual void visit(NonTerminal<D> constructor);
+};
+
+/**
+ * DerivationRule
+ */
+
+template<ConceptOrRole D>
+class DerivationRuleVisitor
+{
+protected:
+    NonTerminalVisitor<D>* m_nonterminal_visitor;
+    ConstructorOrNonTerminalVisitor<D>* m_constructor_or_nonterminal_visitor;
+
+public:
+    DerivationRuleVisitor() = default;
+
+    virtual void initialize(NonTerminalVisitor<D>& nonterminal_visitor, ConstructorOrNonTerminalVisitor<D>& constructor_or_nonterminal_visitor);
+
+    virtual ~DerivationRuleVisitor() = default;
+
+    virtual void visit(DerivationRule<D> constructor);
 };
 
 }

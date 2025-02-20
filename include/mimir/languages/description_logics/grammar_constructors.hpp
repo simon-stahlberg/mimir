@@ -59,7 +59,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(NonTerminalVisitor<D>& visitor) const;
 
     Index get_index() const;
     const std::string& get_name() const;
@@ -96,7 +96,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(ConstructorOrNonTerminalVisitor<D>& visitor) const;
 
     Index get_index() const;
     const std::variant<Constructor<D>, NonTerminal<D>>& get_constructor_or_non_terminal() const;
@@ -134,7 +134,7 @@ public:
 
     bool test_match(dl::Constructor<D> constructor, const Grammar& grammar) const;
 
-    void accept(Visitor& visitor) const;
+    void accept(DerivationRuleVisitor<D>& visitor) const;
 
     Index get_index() const;
     NonTerminal<D> get_non_terminal() const;
@@ -170,7 +170,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
 
@@ -200,7 +200,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
 
@@ -232,7 +232,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
@@ -266,7 +266,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
@@ -302,7 +302,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
@@ -341,7 +341,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal_left() const;
@@ -377,7 +377,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
@@ -410,7 +410,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -446,7 +446,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -482,7 +482,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
@@ -518,7 +518,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
@@ -551,7 +551,7 @@ public:
 
     bool test_match(dl::Constructor<Concept> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Concept>& visitor) const override;
 
     Index get_index() const;
     Object get_object() const;
@@ -586,7 +586,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
 
@@ -618,7 +618,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
@@ -652,7 +652,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     Predicate<P> get_predicate() const;
@@ -686,7 +686,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
@@ -720,7 +720,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
@@ -753,7 +753,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -785,7 +785,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -818,7 +818,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal_left() const;
@@ -851,7 +851,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -883,7 +883,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -916,7 +916,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Role> get_role_or_non_terminal() const;
@@ -949,7 +949,7 @@ public:
 
     bool test_match(dl::Constructor<Role> constructor, const Grammar& grammar) const override;
 
-    void accept(Visitor& visitor) const override;
+    void accept(ConstructorVisitor<Role>& visitor) const override;
 
     Index get_index() const;
     ConstructorOrNonTerminal<Concept> get_concept_or_non_terminal() const;
