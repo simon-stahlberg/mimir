@@ -30,11 +30,10 @@ private:
     LiteralList<Static> m_static_conditions;
     LiteralList<Fluent> m_fluent_conditions;
     LiteralList<Derived> m_derived_conditions;
-    GroundLiteralList<Static> m_nullary_static_conditions;
-    GroundLiteralList<Fluent> m_nullary_fluent_conditions;
-    GroundLiteralList<Derived> m_nullary_derived_conditions;
+    GroundLiteralList<Static> m_nullary_static_conditions;    ///< Exploit this problem-independency :)
+    GroundLiteralList<Fluent> m_nullary_fluent_conditions;    ///< Exploit this problem-independency :)
+    GroundLiteralList<Derived> m_nullary_derived_conditions;  ///< Exploit this problem-independency :)
     NumericConstraintList m_numeric_constraints;
-    GroundNumericConstraintList m_nullary_numeric_constraints;
 
     // Below: add additional members if needed and initialize them in the constructor
 
@@ -46,8 +45,7 @@ private:
                              GroundLiteralList<Static> nullary_static_conditions,
                              GroundLiteralList<Fluent> nullary_fluent_conditions,
                              GroundLiteralList<Derived> nullary_derived_conditions,
-                             NumericConstraintList numeric_constraints,
-                             GroundNumericConstraintList nullary_numeric_constraints);
+                             NumericConstraintList numeric_constraints);
 
     // Give access to the constructor.
     template<typename T, typename Hash, typename EqualTo>
@@ -67,7 +65,6 @@ public:
     template<StaticOrFluentOrDerived P>
     const GroundLiteralList<P>& get_nullary_ground_literals() const;
     const NumericConstraintList& get_numeric_constraints() const;
-    const GroundNumericConstraintList& get_nullary_numeric_constraints() const;
 
     size_t get_arity() const;
 

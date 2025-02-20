@@ -57,21 +57,11 @@ static bool nullary_literals_hold(const GroundLiteralList<P>& literals, const Fl
     return true;
 }
 
-static bool nullary_numeric_constraints_hold(const GroundNumericConstraintList& numeric_constraints,
-                                             const FlatDoubleList& static_numeric_variables,
-                                             const FlatDoubleList& fluent_numeric_variables)
-{
-    // TODO
-    return true;
-}
-
 bool nullary_conditions_hold(ConjunctiveCondition conjunctive_condition, Problem problem, const DenseState& dense_state)
 {
+    // Note: checking nullary constraints doesnt work because its value is problem-dependent!
     return nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Fluent>(), dense_state.get_atoms<Fluent>())
-           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>())
-           && nullary_numeric_constraints_hold(conjunctive_condition->get_nullary_numeric_constraints(),
-                                               problem->get_function_to_value<Static>(),
-                                               dense_state.get_numeric_variables());
+           && nullary_literals_hold(conjunctive_condition->get_nullary_ground_literals<Derived>(), dense_state.get_atoms<Derived>());
 }
 
 /**
